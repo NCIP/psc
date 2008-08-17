@@ -18,6 +18,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     private Activity a11, a12, a20;
     private Population p0, p1;
     private PlannedActivity pa0, pa1;
+    private static final int CELL_COUNT = 7;
 
     @Override
     protected void setUp() throws Exception {
@@ -29,8 +30,8 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         p0 = createPopulation("P", "People");
         p1 = createPopulation("Pp", "Persons");
 
-        rowA = new PeriodActivitiesGridRow(a20);
-        rowB = new PeriodActivitiesGridRow(a20);
+        rowA = new PeriodActivitiesGridRow(a20, CELL_COUNT);
+        rowB = new PeriodActivitiesGridRow(a20, CELL_COUNT);
 
         pa0 = createPlannedActivity(a20, 4);
         pa1 = createPlannedActivity(a20, 2);
@@ -89,18 +90,24 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         assertSame(pa1, rowA.getPlannedActivityForDay(1));
     }
 
+    public void testPlannedActivitiesAlwaysHasTheCorrectNumberOfCells() throws Exception {
+        assertEquals(CELL_COUNT, rowA.getPlannedActivities().size());
+        rowA.addPlannedActivity(pa0);
+        assertEquals(CELL_COUNT, rowA.getPlannedActivities().size());
+    }
+
     ////// COMPARABLE TESTS
 
     public void testOrdersByActivityTypeFirst() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11);
-        rowB = new PeriodActivitiesGridRow(a20);
+        rowA = new PeriodActivitiesGridRow(a11, CELL_COUNT);
+        rowB = new PeriodActivitiesGridRow(a20, CELL_COUNT);
 
         assertOrder(rowA, rowB);
     }
 
     public void testOrdersByActivityNameSecond() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11);
-        rowB = new PeriodActivitiesGridRow(a12);
+        rowA = new PeriodActivitiesGridRow(a11, CELL_COUNT);
+        rowB = new PeriodActivitiesGridRow(a12, CELL_COUNT);
 
         assertOrder(rowB, rowA);
     }
@@ -183,28 +190,5 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         for (String label : labels) {
             row.getLabels().add(createNamedInstance(label, Label.class));
         }
-    }
-
-    //////
-
-    public void testCreateFromPlannedActivity() throws Exception {
-        pa0.setDetails("dets");
-        pa0.setCondition("cond");
-        labelPlannedActivity(pa0, "keyword", "tag");
-        PeriodActivitiesGridRow created = PeriodActivitiesGridRow.create(pa0);
-        assertEquals("Wrong activity", created.getActivity(), pa0.getActivity());
-        assertEquals("Wrong details", created.getDetails(), pa0.getDetails());
-        assertEquals("Wrong condition", created.getCondition(), pa0.getCondition());
-        assertEquals("Wrong number of labels", 2, created.getLabels().size());
-        assertEquals("Wrong first label", pa0.getLabelNames().get(0),
-            created.getLabels().iterator().next().getName());
-    }
-
-    public void testKeyGeneratedFromPlannedActivityMatchesKeyFromRowCreatedFromSamePA() throws Exception {
-        pa0.setDetails("dets");
-        pa0.setCondition("cond");
-        labelPlannedActivity(pa0, "keyword", "tag");
-        PeriodActivitiesGridRow created = PeriodActivitiesGridRow.create(pa0);
-        assertEquals(PeriodActivitiesGridRow.key(pa0), created.key());
     }
 }

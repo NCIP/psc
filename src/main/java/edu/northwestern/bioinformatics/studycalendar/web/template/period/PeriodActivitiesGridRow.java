@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang.StringUtils;
@@ -43,11 +42,12 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     private Collection<Label> labels;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRow(Activity activity) {
+    public PeriodActivitiesGridRow(Activity activity, int cellCount) {
         if (activity == null) throw new IllegalArgumentException("Activity is required");
         this.activity = activity;
         labels = new TreeSet<Label>();
-        plannedActivities = new ExpandingList<PlannedActivity>();
+        plannedActivities = new ArrayList<PlannedActivity>(cellCount);
+        while (plannedActivities.size() < cellCount) plannedActivities.add(null);
     }
 
     ////// LOGIC
@@ -78,6 +78,7 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
             toString();
     }
 
+    // TODO: this assumes that the period duration unit is a day
     public void addPlannedActivity(PlannedActivity planned) {
         if (!getActivity().equals(planned.getActivity())) {
             throw new StudyCalendarError("This row is for %s, not %s", getActivity(), planned.getActivity());
@@ -110,6 +111,7 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
         return getFirstPlannedActivity() != null;
     }
 
+    // TODO: this assumes that the period duration unit is a day
     public PlannedActivity getPlannedActivityForDay(int day) {
         return plannedActivities.get(day - 1);
     }
@@ -181,15 +183,4 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     public List<PlannedActivity> getPlannedActivities() {
         return plannedActivities;
     }
-
-    public static PeriodActivitiesGridRow create(PlannedActivity plannedActivity) {
-        PeriodActivitiesGridRow row = new PeriodActivitiesGridRow(plannedActivity.getActivity());
-        row.setCondition(plannedActivity.getCondition());
-        row.setDetails(plannedActivity.getDetails());
-        for (Label label : plannedActivity.getLabels()) {
-            row.getLabels().add(label);
-        }
-        return row;
-    }
-
 }

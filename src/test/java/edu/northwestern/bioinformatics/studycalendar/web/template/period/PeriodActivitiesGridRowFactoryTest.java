@@ -21,7 +21,7 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
         super.setUp();
         pa0 = createPlannedActivity("Something", 1, "With vim");
         pa0.getActivity().setId(123);
-        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRow.key(pa0));
+        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRow.key(pa0), 21);
         p1 = createPopulation("P", "People");
     }
 

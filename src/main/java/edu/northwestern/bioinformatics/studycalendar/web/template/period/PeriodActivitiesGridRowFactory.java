@@ -34,11 +34,13 @@ public class PeriodActivitiesGridRowFactory {
 
     private Activity activity;
     private String key;
+    private int cellCount;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRowFactory(Activity activity, String key) {
+    public PeriodActivitiesGridRowFactory(Activity activity, String key, int cellCount) {
         this.activity = activity;
         this.key = key;
+        this.cellCount = cellCount;
         plannedActivities = new ArrayList<PlannedActivity>();
     }
 
@@ -68,7 +70,7 @@ public class PeriodActivitiesGridRowFactory {
         // The preferred row is the lowest row where each population appears first for a day.
         Map<Population, Integer> preferredRow = determinePopulationPreferredRows(byDay);
         List<PeriodActivitiesGridRow> rows = new ArrayList<PeriodActivitiesGridRow>(rowCount);
-        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity));
+        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity, cellCount));
 
         for (PlannedActivity pa : plannedActivities) {
             int preferred = preferredRow.get(pa.getPopulation());

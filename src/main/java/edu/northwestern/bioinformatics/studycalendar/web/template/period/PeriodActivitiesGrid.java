@@ -28,10 +28,12 @@ public class PeriodActivitiesGrid {
         this.period = period;
         this.cycleLength = cycleLength;
         this.allActivities = activities;
+
+        this.rowGroups = createRowGroups();
     }
 
     /**
-     * The headings for the days portion of the grid.  The indexes are col, row because that's the
+     * The headings for the days portion of the grid.  The indexes are [col][row] because that's the
      * more convenient iteration order for generating the HTML.
      * @return
      */
@@ -66,8 +68,11 @@ public class PeriodActivitiesGrid {
         }
     }
 
+    public int getColumnCount() {
+        return period.getDuration().getQuantity();
+    }
+    
     public Map<ActivityType, Collection<PeriodActivitiesGridRow>> getRowGroups() {
-        if (rowGroups == null) rowGroups = createRowGroups();
         return rowGroups;
     }
 
@@ -101,7 +106,7 @@ public class PeriodActivitiesGrid {
 
             // add empty rows for activities from other periods/segments
             for (Activity activity : unusedActivities.get(type)) {
-                rowsForType.add(new PeriodActivitiesGridRow(activity));
+                rowsForType.add(new PeriodActivitiesGridRow(activity, getColumnCount()));
             }
 
             rowGroups.put(type, rowsForType);
@@ -118,7 +123,7 @@ public class PeriodActivitiesGrid {
         for (PlannedActivity pa : plannedActivities) {
             String paKey = PeriodActivitiesGridRow.key(pa);
             if (!factories.containsKey(paKey)) {
-                factories.put(paKey, new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey));
+                factories.put(paKey, new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey, getColumnCount()));
             }
             factories.get(paKey).addPlannedActivity(pa);
             unusedActivities.remove(pa.getActivity());
@@ -130,5 +135,11 @@ public class PeriodActivitiesGrid {
             rowsForType.addAll(factory.createRows());
         }
         return rowsForType;
+    }
+
+    ////// BEAN PROPERTIES
+
+    public Period getPeriod() {
+        return period;
     }
 }

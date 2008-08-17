@@ -24,7 +24,7 @@
     </bean>
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerSecureUrlCreator" lazy-init="true">
-        <property name="filterInvocationInterceptor"><ref bean="filterInvocationInterceptor"/></property>
+        <property name="filterInvocationInterceptor" ref="filterInvocationInterceptor"/>
         <property name="urlResolver"><ref local="urlResolver"/></property>
     </bean>
 
@@ -34,19 +34,14 @@
       -->
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass">
-            <value>org.springframework.web.servlet.view.InternalResourceView</value>
-        </property>
-        <property name="prefix">
-            <value>/WEB-INF/views/</value>
-        </property>
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.InternalResourceView"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
     </bean>
 
     <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
-        <property name="servletName"><value>pages</value></property>
+        <property name="servletName" value="pages"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
@@ -107,7 +102,7 @@
     <bean name="/cal/template/import" id="importTemplateXmlController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportTemplateXmlController"/>
 
-<!--to separate ManagePeriodCommands to a separate commands-->
+    <!--to separate ManagePeriodCommands to a separate commands-->
     <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>addToPeriodCommand</value></property>
@@ -128,16 +123,19 @@
         <property name="commandBeanName"><value>moveEventCommand</value></property>
     </bean>
 
-
     <bean name="/cal/managePeriod/addLabel" id="manageLabelController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>addLabelCommand</value></property>
     </bean>
 
-
     <bean name="/cal/managePeriod/addLabelWithRepetitions" id="addLabelWithRepetitionsController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.period.AddLabelWithRepetitionsController"/>
 
+    <!-- XXX: temporary name during development -->
+    <bean name="/cal/newManagePeriod" id="managePeriodActivitiesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.ManagePeriodActivitiesController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>    
 
     <bean name="/cal/template/edit.js" id="editJsController"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">

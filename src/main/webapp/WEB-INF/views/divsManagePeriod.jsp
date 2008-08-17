@@ -1,0 +1,300 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%--
+    Expected model attributes:
+    - populations
+--%>
+
+<html>
+<head>
+    <tags:javascriptLink name="manage-period/plan-activities" />
+    <tags:javascriptLink name="manage-period/manage-activity-rows" />
+    <tags:javascriptLink name="manage-period/activity-notes" />
+    <tags:javascriptLink name="manage-period/reindex" />
+    <tags:javascriptLink name="resig-templates" />
+
+    <tags:resigTemplate id="new_activity_row_template">
+        <tr class="new-row unused activity">
+            <td title="<\%= name %>">
+                <span class="row-number">-1</span>
+                <\%= name %>
+                <input type="hidden" value="<\%= id %>" name="activityId"/>
+            </td>
+        </tr>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_days_row_template">
+        <tr class='new-row unused activity'>
+            <\% for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { %>
+            <td class='cell'>&nbsp;</td>
+            <\% } %>
+        </tr>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_notes_row_template">
+        <tr class='new-row unused activity'>
+            <td>
+                <a class='notes-edit' href=''>
+                    View/Edit
+                </a>
+                <div class='notes-content'>
+                    <span class='details' style='display: none'></span>
+                    <span class='conditions' style='display: none'></span>
+                    <span class='labels' style='display: none'></span>
+                    &nbsp;
+                </div>
+            </td>
+        </tr>
+    </tags:resigTemplate>
+
+    <tags:sassLink name="manage-period"/>
+    <style type="text/css">
+        .days table { width: 40em; }
+    </style>
+</head>
+<body>
+
+<laf:box title="Manage period">
+<laf:division>
+
+<!--
+    SOURCE SECTION
+ -->
+
+<div class="section" id="source-section">
+    <div id="populations">
+        <table>
+            <tr>
+                <td>
+                    <div class='population' id='populations-all'>
+                        <h2>All subjects</h2>
+                        <div class='marker'>
+                            &times;
+                        </div>
+                    </div>
+                </td>
+                <c:forEach items="${populations}" var="pop">
+                    <td>
+                        <div class='population' id='population-${pop.abbreviation}'>
+                            <h2>${pop.name}</h2>
+                            <div class='marker population-${pop.abbreviation}'>
+                                ${pop.abbreviation}
+                            </div>
+                        </div>
+                    </td>
+                </c:forEach>
+            </tr>
+        </table>
+    </div>
+    <div class='population' id='remove-target'>
+        <h2>Remove</h2>
+        <div class='cell'></div>
+    </div>
+</div>
+
+<!--
+    HEADING SECTION
+ -->
+
+<div class='section' id='heading-section'>
+    <div class='activities heading column' id='activities-heading'></div>
+    <div class='days heading column' id='days-heading'>
+        <table>
+            <tr>
+                <c:forEach items="${grid.dayHeadings}" var="oneDay">
+                    <td>
+                        <c:forEach items="${oneDay}" var="dayNumber">
+                            <c:choose>
+                                <c:when test="${empty dayNumber}">
+                                    <div>&hellip;</div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="cycle-number ${dayNumber.cycleEvenOrOdd}">
+                                        ${dayNumber}
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
+                    </td>
+                </c:forEach>
+                <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+                <td class='trailer' id='days-heading-trailer'>
+                  &nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class='notes heading column' id='notes-heading'>
+        <ul>
+            <li class='details'>
+                <a href='#details'>Details</a>
+            </li>
+            <li class='conditions'>
+                <a href='#conditions'>Conditions</a>
+            </li>
+            <!-- Labels will be enabled in 2.2.1 -->
+            <li class='labels' style="display: none">
+                <a href='#labels'>Labels</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--
+    DATA SECTION
+ -->
+
+<div class="section" id="data-section">
+    <div class="activities column" id="activities">
+        <table>
+            <c:forEach items="${grid.rowGroups}" var="typeAndRows">
+                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                    <tr class="activity-type">
+                        <th>
+                            <span class="text">${typeAndRows.key.name}</span>
+                        </th>
+                    </tr>
+                    <c:forEach items="${typeAndRows.value}" var="row" varStatus="rowStatus">
+                        <tr class="activity">
+                            <td title="${row.activity.name}">
+                                <span class="row-number">${rowStatus.count}</span>
+                                ${row.activity.name}
+                                <input type="hidden" value="${row.activity.id}" name="activityId"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </c:forEach>
+            <tr class='trailer' id='activities-trailer'>
+                <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="days column" id="days">
+        <table>
+            <c:forEach items="${grid.rowGroups}" var="typeAndRows">
+                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                    <!-- stripe for activity type -->
+                    <tr class="activity-type">
+                        <c:forEach begin="1" end="${grid.columnCount}">
+                            <td>
+                                <span class="text">&nbsp;</span>
+                            </td>
+                        </c:forEach>
+                    </tr>
+                    <c:forEach items="${typeAndRows.value}" var="row">
+                        <tr class="activity">
+                            <c:forEach items="${row.plannedActivities}" var="pa">
+                                <td class="cell">
+                                    <c:choose>
+                                        <c:when test="${empty pa}">
+                                            &nbsp;
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="marker">
+                                                ${empty pa.population ? '&times;' : pa.population.abbreviation}
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </c:forEach>
+        </table>
+    </div>
+
+    <div class="notes column" id="notes">
+        <div id="notes-preview" style="display: none">
+            <h2>[Activity name]</h2>
+            <dl>
+                <dt>Details</dt>
+                <dd class='none' id='details-preview'>None</dd>
+                <dt>Conditions</dt>
+                <dd class='none' id='conditions-preview'>None</dd>
+                <!-- Labels will be enabled in 2.2.1 -->
+                <dt style="display: none">Labels</dt>
+                <dd style="display: none" class='none' id='labels-preview'>None</dd>
+            </dl>
+        </div>
+        <table>
+            <c:forEach items="${grid.rowGroups}" var="typeAndRows">
+                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                    <!-- stripe for activity type -->
+                    <tr class="activity-type">
+                        <td>
+                            <span class='text'>&nbsp;</span>
+                        </td>
+                    </tr>
+                    <c:forEach items="${typeAndRows.value}" var="row">
+                        <tr class="activity">
+                            <td>
+                                <a class='notes-edit' href=''>
+                                    View/Edit
+                                </a>
+                                <div class='notes-content'>
+                                    <span class='details' style='display: none'>
+                                        ${row.details}
+                                    </span>
+                                    <span class='conditions' style='display: none'>
+                                        ${row.condition}
+                                    </span>
+                                    <span class='labels' style='display: none'>
+                                        <c:forEach items="${row.labels}" var="label">
+                                            <span class="label">${label}</span>
+                                        </c:forEach>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+                <tr class='trailer' id='notes-trailer'>
+                    <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
+</div>
+
+<!--
+    FOOTER SECTION
+ -->
+
+<div class='section' id='footer-section'>
+    <div class='activities footer column' id='activities-footer'></div>
+    <div class='days footer column' id='days-footer'>
+        <div id='message'></div>
+    </div>
+    <div class='notes footer column' id='notes-footer'></div>
+</div>
+
+</laf:division>
+
+<laf:division title="Add another activity">
+
+    <%-- TODO: add another activity form --%> 
+
+</laf:division>
+
+</laf:box>
+
+
+<script type="text/javascript">
+    // Sync scrolling
+    $('days').observe('scroll', function() {
+        $('days-heading').scrollLeft = $('days').scrollLeft
+        $('activities').scrollTop = $('days').scrollTop
+        $('notes').scrollTop = $('days').scrollTop
+    })
+</script>
+
+</body>
+</html>

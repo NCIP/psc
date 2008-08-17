@@ -126,7 +126,18 @@ public class PeriodActivitiesGridTest extends StudyCalendarTestCase {
         assertEquals("15", actual[0][1].toString());
         assertEquals("29", actual[0][2].toString());
     }
-    
+
+    public void testColumnCountForDaysIsNumberOfDays() throws Exception {
+        assertEquals(DEFAULT_DURATION_QUANTITY, getGrid().getColumnCount());
+    }
+
+    public void testColumnCountForOtherUnits() throws Exception {
+        period.getDuration().setUnit(Duration.Unit.fortnight);
+        assertEquals(DEFAULT_DURATION_QUANTITY, getGrid().getColumnCount());
+    }
+
+    ////// ROWS TESTS
+
     public void testGridIncludesRowsForPlannedActivities() throws Exception {
         period.addPlannedActivity(createPlannedActivity("A", 12));
         period.addPlannedActivity(createPlannedActivity("A", 10));
