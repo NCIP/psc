@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -10,6 +11,8 @@ import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +27,8 @@ import java.util.TreeSet;
  * @author Rhett Sutphin
 */
 public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridRow>, Cloneable {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     private static Map<String, Comparator> COMPARATORS = new LinkedHashMap<String, Comparator>();
     static {
@@ -36,18 +41,21 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
         COMPARATORS.put("firstDayPopulation", new NullComparator(ComparableComparator.getInstance(), false));
     }
 
+    private Duration.Unit unit;
     private Activity activity;
     private String details;
     private String condition;
     private Collection<Label> labels;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRow(Activity activity, int cellCount) {
+    public PeriodActivitiesGridRow(Activity activity, Duration duration) {
         if (activity == null) throw new IllegalArgumentException("Activity is required");
         this.activity = activity;
         labels = new TreeSet<Label>();
+        int cellCount = duration.getQuantity();
         plannedActivities = new ArrayList<PlannedActivity>(cellCount);
         while (plannedActivities.size() < cellCount) plannedActivities.add(null);
+        this.unit = duration.getUnit();
     }
 
     ////// LOGIC
@@ -78,12 +86,15 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
             toString();
     }
 
-    // TODO: this assumes that the period duration unit is a day
     public void addPlannedActivity(PlannedActivity planned) {
         if (!getActivity().equals(planned.getActivity())) {
             throw new StudyCalendarError("This row is for %s, not %s", getActivity(), planned.getActivity());
         }
-        int index = planned.getDay() - 1;
+        Integer index = dayToColumn(planned.getDay());
+        if (index == null) {
+            log.warn("Attempted to add a planned activity to the grid which would not have been visible.  Operation cancelled.");
+            return;
+        }
         if (plannedActivities.get(index) != null) {
             throw new StudyCalendarError("There is already a planned activity on day %d in this row", index + 1);
         }
@@ -111,9 +122,14 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
         return getFirstPlannedActivity() != null;
     }
 
-    // TODO: this assumes that the period duration unit is a day
     public PlannedActivity getPlannedActivityForDay(int day) {
-        return plannedActivities.get(day - 1);
+        return plannedActivities.get(dayToColumn(day));
+    }
+
+    private Integer dayToColumn(int day) {
+        int mod = (day - 1) % unit.inDays();
+        if (mod != 0) return null;
+        return (day - 1) / unit.inDays();
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })

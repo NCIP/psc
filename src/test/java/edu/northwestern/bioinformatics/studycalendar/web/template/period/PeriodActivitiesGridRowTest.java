@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
@@ -18,11 +19,13 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     private Activity a11, a12, a20;
     private Population p0, p1;
     private PlannedActivity pa0, pa1;
-    private static final int CELL_COUNT = 7;
+    private Duration duration;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        duration = new Duration(7, Duration.Unit.day);
+
         a11 = setId(11, createActivity("Bingo", "11", null, ActivityType.DISEASE_MEASURE));
         a12 = setId(12, createActivity("aleph", "12", null, ActivityType.DISEASE_MEASURE));
         a20 = setId(20, createActivity("iota", "20", null, ActivityType.INTERVENTION));
@@ -30,8 +33,8 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         p0 = createPopulation("P", "People");
         p1 = createPopulation("Pp", "Persons");
 
-        rowA = new PeriodActivitiesGridRow(a20, CELL_COUNT);
-        rowB = new PeriodActivitiesGridRow(a20, CELL_COUNT);
+        rowA = new PeriodActivitiesGridRow(a20, duration);
+        rowB = new PeriodActivitiesGridRow(a20, duration);
 
         pa0 = createPlannedActivity(a20, 4);
         pa1 = createPlannedActivity(a20, 2);
@@ -91,23 +94,50 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     }
 
     public void testPlannedActivitiesAlwaysHasTheCorrectNumberOfCells() throws Exception {
-        assertEquals(CELL_COUNT, rowA.getPlannedActivities().size());
+        assertEquals((int) duration.getQuantity(), rowA.getPlannedActivities().size());
         rowA.addPlannedActivity(pa0);
-        assertEquals(CELL_COUNT, rowA.getPlannedActivities().size());
+        assertEquals((int) duration.getQuantity(), rowA.getPlannedActivities().size());
+    }
+
+    public void testPlannedActivitiesAlwaysHasTheCorrectNumberOfCellsForNonDayUnits() throws Exception {
+        duration.setUnit(Duration.Unit.quarter);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        pa0.setDay(92);
+        
+        assertEquals((int) duration.getQuantity(), rowC.getPlannedActivities().size());
+        rowC.addPlannedActivity(pa0);
+        assertEquals((int) duration.getQuantity(), rowC.getPlannedActivities().size());
+    }
+
+    public void testAddingPlannedActivityForConcealedDayIsNoop() throws Exception {
+        duration.setUnit(Duration.Unit.month);
+        pa0.setDay(14);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        rowC.addPlannedActivity(pa0);
+        assertFalse(rowC.isUsed());
+    }
+
+    public void testAddingPlannedActivityForUnconcealedDayWorks() throws Exception {
+        duration.setUnit(Duration.Unit.month);
+        pa0.setDay(57);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        rowC.addPlannedActivity(pa0);
+        assertTrue(rowC.isUsed());
+        assertSame(pa0, rowC.getPlannedActivityForDay(57));
     }
 
     ////// COMPARABLE TESTS
 
     public void testOrdersByActivityTypeFirst() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11, CELL_COUNT);
-        rowB = new PeriodActivitiesGridRow(a20, CELL_COUNT);
+        rowA = new PeriodActivitiesGridRow(a11, duration);
+        rowB = new PeriodActivitiesGridRow(a20, duration);
 
         assertOrder(rowA, rowB);
     }
 
     public void testOrdersByActivityNameSecond() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11, CELL_COUNT);
-        rowB = new PeriodActivitiesGridRow(a12, CELL_COUNT);
+        rowA = new PeriodActivitiesGridRow(a11, duration);
+        rowB = new PeriodActivitiesGridRow(a12, duration);
 
         assertOrder(rowB, rowA);
     }

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
@@ -34,13 +35,13 @@ public class PeriodActivitiesGridRowFactory {
 
     private Activity activity;
     private String key;
-    private int cellCount;
+    private Duration duration;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRowFactory(Activity activity, String key, int cellCount) {
+    public PeriodActivitiesGridRowFactory(Activity activity, String key, Duration duration) {
         this.activity = activity;
         this.key = key;
-        this.cellCount = cellCount;
+        this.duration = duration;
         plannedActivities = new ArrayList<PlannedActivity>();
     }
 
@@ -70,7 +71,7 @@ public class PeriodActivitiesGridRowFactory {
         // The preferred row is the lowest row where each population appears first for a day.
         Map<Population, Integer> preferredRow = determinePopulationPreferredRows(byDay);
         List<PeriodActivitiesGridRow> rows = new ArrayList<PeriodActivitiesGridRow>(rowCount);
-        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity, cellCount));
+        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity, duration));
 
         for (PlannedActivity pa : plannedActivities) {
             int preferred = preferredRow.get(pa.getPopulation());

@@ -114,7 +114,7 @@ public class PeriodActivitiesGrid {
         for (Activity activity : allActivities) {
             unusedActivities.get(activity.getType()).add(activity);
         }
-        Map<ActivityType, Collection<PeriodActivitiesGridRow>> rowGroups
+        Map<ActivityType, Collection<PeriodActivitiesGridRow>> created
             = new LinkedHashMap<ActivityType, Collection<PeriodActivitiesGridRow>>();
         for (Map.Entry<ActivityType, Collection<PlannedActivity>> entry : partitioned.entrySet()) {
             ActivityType type = entry.getKey();
@@ -126,12 +126,12 @@ public class PeriodActivitiesGrid {
 
             // add empty rows for activities from other periods/segments
             for (Activity activity : unusedActivities.get(type)) {
-                rowsForType.add(new PeriodActivitiesGridRow(activity, getColumnCount()));
+                rowsForType.add(new PeriodActivitiesGridRow(activity, getPeriod().getDuration()));
             }
 
-            rowGroups.put(type, rowsForType);
+            created.put(type, rowsForType);
         }
-        return rowGroups;
+        return created;
     }
 
     private SortedSet<PeriodActivitiesGridRow> buildRowsForPlannedActivities(
@@ -143,7 +143,7 @@ public class PeriodActivitiesGrid {
         for (PlannedActivity pa : plannedActivities) {
             String paKey = PeriodActivitiesGridRow.key(pa);
             if (!factories.containsKey(paKey)) {
-                factories.put(paKey, new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey, getColumnCount()));
+                factories.put(paKey, new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey, getPeriod().getDuration()));
             }
             factories.get(paKey).addPlannedActivity(pa);
             unusedActivities.remove(pa.getActivity());

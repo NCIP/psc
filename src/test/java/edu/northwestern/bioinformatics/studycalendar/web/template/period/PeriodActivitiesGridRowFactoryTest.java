@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
         super.setUp();
         pa0 = createPlannedActivity("Something", 1, "With vim");
         pa0.getActivity().setId(123);
-        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRow.key(pa0), 21);
+        Duration duration = new Duration(21, Duration.Unit.day);
+        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRow.key(pa0), duration);
         p1 = createPopulation("P", "People");
     }
 
