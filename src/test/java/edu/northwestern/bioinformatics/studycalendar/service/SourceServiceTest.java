@@ -12,24 +12,22 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
  * @author Saurabh Agrawal
  */
 public class SourceServiceTest extends StudyCalendarTestCase {
+    private static final String TARGET_SOURCE = "targetSource";
+    private static final String SOURCE = "source";
 
     private SourceService sourceService;
 
-    private SourceDao sourceDao;
-
-    private PlannedActivityDao plannedActivityDao;
     private Source targetSource;
     private Source source;
-    private final String TARGET_SOURCE = "targetSource";
-    private final String SOURCE = "source";
 
     private Activity activity, anotherActivity, activityToUpdate, activityToDelete;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        sourceDao = registerDaoMockFor(SourceDao.class);
-        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+        SourceDao sourceDao = registerDaoMockFor(SourceDao.class);
+        PlannedActivityDao plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+
         sourceService = new SourceService();
 
         sourceService.setSourceDao(sourceDao);
@@ -38,14 +36,10 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         targetSource = Fixtures.createSource(TARGET_SOURCE);
 
         activity = Fixtures.createActivity("activity1", "code", null, ActivityType.LAB_TEST);
+
         anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, ActivityType.LAB_TEST);
-
-
         activityToUpdate = Fixtures.createActivity("activityToUpdate", "code2", null, ActivityType.LAB_TEST);
-
-
         activityToDelete = Fixtures.createActivity("activityToDelete", "code3", null, ActivityType.LAB_TEST);
-
     }
 
     public void testUpdateSourceWhenSourceHasNoActivity() {
@@ -78,7 +72,6 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         assertEquals(2, targetSource.getActivities().size());
         assertTrue(targetSource.getActivities().contains(activity));
         assertTrue(targetSource.getActivities().contains(activityToUpdate));
-        assertEquals(anotherActivity.toString(), activityToUpdate.toString());
-
+        assertEquals(anotherActivity, activityToUpdate);
     }
 }
