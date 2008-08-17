@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.*;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import java.util.List;
+import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -62,9 +68,9 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return days;
     }
 
-    public int calculateDay(int day) {
+    private int calculateDay(int day) {
         int daysInDuration = getPeriod().getDuration().getUnit().inDays();
-        int dayToReturn = 0;
+        int dayToReturn;
         if(daysInDuration != 1 && day > 1) {
             int multiplication = day-1;
             dayToReturn = daysInDuration * multiplication + getPeriod().getStartDay();
