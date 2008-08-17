@@ -66,7 +66,7 @@
         </c:otherwise>
     </c:choose>
 
-    <a href="#" id="show-details">Show details</a>
+    <a href="#" id="show-details">Show technical details</a>
 
     <div id="error-details" style="display: none">
         ${stackTrace}
