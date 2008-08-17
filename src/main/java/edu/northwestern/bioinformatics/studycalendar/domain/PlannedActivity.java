@@ -90,6 +90,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         }
     }
 
+    @Transient
     public List<Label> getLabels() {
         List<Label> labels = new ArrayList<Label>(getPlannedActivityLabels().size());
         for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
@@ -98,6 +99,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return labels;
     }
 
+    @Transient
     public List<String> getLabelNames() {
         List<String> labels = new ArrayList<String>(getPlannedActivityLabels().size());
         for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
