@@ -78,9 +78,9 @@ public class PscGuard extends Guard {
 
     @Override
     // Mostly copied from Restlet's AuthenticationUtils.authenticate.
-    // This is sort of a roundabout implementation (since I'm overriding this
+    // This is a roundabout implementation (since I'm overriding this
     // method anyway, delegating to an AuthenticationHelper sort of obfuscates
-    // things), but once Restlet supports multiple challenge schemes (isse 457)
+    // things), but once Restlet supports multiple challenge schemes
     // it will be easier to upgrade.
     public int authenticate(Request request) {
         int result = Guard.AUTHENTICATION_MISSING;
