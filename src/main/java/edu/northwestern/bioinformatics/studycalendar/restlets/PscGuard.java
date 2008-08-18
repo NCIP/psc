@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import com.noelios.restlet.Engine;
+import com.noelios.restlet.authentication.AuthenticationHelper;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -19,9 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.regex.Pattern;
-
-import com.noelios.restlet.authentication.AuthenticationHelper;
-import com.noelios.restlet.Engine;
 
 /**
  * Authentication piece of the API security implementation.  There is a single
@@ -52,6 +52,11 @@ public class PscGuard extends Guard {
     @Override
     public int doHandle(Request request, Response response) {
         if (doesNotRequireAuthentication(request)) {
+            accept(request, response);
+            return CONTINUE;
+        }
+        Authentication sessionAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (sessionAuth != null && sessionAuth.isAuthenticated()) {
             accept(request, response);
             return CONTINUE;
         } else {

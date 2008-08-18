@@ -7,7 +7,11 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextImpl;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.Restlet;
@@ -41,6 +45,7 @@ public class PscGuardTest extends RestletTestCase {
     private AuthenticationManager authenticationManager;
     private AuthenticationSystemConfiguration configuration;
     private AuthenticationSystem authenticationSystem;
+    private SecurityContext securityContext;
 
     @Override
     protected void setUp() throws Exception {
@@ -49,7 +54,6 @@ public class PscGuardTest extends RestletTestCase {
         authenticated = new UsernamePasswordAuthenticationToken(
             user, PASSWORD, new GrantedAuthority[0]);
 
-        nextRestlet = new MockRestlet();
         authenticationManager = registerMockFor(AuthenticationManager.class);
         configuration = registerMockFor(AuthenticationSystemConfiguration.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
@@ -58,6 +62,10 @@ public class PscGuardTest extends RestletTestCase {
         expect(authenticationSystem.authenticationManager())
             .andReturn(authenticationManager).anyTimes();
 
+        securityContext = new SecurityContextImpl();
+        SecurityContextHolder.setContext(securityContext);
+
+        nextRestlet = new MockRestlet();
         guard = new PscGuard();
         guard.setNext(nextRestlet);
         guard.setAuthenticationSystemConfiguration(configuration);
@@ -178,6 +186,25 @@ public class PscGuardTest extends RestletTestCase {
         assertContains("Missing error message in response entity", responseText,
             PscGuard.PSC_TOKEN.getTechnicalName() + " authentication is not supported with the configured authentication system");
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+    }
+
+    public void testChallengedIfThereIsNoAcegiSecurityAuthentication() throws Exception {
+        securityContext.setAuthentication(null);
+        doHandle();
+        assertResponseStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+    }
+
+    public void testChallengedIfThereIsASecurityContextButItIsNotAuthenticated() throws Exception {
+        securityContext.setAuthentication(new TestingAuthenticationToken("Bad", "guy", new GrantedAuthority[0]));
+        doHandle();
+        assertResponseStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+    }
+    
+    public void testNotChallengedIfThereIsAnAuthenticatedSecurityContextAvailable() throws Exception {
+        securityContext.setAuthentication(authenticated);
+        doHandle();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertNextInvoked();
     }
 
     private void expectBasicAuthChallengeResponse() {
