@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import com.noelios.restlet.ext.servlet.ServletConverter;
-import org.restlet.Restlet;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.springframework.beans.BeansException;
 import org.springframework.web.servlet.FrameworkServlet;
 
@@ -13,6 +13,8 @@ import java.io.IOException;
 
 /**
  * Modification of RestletFrameworkServlet to create an Application, if appropriate.
+ * The changes here are reflected in a patch associated with restlet issue 569.
+ * If/when they are accepted into restlet, this class can be removed.
  *
  * @author Rhett Sutphin
  */
@@ -59,11 +61,31 @@ public class PscRestletFrameworkServlet extends FrameworkServlet {
             BeansException {
         super.initFrameworkServlet();
         this.converter = new ServletConverter(getServletContext());
-        Restlet target = getTargetRestlet();
-        if (!(target instanceof org.restlet.Application)) {
-            target = new Application();
+
+        org.restlet.Application application;
+        if (getTargetRestlet() instanceof org.restlet.Application) {
+            application = (org.restlet.Application) getTargetRestlet();
+        } else {
+            application = new org.restlet.Application();
+            application.setRoot(getTargetRestlet());
         }
-        this.converter.setTarget(target);
+        if (application.getContext() == null) {
+            application.setContext(createContext());
+        }
+        this.converter.setTarget(application);
+    }
+
+    /**
+     * Creates the Restlet {@link Context} to use if the target application does
+     * not already have a context associated, or if the target restlet is not an application
+     * at all.
+     * <p>
+     * Uses a simple {@link Context} by default.
+     *
+     * @return
+     */
+    protected Context createContext() {
+        return new Context();
     }
 
     /**
@@ -74,16 +96,5 @@ public class PscRestletFrameworkServlet extends FrameworkServlet {
      */
     public void setTargetRestletBeanName(String targetRestletBeanName) {
         this.targetRestletBeanName = targetRestletBeanName;
-    }
-
-    protected class Application extends org.restlet.Application {
-        public Application() {
-            super(new Context());
-        }
-
-        @Override
-        public Restlet createRoot() {
-            return getTargetRestlet();
-        }
     }
 }
