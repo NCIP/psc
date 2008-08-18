@@ -112,7 +112,7 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private Study doParse(String xml, String... formatValues) {
-        String doc = String.format(xml, formatValues);
+        String doc = String.format(xml, (Object[]) formatValues);
         log.debug("about to parse\n{}", doc);
         return parseDocumentString(serializer, doc);
     }
