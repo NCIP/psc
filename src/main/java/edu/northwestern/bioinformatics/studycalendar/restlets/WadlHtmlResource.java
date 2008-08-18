@@ -28,7 +28,7 @@ public class WadlHtmlResource extends Resource {
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (MediaType.TEXT_HTML.includes(variant.getMediaType())) {
-            TransformRepresentation transform = new TransformRepresentation(null,
+            TransformRepresentation transform = new TransformRepresentation(
                 PscWadlRepresentation.create(freemarkerConfiguration, getRequest()),
                 new ClasspathResourceRepresentation(MediaType.TEXT_XML, WSDL_DOC_XSLT)
             );

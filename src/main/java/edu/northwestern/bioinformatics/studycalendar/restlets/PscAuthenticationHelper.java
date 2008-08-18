@@ -39,6 +39,6 @@ public class PscAuthenticationHelper extends AuthenticationHelper implements Ini
     ////// LIFECYCLE
 
     public void afterPropertiesSet() throws Exception {
-        Engine.getInstance().registerAuthentication(this);
+        Engine.getInstance().getRegisteredAuthentications().add(this);
     }
 }

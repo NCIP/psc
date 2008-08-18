@@ -7,14 +7,16 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Status;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 import java.util.regex.Pattern;
 
@@ -35,7 +37,7 @@ public class PscGuardTest extends RestletTestCase {
     private User user;
     private UsernamePasswordAuthenticationToken authenticated;
 
-    private Restlet nextRestlet;
+    private MockRestlet nextRestlet;
     private AuthenticationManager authenticationManager;
     private AuthenticationSystemConfiguration configuration;
     private AuthenticationSystem authenticationSystem;
@@ -47,7 +49,7 @@ public class PscGuardTest extends RestletTestCase {
         authenticated = new UsernamePasswordAuthenticationToken(
             user, PASSWORD, new GrantedAuthority[0]);
 
-        nextRestlet = registerMockFor(Restlet.class);
+        nextRestlet = new MockRestlet();
         authenticationManager = registerMockFor(AuthenticationManager.class);
         configuration = registerMockFor(AuthenticationSystemConfiguration.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
@@ -69,8 +71,8 @@ public class PscGuardTest extends RestletTestCase {
     public void testAuthenticationSkippedForExcepts() throws Exception {
         guard.setExcept(Pattern.compile("everyone-welcome.*"));
         request.setResourceRef(ROOT_URI + "/everyone-welcome/in-here");
-        expectNextInvoked();
         doHandle();
+        assertNextInvoked();
     }
 
     public void testExceptsMatchedFromBeginningOfUri() throws Exception {
@@ -108,9 +110,9 @@ public class PscGuardTest extends RestletTestCase {
 
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTHENTICATION))
             .andReturn(authenticated);
-        expectNextInvoked();
 
         doHandle();
+        assertNextInvoked();
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
@@ -144,10 +146,10 @@ public class PscGuardTest extends RestletTestCase {
 
         expect(authenticationManager.authenticate(USERNAME_PASSWORD_AUTHENTICATION))
             .andReturn(authenticated);
-        expectNextInvoked();
 
         doHandle();
 
+        assertNextInvoked();
         Object actualToken = request.getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
         assertNotNull("Token missing", actualToken);
         assertSame("Wrong token", authenticated, actualToken);
@@ -159,9 +161,9 @@ public class PscGuardTest extends RestletTestCase {
 
         expect(authenticationManager.authenticate(TOKEN_BASED_AUTHENTICATION))
             .andReturn(authenticated);
-        expectNextInvoked();
 
         doHandle();
+        assertNextInvoked();
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
@@ -205,8 +207,8 @@ public class PscGuardTest extends RestletTestCase {
         verifyMocks();
     }
 
-    private void expectNextInvoked() {
-        nextRestlet.handle(request, response);
+    private void assertNextInvoked() {
+        assertTrue("Next not invoked", nextRestlet.handleCalled());
     }
 
     private static final class SingleTokenAuthenticationToken extends AbstractAuthenticationToken {
@@ -222,6 +224,21 @@ public class PscGuardTest extends RestletTestCase {
 
         public Object getPrincipal() {
             return "SOME GUY";
+        }
+    }
+
+    private static final class MockRestlet extends Restlet {
+        private Request lastRequest;
+        private Response lastResponse;
+
+        @Override
+        public void handle(Request request, Response response) {
+            this.lastRequest = request;
+            this.lastResponse = response;
+        }
+
+        public boolean handleCalled() {
+            return lastRequest != null;
         }
     }
 }

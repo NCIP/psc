@@ -37,7 +37,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER_ENCODED);
-        request.setResourceRef("studies/ETC/sites/Northwestern University");
+        request.setResourceRef("studies/ETC/sites/Northwestern+University");
     }
 
     @Override

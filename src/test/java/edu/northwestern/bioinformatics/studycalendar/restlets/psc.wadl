@@ -9,6 +9,10 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:html="http://www.w3.org/1999/xhtml"
     >
+
+  <doc title="Patient Study Calendar RESTful API">
+  </doc>
+
   <resources base="${baseUri}">
     
   </resources>
