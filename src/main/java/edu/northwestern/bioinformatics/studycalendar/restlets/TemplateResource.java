@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -17,7 +16,6 @@ import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * Resource representing a study and its planned calendar, including all amendments.
@@ -31,26 +29,10 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-
         Representation representation = super.represent(variant);
-
-
-        StudyXmlSerializer studyXmlSerializer = getXmlSerializer();
-        try {
-            Date modifiedDate = studyXmlSerializer.readLastModifiedDate(representation.getStream());
-            representation.setModificationDate(modifiedDate);
-
-        } catch (IOException e) {
-            log.warn("Study  does not have any modification date. Representation is: " + representation);
-
-        }
-
-
+        representation.setModificationDate(getRequestedObject().getLastModifiedDate());
         return representation;
-
-
     }
-
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -70,8 +52,10 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         return true;
     }
 
+    @Override
     public void storeRepresentation(Representation entity) throws ResourceException {
         Study study;
+        // XXX: what is going on here? It looks like the entity is consumed twice.
         try {
             try {
                 xmlSerializer.readDocument(entity.getStream());
@@ -103,10 +87,5 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Required
     public void setImportTemplateService(ImportTemplateService importTemplateService) {
         this.importTemplateService = importTemplateService;
-    }
-
-    @Override
-    public StudyXmlSerializer getXmlSerializer() {
-        return (StudyXmlSerializer) super.getXmlSerializer();
     }
 }

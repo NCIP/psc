@@ -129,12 +129,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(elt);
     }
 
-    public Date readLastModifiedDate(InputStream in) {
-        Document doc = deserializeDocument(in);
-        Element elt = doc.getRootElement();
-        return XsdAttribute.LAST_MODIFIED_DATE.fromDateTime(elt);
-    }
-
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
         PlannedCalendarXmlSerializer plannedCalendarXmlSerializer = (PlannedCalendarXmlSerializer) getBeanFactory().getBean("plannedCalendarXmlSerializer");
         plannedCalendarXmlSerializer.setStudy(study);

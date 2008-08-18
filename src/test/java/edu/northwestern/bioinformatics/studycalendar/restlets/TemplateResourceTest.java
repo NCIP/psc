@@ -7,14 +7,12 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplate
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.EasyMock.isA;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -27,11 +25,10 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     private StudyDao studyDao;
     private Study study;
     private ImportTemplateService importTemplateService;
-    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
     private StudyXmlSerializer studyXmlSerializer;
     private Date lastModifiedDate = DateUtils.createDate(2007, Calendar.OCTOBER, 5);
 
-
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -44,6 +41,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         Fixtures.assignIds(study);
     }
 
+    @Override
     protected TemplateResource createResource() {
         TemplateResource templateResource = new TemplateResource();
         templateResource.setStudyDao(studyDao);
@@ -114,11 +112,10 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
 
+    @Override
     @SuppressWarnings({"unchecked"})
     protected void expectObjectXmlized(Object o) {
         expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
-        expect(studyXmlSerializer.readLastModifiedDate(isA(InputStream.class))).andReturn(lastModifiedDate);
-
     }
 
 }

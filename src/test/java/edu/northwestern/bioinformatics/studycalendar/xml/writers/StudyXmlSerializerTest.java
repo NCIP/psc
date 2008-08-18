@@ -13,9 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import org.apache.commons.io.IOUtils;
-import static org.dom4j.DocumentHelper.createElement;
-import static org.dom4j.DocumentHelper.createQName;
+import static org.dom4j.DocumentHelper.*;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
@@ -23,7 +21,6 @@ import static org.easymock.EasyMock.expect;
 import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyXmlSerializer serializer;
@@ -209,21 +206,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertXMLEqual(expected.toString(), actual);
     }
 
-    public void testReadLastModifiedDate() throws Exception {
-
-
-        expectChildrenSerializers();
-        replayMocks();
-
-        String actual = serializer.createDocumentString(study);
-        verifyMocks();
-
-        Date lastModifiedDate = serializer.readLastModifiedDate(IOUtils.toInputStream(actual));
-
-        assertEquals(study.getLastModifiedDate(), lastModifiedDate);
-    }
-
     ////// Expect helper methods
+    
     private void expectChildrenSerializers() {
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
@@ -254,6 +238,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     ////// Element Creation Helpers
+
     private Element createStudyElement() {
         QName qStudy = createQName(STUDY.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
         Element eStudy = createElement(qStudy);
@@ -293,11 +278,11 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     ////// Create PSC object helpers
     private Study createStudy() {
-        Study study = createNamedInstance("Study A", Study.class);
-        study.setPlannedCalendar(calendar);
-        study.addPopulation(population);
-        study.setAmendment(firstAmendment);
-        study.setDevelopmentAmendment(developmentAmendment);
-        return study;
+        Study created = createNamedInstance("Study A", Study.class);
+        created.setPlannedCalendar(calendar);
+        created.addPopulation(population);
+        created.setAmendment(firstAmendment);
+        created.setDevelopmentAmendment(developmentAmendment);
+        return created;
     }
 }
