@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
@@ -38,6 +39,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
+        study.setDevelopmentAmendment(new Amendment());
+        study.getDevelopmentAmendment().setUpdatedDate(lastModifiedDate);
         Fixtures.assignIds(study);
     }
 
@@ -64,7 +67,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertEquals("Result not success", 200, response.getStatus().getCode());
         assertResponseIsCreatedXml();
 
-        assertEquals("modification date can not be null", lastModifiedDate, response.getEntity().getModificationDate());
+        assertEquals("modification date incorrect", lastModifiedDate, response.getEntity().getModificationDate());
 
     }
 
