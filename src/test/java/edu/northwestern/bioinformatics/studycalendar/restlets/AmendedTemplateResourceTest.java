@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.*;
 import org.restlet.data.Status;
@@ -17,6 +16,7 @@ import java.util.Calendar;
 
 /**
  * @author John Dzak
+ * @author Rhett Sutphin
  */
 public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<AmendedTemplateResource> {
     public static final String SOURCE_NAME = "Mutant Study";
@@ -24,11 +24,9 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
     private static final String AMENDMENT_KEY = "2007-10-19~Amendment B";
     private static final String AMENDMENT_KEY_ENCODED = "2007-10-19~Amendment%20B";
-    private static final String CURRENT_AMENDMENT_KEY = "current";
 
-    private Study study;
-    private Amendment amendment;
-    private PlannedCalendar calendar;
+    private Study study, amendedStudy;
+    private Amendment amendment0, amendment1;
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
@@ -44,17 +42,16 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), SOURCE_NAME_ENCODED);
-        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AMENDMENT_KEY_ENCODED);
 
-        calendar = new PlannedCalendar();
+        study = Fixtures.createBasicTemplate();
+        amendment0 = study.getAmendment();
 
-        amendment = new Amendment();
-        amendment.setName("Amendment B");
-        amendment.setDate(createDate(2007, Calendar.OCTOBER, 19));
+        amendment1 = new Amendment();
+        amendment1.setName("Amendment B");
+        amendment1.setDate(createDate(2007, Calendar.OCTOBER, 19));
+        study.pushAmendment(amendment1);
 
-        study = createNamedInstance(SOURCE_NAME, Study.class);
-        study.setPlannedCalendar(calendar);
-        study.pushAmendment(amendment);
+        amendedStudy = study.transientClone();
     }
 
     @Override
@@ -67,11 +64,27 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         return resource;
     }
 
-    public void testGet() throws Exception {
+    public void testGetWithEarlierAmendment() throws Exception {
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), amendment0.getNaturalKey());
+
         expectFoundStudy();
-        expectFoundAmendment();
-        expectAmendClonedStudy(amendment);
-        expectObjectXmlized(calendar);
+        expectFoundAmendment(amendment0);
+        expectAmendClonedStudy(amendment0);
+        expectObjectXmlized();
+
+        doGet();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetCurrentAmendmentExplicitly() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AMENDMENT_KEY_ENCODED);
+
+        expectFoundStudy();
+        expectFoundAmendment(amendment1);
+        expectAmendClonedStudy(amendment1);
+        expectObjectXmlized();
 
         doGet();
 
@@ -79,11 +92,11 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGetWithCurrentAmendmentIdentifier() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), CURRENT_AMENDMENT_KEY);
+        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AmendedTemplateResource.CURRENT);
 
         expectFoundStudy();
-        expectAmendClonedStudy(amendment);
-        expectObjectXmlized(calendar);
+        expectAmendClonedStudy(amendment1);
+        expectObjectXmlized();
 
         doGet();
 
@@ -98,7 +111,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testGetWithNoAssignmentIdentifier() {
+    public void testGetWithNoAmendmentIdentifier() {
         request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), "");
         expectAmendmentNotFound();
 
@@ -108,18 +121,31 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    ////// Expect Methods
+    public void testGetWithUnassociatedAmendmentIs404() throws Exception {
+        Amendment other = new Amendment();
+        other.setDate(DateUtils.createDate(2003, Calendar.MARCH, 1));
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), other.getNaturalKey());
 
-    protected void expectObjectXmlized(PlannedCalendar cal) {
-        expect(studySnapshotXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
+        expectFoundStudy();
+        expectFoundAmendment(other);
+
+        doGet();
+        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+    }
+
+    ////// EXPECTATIONS
+
+    protected void expectObjectXmlized() {
+        expect(studySnapshotXmlSerializer.createDocumentString(amendedStudy)).andReturn(MOCK_XML);
     }
 
     private void expectFoundStudy() {
         expect(studyDao.getByAssignedIdentifier(SOURCE_NAME)).andReturn(study);
     }
 
-    private void expectFoundAmendment() {
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(amendment);
+    private void expectFoundAmendment(Amendment expected) {
+        expect(amendmentDao.getByNaturalKey(expected.getNaturalKey(), study)).andReturn(expected);
     }
 
     private void expectStudyNotFound() {
@@ -131,6 +157,6 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     private void expectAmendClonedStudy(Amendment target) {
-        expect(amendmentService.getAmendedStudy((Study) notNull(), eq(target))).andReturn(study);
+        expect(amendmentService.getAmendedStudy(eq(study), eq(target))).andReturn(amendedStudy);
     }
 }

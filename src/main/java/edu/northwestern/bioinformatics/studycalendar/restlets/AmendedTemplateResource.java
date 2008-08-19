@@ -33,13 +33,10 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-
         Representation representation = super.represent(variant);
         Date modifiedDate = getRequestedObject().getLastModifiedDate();
         representation.setModificationDate(modifiedDate);
         return representation;
-
-
     }
 
     @Override
