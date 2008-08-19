@@ -163,12 +163,31 @@
                     <doc>
                         <html:p>
                             A realized template, containing all epochs, study segments, etc., as it
-                            existed at the current amendment.
+                            exists at the current released amendment.
                         </html:p>
                     </doc>
 
                     <method name="GET">
-                        <doc>Retrieve the realized template as it existed for the current amendment.</doc>
+                        <doc>Retrieve the realized template as it exists for the current amendment.</doc>
+                        <response>
+                            <representation href="#study-snapshot-xml"/>
+                        </response>
+                    </method>
+                </resource>
+
+                <resource path="development">
+                    <doc>
+                        <html:p>
+                            A realized template, containing all epochs, study segments, etc., as it
+                            exists at the current development amendment.
+                        </html:p>
+                    </doc>
+
+                    <method name="GET">
+                        <doc>
+                            Retrieve the realized template as it exists for the current development amendment.
+                            The response will be 404 (not found) if the template is not in development.
+                        </doc>
                         <response>
                             <representation href="#study-snapshot-xml"/>
                         </response>

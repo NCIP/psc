@@ -2,10 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -26,10 +27,11 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     private static final String AMENDMENT_KEY_ENCODED = "2007-10-19~Amendment%20B";
 
     private Study study, amendedStudy;
-    private Amendment amendment0, amendment1;
+    private Amendment amendment0, amendment1, devAmendment;
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
+    private DeltaService deltaService;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
 
     @Override
@@ -39,17 +41,21 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         studyDao = registerDaoMockFor(StudyDao.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        deltaService = registerMockFor(DeltaService.class);
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), SOURCE_NAME_ENCODED);
 
-        study = Fixtures.createBasicTemplate();
+        study = createBasicTemplate();
         amendment0 = study.getAmendment();
 
         amendment1 = new Amendment();
         amendment1.setName("Amendment B");
         amendment1.setDate(createDate(2007, Calendar.OCTOBER, 19));
         study.pushAmendment(amendment1);
+
+        devAmendment = createAmendment("Amendment C", createDate(2007, Calendar.DECEMBER, 12));
+        study.setDevelopmentAmendment(devAmendment);
 
         amendedStudy = study.transientClone();
     }
@@ -61,6 +67,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         resource.setAmendmentDao(amendmentDao);
         resource.setXmlSerializer(studySnapshotXmlSerializer);
         resource.setAmendmentService(amendmentService);
+        resource.setDeltaService(deltaService);
         return resource;
     }
 
@@ -92,7 +99,9 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGetWithCurrentAmendmentIdentifier() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AmendedTemplateResource.CURRENT);
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(),
+            AmendedTemplateResource.CURRENT);
 
         expectFoundStudy();
         expectAmendClonedStudy(amendment1);
@@ -103,12 +112,37 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
+    public void testGetWithDevelopmentAmendment() throws Exception {
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(),
+            AmendedTemplateResource.DEVELOPMENT);
+
+        expectFoundStudy();
+        expectRevised(devAmendment);
+        expectObjectXmlized();
+
+        doGet();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetForDevelopmentIs404WhenThereIsNoDevelopmentAmendment() throws Exception {
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(),
+            AmendedTemplateResource.DEVELOPMENT);
+        study.setDevelopmentAmendment(null);
+
+        expectFoundStudy();
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+    }
+
     public void testGetWithNoStudyIdentifier() {
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "");
         expectStudyNotFound();
 
         doGet();
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testGetWithNoAmendmentIdentifier() {
@@ -118,7 +152,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         expectFoundStudy();
 
         doGet();
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testGetWithUnassociatedAmendmentIs404() throws Exception {
@@ -131,7 +165,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         expectFoundAmendment(other);
 
         doGet();
-        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     ////// EXPECTATIONS
@@ -158,5 +192,9 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
     private void expectAmendClonedStudy(Amendment target) {
         expect(amendmentService.getAmendedStudy(eq(study), eq(target))).andReturn(amendedStudy);
+    }
+
+    private void expectRevised(Amendment target) {
+        expect(deltaService.revise(eq(study), eq(target))).andReturn(amendedStudy);
     }
 }

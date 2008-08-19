@@ -300,6 +300,10 @@ public class Fixtures {
         return population;
     }
 
+    public static Amendment createAmendment(String name, Date date) {
+        return createAmendment(name, date, true);
+    }
+
     public static Amendment createAmendment(String name, Date date, boolean mandatory) {
         Amendment amendment = new Amendment();
         amendment.setMandatory(mandatory);
