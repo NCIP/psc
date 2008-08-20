@@ -6,7 +6,6 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -20,24 +19,12 @@ import org.restlet.resource.Variant;
 public abstract class AbstractDomainObjectResource<D extends DomainObject> extends AbstractPscResource {
     private D requestedObject;
     protected StudyCalendarXmlSerializer<D> xmlSerializer;
-    private String clientErrorReason;
 
     /**
      * Load the domain object which corresponds to the requested resource.  If
      * there isn't one, this method must return null.
      */
     protected abstract D loadRequestedObject(Request request);
-
-    /**
-     * Allows subclasses to expand upon the reason why the request failed.  E.g., "no amendment with
-     * that key," etc.
-     *
-     * @param reason
-     */
-    protected void setClientErrorReason(String reason, String... params) {
-        clientErrorReason = String.format(reason, (Object[]) params);
-        log.debug("client error: {}", clientErrorReason);
-    }
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -57,30 +44,6 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     public D getRequestedObject() {
         return requestedObject;
-    }
-
-    @Override
-    public void handleGet() {
-        super.handleGet();
-        if (getResponse().getStatus().isClientError() && getResponse().getEntity() == null) {
-            getResponse().setEntity(new StringRepresentation(
-                createDefaultClientErrorEntity(getResponse().getStatus()), MediaType.TEXT_PLAIN));
-        }
-    }
-
-    private StringBuilder createDefaultClientErrorEntity(Status status) {
-        StringBuilder message = new StringBuilder().
-            append(status.getCode()).append(' ').append(status.getName());
-        if (status.getDescription() != null) {
-            message.append(": ").append(status.getDescription());
-        }
-        if (clientErrorReason != null) {
-            message.
-                append("\n\n").
-                append(clientErrorReason);
-        }
-        message.append('\n');
-        return message;
     }
 
     @Override

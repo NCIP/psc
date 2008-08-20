@@ -71,7 +71,7 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
         }
 
         Amendment amendment;
-        if (AmendedTemplateResource.CURRENT.equals(amendmentIdentifier)) {
+        if (AmendedTemplateHelper.CURRENT.equals(amendmentIdentifier)) {
             amendment = study.getAmendment();
         } else {
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);

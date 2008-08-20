@@ -4,7 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +27,7 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     private static final Collection<Role> NO_AUTH = Collections.emptySet();
 
     private Map<Method, Collection<Role>> roleAuthorizations;
+    private String clientErrorReason;
 
     public AbstractPscResource() { }
     public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
@@ -49,5 +53,40 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
             roleAuthorizations = new HashMap<Method, Collection<Role>>();
         }
         return roleAuthorizations;
+    }
+
+    @Override
+    public void handleGet() {
+        super.handleGet();
+        if (getResponse().getStatus().isClientError() && getResponse().getEntity() == null) {
+            getResponse().setEntity(new StringRepresentation(
+                createDefaultClientErrorEntity(getResponse().getStatus()), MediaType.TEXT_PLAIN));
+        }
+    }
+
+    private StringBuilder createDefaultClientErrorEntity(Status status) {
+        StringBuilder message = new StringBuilder().
+            append(status.getCode()).append(' ').append(status.getName());
+        if (status.getDescription() != null) {
+            message.append(": ").append(status.getDescription());
+        }
+        if (clientErrorReason != null) {
+            message.
+                append("\n\n").
+                append(clientErrorReason);
+        }
+        message.append('\n');
+        return message;
+    }
+
+    /**
+     * Allows subclasses to expand upon the reason why the request failed.  E.g., "no amendment with
+     * that key," etc.
+     *
+     * @param reason
+     */
+    protected void setClientErrorReason(String reason, String... params) {
+        clientErrorReason = String.format(reason, (Object[]) params);
+        log.debug("client error: {}", clientErrorReason);
     }
 }
