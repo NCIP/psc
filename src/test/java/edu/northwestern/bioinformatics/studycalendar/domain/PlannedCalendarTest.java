@@ -103,4 +103,14 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
             }
         }
     }
+
+    public void testFindMatchingChildSegmentWhenPresent() throws Exception {
+        PlannedCalendar pc = Fixtures.createBasicTemplate().getPlannedCalendar();
+        assertSame("Not found", pc.getEpochs().get(1), pc.findNaturallyMatchingChild("Treatment"));
+    }
+
+    public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
+        PlannedCalendar pc = Fixtures.createBasicTemplate().getPlannedCalendar();
+        assertNull(pc.findNaturallyMatchingChild("LTFU"));
+    }
 }

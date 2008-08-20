@@ -1,11 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
-import javax.persistence.*;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,6 +71,13 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
     @Transient
     public boolean isMultipleStudySegments() {
         return getStudySegments().size() > 1;
+    }
+
+    @Override
+    public StudySegment findNaturallyMatchingChild(String key) {
+        Collection<StudySegment> found = findMatchingChildrenByName(key);
+        if (found.size() == 1) return found.iterator().next();
+        return null;
     }
 
     ////// BEAN PROPERTIES

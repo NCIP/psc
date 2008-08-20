@@ -2,8 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -30,11 +31,13 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
     protected abstract G createChildrenCollection();
     public abstract Class<C> childClass();
 
+    @SuppressWarnings({ "unchecked" })
     public void addChild(C child) {
         children.add(child);
         child.setParent(this);
     }
 
+    @SuppressWarnings({ "unchecked" })
     public C removeChild(C child) {
         if (children.remove(child)) {
             child.setParent(null);
@@ -44,12 +47,44 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         }
     }
 
-    public boolean isAncestorOf(PlanTreeNode descendant) {
-        Collection<?> children = getChildren();
-        if (children instanceof SortedSet) {
-            children = new ArrayList<Object>(children);
+    /**
+     * Returns the child of this node that uniquely matches the given
+     * external key.  The semantics of the external key are dependent on the
+     * node's child type.
+     *
+     * @param key
+     * @return
+     */
+    public abstract C findNaturallyMatchingChild(String key);
+
+    // Utility method for subclasses whose children are Named
+    protected Collection<C> findMatchingChildrenByName(String name) {
+        List<C> found = new ArrayList<C>(getChildren().size());
+        for (C child : getChildren()) {
+            if (!(child instanceof Named)) {
+                throw new IllegalStateException("This helper method only works if the children are Named");
+            }
+            if (name.equals(((Named) child).getName())) found.add(child);
         }
-        if (children.contains(descendant)) {
+        return found;
+    }
+
+    // Utility method to assist implementations of #findNaturallyMatchingChild
+    protected Collection<C> findMatchingChildrenByGridId(String gridId) {
+        List<C> found = new ArrayList<C>(getChildren().size());
+        for (C child : getChildren()) {
+            if (gridId.equals(child.getGridId())) found.add(child);
+        }
+        return found;
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public boolean isAncestorOf(PlanTreeNode descendant) {
+        Collection<C> all = getChildren();
+        if (all instanceof SortedSet) {
+            all = new ArrayList<C>(all);
+        }
+        if (all.contains(descendant)) {
             return true;
         } else if (PlanTreeInnerNode.class.isAssignableFrom(childClass())) {
             for (C child : getChildren()) {
@@ -79,6 +114,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
     }
 
     @Override
+    @SuppressWarnings({ "unchecked" })
     protected PlanTreeInnerNode<P, C, G> clone() {
         PlanTreeInnerNode<P, C, G> clone = (PlanTreeInnerNode<P, C, G>) super.clone();
         // deep clone the children

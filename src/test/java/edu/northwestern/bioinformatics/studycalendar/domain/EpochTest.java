@@ -78,4 +78,14 @@ public class EpochTest extends StudyCalendarTestCase {
             assertEquals(other + " is not a child of " + e, iae.getMessage());
         }
     }
+    
+    public void testFindMatchingChildSegmentWhenPresent() throws Exception {
+        Epoch e = Epoch.create("E", "A1", "A2");
+        assertSame("Not found", e.getChildren().get(1), e.findNaturallyMatchingChild("A2"));
+    }
+
+    public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
+        Epoch e = Epoch.create("E", "A1", "A2");
+        assertNull(e.findNaturallyMatchingChild("A0"));
+    }
 }

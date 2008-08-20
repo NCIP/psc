@@ -1,5 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -14,12 +17,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
 
 /**
  * @author Rhett Sutphin
@@ -71,6 +71,15 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
             }
             return range;
         }
+    }
+
+    @Override
+    public Period findNaturallyMatchingChild(String key) {
+        Collection<Period> found = findMatchingChildrenByName(key);
+        if (found.size() == 1) return found.iterator().next();
+        found = findMatchingChildrenByGridId(key);
+        if (found.size() == 1) return found.iterator().next();
+        return null;
     }
 
     ////// BEAN PROPERTIES

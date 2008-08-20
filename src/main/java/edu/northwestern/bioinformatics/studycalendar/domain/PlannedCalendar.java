@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -12,9 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Collection;
 import java.util.List;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
 /**
  * @author Rhett Sutphin
@@ -58,6 +57,13 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
             max = Math.max(max, epoch.getStudySegments().size());
         }
         return max;
+    }
+
+    @Override
+    public Epoch findNaturallyMatchingChild(String key) {
+        Collection<Epoch> found = findMatchingChildrenByName(key);
+        if (found.size() == 1) return found.iterator().next();
+        return null;
     }
 
     @Override

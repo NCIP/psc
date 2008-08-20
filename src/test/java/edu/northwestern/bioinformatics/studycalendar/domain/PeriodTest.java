@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPeriod;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
@@ -230,7 +229,7 @@ public class PeriodTest extends StudyCalendarTestCase {
     public void testCloneClonesDuration() throws Exception {
         Period p1 = new Period();
         p1.getDuration().setQuantity(17);
-        Period p1c = (Period) p1.clone();
+        Period p1c = p1.clone();
         p1c.getDuration().setQuantity(42);
         assertEquals("Update wrote through from clone to original", 17, (int) p1.getDuration().getQuantity());
         assertEquals("Update of clone didn't take", 42, (int) p1c.getDuration().getQuantity());
@@ -238,12 +237,26 @@ public class PeriodTest extends StudyCalendarTestCase {
     }
 
     public void testCompareTo() {
-
         period = createPeriod("name", 3, Duration.Unit.day, 15, 3);
         Period anotherPeriod = createPeriod("name", 3, Duration.Unit.day, 15, 3);
         assertTrue("both periods are not equal", anotherPeriod.compareTo(period) == 0);
         period.setId(1);
         assertTrue("both periods are equal", anotherPeriod.compareTo(period) > 0);
+    }
 
+    public void testFindMatchingPlannedActivityWhenPresent() throws Exception {
+        PlannedActivity pa1 = setGridId("Inf", createPlannedActivity("Aleph", 1));
+        PlannedActivity pa2 = setGridId("Zer0", createPlannedActivity("Null", 8));
+        period.addPlannedActivity(pa1);
+        period.addPlannedActivity(pa2);
+        assertSame("Not found", pa1, period.findNaturallyMatchingChild("Inf"));
+    }
+
+    public void testFindMatchingPlannedActivityWhenNotPresent() throws Exception {
+        PlannedActivity pa1 = setGridId("Inf", createPlannedActivity("Aleph", 1));
+        PlannedActivity pa2 = setGridId("Zer0", createPlannedActivity("Null", 8));
+        period.addPlannedActivity(pa1);
+        period.addPlannedActivity(pa2);
+        assertNull(period.findNaturallyMatchingChild("Zip"));
     }
 }

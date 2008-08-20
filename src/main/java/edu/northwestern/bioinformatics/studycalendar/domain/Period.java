@@ -11,6 +11,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Moses Hohman
@@ -102,6 +103,13 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     private int getRepetitionRelativeDay(int day) {
         return (day - getStartDay()) % getDuration().getDays() + 1;
+    }
+
+    @Override
+    public PlannedActivity findNaturallyMatchingChild(String key) {
+        Collection<PlannedActivity> found = findMatchingChildrenByGridId(key);
+        if (found.size() == 1) return found.iterator().next();
+        return null;
     }
 
     public int compareTo(Period other) {

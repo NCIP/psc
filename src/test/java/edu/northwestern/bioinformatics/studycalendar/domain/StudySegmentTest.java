@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPeriod;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 /**
@@ -18,7 +18,6 @@ public class StudySegmentTest extends StudyCalendarTestCase {
     }
 
     public void testAddMultiplePeriod() {
-
         studySegment = new StudySegment();
         Period period = createPeriod("name", 3, Duration.Unit.day, 15, 3);
         Period anotherPeriod = createPeriod("name", 3, Duration.Unit.day, 15, 3);
@@ -34,9 +33,7 @@ public class StudySegmentTest extends StudyCalendarTestCase {
         studySegment.addPeriod(anotherPeriod);
 
         assertEquals("wrong number of periods", 2, studySegment.getPeriods().size());
-
     }
-
 
     public void testLengthSimple() throws Exception {
         Period single = createPeriod("", 3, Duration.Unit.day, 15, 3);
@@ -84,5 +81,42 @@ public class StudySegmentTest extends StudyCalendarTestCase {
 
     public void testDayRangeWithNoPeriods() throws Exception {
         assertEquals(0, new StudySegment().getDayRange().getDayCount());
+    }
+
+    public void testFindMatchingChildPeriodByGridId() throws Exception {
+        Period p1 = setGridId("GRID-1", createPeriod("P1", 4, 7, 1));
+        Period p2 = setGridId("GRID-2", createPeriod("P2", 4, 7, 1));
+        studySegment.addPeriod(p1);
+        studySegment.addPeriod(p2);
+        assertSame("Not found", p1, studySegment.findNaturallyMatchingChild("GRID-1"));
+    }
+
+    public void testFindMatchingChildPeriodByNameWhenNameUnique() throws Exception {
+        Period p1 = setGridId("GRID-1", createPeriod("P1", 4, 7, 1));
+        Period p2 = setGridId("GRID-2", createPeriod("P2", 4, 7, 1));
+        studySegment.addPeriod(p1);
+        studySegment.addPeriod(p2);
+        assertSame("Not found", p2, studySegment.findNaturallyMatchingChild("P2"));
+    }
+
+    public void testFindMatchingChildPeriodByNameWhenNameIsNotUnique() throws Exception {
+        Period p1 = createPeriod("P", 4, 6, 1);
+        Period p2 = createPeriod("P", 4, 7, 1);
+        studySegment.addPeriod(p1);
+        studySegment.addPeriod(p2);
+        assertNull(studySegment.findNaturallyMatchingChild("P"));
+    }
+
+    public void testFindMatchingChildPeriodByNameWhenNameIsNotPresent() throws Exception {
+        Period p1 = createPeriod("P1", 4, 7, 1);
+        Period p2 = createPeriod("P2", 4, 7, 1);
+        studySegment.addPeriod(p1);
+        studySegment.addPeriod(p2);
+        assertNull(studySegment.findNaturallyMatchingChild("Q"));
+    }
+
+    public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
+        Epoch e = Epoch.create("E", "A1", "A2");
+        assertNull(e.findNaturallyMatchingChild("A0"));
     }
 }
