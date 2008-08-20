@@ -205,8 +205,6 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
         doGet();
         assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
-        assertNull(response.getEntity());
-
     }
 
     public void testGetWithNoAssignmentIdentifier() {
