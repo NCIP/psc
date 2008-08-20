@@ -159,41 +159,6 @@
                     </response>
                 </method>
 
-                <resource path="current">
-                    <doc>
-                        <html:p>
-                            A realized template, containing all epochs, study segments, etc., as it
-                            exists at the current released amendment.
-                        </html:p>
-                    </doc>
-
-                    <method name="GET">
-                        <doc>Retrieve the realized template as it exists for the current amendment.</doc>
-                        <response>
-                            <representation href="#study-snapshot-xml"/>
-                        </response>
-                    </method>
-                </resource>
-
-                <resource path="development">
-                    <doc>
-                        <html:p>
-                            A realized template, containing all epochs, study segments, etc., as it
-                            exists at the current development amendment.
-                        </html:p>
-                    </doc>
-
-                    <method name="GET">
-                        <doc>
-                            Retrieve the realized template as it exists for the current development amendment.
-                            The response will be 404 (not found) if the template is not in development.
-                        </doc>
-                        <response>
-                            <representation href="#study-snapshot-xml"/>
-                        </response>
-                    </method>
-                </resource>
-
                 <resource path="{amendment-identifier}">
                     <doc>
                         <html:p>
@@ -203,11 +168,26 @@
                     </doc>
                     <param style="template" name="amendment-identifier">
                         <doc>
-                            The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
-                            amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
-                            an amendment with date April 1, 2001, and named "justkidding", the natural key
-                            would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
-                            omitting it does not cause ambiguity.
+                            <html:p>
+                                The amendment identifier may be one of these three things:
+                            </html:p>
+                            <html:ul>
+                                <html:li>
+                                    <html:em>current</html:em> - indicating the current released
+                                    amendment (if any).
+                                </html:li>
+                                <html:li>
+                                    <html:em>development</html:em> - indicating the current
+                                    development amendment (if any).
+                                </html:li>
+                                <html:li>
+                                    The natural key for a released amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
+                                    amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
+                                    an amendment with date April 1, 2001 named "justkidding", the natural key
+                                    would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
+                                    omitting it does not cause ambiguity.
+                                </html:li>
+                            </html:ul>
                         </doc>
                     </param>
                     <method name="GET">
@@ -226,7 +206,7 @@
                         <doc>
                             The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
                             amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
-                            an amendment with date April 1, 2001, and named "justkidding", the natural key
+                            an amendment with date April 1, 2001 named "justkidding", the natural key
                             would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
                             omitting it does not cause ambiguity.
                         </doc>
