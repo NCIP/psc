@@ -63,7 +63,7 @@
 
     <bean name="/studies/{study-identifier}/template/amendments/{amendment-identifier}"
           id="amendedResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendedResource">
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendmentResource">
     </bean>
 
     <bean name="/studies/{study-identifier}/sites/{site-identifier}/subject-assignments"
