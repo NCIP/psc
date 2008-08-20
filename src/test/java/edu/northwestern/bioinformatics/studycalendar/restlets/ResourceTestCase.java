@@ -133,6 +133,10 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         assertEquals("Wrong text", CapturingStudyCalendarXmlFactoryStub.XML_STRING, actualEntityBody);
     }
     
+    protected void assertEntityTextContains(String expected) throws IOException {
+        assertContains("Missing content from entity", response.getEntity().getText(), expected);
+    }
+
     protected static ApplicationContext getApiServletApplicationContext() {
         ApplicationContext parent = getDeployedApplicationContext();
         return new FileSystemXmlApplicationContext(

@@ -20,10 +20,9 @@ import java.util.Calendar;
  * @author Rhett Sutphin
  */
 public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<AmendedTemplateResource> {
-    public static final String SOURCE_NAME = "Mutant Study";
-    public static final String SOURCE_NAME_ENCODED = "Mutant%20Study";
+    private static final String STUDY_NAME = "Mutant Study";
+    private static final String STUDY_NAME_ENCODED = "Mutant%20Study";
 
-    private static final String AMENDMENT_KEY = "2007-10-19~Amendment B";
     private static final String AMENDMENT_KEY_ENCODED = "2007-10-19~Amendment%20B";
 
     private Study study, amendedStudy;
@@ -44,9 +43,11 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         deltaService = registerMockFor(DeltaService.class);
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
-        request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), SOURCE_NAME_ENCODED);
+        request.getAttributes().put(
+            UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_NAME_ENCODED);
 
         study = createBasicTemplate();
+        study.setName(STUDY_NAME);
         amendment0 = study.getAmendment();
 
         amendment1 = new Amendment();
@@ -86,7 +87,8 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGetCurrentAmendmentExplicitly() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AMENDMENT_KEY_ENCODED);
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AMENDMENT_KEY_ENCODED);
 
         expectFoundStudy();
         expectFoundAmendment(amendment1);
@@ -135,24 +137,24 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         expectFoundStudy();
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertEntityTextContains("Mutant Study is not in development");
     }
 
-    public void testGetWithNoStudyIdentifier() {
+    public void testGetWithNoStudyIdentifier() throws Exception {
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "");
-        expectStudyNotFound();
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertEntityTextContains("No study specified");
     }
 
-    public void testGetWithNoAmendmentIdentifier() {
+    public void testGetWithNoAmendmentIdentifier() throws Exception {
         request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), "");
-        expectAmendmentNotFound();
-
         expectFoundStudy();
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertEntityTextContains("No amendment specified");
     }
 
     public void testGetWithUnassociatedAmendmentIs404() throws Exception {
@@ -166,6 +168,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        assertEntityTextContains("The amendment 2003-03-01 is not part of Mutant Study");
     }
 
     ////// EXPECTATIONS
@@ -175,19 +178,11 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     private void expectFoundStudy() {
-        expect(studyDao.getByAssignedIdentifier(SOURCE_NAME)).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier(STUDY_NAME)).andReturn(study);
     }
 
     private void expectFoundAmendment(Amendment expected) {
         expect(amendmentDao.getByNaturalKey(expected.getNaturalKey(), study)).andReturn(expected);
-    }
-
-    private void expectStudyNotFound() {
-        expect(studyDao.getByAssignedIdentifier("")).andReturn(null);
-    }
-
-    private void expectAmendmentNotFound() {
-        expect(amendmentDao.getByNaturalKey("", study)).andReturn(null);
     }
 
     private void expectAmendClonedStudy(Amendment target) {

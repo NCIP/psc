@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import org.apache.commons.lang.StringUtils;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -47,15 +48,22 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
     @Override
     protected Study loadRequestedObject(Request request) {
         String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        if (StringUtils.isBlank(studyIdentifier)) {
+            setClientErrorReason("No study specified");
+            return null;
+        }
 
         Study study = studyDao.getByAssignedIdentifier(studyIdentifier);
         if (study == null) {
-            log.debug("No study matching {}", studyIdentifier);
+            setClientErrorReason("No study matching %s", studyIdentifier);
             return null;
         }
 
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(request);
-        if (DEVELOPMENT.equals(amendmentIdentifier)) {
+        if (StringUtils.isBlank(amendmentIdentifier)) {
+            setClientErrorReason("No amendment specified");
+            return null;
+        } else if (DEVELOPMENT.equals(amendmentIdentifier)) {
             return applyDevelopmentAmendment(study);
         } else {
             return applyReleasedAmendment(amendmentIdentifier, study);
@@ -64,7 +72,7 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
 
     private Study applyDevelopmentAmendment(Study study) {
         if (study.getDevelopmentAmendment() == null) {
-            log.debug("Study {} is not in development", study.getAssignedIdentifier());
+            setClientErrorReason("Study %s is not in development", study.getAssignedIdentifier());
             return null;
         }
         return deltaService.revise(study, study.getDevelopmentAmendment());
@@ -74,19 +82,23 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
         Amendment amendment;
         if (CURRENT.equals(amendmentIdentifier)) {
             amendment = study.getAmendment();
+            if (amendment == null) {
+                setClientErrorReason(
+                    "%s has never been released, so it has no current version.  Try 'development' instead of 'current'.",
+                    study.getAssignedIdentifier());
+            }
         } else {
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
             if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getAmendment().hasPreviousAmendment(amendment)) {
-                log.debug("Amendment {} doesn't apply to study {}",
-                        amendmentIdentifier, study.getAssignedIdentifier());
+                setClientErrorReason("The amendment %s is not part of %s",
+                    amendmentIdentifier, study.getAssignedIdentifier());
                 amendment = null;
+            } else if (amendment == null) {
+                setClientErrorReason("No released amendment matching %s for %s",
+                    amendmentIdentifier, study.getAssignedIdentifier());
             }
         }
-        if (amendment == null) {
-            log.debug("No released amendment matching {}", amendmentIdentifier);
-            return null;
-        }
-        return amendmentService.getAmendedStudy(study, amendment);
+        return amendment == null ? null : amendmentService.getAmendedStudy(study, amendment);
     }
 
     ////// CONFIGURATION
