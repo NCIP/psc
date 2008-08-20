@@ -99,8 +99,11 @@
 			</fileset>
 		</copy>
 	</target>
+    <target name="get-ae" depends="get-ae-jar,update-wsdd"
+               description="create study consumer wsrf and update the server-config.wsdd">
+       </target>
 
-    <target name="get-ae" depends="jar,checkCaaers,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
+    <target name="get-ae-jar" depends="jar,checkCaaers,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
 
         <mkdir dir="ext/lib"/>
 
@@ -130,7 +133,46 @@
         </copy>
     </target>
 
+    <path id="xml-task-dir">
+            <fileset dir="../../test/infrastructure/lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="xml-task-dir"/>
 
+        <target name="update-wsdd">
+            <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                     dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                     failWithoutMatch="true">
+                <insert path="/:deployment/:service" position="before">
+                    <![CDATA[
+              <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoRequestHandler"
+                type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler"/>
+
+            <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoResponseHandler"
+                type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler"/>
+              ]]>
+                </insert>
+            </xmltask>
+
+            <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                     dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                     failWithoutMatch="true">
+                <insert path="/:deployment/:service">
+                    <![CDATA[
+              <requestFlow xmlns="http://xml.apache.org/axis/wsdd/" >
+                    <handler type="auditInfoRequestHandler"/>
+                </requestFlow>
+                <responseFlow xmlns="http://xml.apache.org/axis/wsdd/" >
+                    <handler type="auditInfoResponseHandler"/>
+                </responseFlow>
+              ]]>
+                </insert>
+            </xmltask>
+
+        </target>
+
+      
 
     <target name="checkCaaers" depends="setCaaers">
         <condition property="caaers.not.found">
