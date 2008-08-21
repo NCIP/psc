@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,8 @@ import java.util.Set;
  * @author Rhett Sutphin
 */
 public class PeriodActivitiesGridRowFactory {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @SuppressWarnings({ "unchecked" })
     private static final Comparator<Population> POPULATION_COMPARATOR =
         new NullComparator(ComparableComparator.getInstance(), false);
@@ -52,6 +56,11 @@ public class PeriodActivitiesGridRowFactory {
     }
 
     public void addPlannedActivity(PlannedActivity plannedActivity) {
+        if (plannedActivity.getDay() < 1 || plannedActivity.getDay() > duration.getDays()) {
+            log.error("{} is invalid.  It's day does not fall in [1, {}].", plannedActivity, duration.getDays());
+            return;
+        }
+
         String candidateKey = PeriodActivitiesGridRow.key(plannedActivity);
         if (getKey().equals(candidateKey)) {
             this.plannedActivities.add(plannedActivity);

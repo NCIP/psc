@@ -110,6 +110,13 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
         assertSame(pa2, actualRows.get(1).getPlannedActivityForDay(4));
         assertSame(pa3, actualRows.get(0).getPlannedActivityForDay(4));
     }
+    
+    public void testIgnoresOutOfRangeActivities() throws Exception {
+        pa0.setDay(22);
+        factory.addPlannedActivity(pa0);
+
+        createRowsAndAssertCount(0);
+    }
 
     private List<PeriodActivitiesGridRow> createRowsAndAssertCount(int expectedSize) {
         List<PeriodActivitiesGridRow> actualRows = factory.createRows();
