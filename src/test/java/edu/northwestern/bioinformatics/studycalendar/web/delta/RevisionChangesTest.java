@@ -1,26 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.classextension.EasyMock.expect;
 
 import java.util.List;
-
-import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -62,28 +61,28 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     public void testChangesOnlyForTargetNodeAndChildrenIfProvided() throws Exception {
         Period p1 = setId(1, Fixtures.createPeriod("P1", 3, 6, 1));
         Period p2 = setId(2, Fixtures.createPeriod("P2", 1, 17, 42));
-        PlannedActivity event1 = setId(3, new PlannedActivity());
-        PlannedActivity event2 = setId(4, new PlannedActivity());
+        PlannedActivity pa1 = setId(3, createPlannedActivity("PA1", 5));
+        PlannedActivity pa2 = setId(4, createPlannedActivity("PA2", 7));
         studySegmentB.addPeriod(p1);
-        p1.addPlannedActivity(event1);
+        p1.addPlannedActivity(pa1);
         studySegmentB.addPeriod(p2);
-        p2.addPlannedActivity(event2);
+        p2.addPlannedActivity(pa2);
 
         getTestingDeltaService().updateRevision(rev, treatment, PropertyChange.create("name", "Treatment", "Megatreatment"));
         getTestingDeltaService().updateRevision(rev, studySegmentB, PropertyChange.create("name", "B", "Beta"));
         getTestingDeltaService().updateRevision(rev, p1, PropertyChange.create("name", null, "Aleph"));
         getTestingDeltaService().updateRevision(rev, p2, PropertyChange.create("name", null, "Zep"));
-        getTestingDeltaService().updateRevision(rev, event1, PropertyChange.create("day", "5", "9"));
-        getTestingDeltaService().updateRevision(rev, event2, PropertyChange.create("day", "7", "4"));
+        getTestingDeltaService().updateRevision(rev, pa1, PropertyChange.create("day", "5", "9"));
+        getTestingDeltaService().updateRevision(rev, pa2, PropertyChange.create("day", "7", "4"));
 
         List<RevisionChanges.Flat> forPeriod = new RevisionChanges(mockDaoFinder, rev, study, p1).getFlattened();
         assertEquals("Wrong list: " + forPeriod, 2, forPeriod.size());
         assertEquals(p1, forPeriod.get(0).getNode());
         assertEquals("name", ((PropertyChange) forPeriod.get(0).getChange()).getPropertyName());
-        assertEquals(event1, forPeriod.get(1).getNode());
+        assertEquals(pa1, forPeriod.get(1).getNode());
         assertEquals("day", ((PropertyChange) forPeriod.get(1).getChange()).getPropertyName());
 
-        assertEquals(1, new RevisionChanges(mockDaoFinder, rev, study, event1).getFlattened().size());
+        assertEquals(1, new RevisionChanges(mockDaoFinder, rev, study, pa1).getFlattened().size());
         assertEquals(5, new RevisionChanges(mockDaoFinder, rev, study, studySegmentB).getFlattened().size());
         assertEquals(6, new RevisionChanges(mockDaoFinder, rev, study, treatment).getFlattened().size());
         assertEquals(6, new RevisionChanges(mockDaoFinder, rev, study, study.getPlannedCalendar()).getFlattened().size());
