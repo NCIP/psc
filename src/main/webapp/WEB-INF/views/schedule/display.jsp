@@ -425,7 +425,7 @@
                 <tags:externalLink appShortName="caaers" urlTemplateProperty="caAERSBaseUrl" cssClass="control">adverse events</tags:externalLink>
             </c:if>
             <c:if test="${labViewerAvail}">
-                <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerUrl" cssClass="control">lab results</tags:externalLink>
+                <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerBaseUrl" cssClass="control">lab results</tags:externalLink>
             </c:if>
 
             <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
