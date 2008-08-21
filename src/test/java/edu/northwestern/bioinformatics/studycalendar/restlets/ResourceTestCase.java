@@ -134,7 +134,9 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     }
     
     protected void assertEntityTextContains(String expected) throws IOException {
-        assertContains("Missing content from entity", response.getEntity().getText(), expected);
+        Representation entity = response.getEntity();
+        assertNotNull("No entity returned", entity);
+        assertContains("Missing content from entity", entity.getText(), expected);
     }
 
     protected static ApplicationContext getApiServletApplicationContext() {

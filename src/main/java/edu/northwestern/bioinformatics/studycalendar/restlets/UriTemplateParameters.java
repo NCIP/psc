@@ -8,6 +8,10 @@ import org.restlet.data.Request;
  */
 public enum UriTemplateParameters {
     STUDY_IDENTIFIER,
+    EPOCH_NAME,
+    STUDY_SEGMENT_NAME,
+    PERIOD_IDENTIFIER,
+    PLANNED_ACTIVITY_IDENTIFIER,
     ACTIVITY_SOURCE_NAME,
     ACTIVITY_CODE,
     SITE_IDENTIFIER,
@@ -18,7 +22,6 @@ public enum UriTemplateParameters {
     MONTH,
     DAY,
     SCHEDULED_ACTIVITY_IDENTIFIER;
-
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
@@ -32,5 +35,9 @@ public enum UriTemplateParameters {
 
     public boolean hasParameter(Request request) {
         return request.getAttributes().get(attributeName()) != null;
+    }
+
+    public void putIn(Request request, Object value) {
+        request.getAttributes().put(attributeName(), value);
     }
 }

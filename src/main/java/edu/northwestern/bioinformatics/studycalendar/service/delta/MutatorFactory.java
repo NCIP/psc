@@ -116,15 +116,15 @@ public class MutatorFactory implements ApplicationContextAware {
     // These services are extracted from the application context instead of being injected
     // to resolve a circular reference.
 
-    private TemplateService getTemplateService() {
+    protected TemplateService getTemplateService() {
         return (TemplateService) applicationContext.getBean("templateService");
     }
 
-    private ScheduleService getScheduleService() {
+    protected ScheduleService getScheduleService() {
         return (ScheduleService) applicationContext.getBean("scheduleService");
     }
 
-    private SubjectService getSubjectService() {
+    protected SubjectService getSubjectService() {
         return (SubjectService) applicationContext.getBean("subjectService");
     }
 

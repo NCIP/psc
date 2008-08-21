@@ -40,7 +40,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGetWhenHelperIsSuccessful() throws Exception {
-        expect(helper.getAmendedTemplate(request)).andReturn(amendedStudy);
+        expect(helper.getAmendedTemplate()).andReturn(amendedStudy);
         expectObjectXmlized();
 
         doGet();
@@ -53,7 +53,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         amendedStudy.getAmendment().setUpdatedDate(expectedLastMod);
         assertEquals("Sanity check failed", expectedLastMod, amendedStudy.getLastModifiedDate());
 
-        expect(helper.getAmendedTemplate(request)).andReturn(amendedStudy);
+        expect(helper.getAmendedTemplate()).andReturn(amendedStudy);
         expectObjectXmlized();
 
         doGet();
@@ -62,7 +62,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGetWhenHelperFails() throws Exception {
-        expect(helper.getAmendedTemplate(request)).andThrow(new AmendedTemplateHelper.NotFound("It's not there.  I checked twice."));
+        expect(helper.getAmendedTemplate()).andThrow(new AmendedTemplateHelper.NotFound("It's not there.  I checked twice."));
 
         doGet();
 

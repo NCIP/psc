@@ -301,12 +301,14 @@ public class TemplateService {
         }
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public <T extends PlanTreeNode<?>> Collection<T> findChildren(PlanTreeInnerNode node, Class<T> childClass) {
         List<T> children = new LinkedList<T>();
         findChildren(node, childClass, children);
         return children;
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     private <T extends PlanTreeNode<?>> void findChildren(PlanTreeInnerNode node, Class<T> childClass, Collection<T> target) {
         if (childClass.isAssignableFrom(node.childClass())) {
             target.addAll(node.getChildren());
@@ -539,7 +541,7 @@ public class TemplateService {
         for (T t : collection) delete(t);
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     public <T extends PlanTreeNode> void delete(T object) {
         DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
         if (!(dao instanceof DeletableDomainObjectDao)) {

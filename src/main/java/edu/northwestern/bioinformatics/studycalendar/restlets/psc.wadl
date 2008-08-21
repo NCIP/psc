@@ -1,7 +1,6 @@
 <#--
-<#--
     This is actually a freemarker template for the WADL, not the WADL itself.
-    It is used by WadlResource to render out the WADL with the actual deployment
+    It is used by PscWadlRepresentation to render out the WADL with the actual deployment
     base URI in place.
     -->
 <?xml version="1.0"?>
@@ -9,6 +8,10 @@
              xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:html="http://www.w3.org/1999/xhtml"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="
+                http://research.sun.com/wadl/2006/10 https://wadl.dev.java.net/wadl20061109.xsd
+             "
              >
 
     <doc title="Patient Study Calendar RESTful API">
@@ -33,11 +36,15 @@
         <html:p class="main">
             The human readable version of that description will be visible at
             <html:a href="${baseUri}/docs">${baseUri}/docs</html:a>.
+            Please note that the <html:a href="${baseUri}/docs/psc.wadl">WADL</html:a>
+            version contains more details than the human-readable version for some resources
+            (particularly for x-www-form-encoded representations).  If you need more detail,
+            please be sure to check the WADL directly.
         </html:p>
 
         <html:p class="main">
             Resources marked <html:em class="pending">Pending</html:em> are planned
-            for a future release of PSC, but are not yet implemented.
+            for a future release of PSC but are not yet implemented.
         </html:p>
     </doc>
 
@@ -196,11 +203,81 @@
                             <representation href="#study-snapshot-xml"/>
                         </response>
                     </method>
+
+                    <resource path="epochs/{epoch-name}/study-segments/{segment-name}/periods/{period-identifier}/planned-activities">
+                        <doc>
+                            The collection of planned activities for a particular period in the
+                            template.
+                        </doc>
+                        <param name="epoch-name" style="template">
+                            <doc>The name of the epoch to which the planned activities belong.</doc>
+                        </param>
+                        <param name="segment-name" style="template">
+                            <doc>The name of the study segment to which the planned activities belong.</doc>
+                        </param>
+                        <param name="period-identifier" style="template">
+                            <doc>
+                                The identifier for the period to which the planned activities belong.
+                                If the period has a name which is unique within its segment, that
+                                can be the identifier.  Otherwise, you must use PSC's generated
+                                identifier. This identifier can be discovered by reading the 
+                                study-snapshot XML.
+                            </doc>
+                        </param>
+                        <method name="GET">
+                            <doc>
+                                <html:p>
+                                    <html:em class="pending">Pending</html:em>
+                                    The list of planned activities.
+                                </html:p>
+                            </doc>
+                        </method>
+                        <method name="POST">
+                            <doc>
+                                Add another planned activity to the period.
+                                Only allowed when <html:tt>amendment-identifer</html:tt>
+                                is <html:em>development</html:em>.
+                            </doc>
+                            <request>
+                                <representation href="#planned-activity-form"/>
+                            </request>
+                            <response>
+                                <param name="Location" style="header">
+                                    <doc>
+                                        If successful, this method will return 201 with a location
+                                        header pointing to the new planned activity.
+                                    </doc>
+                                </param>
+                            </response>
+                        </method>
+                        
+                        <resource path="{planned-activity-identifier}">
+                            <doc>A single planned activity</doc>
+                            <param name="planned-activity-identifier" style="template">
+                                <doc>The generated identifier for the planned activity.</doc>
+                            </param>
+                            <method name="GET">
+                                <response>
+                                    <representation href="#planned-activity-form"/>
+                                </response>
+                            </method>
+                            <method name="PUT">
+                                <doc>
+                                    Update the planned activity's properties.
+                                    Only allowed when <html:tt>amendment-identifer</html:tt>
+                                    is <html:em>development</html:em>.
+                                </doc>
+                                <request>
+                                    <representation href="#planned-activity-form"/>
+                                </request>
+                            </method>
+                        </resource>
+                    </resource>
                 </resource>
 
                 <resource path="amendments/{amendment-identifier}">
                     <doc>
-                        <html>A single amendment.</html>
+                        <html:p>A single amendment.</html:p>
                     </doc>
                     <param style="template" name="amendment-identifier">
                         <doc>
@@ -288,7 +365,7 @@
                             <representation href="#registration-xml"/>
                         </request>
                         <response>
-                            <param type="header" name="Location">
+                            <param style="header" name="Location">
                                 <doc>
                                     If successful, the response will be a 303 redirect to the
                                     newly generated schedule for the subject.
@@ -337,7 +414,7 @@
                         attribute in the <html:tt>registration</html:tt> element),
                         or you can use a random one that PSC provides.  In either case, you can
                         find the valid assignment identifiers with a GET to
-                        <tt>studies/{study-identifier}/sites/{site-name}/subject-assigments</tt>.
+                        <html:tt>studies/{study-identifier}/sites/{site-name}/subject-assigments</html:tt>.
                     </doc>
                 </param>
                 <method name="GET">
@@ -361,7 +438,7 @@
                 <resource path="activities/{year}/{month}/{day}">
                     <doc>
                         <html:em class="pending">Pending</html:em>
-                        <html>A list of activities for the selected day.</html>
+                        <html:p>A list of activities for the selected day.</html:p>
                     </doc>
                     <param style="template" name="year"/>
                     <param style="template" name="month"/>
@@ -376,13 +453,13 @@
                 <resource path="activities/{scheduled-activity-identifier}">
                     <doc>
                         <html:em class="pending">Pending</html:em>
-                        <html>A single scheduled activity.</html>
+                        <html:p>A single scheduled activity.</html:p>
                     </doc>
                     <param style="template" name="scheduled-activity-identifier">
                         <doc>
                             PSC's generated identifier for the scheduled activity.  You can use
-                            <tt>studies/{study-identifier}/schedules/{assignment-identifier}</tt>
-                            or <tt>studies/{study-identifier}/schedules/{assignment-identifier}/{year}/{month}/{day}</tt>
+                            <html:tt>studies/{study-identifier}/schedules/{assignment-identifier}</html:tt>
+                            or <html:tt>studies/{study-identifier}/schedules/{assignment-identifier}/{year}/{month}/{day}</html:tt>
                             to find valid values.
                         </doc>
                     </param>
@@ -561,5 +638,49 @@
     <representation mediaType="text/xml" id="site-xml"                     element="psc:site"/>
     <representation mediaType="text/xml" id="blackout-dates-xml"           element="psc:blackout-dates"/>
     <representation mediaType="text/xml" id="blackout-date-xml"            element="psc:blackout-date"/>
+
+    <representation mediaType="application/x-www-form-urlencoded" id="planned-activity-form">
+        <param name="day" style="query" required="true">
+            <doc>
+                The one-based day for the planned activity, relative to the period.
+                For example, say you have a 7 day period starting on day 21
+                of the segment and repeating 3 times.  If you want this planned
+                activity to occur on day 24, 31, and 38 of the segment, you'd specify
+                the day as 4.
+            </doc>
+        </param>
+        <param name="activity-source" style="query" required="true">
+            <doc>
+                The name of the source for the activity for this planned activity.
+            </doc>
+        </param>
+        <param name="activity-code" style="query" required="true">
+            <doc>
+                The code for the activity for this planned activity.
+            </doc>
+        </param>
+        <param name="details" style="query">
+            <doc>
+                The additional details for this planned activity (beyond the activity itself).
+                May be omitted.
+            </doc>
+        </param>
+        <param name="condition" style="query">
+            <doc>
+                The condition under which this activity should be performed.  If it should
+                be performed for all subjects (or all subjects in the specified population),
+                omit this parameter.
+            </doc>
+        </param>
+        <!-- coming soon
+        <param name="labels" style="query"/>
+        -->
+        <param name="population" style="query">
+            <doc>
+                The abbreviation for the population for which this planned activity applies.
+                Omit to apply to apply to all subjects.
+            </doc>
+        </param>
+    </representation>
 
 </application>

@@ -184,6 +184,37 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return (PlannedActivity) super.clone();
     }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlannedActivity)) return false;
+
+        PlannedActivity that = (PlannedActivity) o;
+
+        if (activity != null ? !activity.equals(that.activity) : that.activity != null)
+            return false;
+        if (condition != null ? !condition.equals(that.condition) : that.condition != null)
+            return false;
+        if (day != null ? !day.equals(that.day) : that.day != null) return false;
+        if (details != null ? !details.equals(that.details) : that.details != null) return false;
+        if (plannedActivityLabels != null ? !plannedActivityLabels.equals(that.plannedActivityLabels) : that.plannedActivityLabels != null)
+            return false;
+        if (population != null ? !population.equals(that.population) : that.population != null)
+            return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (activity != null ? activity.hashCode() : 0);
+        result = 31 * result + (population != null ? population.hashCode() : 0);
+        result = 31 * result + (day != null ? day.hashCode() : 0);
+        result = 31 * result + (details != null ? details.hashCode() : 0);
+        result = 31 * result + (condition != null ? condition.hashCode() : 0);
+        result = 31 * result + (plannedActivityLabels != null ? plannedActivityLabels.hashCode() : 0);
+        return result;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).

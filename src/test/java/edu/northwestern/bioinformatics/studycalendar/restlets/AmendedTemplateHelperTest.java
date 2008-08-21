@@ -3,7 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -63,18 +67,19 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         helper.setAmendmentDao(amendmentDao);
         helper.setAmendmentService(amendmentService);
         helper.setDeltaService(deltaService);
+        helper.setRequest(request);
     }
 
     private void assertHelped(Study expected) {
         replayMocks();
-        assertEquals(expected, helper.getAmendedTemplate(request));
+        assertEquals(expected, helper.getAmendedTemplate());
         verifyMocks();
     }
 
     private void assertHelpFailed(String expectedMessage) {
         replayMocks();
         try {
-            helper.getAmendedTemplate(request);
+            helper.getAmendedTemplate();
             fail("Exception not thrown");
         } catch (AmendedTemplateHelper.NotFound err) {
             assertEquals("Wrong error", expectedMessage, err.getMessage());
@@ -157,6 +162,93 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         assertHelpFailed("The amendment 2003-03-01 is not part of Mutant Study");
     }
 
+    public void testIsDevelopmentWhenIdentIsDev() throws Exception {
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, AmendedTemplateHelper.DEVELOPMENT);
+        assertTrue(helper.isDevelopmentRequest());
+    }
+
+    public void testIsDevelopmentWhenIdentIsNull() throws Exception {
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, null);
+        assertFalse(helper.isDevelopmentRequest());
+    }
+
+    public void testIsDevelopmentWhenIdentIsCurrent() throws Exception {
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, AmendedTemplateHelper.CURRENT);
+        assertFalse(helper.isDevelopmentRequest());
+    }
+    
+    public void testIsDevelopmentWhenIdentIsForAmendment() throws Exception {
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, amendment1.getNaturalKey());
+        assertFalse(helper.isDevelopmentRequest());
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    private PlanTreeNode doDrillDown(Class<? extends PlanTreeNode> target) {
+        replayMocks();
+        PlanTreeNode found = helper.drillDown(target);
+        verifyMocks();
+        return found;
+    }
+
+    public void testDrillDownToSegment() throws Exception {
+        expectDrillDownIsPossible();
+
+        UriTemplateParameters.EPOCH_NAME.putIn(request, "Treatment");
+        UriTemplateParameters.STUDY_SEGMENT_NAME.putIn(request, "C");
+        UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
+
+        Class<StudySegment> target = StudySegment.class;
+        assertSame(amendedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2),
+            doDrillDown(target));
+    }
+
+    public void testDrillDownToSegmentWhenSegmentNotPresent() throws Exception {
+        expectDrillDownIsPossible();
+
+        UriTemplateParameters.EPOCH_NAME.putIn(request, "Treatment");
+        UriTemplateParameters.STUDY_SEGMENT_NAME.putIn(request, "Seventy");
+        UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
+
+        try {
+            doDrillDown(StudySegment.class);
+            fail("No exception");
+        } catch (AmendedTemplateHelper.NotFound notFound) {
+            assertEquals("No study segment identified by 'Seventy' in epoch", notFound.getMessage());
+        }
+    }
+
+    public void testDrillDownToSegmentWhenEpochNotPresent() throws Exception {
+        expectDrillDownIsPossible();
+
+        UriTemplateParameters.EPOCH_NAME.putIn(request, "Phony");
+        UriTemplateParameters.STUDY_SEGMENT_NAME.putIn(request, "C");
+        UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
+
+        try {
+            doDrillDown(StudySegment.class);
+            fail("No exception");
+        } catch (AmendedTemplateHelper.NotFound notFound) {
+            assertEquals("No epoch identified by 'Phony' in planned calendar", notFound.getMessage());
+        }
+    }
+
+    public void testDrillDownToPlannedActivity() throws Exception {
+        expectDrillDownIsPossible();
+
+        UriTemplateParameters.EPOCH_NAME.putIn(request, "Treatment");
+        UriTemplateParameters.STUDY_SEGMENT_NAME.putIn(request, "C");
+        UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
+        UriTemplateParameters.PLANNED_ACTIVITY_IDENTIFIER.putIn(request, "elab");
+
+        StudySegment segment = amendedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2);
+        Period p = createPeriod("foom", 1, 1, 1);
+        PlannedActivity pa = setGridId("elab", createPlannedActivity("barm", 8));
+        p.addPlannedActivity(pa);
+        segment.addPeriod(p);
+
+        assertSame(pa, doDrillDown(PlannedActivity.class));
+    }
+
     ////// EXPECTATIONS
 
     private void expectFoundStudy() {
@@ -173,5 +265,12 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
 
     private void expectRevised(Amendment target) {
         expect(deltaService.revise(eq(study), eq(target))).andReturn(amendedStudy);
+    }
+
+    private void expectDrillDownIsPossible() {
+        UriTemplateParameters.AMENDMENT_IDENTIFIER.putIn(request, AmendedTemplateHelper.DEVELOPMENT);
+
+        expectFoundStudy();
+        expectRevised(devAmendment);
     }
 }

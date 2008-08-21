@@ -1,6 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
@@ -16,6 +20,21 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 public class MemoryOnlyMutatorFactory extends MutatorFactory {
     @Override
     protected <T extends PlanTreeNode<?>> DomainObjectDao<?> findDao(Class<T> klass) {
+        return null;
+    }
+
+    @Override
+    protected TemplateService getTemplateService() {
+        return new TestingTemplateService();
+    }
+
+    @Override
+    protected ScheduleService getScheduleService() {
+        return null;
+    }
+
+    @Override
+    protected SubjectService getSubjectService() {
         return null;
     }
 }

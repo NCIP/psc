@@ -1,0 +1,50 @@
+package edu.northwestern.bioinformatics.studycalendar.restlets;
+
+import org.restlet.data.Form;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+
+/**
+ * @author Rhett Sutphin
+ */
+public class FormParametersTest extends RestletTestCase {
+    private Form form;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        form = new Form();
+    }
+
+    public void testAttributeNameIsHyphenatedAndLowerCase() throws Exception {
+        assertEquals("activity-code", FormParameters.ACTIVITY_CODE.attributeName());
+    }
+
+    public void testGetStringValueFromForm() throws Exception {
+        form.add("day", "12");
+        assertEquals("12", FormParameters.DAY.extractFirstFrom(form));
+    }
+
+    public void testGetStringValueFromFormWhenNotSet() throws Exception {
+        assertNull(FormParameters.DAY.extractFirstFrom(form));
+    }
+
+    public void testGetIntegerValueFromForm() throws Exception {
+        form.add("day", "12");
+        assertEquals(12, (int) FormParameters.DAY.extractFirstAsIntegerFrom(form));    
+    }
+
+    public void testGetIntegerValueFromFormWhenNotSet() throws Exception {
+        assertNull(FormParameters.DAY.extractFirstAsIntegerFrom(form));
+    }
+
+    public void testGetIntegerValueFromFormWhenNotInteger() throws Exception {
+        form.add("day", "twelve");
+        try {
+            FormParameters.DAY.extractFirstAsIntegerFrom(form);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException ve) {
+            assertEquals("Expected day parameter value to be an integer, not 'twelve'",
+                ve.getMessage());
+        }
+    }
+}

@@ -8,6 +8,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
 
@@ -16,10 +17,11 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class AmendedTemplateResource extends AbstractDomainObjectResource<Study> {
-    private AmendedTemplateHelper amendedTemplateHelper;
+    private AmendedTemplateHelper helper;
 
     @Override
     public void init(Context context, Request request, Response response) {
+        helper.setRequest(request);
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
     }
@@ -35,7 +37,7 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
     @Override
     protected Study loadRequestedObject(Request request) {
         try {
-            return amendedTemplateHelper.getAmendedTemplate(request);
+            return helper.getAmendedTemplate();
         } catch (AmendedTemplateHelper.NotFound notFound) {
             setClientErrorReason(notFound.getMessage());
             return null;
@@ -44,7 +46,8 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
 
     ////// CONFIGURATION
 
+    @Required
     public void setAmendedTemplateHelper(AmendedTemplateHelper amendedTemplateHelper) {
-        this.amendedTemplateHelper = amendedTemplateHelper;
+        this.helper = amendedTemplateHelper;
     }
 }

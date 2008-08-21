@@ -58,6 +58,29 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     @Override
     public void handleGet() {
         super.handleGet();
+        defaultErrorResponse();
+    }
+
+    @Override
+    public void handlePost() {
+        super.handlePost();
+        defaultErrorResponse();
+    }
+
+    @Override
+    public void handlePut() {
+        super.handlePut();
+        defaultErrorResponse();
+    }
+
+    @Override
+    public void handleDelete() {
+        super.handleDelete();
+        defaultErrorResponse();
+    }
+
+    // TODO: maybe there's an Application-level way to do this instead.
+    private void defaultErrorResponse() {
         if (getResponse().getStatus().isClientError() && getResponse().getEntity() == null) {
             getResponse().setEntity(new StringRepresentation(
                 createDefaultClientErrorEntity(getResponse().getStatus()), MediaType.TEXT_PLAIN));
@@ -68,12 +91,10 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         StringBuilder message = new StringBuilder().
             append(status.getCode()).append(' ').append(status.getName());
         if (status.getDescription() != null) {
-            message.append(": ").append(status.getDescription());
+            message.append("\n\n").append(status.getDescription());
         }
         if (clientErrorReason != null) {
-            message.
-                append("\n\n").
-                append(clientErrorReason);
+            message.append("\n\n").append(clientErrorReason);
         }
         message.append('\n');
         return message;
