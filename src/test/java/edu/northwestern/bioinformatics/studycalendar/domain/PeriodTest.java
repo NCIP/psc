@@ -147,7 +147,7 @@ public class PeriodTest extends StudyCalendarTestCase {
     public void testAddPlannedActivityWithNoDay() throws Exception {
         PlannedActivity pa = new PlannedActivity();
         try {
-            period.addPlannedActivity(pa);
+            period.addChild(pa);
             fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
             assertEquals("Cannot add a planned activity without a day", e.getMessage());
@@ -157,7 +157,7 @@ public class PeriodTest extends StudyCalendarTestCase {
     public void testAddPlannedActivityOutOfDayRangeHighFails() throws Exception {
         PlannedActivity pa = createPlannedActivity("hi", 29);
         try {
-            period.addPlannedActivity(pa);
+            period.addChild(pa);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
@@ -170,7 +170,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.getDuration().setQuantity(51);
         PlannedActivity pa = createPlannedActivity("lo", -4);
         try {
-            period.addPlannedActivity(pa);
+            period.addChild(pa);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
@@ -183,7 +183,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.getDuration().setUnit(Duration.Unit.week);
         PlannedActivity pa = createPlannedActivity("Darryl", 0);
         try {
-            period.addPlannedActivity(pa);
+            period.addChild(pa);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
@@ -196,7 +196,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.getDuration().setQuantity(null);
         PlannedActivity pa = createPlannedActivity("F", 8);
         try {
-            period.addPlannedActivity(pa);
+            period.addChild(pa);
             fail("Exception not thrown");
         } catch (IllegalStateException ise) {
             assertEquals("Cannot add a planned activity unless the period has a duration",

@@ -57,6 +57,11 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
     }
 
     public void addPlannedActivity(PlannedActivity pa) {
+        addChild(pa);
+    }
+
+    @Override
+    public void addChild(PlannedActivity pa) {
         if (pa.getDay() == null) {
             throw new IllegalArgumentException("Cannot add a planned activity without a day");
         }
@@ -70,7 +75,7 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
                 "Cannot add a planned activity for day %d to this period.  Planned activity days always start with 1.  The maximum for this period is %d.",
                 pa.getDay(), maxDay);
         }
-        addChild(pa);
+        super.addChild(pa);
     }
 
     @Transient
