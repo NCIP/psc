@@ -67,6 +67,10 @@ public class Fixtures {
         return target;
     }
 
+    public static Period createPeriod(int startDay, int dayCount, int repetitions) {
+        return createPeriod(null, startDay, dayCount, repetitions);
+    }
+
     public static Period createPeriod(String name, int startDay, int dayCount, int repetitions) {
         return createPeriod(name, startDay, Duration.Unit.day, dayCount, repetitions);
     }

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
@@ -11,7 +12,13 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class PeriodTest extends StudyCalendarTestCase {
-    private Period period = new Period();
+    private Period period;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        period = createPeriod("Test", 7, 28, 4);
+    }
 
     public void testDisplayNameWithName() throws Exception {
         period.setName("Name-o");
@@ -30,6 +37,7 @@ public class PeriodTest extends StudyCalendarTestCase {
     }
 
     public void testDefaults() throws Exception {
+        period = new Period();
         assertEquals("Default start day is 1", 1, (int) period.getStartDay());
         assertEquals("Default duration is 1 day", 1, (int) period.getDuration().getQuantity());
         assertEquals("Default duration is 1 day", Duration.Unit.day, period.getDuration().getUnit());
@@ -134,6 +142,66 @@ public class PeriodTest extends StudyCalendarTestCase {
 
         assertEquals(1, period.getPlannedActivities().size());
         assertSame(e, period.getPlannedActivities().iterator().next());
+    }
+
+    public void testAddPlannedActivityWithNoDay() throws Exception {
+        PlannedActivity pa = new PlannedActivity();
+        try {
+            period.addPlannedActivity(pa);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Cannot add a planned activity without a day", e.getMessage());
+        }
+    }
+
+    public void testAddPlannedActivityOutOfDayRangeHighFails() throws Exception {
+        PlannedActivity pa = createPlannedActivity("hi", 29);
+        try {
+            period.addPlannedActivity(pa);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals(
+                "Cannot add a planned activity for day 29 to this period.  Planned activity days always start with 1.  The maximum for this period is 28.",
+                scve.getMessage());
+        }
+    }
+
+    public void testAddPlannedActivityOutOfDayRangeLowFails() throws Exception {
+        period.getDuration().setQuantity(51);
+        PlannedActivity pa = createPlannedActivity("lo", -4);
+        try {
+            period.addPlannedActivity(pa);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals(
+                "Cannot add a planned activity for day -4 to this period.  Planned activity days always start with 1.  The maximum for this period is 51.",
+                scve.getMessage());
+        }
+    }
+
+    public void testAddPlannedActivityAtDayZeroFails() throws Exception {
+        period.getDuration().setUnit(Duration.Unit.week);
+        PlannedActivity pa = createPlannedActivity("Darryl", 0);
+        try {
+            period.addPlannedActivity(pa);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals(
+                "Cannot add a planned activity for day 0 to this period.  Planned activity days always start with 1.  The maximum for this period is 196.",
+                scve.getMessage());
+        }
+    }
+    
+    public void testAddPlannedActivityWithNoDurationFails() throws Exception {
+        period.getDuration().setQuantity(null);
+        PlannedActivity pa = createPlannedActivity("F", 8);
+        try {
+            period.addPlannedActivity(pa);
+            fail("Exception not thrown");
+        } catch (IllegalStateException ise) {
+            assertEquals("Cannot add a planned activity unless the period has a duration",
+                ise.getMessage());
+        }
     }
 
     public void testSortAscendingByStartDayFirst() throws Exception {

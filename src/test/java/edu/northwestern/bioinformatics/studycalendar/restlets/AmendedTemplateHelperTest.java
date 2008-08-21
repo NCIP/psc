@@ -241,7 +241,7 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         UriTemplateParameters.PLANNED_ACTIVITY_IDENTIFIER.putIn(request, "elab");
 
         StudySegment segment = amendedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2);
-        Period p = createPeriod("foom", 1, 1, 1);
+        Period p = createPeriod("foom", 1, 35, 1);
         PlannedActivity pa = setGridId("elab", createPlannedActivity("barm", 8));
         p.addPlannedActivity(pa);
         segment.addPeriod(p);

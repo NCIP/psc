@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -20,9 +21,9 @@ import java.util.Collection;
 @Entity
 @Table(name = "periods")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
+    parameters = {
         @Parameter(name = "sequence", value = "seq_periods_id")
-                }
+    }
 )
 public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivity>
         implements Named, Comparable<Period> {
@@ -55,8 +56,21 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         return PlannedActivity.class;
     }
 
-    public void addPlannedActivity(PlannedActivity event) {
-        addChild(event);
+    public void addPlannedActivity(PlannedActivity pa) {
+        if (pa.getDay() == null) {
+            throw new IllegalArgumentException("Cannot add a planned activity without a day");
+        }
+        if (getDuration().getDays() == null) {
+            throw new IllegalStateException("Cannot add a planned activity unless the period has a duration");
+        }
+
+        int maxDay = getDuration().getDays();
+        if (pa.getDay() < 1 || pa.getDay() > maxDay) {
+            throw new StudyCalendarValidationException(
+                "Cannot add a planned activity for day %d to this period.  Planned activity days always start with 1.  The maximum for this period is %d.",
+                pa.getDay(), maxDay);
+        }
+        addChild(pa);
     }
 
     @Transient
@@ -159,9 +173,9 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     @Embedded
     @AttributeOverrides({
-    @AttributeOverride(name = "quantity", column = @Column(name = "duration_quantity")),
-    @AttributeOverride(name = "unit", column = @Column(name = "duration_unit"))
-            })
+        @AttributeOverride(name = "quantity", column = @Column(name = "duration_quantity")),
+        @AttributeOverride(name = "unit", column = @Column(name = "duration_unit"))
+    })
     public Duration getDuration() {
         if (duration == null) duration = new Duration();
         return duration;

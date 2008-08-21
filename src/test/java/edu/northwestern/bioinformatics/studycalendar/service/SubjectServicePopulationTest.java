@@ -1,27 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import org.easymock.classextension.EasyMock;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
 import java.util.HashSet;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-
-import org.easymock.classextension.EasyMock;
+import java.util.Set;
 
 /**
  * Tests for {@link edu.northwestern.bioinformatics.studycalendar.service.SubjectService}'s
@@ -47,7 +46,7 @@ public class SubjectServicePopulationTest extends StudyCalendarTestCase {
         oldFolks.setAbbreviation("OF");
 
         study = createSingleEpochStudy("S", "Treatment");
-        Period period = new Period();
+        Period period = createPeriod("dc", 1, 14, 1);
         StudySegment studySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         studySegment.addPeriod(period);
         forFemales = createPlannedActivity("Pregnancy test", 4);
