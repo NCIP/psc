@@ -4,7 +4,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 import org.restlet.data.Status;
 
 import java.util.Calendar;
@@ -25,6 +25,8 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         super.setUp();
 
         helper = registerMockFor(AmendedTemplateHelper.class);
+        helper.setRequest(request);
+        expectLastCall().atLeastOnce();
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
         study = createBasicTemplate();
