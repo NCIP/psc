@@ -56,6 +56,14 @@
             margin-bottom:1em;
         }
 
+        #exportOptions {
+            padding: 0 1em 0 1em;
+        }
+
+        .underlined {
+            text-decoration:underline;
+            display:none
+        }
 
     </style>
 
@@ -64,6 +72,7 @@
         var activitiesAutocompleter;
 
         function initMethods() {
+            $('sources').selectedIndex = 0
             registerEventHandlers()
         }
 
@@ -73,6 +82,21 @@
             input.observe('click', function() {
                 executeAddSource(input)
             })
+
+            var exportActivitiesLinkXML = $('exportActivitiesLinkXML')
+            exportActivitiesLinkXML.observe('click', function(){
+                exportActivitiesToXML(".xml")
+            })
+
+            var exportActivitiesLinkCSV = $('exportActivitiesLinkCSV')
+            exportActivitiesLinkCSV.observe('click', function(){
+                exportActivitiesToXML(".csv")
+            })
+
+            var exportActivitiesLinkXLS = $('exportActivitiesLinkXLS')
+            exportActivitiesLinkXLS.observe('click', function(){
+                exportActivitiesToXML(".xls")
+            })
         }
 
 
@@ -80,7 +104,6 @@
             var data = ''
             data = data+"source"+"="+$('addSource').value+"&";
             var href = '<c:url value="/pages/activities/addSource"/>'
-            console.log("=== data " + data)
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
@@ -97,8 +120,24 @@
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
-                method: 'post'
+                method: 'post',
+                onSuccess: enableExportOptions()
             });
+        }
+
+        function enableExportOptions(){
+            var selectValue = $('sources').options[$('sources').selectedIndex].value
+            if(selectValue == "select" || selectValue == "selectAll") {
+                $('exportOptions').style.display = "none"
+                $('exportActivitiesLinkXML').style.display = "none"
+                $('exportActivitiesLinkCSV').style.display = "none"
+                $('exportActivitiesLinkXLS').style.display = "none"
+            } else {
+                $('exportOptions').style.display = "inline"
+                $('exportActivitiesLinkXML').style.display = "inline"
+                $('exportActivitiesLinkCSV').style.display = "inline"
+                $('exportActivitiesLinkXLS').style.display = "inline"
+            }
         }
 
         function editActivity(activityId) {
@@ -247,6 +286,14 @@
             return true;
         }
 
+        function exportActivitiesToXML(extension) {
+            var activitySource= $('sources').options[$('sources').selectedIndex].value
+
+            var href = '<c:url value="/pages/activities/display/"/>'
+            var data = activitySource+extension;
+
+            location.href = href+data;
+        }
 
         Event.observe(window, "load", initMethods)
 
@@ -256,9 +303,6 @@
 <body>
     <laf:box title="Activities">
         <laf:division>
-        <%-- this is needed to be uncomment for reconcileActivity --%>
-        <%--<c:url value="/pages/activity/reconcileActivity" var="formAction"/>--%>
-        <%--<form:form action="${formAction}" method="post">    --%>
              <div id="activities-input">
                 <label for="source">Source:</label>
                 <select id="sources" name="sources" onchange="loadActivities()">
@@ -279,10 +323,14 @@
                 <input type="button" id="addSourceButton" name="addSourceButton" value="Add"/>
                 <a id="importActivitiesLink" href="<c:url value="/pages/activities/importActivities"/>" >Import activities from xml</a>
 
+                <span id="exportOptions" style="display:none"> Export Options:</span>
+                <a id="exportActivitiesLinkXML" class="underlined">XML</a>
+                <a id="exportActivitiesLinkCSV" class="underlined">CSV</a>
+                <a id="exportActivitiesLinkXLS" class="underlined">Excel</a>
+
                  
             </div>
 
-            <%--<br style="clear:both"/>--%>
             <div id="errors" style="margin-right:10px; margin-left:0.5em;">
                 <form:errors path="*"/>
             </div>
@@ -293,7 +341,6 @@
             </div>
 
 
-        <%--</form:form>--%>
 
     </laf:division>
     </laf:box>

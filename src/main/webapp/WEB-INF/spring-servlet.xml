@@ -168,6 +168,11 @@
            class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
     </bean>    
 
+
+    <bean name="/activities/display/*" id="exportActivitiesXmlController" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportActivitiesController"/>
+
+
     <!--<bean name="/activity/reconcileActivity" id="reconcileActivitiesController" autowire="byName"-->
             <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileActivitiesController">-->
                <!--<property name="crumb">-->

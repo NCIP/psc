@@ -17,7 +17,6 @@ public class ImportActivitiesCommand implements Validatable {
 
     private ImportActivitiesService service;
     private MultipartFile activitiesFile;
-//    private Integer sourceId;
 
     public void apply() throws Exception {
         service.loadAndSave(activitiesFile.getInputStream());
@@ -51,11 +50,4 @@ public class ImportActivitiesCommand implements Validatable {
         this.service = service;
     }
 
-//    public Integer getSourceId() {
-//        return sourceId;
-//    }
-//
-//    public void setSourceId(Integer sourceId) {
-//        this.sourceId = sourceId;
-//    }
 }
