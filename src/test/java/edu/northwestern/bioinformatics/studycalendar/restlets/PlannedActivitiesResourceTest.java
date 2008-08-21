@@ -17,8 +17,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
@@ -236,6 +238,22 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
         assertEntityTextContains("Missing required parameter activity-code");
+    }
+
+    public void testAddPlannedActivityFailsWithSCValidationExceptionFromDomainLayer() throws Exception {
+        expectPostMayProceed();
+        expectMinimumPostAttributes();
+        expectFindActivity();
+
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        expect(periodDao.getByGridId(revisedPeriod)).andReturn(period);
+        amendmentService.updateDevelopmentAmendment(period, Add.create(expectedPlannedActivity));
+        expectLastCall().andThrow(new StudyCalendarValidationException("I have some bad news"));
+
+        doPost();
+
+        assertResponseStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
+        assertEntityTextContains("I have some bad news");
     }
 
     ////// EXPECTATIONS
