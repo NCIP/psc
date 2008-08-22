@@ -85,7 +85,10 @@ tr.activity-type
     :white-space nowrap
     :text-align center
     :width 4em
+#days, #days-heading
+  :border = 1px solid !contrast_color
 #days-heading
+  :border-width 1px 1px 0 1px
   table
     :bottom 0px
   td
@@ -97,6 +100,7 @@ tr.activity-type
     :color #fff
 #days
   :overflow auto
+  :border-width 0 1px 1px 1px
   tr.activity td:hover
     :background-color #393
   td.marker
