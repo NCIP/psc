@@ -102,24 +102,49 @@ Object.extend(SC.MP, {
           SC.MP.reportError("That cell already has a marker in it.  Remove the one that's there first if you want to change it.")
         }
       } else {
-        var callback = function(transport) {
-          SC.MP.replaceCellContents(cell, marker)
-          SC.MP.resetMarker(marker)
-          if (draggable) { draggable.destroy() }
+        // Move the marker immediately, but mark it pending
+        SC.MP.replaceCellContents(cell, marker)
+        SC.MP.resetMarker(marker)
+        if (draggable) { draggable.destroy() }
+        cell.addClassName("pending")
+
+        if (markerSource) {
+          // replace the moved new activity marker
+          var newMarker = "<div class='" + marker.className + "' style='display: none'>" + marker.innerHTML + "</div>"
+          markerSource.insert({ bottom: newMarker })
+          var newMarkerElt = markerSource.select('.marker:first').first()
+          SC.MP.configureNewPlannedActivityMarker(newMarkerElt);
+          new Effect.Appear(newMarkerElt)
+        }
+
+        // Actually invoke the web service
+        var success = function(response) {
+          // prototype sends network errors to this method with status == 0
+          if (response.status == 0) {
+            cell.addClassName("error")
+            SC.MP.reportError("Unexpected connection failure")
+            return;
+          }
+
+          marker.setAttribute("resource-href", response.getHeader("Location"))
           SC.MP.configureMovingPlannedActivityMarker(marker)
           SC.MP.reportInfo("Added " + marker.innerHTML.strip() + " at " + row + ", " + col)
           SC.MP.updateUsedUnused(marker.up("tr"))
-
-          if (markerSource) {
-            // replace the moved new activity marker
-            var newMarker = "<div class='" + marker.className + "' style='display: none'>" + marker.innerHTML + "</div>"
-            markerSource.insert({ bottom: newMarker })
-            var newMarkerElt = markerSource.select('.marker:first').first()
-            SC.MP.configureNewPlannedActivityMarker(newMarkerElt);
-            new Effect.Appear(newMarkerElt)
-          }
         }
-        SC.MP.postPlannedActivityAt(row, col, callback)
+        SC.MP.postPlannedActivityAt(row, col, {
+          onSuccess: success,
+          onFailure: function(response) {
+            cell.addClassName("error")
+            SC.MP.reportError(response.responseText)
+          },
+          onException: function(request, exception) {
+            cell.addClassName("error")
+            SC.MP.reportError(exception)
+          },
+          onComplete: function() {
+            cell.removeClassName("pending")
+          }
+        })
       }
     }
   },

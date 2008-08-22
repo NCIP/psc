@@ -2,7 +2,7 @@ if (!window.SC) { window.SC = { } }
 if (!SC.MP) { SC.MP = { } }
 
 Object.extend(SC.MP, {
-  postPlannedActivityAt: function(row, col, onComplete) {
+  postPlannedActivityAt: function(row, col, ajaxOptions) {
     var activity = SC.MP.findActivity(row)
     var day = SC.MP.findDay(col)
     var notes = SC.MP.findNotes(row)
@@ -13,11 +13,10 @@ Object.extend(SC.MP, {
       "activity-source": activity.source
     }, notes)
 
-    new Ajax.Request(SC.MP.collectionResource, {
+    new Ajax.Request(SC.MP.collectionResource, Object.extend(ajaxOptions, {
       method: 'POST',
-      parameters: plannedActivityForm,
-      onComplete: onComplete
-    })
+      parameters: plannedActivityForm
+    }))
   },
 
   findActivity: function(row) {

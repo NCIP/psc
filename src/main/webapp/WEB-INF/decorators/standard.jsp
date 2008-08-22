@@ -35,7 +35,7 @@
         <tags:javascriptLink name="firebug/firebug"/>
       </c:when>
       <c:otherwise>
-        <tags:javascriptLink name="firebugx"/>
+        <tags:javascriptLink name="firebug/firebugx"/>
       </c:otherwise>
     </c:choose>
 
