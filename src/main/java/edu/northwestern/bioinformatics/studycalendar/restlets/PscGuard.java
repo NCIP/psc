@@ -57,6 +57,7 @@ public class PscGuard extends Guard {
         }
         Authentication sessionAuth = SecurityContextHolder.getContext().getAuthentication();
         if (sessionAuth != null && sessionAuth.isAuthenticated()) {
+            preserveAuthentationForAuthorizationDecisions(request, sessionAuth);
             accept(request, response);
             return CONTINUE;
         } else {
@@ -138,13 +139,17 @@ public class PscGuard extends Guard {
             if (auth == null) {
                 return false;
             } else {
-                request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+                preserveAuthentationForAuthorizationDecisions(request, auth);
                 return auth.isAuthenticated();
             }
         } catch (AuthenticationException ae) {
             log.debug("Authentication using injected authentication provider failed", ae);
             return false;
         }
+    }
+
+    private void preserveAuthentationForAuthorizationDecisions(Request request, Authentication auth) {
+        request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
     }
 
     ////// CONFIGURATION

@@ -207,6 +207,12 @@ public class PscGuardTest extends RestletTestCase {
         assertNextInvoked();
     }
 
+    public void testAuthenticationInRequestWhenAuthenticatedSecurityContextAvailable() throws Exception {
+        securityContext.setAuthentication(authenticated);
+        doHandle();
+        assertSame(authenticated, request.getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY));
+    }
+
     private void expectBasicAuthChallengeResponse() {
         // the guard will be presented with the username/pass, already decoded
         request.setChallengeResponse(

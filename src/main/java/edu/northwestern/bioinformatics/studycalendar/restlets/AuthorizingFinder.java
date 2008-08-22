@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.springframework.beans.factory.BeanFactory;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
+import org.restlet.Handler;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.Handler;
+import org.restlet.ext.spring.SpringBeanFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import org.restlet.ext.spring.SpringBeanFinder;
+import org.springframework.beans.factory.BeanFactory;
 
 import java.util.Collection;
 
@@ -41,6 +42,10 @@ public class AuthorizingFinder extends SpringBeanFinder {
     protected boolean authorize(Handler handler, Request request) {
         if (handler instanceof AuthorizedResource) {
             Authentication token = (Authentication) request.getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
+            if (token == null) {
+                // this should not be possible
+                throw new StudyCalendarSystemException("Cannot authorize an unauthenticated request");
+            }
             Collection<Role> requiredRoles = ((AuthorizedResource) handler).authorizedRoles(request.getMethod());
             if (requiredRoles == null) {
                 log.debug("Guarded resource is open to all authenticated users for {}", request.getMethod());
