@@ -85,7 +85,7 @@
 </c:if>
 <laf:box title="${title}">
 <laf:division>
-<form:form method="post" id="assignmentForm" action="${action}">
+<form:form method="post" id="assignmentForm" action="${action}" onsubmit="return false">
 <form:errors path="*"/>
 <form:hidden path="selected"/>
 
@@ -197,7 +197,7 @@
             <div class="row">
                 <div class="label"></div>
                 <div class="value">
-                    <input type="submit" value="Save"/>
+                    <input id="here" type="button" value="Save" onClick="submit()"/>
                 </div>
             </div>
         </c:if>
