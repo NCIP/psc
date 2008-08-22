@@ -4,17 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -78,14 +75,8 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     }
 
     private void acceptForm(Representation entity) throws ResourceException {
-        ValidatingForm form = new ValidatingForm(entity).
-            validatesPresenceOf(FormParameters.DAY).
-            validatesIntegralityOf(FormParameters.DAY).
-            validatesPresenceOf(FormParameters.ACTIVITY_CODE).
-            validatesPresenceOf(FormParameters.ACTIVITY_SOURCE)
-            ;
-        form.throwForValidationFailureIfNecessary();
-        PlannedActivity newPlannedActivity = createDescribedPlannedActivity(form);
+        PlannedActivityForm form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao);
+        PlannedActivity newPlannedActivity = form.createDescribedPlannedActivity();
 
         Period realPeriod = periodDao.getByGridId(getRequestedObject());
         try {
@@ -98,47 +89,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         getResponse().setStatus(Status.SUCCESS_CREATED);
         getResponse().setLocationRef(
             getRequest().getResourceRef().addSegment(newPlannedActivity.getGridId()));
-    }
-
-    private PlannedActivity createDescribedPlannedActivity(ValidatingForm form) throws ResourceException {
-        Integer day = FormParameters.DAY.extractFirstAsIntegerFrom(form);
-        Activity activity = findDescribedActivity(form);
-        Population population = findDescribedPopulation(form);
-
-        PlannedActivity newPlannedActivity = new PlannedActivity();
-        newPlannedActivity.setDay(day);
-        newPlannedActivity.setActivity(activity);
-        newPlannedActivity.setCondition(
-            StringEscapeUtils.unescapeHtml(FormParameters.CONDITION.extractFirstFrom(form)));
-        newPlannedActivity.setDetails(
-            StringEscapeUtils.unescapeHtml(FormParameters.DETAILS.extractFirstFrom(form)));
-        newPlannedActivity.setPopulation(population);
-        return newPlannedActivity;
-    }
-
-    private Activity findDescribedActivity(ValidatingForm form) throws ResourceException {
-        String activitySource = FormParameters.ACTIVITY_SOURCE.extractFirstFrom(form);
-        String activityCode = FormParameters.ACTIVITY_CODE.extractFirstFrom(form);
-
-        Activity activity = activityDao.getByCodeAndSourceName(activityCode, activitySource);
-        if (activity == null) {
-            throw new ResourceException(
-                Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Activity not found");
-        }
-        return activity;
-    }
-
-    private Population findDescribedPopulation(ValidatingForm form) throws ResourceException {
-        Population population = null;
-        String populationAbbrev = FormParameters.POPULATION.extractFirstFrom(form);
-        if (populationAbbrev != null) {
-            population = populationDao.getByAbbreviation(getStudy(), populationAbbrev);
-            if (population == null) {
-                throw new ResourceException(
-                    Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Population not found");
-            }
-        }
-        return population;
     }
 
     private Study getStudy() {

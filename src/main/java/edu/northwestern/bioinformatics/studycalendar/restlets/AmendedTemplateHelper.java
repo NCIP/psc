@@ -115,18 +115,18 @@ public class AmendedTemplateHelper {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public <N extends PlanTreeNode> N drillDown(Class<N> stopAtClass) {
-        return drillDown(getAmendedTemplate().getPlannedCalendar(), stopAtClass);
+    public <N extends PlanTreeNode> N drillDown(Class<N> targetClass) {
+        return drillDown(getAmendedTemplate().getPlannedCalendar(), targetClass);
     }
 
     @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
-    private <N extends PlanTreeNode> N drillDown(PlanTreeNode node, Class<N> stopAtClass) {
-        if (stopAtClass.isAssignableFrom(node.getClass())) return (N) node;
-        if (!PlanTreeInnerNode.class.isAssignableFrom(node.getClass())) {
+    private <N extends PlanTreeNode> N drillDown(PlanTreeNode from, Class<N> targetClass) {
+        if (targetClass.isAssignableFrom(from.getClass())) return (N) from;
+        if (!PlanTreeInnerNode.class.isAssignableFrom(from.getClass())) {
             log.debug("Reached tree leaves without finding desired node");
             return null;
         }
-        PlanTreeInnerNode innerNode = (PlanTreeInnerNode) node;
+        PlanTreeInnerNode innerNode = (PlanTreeInnerNode) from;
         UriTemplateParameters param = PARAMS_FOR_NODE_TYPES.get(innerNode.childClass());
         String key = param.extractFrom(getRequest());
         PlanTreeNode next = innerNode.findNaturallyMatchingChild(key);
@@ -134,9 +134,9 @@ public class AmendedTemplateHelper {
             throw new NotFound("No %s identified by '%s' in %s",
                 StringTools.humanizeClassName(innerNode.childClass().getSimpleName()),
                 key,
-                StringTools.humanizeClassName(node.getClass().getSimpleName()));
+                StringTools.humanizeClassName(from.getClass().getSimpleName()));
         } else {
-            return drillDown(next, stopAtClass);
+            return drillDown(next, targetClass);
         }
     }
 

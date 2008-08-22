@@ -10,47 +10,47 @@ import org.restlet.resource.ResourceException;
 public class ValidatingFormTest extends StudyCalendarTestCase {
     public void testErrorAddedForMissingRequiredField() throws Exception {
         ValidatingForm form = new ValidatingForm("").
-            validatesPresenceOf(FormParameters.ACTIVITY_CODE);
+            validatePresenceOf(FormParameters.ACTIVITY_CODE);
         assertErrorCount(1, form);
         assertEquals("Missing required parameter activity-code", form.getErrors().get(0));
     }
     
     public void testErrorAddedForBlankPresenceOfField() throws Exception {
         ValidatingForm form = new ValidatingForm("activity-code=+").
-            validatesPresenceOf(FormParameters.ACTIVITY_CODE);
+            validatePresenceOf(FormParameters.ACTIVITY_CODE);
         assertErrorCount(1, form);
         assertEquals("Missing required parameter activity-code", form.getErrors().get(0));
     }
     
     public void testNoErrorAddedForPresentPresenceOfField() throws Exception {
         ValidatingForm form = new ValidatingForm("activity-code=412").
-            validatesPresenceOf(FormParameters.ACTIVITY_CODE);
+            validatePresenceOf(FormParameters.ACTIVITY_CODE);
         assertErrorCount(0, form);
     }
 
     public void testErrorAddedForFloatInIntegralField() throws Exception {
         ValidatingForm form = new ValidatingForm("day=4.3").
-            validatesIntegralityOf(FormParameters.DAY);
+            validateIntegralityOf(FormParameters.DAY);
         assertErrorCount(1, form);
         assertEquals("Parameter day must be an integer ('4.3' isn't)", form.getErrors().get(0));
     }
 
     public void testErrorAddedForTextInIntegralField() throws Exception {
         ValidatingForm form = new ValidatingForm("day=eleven").
-            validatesIntegralityOf(FormParameters.DAY);
+            validateIntegralityOf(FormParameters.DAY);
         assertErrorCount(1, form);
         assertEquals("Parameter day must be an integer ('eleven' isn't)", form.getErrors().get(0));
     }
 
     public void testNoErrorAddedForIntegerInIntegralField() throws Exception {
         ValidatingForm form = new ValidatingForm("day=11").
-            validatesIntegralityOf(FormParameters.DAY);
+            validateIntegralityOf(FormParameters.DAY);
         assertErrorCount(0, form);
     }
 
     public void testNoErrorAddedForBlankInIntegralField() throws Exception {
         ValidatingForm form = new ValidatingForm("day=+").
-            validatesIntegralityOf(FormParameters.DAY);
+            validateIntegralityOf(FormParameters.DAY);
         assertErrorCount(0, form);
     }
 

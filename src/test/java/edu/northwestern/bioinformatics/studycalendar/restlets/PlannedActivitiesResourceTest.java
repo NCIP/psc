@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
@@ -17,15 +18,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import static org.easymock.EasyMock.expectLastCall;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 /**
  * @author Rhett Sutphin
@@ -153,8 +151,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectPostMayProceed();
         expectMinimumPostAttributes();
         expectFindActivity();
-        expectEntityFormAttribute("details", "foom");
-        expectEntityFormAttribute("condition", "foom > 12");
+        expectRequestEntityFormAttribute("details", "foom");
+        expectRequestEntityFormAttribute("condition", "foom > 12");
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
         expectedPlannedActivity.setDetails("foom");
@@ -170,7 +168,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectPostMayProceed();
         expectMinimumPostAttributes();
         expectFindActivity();
-        expectEntityFormAttribute("population", "T");
+        expectRequestEntityFormAttribute("population", "T");
         expect(populationDao.getByAbbreviation(revisedStudy, "T")).andReturn(POPULATION);
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
@@ -185,7 +183,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     public void testAddPlannedActivityWithPopulationWhenPopulationDoesNotExist() throws Exception {
         expectPostMayProceed();
         expectMinimumPostAttributes();
-        expectEntityFormAttribute("population", "T");
+        expectRequestEntityFormAttribute("population", "T");
         expectFindActivity();
         expect(populationDao.getByAbbreviation(revisedStudy, "T")).andReturn(null);
 
@@ -197,8 +195,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     public void testAddPlannedActivityRequiresDay() throws Exception {
         expectPostMayProceed();
-        expectEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
-        expectEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
 
         doPost();
 
@@ -208,9 +206,9 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     public void testAddPlannedActivityDayMustBeInteger() throws Exception {
         expectPostMayProceed();
-        expectEntityFormAttribute("day", "twelve");
-        expectEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
-        expectEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("day", "twelve");
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
 
         doPost();
 
@@ -220,8 +218,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     public void testAddPlannedActivityRequiresActivitySource() throws Exception {
         expectPostMayProceed();
-        expectEntityFormAttribute("day", DAY.toString());
-        expectEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("day", DAY.toString());
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
 
         doPost();
 
@@ -231,8 +229,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     public void testAddPlannedActivityRequiresActivityCode() throws Exception {
         expectPostMayProceed();
-        expectEntityFormAttribute("day", DAY.toString());
-        expectEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("day", DAY.toString());
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
 
         doPost();
 
@@ -260,8 +258,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectPostMayProceed();
         expectMinimumPostAttributes();
         expectFindActivity();
-        expectEntityFormAttribute("details", "Four &amp; five are outr&eacute;");
-        expectEntityFormAttribute("condition", "x &lt; 4 or y &gt; 5");
+        expectRequestEntityFormAttribute("details", "Four &amp; five are outr&eacute;");
+        expectRequestEntityFormAttribute("condition", "x &lt; 4 or y &gt; 5");
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
         expectedPlannedActivity.setDetails("Four & five are outrŽ");
@@ -302,20 +300,9 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
             andReturn(ACTIVITY);
     }
 
-    @SuppressWarnings({ "deprecation" }) // URLEncoder.encode is deprecated for stupid reasons
-    private void expectEntityFormAttribute(String name, String value) throws IOException {
-        StringBuilder form = new StringBuilder();
-        if (request.getEntity() != null) {
-            form.append(request.getEntity().getText()).append('&');
-        }
-        form.append(URLEncoder.encode(name)).
-            append('=').append(URLEncoder.encode(value));
-        request.setEntity(form.toString(), MediaType.APPLICATION_WWW_FORM);
-    }
-
     private void expectMinimumPostAttributes() throws IOException {
-        expectEntityFormAttribute("day", DAY.toString());
-        expectEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
-        expectEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("day", DAY.toString());
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
     }
 }

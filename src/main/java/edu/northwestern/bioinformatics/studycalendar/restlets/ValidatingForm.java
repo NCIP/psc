@@ -26,7 +26,7 @@ public class ValidatingForm extends Form {
         super(queryString);
     }
 
-    public ValidatingForm validatesPresenceOf(FormParameters param) {
+    public ValidatingForm validatePresenceOf(FormParameters param) {
         String value = getFirstValue(param.attributeName());
         if (StringUtils.isBlank(value)) {
             addError("Missing required parameter %s", param.attributeName());
@@ -34,7 +34,7 @@ public class ValidatingForm extends Form {
         return this;
     }
 
-    public ValidatingForm validatesIntegralityOf(FormParameters param) {
+    public ValidatingForm validateIntegralityOf(FormParameters param) {
         String name = param.attributeName();
         String value = getFirstValue(name);
         if (!StringUtils.isBlank(value)) {
