@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-
-import javax.persistence.*;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -47,13 +53,14 @@ public abstract class Change extends AbstractMutableDomainObject {
      * This may be as simple as adding the change to the delta's change list, but
      * may extend to removing or modifying other changes.  Or, if this change is
      * already represented in the delta, this method may do nothing.
-     * @param delta
+     * @param targetDelta
      */
-    public void mergeInto(Delta<?> delta) {
-        log.debug("Merging {} into {}", this, delta);
-        List<Change> changes = delta.getChanges();
+    public void mergeInto(Delta<?> targetDelta) {
+        if (this.isNoop()) return;
+        log.debug("Merging {} into {}", this, targetDelta);
+        List<Change> changes = targetDelta.getChanges();
         boolean merged = false;
-        MergeLogic logic = createMergeLogic(delta);
+        MergeLogic logic = createMergeLogic(targetDelta);
         // walk back through changes until the merge logic says to stop
         for (int i = changes.size() - 1; i >= 0; i--) {
             Change c = changes.get(i);

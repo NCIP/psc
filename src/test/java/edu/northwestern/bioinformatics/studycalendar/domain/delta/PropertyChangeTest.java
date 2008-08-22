@@ -50,6 +50,15 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         assertPropertyChange("Result values not merged", "startDay", "2", "8", delta.getChanges().get(0));
     }
 
+    public void testMergeWithNoop() throws Exception {
+        change.setPropertyName("startDay");
+        change.setOldValue("5");
+        change.setNewValue("5");
+        change.mergeInto(delta);
+
+        assertEquals("Change should not have been merged", 0, delta.getChanges().size());
+    }
+
     public void testMergeWithExistingChangeForADifferentProperty() throws Exception {
         delta.addChange(PropertyChange.create("name", "Second", "First"));
 
