@@ -1,24 +1,34 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledActivity;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addEvents;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static org.easymock.EasyMock.expect;
 
-import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
-import static org.easymock.EasyMock.expect;
-import gov.nih.nci.cabig.ctms.lang.DateTools;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class ScheduleCommandTest extends StudyCalendarTestCase {
@@ -205,8 +215,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertNotNull("Map is null", map);
-        System.out.println("map " + map);
-        assertEquals("Map size is incorrect", 1, map.size());
+        assertEquals("Map size is incorrect: " + map, 1, map.size());
 
         Set<String> keys = map.keySet();
         Date today = new Date();
