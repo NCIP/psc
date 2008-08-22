@@ -8,9 +8,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
 
 /**
  * @author Rhett Sutphin
@@ -25,22 +22,13 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     protected Context context;
     protected Application application;
 
-    protected MockHttpServletRequest servletRequest;
-    protected MockHttpServletResponse servletResponse;
-    protected MockHttpSession servletSession;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-//        servletRequest = new MockHttpServletRequest();
-//        servletResponse = new MockHttpServletResponse();
-//        servletSession = new MockHttpSession(); // not associated with servletRequest by default
 
         context = new Context();
         application = new Application(context);
         Application.setCurrent(application);
-
-//        servletCall = new ServletCall(null, servletRequest, servletResponse);
 
         request = new Request();
         request.setRootRef(new Reference(ROOT_URI));
