@@ -6,22 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.utils.BeanPropertyListComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -30,28 +23,23 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    private static Map<String, Comparator> COMPARATORS = new LinkedHashMap<String, Comparator>();
-    static {
-        COMPARATORS.put("activity.type", ComparableComparator.getInstance());
-        COMPARATORS.put("activity.name", new NullComparator(String.CASE_INSENSITIVE_ORDER));
-        COMPARATORS.put("details", new NullComparator(String.CASE_INSENSITIVE_ORDER));
-        COMPARATORS.put("condition", new NullComparator(String.CASE_INSENSITIVE_ORDER));
-        COMPARATORS.put("#labels", new NullComparator(String.CASE_INSENSITIVE_ORDER));
-        COMPARATORS.put("firstDay", new NullComparator(ComparableComparator.getInstance(), false));
-        COMPARATORS.put("firstDayPopulation", new NullComparator(ComparableComparator.getInstance(), false));
-    }
+    private static BeanPropertyListComparator COMPARATOR = new BeanPropertyListComparator().
+        addProperty("activity.type", ComparableComparator.getInstance()).
+        addProperty("activity.name", new NullComparator(String.CASE_INSENSITIVE_ORDER)).
+        addProperty("key", ComparableComparator.getInstance()).
+        addProperty("firstDay", new NullComparator(ComparableComparator.getInstance(), false)).
+        addProperty("firstDayPopulation", new NullComparator(ComparableComparator.getInstance(), false));
 
     private Duration.Unit unit;
     private Activity activity;
-    private String details;
-    private String condition;
-    private Collection<Label> labels;
+    private PeriodActivitiesGridRowKey key;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRow(Activity activity, Duration duration) {
+    public PeriodActivitiesGridRow(Activity activity, PeriodActivitiesGridRowKey key, Duration duration) {
         if (activity == null) throw new IllegalArgumentException("Activity is required");
+        if (key == null) throw new IllegalArgumentException("Key is required");
         this.activity = activity;
-        labels = new TreeSet<Label>();
+        this.key = key;
         int cellCount = duration.getQuantity();
         plannedActivities = new ArrayList<PlannedActivity>(cellCount);
         while (plannedActivities.size() < cellCount) plannedActivities.add(null);
@@ -59,32 +47,6 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     }
 
     ////// LOGIC
-
-    public static String key(PlannedActivity plannedActivity) {
-        if (plannedActivity.getActivity().getId() == null) {
-            throw new StudyCalendarError("Cannot build a useful key if the activity has no ID");
-        }
-        return new StringBuilder().
-            append(plannedActivity.getActivity().getId()).
-            append(plannedActivity.getDetails()).
-            append(plannedActivity.getCondition()).
-            append(comparableLabels(plannedActivity.getLabels())).
-            toString();
-    }
-
-    /**
-     * This must return exactly the same key as {@link #key(PlannedActivity)}, given the
-     * same components.
-     * @return
-     */
-    public String key() {
-        return new StringBuilder().
-            append(getActivity().getId()).
-            append(getDetails()).
-            append(getCondition()).
-            append(comparableLabels(getLabels())).
-            toString();
-    }
 
     public void addPlannedActivity(PlannedActivity planned) {
         if (!getActivity().equals(planned.getActivity())) {
@@ -134,66 +96,29 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     public int compareTo(PeriodActivitiesGridRow other) {
-        BeanWrapper first = new BeanWrapperImpl(this);
-        BeanWrapper second = new BeanWrapperImpl(other);
-
-        for (Map.Entry<String, Comparator> entry : COMPARATORS.entrySet()) {
-            Object value1 = comparableValue(entry.getKey(), first);
-            Object value2 = comparableValue(entry.getKey(), second);
-
-            int result = entry.getValue().compare(value1, value2);
-            if (result != 0) return result;
-        }
-
-        return 0;
-    }
-
-    private Object comparableValue(String key, BeanWrapper wrapped) {
-        if ("#labels".equals(key)) {
-            return comparableLabels(
-                ((PeriodActivitiesGridRow) wrapped.getWrappedInstance()).getLabels());
-        } else {
-            return wrapped.getPropertyValue(key);
-        }
-    }
-
-    private static String comparableLabels(Collection<Label> labels) {
-        if (labels.size() == 0) {
-            return null;
-        } else {
-            List<String> labelNames = new ArrayList<String>(labels.size());
-            for (Label label : labels) {
-                labelNames.add(label.getName().toLowerCase());
-            }
-            Collections.sort(labelNames);
-            return StringUtils.join(labelNames.iterator(), "|");
-        }
+        return COMPARATOR.compare(this, other);
     }
 
     ////// BEAN PROPS
+
+    public PeriodActivitiesGridRowKey getKey() {
+        return key;
+    }
 
     public Activity getActivity() {
         return activity;
     }
 
     public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
+        return getKey().getDetails();
     }
 
     public String getCondition() {
-        return condition;
-    }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
+        return getKey().getCondition();
     }
 
     public Collection<Label> getLabels() {
-        return labels;
+        return getKey().getLabels();
     }
 
     public List<PlannedActivity> getPlannedActivities() {

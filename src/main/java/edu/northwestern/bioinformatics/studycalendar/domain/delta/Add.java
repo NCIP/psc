@@ -77,6 +77,9 @@ public class Add extends ChildrenChange {
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName())
             .append("[id=").append(getId()).append("; child id ").append(getChildId());
+        if (getChild() != null) {
+            sb.append("; child ").append(getChild());
+        }
         if (getIndex() != null) {
             sb.append(" at index ").append(getIndex());
         }

@@ -27,6 +27,14 @@ SC.doAsyncLink = function(anchor, options, indicator) {
     }, options));
 }
 
+/** Provides a context-path-sensitive relative URI within PSC -- similar to the JSTL tag c:url. */
+SC.relativeUri = function(path) {
+  var relpath = path;
+  if (path.substring(0,1) == '/') relpath = path.substring(1);
+  // URI_BASE_PATH is generated in decorators/standard.jsp
+  return INTERNAL_URI_BASE_PATH + resourcePath;
+}
+
 SC.SessionExpiredLogic = Class.create( {
     initialize: function(url) {
         this.url = url

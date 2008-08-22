@@ -102,14 +102,12 @@ Object.extend(SC.MP, {
           SC.MP.reportError("That cell already has a marker in it.  Remove the one that's there first if you want to change it.")
         }
       } else {
-        // TODO: backend update
-      
-        var callback = function() {
+        var callback = function(transport) {
           SC.MP.replaceCellContents(cell, marker)
           SC.MP.resetMarker(marker)
           if (draggable) { draggable.destroy() }
           SC.MP.configureMovingPlannedActivityMarker(marker)
-          SC.MP.reportInfo("Added " + marker.innerHTML + " at " + row + ", " + col)
+          SC.MP.reportInfo("Added " + marker.innerHTML.strip() + " at " + row + ", " + col)
           SC.MP.updateUsedUnused(marker.up("tr"))
 
           if (markerSource) {
@@ -121,7 +119,7 @@ Object.extend(SC.MP, {
             new Effect.Appear(newMarkerElt)
           }
         }
-        callback()
+        SC.MP.postPlannedActivityAt(row, col, callback)
       }
     }
   },

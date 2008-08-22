@@ -1,0 +1,129 @@
+package edu.northwestern.bioinformatics.studycalendar.web.template.period;
+
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Label;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.utils.BeanPropertyListComparator;
+import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
+
+/**
+ * @author Rhett Sutphin
+*/
+public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGridRowKey> {
+    private static final BeanPropertyListComparator<PeriodActivitiesGridRowKey> COMPARATOR
+        = new BeanPropertyListComparator<PeriodActivitiesGridRowKey>().
+            addProperty("details", new NullComparator(String.CASE_INSENSITIVE_ORDER)).
+            addProperty("condition", new NullComparator(String.CASE_INSENSITIVE_ORDER)).
+            addProperty("comparableLabels", new NullComparator(String.CASE_INSENSITIVE_ORDER));
+
+    private Integer activityId;
+    protected String details;
+    protected String condition;
+    protected Collection<Label> labels;
+
+    public static PeriodActivitiesGridRowKey create(Activity activity) {
+        return new PeriodActivitiesGridRowKey(
+            activity.getId(), null, null, Collections.<Label>emptySet()
+        );
+    }
+
+    public static PeriodActivitiesGridRowKey create(PlannedActivity plannedActivity) {
+        if (plannedActivity.getActivity().getId() == null) {
+            throw new StudyCalendarError("Cannot build a useful key if the activity has no ID");
+        }
+        return new PeriodActivitiesGridRowKey(
+            plannedActivity.getActivity().getId(),
+            plannedActivity.getDetails(),
+            plannedActivity.getCondition(),
+            plannedActivity.getLabels()
+        );
+    }
+
+    public PeriodActivitiesGridRowKey(Integer activityId, String details, String condition, Collection<Label> labels) {
+        this.activityId = activityId;
+        this.details = details;
+        this.condition = condition;
+        this.labels = new TreeSet<Label>(labels);
+    }
+
+    public Integer getActivityId() {
+        return activityId;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public Collection<Label> getLabels() {
+        return labels;
+    }
+
+    public String getComparableLabels() {
+        if (labels.size() == 0) {
+            return null;
+        } else {
+            List<String> labelNames = new ArrayList<String>(labels.size());
+            for (Label label : labels) {
+                labelNames.add(label.getName().toLowerCase());
+            }
+            Collections.sort(labelNames);
+            return StringUtils.join(labelNames.iterator(), "|");
+        }
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
+    public int compareTo(PeriodActivitiesGridRowKey other) {
+        return COMPARATOR.compare(this, other);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PeriodActivitiesGridRowKey)) return false;
+
+        PeriodActivitiesGridRowKey key = (PeriodActivitiesGridRowKey) o;
+
+        if (activityId != null ? !activityId.equals(key.activityId) : key.activityId != null)
+            return false;
+        if (condition != null ? !condition.equals(key.condition) : key.condition != null)
+            return false;
+        if (details != null ? !details.equals(key.details) : key.details != null) return false;
+
+        String thisLabels = getComparableLabels();
+        String otherLabels = getComparableLabels();
+        return !(thisLabels != null ? !thisLabels.equals(otherLabels) : otherLabels != null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = (activityId != null ? activityId.hashCode() : 0);
+        result = 31 * result + (details != null ? details.hashCode() : 0);
+        result = 31 * result + (condition != null ? condition.hashCode() : 0);
+        String thisLabels = getComparableLabels();
+        result = 31 * result + (thisLabels != null ? thisLabels.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().
+            append(getActivityId()).
+            append(getDetails()).
+            append(getCondition()).
+            append(getComparableLabels()).
+            toString();
+    }
+}

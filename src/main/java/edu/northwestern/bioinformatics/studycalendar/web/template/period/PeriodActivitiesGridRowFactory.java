@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.slf4j.Logger;
@@ -38,11 +38,11 @@ public class PeriodActivitiesGridRowFactory {
     };
 
     private Activity activity;
-    private String key;
+    private PeriodActivitiesGridRowKey key;
     private Duration duration;
     private List<PlannedActivity> plannedActivities;
 
-    public PeriodActivitiesGridRowFactory(Activity activity, String key, Duration duration) {
+    public PeriodActivitiesGridRowFactory(Activity activity, PeriodActivitiesGridRowKey key, Duration duration) {
         this.activity = activity;
         this.key = key;
         this.duration = duration;
@@ -61,7 +61,7 @@ public class PeriodActivitiesGridRowFactory {
             return;
         }
 
-        String candidateKey = PeriodActivitiesGridRow.key(plannedActivity);
+        PeriodActivitiesGridRowKey candidateKey = PeriodActivitiesGridRowKey.create(plannedActivity);
         if (getKey().equals(candidateKey)) {
             this.plannedActivities.add(plannedActivity);
         } else {
@@ -80,7 +80,7 @@ public class PeriodActivitiesGridRowFactory {
         // The preferred row is the lowest row where each population appears first for a day.
         Map<Population, Integer> preferredRow = determinePopulationPreferredRows(byDay);
         List<PeriodActivitiesGridRow> rows = new ArrayList<PeriodActivitiesGridRow>(rowCount);
-        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity, duration));
+        while (rows.size() < rowCount) rows.add(new PeriodActivitiesGridRow(activity, key, duration));
 
         for (PlannedActivity pa : plannedActivities) {
             int preferred = preferredRow.get(pa.getPopulation());
@@ -144,7 +144,7 @@ public class PeriodActivitiesGridRowFactory {
         return activity;
     }
 
-    public String getKey() {
+    public PeriodActivitiesGridRowKey getKey() {
         return key;
     }
 }

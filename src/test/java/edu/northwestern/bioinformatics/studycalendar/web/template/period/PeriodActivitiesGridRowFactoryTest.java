@@ -16,15 +16,20 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
     private PlannedActivity pa0;
     private PeriodActivitiesGridRowFactory factory;
     private Population p1;
+    private Duration duration;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         pa0 = createPlannedActivity("Something", 1, "With vim");
         pa0.getActivity().setId(123);
-        Duration duration = new Duration(21, Duration.Unit.day);
-        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRow.key(pa0), duration);
+        duration = new Duration(21, Duration.Unit.day);
+        recreateFactory();
         p1 = createPopulation("P", "People");
+    }
+
+    private void recreateFactory() {
+        factory = new PeriodActivitiesGridRowFactory(pa0.getActivity(), PeriodActivitiesGridRowKey.create(pa0), duration);
     }
 
     public void testAllActivitiesMustHaveMatchingKeys() throws Exception {
@@ -35,7 +40,7 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
         } catch (StudyCalendarError e) {
             assertEquals(
                 String.format("This factory is for planned activities matching %s.  The supplied planned activity has key %s.",
-                    factory.getKey(), PeriodActivitiesGridRow.key(pa1)), e.getMessage());
+                    factory.getKey(), PeriodActivitiesGridRowKey.create(pa1)), e.getMessage());
         }
     }
 
@@ -109,6 +114,22 @@ public class PeriodActivitiesGridRowFactoryTest extends StudyCalendarTestCase {
         assertSame(pa1, actualRows.get(1).getPlannedActivityForDay(1));
         assertSame(pa2, actualRows.get(1).getPlannedActivityForDay(4));
         assertSame(pa3, actualRows.get(0).getPlannedActivityForDay(4));
+    }
+
+    public void testIncludesDetailsInCreatedRows() throws Exception {
+        pa0.setDetails("foom");
+        recreateFactory();
+        factory.addPlannedActivity(pa0);
+        List<PeriodActivitiesGridRow> actualRows = createRowsAndAssertCount(1);
+        assertEquals("foom", actualRows.get(0).getDetails());
+    }
+    
+    public void testIncludesConditionInCreatedRows() throws Exception {
+        pa0.setCondition("etc");
+        recreateFactory();
+        factory.addPlannedActivity(pa0);
+        List<PeriodActivitiesGridRow> actualRows = createRowsAndAssertCount(1);
+        assertEquals("etc", actualRows.get(0).getCondition());
     }
     
     public void testIgnoresOutOfRangeActivities() throws Exception {

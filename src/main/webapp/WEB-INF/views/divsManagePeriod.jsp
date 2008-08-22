@@ -1,33 +1,30 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
-<%--
-    Expected model attributes:
-    - populations
---%>
-
+<c:url var="collectionResource"
+    value="/api/v1/studies/${study.name}/template/development/epochs/${epoch.name}/study-segments/${studySegment.name}/periods/${period.gridId}/planned-activities"/>
 <html>
 <head>
     <tags:javascriptLink name="manage-period/plan-activities" />
     <tags:javascriptLink name="manage-period/manage-activity-rows" />
     <tags:javascriptLink name="manage-period/activity-notes" />
     <tags:javascriptLink name="manage-period/reindex" />
+    <tags:javascriptLink name="manage-period/server" />
     <tags:javascriptLink name="resig-templates" />
 
     <tags:resigTemplate id="new_activity_row_template">
         <tr class="new-row unused activity">
-            <td title="<\%= name %>">
+            <td title="[#= name #]" activity-code="[#= code #]" activity-source="[#= source_name #]">
                 <span class="row-number">-1</span>
-                <\%= name %>
-                <input type="hidden" value="<\%= id %>" name="activityId"/>
+                [#= name #]
             </td>
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_days_row_template">
         <tr class='new-row unused activity'>
-            <\% for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { %>
+            [# for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { #]
             <td class='cell'>&nbsp;</td>
-            <\% } %>
+            [# } #]
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_notes_row_template">
@@ -38,7 +35,7 @@
                 </a>
                 <div class='notes-content'>
                     <span class='details' style='display: none'></span>
-                    <span class='conditions' style='display: none'></span>
+                    <span class='condition' style='display: none'></span>
                     <span class='labels' style='display: none'></span>
                     &nbsp;
                 </div>
@@ -50,6 +47,10 @@
     <style type="text/css">
         .days table { width: 40em; }
     </style>
+
+    <script type="text/javascript">
+        SC.MP.collectionResource = '${collectionResource}'
+    </script>
 </head>
 <body>
 
@@ -100,8 +101,8 @@
     <div class='days heading column' id='days-heading'>
         <table>
             <tr>
-                <c:forEach items="${grid.dayHeadings}" var="oneDay">
-                    <td>
+                <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
+                    <td class="day" day-number="${grid.columnDayNumbers[cell.index]}">
                         <c:forEach items="${oneDay}" var="dayNumber">
                             <c:choose>
                                 <c:when test="${empty dayNumber}">
@@ -128,8 +129,8 @@
             <li class='details'>
                 <a href='#details'>Details</a>
             </li>
-            <li class='conditions'>
-                <a href='#conditions'>Conditions</a>
+            <li class='condition'>
+                <a href='#condition'>Condition</a>
             </li>
             <!-- Labels will be enabled in 2.2.1 -->
             <li class='labels' style="display: none">
@@ -155,7 +156,7 @@
                     </tr>
                     <c:forEach items="${typeAndRows.value}" var="row" varStatus="rowStatus">
                         <tr class="activity">
-                            <td title="${row.activity.name}">
+                            <td title="${row.activity.name}" activity-code="${row.activity.code}" activity-source="${row.activity.source.naturalKey}">
                                 <span class="row-number">${rowStatus.count}</span>
                                 ${row.activity.name}
                                 <input type="hidden" value="${row.activity.id}" name="activityId"/>
@@ -188,13 +189,13 @@
                     <c:forEach items="${typeAndRows.value}" var="row">
                         <tr class="activity">
                             <c:forEach items="${row.plannedActivities}" var="pa" varStatus="cell">
-                                <td class="cell day-${grid.columnDayNumbers[cell.index]}">
+                                <td class="cell">
                                     <c:choose>
                                         <c:when test="${empty pa}">
                                             &nbsp;
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="marker planned-activity-${pa.id}">
+                                            <div class="marker" resource-href="${collectionResource}/${pa.gridId}">
                                                 ${empty pa.population ? '&times;' : pa.population.abbreviation}
                                             </div>
                                         </c:otherwise>
@@ -214,8 +215,8 @@
             <dl>
                 <dt>Details</dt>
                 <dd class='none' id='details-preview'>None</dd>
-                <dt>Conditions</dt>
-                <dd class='none' id='conditions-preview'>None</dd>
+                <dt>Condition</dt>
+                <dd class='none' id='condition-preview'>None</dd>
                 <!-- Labels will be enabled in 2.2.1 -->
                 <dt style="display: none">Labels</dt>
                 <dd style="display: none" class='none' id='labels-preview'>None</dd>
@@ -240,7 +241,7 @@
                                     <span class='details' style='display: none'>
                                         ${row.details}
                                     </span>
-                                    <span class='conditions' style='display: none'>
+                                    <span class='condition' style='display: none'>
                                         ${row.condition}
                                     </span>
                                     <span class='labels' style='display: none'>

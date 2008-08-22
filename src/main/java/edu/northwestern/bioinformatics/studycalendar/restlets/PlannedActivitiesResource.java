@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -13,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,9 +109,9 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         newPlannedActivity.setDay(day);
         newPlannedActivity.setActivity(activity);
         newPlannedActivity.setCondition(
-            FormParameters.CONDITION.extractFirstFrom(form));
+            StringEscapeUtils.unescapeHtml(FormParameters.CONDITION.extractFirstFrom(form)));
         newPlannedActivity.setDetails(
-            FormParameters.DETAILS.extractFirstFrom(form));
+            StringEscapeUtils.unescapeHtml(FormParameters.DETAILS.extractFirstFrom(form)));
         newPlannedActivity.setPopulation(population);
         return newPlannedActivity;
     }

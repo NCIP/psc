@@ -256,6 +256,24 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         assertEntityTextContains("I have some bad news");
     }
 
+    public void testAddPlannedActivityConvertsHtmlEntitiesToText() throws Exception {
+        expectPostMayProceed();
+        expectMinimumPostAttributes();
+        expectFindActivity();
+        expectEntityFormAttribute("details", "Four &amp; five are outr&eacute;");
+        expectEntityFormAttribute("condition", "x &lt; 4 or y &gt; 5");
+
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        expectedPlannedActivity.setDetails("Four & five are outrŽ");
+        expectedPlannedActivity.setCondition("x < 4 or y > 5");
+
+        expectPlannedActivityAdd(expectedPlannedActivity);
+
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
+    }
+
     ////// EXPECTATIONS
 
     private void expectPlannedActivityAdd(PlannedActivity expectedPlannedActivity) {

@@ -18,14 +18,13 @@ Object.extend(SC.MP, {
       selectedNoteType = "details" 
     }
     
-    $w("details conditions labels").
+    $w("details condition labels").
       reject(function(t) { return t == selectedNoteType }).
       each(SC.MP.hideNoteType)
     SC.MP.showNoteType(selectedNoteType)
   },
   
   flipNoteType: function(type, show) {
-    console.log(show + " " + type)
     $$("#notes span." + type).invoke(show)
   },
   
@@ -60,7 +59,7 @@ Object.extend(SC.MP, {
     // update contents
     box.select('h2').first().innerHTML = 
       $$("#activities ." + rowClass + " td").first().title
-    $w('details conditions labels').each(function(noteKind) {
+    $w('details condition labels').each(function(noteKind) {
       var content = notesRow.select("." + noteKind).first().innerHTML.strip()
       var elt = $(noteKind + "-preview")
       if (content.length == 0) {

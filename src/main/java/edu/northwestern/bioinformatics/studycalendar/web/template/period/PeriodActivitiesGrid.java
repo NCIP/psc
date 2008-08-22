@@ -126,7 +126,7 @@ public class PeriodActivitiesGrid {
 
             // add empty rows for activities from other periods/segments
             for (Activity activity : unusedActivities.get(type)) {
-                rowsForType.add(new PeriodActivitiesGridRow(activity, getPeriod().getDuration()));
+                rowsForType.add(new PeriodActivitiesGridRow(activity, PeriodActivitiesGridRowKey.create(activity), getPeriod().getDuration()));
             }
 
             created.put(type, rowsForType);
@@ -139,11 +139,12 @@ public class PeriodActivitiesGrid {
         Collection<Activity> unusedActivities
     ) {
         // collect planned activities into factories based on their eventual rows
-        Map<String, PeriodActivitiesGridRowFactory> factories = new HashMap<String, PeriodActivitiesGridRowFactory>();
+        Map<PeriodActivitiesGridRowKey, PeriodActivitiesGridRowFactory> factories = new HashMap<PeriodActivitiesGridRowKey, PeriodActivitiesGridRowFactory>();
         for (PlannedActivity pa : plannedActivities) {
-            String paKey = PeriodActivitiesGridRow.key(pa);
+            PeriodActivitiesGridRowKey paKey = PeriodActivitiesGridRowKey.create(pa);
             if (!factories.containsKey(paKey)) {
-                factories.put(paKey, new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey, getPeriod().getDuration()));
+                factories.put(paKey,
+                    new PeriodActivitiesGridRowFactory(pa.getActivity(), paKey, getPeriod().getDuration()));
             }
             factories.get(paKey).addPlannedActivity(pa);
             unusedActivities.remove(pa.getActivity());

@@ -10,6 +10,11 @@
   <head>
     <c:set var="specificTitle"><decorator:title/></c:set>
     <title><tags:pageTitle pageSpecificTitle="${specificTitle}"/></title>
+
+    <script type="text/javascript">
+      var INTERNAL_URI_BASE_PATH = '<c:url value="/"/>'
+    </script>
+
     <laf:stylesheetLink name="debug"/>
     <laf:stylesheetLink name="common"/>
     <laf:stylesheetLink name="fields"/>
@@ -37,6 +42,7 @@
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
     </style>
+
     <decorator:head/>
 
     <tags:sessionTimeout/>

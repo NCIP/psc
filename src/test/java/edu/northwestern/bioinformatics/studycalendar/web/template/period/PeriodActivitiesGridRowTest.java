@@ -11,11 +11,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
+import java.util.Collections;
+
 /**
  * @author Rhett Sutphin
  */
 public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     private PeriodActivitiesGridRow rowA, rowB;
+    private TestKey keyA, keyB;
     private Activity a11, a12, a20;
     private Population p0, p1;
     private PlannedActivity pa0, pa1;
@@ -33,8 +36,11 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         p0 = createPopulation("P", "People");
         p1 = createPopulation("Pp", "Persons");
 
-        rowA = new PeriodActivitiesGridRow(a20, duration);
-        rowB = new PeriodActivitiesGridRow(a20, duration);
+        keyA = new TestKey(20);
+        keyB = new TestKey(20);
+
+        rowA = new PeriodActivitiesGridRow(a20, keyA, duration);
+        rowB = new PeriodActivitiesGridRow(a20, keyB, duration);
 
         pa0 = createPlannedActivity(a20, 4);
         pa1 = createPlannedActivity(a20, 2);
@@ -101,7 +107,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
 
     public void testPlannedActivitiesAlwaysHasTheCorrectNumberOfCellsForNonDayUnits() throws Exception {
         duration.setUnit(Duration.Unit.quarter);
-        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, keyA, duration);
         pa0.setDay(92);
         
         assertEquals((int) duration.getQuantity(), rowC.getPlannedActivities().size());
@@ -112,7 +118,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     public void testAddingPlannedActivityForConcealedDayIsNoop() throws Exception {
         duration.setUnit(Duration.Unit.month);
         pa0.setDay(14);
-        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, keyA, duration);
         rowC.addPlannedActivity(pa0);
         assertFalse(rowC.isUsed());
     }
@@ -120,7 +126,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     public void testAddingPlannedActivityForUnconcealedDayWorks() throws Exception {
         duration.setUnit(Duration.Unit.month);
         pa0.setDay(57);
-        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, duration);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, keyA, duration);
         rowC.addPlannedActivity(pa0);
         assertTrue(rowC.isUsed());
         assertSame(pa0, rowC.getPlannedActivityForDay(57));
@@ -129,41 +135,41 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     ////// COMPARABLE TESTS
 
     public void testOrdersByActivityTypeFirst() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11, duration);
-        rowB = new PeriodActivitiesGridRow(a20, duration);
+        rowA = new PeriodActivitiesGridRow(a11, keyA, duration);
+        rowB = new PeriodActivitiesGridRow(a20, keyB, duration);
 
         assertOrder(rowA, rowB);
     }
 
     public void testOrdersByActivityNameSecond() throws Exception {
-        rowA = new PeriodActivitiesGridRow(a11, duration);
-        rowB = new PeriodActivitiesGridRow(a12, duration);
+        rowA = new PeriodActivitiesGridRow(a11, keyA, duration);
+        rowB = new PeriodActivitiesGridRow(a12, keyB, duration);
 
         assertOrder(rowB, rowA);
     }
 
     public void testOrdersByDetailsThird() throws Exception {
-        rowA.setDetails("Some details");
-        rowB.setDetails("Some other details");
+        keyA.setDetails("Some details");
+        keyB.setDetails("Some other details");
 
         assertOrder(rowA, rowB);
     }
 
     public void testNullDetailsComesLast() throws Exception {
-        rowB.setDetails("etc");
+        keyB.setDetails("etc");
 
         assertOrder(rowB, rowA);
     }
 
     public void testOrdersByConditionsFourth() throws Exception {
-        rowA.setCondition("frob < 14");
-        rowB.setCondition("frob < 10");
+        keyA.setCondition("frob < 14");
+        keyB.setCondition("frob < 10");
 
         assertOrder(rowB, rowA);
     }
 
     public void testNullConditionComesLast() throws Exception {
-        rowA.setCondition("something");
+        keyA.setCondition("something");
 
         assertOrder(rowA, rowB);
     }
@@ -219,6 +225,20 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     private void addLabels(PeriodActivitiesGridRow row, String... labels) {
         for (String label : labels) {
             row.getLabels().add(createNamedInstance(label, Label.class));
+        }
+    }
+
+    private static class TestKey extends PeriodActivitiesGridRowKey {
+        public TestKey(Integer activityId) {
+            super(activityId, null, null, Collections.<Label>emptySet());
+        }
+
+        public void setDetails(String details) {
+            this.details = details;
+        }
+
+        public void setCondition(String condition) {
+            this.condition = condition;
         }
     }
 }
