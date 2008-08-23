@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 /**
  * @author Jaron Sampson
+ * @author Rhett Sutphin
  */
 public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> implements DeletableDomainObjectDao<Activity> {
     @Override
@@ -20,9 +22,9 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     *
     * @return      list of all the Activities currently available
     */
+    @SuppressWarnings({ "unchecked" })
     public List<Activity> getAll() {
-        List<Activity> sortedList;
-        sortedList = getHibernateTemplate().find("from Activity");
+        List<Activity> sortedList = getHibernateTemplate().find("from Activity");
         Collections.sort(sortedList);
         return sortedList;
     }
@@ -33,12 +35,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @param  name the name of the activity we want to find
     * @return      the activity found that corresponds to the name parameter
     */
+    @SuppressWarnings({ "unchecked" })
     public Activity getByName(String name) {
-        List<Activity> activities = getHibernateTemplate().find("from Activity where name = ?", name);
-        if (activities.size() == 0) {
-            return null;
-        }
-        return activities.get(0);
+        return CollectionUtils.firstElement(
+            (List<Activity>) getHibernateTemplate().find("from Activity where name = ?", name));
     }
 
     /**
@@ -48,14 +48,17 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @param  sourceName the source name for the activity we want to find
     * @return      the activity found that corresponds to the activity code and source name parameters
     */
+    @SuppressWarnings({ "unchecked" })
     public Activity getByCodeAndSourceName(String code, String sourceName) {
-        List<Activity> activities = getHibernateTemplate().find("from Activity a where code = ? and a.source.name = ?", new String[] {code, sourceName});
-        if (activities.size() == 0) {
-            return null;
-        }
-        return activities.get(0);
+        return CollectionUtils.firstElement(
+            (List<Activity>) getHibernateTemplate().find(
+                "from Activity a where code = ? and a.source.name = ?", new String[] { code, sourceName }));
     }
 
+    public Activity getByUniqueKey(String key) {
+        Map<String, String> parts = Activity.splitPropertyChangeKey(key);
+        return getByCodeAndSourceName(parts.get("code"), parts.get("source"));
+    }
 
     /**
     * Finds the activities by source id.
@@ -63,9 +66,9 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @param  sourceId the source id for the activity we want to find
     * @return      the activity found that corresponds to the source id parameters
     */
+    @SuppressWarnings({ "unchecked" })
     public List<Activity> getBySourceId(Integer sourceId) {
-        List<Activity> activities = getHibernateTemplate().find("from Activity where source_id = ?", sourceId);
-        return activities;
+        return (List<Activity>) getHibernateTemplate().find("from Activity where source_id = ?", sourceId);
     }
 
     /**
@@ -74,10 +77,11 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @param  searchText the text we are searching with
     * @return      a list of activities found based on the search text
     */
+    @SuppressWarnings({ "unchecked" })
     public List<Activity> getActivitiesBySearchText(String searchText) {
         String search = "%" + searchText.toLowerCase() +"%";
-        List<Activity> activities = getHibernateTemplate().find("from Activity where lower(name || code) LIKE ?", search);
-        return activities;
+        return (List<Activity>) getHibernateTemplate().find(
+            "from Activity where lower(name || code) LIKE ?", search);
     }
 
     /**
@@ -87,10 +91,5 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     */
     public void delete(Activity activity) {
         getHibernateTemplate().delete(activity);
-    }
-
-    public Activity getByUniqueKey(String key) {
-        Map<String, String> parts = Activity.splitPropertyChangeKey(key);
-        return getByCodeAndSourceName(parts.get("code"), parts.get("source"));
     }
 }
