@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
+import java.util.Map;
+
 /**
  * @author Rhett Sutphin
  */
@@ -10,12 +12,8 @@ public class ActivityTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        a0 = new Activity();
-        a0.setType(ActivityType.DISEASE_MEASURE);
-        a0.setName("Activity 0");
-        a1 = new Activity();
-        a1.setType(ActivityType.OTHER);
-        a1.setName("Activity 1");
+        a0 = Fixtures.createActivity("Activity 0", ActivityType.DISEASE_MEASURE);
+        a1 = Fixtures.createActivity("Activity 1", ActivityType.OTHER);
     }
 
     public void testNaturalOrderByTypeFirst() throws Exception {
@@ -41,5 +39,42 @@ public class ActivityTest extends StudyCalendarTestCase {
 
         assertNegative(a0.compareTo(a1));
         assertPositive(a1.compareTo(a0));
+    }
+
+    public void testNaturalKeyIsCode() throws Exception {
+        a0.setCode("ETC");
+        assertEquals("ETC", a0.getNaturalKey());
+    }
+
+    public void testPropertyChangeKeyIncludesSourceName() throws Exception {
+        a0.setCode("1000000");
+
+        assertEquals("Fixtures Source|1000000", a0.getUniqueKey());
+    }
+
+    public void testPropertyChangeKeyEscapesPipeInSourceName() throws Exception {
+        Source s = Fixtures.createSource("Pipe|y");
+        a0.setSource(s);
+        a0.setCode("1");
+
+        assertEquals("Pipe\\|y|1", a0.getUniqueKey());
+    }
+
+    public void testPropertyChangeKeyEscapesPipeInCode() throws Exception {
+        a0.setCode("110|40");
+
+        assertEquals("Fixtures Source|110\\|40", a0.getUniqueKey());
+    }
+
+    public void testDecodePropertyChangeKey() throws Exception {
+        Map<String, String> actual = Activity.splitPropertyChangeKey("Fixtures Source|120");
+        assertEquals("Fixtures Source", actual.get("source"));
+        assertEquals("120", actual.get("code"));
+    }
+
+    public void testDecodePropertyChangeKeyWithEscapedPipes() throws Exception {
+        Map<String, String> actual = Activity.splitPropertyChangeKey("Pipe\\|y|12\\|0");
+        assertEquals("Pipe|y", actual.get("source"));
+        assertEquals("12|0", actual.get("code"));
     }
 }

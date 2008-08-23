@@ -14,7 +14,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Jaron Sampson
@@ -27,7 +30,12 @@ import java.util.List;
         @Parameter(name = "sequence", value = "seq_activities_id")
     }
 )
-public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named, NaturallyKeyed {
+public class Activity extends AbstractMutableDomainObject
+    implements Comparable<Activity>, Named, NaturallyKeyed, UniquelyKeyed
+{
+    private static final Pattern ESCAPED_PIPE = Pattern.compile("\\\\\\|");
+    private static final Pattern PIPE = Pattern.compile("\\|");
+
     private String name;
     private String description;
     private ActivityType type;
@@ -51,6 +59,29 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
     @Transient
     public String getNaturalKey() {
         return getCode();
+    }
+
+    @Transient
+    public String getUniqueKey() {
+        return new StringBuilder().
+            append(escapePipe(getSource().getNaturalKey())).append("|").
+            append(escapePipe(getNaturalKey())).
+            toString();
+    }
+
+    private static String escapePipe(String value) {
+        return value == null ? null : PIPE.matcher(value).replaceAll("\\\\|");
+    }
+
+    public static Map<String, String> splitPropertyChangeKey(String key) {
+        String[] split = PIPE.split(ESCAPED_PIPE.matcher(key).replaceAll("\0"));
+        for (int i = 0; i < split.length; i++) {
+            split[i] = split[i].replaceAll("\0", "|");
+        }
+        Map<String, String> values = new HashMap<String, String>();
+        values.put("source", split[0]);
+        values.put("code", split[1]);
+        return values;
     }
 
     ///// BEAN PROPERTIES
@@ -155,5 +186,4 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
     public void updateActivity(final Activity activity) {
         BeanUtils.copyProperties(activity, this, new String[]{"source", "id"});
     }
-
 }

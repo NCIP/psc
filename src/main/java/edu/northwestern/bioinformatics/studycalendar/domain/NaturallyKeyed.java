@@ -11,6 +11,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
  * of the keyed object.  For example, the natural key for an activity
  * need only be unique within its source.
  *
+ * @see UniquelyKeyed
  * @author Rhett Sutphin
  */
 public interface NaturallyKeyed {

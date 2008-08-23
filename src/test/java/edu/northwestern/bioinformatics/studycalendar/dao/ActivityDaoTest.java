@@ -27,6 +27,11 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong id", -98, (int) activity.getId());
     }
 
+    public void testGetByUniqueKey() throws Exception {
+        Activity activity = dao.getByUniqueKey("ICD9|CS");
+        assertEquals("Wrong activity", -98, (int) activity.getId());
+    }
+
     public void testSaveNewActivity() throws Exception {
         Integer savedId;
         {

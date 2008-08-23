@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jaron Sampson
@@ -86,5 +87,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     */
     public void delete(Activity activity) {
         getHibernateTemplate().delete(activity);
+    }
+
+    public Activity getByUniqueKey(String key) {
+        Map<String, String> parts = Activity.splitPropertyChangeKey(key);
+        return getByCodeAndSourceName(parts.get("code"), parts.get("source"));
     }
 }
