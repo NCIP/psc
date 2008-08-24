@@ -1,23 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.classextension.EasyMock.*;
 import org.springframework.context.ApplicationContext;
-import org.easymock.classextension.EasyMock;
 
 /**
  * @author Rhett Sutphin
@@ -26,26 +29,26 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     private MutatorFactory factory;
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
-    private PeriodDao periodDao;
-    private PlannedActivityDao plannedActivityDao;
-    private ApplicationContext mockApplicationContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        Study study = new Study();
         factory = new MutatorFactory();
 
         DaoFinder finder = new StaticDaoFinder(
             epochDao = registerDaoMockFor(EpochDao.class),
             studySegmentDao = registerDaoMockFor(StudySegmentDao.class),
-            periodDao = registerDaoMockFor(PeriodDao.class),
-            plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class)
+            registerDaoMockFor(PeriodDao.class),
+            registerDaoMockFor(PlannedActivityDao.class)
         );
+        TemplateService templateService = registerMockFor(TemplateService.class);
 
-        mockApplicationContext = registerMockFor(ApplicationContext.class);
-        EasyMock.expect(mockApplicationContext.getBean("templateService")).andStubReturn(null);
-        EasyMock.expect(mockApplicationContext.getBean("subjectService")).andStubReturn(null);
-        EasyMock.expect(mockApplicationContext.getBean("scheduleService")).andStubReturn(null);
+        ApplicationContext mockApplicationContext = registerMockFor(ApplicationContext.class);
+        expect(mockApplicationContext.getBean("templateService")).andStubReturn(templateService);
+        expect(mockApplicationContext.getBean("subjectService")).andStubReturn(null);
+        expect(mockApplicationContext.getBean("scheduleService")).andStubReturn(null);
+        expect(templateService.findStudy((PlanTreeNode) notNull())).andStubReturn(study);
 
         factory.setDaoFinder(finder);
         factory.setApplicationContext(mockApplicationContext);
@@ -139,13 +142,11 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertEquals(ChangePlannedActivityActivityMutator.class, actual.getClass());
     }
 
-    /* TODO
     public void testCreatePlannedActivityPopulationMutator() throws Exception {
         Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("population", "F", null));
         assertNotNull(actual);
         assertEquals(ChangePlannedActivityPopulationMutator.class, actual.getClass());
     }
-    */
 
     public void testCreatePlannedActivityDayMutator() throws Exception {
         Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("day", "4", "18"));

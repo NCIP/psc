@@ -1,38 +1,42 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * @author Rhett Sutphin
  */
 public class MutatorFactory implements ApplicationContextAware {
-    private DaoFinder daoFinder;
-    private ScheduledActivityDao scheduledActivityDao;
     private ApplicationContext applicationContext;
+    private DaoFinder daoFinder;
+    private TemplateService templateService;
+    private ScheduledActivityDao scheduledActivityDao;
     private ActivityDao activityDao;
+    private PopulationDao populationDao;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -97,6 +101,9 @@ public class MutatorFactory implements ApplicationContextAware {
                 return new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
             } else if ("activity".equals(change.getPropertyName())) {
                 return new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
+            } else if ("population".equals(change.getPropertyName())) {
+                Study study = getTemplateService().findStudy(target);
+                return new ChangePlannedActivityPopulationMutator(change, study, scheduledActivityDao, populationDao);
             }
             // fall through
         }
@@ -149,5 +156,10 @@ public class MutatorFactory implements ApplicationContextAware {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    @Required
+    public void setPopulationDao(PopulationDao populationDao) {
+        this.populationDao = populationDao;
     }
 }
