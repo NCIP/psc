@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
@@ -222,7 +223,7 @@ public class Fixtures {
     public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
-        return createScheduledActivity(baseEvent, year, month, day);
+        return createScheduledActivity(baseEvent, year, month, day, new Conditional());
     }
 
     public static Activity createActivity(String name) {
