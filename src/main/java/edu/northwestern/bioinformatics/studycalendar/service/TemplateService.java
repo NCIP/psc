@@ -2,17 +2,29 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
 import org.slf4j.Logger;
@@ -21,8 +33,18 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
@@ -79,7 +101,7 @@ public class TemplateService {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
 
-        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(SUBJECT_COORDINATOR);
         if (!userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.addStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
@@ -102,7 +124,7 @@ public class TemplateService {
         if (user == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
-        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(SUBJECT_COORDINATOR);
         StudySite studySite = study.getStudySite(site);
         if (user.hasAssignment(studySite)) {
             throw new StudyCalendarValidationException("%s is still responsible for one or more subjects on %s at %s.  Please reassign those subjects before removing %s from that study and site.",
@@ -355,6 +377,16 @@ public class TemplateService {
                 (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public <T extends PlanTreeNode> T findCurrentNode(T transientNode) {
+        if (!transientNode.isMemoryOnly()) {
+            return transientNode;
+        }
+        GridIdentifiableDao<T> dao
+            = (GridIdentifiableDao<T>) daoFinder.findDao(transientNode.getClass());
+        return dao.getByGridId(transientNode.getGridId());
+    }
+
     // This is not a general solution, but it will work for all PlanTreeNode subclasses
     private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
         return toMatch.getClass().isAssignableFrom(node.getClass())
@@ -529,7 +561,7 @@ public class TemplateService {
         for (StudySite studySite : study.getStudySites()) {
             List<UserRole> userRoles = studySite.getUserRoles();
             for (UserRole userRole : userRoles) {
-                if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)) {
+                if (userRole.getRole().equals(SUBJECT_COORDINATOR)) {
                     return true;
                 }
             }

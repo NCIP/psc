@@ -68,6 +68,10 @@
           id="plannedActivitiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.PlannedActivitiesResource"/>
 
+    <bean name="/studies/{study-identifier}/template/{amendment-identifier}/epochs/{epoch-name}/study-segments/{study-segment-name}/periods/{period-identifier}/planned-activities/{planned-activity-identifier}"
+          id="plannedActivityResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.PlannedActivityResource"/>
+
     <bean name="/studies/{study-identifier}/template/amendments/{amendment-identifier}"
           id="amendedResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendmentResource">
@@ -163,9 +167,8 @@
 
     <bean id="resourceFreemarkerConfiguration"
           class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
-        <property name="templateLoaderPath">
-            <value>classpath:edu/northwestern/bioinformatics/studycalendar</value>
-        </property>
+        <property name="templateLoaderPath"
+                  value="classpath:edu/northwestern/bioinformatics/studycalendar"/>
         <property name="freemarkerSettings">
             <props>
                 <prop key="number_format">0</prop>

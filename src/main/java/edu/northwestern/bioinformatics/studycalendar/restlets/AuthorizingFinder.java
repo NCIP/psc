@@ -40,6 +40,7 @@ public class AuthorizingFinder extends SpringBeanFinder {
     }
 
     protected boolean authorize(Handler handler, Request request) {
+        log.debug("Guarding {}", handler.getClass().getSimpleName());
         if (handler instanceof AuthorizedResource) {
             Authentication token = (Authentication) request.getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
             if (token == null) {

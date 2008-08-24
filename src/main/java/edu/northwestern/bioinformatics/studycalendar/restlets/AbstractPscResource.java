@@ -107,7 +107,11 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
      * @param reason
      */
     protected void setClientErrorReason(String reason, String... params) {
-        clientErrorReason = String.format(reason, (Object[]) params);
-        log.debug("client error: {}", clientErrorReason);
+        if (reason != null) {
+            clientErrorReason = String.format(reason, (Object[]) params);
+            log.debug("client error: {}", clientErrorReason);
+        } else {
+            clientErrorReason = null;
+        }
     }
 }

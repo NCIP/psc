@@ -42,7 +42,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         super.setUp();
 
         studyDao = registerMockFor(StudyDao.class);
-        deltaService = deltaService = registerMockFor(DeltaService.class);
+        deltaService = registerMockFor(DeltaService.class);
         scheduledActivityDao=registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerMockFor(ActivityDao.class);
         notificationService=registerMockFor(NotificationService.class);

@@ -1,9 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.hibernate.Hibernate;
@@ -22,8 +39,6 @@ public class StudyService {
     private DeltaService deltaService;
     private TemplateService templateService;
     private PlannedCalendarDao plannedCalendarDao;
-    private AmendmentDao amendmentDao;
-    private EpochDao epochDao;
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
@@ -99,7 +114,8 @@ public class StudyService {
         }
     }
 
-    public Study saveStudyFor(final PlanTreeNode<?> node) {
+    public Study saveStudyFor(PlanTreeNode<?> node) {
+        node = templateService.findCurrentNode(node);
         Study study = templateService.findStudy(node);
         save(study);
         return study;
@@ -177,7 +193,7 @@ public class StudyService {
         save(example);
     }
 
-    // //// CONFIGURATION
+    ////// CONFIGURATION
 
     @Required
     public void setActivityDao(final ActivityDao activityDao) {
@@ -207,16 +223,6 @@ public class StudyService {
     @Required
     public void setPlannedCalendarDao(final PlannedCalendarDao plannedCalendarDao) {
         this.plannedCalendarDao = plannedCalendarDao;
-    }
-
-    @Required
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
-    }
-
-    @Required
-    public void setEpochDao(EpochDao epochDao) {
-        this.epochDao = epochDao;
     }
 
     @Required

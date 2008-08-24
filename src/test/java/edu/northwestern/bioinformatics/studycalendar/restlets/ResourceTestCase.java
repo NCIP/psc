@@ -47,13 +47,19 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     }
 
     protected void doInit() {
+        replayMocks();
+        doInitOnly();
+        verifyMocks();
+    }
+
+    private void doInitOnly() {
         getResource().init(null, request, response);
     }
 
     protected void doGet() {
         replayMocks();
         request.setMethod(Method.GET);
-        doInit();
+        doInitOnly();
         getResource().handleGet();
         verifyMocks();
     }
@@ -61,7 +67,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected void doPut() {
         replayMocks();
         request.setMethod(Method.PUT);
-        doInit();
+        doInitOnly();
         getResource().handlePut();
         verifyMocks();
     }
@@ -69,7 +75,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected void doPost() {
         replayMocks();
         request.setMethod(Method.POST);
-        doInit();
+        doInitOnly();
         getResource().handlePost();
         verifyMocks();
     }
@@ -77,7 +83,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected void doDelete() {
         replayMocks();
         request.setMethod(Method.DELETE);
-        doInit();
+        doInitOnly();
         getResource().handleDelete();
         verifyMocks();
     }
@@ -90,7 +96,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
             allowedMethods[i] = allowedMethods[i].toUpperCase();
             disallowedMethods.remove(allowedMethods[i]);
         }
-        doInit();
+        doInitOnly();
         for (String method : allowedMethods) {
             assertTrue(method + " should be allowed", isMethodAllowed(method));
         }

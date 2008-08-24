@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -35,7 +34,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     private PopulationDao populationDao;
     private TemplateService templateService;
     private StudyService studyService;
-    private PeriodDao periodDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -78,14 +76,13 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         PlannedActivityForm form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao);
         PlannedActivity newPlannedActivity = form.createDescribedPlannedActivity();
 
-        Period realPeriod = periodDao.getByGridId(getRequestedObject());
         try {
-            amendmentService.updateDevelopmentAmendment(realPeriod, Add.create(newPlannedActivity));
+            amendmentService.updateDevelopmentAmendment(getRequestedObject(), Add.create(newPlannedActivity));
         } catch (StudyCalendarUserException e) {
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage(), e);
         }
 
-        studyService.saveStudyFor(realPeriod);
+        studyService.saveStudyFor(getRequestedObject());
         getResponse().setStatus(Status.SUCCESS_CREATED);
         getResponse().setLocationRef(
             getRequest().getResourceRef().addSegment(newPlannedActivity.getGridId()));
@@ -125,10 +122,5 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
-    }
-
-    @Required
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
     }
 }

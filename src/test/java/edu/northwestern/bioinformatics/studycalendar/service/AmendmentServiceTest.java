@@ -81,15 +81,17 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         portlandSS = setId(4, createStudySite(study, portland));
         portlandSS.approveAmendment(a0, DateTools.createDate(2004, JANUARY, 4));
 
+        TestingTemplateService templateService = new TestingTemplateService();
+        templateService.setDaoFinder(daoFinder);
+        
         service = new AmendmentService();
         service.setStudyService(studyService);
         service.setDeltaService(Fixtures.getTestingDeltaService());
-        service.setTemplateService(new TestingTemplateService());
+        service.setTemplateService(templateService);
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
         service.setPopulationService(populationService);
         service.setNotificationService(notificationService);
-        service.setDaoFinder(daoFinder);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
