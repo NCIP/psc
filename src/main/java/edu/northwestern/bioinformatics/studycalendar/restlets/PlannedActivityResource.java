@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -22,6 +23,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,7 +80,15 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         } else {
             createNewPlannedActivityFrom(form);
         }
-        getResponse().setEntity(entity);
+        String responseEntity;
+        MediaType type = MediaType.APPLICATION_WWW_FORM;
+        try {
+            responseEntity = form.encode();
+        } catch (IOException ie) {
+            responseEntity = "Encoding data for return failed.  However, the request was successfully stored.";
+            type = MediaType.TEXT_PLAIN;
+        }
+        getResponse().setEntity(responseEntity, type);
     }
 
     private void updatePlannedActivityFrom(PlannedActivityForm form) throws ResourceException {
