@@ -25,11 +25,11 @@ Object.extend(SC.MP, {
 
   createPlannedActivityForm: function(row, col) {
     var activity = SC.MP.findActivity(row)
-    var day = SC.MP.findDay(col)
     var notes = SC.MP.findNotes(row)
 
     return Object.extend({
-      day: day,
+      day: SC.MP.findDay(col),
+      population: SC.MP.findPopulation(row, col),
       "activity-code": activity.code,
       "activity-source": activity.source
     }, notes)
@@ -55,5 +55,14 @@ Object.extend(SC.MP, {
       notes[kind] = content.select("." + kind).first().innerHTML.strip()
       return notes
     })
+  },
+
+  findPopulation: function(row, col) {
+    var marker = SC.MP.getCell(row, col).select(".marker").first()
+    if (!marker) return;
+    var popClass = marker.classNames().find(function(name) { return name.indexOf("population-") == 0 })
+    if (popClass) {
+      return popClass.substring(11);
+    }
   }
 })

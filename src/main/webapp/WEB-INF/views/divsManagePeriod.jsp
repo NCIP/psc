@@ -73,8 +73,8 @@
                         </div>
                     </div>
                 </td>
-                <c:forEach items="${populations}" var="pop">
-                    <td>
+                <c:forEach items="${study.populations}" var="pop">
+                    <td title="${pop.name}">
                         <div class='population' id='population-${pop.abbreviation}'>
                             <h2>${pop.name}</h2>
                             <div class='marker population-${pop.abbreviation}'>
@@ -195,7 +195,7 @@
                                             &nbsp;
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="marker" resource-href="${collectionResource}/${pa.gridId}">
+                                            <div class="marker <c:if test="${not empty pa.population}">population-${pa.population.abbreviation}</c:if>" resource-href="${collectionResource}/${pa.gridId}">
                                                 ${empty pa.population ? '&times;' : pa.population.abbreviation}
                                             </div>
                                         </c:otherwise>
