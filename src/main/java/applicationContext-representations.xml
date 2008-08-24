@@ -10,9 +10,6 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
     >
 
-    <bean id="activitySourceXmlReader" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
-
     <!-- Xml Serializers -->
     <bean id="studyXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
