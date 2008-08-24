@@ -122,7 +122,6 @@ WEB = [
   "opensymphony:sitemesh:jar:2.2.1",
   "poi:poi-2.5.1-final:jar:20040804",
   "org.freemarker:freemarker:jar:2.3.10",
-  eponym("jasperreports", "1.2.7"),
   "taglibs:standard:jar:1.1.2",
   eponym("jstl", "1.1.2"),
   "net.fortuna:ical4j:jar:1.0-beta4"

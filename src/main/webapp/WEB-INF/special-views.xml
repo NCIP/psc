@@ -2,18 +2,6 @@
 
 <beans>
 
-	<!-- Intermediate views for JasperReports -->
-    <bean id="xlsReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
-		<property name="url">
-			<value>/WEB-INF/reports/xlsReport.jrxml</value>
-        </property>
-    </bean>
-    <bean id="pdfReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
-		<property name="url">
-			<value>/WEB-INF/reports/pdfReport.jrxml</value>
-        </property>
-    </bean>
-    
     <!-- Redirect views -->
     <bean id="redirectToRoot" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
