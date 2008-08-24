@@ -1,28 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Jul 28, 2008
- * Time: 2:03:31 PM
- * To change this template use File | Settings | File Templates.
+ * @author Nataliya Shurupova
+ * @author Rhett Sutphin
  */
 public class ActivityService {
     private ActivityDao activityDao;
-    private SourceDao sourceDao;
     private PlannedActivityDao plannedActivityDao;
-
 
     /**
      * Deletes the activity, if it has no reference by planned activity.
@@ -44,11 +38,6 @@ public class ActivityService {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
-    }
-
-    @Required
-    public void setSourceDao(SourceDao sourceDao) {
-        this.sourceDao = sourceDao;
     }
 
     @Required
