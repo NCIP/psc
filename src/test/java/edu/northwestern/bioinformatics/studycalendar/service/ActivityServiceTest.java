@@ -49,12 +49,12 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
     }
 
     private void expectActivityUsedByPlannedCalendar(Activity expectedActivity) {
-        expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).
+        expect(plannedActivityDao.getPlannedActivitiesForActivity(expectedActivity.getId())).
             andReturn(Arrays.asList(new PlannedActivity()));
     }
 
     private void expectActivityNotUsedByPlannedCalendar(Activity activity) {
-        expect(plannedActivityDao.getPlannedActivitiesForAcivity(activity.getId())).andReturn(null);
+        expect(plannedActivityDao.getPlannedActivitiesForActivity(activity.getId())).andReturn(null);
     }
 
 }

@@ -72,7 +72,7 @@ public class SourceService {
                 existingActivity.updateActivity(activity);
             } else {
                 //remove this activity only if its not used any where
-                List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForAcivity(existingActivity.getId());
+                List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForActivity(existingActivity.getId());
                 if (plannedActivities == null || plannedActivities.size() == 0) {
                     activitiesToRemove.add(existingActivity);
 

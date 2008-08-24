@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
@@ -15,14 +14,10 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +63,7 @@ public class ImportActivitiesController extends PscSimpleFormController {
 
             Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
             for (Activity a : activities) {
-                if (plannedActivityDao.getPlannedActivitiesForAcivity(a.getId()).size()>0) {
+                if (plannedActivityDao.getPlannedActivitiesForActivity(a.getId()).size()>0) {
                     enableDelete.put(a.getId(), false);
                 } else {
                     enableDelete.put(a.getId(), true);

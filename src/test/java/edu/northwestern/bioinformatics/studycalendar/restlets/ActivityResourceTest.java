@@ -122,9 +122,9 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         if (isExcepted) {
             List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();
             plannedActivities.add(new PlannedActivity());
-            expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(plannedActivities);
+            expect(plannedActivityDao.getPlannedActivitiesForActivity(expectedActivity.getId())).andReturn(plannedActivities);
         } else {
-            expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(null);
+            expect(plannedActivityDao.getPlannedActivitiesForActivity(expectedActivity.getId())).andReturn(null);
 
         }
     }

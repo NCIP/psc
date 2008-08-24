@@ -56,7 +56,7 @@ public class ActivityController extends PscAbstractController {
         }
         Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
         for (Activity a : activities) {
-            if (plannedActivityDao.getPlannedActivitiesForAcivity(a.getId()).size()>0) {
+            if (plannedActivityDao.getPlannedActivitiesForActivity(a.getId()).size()>0) {
                 enableDelete.put(a.getId(), false);
             } else {
                 enableDelete.put(a.getId(), true);

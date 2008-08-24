@@ -26,7 +26,7 @@ public class ActivityService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public boolean deleteActivity(Activity activity) {
         Integer id = activity.getId();
-        List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForAcivity(id);
+        List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForActivity(id);
         if (plannedActivities == null || plannedActivities.size() == 0) {
             activityDao.delete(activity);
             return true;

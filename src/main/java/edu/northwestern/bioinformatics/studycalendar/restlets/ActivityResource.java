@@ -65,7 +65,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
 
     @Override
     public void verifyRemovable(final Activity activity) throws ResourceException {
-        List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForAcivity(activity.getId());
+        List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForActivity(activity.getId());
         if (plannedActivities != null && plannedActivities.size() > 0) {
 
             String message = "Can not delete the activity" + UriTemplateParameters.ACTIVITY_CODE.extractFrom(getRequest()) +

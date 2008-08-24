@@ -26,7 +26,7 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
     }
 
     public void testGetPlannedActivitiesForAcivity() throws Exception {
-        List<PlannedActivity> plannedActivities = getDao().getPlannedActivitiesForAcivity(-200);
+        List<PlannedActivity> plannedActivities = getDao().getPlannedActivitiesForActivity(-200);
         assertNotNull(plannedActivities);
         assertTrue(plannedActivities.size() > 0);
 

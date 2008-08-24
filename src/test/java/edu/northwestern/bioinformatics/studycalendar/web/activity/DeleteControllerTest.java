@@ -61,7 +61,7 @@ public class DeleteControllerTest extends ControllerTestCase {
         activityList.add(a1);
         expect(activityDao.getBySourceId(source.getId())).andReturn(activityList).anyTimes();
         List<PlannedActivity> plannedActivityList = new ArrayList<PlannedActivity>();
-        expect(plannedActivityDao.getPlannedActivitiesForAcivity(a1.getId())).andReturn(plannedActivityList).anyTimes();
+        expect(plannedActivityDao.getPlannedActivitiesForActivity(a1.getId())).andReturn(plannedActivityList).anyTimes();
 
         replayMocks();
         actualModel = controller.handleRequestInternal(request, response).getModel();
@@ -84,7 +84,7 @@ public class DeleteControllerTest extends ControllerTestCase {
         activityList.add(a1);
         expect(activityDao.getBySourceId(source.getId())).andReturn(activityList).anyTimes();
         List<PlannedActivity> plannedActivityList = new ArrayList<PlannedActivity>();
-        expect(plannedActivityDao.getPlannedActivitiesForAcivity(a1.getId())).andReturn(plannedActivityList).anyTimes();
+        expect(plannedActivityDao.getPlannedActivitiesForActivity(a1.getId())).andReturn(plannedActivityList).anyTimes();
 
         replayMocks();
         actualModel = controller.handleRequestInternal(request, response).getModel();
