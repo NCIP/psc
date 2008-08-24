@@ -98,7 +98,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         res.setAmendmentService(amendmentService);
         res.setActivityDao(activityDao);
         res.setPopulationDao(populationDao);
-        res.setPeriodDao(periodDao);
         return res;
     }
 
