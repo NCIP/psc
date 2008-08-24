@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -31,6 +32,7 @@ public class MutatorFactory implements ApplicationContextAware {
     private DaoFinder daoFinder;
     private ScheduledActivityDao scheduledActivityDao;
     private ApplicationContext applicationContext;
+    private ActivityDao activityDao;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -93,6 +95,8 @@ public class MutatorFactory implements ApplicationContextAware {
                 return new ChangePlannedActivityDayMutator(change, scheduledActivityDao, getScheduleService());
             } else if ("details".equals(change.getPropertyName())) {
                 return new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
+            } else if ("activity".equals(change.getPropertyName())) {
+                return new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
             }
             // fall through
         }
@@ -140,5 +144,10 @@ public class MutatorFactory implements ApplicationContextAware {
     @Required
     public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
+    }
+
+    @Required
+    public void setActivityDao(ActivityDao activityDao) {
+        this.activityDao = activityDao;
     }
 }

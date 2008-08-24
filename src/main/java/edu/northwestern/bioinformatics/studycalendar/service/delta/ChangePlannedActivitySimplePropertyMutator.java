@@ -17,10 +17,11 @@ public class ChangePlannedActivitySimplePropertyMutator extends AbstractChangePl
     @Override
     public void apply(ScheduledCalendar calendar) {
         for (ScheduledActivity event : findEventsToMutate(calendar)) {
-            if (event.getCurrentState().getMode().isOutstanding()) {
-                bind(event, change.getNewValue());
-            }
+            bind(event, getAssignableNewValue());
         }
     }
 
+    protected Object getAssignableNewValue() {
+        return change.getNewValue();
+    }
 }

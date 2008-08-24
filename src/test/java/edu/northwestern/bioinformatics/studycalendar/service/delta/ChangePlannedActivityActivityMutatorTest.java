@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -9,7 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.expect;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,12 +19,15 @@ import java.util.Calendar;
 /**
  * @author Rhett Sutphin
  */
-public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalendarTestCase {
-    private ChangePlannedActivitySimplePropertyMutator mutator;
+public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestCase {
+    private ChangePlannedActivityActivityMutator mutator;
     private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
 
     private ScheduledActivityDao scheduledActivityDao;
+    private ActivityDao activityDao;
+    private Activity sc;
+    private Activity scprime;
 
     @Override
     protected void setUp() throws Exception {
@@ -30,36 +35,41 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
         plannedActivity = Fixtures.createPlannedActivity("Elph", 4);
         scheduledCalendar = new ScheduledCalendar();
 
-        // Needed for side effects
-        PropertyChange change = PropertyChange.create("details", "D", "Dprime");
+        // For side effects
+        PropertyChange change = PropertyChange.create("activity", "S|C", "S|Cprime");
         Delta.createDeltaFor(plannedActivity, change);
 
+        sc = Fixtures.createActivity("C");
+        scprime = Fixtures.createActivity("Cprime");
+
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        activityDao = registerDaoMockFor(ActivityDao.class);
 
-        mutator = new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
+        mutator = new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
     }
 
-    public void testApplyDetails() throws Exception {
+    public void testApplyActivity() throws Exception {
         ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
-        expectedSE.setDetails("D");
-        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        expectedSE.setActivity(sc);
+        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
+        expect(activityDao.getByUniqueKey("S|Cprime")).andReturn(scprime);
 
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
-        assertEquals("Dprime", expectedSE.getDetails());
+        assertEquals(scprime, expectedSE.getActivity());
     }
 
-    public void testApplyToOccurredDetails() throws Exception {
+    public void testApplyToOccurredActivity() throws Exception {
         ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, new Occurred());
-        expectedSE.setDetails("D");
-        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        expectedSE.setActivity(sc);
+        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
-        assertEquals("D", expectedSE.getDetails());
+        assertEquals(sc, expectedSE.getActivity());
     }
 }

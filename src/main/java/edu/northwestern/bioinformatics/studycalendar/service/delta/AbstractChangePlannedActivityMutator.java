@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -26,7 +28,13 @@ abstract class AbstractChangePlannedActivityMutator extends SimplePropertyChange
     public abstract void apply(ScheduledCalendar calendar);
 
     public Collection<ScheduledActivity> findEventsToMutate(ScheduledCalendar calendar) {
-        return scheduledActivityDao.getEventsFromPlannedActivity(
-            (PlannedActivity) (PlanTreeNode) change.getDelta().getNode(), calendar);
+        Collection<ScheduledActivity> scheduledActivities
+            = new ArrayList<ScheduledActivity>(scheduledActivityDao.getEventsFromPlannedActivity(
+                (PlannedActivity) (PlanTreeNode) change.getDelta().getNode(), calendar));
+        for (Iterator<ScheduledActivity> it = scheduledActivities.iterator(); it.hasNext();) {
+            ScheduledActivity sa = it.next();
+            if (!sa.getCurrentState().getMode().isOutstanding()) it.remove();
+        }
+        return scheduledActivities;
     }
 }

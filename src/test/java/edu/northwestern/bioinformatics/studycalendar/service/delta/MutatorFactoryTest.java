@@ -133,6 +133,20 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     }
     */
 
+    public void testCreatePlannedActivityActivityMutator() throws Exception {
+        Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("activity", "foom|etc", "foom|etal"));
+        assertNotNull(actual);
+        assertEquals(ChangePlannedActivityActivityMutator.class, actual.getClass());
+    }
+
+    /* TODO
+    public void testCreatePlannedActivityPopulationMutator() throws Exception {
+        Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("population", "F", null));
+        assertNotNull(actual);
+        assertEquals(ChangePlannedActivityPopulationMutator.class, actual.getClass());
+    }
+    */
+
     public void testCreatePlannedActivityDayMutator() throws Exception {
         Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("day", "4", "18"));
         assertNotNull(actual);

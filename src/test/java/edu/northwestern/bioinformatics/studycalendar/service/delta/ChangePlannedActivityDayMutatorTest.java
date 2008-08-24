@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -54,6 +55,7 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
 
     private ScheduledActivity createScheduledActivity() {
         ScheduledActivity se = new ScheduledActivity();
+        se.changeState(new Scheduled());
         se.setPlannedActivity(plannedActivity);
         return se;
     }

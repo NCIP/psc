@@ -28,7 +28,7 @@ public class SimplePropertyChangeMutator implements Mutator {
         bind(target, change.getOldValue());
     }
 
-    protected void bind(Object source, String targetValue) {
+    protected void bind(Object source, Object targetValue) {
         DataBinder binder = new DataBinder(source);
         binder.bind(new MutablePropertyValues(
             Collections.singletonMap(change.getPropertyName(), targetValue)));

@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
+import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 
-import javax.persistence.Entity;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * @author Rhett Sutphin
@@ -22,9 +24,19 @@ public class PropertyChange extends Change {
     public static PropertyChange create(String prop, Object oldValue, Object newValue) {
         PropertyChange change = new PropertyChange();
         change.setPropertyName(prop);
-        change.setOldValue(oldValue == null ? null : oldValue.toString());
-        change.setNewValue(newValue == null ? null : newValue.toString());
+        change.setOldValue(serializeValue(oldValue));
+        change.setNewValue(serializeValue(newValue));
         return change;
+    }
+
+    private static String serializeValue(Object value) {
+        if (value instanceof UniquelyKeyed) {
+            return ((UniquelyKeyed) value).getUniqueKey();
+        } else if (value instanceof NaturallyKeyed) {
+            return ((NaturallyKeyed) value).getNaturalKey();
+        } else {
+            return value == null ? null : value.toString();
+        }
     }
 
     ////// LOGIC

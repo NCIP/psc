@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.assertPropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 /**
  * @author Rhett Sutphin
@@ -90,5 +93,22 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         PropertyChange actual = PropertyChange.create("b", 6, 7);
         assertEquals("6", actual.getOldValue());
         assertEquals("7", actual.getNewValue());
+    }
+
+    public void testCreateUsesNaturalKeyIfPresent() throws Exception {
+        Object newValue = new NaturallyKeyed() {
+            public String getNaturalKey() {
+                return "natty";
+            }
+        };
+        assertEquals("natty", PropertyChange.create("dc", null, newValue).getNewValue());
+    }
+    
+    public void testCreatePrefersUniqueKeyToNaturalKey() throws Exception {
+        Object newValue = Fixtures.createActivity("codec");
+        assertTrue("Test assumption failure", newValue instanceof UniquelyKeyed);
+        assertTrue("Test assumption failure", newValue instanceof NaturallyKeyed);
+        assertEquals("Fixtures Source|codec",
+            PropertyChange.create("dc", null, newValue).getNewValue());
     }
 }
