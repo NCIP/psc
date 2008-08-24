@@ -1,26 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-
-import org.easymock.classextension.EasyMock;
-import org.easymock.IArgumentMatcher;
-import org.springframework.context.ApplicationContext;
-import org.apache.commons.beanutils.PropertyUtils;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
+import org.springframework.context.ApplicationContext;
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -29,6 +29,10 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     private static ApplicationContext applicationContext = null;
     private static Throwable acLoadingFailure = null;
     protected Set<Object> mocks = new HashSet<Object>();
+
+    static {
+        SLF4JBridgeHandler.install();
+    }
 
     public static ApplicationContext getDeployedApplicationContext() {
         synchronized (StudyCalendarTestCase.class) {

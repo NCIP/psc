@@ -35,8 +35,8 @@ XML = [
 
 LOGBACK = group(%w{log4j-bridge logback-core logback-classic},
   :under => "ch.qos.logback", :version => "0.9.7")
-SLF4J = group('slf4j-api', 'jcl104-over-slf4j',
-  :under => "org.slf4j", :version => "1.4.2")
+SLF4J = group('slf4j-api', 'jcl104-over-slf4j', 'jul-to-slf4j',
+  :under => "org.slf4j", :version => "1.5.2")
 
 JAKARTA_COMMONS = [
   eponym("commons-beanutils", "1.7.0"),

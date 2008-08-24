@@ -27,6 +27,10 @@
     </listener>
 
     <listener>
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.JulIntoSlf4jConfigurator</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
     </listener>
 
@@ -207,7 +211,7 @@
         <servlet-class>com.noelios.restlet.ext.spring.RestletFrameworkServlet</servlet-class>
         <init-param>
             <param-name>targetRestletBeanName</param-name>
-            <param-value>guard</param-value>
+            <param-value>apiApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

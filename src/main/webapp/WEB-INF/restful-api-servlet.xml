@@ -4,8 +4,11 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
         ">
 
-    <!-- TODO: reenable after xml serializers are ready -->
-    <!--<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>-->
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <bean name="apiApplication" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscApplication">
+        <property name="root" ref="guard"/>
+    </bean>
 
     <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
         <property name="except" value="docs.*"/>
