@@ -14,6 +14,7 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
      *
      * @return      a list of all the available activity sources
      */
+    @SuppressWarnings({ "unchecked" })
     public List<Source> getAll()  {
         return getHibernateTemplate().find("from Source order by name");
     }
@@ -24,6 +25,7 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
      * @param  name the name of the activity source to search for
      * @return      the source that was found for the given activity source name
      */
+    @SuppressWarnings({ "unchecked" })
     public Source getByName(String name) {
         List<Source> sources = getHibernateTemplate().find("from Source where name = ?", name);
         if (!sources.isEmpty()) {
