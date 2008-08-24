@@ -1,8 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +79,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
         return (List<Activity>) getHibernateTemplate().find("from Activity where source_id = ?", sourceId);
     }
 
+    public List<Activity> getActivitiesBySearchText(String searchText) {
+        return getActivitiesBySearchText(searchText, null, null);
+    }
+
     /**
     * Finds the activity doing a LIKE search with some search text for activity name or activity code.
     *
@@ -78,10 +90,21 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     * @return      a list of activities found based on the search text
     */
     @SuppressWarnings({ "unchecked" })
-    public List<Activity> getActivitiesBySearchText(String searchText) {
-        String search = "%" + searchText.toLowerCase() +"%";
-        return (List<Activity>) getHibernateTemplate().find(
-            "from Activity where lower(name || code) LIKE ?", search);
+    public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source) {
+        return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
+                Criteria criteria = session.createCriteria(Activity.class).
+                    add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
+                if (type != null) {
+                    criteria.add(Restrictions.eq("type", type));
+                }
+                if (source != null) {
+                    criteria.add(Restrictions.eq("source", source));
+                }
+                return criteria.list();
+            }
+        });
     }
 
     /**

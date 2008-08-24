@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
 
@@ -11,6 +12,12 @@ import java.util.List;
  */
 public class ActivityDaoTest extends DaoTestCase {
     private ActivityDao dao = (ActivityDao) getApplicationContext().getBean("activityDao");
+    private Source icd9;
+
+    public void setUp() throws Exception {
+        super.setUp();
+        icd9 = ((SourceDao) getApplicationContext().getBean("sourceDao")).getById(-200);
+    }
 
     public void testGetById() throws Exception {
         Activity activity = dao.getById(-100);
@@ -63,7 +70,29 @@ public class ActivityDaoTest extends DaoTestCase {
 
     public void testGetActivitiesBySearchText() throws Exception {
         List<Activity> actual = dao.getActivitiesBySearchText("A");
-        assertEquals(4, actual.size());
+        assertEquals("Wrong activities: " + actual, 4, actual.size());
+    }
+
+    public void testGetActivitiesBySearchTextWithType() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText("A", ActivityType.LAB_TEST, null);
+        assertEquals("Wrong activities: " + actual, 2, actual.size());
+    }
+
+    public void testGetActivitiesBySearchTextWithSource() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText("A", null, icd9);
+        assertEquals("Wrong activities: " + actual, 3, actual.size());
+    }
+
+    public void testGetActivitiesBySearchTextLooksAtCode() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText("ADZ");
+        assertEquals("Wrong activities: " + actual, 1, actual.size());
+        assertEquals("Wrong activity", -99, (int) actual.get(0).getId());
+    }
+
+    public void testGetActivitiesBySearchTextLooksAtName() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText("Drug A");
+        assertEquals("Wrong activities: " + actual, 1, actual.size());
+        assertEquals("Wrong activity", -97, (int) actual.get(0).getId());
     }
 
     public void testGetAllSortOrder() throws Exception {
