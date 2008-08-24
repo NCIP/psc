@@ -1,18 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.*;
 
-import static java.util.Calendar.DECEMBER;
-import static java.util.Calendar.JANUARY;
+import static java.util.Calendar.*;
 import java.util.List;
 
 /**
@@ -26,6 +40,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private AmendmentDao amendmentDao;
     private StudyDao studyDao;
     private PopulationService populationService;
+    private DynamicMockDaoFinder daoFinder;
 
     private Study study;
     private Amendment a0, a1, a2, a3;
@@ -43,7 +58,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         populationService = registerMockFor(PopulationService.class);
-        notificationService=registerMockFor(NotificationService.class);
+        notificationService = registerMockFor(NotificationService.class);
+        daoFinder = new DynamicMockDaoFinder();
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -73,6 +89,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setStudyDao(studyDao);
         service.setPopulationService(populationService);
         service.setNotificationService(notificationService);
+        service.setDaoFinder(daoFinder);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -80,6 +97,16 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         subject = Fixtures.createSubject("first", "last");
         StudySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         service.setStudySubjectAssignmentDao(StudySubjectAssignmentDao);
+    }
+
+    protected void replayMocks() {
+        super.replayMocks();
+        daoFinder.replayAll();
+    }
+
+    protected void verifyMocks() {
+        daoFinder.verifyAll();
+        super.verifyMocks();
     }
 
     public void testAmend() throws Exception {
@@ -246,6 +273,24 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         mockDeltaService.updateRevision(expectedDevAmendment, epoch, expectedChange);
         replayMocks();
         service.updateDevelopmentAmendment(epoch, expectedChange);
+        verifyMocks();
+    }
+
+    public void testUpdateDevAmendmentLooksUpOriginalNodeIfNecessary() throws Exception {
+        service.setDeltaService(mockDeltaService);
+
+        Amendment expectedDevAmendment = new Amendment();
+        study.setDevelopmentAmendment(expectedDevAmendment);
+        Epoch originalEpoch = calendar.getEpochs().get(1);
+        Remove expectedChange = Remove.create(originalEpoch.getStudySegments().get(0));
+        Epoch paramEpoch = (Epoch) originalEpoch.transientClone();
+
+        EpochDao epochDao = daoFinder.expectDaoFor(Epoch.class, EpochDao.class);
+        expect(epochDao.getByGridId(paramEpoch.getGridId())).andReturn(originalEpoch);
+        mockDeltaService.updateRevision(expectedDevAmendment, originalEpoch, expectedChange);
+
+        replayMocks();
+        service.updateDevelopmentAmendment(paramEpoch, expectedChange);
         verifyMocks();
     }
 

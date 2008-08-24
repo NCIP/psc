@@ -1,14 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -31,7 +38,7 @@ public class AmendmentService {
     private PopulationService populationService;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
     private NotificationService notificationService;
-
+    private DaoFinder daoFinder;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -117,6 +124,10 @@ public class AmendmentService {
      * and merges in the given change.
      */
     public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change change) {
+        if (node.isMemoryOnly()) {
+            GridIdentifiableDao dao = (GridIdentifiableDao) daoFinder.findDao(node.getClass());
+            node = (PlanTreeNode<?>) dao.getByGridId(node.getGridId());
+        }
         Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
         if (!study.isInDevelopment()) {
             throw new StudyCalendarSystemException("The study %s is not open for editing or amending", study);
@@ -203,5 +214,9 @@ public class AmendmentService {
     @Required
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }
