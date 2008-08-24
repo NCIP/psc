@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -193,16 +192,28 @@ public class Fixtures {
     public static ScheduledActivity createScheduledActivity(
             String activityName, int year, int month, int day, ScheduledActivityState state
     ) {
-        ScheduledActivity event = createScheduledActivity(activityName, year, month, day);
-        event.changeState(state);
-        return event;
+        ScheduledActivity scheduled = createScheduledActivity(activityName, year, month, day);
+        scheduled.changeState(state);
+        return scheduled;
+    }
+
+    public static ScheduledActivity createScheduledActivity(
+            PlannedActivity planned, int year, int month, int day, ScheduledActivityState state
+    ) {
+        ScheduledActivity scheduledActivity = createScheduledActivity(planned, year, month, day);
+        scheduledActivity.changeState(state);
+        return scheduledActivity;
     }
 
     public static ScheduledActivity createScheduledActivity(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
+        return createScheduledActivity(baseEvent, year, month, day);
+    }
+
+    public static ScheduledActivity createScheduledActivity(PlannedActivity planned, int year, int month, int day) {
         ScheduledActivity event = new ScheduledActivity();
-        event.setPlannedActivity(baseEvent);
-        event.setActivity(createActivity(activityName));
+        event.setPlannedActivity(planned);
+        event.setActivity(planned.getActivity());
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
         event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
         return event;
@@ -211,12 +222,7 @@ public class Fixtures {
     public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
-        ScheduledActivity event = new ScheduledActivity();
-        event.setPlannedActivity(baseEvent);
-        event.setActivity(createActivity(activityName));
-        event.setIdealDate(DateUtils.createDate(year, month, day - 2));
-        event.changeState(new Conditional(null, DateUtils.createDate(year, month, day)));
-        return event;
+        return createScheduledActivity(baseEvent, year, month, day);
     }
 
     public static Activity createActivity(String name) {
