@@ -3,12 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ActivityServiceTest extends StudyCalendarTestCase {
     private ActivityService service;
@@ -57,4 +61,45 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         expect(plannedActivityDao.getPlannedActivitiesForActivity(activity.getId())).andReturn(null);
     }
 
+    public void testGetFilteredSources() throws Exception {
+        Activity a = createActivity("A");
+        Activity b = createActivity("B");
+        Source other = createSource("Another");
+        Activity c = createActivity("C", "C", other, ActivityType.LAB_TEST);
+        // an activity that's in one of the matched sources, but not in the search results
+        createActivity("Mismatch", "M", other, ActivityType.OTHER);
+        assertEquals("Test setup failure", 2, other.getActivities().size());
+        List<Activity> activities = Arrays.asList(b, c, a); // no particular order
+        expect(activityDao.getActivitiesBySearchText("search", null, null)).andReturn(activities);
+
+        replayMocks();
+        List<Source> actual = service.getFilteredSources("search", null, null);
+        verifyMocks();
+
+        assertEquals("Wrong number of sources: " + actual, 2, actual.size());
+        assertTransientSource("Problem with first source", actual.get(0), "Another", c);
+        assertTransientSource("Problem with second source", actual.get(1), Fixtures.DEFAULT_ACTIVITY_SOURCE.getName(), a, b);
+    }
+    
+    public void testGetFilteredSourcesObeysTypeAndSource() throws Exception {
+        Activity a = createActivity("A");
+
+        ActivityType expectedType = ActivityType.DISEASE_MEASURE;
+        Source expectedSource = Fixtures.DEFAULT_ACTIVITY_SOURCE;
+        expect(activityDao.getActivitiesBySearchText(
+            "search", expectedType, expectedSource)).andReturn(Arrays.asList(a));
+
+        replayMocks();
+        service.getFilteredSources("search", expectedType, expectedSource);
+        verifyMocks();
+    }
+
+    private void assertTransientSource(String message, Source actual, String expectedName, Activity... expectedActivities) {
+        assertEquals(message + " wrong name", expectedName, actual.getName());
+        assertTrue(message + " not transient", actual.isMemoryOnly());
+        for (int i = 0; i < expectedActivities.length; i++) {
+            assertEquals(message + " activity mismatch at " + i,
+                expectedActivities[i], actual.getActivities().get(i));
+        }
+    }
 }

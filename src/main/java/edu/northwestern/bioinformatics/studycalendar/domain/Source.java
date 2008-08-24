@@ -17,9 +17,12 @@ import java.util.List;
         @Parameter(name = "sequence", value = "seq_sources_id")
                 }
 )
-public class Source extends AbstractMutableDomainObject implements Named, NaturallyKeyed {
+public class Source extends AbstractMutableDomainObject
+    implements Named, NaturallyKeyed, TransientCloneable<Source>
+{
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
+    private boolean memoryOnly;
 
     ////// LOGIC
 
@@ -31,6 +34,22 @@ public class Source extends AbstractMutableDomainObject implements Named, Natura
     public void addActivity(Activity activity) {
         getActivities().add(activity);
         activity.setSource(this);
+    }
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+    }
+
+    public Source transientClone() {
+        Source clone = new Source();
+        clone.setName(getName());
+        clone.setMemoryOnly(true);
+        return clone;
     }
 
     ////// BEAN PROPERTIES
