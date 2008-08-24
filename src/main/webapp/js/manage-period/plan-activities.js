@@ -84,11 +84,26 @@ Object.extend(SC.MP, {
     console.timeEnd('drop new')
   },
   
-  clickNewPlannedActivity: function(clickEvt) {
-    var marker = document.createElement("div")
-    marker.className = "marker"
-    marker.innerHTML = "&times;"
-    SC.MP.addNewPlannedActivity(Event.pointer(clickEvt), marker)
+  clickNewPlannedActivity: function(mouseEvt) {
+    console.log(mouseEvt)
+    if (mouseEvt.type == 'mousedown') {
+      SC.MP.mouseDownAt = SC.MP.findDaysRowColumn(Event.pointer(mouseEvt)) 
+      console.log("Mouse down at %o", SC.MP.mouseDownAt)
+    } else if (mouseEvt.type == 'mouseup') {
+      if (!SC.MP.mouseDownAt) return;
+      console.time('click new')
+      var upPt = Event.pointer(mouseEvt)
+      var upRc = SC.MP.findDaysRowColumn(upPt)
+      console.log("Mouse up at %o", upRc)
+      if (upRc[0] == SC.MP.mouseDownAt[0] && upRc[1] == SC.MP.mouseDownAt[1]) {
+        var marker = document.createElement("div")
+        marker.className = "marker"
+        marker.innerHTML = "&times;"
+        SC.MP.addNewPlannedActivity(upPt, marker)
+      }
+      console.timeEnd('click new')
+      SC.MP.mouseDownAt = null;
+    }
   },
   
   addNewPlannedActivity: function(pt, marker, draggable, markerSource) {
@@ -103,9 +118,9 @@ Object.extend(SC.MP, {
         }
       } else {
         // Move the marker immediately, but mark it pending
+        if (draggable) { draggable.destroy() }
         SC.MP.replaceCellContents(cell, marker)
         SC.MP.resetMarker(marker)
-        if (draggable) { draggable.destroy() }
         cell.addClassName("pending")
 
         if (markerSource) {
@@ -168,11 +183,13 @@ Object.extend(SC.MP, {
   dropMovedPlannedActivity: function(draggable, evt) {
     SC.MP.markerStopped(draggable, evt)
     console.time('drop moved')
-    var marker = draggable.element
+    var marker = $(draggable.element)
     if (SC.MP.isDroppedWithin('days', marker)) {
       var markerSource = $(marker.parentNode)
+      console.log("Locating source cell")
       var sourceRC = SC.MP.findDaysRowColumn(markerSource)
       var sourceRow = sourceRC[0]; var sourceCol = sourceRC[1];
+      console.log("Locating target cell")
       var targetRC = SC.MP.findDaysRowColumn(marker)
       var targetRow = targetRC[0]; var targetCol = targetRC[1];
       console.log("Source: %d, %d ; Target: %d, %d", sourceRow, sourceCol, 
@@ -186,29 +203,59 @@ Object.extend(SC.MP, {
         // actually move
         var targetCell = SC.MP.getCell(targetRow, targetCol)
         if (!targetCell) {
-          console.log("Dragged out of range")
+          SC.MP.reportError("Dragged out of range")
         } else if (targetCell.select(".marker").length > 0) {
           SC.MP.reportError("That cell already has a marker in it.  Remove the one that's there first if you want to change it.")
         } else {
-          // TODO: backend update
+          // Move the marker immediately, but mark it pending
+          SC.MP.replaceCellContents(targetCell, marker)
+          SC.MP.resetMarker(marker)
+          marker.addClassName('was-moved')
+          targetCell.addClassName("pending")
 
-          var callback = function() { 
-            SC.MP.replaceCellContents(targetCell, marker)
-            SC.MP.resetMarker(marker)
-            $(marker).addClassName('was-moved')
+          var success = function(response) {
+            // prototype sends network errors to this method with status == 0
+            if (response.status == 0) {
+              cell.addClassName("error")
+              SC.MP.reportError("Unexpected connection failure")
+              return;
+            }
+
             SC.MP.reportInfo("Moved from " + sourceCol + " to " + targetCol)
           }
-          callback()
+          SC.MP.putPlannedActivity(marker.getAttribute("resource-href"), targetRow, targetCol, {
+            onSuccess: success,
+            onFailure: function(response) {
+              targetCell.addClassName("error")
+              SC.MP.reportError(response.responseText)
+            },
+            onException: function(request, exception) {
+              targetCell.addClassName("error")
+              SC.MP.reportError(exception)
+            },
+            onComplete: function() {
+              targetCell.removeClassName("pending")
+            }
+          })
         }
       }
     } else if (SC.MP.isDroppedWithin('remove-target', marker)) {
-      // TODO: backend update
       marker.addClassName('was-moved')
       draggable.destroy()
-      var callback = function() {
-        var containingRow = marker.up("tr")
-        SC.MP.resetMarker(marker)
-        SC.MP.replaceCellContents($$("#remove-target .cell").first(), marker)
+      var cell = marker.up("td")
+      var containingRow = marker.up("tr")
+      SC.MP.resetMarker(marker)
+      SC.MP.replaceCellContents($$("#remove-target .cell").first(), marker)
+      cell.addClassName("pending")
+
+      var success = function(response) {
+        // prototype sends network errors to this method with status == 0
+        if (response.status == 0) {
+          cell.addClassName("error")
+          SC.MP.reportError("Unexpected connection failure")
+          return;
+        }
+
         SC.MP.updateUsedUnused(containingRow)
         new Effect.Fade(marker, {
           afterFinish: function() {
@@ -217,7 +264,20 @@ Object.extend(SC.MP, {
           }
         })
       }
-      callback()
+      SC.MP.deletePlannedActivity(marker.getAttribute("resource-href"), {
+        onSuccess: success,
+        onFailure: function(response) {
+          cell.addClassName("error")
+          SC.MP.reportError(response.responseText)
+        },
+        onException: function(request, exception) {
+          cell.addClassName("error")
+          SC.MP.reportError(exception)
+        },
+        onComplete: function() {
+          cell.removeClassName("pending")
+        }
+      })
     }
     console.timeEnd('drop moved')
   },
@@ -295,7 +355,11 @@ Object.extend(SC.MP, {
   findDaysRowColumn: function(point) {
     var cellSize = SC.MP.cellSize()
     console.log("cell %d x %d", cellSize.width, cellSize.height)
-    
+
+    if (!point.x) {
+      point = SC.MP.viewportBounds(point).center
+    }
+
     var daysBounds = SC.MP.bounds('days')
     var daysRelativeMarkerLocation = {
       x: (point.x - daysBounds.left) + $('days').scrollLeft,
@@ -371,6 +435,7 @@ Object.extend(SC.MP, {
 $(document).observe('dom:loaded', function() {
   SC.MP.setUpNewPlannedActivityDragging()
   $$("#days .marker").each(SC.MP.configureMovingPlannedActivityMarker)
-  $('days').observe('click', SC.MP.clickNewPlannedActivity)
+  $('days').observe('mousedown', SC.MP.clickNewPlannedActivity)
+  $('days').observe('mouseup', SC.MP.clickNewPlannedActivity)
   $('days').observe('click', SC.MP.unnew)
 })

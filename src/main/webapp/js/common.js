@@ -27,6 +27,21 @@ SC.doAsyncLink = function(anchor, options, indicator) {
     }, options));
 }
 
+/** Like new Ajax.Request, except it does method tunneling
+ *  that's compatible with Restlet's TunnelFilter */
+SC.asyncRequest = function(href, options) {
+  if (options && options.method) {
+    // the tunnel filter in Restlet requires that the _method parameter be in the query string
+    if (!['get', 'post'].include(options.method.toLowerCase())) {
+      var method = options.method.toLowerCase()
+      delete options['method']
+      var delim = href.indexOf("?") < 0 ? '?' : '&'
+      href = href + delim + "method=" + method
+    }
+  }
+  return new Ajax.Request(href, options)
+}
+
 /** Provides a context-path-sensitive relative URI within PSC -- similar to the JSTL tag c:url. */
 SC.relativeUri = function(path) {
   var relpath = path;
