@@ -57,6 +57,7 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
 
         command.setScheduledCalendar(calendar);
     }
+
     public void testApplyCancel() throws Exception {
         command.setNewMode(ScheduledActivityMode.CANCELED);
         command.setNewReason("Died");
@@ -158,11 +159,11 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         doApply();
 
         ScheduledActivity prevCond0 = calendar.getScheduledStudySegments().get(0).getActivities().get(3);
-        assertEquals("New state not added to conditional event in studySegment 0", 2, prevCond0.getAllStates().size());
+        assertEquals("New state not added to conditional event in studySegment 0", 3, prevCond0.getAllStates().size());
         assertEquals("Wrong new state for previously conditional event", ScheduledActivityMode.SCHEDULED, prevCond0.getCurrentState().getMode());
 
         ScheduledActivity prevCond1 = calendar.getScheduledStudySegments().get(1).getActivities().get(3);
-        assertEquals("New state not added to conditional event in studySegment 1", 2, prevCond1.getAllStates().size());
+        assertEquals("New state not added to conditional event in studySegment 1", 3, prevCond1.getAllStates().size());
         assertEquals("Wrong new state for previously conditional event", ScheduledActivityMode.SCHEDULED, prevCond1.getCurrentState().getMode());
 
     }
