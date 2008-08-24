@@ -12,7 +12,7 @@ import java.util.Collection;
  */
 public abstract class AuthorizedResourceTestCase<R extends Resource & AuthorizedResource> extends ResourceTestCase<R> {
     protected void assertRolesAllowedForMethod(Method method, Role... roles) {
-        doInit();
+        doInitOnly();
 
         Collection<Role> expected = Arrays.asList(roles);
         Collection<Role> actual = getResource().authorizedRoles(method);

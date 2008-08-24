@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -49,7 +48,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     private StudyService studyService;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
-    private PeriodDao periodDao;
 
     private Study study, revisedStudy;
     private Period period, revisedPeriod;
@@ -66,7 +64,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         studyService = registerMockFor(StudyService.class);
         activityDao = registerMockFor(ActivityDao.class);
         populationDao = registerMockFor(PopulationDao.class);
-        periodDao = registerMockFor(PeriodDao.class);
 
         study = createBasicTemplate();
         study.setName(STUDY_NAME);
@@ -243,8 +240,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectFindActivity();
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
-        expect(periodDao.getByGridId(revisedPeriod)).andReturn(period);
-        amendmentService.updateDevelopmentAmendment(period, Add.create(expectedPlannedActivity));
+        amendmentService.updateDevelopmentAmendment(revisedPeriod, Add.create(expectedPlannedActivity));
         expectLastCall().andThrow(new StudyCalendarValidationException("I have some bad news"));
 
         doPost();
@@ -274,9 +270,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     ////// EXPECTATIONS
 
     private void expectPlannedActivityAdd(PlannedActivity expectedPlannedActivity) {
-        expect(periodDao.getByGridId(revisedPeriod)).andReturn(period);
-        amendmentService.updateDevelopmentAmendment(period, Add.create(expectedPlannedActivity));
-        expect(studyService.saveStudyFor(period)).andReturn(study);
+        amendmentService.updateDevelopmentAmendment(revisedPeriod, Add.create(expectedPlannedActivity));
+        expect(studyService.saveStudyFor(revisedPeriod)).andReturn(study);
     }
 
     private void expectSuccessfulDrillDown() {

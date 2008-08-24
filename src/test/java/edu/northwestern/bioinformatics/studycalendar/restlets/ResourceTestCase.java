@@ -52,7 +52,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         verifyMocks();
     }
 
-    private void doInitOnly() {
+    protected void doInitOnly() {
         getResource().init(null, request, response);
     }
 
