@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -32,15 +32,15 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedActivity = Fixtures.createPlannedActivity("Elph", 4);
+        plannedActivity = createPlannedActivity(sc, 4);
         scheduledCalendar = new ScheduledCalendar();
 
         // For side effects
         PropertyChange change = PropertyChange.create("activity", "S|C", "S|Cprime");
         Delta.createDeltaFor(plannedActivity, change);
 
-        sc = Fixtures.createActivity("C");
-        scprime = Fixtures.createActivity("Cprime");
+        sc = createActivity("C");
+        scprime = createActivity("Cprime");
 
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
@@ -48,8 +48,17 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
         mutator = new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
     }
 
+    public void testApplyActivityToPlannedActivity() throws Exception {
+        expect(activityDao.getByUniqueKey("S|Cprime")).andReturn(scprime);
+
+        replayMocks();
+        mutator.apply(plannedActivity);
+        verifyMocks();
+        assertEquals("Wrong activity", scprime, plannedActivity.getActivity());
+    }
+
     public void testApplyActivity() throws Exception {
-        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSE = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4);
         expectedSE.setActivity(sc);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
@@ -62,7 +71,7 @@ public class ChangePlannedActivityActivityMutatorTest extends StudyCalendarTestC
     }
 
     public void testApplyToOccurredActivity() throws Exception {
-        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, new Occurred());
+        ScheduledActivity expectedSE = createScheduledActivity(plannedActivity, 2007, Calendar.MARCH, 4, new Occurred());
         expectedSE.setActivity(sc);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));

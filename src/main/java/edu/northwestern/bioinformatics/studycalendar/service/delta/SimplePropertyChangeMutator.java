@@ -21,11 +21,15 @@ public class SimplePropertyChangeMutator implements Mutator {
     }
 
     public void apply(PlanTreeNode<?> source) {
-        bind(source, change.getNewValue());
+        bind(source, getAssignableValue(change.getNewValue()));
     }
 
     public void revert(PlanTreeNode<?> target) {
-        bind(target, change.getOldValue());
+        bind(target, getAssignableValue(change.getOldValue()));
+    }
+
+    protected Object getAssignableValue(String value) {
+        return value;
     }
 
     protected void bind(Object source, Object targetValue) {

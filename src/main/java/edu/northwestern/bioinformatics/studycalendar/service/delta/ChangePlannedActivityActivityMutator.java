@@ -17,7 +17,8 @@ public class ChangePlannedActivityActivityMutator extends ChangePlannedActivityS
         this.activityDao = activityDao;
     }
 
-    protected Object getAssignableNewValue() {
-        return activityDao.getByUniqueKey(change.getNewValue());
+    @Override
+    protected Object getAssignableValue(String value) {
+        return activityDao.getByUniqueKey(value);
     }
 }
