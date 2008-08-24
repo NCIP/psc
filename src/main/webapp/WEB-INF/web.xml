@@ -46,6 +46,10 @@
     <filter-mapping>
         <filter-name>setup-or-not</filter-name>
         <url-pattern>/pages/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>setup-or-not</filter-name>
         <url-pattern>/public/*</url-pattern>
     </filter-mapping>
 
