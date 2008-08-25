@@ -175,6 +175,7 @@
             <tags:errors path="user.*"/>
             <tags:errors path="emailAddress*"/>
             <tags:errors path="password*"/>
+            <tags:errors path="rePassword*"/>
             <c:set var="passwordError" value="false"/>
             <spring:bind path="command.password">
                 <c:set var="passwordError" value="${status.errors.errorCount > 0}"/>

@@ -75,7 +75,7 @@ public class CreateUserController extends PscCancellableFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         CreateUserCommand command = (CreateUserCommand) oCommand;
-        
+
         command.apply();
 
         return new ModelAndView(new RedirectView(getSuccessView()));
@@ -84,9 +84,16 @@ public class CreateUserController extends PscCancellableFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        User user = (editId != null) ? userDao.getById(editId) : new User();
-
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
+        User user;
+        Boolean isEditMode;
+        if (editId != null) {
+            user = userDao.getById(editId);
+            isEditMode = true;
+        } else {
+            user = new User();
+            isEditMode = false;
+        }
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration, isEditMode);
     }
 
     @Override

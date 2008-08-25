@@ -32,14 +32,17 @@ public class CreateUserCommand implements Validatable, Serializable {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
+    private Boolean isEdit;
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public CreateUserCommand(
             User user, SiteDao siteDao, UserService userService, UserDao userDao,
             UserRoleService userRoleService,
-            AuthenticationSystemConfiguration authenticationSystemConfiguration
+            AuthenticationSystemConfiguration authenticationSystemConfiguration,
+            Boolean isEdit
     ) {
         this.user = user == null ? new User() : user;
+        this.isEdit = isEdit;
         this.siteDao = siteDao;
         this.userService = userService;
         this.userDao = userDao;
@@ -84,11 +87,13 @@ public class CreateUserCommand implements Validatable, Serializable {
                     errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
-            if (emailAddress == null || StringUtils.isEmpty(emailAddress)) {
-                errors.rejectValue("emailAddress", "error.user.email.not.specified");
-            } else if (!GenericValidator.isEmail(emailAddress)) {
-                errors.rejectValue("emailAddress", "error.user.email.invalid");
-
+            //For the case where emails are not set, this shouldn't be a stopping point to edit a particular user
+            if (!isEdit) {
+                if (emailAddress == null || StringUtils.isEmpty(emailAddress)) {
+                    errors.rejectValue("emailAddress", "error.user.email.not.specified");
+                } else if (!GenericValidator.isEmail(emailAddress)) {
+                    errors.rejectValue("emailAddress", "error.user.email.invalid");
+                }
             }
 
             if (updatePassword() && authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
