@@ -490,6 +490,14 @@
                 <html:p>All of the activity sources in the system.</html:p>
             </doc>
             <method name="GET">
+                <request>
+                    <param style="query" name="q" type="xsd:string">
+                        <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
+                    </param>
+                    <param style="query" name="type-id" type="xsd:integer">
+                        <doc>If specified, only activities whose type-id matches the given value will be returned.</doc>
+                    </param>
+                </request>
                 <response>
                     <representation href="#activity-source-list-xml"/>
                 </response>
@@ -502,6 +510,14 @@
                 <param style="template" name="activity-source-name"/>
                 <method name="GET">
                     <doc>Returns a list of the activities in the source.</doc>
+                    <request>
+                        <param style="query" name="q" type="xsd:string">
+                            <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
+                        </param>
+                        <param style="query" name="type-id" type="xsd:integer">
+                            <doc>If specified, only activities whose type-id matches the given value will be returned.</doc>
+                        </param>
+                    </request>
                     <response>
                         <representation href="#activity-source-xml"/>
                     </response>

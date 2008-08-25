@@ -56,7 +56,7 @@ public class ActivityService {
                 Source newSource = match.getSource().transientClone();
                 sources.put(newSource.getNaturalKey(), newSource);
             }
-            sources.get(key).addActivity(match);
+            sources.get(key).addActivity(match.transientClone());
         }
         for (Source source : sources.values()) {
             Collections.sort(source.getActivities());

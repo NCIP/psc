@@ -77,4 +77,12 @@ public class ActivityTest extends StudyCalendarTestCase {
         assertEquals("Pipe|y", actual.get("source"));
         assertEquals("12|0", actual.get("code"));
     }
+
+    public void testTransientClone() throws Exception {
+        a0.setDescription("something");
+        a0.setCode("S");
+        Activity clone = a0.transientClone();
+        assertNull(clone.getSource());
+        assertTrue(clone.isMemoryOnly());
+    }
 }

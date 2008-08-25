@@ -38,6 +38,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
     }
 
     @Override
+    @SuppressWarnings({ "unchecked" })
     protected ActivityResource createResource() {
         ActivityResource resource = new ActivityResource();
         resource.setActivityDao(activityDao);
@@ -67,7 +68,6 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
 
         assertEquals("Result not 'not found'", 404, response.getStatus().getCode());
     }
-
 
     public void testPutExistingActivity() throws Exception {
         Activity newActivity = new Activity();
@@ -112,7 +112,6 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
-
 
     private void expectFoundActivity(Activity expectedActivity) {
         expect(activityDao.getByCodeAndSourceName(ACTIVITY_NAME, SOURCE_NAME)).andReturn(expectedActivity);

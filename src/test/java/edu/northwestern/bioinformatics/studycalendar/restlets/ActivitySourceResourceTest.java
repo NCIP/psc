@@ -3,9 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
+
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -19,12 +23,14 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     private Source source;
 
     private SourceService sourceService;
+    private ActivityService activityService;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         sourceDao = registerDaoMockFor(SourceDao.class);
         sourceService = registerMockFor(SourceService.class);
+        activityService = registerMockFor(ActivityService.class);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
 
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
@@ -36,6 +42,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         resource.setSourceDao(sourceDao);
         resource.setXmlSerializer(xmlSerializer);
         resource.setSourceService(sourceService);
+        resource.setActivityService(activityService);
         return resource;
     }
 
@@ -61,6 +68,44 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         assertEquals("Result not 'not found'", 404, response.getStatus().getCode());
     }
 
+    public void testGetFiltersByQIfProvided() throws Exception {
+        QueryParameters.Q.putIn(request, "etc");
+        Source expectedSource = source.transientClone();
+
+        expectFoundSource(source);
+        expect(activityService.getFilteredSources("etc", null, source)).
+            andReturn(Collections.singletonList(expectedSource));
+        expectObjectXmlized(expectedSource);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetFiltersByTypeIdIfProvided() throws Exception {
+        QueryParameters.TYPE_ID.putIn(request, "3");
+        Source expectedSource = source.transientClone();
+
+        expectFoundSource(source);
+        expect(activityService.getFilteredSources(null, ActivityType.LAB_TEST, source)).
+            andReturn(Collections.singletonList(expectedSource));
+        expectObjectXmlized(expectedSource);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetRendersEmptySourceIfFilteringComesUpWithNothing() throws Exception {
+        QueryParameters.TYPE_ID.putIn(request, "3");
+        Source expectedSource = Fixtures.createSource(source.getName());
+
+        expectFoundSource(source);
+        expect(activityService.getFilteredSources(null, ActivityType.LAB_TEST, source)).
+            andReturn(Collections.<Source>emptyList());
+        expectObjectXmlized(expectedSource);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
 
     public void testPutExistingSource() throws Exception {
         Source newSource = new Source();

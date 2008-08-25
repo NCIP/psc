@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
     }
 )
 public class Activity extends AbstractMutableDomainObject
-    implements Comparable<Activity>, Named, NaturallyKeyed, UniquelyKeyed
+    implements Comparable<Activity>, Named, NaturallyKeyed, UniquelyKeyed, Cloneable, TransientCloneable<Activity>
 {
     private static final Pattern ESCAPED_PIPE = Pattern.compile("\\\\\\|");
     private static final Pattern PIPE = Pattern.compile("\\|");
@@ -41,6 +42,8 @@ public class Activity extends AbstractMutableDomainObject
     private ActivityType type;
     private Source source;
     private String code;
+    
+    private boolean memoryOnly;
 
     ///// LOGIC
 
@@ -82,6 +85,21 @@ public class Activity extends AbstractMutableDomainObject
         values.put("source", split[0]);
         values.put("code", split[1]);
         return values;
+    }
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+    }
+
+    public Activity transientClone() {
+        Activity clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
     }
 
     ///// BEAN PROPERTIES
@@ -131,6 +149,18 @@ public class Activity extends AbstractMutableDomainObject
     }
 
     ////// OBJECT METHODS
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    public Activity clone() {
+        try {
+            Activity clone = (Activity) super.clone();
+            clone.setSource(null);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
 
     public boolean equals(Object o) {
         if (this == o) return true;

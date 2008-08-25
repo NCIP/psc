@@ -98,8 +98,10 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         assertEquals(message + " wrong name", expectedName, actual.getName());
         assertTrue(message + " not transient", actual.isMemoryOnly());
         for (int i = 0; i < expectedActivities.length; i++) {
-            assertEquals(message + " activity mismatch at " + i,
+            assertEqualsAndNotSame(message + " activity mismatch at " + i,
                 expectedActivities[i], actual.getActivities().get(i));
+            assertTrue(message + " activity at " + i + " not transient",
+                actual.getActivities().get(i).isMemoryOnly());
         }
     }
 }
