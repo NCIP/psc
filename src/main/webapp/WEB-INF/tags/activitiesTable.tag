@@ -4,15 +4,17 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
 
-<display:table name="activitiesPerSource" class="query-results" id="row" requestURI="activities" export="false" >
-    <%--<display:setProperty name="export.xml" value="true"/>--%>
-    <%--<display:setProperty name="export.xml.class" value="edu.northwestern.bioinformatics.studycalendar.web.EnhancedXmlView"/>--%>
-    <display:column property="name" title="Name" sortable="true">
+<display:table name="activitiesPerSource" class="query-results" id="row" requestURI="activities" >
+    <c:if test="${showtable}">
+        <display:setProperty name="basic.empty.showtable" value="true"/>
+    </c:if>
+
+    <display:column title="Name" sortable="true">
         <label id="Name${row.id}">${row.name}</label>
         <input id="InputName${row.id}" type="hidden" value="${row.name}"/>
     </display:column>
 
-    <display:column property="type" title="Type" sortable="true">
+    <display:column title="Type" sortable="true">
         <label id="Type${row.id}">${row.type}</label>
         <div id="DivType${row.id}" style="display:none">
             <select id="SourceTypes${row.id}">
@@ -29,17 +31,17 @@
         </div>
     </display:column>
 
-    <display:column property="code" title="Code">
+    <display:column title="Code">
         <label id="Code${row.id}">${row.code}</label>
         <input id="InputCode${row.id}" type="hidden" value="${row.code}"/>
     </display:column>
 
-    <display:column property="description" title="Description">
+    <display:column title="Description">
         <label id="Description${row.id}">${row.description}</label>
         <input id="InputDescription${row.id}" type="hidden" value="${row.description}"/>
     </display:column>
 
-    <display:column property="source.name" title="Source" media="excel csv">
+    <display:column title="Source" media="excel csv">
         <label id="Source${row.id}">${row.source.name}</label>
     </display:column>
 

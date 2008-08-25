@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,7 +36,10 @@ public class AddSourceController extends PscAbstractController {
             source.setName(sourceName);
             sourceDao.save(source);
             model.put("source", source);
-        } 
+            model.put("displayCreateNewActivity", Boolean.TRUE);
+            model.put("activityTypes", ActivityType.values());
+            model.put("showtable", Boolean.TRUE);
+        }
         return new ModelAndView("template/ajax/activityTableUpdate", model);
      }
 

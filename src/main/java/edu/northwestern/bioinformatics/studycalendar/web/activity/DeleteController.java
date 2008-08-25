@@ -60,6 +60,7 @@ public class DeleteController extends PscAbstractController {
         model.put("activitiesPerSource", activities);
         model.put("activityTypes", ActivityType.values());
         model.put("displayCreateNewActivity", Boolean.TRUE);
+        model.put("showtable", Boolean.TRUE);
         return new ModelAndView("template/ajax/activityTableUpdate", model);
     }
 

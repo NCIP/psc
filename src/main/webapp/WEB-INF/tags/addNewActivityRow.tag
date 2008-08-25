@@ -23,10 +23,6 @@
                 <input id="addActivityDescription" type="text" class="addActivityDescription" value=""/>
             </td>
             <td>
-                <label id="Source0">${source.name}</label>
-            </td>
-
-            <td>
                 <input type="submit" id="addActivity" name="addActivity" value="Create" onclick="addNewActivity()"/>
             </td>
         </tr>

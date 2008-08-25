@@ -67,6 +67,7 @@ public class ActivityController extends PscAbstractController {
         model.put("activityTypes", ActivityType.values());
         if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
             model.put("displayCreateNewActivity", Boolean.TRUE);
+            model.put("showtable", Boolean.TRUE);
         } else {
             model.put("displayCreateNewActivity", Boolean.FALSE);
         }
