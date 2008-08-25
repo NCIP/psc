@@ -85,7 +85,12 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     }
 
     public PlannedActivity getPlannedActivityForDay(int day) {
-        return plannedActivities.get(dayToColumn(day));
+        Integer col = dayToColumn(day);
+        if (col == null) {
+            return null;
+        } else {
+            return plannedActivities.get(col);
+        }
     }
 
     private Integer dayToColumn(int day) {

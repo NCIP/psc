@@ -131,6 +131,12 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         assertTrue(rowC.isUsed());
         assertSame(pa0, rowC.getPlannedActivityForDay(57));
     }
+    
+    public void testGetPlannedActivityForConcealedDayIsNull() throws Exception {
+        duration.setUnit(Duration.Unit.month);
+        PeriodActivitiesGridRow rowC = new PeriodActivitiesGridRow(a20, keyA, duration);
+        assertNull(rowC.getPlannedActivityForDay(14));
+    }
 
     ////// COMPARABLE TESTS
 
