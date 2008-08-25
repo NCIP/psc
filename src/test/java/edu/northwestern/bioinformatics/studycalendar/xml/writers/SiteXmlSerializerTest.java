@@ -70,7 +70,7 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     //// Test Helper Methods
     private Element createElement(Site aSite) {
         Element elt = new BaseElement(XsdElement.SITE.name());
-        elt.addAttribute(SITE_SITE_NM.name(), aSite.getName());
+        elt.addAttribute(SITE_SITE_NAME.name(), aSite.getName());
         elt.addAttribute(SITE_ASSIGNED_IDENTIFIER.name(), site.getAssignedIdentifier());
 
         return elt;

@@ -7,8 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_SITE_SITE_NM;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_SITE_STUDY_NM;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
@@ -24,8 +23,8 @@ public class StudySiteXmlSerializer extends AbstractStudyCalendarXmlSerializer<S
 
     public Element createElement(StudySite studySite) {
         Element elt = XsdElement.STUDY_SITE_LINK.create();
-        STUDY_SITE_STUDY_NM.addTo(elt, studySite.getStudy().getName());
-        STUDY_SITE_SITE_NM.addTo(elt, studySite.getSite().getName());
+        STUDY_SITE_STUDY_NAME.addTo(elt, studySite.getStudy().getName());
+        STUDY_SITE_SITE_NAME.addTo(elt, studySite.getSite().getName());
         return elt;
     }
 

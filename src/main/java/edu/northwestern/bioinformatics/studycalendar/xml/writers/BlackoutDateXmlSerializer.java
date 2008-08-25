@@ -46,7 +46,7 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         Element blackoutDateElement = rootElement().create();
 
         XsdAttribute.BLACKOUT_DATE_ID.addTo(blackoutDateElement, holiday.getId());
-        XsdAttribute.BLACKOUT_DATE_DESC.addTo(blackoutDateElement, holiday.getDescription());
+        XsdAttribute.BLACKOUT_DATE_DESCRIPTION.addTo(blackoutDateElement, holiday.getDescription());
         XsdAttribute.BLACKOUT_DATE_SITE_ID.addTo(blackoutDateElement, site.getId());
 
         if (holiday instanceof DayOfTheWeek) {
@@ -92,7 +92,7 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
             final String month = XsdAttribute.BLACKOUT_DATE_MONTH.from(element);
             final String year = XsdAttribute.BLACKOUT_DATE_YEAR.from(element);
             final String weekNumber = XsdAttribute.BLACKOUT_DATE_WEEK_NUMBER.from(element);
-            final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESC.from(element);
+            final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESCRIPTION.from(element);
 
             if (dayOfWeek != null && !dayOfWeek.trim().equals("")) {
                 holiday = new DayOfTheWeek();

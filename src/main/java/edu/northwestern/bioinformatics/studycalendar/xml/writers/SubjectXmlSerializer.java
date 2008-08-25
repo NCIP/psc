@@ -18,8 +18,8 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
 
     public Element createElement(Subject subject) {
         Element elt = SUBJECT.create();
-        SUBJECT_FIRST_NM.addTo(elt, subject.getFirstName());
-        SUBJECT_LAST_NM.addTo(elt, subject.getLastName());
+        SUBJECT_FIRST_NAME.addTo(elt, subject.getFirstName());
+        SUBJECT_LAST_NAME.addTo(elt, subject.getLastName());
         SUBJECT_PERSON_ID.addTo(elt, subject.getPersonId());
         SUBJECT_BIRTH_DATE.addTo(elt, subject.getDateOfBirth());
         SUBJECT_GENDER.addTo(elt, subject.getGender().getCode());
@@ -28,8 +28,8 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
 
     public Subject readElement(Element element) {
         String personId = SUBJECT_PERSON_ID.from(element);
-        String firstName = SUBJECT_FIRST_NM.from(element);
-        String lastName = SUBJECT_LAST_NM.from(element);
+        String firstName = SUBJECT_FIRST_NAME.from(element);
+        String lastName = SUBJECT_LAST_NAME.from(element);
         Date birthDate = SUBJECT_BIRTH_DATE.fromDate(element);
         String gender = SUBJECT_GENDER.from(element);
 

@@ -35,7 +35,7 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlColl
         SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(rootElement, scheduledActivity.getIdealDate());
         SCHEDULED_ACTIVITY_NOTES.addTo(rootElement, scheduledActivity.getNotes());
         SCHEDULED_ACTIVITY_DETAILS.addTo(rootElement, scheduledActivity.getDetails());
-        SCHEDULED_ACTIVITY_REPITITION_NUMBER.addTo(rootElement, scheduledActivity.getRepetitionNumber());
+        SCHEDULED_ACTIVITY_REPETITION_NUMBER.addTo(rootElement, scheduledActivity.getRepetitionNumber());
         if (scheduledActivity.getPlannedActivity() != null) {
             SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID.addTo(rootElement, scheduledActivity.getPlannedActivity().getGridId());
         }

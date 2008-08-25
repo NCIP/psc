@@ -31,14 +31,14 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
     @Override
     protected Element createElement(final Site site, final boolean inCollection) {
         Element siteElement = rootElement().create();
-        SITE_SITE_NM.addTo(siteElement, site.getName());
+        SITE_SITE_NAME.addTo(siteElement, site.getName());
         SITE_ASSIGNED_IDENTIFIER.addTo(siteElement, site.getAssignedIdentifier());
         return siteElement;
     }
 
     @Override
     public Site readElement(Element element) {
-        String siteName = element.attributeValue(SITE_SITE_NM.name());
+        String siteName = element.attributeValue(SITE_SITE_NAME.name());
         Site site = siteDao.getByName(siteName);
         if (site == null) {
             throw new StudyCalendarValidationException(SITE_NOT_FOUND_MESSAGE, siteName);

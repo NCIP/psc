@@ -117,7 +117,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong ideal date", "2008-01-15", actual.attributeValue("ideal-date"));
         assertEquals("Wrong notes", "some notes", actual.attributeValue("notes"));
         assertEquals("Wrong details", "some details", actual.attributeValue("details"));
-        assertEquals("Wrong repitition number", "3", actual.attributeValue("repitition-number"));
+        assertEquals("Wrong repetition number", "3", actual.attributeValue("repetition-number"));
         assertEquals("Wrong planned activity id", "planned-activity-grid0", actual.attributeValue("planned-activity-id"));
         assertNotNull("Scheduled activity state is null", actual.element("current-scheduled-activity-state"));
     }
