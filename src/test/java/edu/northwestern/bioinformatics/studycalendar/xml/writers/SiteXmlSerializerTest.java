@@ -5,8 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SITE_ASSIGNED_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SITE_SITE_NM;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
@@ -17,7 +16,6 @@ import static org.easymock.EasyMock.expect;
  */
 public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SiteXmlSerializer serializer;
-    private Element element;
     private Site site;
     private SiteDao siteDao;
 
@@ -31,21 +29,14 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         site = createNamedInstance("Northwestern University", Site.class);
         site.setAssignedIdentifier("assigned id");
-
-        element = createElement(site);
     }
 
     public void testCreateElement() {
-        Element actual = serializer.createElement(site);
-        assertEquals("Wrong element name", XsdElement.SITES.xmlName(), actual.getName());
-        assertEquals("Wrong number of children", 1, actual.elements().size());
-        Element actualElement = (Element) actual.elements().get(0);
-
-
+        Element actualElement = serializer.createElement(site);
+        assertEquals("Wrong element name", XsdElement.SITE.xmlName(), actualElement.getName());
         assertEquals("Wrong study name", "assigned id", actualElement.attributeValue("assigned-identifier"));
         assertEquals("Wrong site name", "Northwestern University", actualElement.attributeValue("site-name"));
     }
-
 
     public void testReadElementForExitingSite() {
 
@@ -58,7 +49,6 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Site should be the same", site, actual);
     }
-
 
     public void testReadElementForNonExistantSite() {
         Site invalidSite = createNamedInstance("Invalid Site", Site.class);

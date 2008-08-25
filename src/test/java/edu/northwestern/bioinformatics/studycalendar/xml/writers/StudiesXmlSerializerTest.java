@@ -20,6 +20,13 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new StudiesXmlSerializer();
     }
 
+    public void testCreateSingleElement() throws Exception {
+        Study sA = Fixtures.createNamedInstance("A", Study.class);
+
+        Element actual = serializer.createElement(sA);
+        assertEquals("study", actual.getName());
+    }
+    
     public void testSerializeCollection() throws Exception {
         Study sA = Fixtures.createNamedInstance("A", Study.class);
         Study sB = Fixtures.createNamedInstance("B", Study.class);

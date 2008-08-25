@@ -10,8 +10,6 @@ import org.dom4j.Element;
  * @author Rhett Sutphin
  */
 public class StudiesXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Study> {
-
-
     @Override
     public Study readElement(Element element) {
         throw new UnsupportedOperationException("This serializer is write-only");
@@ -32,17 +30,6 @@ public class StudiesXmlSerializer extends AbstractStudyCalendarXmlCollectionSeri
         Element studyElement = rootElement().create();
         STUDY_ASSIGNED_IDENTIFIER.addTo(studyElement, study.getNaturalKey());
 
-        if (inCollection) {
-            return studyElement;
-
-        } else {
-            Element root = collectionRootElement().create();
-            root.add(studyElement);
-
-            return root;
-        }
-
+        return studyElement;
     }
-
-
 }

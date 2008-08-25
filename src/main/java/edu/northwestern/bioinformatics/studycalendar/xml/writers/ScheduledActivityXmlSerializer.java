@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
@@ -25,12 +25,11 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlColl
     }
 
     @Override
-    public Element createElement(final ScheduledActivity scheduledActivity, final boolean inCollection) {
-
+    public Element createElement(ScheduledActivity scheduledActivity, boolean inCollection) {
         if (scheduledActivity == null) {
-            throw new StudyCalendarValidationException("activity can not be null");
-
+            throw new StudyCalendarSystemException("scheduled activity must not be null");
         }
+
         Element rootElement = rootElement().create();
         SCHEDULED_ACTIVITY_ID.addTo(rootElement, scheduledActivity.getGridId());
         SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(rootElement, scheduledActivity.getIdealDate());
@@ -47,17 +46,7 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlColl
             rootElement.add(previousScheduledActivityStateSerializer.createElement(state));
         }
 
-
-        if (inCollection) {
-            return rootElement;
-
-        } else {
-            Element root = collectionRootElement().create();
-            root.add(rootElement);
-            return root;
-        }
-
-
+        return rootElement;
     }
 
     @Override

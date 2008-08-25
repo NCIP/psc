@@ -1,7 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
+import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
+import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -66,16 +70,7 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
 
         }
 
-        if (inCollection) {
-            return blackoutDateElement;
-
-        } else {
-            Element root = collectionRootElement().create();
-            root.add(blackoutDateElement);
-
-            return root;
-        }
-
+        return blackoutDateElement;
     }
 
     @Override

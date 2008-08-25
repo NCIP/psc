@@ -4,8 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SITE_ASSIGNED_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SITE_SITE_NM;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
@@ -34,17 +33,7 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
         Element siteElement = rootElement().create();
         SITE_SITE_NM.addTo(siteElement, site.getName());
         SITE_ASSIGNED_IDENTIFIER.addTo(siteElement, site.getAssignedIdentifier());
-
-        if (inCollection) {
-            return siteElement;
-
-        } else {
-            Element root = collectionRootElement().create();
-            root.add(siteElement);
-
-            return root;
-        }
-
+        return siteElement;
     }
 
     @Override
@@ -54,12 +43,8 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
         if (site == null) {
             throw new StudyCalendarValidationException(SITE_NOT_FOUND_MESSAGE, siteName);
         }
-
-
         return site;
-
     }
-
 
     @Required
     public void setSiteDao(SiteDao siteDao) {

@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
+import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
@@ -10,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 import static java.text.MessageFormat.format;
+import java.util.Collections;
 
 /**
  * @author Saurabh Agrawal
@@ -60,12 +65,10 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
+    // TODO: these should be separate tests
     public void testCreateElement() {
-        Element actual = serializer.createElement(dayOfTheWeek);
-        assertEquals("Wrong element name", XsdElement.BLACKOUT_DATES.xmlName(), actual.getName());
-        assertEquals("Wrong number of children", 1, actual.elements().size());
-        Element actualElement = (Element) actual.elements().get(0);
-
+        Element actualElement = serializer.createElement(dayOfTheWeek);
+        assertEquals("Wrong element name", XsdElement.BLACKOUT_DATE.xmlName(), actualElement.getName());
 
         assertEquals("Wrong day-of-the-week", dayOfTheWeek.getDayOfTheWeek(), actualElement.attributeValue("day-of-the-week"));
         assertEquals("Wrong description", dayOfTheWeek.getDescription(), actualElement.attributeValue("description"));
@@ -78,15 +81,12 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong month ", relativeRecurringHoliday.getMonth() + "", actualElement.attributeValue("month"));
         assertEquals("Wrong week-number", relativeRecurringHoliday.getWeekNumber() + "", actualElement.attributeValue("week-number"));
 
-
         actualElement = serializer.createElement(monthDayHoliday, true);
 
         assertEquals("Wrong year", monthDayHoliday.getYear() + "", actualElement.attributeValue("year"));
         assertEquals("Wrong description", monthDayHoliday.getDescription(), actualElement.attributeValue("description"));
         assertEquals("Wrong month ", monthDayHoliday.getMonth() + "", actualElement.attributeValue("month"));
         assertEquals("Wrong day", monthDayHoliday.getDay() + "", actualElement.attributeValue("day"));
-
-
     }
 
     public void testReadElementForHoliday() {
@@ -178,7 +178,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append("</blackout-dates>");
 
 
-        String actual = serializer.createDocumentString(monthDayHoliday);
+        String actual = serializer.createDocumentString(Collections.<Holiday>singleton(monthDayHoliday));
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
@@ -200,7 +200,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append("</blackout-dates>");
 
 
-        String actual = serializer.createDocumentString(relativeRecurringHoliday);
+        String actual = serializer.createDocumentString(Collections.<Holiday>singleton(relativeRecurringHoliday));
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
@@ -221,7 +221,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append("</blackout-dates>");
 
 
-        String actual = serializer.createDocumentString(dayOfTheWeek);
+        String actual = serializer.createDocumentString(Collections.<Holiday>singleton(dayOfTheWeek));
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);

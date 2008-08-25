@@ -16,6 +16,7 @@ import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 import java.util.Calendar;
+import java.util.Collections;
 
 /**
  * @author John Dzak
@@ -60,7 +61,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         expectSerializeCurrentScheduledActivityState();
         replayMocks();
 
-        Element actual = serializer.createElement(activity, true);
+        Element actual = serializer.createElement(activity);
         verifyMocks();
 
         validateScheduledActivityElement(actual);
@@ -71,7 +72,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         expectSerializeCurrentScheduledActivityState();
         replayMocks();
 
-        Element collectionElement = serializer.createElement(activity);
+        Element collectionElement = serializer.createDocument(Collections.singleton(activity)).getRootElement();
         verifyMocks();
 
         assertEquals("Wrong element name", "scheduled-activities", collectionElement.getName());
@@ -104,10 +105,9 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         replayMocks();
 
 
-        String actual = serializer.createDocumentString(activity);
+        String actual = serializer.createDocumentString(Collections.singleton(activity));
         verifyMocks();
         assertNotNull(actual);
-        log.info("actual:" + actual.toString());
     }
 
 
@@ -120,7 +120,6 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong repitition number", "3", actual.attributeValue("repitition-number"));
         assertEquals("Wrong planned activity id", "planned-activity-grid0", actual.attributeValue("planned-activity-id"));
         assertNotNull("Scheduled activity state is null", actual.element("current-scheduled-activity-state"));
-
     }
 
     public void testReadElement() {

@@ -4,11 +4,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -29,6 +29,9 @@ public abstract class AbstractStudyCalendarXmlCollectionSerializer<R>
 
     /**
      * Implement this method instead of {@link #createElement}.
+     * @param inCollection provides a hint about whether the element will be part of a
+     *   collection or not.  No matter the value, this method must always return an
+     *   element matching {@link #rootElement}.
      */
     protected abstract Element createElement(R r, boolean inCollection);
 

@@ -2,9 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
@@ -42,14 +40,7 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
         XsdAttribute.AMENDMENT_APPROVAL_DATE.addTo(amendmentApprovalelement, amendmentApproval.getDate());
         XsdAttribute.AMENDMENT_APPROVAL_AMENDMENT.addTo(amendmentApprovalelement, amendmentApproval.getAmendment().getNaturalKey());
 
-        if (inCollection) {
-            return amendmentApprovalelement;
-        } else {
-            Element root = collectionRootElement().create();
-            root.add(amendmentApprovalelement);
-            return root;
-        }
-
+        return amendmentApprovalelement;
     }
 
     @Override
