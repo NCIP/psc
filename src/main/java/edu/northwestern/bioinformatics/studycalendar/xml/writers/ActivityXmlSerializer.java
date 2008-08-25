@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 /**
@@ -16,8 +14,6 @@ import org.dom4j.Element;
  */
 public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     private boolean embeddedInSource;
-    private ActivityDao activityDao;
-    private SourceDao sourceDao;
 
     public ActivityXmlSerializer() {
         this(false);
@@ -67,13 +63,5 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         }
 
         return activity;
-    }
-
-    public void setActivityDao(ActivityDao activityDao) {
-        this.activityDao = activityDao;
-    }
-
-    public void setSourceDao(SourceDao sourceDao) {
-        this.sourceDao = sourceDao;
     }
 }
