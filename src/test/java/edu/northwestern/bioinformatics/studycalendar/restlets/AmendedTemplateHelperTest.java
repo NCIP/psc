@@ -198,7 +198,7 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
 
         Class<StudySegment> target = StudySegment.class;
-        assertSame(amendedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2),
+        assertSame(amendedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(2),
             doDrillDown(target));
     }
 
@@ -240,7 +240,7 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         UriTemplateParameters.PERIOD_IDENTIFIER.putIn(request, "foom");
         UriTemplateParameters.PLANNED_ACTIVITY_IDENTIFIER.putIn(request, "elab");
 
-        StudySegment segment = amendedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2);
+        StudySegment segment = amendedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(2);
         Period p = createPeriod("foom", 1, 35, 1);
         PlannedActivity pa = setGridId("elab", createPlannedActivity("barm", 8));
         p.addPlannedActivity(pa);

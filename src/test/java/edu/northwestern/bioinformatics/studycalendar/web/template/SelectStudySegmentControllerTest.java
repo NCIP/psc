@@ -27,7 +27,7 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         super.setUp();
         study = Fixtures.createBasicTemplate();
         Fixtures.assignIds(study);
-        studySegment = study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1);
+        studySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
         studySegment.setId(STUDY_SEGMENT_ID);
 
         controller = new SelectStudySegmentController();

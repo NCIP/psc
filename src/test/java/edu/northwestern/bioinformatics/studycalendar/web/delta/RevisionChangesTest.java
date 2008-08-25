@@ -37,7 +37,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         rev = new Amendment();
         study = createBasicTemplate();
         study.setDevelopmentAmendment(rev);
-        treatment = study.getPlannedCalendar().getEpochs().get(1);
+        treatment = study.getPlannedCalendar().getEpochs().get(0);
         studySegmentB = treatment.getStudySegments().get(1);
         Fixtures.assignIds(study);
 

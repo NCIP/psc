@@ -18,8 +18,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
-import org.easymock.classextension.EasyMock;
 
 /**
  * Note that some tests here are more like integration tests in that they test the full
@@ -30,9 +28,9 @@ import org.easymock.classextension.EasyMock;
 public class DeltaServiceTest extends StudyCalendarTestCase {
     private Study study;
     private PlannedCalendar calendar;
+    private Epoch e0;
     private Epoch e1;
-    private Epoch e2;
-    private StudySegment e1a0;
+    private StudySegment e0a0;
 
     private DeltaService service;
     private TemplateService mockTemplateService;
@@ -48,24 +46,24 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
-        e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
-        e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
-        e1a0 = setGridId("E1A0-GRID",
-            setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
+        e0 = setGridId("E0-GRID", setId(1, calendar.getEpochs().get(0)));
+        e1 = setGridId("E1-GRID", setId(2, calendar.getEpochs().get(1)));
+        e0a0 = setGridId("E0A0-GRID",
+            setId(10, calendar.getEpochs().get(0).getStudySegments().get(0)));
 
         Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
         Amendment a2 = a3.getPreviousAmendment();
         study.setAmendment(a3);
 
         a2.addDelta(Delta.createDeltaFor(calendar, createAddChange(2, null)));
-        a3.addDelta(Delta.createDeltaFor(e1, createAddChange(10, 0)));
+        a3.addDelta(Delta.createDeltaFor(e0, createAddChange(10, 0)));
 
         changeDao = registerDaoMockFor(ChangeDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         epochDao = registerDaoMockFor(EpochDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
-        expect(epochDao.getById(2)).andReturn(e2).anyTimes();
-        expect(studySegmentDao.getById(10)).andReturn(e1a0).anyTimes();
+        expect(epochDao.getById(2)).andReturn(e1).anyTimes();
+        expect(studySegmentDao.getById(10)).andReturn(e0a0).anyTimes();
 
         StaticDaoFinder daoFinder = new StaticDaoFinder(epochDao, studySegmentDao);
         MutatorFactory mutatorFactory = new MutatorFactory();
@@ -84,7 +82,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRevise() throws Exception {
-        assertEquals("Wrong number of epochs to start with", 3, calendar.getEpochs().size());
+        assertEquals("Wrong number of epochs to start with", 2, calendar.getEpochs().size());
 
         Amendment inProgress = new Amendment();
         Epoch newEpoch = setGridId("E-NEW", setId(8, Epoch.create("Long term")));
@@ -96,11 +94,11 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Study revised = service.revise(study, inProgress);
         verifyMocks();
 
-        assertEquals("Epoch not added", 4, revised.getPlannedCalendar().getEpochs().size());
+        assertEquals("Epoch not added", 3, revised.getPlannedCalendar().getEpochs().size());
         assertEquals("Epoch not added in the expected location", 8,
-            (int) revised.getPlannedCalendar().getEpochs().get(3).getId());
+            (int) revised.getPlannedCalendar().getEpochs().get(2).getId());
 
-        assertEquals("Original calendar modified", 3, calendar.getEpochs().size());
+        assertEquals("Original calendar modified", 2, calendar.getEpochs().size());
     }
 
     /* TODO: This should be corrected.  For now, #saveRevision is tested in StudyServiceIntegratedTest
@@ -142,13 +140,13 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Amendment rev = new Amendment();
         Epoch epoch = setId(4, createNamedInstance("New", Epoch.class));
         Delta<?> pcDelta = Delta.createDeltaFor(study.getPlannedCalendar(),
-            Add.create(epoch, 3));
+            Add.create(epoch, 2));
         rev.addDelta(pcDelta);
 
         assertEquals("Wrong number of changes in delta initially", 1, pcDelta.getChanges().size());
 
         service.updateRevision(rev, study.getPlannedCalendar(),
-            Remove.create(study.getPlannedCalendar().getEpochs().get(2)));
+            Remove.create(study.getPlannedCalendar().getEpochs().get(1)));
 
         assertEquals("New change not merged into delta", 2, pcDelta.getChanges().size());
     }
@@ -178,7 +176,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         service.setTemplateService(mockTemplateService);
 
         Epoch addedEpoch = new Epoch();
-        Delta<?> pcDelta = Delta.createDeltaFor(calendar, Add.create(addedEpoch), Remove.create(e2));
+        Delta<?> pcDelta = Delta.createDeltaFor(calendar, Add.create(addedEpoch), Remove.create(e1));
         mockTemplateService.delete(addedEpoch);
         deltaDao.delete(pcDelta);
         changeDao.delete(pcDelta.getChanges().get(0));
@@ -193,7 +191,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         service.setTemplateService(mockTemplateService);
 
         Epoch addedEpoch = setId(4, new Epoch());
-        Delta<?> pcDelta = Delta.createDeltaFor(calendar, createAddChange(4, null), Remove.create(e2));
+        Delta<?> pcDelta = Delta.createDeltaFor(calendar, createAddChange(4, null), Remove.create(e1));
         expect(epochDao.getById(4)).andReturn(addedEpoch);
         mockTemplateService.delete(addedEpoch);
         deltaDao.delete(pcDelta);

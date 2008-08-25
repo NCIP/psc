@@ -63,10 +63,10 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
-        Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
-        Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
-        StudySegment e1a0 = setGridId("E1A0-GRID",
-                setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
+        Epoch e0 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(0)));
+        Epoch e1 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(1)));
+        StudySegment e0a0 = setGridId("E1A0-GRID",
+                setId(10, e0.getStudySegments().get(0)));
 
         a3 = createAmendments("A0", "A1", "A2", "A3");
         a2 = a3.getPreviousAmendment();
@@ -74,8 +74,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         a0 = a1.getPreviousAmendment();
         study.setAmendment(a3);
 
-        a2.addDelta(Delta.createDeltaFor(calendar, Add.create(e2)));
-        a3.addDelta(Delta.createDeltaFor(e1, Add.create(e1a0, 0)));
+        a2.addDelta(Delta.createDeltaFor(calendar, Add.create(e1)));
+        a3.addDelta(Delta.createDeltaFor(e0, Add.create(e0a0, 0)));
 
         Site portland = setId(3, createNamedInstance("Portland", Site.class));
         portlandSS = setId(4, createStudySite(study, portland));
@@ -101,18 +101,20 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setStudySubjectAssignmentDao(StudySubjectAssignmentDao);
     }
 
+    @Override
     protected void replayMocks() {
         super.replayMocks();
         daoFinder.replayAll();
     }
 
+    @Override
     protected void verifyMocks() {
         daoFinder.verifyAll();
         super.verifyMocks();
     }
 
     public void testAmend() throws Exception {
-        assertEquals("Wrong number of epochs to start with", 3, calendar.getEpochs().size());
+        assertEquals("Wrong number of epochs to start with", 2, calendar.getEpochs().size());
         assertEquals("Wrong number of amendments to start with", 3,
                 study.getAmendment().getPreviousAmendmentsCount());
 
@@ -127,9 +129,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.amend(study);
         verifyMocks();
 
-        assertEquals("Epoch not added", 4, study.getPlannedCalendar().getEpochs().size());
+        assertEquals("Epoch not added", 3, study.getPlannedCalendar().getEpochs().size());
         assertEquals("Epoch not added in the expected location", 8,
-                (int) study.getPlannedCalendar().getEpochs().get(3).getId());
+                (int) study.getPlannedCalendar().getEpochs().get(2).getId());
         assertEquals("Development amendment did not become current", inProgress, study.getAmendment());
         assertEquals("Development amendment did not become current", "A3",
                 study.getAmendment().getPreviousAmendment().getName());
@@ -226,7 +228,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetAmendedOneRevBack() throws Exception {
-        assertEquals("Test setup failure", 3, calendar.getEpochs().size());
+        assertEquals("Test setup failure", 2, calendar.getEpochs().size());
 
         replayMocks();
         Study amended
@@ -239,14 +241,14 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
                 amended.getAmendment().getName());
 
         List<Epoch> actualEpochs = amended.getPlannedCalendar().getEpochs();
-        List<StudySegment> actualE1StudySegments = actualEpochs.get(1).getStudySegments();
-        assertEquals("StudySegment add not reverted: " + actualE1StudySegments, 2, actualE1StudySegments.size());
-        assertEquals("Epoch add incorrectly reverted: " + actualEpochs, 3, actualEpochs.size());
+        List<StudySegment> actualE0StudySegments = actualEpochs.get(0).getStudySegments();
+        assertEquals("StudySegment add not reverted: " + actualE0StudySegments, 2, actualE0StudySegments.size());
+        assertEquals("Epoch add incorrectly reverted: " + actualEpochs, 2, actualEpochs.size());
     }
 
     public void testGetAmendedTwoRevsBack() throws Exception {
-        assertEquals("Test setup failure", 3, calendar.getEpochs().size());
-        assertEquals("Test setup failure", 3, calendar.getEpochs().get(1).getStudySegments().size());
+        assertEquals("Test setup failure", 2, calendar.getEpochs().size());
+        assertEquals("Test setup failure", 3, calendar.getEpochs().get(0).getStudySegments().size());
 
         replayMocks();
         Study amended
@@ -256,9 +258,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         assertNotNull(amended);
         assertNotSame(calendar, amended);
 
-        List<StudySegment> actualE1StudySegments = amended.getPlannedCalendar().getEpochs().get(1).getStudySegments();
-        assertEquals("StudySegment add in A3 not reverted: " + actualE1StudySegments, 2, actualE1StudySegments.size());
-        assertEquals("Epoch add in A2 not reverted: " + amended.getPlannedCalendar().getEpochs(), 2,
+        List<StudySegment> actualE0StudySegments = amended.getPlannedCalendar().getEpochs().get(0).getStudySegments();
+        assertEquals("StudySegment add in A3 not reverted: " + actualE0StudySegments, 2, actualE0StudySegments.size());
+        assertEquals("Epoch add in A2 not reverted: " + amended.getPlannedCalendar().getEpochs(), 1,
                 amended.getPlannedCalendar().getEpochs().size());
         assertEquals("Amended calendar reflects incorrect level", "A1",
                 amended.getAmendment().getName());

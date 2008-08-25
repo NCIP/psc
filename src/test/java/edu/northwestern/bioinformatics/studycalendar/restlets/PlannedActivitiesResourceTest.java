@@ -67,7 +67,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
         study = createBasicTemplate();
         study.setName(STUDY_NAME);
-        Epoch epoch = study.getPlannedCalendar().getEpochs().get(1);
+        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         epoch.setName(EPOCH_NAME);
         StudySegment segment = epoch.getStudySegments().get(1);
         segment.setName(SEGMENT_NAME);
@@ -276,7 +276,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     private void expectSuccessfulDrillDown() {
         revisedStudy = revise(study, devAmendment);
-        revisedPeriod = revisedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1).getPeriods().first();
+        revisedPeriod = revisedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1).getPeriods().first();
         expect(helper.drillDown(Period.class)).andReturn(revisedPeriod);
     }
 

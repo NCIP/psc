@@ -43,10 +43,9 @@ public class TemplateSkeletonCreatorTest extends StudyCalendarTestCase {
 
         Delta<?> actualDelta = assertHasSkeletonDevAmendment(actual);
 
-        assertEquals("Wrong number of changes", 3, actualDelta.getChanges().size());
-        assertIsAddEpochChange(actualDelta.getChanges().get(0), 0, "Screening");
-        Epoch actualTreatment = assertIsAddEpochChange(actualDelta.getChanges().get(1), 1, "Treatment");
-        assertIsAddEpochChange(actualDelta.getChanges().get(2), 2, "Follow up");
+        assertEquals("Wrong number of changes", 2, actualDelta.getChanges().size());
+        Epoch actualTreatment = assertIsAddEpochChange(actualDelta.getChanges().get(0), 0, "Treatment");
+        assertIsAddEpochChange(actualDelta.getChanges().get(1), 1, "Follow up");
 
         PlannedCalendar calendar = actual.getPlannedCalendar();
 

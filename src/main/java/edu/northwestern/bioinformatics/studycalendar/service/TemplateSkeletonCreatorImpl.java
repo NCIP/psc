@@ -46,16 +46,15 @@ public class TemplateSkeletonCreatorImpl {
 
     static class Basic implements TemplateSkeletonCreator {
         public Study create(String studyName) {
-        String newStudyName;
+            String newStudyName;
             if (studyName == null || studyName.length()==0) {
                 newStudyName = "[ABC 1234]";
             } else {
                 newStudyName = studyName;
             }
             Study study = createBase(newStudyName);
-            addEpoch(study, 0, Epoch.create("Screening"));
-            addEpoch(study, 1, Epoch.create("Treatment", "A", "B", "C"));
-            addEpoch(study, 2, Epoch.create("Follow up"));
+            addEpoch(study, 0, Epoch.create("Treatment", "A", "B", "C"));
+            addEpoch(study, 1, Epoch.create("Follow up"));
             return study;
         }
    }

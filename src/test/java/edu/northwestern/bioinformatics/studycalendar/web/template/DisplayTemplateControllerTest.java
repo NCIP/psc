@@ -1,27 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import static java.util.Collections.singletonList;
-
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
 import java.util.Arrays;
+import static java.util.Collections.singletonList;
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -37,7 +40,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private AmendmentService amendmentService;
 
     private Study study;
-    private StudySegment e1, e2a, e2b;
+    private StudySegment seg1, seg0a, seg0b;
     private Amendment a0, a1, a2;
     private UserDao userDao;
     private User subjectCoord;
@@ -53,9 +56,9 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
-        e1 =  study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
-        e2a = study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
-        e2b = study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1);
+        seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
+        seg1 =  study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
         int id = 50;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(id++);
@@ -115,25 +118,25 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(study, actualModel.get("study"));
         assertSame(study.getPlannedCalendar(), actualModel.get("plannedCalendar"));
-        assertSame(e1.getEpoch(), actualModel.get("epoch"));
+        assertSame(seg0a.getEpoch(), actualModel.get("epoch"));
         assertFalse(actualModel.containsKey("calendar"));
     }
 
     public void testStudySegmentIsFirstStudySegmentByDefault() throws Exception {
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e1, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
+        assertSame(seg0a, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
     public void testStudySegmentRespectsSelectedStudySegmentParameter() throws Exception {
-        request.addParameter("studySegment", e2b.getId().toString());
+        request.addParameter("studySegment", seg0b.getId().toString());
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e2b, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
+        assertSame(seg0b, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
     public void testStudySegmentIgnoresSelectedStudySegmentParameterIfNotInStudy() throws Exception {
         request.addParameter("studySegment", "234");
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e1, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
+        assertSame(seg0a, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
     public void testAssignmentsIncludedWhenComplete() throws Exception {

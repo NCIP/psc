@@ -38,12 +38,10 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertEquals("Amendment not saved", 1, reloaded.getDevelopmentAmendment().getDeltas().size());
         List<Change> changes = reloaded.getDevelopmentAmendment().getDeltas().get(0).getChanges();
         // The detail of the epochs are tested in more detail in TemplateSkeletonCreatorTest
-        assertEquals("Wrong number of changes", 3, changes.size());
+        assertEquals("Wrong number of changes", 2, changes.size());
         assertNotNull("First epoch ID not saved with amendment",
             ((Add) changes.get(0)).getChildId());
         assertNotNull("Second epoch ID not saved with amendment",
             ((Add) changes.get(1)).getChildId());
-        assertNotNull("Third epoch ID not saved with amendment",
-            ((Add) changes.get(2)).getChildId());
     }
 }
