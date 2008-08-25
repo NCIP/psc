@@ -32,17 +32,14 @@ public class CreateUserCommand implements Validatable, Serializable {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
-    private Boolean isEdit;
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public CreateUserCommand(
             User user, SiteDao siteDao, UserService userService, UserDao userDao,
             UserRoleService userRoleService,
-            AuthenticationSystemConfiguration authenticationSystemConfiguration,
-            Boolean isEdit
+            AuthenticationSystemConfiguration authenticationSystemConfiguration
     ) {
         this.user = user == null ? new User() : user;
-        this.isEdit = isEdit;
         this.siteDao = siteDao;
         this.userService = userService;
         this.userDao = userDao;
@@ -88,7 +85,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                 }
             }
             //For the case where emails are not set, this shouldn't be a stopping point to edit a particular user
-            if (!isEdit) {
+            if (user.getId() == null) {
                 if (emailAddress == null || StringUtils.isEmpty(emailAddress)) {
                     errors.rejectValue("emailAddress", "error.user.email.not.specified");
                 } else if (!GenericValidator.isEmail(emailAddress)) {

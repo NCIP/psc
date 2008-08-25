@@ -84,16 +84,9 @@ public class CreateUserController extends PscCancellableFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        User user;
-        Boolean isEditMode;
-        if (editId != null) {
-            user = userDao.getById(editId);
-            isEditMode = true;
-        } else {
-            user = new User();
-            isEditMode = false;
-        }
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration, isEditMode);
+        User user = (editId != null) ? userDao.getById(editId) : new User();
+
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
     }
 
     @Override
