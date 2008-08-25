@@ -3,9 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
@@ -226,6 +226,10 @@ public class Fixtures {
         return createScheduledActivity(baseEvent, year, month, day, new Conditional());
     }
 
+    public static Source createSource(final String name) {
+        return createNamedInstance(name, Source.class);
+    }
+
     public static Activity createActivity(String name) {
         return createActivity(name, DEFAULT_ACTIVITY_TYPE);
     }
@@ -371,11 +375,5 @@ public class Fixtures {
 
     // static class
     private Fixtures() {
-    }
-
-    public static Source createSource(final String name) {
-        Source source = new Source();
-        source.setName(name);
-        return source;
     }
 }
