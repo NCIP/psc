@@ -42,6 +42,11 @@ public class ActivityService {
         }
     }
 
+    /**
+     * Searches all the activities in the system for those that match the given
+     * criteria.  Returns a list of transient Source elements containing just the
+     * matching activities.
+     */
     public List<Source> getFilteredSources(String nameOrCodeSearch, ActivityType desiredType, Source desiredSource) {
         List<Activity> matches = activityDao.getActivitiesBySearchText(nameOrCodeSearch, desiredType, desiredSource);
         Map<String, Source> sources = new TreeMap<String, Source>(String.CASE_INSENSITIVE_ORDER);

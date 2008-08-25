@@ -93,9 +93,11 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     public List<Activity> getActivitiesBySearchText(final String searchText, final ActivityType type, final Source source) {
         return (List<Activity>) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
-                Criteria criteria = session.createCriteria(Activity.class).
-                    add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
+                Criteria criteria = session.createCriteria(Activity.class);
+                if (searchText != null) {
+                    String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
+                    criteria.add(Restrictions.or(Restrictions.ilike("name", like), Restrictions.ilike("code", like)));
+                }
                 if (type != null) {
                     criteria.add(Restrictions.eq("type", type));
                 }

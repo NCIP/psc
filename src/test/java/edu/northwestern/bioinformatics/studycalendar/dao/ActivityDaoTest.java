@@ -12,11 +12,12 @@ import java.util.List;
  */
 public class ActivityDaoTest extends DaoTestCase {
     private ActivityDao dao = (ActivityDao) getApplicationContext().getBean("activityDao");
-    private Source icd9;
+    private Source icd9, icd11;
 
     public void setUp() throws Exception {
         super.setUp();
         icd9 = ((SourceDao) getApplicationContext().getBean("sourceDao")).getById(-200);
+        icd11 = ((SourceDao) getApplicationContext().getBean("sourceDao")).getById(-201);
     }
 
     public void testGetById() throws Exception {
@@ -93,6 +94,12 @@ public class ActivityDaoTest extends DaoTestCase {
         List<Activity> actual = dao.getActivitiesBySearchText("Drug A");
         assertEquals("Wrong activities: " + actual, 1, actual.size());
         assertEquals("Wrong activity", -97, (int) actual.get(0).getId());
+    }
+
+    public void testGetActivitiesBySearchTextWithNoText() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText(null, null, icd11);
+        assertEquals("Wrong activities: " + actual, 1, actual.size());
+        assertEquals("Wrong activity", -99, (int) actual.get(0).getId());
     }
 
     public void testGetAllSortOrder() throws Exception {
