@@ -64,5 +64,53 @@ Object.extend(SC.MP, {
     if (popClass) {
       return popClass.substring(11);
     }
+  },
+
+  // Finds the set of activities implied by the settings in the add another activity boxes
+  findNextActivities: function(receiver) {
+    var selectedSource = $F("activity-source-filter")
+    var selectedType = $F("activity-type-filter")
+    var searchString = $F("activities-autocompleter-input")
+    if (searchString == "Search for activity") {
+      searchString = ""
+    }
+
+    var uri = SC.relativeUri("/api/v1/activities")
+    if (!selectedSource.blank()) {
+      uri += "/" + selectedSource
+    }
+
+    if (searchString.blank() && selectedSource.blank()) {
+      receiver([]);
+      return;
+    }
+
+    var params = { };
+    if (!searchString.blank()) params.q = searchString;
+    if (!selectedType.blank()) params['type-id'] = selectedType;
+
+    SC.asyncRequest(uri, {
+      method: "GET", parameters: params,
+      onSuccess: function(response) {
+        var doc = response.responseXML;
+        // TODO: this won't work in IE
+        var activities = SC.objectifyXml("//psc:activity", doc, function(elt, activity) {
+          activity.source = elt.parentNode.getAttribute("name")
+          activity.type = SC.MP.lookupActivityTypeNameById(activity['type-id'])
+          if (!activity.code) activity.code = "";
+        })
+
+        receiver(activities)
+      }
+    })
+  },
+
+  // This is a bit of a hack, but it should work
+  lookupActivityTypeNameById: function(id) {
+    var opt = $A($('activity-type-filter').options).find(function(option) { return option.value == id } )
+    var name = opt ? opt.innerHTML : null;
+    return {
+      id: id, name: name
+    }
   }
 })

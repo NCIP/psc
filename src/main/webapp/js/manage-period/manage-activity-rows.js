@@ -45,10 +45,10 @@ Object.extend(SC.MP, {
     $$(".row-" + newRowIndex).each(SC.MP.registerActivityHover)
     var daysBounds = SC.MP.bounds('days')
     var newDaysRow = $$("#days .row-" + newRowIndex).first()
-    
-    console.log(newDaysRow)
-    console.log(newDaysRow.select("td"))
-    
+
+    // event handlers
+    SC.MP.registerNotePreviewHandler($$("#notes .row-" + newRowIndex + " .notes-edit").first())
+
     var finalScroll = newDaysRow.positionedOffset().top + newDaysRow.getDimensions().height / 2 - daysBounds.height / 2
     new Effect.Tween('days', $('days').scrollTop, finalScroll, { transition: Effect.Transitions.sinoidal }, 'scrollTop')
   },
@@ -89,7 +89,7 @@ Object.extend(SC.MP, {
   
   insertNewActivityRow: function(container, template, rowClass, activity, activityType) {
     console.log("Inserting %s for %o", template, activity)
-    var newRow = tmpl(template, activity)
+    var newRow = resigTemplate(template, activity)
     if (rowClass) {
       $$("#" + container + " ." + rowClass).first().insert({ before: newRow })
     } else {
@@ -102,11 +102,47 @@ Object.extend(SC.MP, {
     $$("tr." + SC.MP.findRowIndexClass(daysRow)).each(function(row) {
       row.removeClassName("used")
       row.removeClassName("unused")
-      count == 0 ? row.addClassName("unused") : row.addClassName("used")
+      if (count == 0) {
+        row.addClassName("unused")
+      } else {
+        row.addClassName("used")
+      }
+    })
+  },
+
+  createActivitiesAutocompleter: function() {
+    SC.MP.activitiesAutocompleter = new SC.FunctionalAutocompleter(
+      'activities-autocompleter-input', 'activities-autocompleter-div', SC.MP.activityAutocompleterChoices, {
+        select: "activity-name",
+        afterUpdateElement: function(input, selected) {
+          var activity = {
+            name:   selected.select(".activity-name").first().innerHTML,
+            code:   selected.select(".activity-code").first().innerHTML,
+            source: selected.select(".activity-source").first().innerHTML
+          }
+          var activityType = {
+            id: selected.getAttribute("activity-type-id"),
+            name: selected.getAttribute("activity-type-name")
+          }
+          SC.MP.addActivityRow(activity, activityType)
+        }
+      }
+    );
+  },
+
+  activityAutocompleterChoices: function(str, callback) {
+    SC.MP.findNextActivities(function(data) {
+      var lis = data.map(function(activity) {
+        return resigTemplate("new_activity_autocompleter_row", activity)
+      }).join("\n")
+      callback("<ul>\n" + lis + "\n</ul>")
     })
   }
 })
 
 $(document).observe('dom:loaded', function() {
   $$('tr.activity').each(SC.MP.registerActivityHover)
+  SC.MP.createActivitiesAutocompleter()
+  // TODO: refactor this method out of the global NS
+  initSearchField()
 })

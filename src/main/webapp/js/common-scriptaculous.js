@@ -4,7 +4,6 @@
 
 ////// STUDY CALENDAR JS STYLES
 
-
 SC.slideAndHide = function(element, options) {
     var e = $(element);
     if (e.style.display != "none")
@@ -191,3 +190,25 @@ Object.extend(Object.extend(Ajax.ResetableAutocompleter.prototype, Ajax.Autocomp
         this.element.value = null;
     }
 }) ;
+
+/**
+ * An autocompleter which invokes a collaborating function to retrieve the
+ * matching values.  The collaborating function will receive the typed text
+ * as its first argument and a callback function as the second.  It must
+ * invoke the callback to return the matches to the autocompleter.  Note,
+ * the collaborating function's return value is ignored.
+ */
+SC.FunctionalAutocompleter = Class.create(Autocompleter.Base, {
+  initialize: function(element, update, fn, options) {
+    this.baseInitialize(element, update, options);
+    this.dataFunction = fn.bind(this);
+  },
+
+  getUpdatedChoices: function() {
+    this.startIndicator();
+
+    this.dataFunction(this.getToken(), function(newChoices) {
+      this.updateChoices(newChoices)
+    }.bind(this))
+  }
+});

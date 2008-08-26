@@ -47,7 +47,43 @@ SC.relativeUri = function(path) {
   var relpath = path;
   if (path.substring(0,1) == '/') relpath = path.substring(1);
   // URI_BASE_PATH is generated in decorators/standard.jsp
-  return INTERNAL_URI_BASE_PATH + resourcePath;
+  return INTERNAL_URI_BASE_PATH + relpath;
+}
+
+SC.NS_BINDINGS = {
+  psc: 'http://bioinformatics.northwestern.edu/ns/psc'
+}
+
+SC.nsResolver = function(prefix) {
+  return SC.NS_BINDINGS[prefix] || null
+}
+
+/**
+ * Executes the given XPath against the target document (usually the responseXML from
+ * an async request).  Converts every node returned by the XPath into a simple javascript
+ * Object with properties matching the attributes of the XML element.
+ *
+ * If "initializer" is specified, it must be a function which takes two parameters.  This
+ * function will be passed each node along with the new object corresponding to it.
+ *
+ * Returns a the list of objects corresponding to the results of the XPath query, or
+ * an empty list if there are no matches.
+ */
+SC.objectifyXml = function(xpath, xmlDoc, initializer) {
+  var xmlIterator = xmlDoc.evaluate(xpath, xmlDoc, SC.nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null)
+  var list = []
+  var elt = xmlIterator.iterateNext()
+  while (elt) {
+    var obj = $A(elt.attributes).inject({}, function(o, attr) {
+      if (attr && !attr.value.blank()) o[attr.nodeName] = attr.value;
+      return o
+    });
+    if (initializer) initializer(elt, obj)
+
+    list.unshift(obj);
+    elt = xmlIterator.iterateNext()
+  }
+  return list
 }
 
 SC.SessionExpiredLogic = Class.create( {
@@ -269,9 +305,7 @@ function registerHeaderCollapse() {
 
 /////  autocompleter search fields
 function initSearchField() {
-
-    $$("input[type=text].autocomplete").each(function(theInput)
-    {
+    $$("input[type=text].autocomplete").each(function(theInput) {
         /* Add event handlers */
         Event.observe(theInput, 'focus', clearDefaultText);
         Event.observe(theInput, 'blur', replaceDefaultText);
@@ -279,9 +313,7 @@ function initSearchField() {
         if (theInput.value != '') {
             theInput.defaultText = theInput.value;
             theInput.className = 'pending-search';
-
         }
-
     });
 }
 function clearDefaultText(e) {
@@ -289,11 +321,9 @@ function clearDefaultText(e) {
     if (!target) return;
 
     if (target.value == target.defaultText) {
-        target.value = '';
         target.className = 'search';
-
+        target.value = '';
     }
-
 }
 
 function replaceDefaultText(e) {
@@ -301,8 +331,7 @@ function replaceDefaultText(e) {
     if (!target) return;
 
     if (target.value == '' && target.defaultText) {
-        target.value = target.defaultText;
         target.className = 'pending-search';
+        target.value = target.defaultText;
     }
-
 }

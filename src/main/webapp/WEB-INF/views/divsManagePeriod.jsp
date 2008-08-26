@@ -14,33 +14,42 @@
 
     <tags:resigTemplate id="new_activity_row_template">
         <tr class="new-row unused activity">
-            <td title="[#= name #]" activity-code="[#= code #]" activity-source="[#= source_name #]">
+            <td title="[#= name #]" activity-code="[#= code #]" activity-source="[#= source #]">
                 <span class="row-number">-1</span>
                 [#= name #]
             </td>
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_days_row_template">
-        <tr class='new-row unused activity'>
+        <tr class="new-row unused activity">
             [# for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { #]
-            <td class='cell'>&nbsp;</td>
+            <td class="cell">&nbsp;</td>
             [# } #]
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_notes_row_template">
-        <tr class='new-row unused activity'>
+        <tr class="new-row unused activity">
             <td>
-                <a class='notes-edit' href=''>
+                <a class="notes-edit" href="">
                     View/Edit
                 </a>
-                <div class='notes-content'>
-                    <span class='details' style='display: none'></span>
-                    <span class='condition' style='display: none'></span>
-                    <span class='labels' style='display: none'></span>
+                <div class="notes-content">
+                    <span class="details" style="display: none"></span>
+                    <span class="condition" style="display: none"></span>
+                    <span class="labels" style="display: none"></span>
                     &nbsp;
                 </div>
             </td>
         </tr>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_activity_autocompleter_row">
+        <li activity-type-id="[#= type.id #]" activity-type-name="[#= type.name #]">
+            <span class="activity-name">[#= name #]</span>
+            <span class="informal">
+                (<span class="activity-code">[#= code #]</span>)
+                <span class="activity-source">[#= source #]</span>
+            </span>
+        </li>
     </tags:resigTemplate>
 
     <tags:sassLink name="manage-period"/>
@@ -279,9 +288,33 @@
 
 </laf:division>
 
+<!--
+    NEW ACTIVITY
+ -->
+
 <laf:division title="Add another activity">
 
-    <%-- TODO: add another activity form --%> 
+    <div id="activities-input">
+        <label for="activities-autocompleter-input">Pick an activity from:</label>
+        <select id="activity-source-filter">
+            <option value="">Any source</option>
+            <c:forEach items="${activitySources}" var="source">
+                <option>${source.name}</option>
+            </c:forEach>
+        </select>
+        <select id="activity-type-filter">
+            <option value="">Any type</option>
+            <c:forEach items="${activityTypes}" var="activityType">
+                <option value="${activityType.id}">${activityType.name}</option>
+            </c:forEach>
+        </select>
+        <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
+               value="With name or code"/>
+
+        <div id="activities-autocompleter-div" class="autocomplete"></div>
+
+        <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity (TODO)</a>
+    </div>
 
 </laf:division>
 
