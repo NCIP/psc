@@ -29,9 +29,11 @@
     .unused-message
       :display none
   tr.new-row
-    :background-color #ffc
+    td
+      :background-color #ffc
   tr.hover
-    :background-color #cfc
+    td
+      :background-color #cfc
 #footer-section
   :height 4em
   :overflow visible
@@ -46,6 +48,7 @@
     :border = 1px solid !border_color
     :border-width 0px 1px 1px 0px
     :padding 3px
+    :overflow hidden
   tr.activity-type
     td, th
       :height 1em
@@ -59,7 +62,6 @@
   td, th
     :position relative
     :text-align right
-    :overflow hidden
     :white-space nowrap
     :text-overflow ellipsis
     :width 100%
@@ -126,6 +128,7 @@ a.notes-edit
   padding: 2px
   text-decoration: none
   z-index: 20000
+  :font-size 0.9em
   &:hover
     :background= !border_color
 .notes-content
