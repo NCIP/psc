@@ -263,13 +263,13 @@
                         </tr>
                     </c:forEach>
                 </tbody>
-                <tr class='trailer' id='notes-trailer'>
-                    <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
             </c:forEach>
+            <tr class='trailer' id='notes-trailer'>
+                <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
         </table>
     </div>
 </div>
