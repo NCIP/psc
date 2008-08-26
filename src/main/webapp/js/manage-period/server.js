@@ -93,8 +93,7 @@ Object.extend(SC.MP, {
       method: "GET", parameters: params,
       onSuccess: function(response) {
         var doc = response.responseXML;
-        // TODO: this won't work in IE
-        var activities = SC.objectifyXml("//psc:activity", doc, function(elt, activity) {
+        var activities = SC.objectifyXml("activity", doc, function(elt, activity) {
           activity.source = elt.parentNode.getAttribute("name")
           activity.type = SC.MP.lookupActivityTypeNameById(activity['type-id'])
           if (!activity.code) activity.code = "";

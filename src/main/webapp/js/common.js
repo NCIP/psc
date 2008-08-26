@@ -30,6 +30,7 @@ SC.doAsyncLink = function(anchor, options, indicator) {
 /** Like new Ajax.Request, except it does method tunneling
  *  that's compatible with Restlet's TunnelFilter */
 SC.asyncRequest = function(href, options) {
+  console.log("async: %s %s", (options.method || 'get').toUpperCase(), href)
   if (options && options.method) {
     // the tunnel filter in Restlet requires that the _method parameter be in the query string
     if (!['get', 'post'].include(options.method.toLowerCase())) {
@@ -69,21 +70,36 @@ SC.nsResolver = function(prefix) {
  * Returns a the list of objects corresponding to the results of the XPath query, or
  * an empty list if there are no matches.
  */
-SC.objectifyXml = function(xpath, xmlDoc, initializer) {
-  var xmlIterator = xmlDoc.evaluate(xpath, xmlDoc, SC.nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null)
-  var list = []
-  var elt = xmlIterator.iterateNext()
-  while (elt) {
+SC.objectifyXml = function(elementName, xmlDoc, initializer) {
+  var wrap = function(elt) {
+    console.log(elt)
     var obj = $A(elt.attributes).inject({}, function(o, attr) {
       if (attr && !attr.value.blank()) o[attr.nodeName] = attr.value;
       return o
     });
     if (initializer) initializer(elt, obj)
-
-    list.unshift(obj);
-    elt = xmlIterator.iterateNext()
+    return obj
   }
-  return list
+
+  if (Prototype.BrowserFeatures.XPath) {
+    var xmlIterator = xmlDoc.evaluate("//psc:" + elementName, xmlDoc, SC.nsResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null)
+    var list = []
+    var elt;
+    while (elt = xmlIterator.iterateNext()) {
+      list.unshift(wrap(elt));
+    }
+    return list;
+  } else {
+    // IE sucks
+    var recurse = function(elt) {
+      if (elt.nodeName == elementName) {
+        return elt
+      } else {
+        return $A(elt.childNodes).map(function(e) { return recurse(e) })
+      }
+    }
+    return recurse(xmlDoc.documentElement).flatten().compact().map(wrap)
+  }
 }
 
 SC.SessionExpiredLogic = Class.create( {
