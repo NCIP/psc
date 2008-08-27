@@ -364,6 +364,7 @@
 
     // Doing this in dom:loaded does not work consistently in Safari
     Event.observe(window, "load", function() {
+        // hide the trailer for the horizontal scroll if there's no horizontal scroll happening
         if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
             $$("#heading-section .trailer").invoke("hide")
         }

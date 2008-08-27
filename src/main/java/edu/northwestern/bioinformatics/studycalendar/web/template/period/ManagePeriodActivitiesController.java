@@ -9,6 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -24,7 +27,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,10 +59,12 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
     protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
         int periodId = ServletRequestUtils.getRequiredIntParameter(request, "period");
         Period period = deltaService.revise(periodDao.getById(periodId));
+        Study study = templateService.findStudy(period);
+
         PeriodActivitiesGrid grid
             = new PeriodActivitiesGrid(period,
                 null /* TODO */,
-                Collections.<Activity>emptySet() /* TODO */);
+                collectActivities(study));
 
         ModelMap model = new ModelMap();
         model.put("grid", grid);
@@ -69,7 +77,6 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
 
         model.put("activitySources", sourceDao.getAll());
         model.put("activityTypes", ActivityType.values());
-        Study study = templateService.findStudy(period);
         Amendment amendment = study.getDevelopmentAmendment();
         model.put("amendment", amendment);
         model.put("developmentRevision", amendment);
@@ -77,6 +84,20 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         getControllerTools().addHierarchyToModel(period, model);
 
         return model;
+    }
+
+    private Collection<Activity> collectActivities(Study study) {
+        List<Activity> activities = new LinkedList<Activity>();
+        for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
+            for (StudySegment segment : epoch.getStudySegments()) {
+                for (Period period : segment.getPeriods()) {
+                    for (PlannedActivity pa : period.getPlannedActivities()) {
+                        activities.add(pa.getActivity());
+                    }
+                }
+            }
+        }
+        return activities;
     }
 
     ////// CONFIGURATION

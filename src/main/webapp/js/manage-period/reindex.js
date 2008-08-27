@@ -43,6 +43,13 @@ Object.extend(SC.MP, {
 
 $(document).observe('dom:loaded', function() {
   SC.MP.reindex()
-  // this relies on reindex being complete
+
+  // these rely on the initial reindex being complete
   $$('#days tr.activity').each(SC.MP.updateUsedUnused)
+
+  var firstUsed = $$("#days .used").first()
+  if (firstUsed) {
+    var firstUsedNumber = SC.MP.findRowIndexClass(firstUsed).substring(4)
+    SC.MP.scrollToRow(firstUsedNumber)
+  }
 })

@@ -82,17 +82,21 @@ Object.extend(SC.MP, {
       parseInt(beforeRowClass.split('-')[1]) :
       parseInt(daysGroup.getAttribute("drop-first-row-index")) + daysGroup.select("tr.activity").length - 1
     $$(".row-" + newRowIndex).each(SC.MP.registerActivityHover)
-    var daysBounds = SC.MP.bounds('days')
-    var newDaysRow = $$("#days .row-" + newRowIndex).first()
 
     // event handlers
     SC.MP.registerNotePreviewHandler($$("#notes .row-" + newRowIndex + " .notes-edit").first())
 
-    var finalScroll = newDaysRow.positionedOffset().top + newDaysRow.getDimensions().height / 2 - daysBounds.height / 2
-    new Effect.Tween('days', $('days').scrollTop, finalScroll, { transition: Effect.Transitions.sinoidal }, 'scrollTop')
+    SC.MP.scrollToRow(newRowIndex)
     SC.MP.clearReport()
   },
-  
+
+  scrollToRow: function(rowIndex) {
+    var daysBounds = SC.MP.bounds('days')
+    var row = $$("#days .row-" + rowIndex).first();
+    var finalScroll = row.positionedOffset().top + row.getDimensions().height / 2 - daysBounds.height / 2
+    new Effect.Tween('days', $('days').scrollTop, finalScroll, { transition: Effect.Transitions.sinoidal }, 'scrollTop')
+  },
+
   findActivityRowClassToInsertBefore: function(newName, rows, lo, hi) {
     console.log("Looking for location for %s in %d, %d of %d", newName, lo, hi, rows.length)
     if (lo > hi) {

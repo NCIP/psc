@@ -5,11 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -20,6 +18,8 @@ import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +42,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         period = createPeriod("7th", 10, 8, 4);
-        parent = createNamedInstance("Root", Study.class);
-        parent.setPlannedCalendar(new PlannedCalendar());
-        parent.getPlannedCalendar().addEpoch(Epoch.create("Holocene", "Middle"));
+        parent = createBasicTemplate();
         parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(period);
         parent.setDevelopmentAmendment(new Amendment("dev"));
         Fixtures.assignIds(parent);
@@ -67,7 +65,6 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         controller.setTemplateService(templateService);
 
         request.addParameter("period", "15");
-
     }
 
     private ModelAndView doHandle() throws Exception {
@@ -97,6 +94,35 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         PeriodActivitiesGrid grid = (PeriodActivitiesGrid) model.get("grid");
         assertEquals(revisedPeriod, grid.getPeriod());
         assertEquals(8, grid.getColumnCount());
+    }
+
+    public void testGridIncludesAllActivities() throws Exception {
+        Activity a0 = createActivity("A0");
+        Activity a1 = createActivity("A1");
+        Activity a2 = createActivity("A2");
+        Activity a3 = createActivity("A3");
+        revisedPeriod.addPlannedActivity(createPlannedActivity(a1, 3));
+        Period p1 = createPeriod(1, 7, 1); p1.addPlannedActivity(createPlannedActivity(a1, 2));
+        Period p2 = createPeriod(1, 7, 1); p2.addPlannedActivity(createPlannedActivity(a2, 1));
+        Period p3 = createPeriod(1, 7, 1); p3.addPlannedActivity(createPlannedActivity(a3, 5));
+        p2.addPlannedActivity(createPlannedActivity(a0, 4));
+        parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(p1);
+        parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1).addPeriod(p2);
+        parent.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(p3);
+
+        PeriodActivitiesGrid grid = (PeriodActivitiesGrid) doHandle().getModel().get("grid");
+        Collection<PeriodActivitiesGridRow> rows = grid.getRowGroups().get(Fixtures.DEFAULT_ACTIVITY_TYPE);
+        assertEquals("Should be one row for each activity", 4, rows.size());
+        Iterator<PeriodActivitiesGridRow> it = rows.iterator();
+        assertGridRow(a0, false, it.next());
+        assertGridRow(a1, true, it.next());
+        assertGridRow(a2, false, it.next());
+        assertGridRow(a3, false, it.next());
+    }
+
+    private void assertGridRow(Activity expectedActivity, boolean expectUsed, PeriodActivitiesGridRow actual) {
+        assertEquals("Wrong activity", expectedActivity, actual.getActivity());
+        assertEquals("Wrong value for isUsed", expectUsed, actual.isUsed());
     }
 
     public void testModelIncludesStudy() throws Exception {
