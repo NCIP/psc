@@ -22,9 +22,48 @@ Object.extend(SC.MP, {
   unnew: function() {
     $$(".new-row").each(function(elt) { elt.removeClassName('new-row') })
   },
+
+  addNewActivityGroup: function(activityType) {
+    var activitiesGroup = $$("#activities tbody.activity-type-" + activityType.id).first()
+    if (activitiesGroup) {
+      console.log("There is already a group for %o", activityType.name)
+      return;
+    }
+    var prefix = "activity-type-"
+    var beforeBodyClass = $$("#activities tbody").map(function(group) {
+      return $w(group.className).detect(function(clz) { return clz.indexOf(prefix) == 0 })
+    }).detect(function(typeClass) {
+      return typeClass ? activityType.id < typeClass.substring(prefix.length) : false
+    })
+
+    SC.MP.insertNewActivityTypeTbody("activities", "new_activity_tbody_template",
+      beforeBodyClass, activityType)
+    SC.MP.insertNewActivityTypeTbody("days", "new_days_tbody_template",
+      beforeBodyClass, activityType)
+    SC.MP.insertNewActivityTypeTbody("notes", "new_notes_tbody_template",
+      beforeBodyClass, activityType)
+    SC.MP.reindex();
+
+    return $$("#activities .activity-type-" + activityType.id).first()
+  },
   
+  insertNewActivityTypeTbody: function(container, template, bodyClass, activityType) {
+    console.log("Inserting %s for %o", template, activityType)
+    var newBody = resigTemplate(template, activityType)
+    if (bodyClass) {
+      $$("#" + container + " ." + bodyClass).first().insert({ before: newBody })
+    } else {
+      var trailer = $$('#' + container + " tr.trailer").first()
+      if (trailer) {
+        trailer.up("tbody").insert({ before: newBody })
+      } else {
+        $$("#" + container + " table").first().insert({ bottom: newBody })
+      }
+    }
+  },
+
   addActivityRow: function(activity, activityType) {
-    var activitiesGroup = $$("#activities .activity-type-" + activityType.id).first()
+    var activitiesGroup = $$("#activities tbody.activity-type-" + activityType.id).first()
     if (!activitiesGroup) { activitiesGroup = SC.MP.addNewActivityGroup(activityType) }
     var rows = activitiesGroup.select("tr.activity")
     var beforeRowClass = SC.MP.findActivityRowClassToInsertBefore(activity.name, rows, 0, rows.length - 1)

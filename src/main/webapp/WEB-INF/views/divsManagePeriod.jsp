@@ -42,6 +42,35 @@
             </td>
         </tr>
     </tags:resigTemplate>
+    <tags:resigTemplate id="new_activity_tbody_template">
+        <tbody class="activity-type activity-type-[#= id #]">
+            <tr class="activity-type">
+                <th>
+                    <span class="text">[#= name #]</span>
+                </th>
+            </tr>
+        </tbody>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_days_tbody_template">
+        <tbody class="activity-type activity-type-[#= id #]">
+            <tr class="activity-type">
+                [# for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { #]
+                <td>
+                    <span class="text">&nbsp;</span>
+                </td>
+                [# } #]
+            </tr>
+        </tbody>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_notes_tbody_template">
+        <tbody class="activity-type activity-type-[#= id #]">
+            <tr class="activity-type">
+                <td>
+                    <span class="text">&nbsp;</span>
+                </td>
+            </tr>
+        </tbody>
+    </tags:resigTemplate>
     <tags:resigTemplate id="new_activity_autocompleter_row">
         <li activity-type-id="[#= type.id #]" activity-type-name="[#= type.name #]">
             <span class="activity-name">[#= name #]</span>

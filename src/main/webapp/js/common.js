@@ -72,7 +72,6 @@ SC.nsResolver = function(prefix) {
  */
 SC.objectifyXml = function(elementName, xmlDoc, initializer) {
   var wrap = function(elt) {
-    console.log(elt)
     var obj = $A(elt.attributes).inject({}, function(o, attr) {
       if (attr && !attr.value.blank()) o[attr.nodeName] = attr.value;
       return o
