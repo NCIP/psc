@@ -32,14 +32,14 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final ConfigurationProperties PROPERTIES
-        = new ConfigurationProperties(
+            = new ConfigurationProperties(
             new ClassPathResource("cas-details.properties", CasAuthenticationSystem.class));
     public static final ConfigurationProperty<String> SERVICE_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text("cas.serviceUrl"));
+            = PROPERTIES.add(new ConfigurationProperty.Text("cas.serviceUrl"));
     public static final ConfigurationProperty<String> TRUST_STORE
-        = PROPERTIES.add(new ConfigurationProperty.Text("cas.trustStore"));
+            = PROPERTIES.add(new ConfigurationProperty.Text("cas.trustStore"));
     public static final ConfigurationProperty<String> APPLICATION_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
+            = PROPERTIES.add(new ConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
 
     private static final String CAS_FILTER_PATH = "/j_acegi_cas_security_check";
 
@@ -48,6 +48,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
     }
+    
 
     @Override
     protected Collection<ConfigurationProperty<?>> requiredConfigurationProperties() {
@@ -57,25 +58,27 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     @Override
     protected void initBeforeCreate() {
         ApplicationContext configParametersContext
-            = AuthenticationSystemTools.createApplicationContextWithPropertiesBean(
+                = AuthenticationSystemTools.createApplicationContextWithPropertiesBean(
                 getApplicationContext(), "casConfiguration", createContextProperties());
         casContext = new ClassPathXmlApplicationContext(
-            new String[] { "cas-authentication-beans.xml" }, getClass(), configParametersContext);
+                new String[]{"cas-authentication-beans.xml"}, getClass(), configParametersContext);
     }
 
     private Properties createContextProperties() {
         Properties template = new Properties();
-        nullSafeSetProperty(template, "cas.server.trustStore",   getConfiguration().get(TRUST_STORE));
-        nullSafeSetProperty(template, "cas.server.url.base",     getConfiguration().get(SERVICE_URL));
+        nullSafeSetProperty(template, "cas.server.trustStore", getConfiguration().get(TRUST_STORE));
+        nullSafeSetProperty(template, "cas.server.url.base", getConfiguration().get(SERVICE_URL));
         nullSafeSetProperty(template, "cas.server.url.validate",
-            urlJoin(getConfiguration().get(SERVICE_URL), "proxyValidate"));
+                urlJoin(getConfiguration().get(SERVICE_URL), "proxyValidate"));
         nullSafeSetProperty(template, "cas.server.url.logout",
-            urlJoin(getConfiguration().get(SERVICE_URL), "logout"));
-        nullSafeSetProperty(template, "cas.local.filterPath",    urlJoin("", CAS_FILTER_PATH));
+                urlJoin(getConfiguration().get(SERVICE_URL), "logout"));
+        nullSafeSetProperty(template, "cas.local.filterPath", urlJoin("", CAS_FILTER_PATH));
         nullSafeSetProperty(template, "cas.local.url",
-            urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
-        nullSafeSetProperty(template, "psc.defaultTarget",       DEFAULT_TARGET_PATH);
+                urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
+        nullSafeSetProperty(template, "psc.defaultTarget", DEFAULT_TARGET_PATH);
         nullSafeSetProperty(template, "populatorBeanName", getPopulatorBeanName());
+        nullSafeSetProperty(template, "ticketValidatorBeanName", getTicketValidatorBeanName());
+
         return template;
     }
 
@@ -97,7 +100,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     @Override
     protected AuthenticationManager createAuthenticationManager() {
         return AuthenticationSystemTools.createProviderManager(getApplicationContext(),
-            (AuthenticationProvider) casContext.getBean("casAuthenticationProvider"));
+                (AuthenticationProvider) casContext.getBean("casAuthenticationProvider"));
     }
 
     @Override
@@ -132,5 +135,9 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     protected String getPopulatorBeanName() {
         return "casAuthoritiesPopulator";
+    }
+
+    protected String getTicketValidatorBeanName() {
+        return "casProxyTicketValidator";
     }
 }
