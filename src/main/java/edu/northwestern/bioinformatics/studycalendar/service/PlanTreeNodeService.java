@@ -11,12 +11,15 @@ import java.util.Collection;
 /**
  * @author Saurabh Agrawal
  */
+// TODO: merge this into TemplateService
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class PlanTreeNodeService {
 
     private DeltaService deltaService;
 
     @SuppressWarnings({"unchecked"})
+    // TODO: this is defined in a way that implies that it will work at any level of the plan tree
+    // However, it does not recursively copy, so it will not work above (source instanceof Period)
     public <T extends PlanTreeInnerNode<?, ?, ?>> T copy(T source, final boolean isDevelopmentTemplateSelected) {
 
         T revisedSource = null;
