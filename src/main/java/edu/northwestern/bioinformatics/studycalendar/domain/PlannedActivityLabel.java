@@ -5,6 +5,7 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 
 @Entity
@@ -14,7 +15,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name = "sequence", value = "seq_planned_activity_labels_id")
     }
 )
-public class PlannedActivityLabel extends AbstractMutableDomainObject {
+public class PlannedActivityLabel extends AbstractMutableDomainObject implements Cloneable {
     private PlannedActivity plannedActivity;
     private Integer repetitionNumber;
     private Label label;
@@ -47,5 +48,15 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject {
 
     public void setLabel(Label label) {
         this.label = label;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    protected PlannedActivityLabel clone() {
+        try {
+            return (PlannedActivityLabel) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
     }
 }

@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.*;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -181,7 +179,13 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     @Override
     public PlannedActivity clone() {
-        return (PlannedActivity) super.clone();
+        PlannedActivity clone = (PlannedActivity) super.clone();
+        List<PlannedActivityLabel> clonedPlannedActivityLabels = new ArrayList<PlannedActivityLabel>();
+        for (PlannedActivityLabel label: getPlannedActivityLabels()){
+            clonedPlannedActivityLabels.add(label.clone());
+        }
+        clone.setPlannedActivityLabels(clonedPlannedActivityLabels);
+        return clone;
     }
 
     public boolean equals(Object o) {
