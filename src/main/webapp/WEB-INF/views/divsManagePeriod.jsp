@@ -344,7 +344,9 @@
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
                value="With this name or code"/>
 
-        <div id="activities-autocompleter-div" class="autocomplete"></div>
+        <div style="position: relative">
+            <div id="activities-autocompleter-div" class="autocomplete"></div>
+        </div>
 
         <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity (TODO)</a>
     </div>
