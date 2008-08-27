@@ -76,6 +76,8 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
             urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
         nullSafeSetProperty(template, "psc.defaultTarget",       DEFAULT_TARGET_PATH);
         nullSafeSetProperty(template, "populatorBeanName", getPopulatorBeanName());
+        nullSafeSetProperty(template, "ticketValidatorBeanName", getTicketValidatorBeanName());
+
         return template;
     }
 
@@ -132,5 +134,9 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     protected String getPopulatorBeanName() {
         return "casAuthoritiesPopulator";
+    }
+
+     protected String getTicketValidatorBeanName() {
+        return "casProxyTicketValidator";
     }
 }

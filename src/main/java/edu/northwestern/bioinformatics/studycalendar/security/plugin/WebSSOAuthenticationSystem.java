@@ -8,4 +8,9 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     protected String getPopulatorBeanName() {
         return "cctsAuthoritiesPopulator";
     }
+
+    @Override
+    protected String getTicketValidatorBeanName() {
+        return "cctsCasProxyTicketValidator";
+    }
 }

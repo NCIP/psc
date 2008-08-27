@@ -25,8 +25,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="casProxyDecider">
             <bean class="org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy"/>
         </property>
-        <property name="ticketValidator">
-            <ref local="casProxyTicketValidator"/>
+        <property name="ticketValidator" ref="${ticketValidatorBeanName}">
         </property>
         <property name="statelessTicketCache">
             <ref local="statelessTicketCache"/>
@@ -36,7 +35,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
     </bean>
 
-    <bean id="casProxyTicketValidator" class="gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator">
+    <bean id="casProxyTicketValidator" class="org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator">
+        <property name="casValidate" value="${cas.server.url.validate}"/>
+        <property name="serviceProperties">
+            <ref local="serviceProperties"/>
+        </property>
+        <property name="trustStore" value="${cas.server.trustStore}"/>
+    </bean>
+
+
+    <bean id="cctsCasProxyTicketValidator"
+          class="gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator">
         <property name="casValidate" value="${cas.server.url.validate}"/>
         <property name="serviceProperties">
             <ref local="serviceProperties"/>
