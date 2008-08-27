@@ -9,10 +9,10 @@ Object.extend(SC.MP, {
     }))
   },
 
-  putPlannedActivity: function(href, row, col, ajaxOptions) {
+  putPlannedActivity: function(href, toRow, toCol, ajaxOptions) {
     SC.asyncRequest(href, Object.extend(ajaxOptions, {
       method: 'PUT',
-      parameters: SC.MP.createPlannedActivityForm(row, col)
+      parameters: SC.MP.createPlannedActivityForm(toRow, toCol)
     }))
   },
 

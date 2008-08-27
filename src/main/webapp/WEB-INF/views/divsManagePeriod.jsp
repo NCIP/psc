@@ -342,7 +342,7 @@
             </c:forEach>
         </select>
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
-               value="With name or code"/>
+               value="With this name or code"/>
 
         <div id="activities-autocompleter-div" class="autocomplete"></div>
 
@@ -352,7 +352,6 @@
 </laf:division>
 
 </laf:box>
-
 
 <script type="text/javascript">
     // Sync scrolling
@@ -370,6 +369,33 @@
         }
     })
 </script>
+
+<div id="lightbox">
+    <div id="edit-notes-lightbox">
+        <h1>Editing planned activity notes for <span class="activity-name">[Not filled in]</span></h1>
+        <div class="row">
+            <div class="label">
+                <label for="edit-notes-details">Details</label>
+            </div>
+            <div class="value">
+                <input type="text" class="text" id="edit-notes-details" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="label">
+                <label for="edit-notes-condition">Condition</label>
+            </div>
+            <div class="value">
+                <input type="text" class="text" id="edit-notes-condition" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="submit">
+                <input type="button" value="Done" id="edit-notes-done"/>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

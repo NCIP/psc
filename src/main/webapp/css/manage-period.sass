@@ -33,6 +33,11 @@
   tr.hover
     td
       :background-color #cfc
+  tr.emphasized
+    td
+      :background-color #00c
+      :color #fff
+      :font-weight bold
 #footer-section
   :height 4em
   :overflow visible
@@ -265,3 +270,10 @@ a.notes-edit
   :height 15em
   .activity-source
     :display none
+
+#edit-notes-lightbox
+  .submit
+    :text-align right
+    :padding 0.5em
+  .value input
+    :width 80%

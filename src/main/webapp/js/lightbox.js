@@ -138,12 +138,14 @@ LB.addLightboxMarkup = function() {
     var bod = document.getElementsByTagName('body')[0];
     var overlay = document.createElement('div');
     overlay.id = 'overlay';
-
-    var lb = document.createElement('div');
-    lb.id = 'lightbox';
-    lb.className= 'loading';
     bod.appendChild(overlay);
-    bod.appendChild(lb);
+
+    if (!document.getElementById('lightbox')) {
+      var lb = document.createElement('div');
+      lb.id = 'lightbox';
+      lb.className = 'loading';
+      bod.appendChild(lb);
+    }
 }
 
 Event.observe(window, 'load', LB.addLightboxMarkup);
