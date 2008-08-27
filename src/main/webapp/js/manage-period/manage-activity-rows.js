@@ -90,6 +90,7 @@ Object.extend(SC.MP, {
 
     var finalScroll = newDaysRow.positionedOffset().top + newDaysRow.getDimensions().height / 2 - daysBounds.height / 2
     new Effect.Tween('days', $('days').scrollTop, finalScroll, { transition: Effect.Transitions.sinoidal }, 'scrollTop')
+    SC.MP.clearReport()
   },
   
   findActivityRowClassToInsertBefore: function(newName, rows, lo, hi) {

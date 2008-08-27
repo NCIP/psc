@@ -310,7 +310,11 @@
 <div class='section' id='footer-section'>
     <div class='activities footer column' id='activities-footer'></div>
     <div class='days footer column' id='days-footer'>
-        <div id='message'></div>
+        <div id='message'>
+            <c:if test="${empty grid.rowGroups}">
+                There are no activities in this period.  Use the tools below to find one and add it.
+            </c:if>
+        </div>
     </div>
     <div class='notes footer column' id='notes-footer'></div>
 </div>
