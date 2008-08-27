@@ -357,6 +357,11 @@
         $('activities').scrollTop = $('days').scrollTop
         $('notes').scrollTop = $('days').scrollTop
     })
+
+    // hide the trailer if there's no horizontal scrolling
+    if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
+        $$("#heading-section .trailer").invoke("hide")
+    }
 </script>
 
 </body>
