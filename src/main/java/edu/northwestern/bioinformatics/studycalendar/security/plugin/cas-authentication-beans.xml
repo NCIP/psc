@@ -36,7 +36,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
     </bean>
 
-    <bean id="casProxyTicketValidator" class="org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator">
+    <bean id="casProxyTicketValidator" class="gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator">
         <property name="casValidate" value="${cas.server.url.validate}"/>
         <property name="serviceProperties">
             <ref local="serviceProperties"/>
