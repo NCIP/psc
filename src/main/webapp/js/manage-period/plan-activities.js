@@ -147,20 +147,7 @@ Object.extend(SC.MP, {
           SC.MP.reportInfo("Added " + marker.innerHTML.strip() + " at " + row + ", " + col)
           SC.MP.updateUsedUnused(marker.up("tr"))
         }
-        SC.MP.postPlannedActivityAt(row, col, {
-          onSuccess: success,
-          onFailure: function(response) {
-            cell.addClassName("error")
-            SC.MP.reportError(response.responseText)
-          },
-          onException: function(request, exception) {
-            cell.addClassName("error")
-            SC.MP.reportError(exception)
-          },
-          onComplete: function() {
-            cell.removeClassName("pending")
-          }
-        })
+        SC.MP.postPlannedActivityAt(row, col, SC.MP.plannedActivityAjaxOptions(success, cell))
       }
     }
   },
@@ -224,20 +211,8 @@ Object.extend(SC.MP, {
 
             SC.MP.reportInfo("Moved from " + sourceCol + " to " + targetCol)
           }
-          SC.MP.putPlannedActivity(marker.getAttribute("resource-href"), targetRow, targetCol, {
-            onSuccess: success,
-            onFailure: function(response) {
-              targetCell.addClassName("error")
-              SC.MP.reportError(response.responseText)
-            },
-            onException: function(request, exception) {
-              targetCell.addClassName("error")
-              SC.MP.reportError(exception)
-            },
-            onComplete: function() {
-              targetCell.removeClassName("pending")
-            }
-          })
+          SC.MP.putPlannedActivity(marker.getAttribute("resource-href"), targetRow, targetCol,
+            SC.MP.plannedActivityAjaxOptions(success, targetCell))
         }
       }
     } else if (SC.MP.isDroppedWithin('remove-target', marker)) {
@@ -265,22 +240,32 @@ Object.extend(SC.MP, {
           }
         })
       }
-      SC.MP.deletePlannedActivity(marker.getAttribute("resource-href"), {
-        onSuccess: success,
-        onFailure: function(response) {
-          cell.addClassName("error")
-          SC.MP.reportError(response.responseText)
-        },
-        onException: function(request, exception) {
-          cell.addClassName("error")
-          SC.MP.reportError(exception)
-        },
-        onComplete: function() {
-          cell.removeClassName("pending")
-        }
-      })
+      SC.MP.deletePlannedActivity(marker.getAttribute("resource-href"),
+        SC.MP.plannedActivityAjaxOptions(success, cell))
     }
     console.timeEnd('drop moved')
+  },
+
+  plannedActivityAjaxOptions: function(success, cell) {
+    return {
+      onSuccess: success,
+      on1223: success, // IE returns status 1223 if the underlying call returns 204
+      onFailure: function(response) {
+        cell.addClassName("error")
+        console.log("error from onFailure.  Status %o", response.getStatus())
+        SC.MP.reportError(response.responseText)
+      },
+      onException: function(request, exception) {
+        cell.addClassName("error")
+        console.log("error from onException")
+        // since IE doesn't have a reasonable toString
+        var msg = exception.description ? exception.description : exception;
+        SC.MP.reportError(msg)
+      },
+      onComplete: function() {
+        cell.removeClassName("pending")
+      }
+    }
   },
   
   ////// Utilities

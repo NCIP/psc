@@ -30,7 +30,7 @@
     <tags:resigTemplate id="new_notes_row_template">
         <tr class="new-row unused activity">
             <td>
-                <a class="notes-edit" href="">
+                <a class="notes-edit" href="#notes-edit">
                     View/Edit
                 </a>
                 <div class="notes-content">
@@ -272,7 +272,7 @@
                     <c:forEach items="${typeAndRows.value}" var="row">
                         <tr class="activity">
                             <td>
-                                <a class='notes-edit' href=''>
+                                <a class='notes-edit' href='#notes-edit'>
                                     View/Edit
                                 </a>
                                 <div class='notes-content'>
