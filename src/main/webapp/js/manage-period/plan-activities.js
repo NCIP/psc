@@ -50,6 +50,7 @@ Object.extend(SC.MP, {
   
   reattach: function(draggable, event) {
     var marker = draggable.element
+    marker.comparableBounds = SC.MP.viewportBounds(marker)
     SC.MP.ORIGINAL_MARKER_PARENT.appendChild(marker)
     marker.style.position = "relative"
     marker.style.left = (parseInt(marker.style.left) - SC.MP.ORIGINAL_VIEWPORT.left) + "px"
@@ -342,7 +343,7 @@ Object.extend(SC.MP, {
   // the container
   isDroppedWithin: function(container, marker) {
     var containerBounds = SC.MP.bounds(container)
-    var markerBounds = SC.MP.viewportBounds(marker)
+    var markerBounds = marker.comparableBounds || SC.MP.viewportBounds(marker)
     console.log("container: %o | marker: %o", containerBounds, markerBounds)
     var inContainerX = containerBounds.left < markerBounds.center.x && 
       markerBounds.center.x < containerBounds.right
@@ -359,7 +360,7 @@ Object.extend(SC.MP, {
     console.log("cell %d x %d", cellSize.width, cellSize.height)
 
     if (!point.x) {
-      point = SC.MP.viewportBounds(point).center
+      point = (point.comparableBounds || SC.MP.viewportBounds(point)).center
     }
 
     var daysBounds = SC.MP.bounds('days')
