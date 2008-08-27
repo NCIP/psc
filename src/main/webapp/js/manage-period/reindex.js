@@ -41,7 +41,8 @@ Object.extend(SC.MP, {
   }
 })
 
-$(document).observe('dom:loaded', function() {
+// this happens too early on Safari if done in dom:loaded
+Event.observe(window, 'load', function() {
   SC.MP.reindex()
 
   // these rely on the initial reindex being complete

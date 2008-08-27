@@ -15,7 +15,6 @@
     :padding 0
 #heading-section
   :height 6em
-  :border-bottom = 1px solid !border_color
 #data-section
   height: 18em
   tr.unused
@@ -71,7 +70,9 @@
     :position absolute
     :left 0px
     :color= !border_color
-#activities-heading
+#activities-heading, #notes-heading
+  :border-bottom= 3px solid !contrast_color
+  :z-index 8
 tr.activity-type
   td, th
     :background-color= !contrast_color
@@ -181,9 +182,10 @@ a.notes-edit
     :border-bottom-width 0
     :margin 0 3px
     &.selected
-      :background-color= !border_color
+      :background-color= !contrast_color
+      :border-color= !contrast_color
       a
-        :color= !contrast_color
+        :color= !border_color
     a
       :text-decoration none
       :display block

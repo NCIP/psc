@@ -308,30 +308,32 @@ Object.extend(SC.MP, {
 
   // Returns the logical bounds for an element
   bounds: function(elt) {
-    var bounds = $(elt).getDimensions()
+    var dim = $(elt).getDimensions()
     var offset = $(elt).cumulativeOffset()
-    bounds.top = offset.top
-    bounds.left = offset.left
-    bounds.bottom = bounds.top + bounds.height
-    bounds.right = bounds.left + bounds.width
-    bounds.center = { 
-      x: bounds.left + (bounds.width / 2),
-      y: bounds.top + (bounds.height / 2)
-    }
-    return bounds
+    return SC.MP._bounds(dim, offset)
   },
   
   // Returns the view-relative bounds for an element
   viewportBounds: function(elt) {
-    var bounds = $(elt).getDimensions()
+    var dim = $(elt).getDimensions()
     var offset = $(elt).viewportOffset()
+    return SC.MP._bounds(dim, offset)
+  },
+
+  _bounds: function(bounds, offset) {
     bounds.top = offset.top
     bounds.left = offset.left
     bounds.bottom = bounds.top + bounds.height
     bounds.right = bounds.left + bounds.width
-    bounds.center = { 
+    bounds.center = {
       x: bounds.left + (bounds.width / 2),
       y: bounds.top + (bounds.height / 2)
+    }
+    bounds.toString = function() {
+      return "center=(" + this.center.x + ", " + this.center.y + ")" +
+             " top=" + this.top + " bottom=" + this.bottom +
+             " left=" + this.left + " right=" + this.right +
+             " width=" + this.width + " height=" + this.height
     }
     return bounds
   },

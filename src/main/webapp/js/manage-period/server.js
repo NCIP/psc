@@ -3,7 +3,6 @@ if (!SC.MP) { SC.MP = { } }
 
 Object.extend(SC.MP, {
   postPlannedActivityAt: function(row, col, ajaxOptions) {
-    console.log("POST %d, %d %s", row, col, SC.MP.collectionResource)
     SC.asyncRequest(SC.MP.collectionResource, Object.extend(ajaxOptions, {
       method: 'POST',
       parameters: SC.MP.createPlannedActivityForm(row, col)
@@ -11,7 +10,6 @@ Object.extend(SC.MP, {
   },
 
   putPlannedActivity: function(href, row, col, ajaxOptions) {
-    console.log("PUT %d, %d %s", row, col, href)
     SC.asyncRequest(href, Object.extend(ajaxOptions, {
       method: 'PUT',
       parameters: SC.MP.createPlannedActivityForm(row, col)
@@ -19,7 +17,6 @@ Object.extend(SC.MP, {
   },
 
   deletePlannedActivity: function(href, ajaxOptions) {
-    console.log("DELETE %s", href)
     SC.asyncRequest(href, Object.extend(ajaxOptions, { method: 'DELETE' }))
   },
 
