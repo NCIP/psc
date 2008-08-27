@@ -12,7 +12,7 @@
 
     <property name="build-dir.main"      value="${src-dir.web}/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="target/test-classes"/>
-    <property name="build-dir.webapp"    value="target/web"/>
+    <property name="build-dir.webapp"    value="${src-dir.web}"/>
     <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
 
     <property name="api-dir" value="target/psc-api-${version}"/>
@@ -122,7 +122,6 @@
     <target name="clean">
         <delete dir="target"/>
         <delete dir="${build-dir.main}"/>
-        <delete dir="${build-dir.webapp}"/>
         <delete dir="dist"/>
     </target>
 
@@ -194,56 +193,15 @@
         </javac>
     </target>
 
-    <target name="selenium" description="Flag webapp deployment to include selenium infrastructure">
-        <property name="include-test-infrastructure" value="*"/>
-    </target>
+    <target name="webapp" description="Merge created application into deployment directory" depends="compile, webapp.main"/>
 
-    <target name="webapp" description="Merge created application into deployment directory" depends="compile, webapp.main, webapp.selenium"/>
-
-    <target name="webapp.main" description="Copy basic webapp only, without recompiling">
-        <copy todir="${build-dir.webapp}">
-            <fileset dir="${src-dir.web}">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
+    <target name="webapp.main" description="Copy externals into webapp">
         <!-- copy in the Oracle driver if it's present -->
         <copy todir="${build-dir.webapp}/WEB-INF/lib">
             <fileset dir="db/lib">
                 <include name="ojdbc14.jar"/>
             </fileset>
         </copy>
-    </target>
-
-    <target name="webapp.selenium" if="include-test-infrastructure">
-        <antcall target="dbunit-dtd"/> <!-- "depends" doesn't obey the condition -->
-        <property name="test-dir.infrastructure" value="test/infrastructure"/>
-        <copy todir="${build-dir.webapp}/WEB-INF/lib">
-            <fileset dir="${test-dir.infrastructure}/lib">
-                <include name="**/*.jar"/>
-            </fileset>
-        </copy>
-        <xmltask source="${src-dir.web}/WEB-INF/web.xml" dest="${build-dir.webapp}/WEB-INF/web.xml"
-                 failwithoutmatch="true">
-            <insert path="//:web-app" file="${test-dir.infrastructure}/conf/web.xml"/>
-        </xmltask>
-        <copy todir="${build-dir.webapp}/WEB-INF">
-            <fileset dir="${test-dir.infrastructure}/conf">
-                <include name="**/*.xml"/>
-                <exclude name="web.xml"/>
-            </fileset>
-        </copy>
-        <copy todir="${build-dir.webapp}/WEB-INF/classes/edu/northwestern/bioinformatics/studycalendar/test/data" overwrite="true" verbose="true">
-            <fileset dir="test/selenium/testdata">
-                <include name="**/*.xml"/>
-            </fileset>
-            <filterset>
-                <filter token="DTD_PATH" value="${basedir}/${dbunit-dtd-filename}"/>
-            </filterset>
-        </copy>
-        <javac destdir="${build-dir.webapp}/WEB-INF/classes" classpathref="cp.integrated-test"
-               debug="true" source="1.5">
-            <src path="test/infrastructure/src"/>
-        </javac>
     </target>
 
     <target name="webapp.create-context">
