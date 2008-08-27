@@ -358,10 +358,12 @@
         $('notes').scrollTop = $('days').scrollTop
     })
 
-    // hide the trailer if there's no horizontal scrolling
-    if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
-        $$("#heading-section .trailer").invoke("hide")
-    }
+    // Doing this in dom:loaded does not work consistently in Safari
+    Event.observe(window, "load", function() {
+        if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
+            $$("#heading-section .trailer").invoke("hide")
+        }
+    })
 </script>
 
 </body>
