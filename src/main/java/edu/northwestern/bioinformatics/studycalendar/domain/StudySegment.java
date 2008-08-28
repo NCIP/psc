@@ -33,6 +33,7 @@ import java.util.TreeSet;
 )
 public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
     private String name;
+    private Integer cycleLength;
 
     ////// LOGIC
 
@@ -113,5 +114,13 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
 
     public void setPeriods(SortedSet<Period> periods) {
         setChildren(periods);
+    }
+    
+    public Integer getCycleLength() {
+        return cycleLength;
+    }
+
+    public void setCycleLength(Integer cycleLength) {
+        this.cycleLength = cycleLength;
     }
 }

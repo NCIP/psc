@@ -7,6 +7,7 @@
         id="-2"
         version="0"
         name="Treatment"
+        cycle_length="14"
         epoch_id="-1"/>
 
     <PERIODS

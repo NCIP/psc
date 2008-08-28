@@ -100,5 +100,10 @@ public class StudySegmentDaoTest extends DaoTestCase {
         assertNotNull("Could not reload segment", reloaded);
         assertNull(reloaded.getEpoch());
     }
+
+    public void testLoadCycleLength() {
+        StudySegment studySegment = dao.getById(-2);
+        assertEquals("The length doesn't match", new Integer(14), studySegment.getCycleLength());
+    }
 }
 
