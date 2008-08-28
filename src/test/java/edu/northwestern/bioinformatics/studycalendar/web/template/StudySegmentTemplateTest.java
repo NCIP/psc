@@ -114,6 +114,7 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         StudySegmentTemplate.Day firstDayOfSecondMonth
                 = template.getMonths().get(1).getDays().values().iterator().next();
         assertEquals("C3D1", firstDayOfSecondMonth.getNumber().toString());
+        assertEquals("C7D1", template.getMonths().get(2).getDays().values().iterator().next().getNumber().toString());
     }
     
     public void testHasEvents() throws Exception {
