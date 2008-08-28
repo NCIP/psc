@@ -117,6 +117,13 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         assertEquals("C7D1", template.getMonths().get(2).getDays().values().iterator().next().getNumber().toString());
     }
     
+    public void testDoesNotUseCycleNumbersForNegative() {
+        studySegment.setCycleLength(7);
+        initTemplate();
+
+        assertEquals("-13", template.getMonths().get(0).getDays().values().iterator().next().getNumber().toString());
+    }
+
     public void testHasEvents() throws Exception {
         assertTrue(template.getHasEvents());
         assertFalse(new StudySegmentTemplate(new StudySegment()).getHasEvents());
