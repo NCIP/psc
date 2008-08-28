@@ -210,6 +210,10 @@
         </property>
     </bean>
 
+    <bean name="/dashboard/subjectCoordinatorSchedule/dismissNotification" id="dashboardSubjectCoordinatorControllerDismissNotification" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
+    </bean>
+
     <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
         <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>

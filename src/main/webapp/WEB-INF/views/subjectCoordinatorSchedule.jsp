@@ -87,9 +87,24 @@
             /*font-size:0.6em;*/
         }
 
+        .dismissNotification {
+            margin-left:10px;
+        }
+
  
     </style>
     <script type="text/javascript">
+
+        function dismissNotification(notificationId){
+            var data = "notificationId="+notificationId;
+            var href = '<c:url value="/pages/dashboard/subjectCoordinatorSchedule/dismissNotification"/>'
+            href= href+"?"+data
+            var lastRequest = new Ajax.Request(href,
+            {
+                method: 'post'
+            });
+        }
+
         Event.observe(window, "load", registerHeaderCollapse);
     </script>    
 </head>

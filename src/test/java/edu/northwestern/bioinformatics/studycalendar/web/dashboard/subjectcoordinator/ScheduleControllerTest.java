@@ -4,27 +4,19 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.nwu.bioinformatics.commons.DateUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScheduleControllerTest extends ControllerTestCase {
     private ScheduleController controller;
@@ -34,6 +26,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private ScheduledActivityDao scheduledActivityDao;
     private StudyDao studyDao;
     private UserDao userDao;
+    private NotificationDao notificationDao;
+
     private User user;
 
     private String userName;
@@ -68,6 +62,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         studyDao = registerDaoMockFor(StudyDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        notificationDao = registerDaoMockFor(NotificationDao.class);
 
         templateService = registerMockFor(TemplateService.class);
         command = registerMockFor(ScheduleCommand.class);
@@ -81,6 +76,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setUserDao(userDao);
         controller.setScheduledActivityDao(scheduledActivityDao);
+        controller.setNotificationDao(notificationDao);
         controller.setTemplateService(templateService);
         controller.setSubjectCoordinatorDashboardService(paService);
 
@@ -111,8 +107,31 @@ public class ScheduleControllerTest extends ControllerTestCase {
         assertNotNull("pastDueActivities is Null", refdata.get("pastDueActivities"));
     }
 
+    public void testNotifications() throws Exception {
+        AdverseEvent event = new AdverseEvent();
+        event.setDescription("Big bad");
+        event.setDetectionDate(DateUtils.createDate(2006, Calendar.APRIL, 5));
+
+        Notification notification = new Notification(event);
+        Integer notificationId = 29;
+        notification.setId(notificationId);
+
+        expect(command.getNotificationId()).andReturn(notificationId).anyTimes();
+
+        expect(notificationDao.getById(notificationId)).andReturn(notification);
+        notificationDao.save(notification);
+        replayMocks();
+
+        ModelAndView mv = controller.onSubmit(request, response, command, null);
+        verifyMocks();
+
+        assertEquals("Key for Model and View is wrong ", "template/ajax/notificationList", mv.getViewName());
+        assertEquals("Model doesn't contain notifications ", true , mv.getModel().containsKey("notifications"));
+    }
+
     public void testOnSubmit() throws Exception {
         command.setUser(user);
+        expect(command.getNotificationId()).andReturn(null).anyTimes();
         command.setUserDao(userDao);
         command.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = null;

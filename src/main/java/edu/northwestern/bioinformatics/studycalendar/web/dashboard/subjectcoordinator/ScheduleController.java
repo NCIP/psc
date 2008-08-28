@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoord
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -31,6 +32,7 @@ public class ScheduleController extends PscSimpleFormController {
     private StudyDao studyDao;
     private UserDao userDao;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
+    private NotificationDao notificationDao;
 
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);
@@ -108,11 +110,27 @@ public class ScheduleController extends PscSimpleFormController {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
-        scheduleCommand.setUser(user);
-        scheduleCommand.setUserDao(userDao);
-        scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
-        Map<String, Object> model = scheduleCommand.execute(getPAService());
-        return new ModelAndView("template/ajax/listOfSubjectsAndEvents", model);
+        if (scheduleCommand.getNotificationId() != null ) {
+            Notification notification = notificationDao.getById(scheduleCommand.getNotificationId());
+            notification.setDismissed(true);
+            notificationDao.save(notification);
+
+            Map<String, Object> model = new HashMap<String, Object>();
+            List<Notification> notifications = new ArrayList<Notification>();
+            List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
+            for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
+                notifications.addAll(studySubjectAssignment.getNotifications());
+            }
+            model.put("notifications",notifications);
+            return new ModelAndView("template/ajax/notificationList", model);
+        } else {
+            scheduleCommand.setUser(user);
+            scheduleCommand.setUserDao(userDao);
+            scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
+            Map<String, Object> model = scheduleCommand.execute(getPAService());
+            return new ModelAndView("template/ajax/listOfSubjectsAndEvents", model);
+        }
+
     }
 
     protected void initBinder(HttpServletRequest httpServletRequest,
@@ -158,5 +176,15 @@ public class ScheduleController extends PscSimpleFormController {
 
     public void setSubjectCoordinatorDashboardService(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService) {
         this.subjectCoordinatorDashboardService = subjectCoordinatorDashboardService;
+    }
+
+
+    public NotificationDao getNotificationDao() {
+        return notificationDao;
+    }
+
+    @Required
+    public void setNotificationDao(NotificationDao notificationDao) {
+        this.notificationDao = notificationDao;
     }
 }
