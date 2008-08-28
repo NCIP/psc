@@ -17,7 +17,7 @@
                     <c:forEach items="${mapOfPastDueActivities.value}" var="mapOfPastDueActivitiesValue" varStatus="valueStatus">
                         <a href=
                             "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivitiesValue.key.id}"/>" > ${pastDueActivities} past-due activities</a>. Earliest is
-                            from <tags:formatDate value="${mapOfPastDueActivitiesValue.value.idealDate}"/>
+                            from <tags:formatDate value="${mapOfPastDueActivitiesValue.value.actualDate}"/>
                         <br>
                     </c:forEach>
                 </c:forEach>
