@@ -5,6 +5,7 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
@@ -129,7 +130,7 @@ public class StudySegmentTemplate {
 
         public boolean isResume() {
             return !getFirstDay().isFirstDayOfSpan()
-                && getPeriod().getTotalDayRange().containsDay(getFirstDay().getDay().getNumber());
+                && getPeriod().getTotalDayRange().containsDay(getFirstDay().getDay().getNumber().getDayNumber());
         }
 
         public List<DayOfPeriod> getDays() {
@@ -138,18 +139,18 @@ public class StudySegmentTemplate {
     }
 
     public class Day {
-        private int number;
+        private DayNumber number;
         private List<DayOfPeriod> periods;
 
         public Day(int number) {
-            this.number = number;
+            this.number = DayNumber.createCycleDayNumber(number, studySegment.getCycleLength());
             periods = new ArrayList<DayOfPeriod>();
             for (Period period : studySegment.getPeriods()) {
                 periods.add(new DayOfPeriod(this, period));
             }
         }
 
-        public int getNumber() {
+        public DayNumber getNumber() {
             return number;
         }
 
@@ -177,7 +178,7 @@ public class StudySegmentTemplate {
             this.events = new LinkedList<PlannedActivity>();
 
             for (PlannedActivity pe : period.getPlannedActivities()) {
-                if (pe.getDaysInStudySegment().contains(day.getNumber())) {
+                if (pe.getDaysInStudySegment().contains(getAbsoluteDayNumber())) {
                     events.add(pe);
                 }
             }
@@ -185,22 +186,26 @@ public class StudySegmentTemplate {
 
         public boolean isFirstDayOfSpan() {
             if (isInPeriod()) {
-                return period.isFirstDayOfRepetition(day.getNumber());
+                return period.isFirstDayOfRepetition(getAbsoluteDayNumber());
             } else {
-                return period.isLastDayOfRepetition(day.getNumber() - 1);
+                return period.isLastDayOfRepetition(getAbsoluteDayNumber() - 1);
             }
         }
 
         public boolean isLastDayOfSpan() {
             if (isInPeriod()) {
-                return period.isLastDayOfRepetition(day.getNumber());
+                return period.isLastDayOfRepetition(getAbsoluteDayNumber());
             } else {
-                return period.isFirstDayOfRepetition(day.getNumber() + 1);
+                return period.isFirstDayOfRepetition(getAbsoluteDayNumber() + 1);
             }
         }
 
+        private int getAbsoluteDayNumber() {
+            return day.getNumber().getDayNumber();
+        }
+
         public boolean isInPeriod() {
-            return period.getTotalDayRange().containsDay(day.getNumber());
+            return period.getTotalDayRange().containsDay(getAbsoluteDayNumber());
         }
 
         public boolean isEmpty() {

@@ -32,6 +32,10 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         studySegment.addPeriod(pC);
         studySegment.addPeriod(pD);
 
+        initTemplate();
+    }
+
+    private void initTemplate() {
         template = new StudySegmentTemplate(studySegment);
     }
 
@@ -68,7 +72,7 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         // index 15 is day 2
         StudySegmentTemplate.DayOfPeriod pAd2 = template.getMonths().get(0).getPeriods().get(0).getDays().get(15);
         StudySegmentTemplate.DayOfPeriod pCd2 = template.getMonths().get(0).getPeriods().get(2).getDays().get(15);
-        assertEquals("Malformed test", 2, pAd2.getDay().getNumber());
+        assertEquals("Malformed test", "2", pAd2.getDay().getNumber().toString());
         assertTrue("Expected day 2 of pA empty", pAd2.isEmpty());
         assertFalse("Expected day 2 of pC not empty", pCd2.isEmpty());
     }
@@ -101,6 +105,15 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         for (StudySegmentTemplate.MonthOfPeriod period : template.getMonths().get(2).getPeriods()) {
             assertFalse("Period " + period.getName() + " in third month incorrectly flagged", period.isResume());
         }
+    }
+
+    public void testUsesCycleNumbersIfAppropriate() {
+        studySegment.setCycleLength(7);
+        initTemplate();
+
+        StudySegmentTemplate.Day firstDayOfSecondMonth
+                = template.getMonths().get(1).getDays().values().iterator().next();
+        assertEquals("C3D1", firstDayOfSecondMonth.getNumber().toString());
     }
     
     public void testHasEvents() throws Exception {
