@@ -67,7 +67,7 @@ public class NotificationTest extends CoreTestCase {
         scheduledActivity.setId(2);
         notification = new Notification(scheduledActivity);
 
-        String expectedTitle = "Reconsent scheduled for " + FormatTools.formatDate(new Date());
+        String expectedTitle = "Reconsent scheduled for " + FormatTools.formatDate(scheduledActivity.getActualDate());
 
         assertEquals(expectedTitle, notification.getTitle());
         assertTrue("action is required", notification.isActionRequired());
