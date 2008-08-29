@@ -45,8 +45,8 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         XsdAttribute.BLACKOUT_DATE_DESC.addTo(blackoutDateElement, blackoutDate.getDescription());
         XsdAttribute.BLACKOUT_DATE_SITE_ID.addTo(blackoutDateElement, site.getId());
 
-        if (blackoutDate instanceof WeekDayBlackout) {
-            WeekDayBlackout dayOfTheWeek = (WeekDayBlackout) blackoutDate;
+        if (blackoutDate instanceof WeekdayBlackout) {
+            WeekdayBlackout dayOfTheWeek = (WeekdayBlackout) blackoutDate;
             XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.addTo(blackoutDateElement, dayOfTheWeek.getDayOfTheWeek());
 
         } else if (blackoutDate instanceof SpecificDateBlackout) {
@@ -100,8 +100,8 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
             final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESC.from(element);
 
             if (dayOfWeek != null && !dayOfWeek.trim().equals("")) {
-                blackoutDate = new WeekDayBlackout();
-                ((WeekDayBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
+                blackoutDate = new WeekdayBlackout();
+                ((WeekdayBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
 
             } else if (month != null || day != null || year != null) {
                 blackoutDate = new SpecificDateBlackout();
