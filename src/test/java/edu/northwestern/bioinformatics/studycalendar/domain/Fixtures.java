@@ -41,25 +41,31 @@ public class Fixtures {
     }
 
     public static void assignIds(Study study) {
-        study.getPlannedCalendar().setId(1);
-        study.getPlannedCalendar().setGridId("GRID-1");
-        int epochId = 10, studySegmentId = 100, periodId = 1000, plannedActivityId = 10000;
-        for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
-            epoch.setId(++epochId);
-            epoch.setGridId("GRID-" + epochId);
-            for (StudySegment studySegment : epoch.getStudySegments()) {
-                studySegment.setId(++studySegmentId);
-                studySegment.setGridId("GRID-" + studySegmentId);
-                for (Period period : studySegment.getPeriods()) {
-                    period.setId(++periodId);
-                    period.setGridId("GRID-" + periodId);
-                    for (PlannedActivity event : period.getPlannedActivities()) {
-                        event.setId(++plannedActivityId);
-                        event.setGridId("GRID-" + plannedActivityId);
-                    }
-                }
+        assignIds(study, 0);
+    }
+
+    public static void assignIds(Study study, int start) {
+        setIds(start, study);
+        assignIds(study.getPlannedCalendar(), start + 1);
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
+    public static <T extends PlanTreeNode> T assignIds(T node, int start) {
+        int i = start;
+        setIds(i, node);
+        if (node instanceof PlanTreeInnerNode) {
+            for (PlanTreeNode child : ((PlanTreeInnerNode<?, ? extends PlanTreeNode, ?>) node).getChildren()) {
+                i++;
+                assignIds(child, i * 50);
             }
         }
+        return node;
+    }
+
+    public static <T extends GridIdentifiable & DomainObject> T setIds(int base, T target) {
+        target.setId(base);
+        target.setGridId("GRID-" + base);
+        return target;
     }
 
     public static <T extends GridIdentifiable> T setGridId(String gridId, T target) {
