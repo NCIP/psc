@@ -153,13 +153,26 @@ public class SubjectCoordinatorDashboardService {
             }
             if (events.size()>0) {
                 key.put(subject, events.size());
-                value.put(studySubjectAssignment, events.get(0));
+                ScheduledActivity earliestEvent = getEarliestEvent(events);
+                value.put(studySubjectAssignment, earliestEvent);
                 subjectAndOverDueEvents.put(key, value);
             }
         }
         return subjectAndOverDueEvents;
     }
 
+
+    public ScheduledActivity getEarliestEvent(List<ScheduledActivity> events) {
+        Date earliestDate = events.get(0).getActualDate();
+        ScheduledActivity activity = events.get(0);
+        for (ScheduledActivity event : events){
+            if (event.getActualDate().compareTo(earliestDate) < 0){
+                earliestDate = event.getActualDate();
+                activity = event;
+            }
+        }
+        return activity;
+    }
 
     public Date shiftStartDayByNumberOfDays(Date startDate, Integer numberOfDays) {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(startDate.getTime());
