@@ -5,11 +5,9 @@ import javax.persistence.*;
 /**
  * @author Nataliya Shurupova
  */
-
-
 @Entity
 @DiscriminatorValue(value="1")
-public class MonthDayHoliday extends Holiday {
+public class SpecificDateBlackout extends BlackoutDate {
 
     private Integer day;
 	private Integer month;
@@ -28,11 +26,11 @@ public class MonthDayHoliday extends Holiday {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MonthDayHoliday holiday = (MonthDayHoliday) o;
+        SpecificDateBlackout other = (SpecificDateBlackout) o;
 
-        if (day != null ? !day.equals(holiday.day) : holiday.day != null) return false;
-        if (month != null ? !month.equals(holiday.month) : holiday.month != null) return false;
-        if (year != null ? !year.equals(holiday.year) : holiday.year != null) return false;
+        if (day != null ? !day.equals(other.day) : other.day != null) return false;
+        if (month != null ? !month.equals(other.month) : other.month != null) return false;
+        if (year != null ? !year.equals(other.year) : other.year != null) return false;
 
         return true;
     }

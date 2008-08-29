@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue(value="2")
-public class DayOfTheWeek extends Holiday {
+public class WeekdayBlackout extends BlackoutDate {
     // TODO: This ought to be the java.util.Calendar constant for the day, or a custom enum
     private String dayOfTheWeek;
 
@@ -38,7 +38,7 @@ public class DayOfTheWeek extends Holiday {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DayOfTheWeek that = (DayOfTheWeek) o;
+        WeekdayBlackout that = (WeekdayBlackout) o;
 
         if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.dayOfTheWeek) : that.dayOfTheWeek != null)
             return false;

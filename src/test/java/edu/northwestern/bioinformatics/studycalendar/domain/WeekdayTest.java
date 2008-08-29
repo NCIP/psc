@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
  * @author Nataliya Shurupova
  */
 
-public class DayOfTheWeekTest extends StudyCalendarTestCase {
-    DayOfTheWeek dayOfTheWeek = new DayOfTheWeek();
+public class WeekdayTest extends StudyCalendarTestCase {
+    WeekdayBlackout dayOfTheWeek = new WeekdayBlackout();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -28,7 +28,7 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
     }
 
     public void testMapDayStringToInt() throws Exception {
-        DayOfTheWeek dayOfTheWeekTwo = new DayOfTheWeek();
+        WeekdayBlackout dayOfTheWeekTwo = new WeekdayBlackout();
         dayOfTheWeekTwo.setDayOfTheWeek("Monday");
         assertEquals("descriptions are the same", 2,
                 dayOfTheWeekTwo.getDayOfTheWeekInteger());
@@ -58,15 +58,15 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
     }
 
     public void testEquals() throws Exception {
-        DayOfTheWeek d1 = new DayOfTheWeek();
+        WeekdayBlackout d1 = new WeekdayBlackout();
         d1.setDayOfTheWeek("Monday");
         d1.setDescription("Office is Closed");
 
-        DayOfTheWeek d2 = new DayOfTheWeek();
+        WeekdayBlackout d2 = new WeekdayBlackout();
         d2.setDayOfTheWeek("Tuesday");
         d2.setDescription("Office is Closed");
 
-        DayOfTheWeek d3 = new DayOfTheWeek();
+        WeekdayBlackout d3 = new WeekdayBlackout();
         d3.setDayOfTheWeek("Monday");
         d3.setDescription("Something");
 

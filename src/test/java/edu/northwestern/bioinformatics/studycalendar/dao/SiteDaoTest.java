@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
-import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
@@ -40,42 +40,42 @@ public class SiteDaoTest extends DaoTestCase {
 
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
-        List<Holiday> list = actual.getHolidaysAndWeekends();
-        actual.getHolidaysAndWeekends().remove(1);
+        List<BlackoutDate> list = actual.getBlackoutDates();
+        actual.getBlackoutDates().remove(1);
         siteDao.save(actual);
 
 
         interruptSession();
 
         Site reloaded = siteDao.getById(-4);
-        assertEquals("Holiday not removed", 1, reloaded.getHolidaysAndWeekends().size());
+        assertEquals("BlackoutDate not removed", 1, reloaded.getBlackoutDates().size());
         assertEquals("Wrong holiday removed", -2,
-                (int) reloaded.getHolidaysAndWeekends().get(0).getId());
+                (int) reloaded.getBlackoutDates().get(0).getId());
     }
 
     public void testAddHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
 
-        RelativeRecurringHoliday holidayToAdd = new RelativeRecurringHoliday();
+        RelativeRecurringBlackout holidayToAdd = new RelativeRecurringBlackout();
         holidayToAdd.setWeekNumber(1);
         holidayToAdd.setDayOfTheWeek("Monday");
         holidayToAdd.setMonth(Calendar.SEPTEMBER);
         holidayToAdd.setId(-3);
         holidayToAdd.setDescription("Closed");
 
-        List<Holiday> list = actual.getHolidaysAndWeekends();
+        List<BlackoutDate> list = actual.getBlackoutDates();
         int size = list.size();
         list.add(holidayToAdd);
-        actual.setHolidaysAndWeekends(list);
+        actual.setBlackoutDates(list);
         siteDao.save(actual);
 
 
         interruptSession();
 
         Site reloaded = siteDao.getById(-4);
-        assertEquals("Holiday is not added", size + 1, reloaded.getHolidaysAndWeekends().size());
+        assertEquals("BlackoutDate is not added", size + 1, reloaded.getBlackoutDates().size());
         assertEquals("Wrong holiday added", holidayToAdd,
-                reloaded.getHolidaysAndWeekends().get(2));
+                reloaded.getBlackoutDates().get(2));
     }
 
     public void testCount() throws Exception {

@@ -18,26 +18,26 @@ import org.slf4j.LoggerFactory;
  */
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
-public class HolidaysController extends PscSimpleFormController {
+public class BlackoutDatesController extends PscSimpleFormController {
     private SiteDao siteDao;
-    private static final Logger log = LoggerFactory.getLogger(HolidaysController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(BlackoutDatesController.class.getName());
 
-    public HolidaysController() {
-        setCommandClass(HolidaysCommand.class);
-        setFormView("manageHolidays");
+    public BlackoutDatesController() {
+        setCommandClass(BlackoutDatesCommand.class);
+        setFormView("manageBlackoutDates");
         setBindOnNewForm(true);
     }
 
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
-        return new HolidaysCommand(siteDao);          
+        return new BlackoutDatesCommand(siteDao);
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
 
-        HolidaysCommand holidaysCommand = (HolidaysCommand) oCommand;
-        holidaysCommand.execute();
+        BlackoutDatesCommand command = (BlackoutDatesCommand) oCommand;
+        command.execute();
         return new ModelAndView(getFormView(), errors.getModel());
     }
 

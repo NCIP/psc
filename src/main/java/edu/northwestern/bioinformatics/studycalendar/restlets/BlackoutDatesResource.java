@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
@@ -20,7 +20,7 @@ import java.util.Collection;
 /**
  * @author Saurabh Agrawal
  */
-public class BlackoutDatesResource extends AbstractStorableCollectionResource<Holiday> {
+public class BlackoutDatesResource extends AbstractStorableCollectionResource<BlackoutDate> {
 
     private SiteService siteService;
 
@@ -36,29 +36,29 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Ho
 
     }
 
-    public Collection<Holiday> getAllObjects() {
+    public Collection<BlackoutDate> getAllObjects() {
         if (site != null) {
-            return site.getHolidaysAndWeekends();
+            return site.getBlackoutDates();
         }
         return null;
     }
 
     @Override
-    public String store(final Holiday holiday) {
+    public String store(final BlackoutDate blackoutDate) {
         try {
 
-            site.addOrMergeExistingHoliday(holiday);
+            site.addOrMergeExistingHoliday(blackoutDate);
 
-//            for (Holiday holiday : holidays) {
-//                site.addOrMergeExistingHoliday(holiday);
+//            for (BlackoutDate blackoutDate : holidays) {
+//                site.addOrMergeExistingHoliday(blackoutDate);
 //            }
 
 
             siteService.createOrUpdateSite(site);
             return String.format("sites/%s/blackout-dates/%s",
-                    site.getAssignedIdentifier(),holiday.getId());
+                    site.getAssignedIdentifier(), blackoutDate.getId());
         } catch (Exception e) {
-            String message = "Can not POST the holiday on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
+            String message = "Can not POST the blackoutDate on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
 
         }
@@ -74,7 +74,7 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Ho
         }
     }
 
-    public StudyCalendarXmlCollectionSerializer<Holiday> getXmlSerializer() {
+    public StudyCalendarXmlCollectionSerializer<BlackoutDate> getXmlSerializer() {
         BlackoutDateXmlSerializer xmlSerializer = new BlackoutDateXmlSerializer(site);
 
         return xmlSerializer;

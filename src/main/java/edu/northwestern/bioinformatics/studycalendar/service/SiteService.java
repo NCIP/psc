@@ -135,7 +135,7 @@ public class SiteService {
         if (existingSite == null) {
             return createOrUpdateSite(newSite);
         } else {
-            BeanUtils.copyProperties(newSite, existingSite, new String[]{"studySites", "id", "holidaysAndWeekends"});
+            BeanUtils.copyProperties(newSite, existingSite, new String[]{"studySites", "id", "blackoutDates"});
             return createOrUpdateSite(existingSite);
         }
 

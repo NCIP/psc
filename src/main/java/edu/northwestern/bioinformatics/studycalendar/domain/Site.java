@@ -26,7 +26,7 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
 
     private String assignedIdentifier;
 
-    private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
+    private List<BlackoutDate> blackoutDates = new ArrayList<BlackoutDate>();
 
     ////// LOGIC
 
@@ -78,8 +78,8 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         return studySites;
     }
 
-    public void setHolidaysAndWeekends(final List<Holiday> holidaysAndWeekends) {
-        this.holidaysAndWeekends = holidaysAndWeekends;
+    public void setBlackoutDates(final List<BlackoutDate> blackoutDates) {
+        this.blackoutDates = blackoutDates;
     }
 
     public String getAssignedIdentifier() {
@@ -99,8 +99,8 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     @OrderBy
     // order by ID for testing consistency
     @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<Holiday> getHolidaysAndWeekends() {
-        return holidaysAndWeekends;
+    public List<BlackoutDate> getBlackoutDates() {
+        return blackoutDates;
     }
 
     ////// OBJECT METHODS
@@ -129,10 +129,10 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     }
 
     @Transient
-    public boolean checkIfHolidayExists(final Holiday holiday) {
+    public boolean checkIfHolidayExists(final BlackoutDate blackoutDate) {
 
-        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
-            if (existingHoliday.getId() != null && holiday != null && existingHoliday.getId().equals(holiday.getId())) {
+        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
+            if (existingBlackoutDate.getId() != null && blackoutDate != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
                 return true;
             }
         }
@@ -140,17 +140,17 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     }
 
     @Transient
-    public void removeHoliday(final Holiday holiday) {
-        Holiday holidayToRemove = null;
-        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
-            if (existingHoliday.getId() != null && existingHoliday.getId().equals(holiday.getId())) {
-                holidayToRemove = existingHoliday;
+    public void removeHoliday(final BlackoutDate blackoutDate) {
+        BlackoutDate holidayToRemove = null;
+        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
+            if (existingBlackoutDate.getId() != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
+                holidayToRemove = existingBlackoutDate;
                 break;
             }
         }
 
         if (holidayToRemove != null) {
-            getHolidaysAndWeekends().remove(holidayToRemove);
+            getBlackoutDates().remove(holidayToRemove);
         }
 
     }
@@ -158,24 +158,24 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     /**
      * Adds the holiday if holiday does not exists. Or updates the holiday if holiday already exists
      *
-     * @param holiday
+     * @param blackoutDate
      */
     @Transient
-    public void addOrMergeExistingHoliday(final Holiday holiday) {
+    public void addOrMergeExistingHoliday(final BlackoutDate blackoutDate) {
 
-        Holiday holidayToAddOrMerge = null;
-        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
-            if (existingHoliday.getId() != null && existingHoliday.getId().equals(holiday.getId())) {
-                holidayToAddOrMerge = existingHoliday;
+        BlackoutDate holidayToAddOrMerge = null;
+        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
+            if (existingBlackoutDate.getId() != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
+                holidayToAddOrMerge = existingBlackoutDate;
                 break;
             }
         }
 
         if (holidayToAddOrMerge != null) {
-            holidayToAddOrMerge.mergeAnotherHoliday(holiday);
+            holidayToAddOrMerge.mergeAnotherHoliday(blackoutDate);
 
         } else {
-            getHolidaysAndWeekends().add(holiday);
+            getBlackoutDates().add(blackoutDate);
 
         }
 
