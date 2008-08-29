@@ -8,8 +8,8 @@ import java.util.Calendar;
  * @author Nataliya Shurupova
  */
 
-public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
-    RelativeRecurringBlackoutDate holiday = new RelativeRecurringBlackoutDate();
+public class RelativeRecurringBlackoutTest extends StudyCalendarTestCase {
+    RelativeRecurringBlackout holiday = new RelativeRecurringBlackout();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -42,12 +42,12 @@ public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
     }
 
     public void testEquals() throws Exception {
-        RelativeRecurringBlackoutDate h1 = new RelativeRecurringBlackoutDate();
+        RelativeRecurringBlackout h1 = new RelativeRecurringBlackout();
         h1.setWeekNumber(3);
         h1.setDayOfTheWeek("Wednesday");
         h1.setMonth(Calendar.JANUARY);
 
-        RelativeRecurringBlackoutDate h2 = new RelativeRecurringBlackoutDate();
+        RelativeRecurringBlackout h2 = new RelativeRecurringBlackout();
         h2.setWeekNumber(4);
         h2.setDayOfTheWeek("Wednesday");
         h2.setMonth(Calendar.JANUARY);

@@ -12,7 +12,7 @@ import java.util.Calendar;
  * @author Nataliya Shurupova
  */
 
-public class HolidaysCommandTest extends StudyCalendarTestCase {
+public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
     private BlackoutDatesCommand command;
     private SiteDao siteDao;
     private Site site;
@@ -24,9 +24,9 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         command = new BlackoutDatesCommand(siteDao);
 
         site = new Site();
-        site.getBlackoutDates().add(Fixtures.setId(1, new MonthDayBlackoutDate()));
-        site.getBlackoutDates().add(Fixtures.setId(2, new DayOfTheWeekBlackoutDate()));
-        site.getBlackoutDates().add(Fixtures.setId(3, new RelativeRecurringBlackoutDate()));
+        site.getBlackoutDates().add(Fixtures.setId(1, new SpecificDateBlackout()));
+        site.getBlackoutDates().add(Fixtures.setId(2, new WeekdayBlackout()));
+        site.getBlackoutDates().add(Fixtures.setId(3, new RelativeRecurringBlackout()));
         command.setSite(site);
     }
 
@@ -73,8 +73,8 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Didn't add a non recur. date", 4, site.getBlackoutDates().size());
-        assertTrue(site.getBlackoutDates().get(3) instanceof MonthDayBlackoutDate);
-        MonthDayBlackoutDate holiday = (MonthDayBlackoutDate)site.getBlackoutDates().get(3);
+        assertTrue(site.getBlackoutDates().get(3) instanceof SpecificDateBlackout);
+        SpecificDateBlackout holiday = (SpecificDateBlackout)site.getBlackoutDates().get(3);
         assertEquals("day doesn't match ", 1, (int) holiday.getDay());
         assertEquals("month doesn't match ", Calendar.DECEMBER, (int) holiday.getMonth());
         assertEquals("year is wrong ", 2009, (int) holiday.getYear());
@@ -94,7 +94,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
 
         assertEquals("didn't add the day", 4, site.getBlackoutDates().size());
         assertEquals("Wrong day of the week", dayOfTheWeek,
-                ((DayOfTheWeekBlackoutDate)site.getBlackoutDates().get(3)).getDayOfTheWeek());
+                ((WeekdayBlackout)site.getBlackoutDates().get(3)).getDayOfTheWeek());
         assertEquals("wrong description ", "off", site.getBlackoutDates().get(3).getDescription());
     }
 
@@ -113,9 +113,9 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Didn't add a relative recurring holiday", 4, site.getBlackoutDates().size());
-        assertTrue(site.getBlackoutDates().get(3) instanceof RelativeRecurringBlackoutDate);
-        RelativeRecurringBlackoutDate relativeHoliday =
-                (RelativeRecurringBlackoutDate)site.getBlackoutDates().get(3);
+        assertTrue(site.getBlackoutDates().get(3) instanceof RelativeRecurringBlackout);
+        RelativeRecurringBlackout relativeHoliday =
+                (RelativeRecurringBlackout)site.getBlackoutDates().get(3);
         assertEquals("day of the week doesn't match ", "Monday", relativeHoliday.getDayOfTheWeek());
         assertEquals("month doesn't match ", Calendar.SEPTEMBER, (int) relativeHoliday.getMonth());
         assertEquals("description doesn't match ", expectedDescription, relativeHoliday.getDescription());
@@ -123,15 +123,15 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
     }
 
     public void testUniqueDayOfTheWeek() throws Exception {
-        DayOfTheWeekBlackoutDate oneDayOfTheWeek = new DayOfTheWeekBlackoutDate();
+        WeekdayBlackout oneDayOfTheWeek = new WeekdayBlackout();
         oneDayOfTheWeek.setDayOfTheWeek("Monday");
         oneDayOfTheWeek.setDescription("Closed");
 
-        DayOfTheWeekBlackoutDate anotherDayOfTheWeek = new DayOfTheWeekBlackoutDate();
+        WeekdayBlackout anotherDayOfTheWeek = new WeekdayBlackout();
         anotherDayOfTheWeek.setDayOfTheWeek("Monday");
         anotherDayOfTheWeek.setDescription("And definitely Closed");
 
-        DayOfTheWeekBlackoutDate thirdDayOfTheWeek = new DayOfTheWeekBlackoutDate();
+        WeekdayBlackout thirdDayOfTheWeek = new WeekdayBlackout();
         thirdDayOfTheWeek.setDayOfTheWeek("Tuesday");
         thirdDayOfTheWeek.setDescription("whatever");
 

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayBlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
@@ -25,7 +25,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
     private SiteService siteService;
 
     private Site site;
-    private MonthDayBlackoutDate monthDayHoliday;
+    private SpecificDateBlackout monthDayHoliday;
 
     @Override
     public void setUp() throws Exception {
@@ -36,7 +36,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
         site.setAssignedIdentifier(SITE_IDENTIFIER);
 
-        monthDayHoliday = new MonthDayBlackoutDate();
+        monthDayHoliday = new SpecificDateBlackout();
         monthDayHoliday.setDay(2);
         monthDayHoliday.setMonth(1);
         monthDayHoliday.setYear(2008);

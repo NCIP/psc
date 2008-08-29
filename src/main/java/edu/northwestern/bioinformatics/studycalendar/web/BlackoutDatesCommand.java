@@ -51,17 +51,17 @@ public class BlackoutDatesCommand {
             BlackoutDate toAdd = null;
             if (getHolidayDate() != null ) {
                 parse(getHolidayDate());
-                MonthDayBlackoutDate holiday = new MonthDayBlackoutDate();
+                SpecificDateBlackout holiday = new SpecificDateBlackout();
                 holiday.setDay(getDay());
                 holiday.setMonth(getMonth());
                 holiday.setYear(getYear());
                 toAdd = holiday;
             } else if (getDayOfTheWeek() != null && getWeek() == null && getMonth() == null){
-                DayOfTheWeekBlackoutDate dayOfTheWeek = new DayOfTheWeekBlackoutDate();
+                WeekdayBlackout dayOfTheWeek = new WeekdayBlackout();
                 dayOfTheWeek.setDayOfTheWeek(getDayOfTheWeek());
                 toAdd = dayOfTheWeek;
             } else {
-                RelativeRecurringBlackoutDate relativeRecurringHoliday = new RelativeRecurringBlackoutDate();
+                RelativeRecurringBlackout relativeRecurringHoliday = new RelativeRecurringBlackout();
                 relativeRecurringHoliday.setWeekNumber(getWeek());
                 relativeRecurringHoliday.setMonth(getMonth());
                 relativeRecurringHoliday.setDayOfTheWeek(getDayOfTheWeek());

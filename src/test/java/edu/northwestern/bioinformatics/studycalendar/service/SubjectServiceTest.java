@@ -429,15 +429,15 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySite studySite = new StudySite();
         Site site = new Site();
 
-        MonthDayBlackoutDate holidayOne = new MonthDayBlackoutDate();
+        SpecificDateBlackout holidayOne = new SpecificDateBlackout();
         holidayOne.setDay(1);
         holidayOne.setMonth(AUGUST);
         holidayOne.setYear(2005);
-        MonthDayBlackoutDate holidayTwo = new MonthDayBlackoutDate();
+        SpecificDateBlackout holidayTwo = new SpecificDateBlackout();
         holidayTwo.setDay(2);
         holidayTwo.setMonth(AUGUST);
         holidayTwo.setYear(2005);
-        MonthDayBlackoutDate holidayThree = new MonthDayBlackoutDate();
+        SpecificDateBlackout holidayThree = new SpecificDateBlackout();
         holidayThree.setDay(3);
         holidayThree.setMonth(AUGUST);
         holidayThree.setYear(2005);

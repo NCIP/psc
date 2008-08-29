@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue(value="3")
-public class RelativeRecurringBlackoutDate extends BlackoutDate {
+public class RelativeRecurringBlackout extends BlackoutDate {
     private Integer weekNumber;
     private String dayOfTheWeek;
     private Integer month;
@@ -97,7 +97,7 @@ public class RelativeRecurringBlackoutDate extends BlackoutDate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RelativeRecurringBlackoutDate that = (RelativeRecurringBlackoutDate) o;
+        RelativeRecurringBlackout that = (RelativeRecurringBlackout) o;
 
         if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.dayOfTheWeek) : that.dayOfTheWeek != null)
             return false;

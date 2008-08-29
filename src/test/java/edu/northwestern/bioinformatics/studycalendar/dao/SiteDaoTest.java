@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
@@ -56,7 +56,7 @@ public class SiteDaoTest extends DaoTestCase {
     public void testAddHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
 
-        RelativeRecurringBlackoutDate holidayToAdd = new RelativeRecurringBlackoutDate();
+        RelativeRecurringBlackout holidayToAdd = new RelativeRecurringBlackout();
         holidayToAdd.setWeekNumber(1);
         holidayToAdd.setDayOfTheWeek("Monday");
         holidayToAdd.setMonth(Calendar.SEPTEMBER);

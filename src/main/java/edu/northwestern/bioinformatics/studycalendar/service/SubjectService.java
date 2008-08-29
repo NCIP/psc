@@ -255,9 +255,9 @@ public class SubjectService {
 
         for (BlackoutDate blackoutDate : holidayList) {
             // TODO: instanceof indicates abstraction failure -- this logic should be in each BlackoutDate class
-            if (blackoutDate instanceof MonthDayBlackoutDate) {
+            if (blackoutDate instanceof SpecificDateBlackout) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
-                MonthDayBlackoutDate h = (MonthDayBlackoutDate) blackoutDate;
+                SpecificDateBlackout h = (SpecificDateBlackout) blackoutDate;
                 if (h.getYear() == null) {
                     holidayCalendar.set(year, h.getMonth(), h.getDay());
                 } else {
@@ -268,15 +268,15 @@ public class SubjectService {
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
                     shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                 }
-            } else if(blackoutDate instanceof DayOfTheWeekBlackoutDate) {
-                DayOfTheWeekBlackoutDate dayOfTheWeek = (DayOfTheWeekBlackoutDate) blackoutDate;
+            } else if(blackoutDate instanceof WeekdayBlackout) {
+                WeekdayBlackout dayOfTheWeek = (WeekdayBlackout) blackoutDate;
                 int intValueOfTheDay = dayOfTheWeek.getDayOfTheWeekInteger();
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
                     shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                 }
-            } else if (blackoutDate instanceof RelativeRecurringBlackoutDate) {
-                RelativeRecurringBlackoutDate relativeRecurringHoliday =
-                        (RelativeRecurringBlackoutDate) blackoutDate;
+            } else if (blackoutDate instanceof RelativeRecurringBlackout) {
+                RelativeRecurringBlackout relativeRecurringHoliday =
+                        (RelativeRecurringBlackout) blackoutDate;
                 Integer numberOfTheWeek = relativeRecurringHoliday.getWeekNumber();
                 Integer month = relativeRecurringHoliday.getMonth();
                 int dayOfTheWeekInt = relativeRecurringHoliday.getDayOfTheWeekInteger();

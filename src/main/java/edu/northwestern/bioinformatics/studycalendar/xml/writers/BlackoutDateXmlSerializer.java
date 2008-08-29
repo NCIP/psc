@@ -45,12 +45,12 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         XsdAttribute.BLACKOUT_DATE_DESC.addTo(blackoutDateElement, blackoutDate.getDescription());
         XsdAttribute.BLACKOUT_DATE_SITE_ID.addTo(blackoutDateElement, site.getId());
 
-        if (blackoutDate instanceof DayOfTheWeekBlackoutDate) {
-            DayOfTheWeekBlackoutDate dayOfTheWeek = (DayOfTheWeekBlackoutDate) blackoutDate;
+        if (blackoutDate instanceof WeekDayBlackout) {
+            WeekDayBlackout dayOfTheWeek = (WeekDayBlackout) blackoutDate;
             XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.addTo(blackoutDateElement, dayOfTheWeek.getDayOfTheWeek());
 
-        } else if (blackoutDate instanceof MonthDayBlackoutDate) {
-            MonthDayBlackoutDate monthDayHoliday = (MonthDayBlackoutDate) blackoutDate;
+        } else if (blackoutDate instanceof SpecificDateBlackout) {
+            SpecificDateBlackout monthDayHoliday = (SpecificDateBlackout) blackoutDate;
 
             XsdAttribute.BLACKOUT_DATE_DAY.addTo(blackoutDateElement, monthDayHoliday.getDay());
 
@@ -58,8 +58,8 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
 
             XsdAttribute.BLACKOUT_DATE_YEAR.addTo(blackoutDateElement, monthDayHoliday.getYear());
 
-        } else if (blackoutDate instanceof RelativeRecurringBlackoutDate) {
-            RelativeRecurringBlackoutDate relativeRecurringHoliday = (RelativeRecurringBlackoutDate) blackoutDate;
+        } else if (blackoutDate instanceof RelativeRecurringBlackout) {
+            RelativeRecurringBlackout relativeRecurringHoliday = (RelativeRecurringBlackout) blackoutDate;
             XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.addTo(blackoutDateElement, relativeRecurringHoliday.getDayOfTheWeek());
             XsdAttribute.BLACKOUT_DATE_WEEK_NUMBER.addTo(blackoutDateElement, relativeRecurringHoliday.getWeekNumber());
             XsdAttribute.BLACKOUT_DATE_MONTH.addTo(blackoutDateElement, relativeRecurringHoliday.getMonth());
@@ -100,32 +100,32 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
             final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESC.from(element);
 
             if (dayOfWeek != null && !dayOfWeek.trim().equals("")) {
-                blackoutDate = new DayOfTheWeekBlackoutDate();
-                ((DayOfTheWeekBlackoutDate) blackoutDate).setDayOfTheWeek(dayOfWeek);
+                blackoutDate = new WeekDayBlackout();
+                ((WeekDayBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
 
             } else if (month != null || day != null || year != null) {
-                blackoutDate = new MonthDayBlackoutDate();
+                blackoutDate = new SpecificDateBlackout();
                 if (day != null && !day.trim().equalsIgnoreCase("")) {
 
-                    ((MonthDayBlackoutDate) blackoutDate).setDay(Integer.parseInt(day));
+                    ((SpecificDateBlackout) blackoutDate).setDay(Integer.parseInt(day));
                 }
                 if (month != null && !month.trim().equalsIgnoreCase("")) {
 
-                    ((MonthDayBlackoutDate) blackoutDate).setMonth(Integer.parseInt(month));
+                    ((SpecificDateBlackout) blackoutDate).setMonth(Integer.parseInt(month));
                 }
                 if (year != null && !year.trim().equalsIgnoreCase("")) {
 
-                    ((MonthDayBlackoutDate) blackoutDate).setYear(Integer.parseInt(year));
+                    ((SpecificDateBlackout) blackoutDate).setYear(Integer.parseInt(year));
                 }
             } else if (weekNumber != null || dayOfWeek != null || month != null) {
-                blackoutDate = new RelativeRecurringBlackoutDate();
-                ((RelativeRecurringBlackoutDate) blackoutDate).setDayOfTheWeek(dayOfWeek);
+                blackoutDate = new RelativeRecurringBlackout();
+                ((RelativeRecurringBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
                 if (month != null && !month.trim().equalsIgnoreCase("")) {
-                    ((RelativeRecurringBlackoutDate) blackoutDate).setMonth(Integer.parseInt(month));
+                    ((RelativeRecurringBlackout) blackoutDate).setMonth(Integer.parseInt(month));
                 }
                 if (weekNumber != null && !weekNumber.trim().equalsIgnoreCase("")) {
 
-                    ((RelativeRecurringBlackoutDate) blackoutDate).setWeekNumber(Integer.parseInt(weekNumber));
+                    ((RelativeRecurringBlackout) blackoutDate).setWeekNumber(Integer.parseInt(weekNumber));
                 }
 
             }

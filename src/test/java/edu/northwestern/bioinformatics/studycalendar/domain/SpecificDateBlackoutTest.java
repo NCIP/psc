@@ -8,9 +8,9 @@ import java.util.Calendar;
  * @author Nataliya Shurupova
  */
 
-public class MonthDayHolidayTest extends StudyCalendarTestCase {
-    private MonthDayBlackoutDate recurringHoliday = new MonthDayBlackoutDate();
-    private MonthDayBlackoutDate nonRecurringHoliday = new MonthDayBlackoutDate();
+public class SpecificDateBlackoutTest extends StudyCalendarTestCase {
+    private SpecificDateBlackout recurringHoliday = new SpecificDateBlackout();
+    private SpecificDateBlackout nonRecurringHoliday = new SpecificDateBlackout();
 
     @Override
     protected void setUp() throws Exception {
@@ -66,11 +66,11 @@ public class MonthDayHolidayTest extends StudyCalendarTestCase {
     }
 
     public void testEquals() throws Exception {
-        MonthDayBlackoutDate h1 = new MonthDayBlackoutDate();
+        SpecificDateBlackout h1 = new SpecificDateBlackout();
         h1.setMonth(Calendar.JUNE);
         h1.setDay(2);
 
-        MonthDayBlackoutDate h2 = new MonthDayBlackoutDate();
+        SpecificDateBlackout h2 = new SpecificDateBlackout();
         h2.setMonth(Calendar.JULY);
         h2.setDay(7);
         h2.setYear(2007);

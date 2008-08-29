@@ -19,12 +19,13 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element dayOfTheWeekHolidayElement, relativeRecurringHolidayElement, monthDayHolidayElement;
     private Site site;
 
-    private DayOfTheWeekBlackoutDate dayOfTheWeek;
+    private WeekdayBlackout dayOfTheWeek;
 
-    private RelativeRecurringBlackoutDate relativeRecurringHoliday;
+    private RelativeRecurringBlackout relativeRecurringHoliday;
 
-    private MonthDayBlackoutDate monthDayHoliday;
+    private SpecificDateBlackout monthDayHoliday;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -35,19 +36,19 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new BlackoutDateXmlSerializer(site);
 
 
-        dayOfTheWeek = new DayOfTheWeekBlackoutDate();
+        dayOfTheWeek = new WeekdayBlackout();
         dayOfTheWeek.setId(1);
         dayOfTheWeek.setDayOfTheWeek("Sunday");
         dayOfTheWeek.setDescription("day of the week");
 
-        relativeRecurringHoliday = new RelativeRecurringBlackoutDate();
+        relativeRecurringHoliday = new RelativeRecurringBlackout();
         relativeRecurringHoliday.setDayOfTheWeek("Monday");
         relativeRecurringHoliday.setMonth(2);
         relativeRecurringHoliday.setWeekNumber(4);
         relativeRecurringHoliday.setDescription("relative recurring holiday");
         relativeRecurringHoliday.setId(2);
 
-        monthDayHoliday = new MonthDayBlackoutDate();
+        monthDayHoliday = new SpecificDateBlackout();
         monthDayHoliday.setDay(2);
         monthDayHoliday.setMonth(1);
         monthDayHoliday.setYear(2008);
@@ -129,7 +130,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         final BlackoutDate actualBlackoutDate = serializer.readElement(monthDayHolidayElement);
         assertEquals(monthDayHoliday.getDescription(), actualBlackoutDate.getDescription());
-        assertTrue(actualBlackoutDate instanceof MonthDayBlackoutDate);
+        assertTrue(actualBlackoutDate instanceof SpecificDateBlackout);
 
     }
 

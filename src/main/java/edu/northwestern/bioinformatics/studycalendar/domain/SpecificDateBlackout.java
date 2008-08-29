@@ -5,11 +5,9 @@ import javax.persistence.*;
 /**
  * @author Nataliya Shurupova
  */
-
-
 @Entity
 @DiscriminatorValue(value="1")
-public class MonthDayBlackoutDate extends BlackoutDate {
+public class SpecificDateBlackout extends BlackoutDate {
 
     private Integer day;
 	private Integer month;
@@ -28,7 +26,7 @@ public class MonthDayBlackoutDate extends BlackoutDate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MonthDayBlackoutDate other = (MonthDayBlackoutDate) o;
+        SpecificDateBlackout other = (SpecificDateBlackout) o;
 
         if (day != null ? !day.equals(other.day) : other.day != null) return false;
         if (month != null ? !month.equals(other.month) : other.month != null) return false;
