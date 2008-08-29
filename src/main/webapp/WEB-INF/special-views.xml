@@ -38,7 +38,7 @@
 
     <bean id="redirectToManageHolidays" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/admin/manage/holidays</value></property>
+        <property name="url"><value>/pages/admin/manage/blackoutDates</value></property>
     </bean>
 
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">

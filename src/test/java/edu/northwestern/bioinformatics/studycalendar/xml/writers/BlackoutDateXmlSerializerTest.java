@@ -19,11 +19,11 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element dayOfTheWeekHolidayElement, relativeRecurringHolidayElement, monthDayHolidayElement;
     private Site site;
 
-    private DayOfTheWeek dayOfTheWeek;
+    private DayOfTheWeekBlackoutDate dayOfTheWeek;
 
-    private RelativeRecurringHoliday relativeRecurringHoliday;
+    private RelativeRecurringBlackoutDate relativeRecurringHoliday;
 
-    private MonthDayHoliday monthDayHoliday;
+    private MonthDayBlackoutDate monthDayHoliday;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -35,28 +35,28 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new BlackoutDateXmlSerializer(site);
 
 
-        dayOfTheWeek = new DayOfTheWeek();
+        dayOfTheWeek = new DayOfTheWeekBlackoutDate();
         dayOfTheWeek.setId(1);
         dayOfTheWeek.setDayOfTheWeek("Sunday");
         dayOfTheWeek.setDescription("day of the week");
 
-        relativeRecurringHoliday = new RelativeRecurringHoliday();
+        relativeRecurringHoliday = new RelativeRecurringBlackoutDate();
         relativeRecurringHoliday.setDayOfTheWeek("Monday");
         relativeRecurringHoliday.setMonth(2);
         relativeRecurringHoliday.setWeekNumber(4);
         relativeRecurringHoliday.setDescription("relative recurring holiday");
         relativeRecurringHoliday.setId(2);
 
-        monthDayHoliday = new MonthDayHoliday();
+        monthDayHoliday = new MonthDayBlackoutDate();
         monthDayHoliday.setDay(2);
         monthDayHoliday.setMonth(1);
         monthDayHoliday.setYear(2008);
         monthDayHoliday.setDescription("month day holiday");
         monthDayHoliday.setId(3);
 
-        site.getHolidaysAndWeekends().add(dayOfTheWeek);
-        site.getHolidaysAndWeekends().add(monthDayHoliday);
-        site.getHolidaysAndWeekends().add(relativeRecurringHoliday);
+        site.getBlackoutDates().add(dayOfTheWeek);
+        site.getBlackoutDates().add(monthDayHoliday);
+        site.getBlackoutDates().add(relativeRecurringHoliday);
 
     }
 
@@ -95,22 +95,22 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         relativeRecurringHolidayElement = serializer.createElement(relativeRecurringHoliday, true);
         monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
 
-        Holiday newDayOfTheWeekholiday = serializer.readElement(dayOfTheWeekHolidayElement);
+        BlackoutDate newDayOfTheWeekholiday = serializer.readElement(dayOfTheWeekHolidayElement);
 
         assertEquals("day of week holiday should be the same", dayOfTheWeek, newDayOfTheWeekholiday);
 
-        Holiday newMonthDayHoliday = serializer.readElement(monthDayHolidayElement);
+        BlackoutDate newMonthDayHoliday = serializer.readElement(monthDayHolidayElement);
 
         assertEquals("month day holiday should be the same", monthDayHoliday, newMonthDayHoliday);
 
-        Holiday newRelativeRecurringHoliday = serializer.readElement(relativeRecurringHolidayElement);
+        BlackoutDate newRelativeRecurringHoliday = serializer.readElement(relativeRecurringHolidayElement);
 
         assertEquals("relative recurring holiday should be the same", relativeRecurringHoliday, newRelativeRecurringHoliday);
 
     }
 
     public void testReadElementForNonExistingHoliday() {
-        site.getHolidaysAndWeekends().remove(monthDayHoliday);
+        site.getBlackoutDates().remove(monthDayHoliday);
         try {
             monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
 
@@ -127,9 +127,9 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
 
-        final Holiday actualHoliday = serializer.readElement(monthDayHolidayElement);
-        assertEquals(monthDayHoliday.getDescription(),actualHoliday.getDescription());
-        assertTrue(actualHoliday instanceof MonthDayHoliday);
+        final BlackoutDate actualBlackoutDate = serializer.readElement(monthDayHolidayElement);
+        assertEquals(monthDayHoliday.getDescription(), actualBlackoutDate.getDescription());
+        assertTrue(actualBlackoutDate instanceof MonthDayBlackoutDate);
 
     }
 
@@ -139,7 +139,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
             serializer.createElement(null, true);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("holiday can not be null",
+            assertEquals("blackoutDate can not be null",
                     scve.getMessage());
         }
 

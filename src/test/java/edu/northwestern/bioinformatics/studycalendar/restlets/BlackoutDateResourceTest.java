@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayBlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
@@ -20,7 +20,7 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
     private SiteService siteService;
 
     private Site site;
-    private MonthDayHoliday monthDayHoliday;
+    private MonthDayBlackoutDate monthDayHoliday;
 
     @Override
     public void setUp() throws Exception {
@@ -32,13 +32,13 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
         site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
         site.setAssignedIdentifier(SITE_IDENTIFIER);
 
-        monthDayHoliday = new MonthDayHoliday();
+        monthDayHoliday = new MonthDayBlackoutDate();
         monthDayHoliday.setDay(2);
         monthDayHoliday.setMonth(1);
         monthDayHoliday.setYear(2008);
         monthDayHoliday.setDescription("month day holiday");
         monthDayHoliday.setId(3);
-        site.getHolidaysAndWeekends().add(monthDayHoliday);
+        site.getBlackoutDates().add(monthDayHoliday);
 
     }
 

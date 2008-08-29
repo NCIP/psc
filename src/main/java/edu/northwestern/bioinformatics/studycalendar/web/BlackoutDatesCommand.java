@@ -13,8 +13,8 @@ import java.util.Iterator;
  */
 
 
-public class HolidaysCommand {
-    private static final Logger log = LoggerFactory.getLogger(HolidaysCommand.class.getName());
+public class BlackoutDatesCommand {
+    private static final Logger log = LoggerFactory.getLogger(BlackoutDatesCommand.class.getName());
     private Integer selectedHoliday;
     private String holidayDate;
     private String holidayDescription;
@@ -31,15 +31,15 @@ public class HolidaysCommand {
 
     private String dayOfTheWeek;
 
-    public HolidaysCommand(SiteDao siteDao) {
+    public BlackoutDatesCommand(SiteDao siteDao) {
         this.siteDao = siteDao;
     }
 
     public void execute() {
         if (getAction().equals("Remove")) {
-            List<Holiday> list = getSite().getHolidaysAndWeekends();
-            for (Iterator<Holiday> iterator = list.iterator(); iterator.hasNext();) {
-                Holiday abstractHolidayState =  iterator.next();
+            List<BlackoutDate> list = getSite().getBlackoutDates();
+            for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
+                BlackoutDate abstractHolidayState =  iterator.next();
                 if(abstractHolidayState.getId().equals(getSelectedHoliday())) {
                     iterator.remove();
                     siteDao.save(getSite());
@@ -47,21 +47,21 @@ public class HolidaysCommand {
 
             }
         } else if (getAction().equals("Add")) {
-            List<Holiday> list = getSite().getHolidaysAndWeekends();
-            Holiday toAdd = null;
+            List<BlackoutDate> list = getSite().getBlackoutDates();
+            BlackoutDate toAdd = null;
             if (getHolidayDate() != null ) {
                 parse(getHolidayDate());
-                MonthDayHoliday holiday = new MonthDayHoliday();
+                MonthDayBlackoutDate holiday = new MonthDayBlackoutDate();
                 holiday.setDay(getDay());
                 holiday.setMonth(getMonth());
                 holiday.setYear(getYear());
                 toAdd = holiday;
             } else if (getDayOfTheWeek() != null && getWeek() == null && getMonth() == null){
-                DayOfTheWeek dayOfTheWeek = new DayOfTheWeek();
+                DayOfTheWeekBlackoutDate dayOfTheWeek = new DayOfTheWeekBlackoutDate();
                 dayOfTheWeek.setDayOfTheWeek(getDayOfTheWeek());
                 toAdd = dayOfTheWeek;
             } else {
-                RelativeRecurringHoliday relativeRecurringHoliday = new RelativeRecurringHoliday();
+                RelativeRecurringBlackoutDate relativeRecurringHoliday = new RelativeRecurringBlackoutDate();
                 relativeRecurringHoliday.setWeekNumber(getWeek());
                 relativeRecurringHoliday.setMonth(getMonth());
                 relativeRecurringHoliday.setDayOfTheWeek(getDayOfTheWeek());
@@ -91,9 +91,9 @@ public class HolidaysCommand {
         }
     }
 
-    public boolean isElementInTheList(List<Holiday> list, Holiday value) {
-        for (Iterator<Holiday> iterator = list.iterator(); iterator.hasNext();) {
-            Holiday abstractHolidayState = iterator.next();
+    public boolean isElementInTheList(List<BlackoutDate> list, BlackoutDate value) {
+        for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
+            BlackoutDate abstractHolidayState = iterator.next();
             if(abstractHolidayState.equals(value)){
                 return true;
             }

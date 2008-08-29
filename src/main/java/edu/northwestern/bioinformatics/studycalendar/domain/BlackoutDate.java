@@ -20,7 +20,7 @@ import javax.persistence.*;
                 }
 )
 @DiscriminatorColumn(name = "discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class Holiday extends AbstractMutableDomainObject {
+public abstract class BlackoutDate extends AbstractMutableDomainObject {
     private String description;
 
     public String getDescription() {
@@ -37,9 +37,8 @@ public abstract class Holiday extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public void mergeAnotherHoliday(final Holiday anotherHoliday) {
-        BeanUtils.copyProperties(anotherHoliday, this, new String[]{"id"});
-
+    public void mergeAnotherHoliday(final BlackoutDate anotherBlackoutDate) {
+        BeanUtils.copyProperties(anotherBlackoutDate, this, new String[]{"id"});
     }
 
     private static enum Weekday {

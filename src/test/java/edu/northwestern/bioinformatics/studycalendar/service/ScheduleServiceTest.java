@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeekBlackoutDate;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -111,9 +111,9 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForScheduledScheduledActivityAvoidsBlackouts() throws Exception {
-        DayOfTheWeek noThursdays = new DayOfTheWeek();
+        DayOfTheWeekBlackoutDate noThursdays = new DayOfTheWeekBlackoutDate();
         noThursdays.setDayOfTheWeek("Thursday");
-        site.getHolidaysAndWeekends().add(noThursdays);
+        site.getBlackoutDates().add(noThursdays);
 
         ScheduledActivity event = createScheduledActivity("DC", 2007, Calendar.OCTOBER, 2);
         scheduledStudySegment.addEvent(event);

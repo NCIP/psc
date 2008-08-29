@@ -440,8 +440,8 @@
         </property>
     </bean>
 
-    <bean name="/admin/manage/holidays" id="holidaysController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.HolidaysController">
+    <bean name="/admin/manage/blackoutDates" id="holidaysController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.BlackoutDatesController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name"><value>Manage Holidays</value></property>

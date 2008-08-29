@@ -7,6 +7,7 @@
 
 <html>
 <head>
+<title>Manage Blackout Dates</title>
 <tags:includeScriptaculous/>
 <style type="text/css">
     div.label {

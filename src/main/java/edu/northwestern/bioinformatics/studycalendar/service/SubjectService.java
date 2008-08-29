@@ -251,13 +251,13 @@ public class SubjectService {
 
         int year = dateCalendar.get(Calendar.YEAR);
         Calendar holidayCalendar = Calendar.getInstance();
-        List<Holiday> holidayList = site.getHolidaysAndWeekends();
+        List<BlackoutDate> holidayList = site.getBlackoutDates();
 
-        for (Holiday holiday: holidayList) {
+        for (BlackoutDate blackoutDate : holidayList) {
             // TODO: instanceof indicates abstraction failure -- this logic should be in each BlackoutDate class
-            if (holiday instanceof MonthDayHoliday) {
+            if (blackoutDate instanceof MonthDayBlackoutDate) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
-                MonthDayHoliday h = (MonthDayHoliday)holiday;
+                MonthDayBlackoutDate h = (MonthDayBlackoutDate) blackoutDate;
                 if (h.getYear() == null) {
                     holidayCalendar.set(year, h.getMonth(), h.getDay());
                 } else {
@@ -266,17 +266,17 @@ public class SubjectService {
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
+                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                 }
-            } else if(holiday instanceof DayOfTheWeek) {
-                DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
+            } else if(blackoutDate instanceof DayOfTheWeekBlackoutDate) {
+                DayOfTheWeekBlackoutDate dayOfTheWeek = (DayOfTheWeekBlackoutDate) blackoutDate;
                 int intValueOfTheDay = dayOfTheWeek.getDayOfTheWeekInteger();
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
-                    shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
+                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                 }
-            } else if (holiday instanceof RelativeRecurringHoliday) {
-                RelativeRecurringHoliday relativeRecurringHoliday =
-                        (RelativeRecurringHoliday) holiday;
+            } else if (blackoutDate instanceof RelativeRecurringBlackoutDate) {
+                RelativeRecurringBlackoutDate relativeRecurringHoliday =
+                        (RelativeRecurringBlackoutDate) blackoutDate;
                 Integer numberOfTheWeek = relativeRecurringHoliday.getWeekNumber();
                 Integer month = relativeRecurringHoliday.getMonth();
                 int dayOfTheWeekInt = relativeRecurringHoliday.getDayOfTheWeekInteger();
@@ -292,7 +292,7 @@ public class SubjectService {
                     String originalDateFormatted = df.format(date.getTime());
                     String holidayDateFormatted = df.format(specificDay);
                     if (originalDateFormatted.equals(holidayDateFormatted)) {
-                        shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
+                        shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                     }
                 } catch (ParseException e) {
                     throw new StudyCalendarSystemException(e);

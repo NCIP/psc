@@ -9,7 +9,7 @@ import java.util.Calendar;
  */
 
 public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
-    RelativeRecurringHoliday holiday = new RelativeRecurringHoliday();
+    RelativeRecurringBlackoutDate holiday = new RelativeRecurringBlackoutDate();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -42,12 +42,12 @@ public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
     }
 
     public void testEquals() throws Exception {
-        RelativeRecurringHoliday h1 = new RelativeRecurringHoliday();
+        RelativeRecurringBlackoutDate h1 = new RelativeRecurringBlackoutDate();
         h1.setWeekNumber(3);
         h1.setDayOfTheWeek("Wednesday");
         h1.setMonth(Calendar.JANUARY);
 
-        RelativeRecurringHoliday h2 = new RelativeRecurringHoliday();
+        RelativeRecurringBlackoutDate h2 = new RelativeRecurringBlackoutDate();
         h2.setWeekNumber(4);
         h2.setDayOfTheWeek("Wednesday");
         h2.setMonth(Calendar.JANUARY);
