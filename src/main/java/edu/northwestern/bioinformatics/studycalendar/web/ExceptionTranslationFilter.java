@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import org.springframework.web.bind.MissingServletRequestParameterException;
 
 /**
  * This filter catches some known exceptions and translates them into appropriate HTTP error codes.
@@ -26,6 +25,8 @@ public class ExceptionTranslationFilter extends ContextRetainingFilterAdapter {
         try {
             filterChain.doFilter(request, response);
         } catch (MissingServletRequestParameterException missing) {
+            treatAsBadRequest(httpResponse, missing);
+        } catch (MissingRequiredBoundProperty missing) {
             treatAsBadRequest(httpResponse, missing);
         }
     }

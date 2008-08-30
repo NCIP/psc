@@ -188,6 +188,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return clone;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PlannedActivity)) return false;
@@ -208,6 +209,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (activity != null ? activity.hashCode() : 0);

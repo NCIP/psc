@@ -40,13 +40,14 @@ public class Fixtures {
         return target;
     }
 
-    public static void assignIds(Study study) {
-        assignIds(study, 0);
+    public static Study assignIds(Study study) {
+        return assignIds(study, 0);
     }
 
-    public static void assignIds(Study study, int start) {
+    public static Study assignIds(Study study, int start) {
         setIds(start, study);
         assignIds(study.getPlannedCalendar(), start + 1);
+        return study;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
@@ -312,6 +313,10 @@ public class Fixtures {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Creating domain obj of class " + clazz.getName() + " failed", e);
         }
+    }
+
+    public static Population createPopulation() {
+        return createPopulation("P", "People");
     }
 
     public static Population createPopulation(String abbreviation, String name) {

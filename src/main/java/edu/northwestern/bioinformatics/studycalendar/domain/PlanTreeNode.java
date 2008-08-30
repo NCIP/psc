@@ -31,6 +31,11 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
         }
     }
 
+    public void clearIds() {
+        setId(null);
+        setGridId(null);
+    }
+
     ////// Child IMPLEMENTATION
 
     public abstract Class<P> parentClass();

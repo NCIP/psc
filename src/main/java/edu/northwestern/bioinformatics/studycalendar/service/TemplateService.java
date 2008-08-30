@@ -47,6 +47,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * This service provides methods for:
+ *   - analyzing the plan node tree in the presence of deltas
+ *   - performing security-related operations on templates
+ *
+ * This is a fairly low-level service, with no dependencies on other services.
+ *
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */

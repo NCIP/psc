@@ -18,14 +18,9 @@ public class NewPeriodCommand implements PeriodCommand {
         period = new Period();
     }
 
-    // TODO: this is going to have to be an arbitrary revision at some point
-    // (i.e. for Customizations)
-    public void apply() {
+    public boolean apply() {
         amendmentService.updateDevelopmentAmendment(getStudySegment(), Add.create(getPeriod()));
-    }
-
-    public void setPeriod(final Period period) {
-        this.period = period;
+        return false;
     }
 
     public Period getPeriod() {

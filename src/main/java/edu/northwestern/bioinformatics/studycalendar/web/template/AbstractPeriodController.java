@@ -34,6 +34,7 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     }
 
     @Override
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("durationUnits", Duration.Unit.values());
@@ -44,11 +45,17 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     }
 
     @Override
+    @SuppressWarnings({ "unchecked" })
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         C command = (C) oCommand;
-        command.apply();
+        boolean reedit = command.apply();
         Study study = studyService.saveStudyFor(command.getStudySegment());
-        return getControllerTools().redirectToCalendarTemplate(study.getId(), command.getStudySegment().getId(), study.getDevelopmentAmendment().getId());
+        if (reedit) {
+            return new ModelAndView("redirectToEditPeriod", "period", command.getPeriod().getId());
+        } else {
+            return getControllerTools().redirectToCalendarTemplate(
+                study.getId(), command.getStudySegment().getId(), study.getDevelopmentAmendment().getId());
+        }
     }
 
     ////// CONFIGURATION
@@ -63,7 +70,7 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
         this.templateService = templateService;
     }
 
-    public TemplateService getTemplateService() {
+    protected TemplateService getTemplateService() {
         return this.templateService;
     }
 }

@@ -97,6 +97,14 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         return false;
     }
 
+    @Override
+    public void clearIds() {
+        super.clearIds();
+        for (C child : getChildren()) {
+            child.clearIds();
+        }
+    }
+
     public G getChildren() {
         return children;
     }

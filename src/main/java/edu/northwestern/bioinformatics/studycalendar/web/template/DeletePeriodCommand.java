@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 
 public class DeletePeriodCommand implements PeriodCommand {
 
@@ -24,10 +24,10 @@ public class DeletePeriodCommand implements PeriodCommand {
         this.period = p;
     }
 
-
-    public void apply() {
+    public boolean apply() {
         removePlannedActivities();
         removePeriod();
+        return false;
     }
 
     private void removePlannedActivities() {

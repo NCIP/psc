@@ -72,19 +72,21 @@ public class Duration implements Comparable<Duration>, Cloneable {
 
     // Object methods
 
+    @Override
     public String toString() {
-        StringBuilder result = new StringBuilder().append(quantity).append(" ");
+        StringBuilder result = new StringBuilder().append(quantity).append(' ');
         if (unit == null) {
             result.append("(null unit)");
         } else {
             result.append(unit);
         }
         if (quantity == null || quantity != 1) {
-            result.append("s");
+            result.append('s');
         }
         return result.toString();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -97,6 +99,7 @@ public class Duration implements Comparable<Duration>, Cloneable {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (quantity != null ? quantity.hashCode() : 0);

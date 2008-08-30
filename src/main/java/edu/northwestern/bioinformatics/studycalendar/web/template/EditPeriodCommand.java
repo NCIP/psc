@@ -1,23 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-
-import java.util.Collection;
-import java.util.Arrays;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -48,9 +47,10 @@ public class EditPeriodCommand implements PeriodCommand {
         return templateService.findParent(getPeriod());
     }
 
-    public void apply() {
+    public boolean apply() {
         updateRevWithChangedProperties();
         removeInvalidPlannedActivities();
+        return false;
     }
 
     private void updateRevWithChangedProperties() {

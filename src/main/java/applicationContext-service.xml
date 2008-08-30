@@ -20,6 +20,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
     <bean id="templateService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateService"/>
+    <bean id="templateDevelopmentService" autowire="byType" 
+          class="edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService"/>
     <bean id="scheduleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
     <bean id="userService" autowire="byName"
@@ -30,8 +32,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.AmendmentService"/>
     <bean id="deltaService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
-    <bean id="planTreeNodeService" autowire="byName"
-              class="edu.northwestern.bioinformatics.studycalendar.service.PlanTreeNodeService"/>
     <bean id="mutatorFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
     <bean id="subjectCoordinatorDashboardService" autowire="byName"

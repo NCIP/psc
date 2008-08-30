@@ -1,16 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import static org.easymock.classextension.EasyMock.*;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,7 +75,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         expect(command.getPeriod()).andReturn(period).anyTimes();
         expect(command.getStudySegment()).andReturn(period.getStudySegment()).anyTimes();
         expect(studyService.saveStudyFor(period.getStudySegment())).andReturn(study);
-        command.apply();
+        expect(command.apply()).andReturn(false);
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);

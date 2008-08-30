@@ -222,5 +222,30 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         return clone;
     }
 
-    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Period)) return false;
+
+        Period period = (Period) o;
+
+        if (repetitions != period.repetitions) return false;
+        if (duration != null ? !duration.equals(period.duration) : period.duration != null)
+            return false;
+        if (name != null ? !name.equals(period.name) : period.name != null) return false;
+        if (startDay != null ? !startDay.equals(period.startDay) : period.startDay != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = (name != null ? name.hashCode() : 0);
+        result = 31 * result + (startDay != null ? startDay.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + repetitions;
+        return result;
+    }
 }

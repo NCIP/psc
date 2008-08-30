@@ -91,6 +91,8 @@
             element.innerHTML = text;
         }
 
+        // TODO: client-side validation is anathema
+
         function isCorrectStartDay() {
             var startDay = document.getElementById("period.startDay").value;
             var isDataCorrect = true;
@@ -127,14 +129,11 @@
         function isCorrectInput() {
             var isDataCorrect = true;
             isDataCorrect = isCorrectStartDay();
-            if(!isDataCorrect) {
-                return ;
-            }
+            if(!isDataCorrect) { return false; }
             isDataCorrect = isCorrectDuration();
-            if(!isDataCorrect) { return ; }
+            if(!isDataCorrect) { return false; }
             isDataCorrect= isCorrectRepetitions();
-             submitForm(isDataCorrect)
-
+            return isDataCorrect
         }
 
         Element.observe(window, "load", function() {
@@ -188,7 +187,7 @@
 
         }
         function createAutocompleter() {
-            if ($('copy') != null) {
+            if ($('copy')) {
 
                 templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
                 {
@@ -201,28 +200,31 @@
         }
 
         function currentTemplateSelected() {
-            if ($('copy') != null) {
+            if ($('copy')) {
                 updatePeriods($('template-autocompleter-input-id').value, 'true')
-            }
-        }
-        function isUserSelectedAnyPeriod() {
-            var isDataCorrect = true;
-             if($('selectedPeriod').value==''){    isDataCorrect = false;
-                resetElement("periodError",
-                                  "ERROR: Please select one period.", "black");
-            }
-            $('copyPeriod').value='Copy'
-              submitForm(isDataCorrect)
-        }
-        function submitForm(isDataCorrect){
-            var periodForm = $('period-form');
-            if (isDataCorrect) {
-                periodForm.submit();
             }
         }
         Event.observe(window, "load", currentTemplateSelected)
         Event.observe(window, "load", createAutocompleter)
         Event.observe(window, "load", initSearchField);
+
+        // Temporary.  Validation should really be on the server side.
+        $(document).observe("dom:loaded", function() {
+            if ($('copy-form')) {
+                $('copy-form').observe("submit", function(evt) {
+                    if ($F('selectedPeriod').blank()) {
+                        resetElement("periodError", "ERROR: Please select one period.", "black");
+                        Event.stop(evt);
+                    }
+                })
+            }
+
+            $('period-form').observe("submit", function(evt) {
+                if (!isCorrectInput()) {
+                    Event.stop(evt);
+                }
+            })
+        })
 
     </script>
 </head>
@@ -291,45 +293,36 @@
                 </div>
             </div>
             <div class="even row submit">
-                <input id="submitButoon" type="button" value="Submit" onclick="javascript:isCorrectInput()" />
+                <input id="submitButton" type="submit" value="Submit"/>
             </div>
-            <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
-            <!---->
+        </form:form>
+    </laf:division>
 
-            <!--html code for copy period functionality-->
+    <c:if test="${period.id == null}">
+        <laf:division title="Copy from another period">
+            <form:form method="post" id="copy-form" >
+                <div class="row">
 
-            <c:if test="${period.id == null}">
-                <laf:body title="Copy from another period">
+                    <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" class="search"/>
+                    <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
+                    <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
 
-                        <div class="row">
-
-                            <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" class="search"/>
-                            <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
-                            <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
-
-                            <div id="template-autocompleter-div" class="autocomplete"></div>
-                        <div class="row" id="periods">
+                    <div id="template-autocompleter-div" class="autocomplete"></div>
+                    <div class="row" id="periods">
                         <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
 
                         <div class="row" id="selected-epochs">
 
-                     </div>
-
-
-                    </div>
                         </div>
+                    </div>
+                </div>
 
-                     <div class="row">
-                        <input id="copy" type="button" value="Copy" name="copyPeriod" onclick="javascript:isUserSelectedAnyPeriod()"/>
-                         <input type="hidden" id="copyPeriod" name="copyPeriod" value=""/>
-
-                      </div>
-                  </laf:body>
-
-            </c:if>
-        </form:form>
-
-    </laf:division>
+                <div class="row">
+                    <input id="copy" type="submit" value="Copy"/>
+                </div>
+            </form:form>
+        </laf:division>
+    </c:if>
 </laf:box>
 </body>
 </html>

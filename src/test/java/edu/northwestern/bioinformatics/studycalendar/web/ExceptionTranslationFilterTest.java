@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expectLastCall;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import javax.servlet.FilterChain;
@@ -35,6 +34,15 @@ public class ExceptionTranslationFilterTest extends WebTestCase {
     public void testMissingParameterBecomesBadRequest() throws Exception {
         filterChain.doFilter(request, response);
         expectLastCall().andThrow(new MissingServletRequestParameterException("hatSize", "int"));
+
+        doFilter();
+
+        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+    }
+
+    public void testMissingBoundPropertyBecomesBadRequest() throws Exception {
+        filterChain.doFilter(request, response);
+        expectLastCall().andThrow(new MissingRequiredBoundProperty("hatSize"));
 
         doFilter();
 

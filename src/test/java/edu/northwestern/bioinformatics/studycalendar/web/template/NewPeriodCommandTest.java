@@ -12,6 +12,7 @@ public class NewPeriodCommandTest extends StudyCalendarTestCase {
     private NewPeriodCommand command;
     private AmendmentService amendmentService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         amendmentService = registerMockFor(AmendmentService.class);
