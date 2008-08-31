@@ -9,11 +9,11 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 public abstract class DayNumber {
     private int dayNumber;
 
-    public static DayNumber create(int dayNumber) {
+    public static DayNumber createAbsoluteDayNumber(int dayNumber) {
         return create(null, dayNumber);
     }
 
-    public static DayNumber create(Integer cycleNumber, int dayNumber) {
+    private static DayNumber create(Integer cycleNumber, int dayNumber) {
         if (cycleNumber == null || dayNumber < 1) {
             return new DayNumber.WithoutCycle(dayNumber);
         } else {
@@ -23,11 +23,9 @@ public abstract class DayNumber {
 
     public static DayNumber createCycleDayNumber(int absoluteDayNumber, Integer cycleLength) {
         if (cycleLength == null || absoluteDayNumber < 1) {
-            return create(absoluteDayNumber);
+            return createAbsoluteDayNumber(absoluteDayNumber);
         } else {
-            return create(
-                (absoluteDayNumber - 1) / cycleLength + 1,
-                (absoluteDayNumber - 1) % cycleLength + 1);
+            return new WithCycle(absoluteDayNumber, cycleLength);
         }
     }
 
@@ -44,12 +42,16 @@ public abstract class DayNumber {
     @Override
     public abstract String toString();
 
+    public abstract int getAbsoluteDayNumber();
+
     public static class WithCycle extends DayNumber {
+        private int cycleLength;
         private int cycleNumber;
 
-        private WithCycle(int cycleNumber, int dayNumber) {
-            super(dayNumber);
-            this.cycleNumber = cycleNumber;
+        private WithCycle(int absoluteDayNumber, int cycleLength) {
+            super((absoluteDayNumber - 1) % cycleLength + 1);
+            this.cycleNumber = (absoluteDayNumber - 1) / cycleLength + 1;
+            this.cycleLength = cycleLength;
         }
 
         public Integer getCycleNumber() {
@@ -65,10 +67,14 @@ public abstract class DayNumber {
         public String toString() {
             return String.format("C%dD%d", cycleNumber, getDayNumber());
         }
+
+        public int getAbsoluteDayNumber() {
+            return (cycleNumber - 1) * cycleLength + getDayNumber();
+        }
     }
 
     public static class WithoutCycle extends DayNumber {
-        private WithoutCycle(Integer dayNumber) {
+        private WithoutCycle(int dayNumber) {
             super(dayNumber);
         }
 
@@ -80,6 +86,10 @@ public abstract class DayNumber {
         @Override
         public String toString() {
             return Integer.toString(getDayNumber());
+        }
+
+        public int getAbsoluteDayNumber() {
+            return getDayNumber();
         }
     }
 }

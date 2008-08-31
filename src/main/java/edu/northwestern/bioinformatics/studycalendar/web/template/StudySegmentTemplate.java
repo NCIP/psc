@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.nwu.bioinformatics.commons.CollectionUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -201,7 +200,7 @@ public class StudySegmentTemplate {
         }
 
         private int getAbsoluteDayNumber() {
-            return day.getNumber().getDayNumber();
+            return day.getNumber().getAbsoluteDayNumber();
         }
 
         public boolean isInPeriod() {

@@ -7,23 +7,23 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
  */
 public class DayNumberTest extends StudyCalendarTestCase {
     public void testStringRepresentationInCycle() throws Exception {
-        assertEquals("C1D1", DayNumber.create(1, 1).toString());
-        assertEquals("C3D8", DayNumber.create(3, 8).toString());
-        assertEquals("C2311D45", DayNumber.create(2311, 45).toString());
+        assertEquals("C1D1", DayNumber.createCycleDayNumber(1, 1).toString());
+        assertEquals("C3D8", DayNumber.createCycleDayNumber(28, 10).toString());
+        assertEquals("C2311D45", DayNumber.createCycleDayNumber(115545, 50).toString());
     }
 
     public void testNoCycleInformationForNegativeDays() throws Exception {
-        assertEquals("-5", DayNumber.create(4, -5).toString());
+        assertEquals("-5", DayNumber.createCycleDayNumber(-5, 3).toString());
     }
     
     public void testNoCycleInformationForDayZero() throws Exception {
-        assertEquals("0", DayNumber.create(4, 0).toString());
+        assertEquals("0", DayNumber.createCycleDayNumber(0, 4).toString());
     }
     
     public void testStringRepresentationOutsideOfCycle() throws Exception {
-        assertEquals("1", DayNumber.create(1).toString());
-        assertEquals("0", DayNumber.create(0).toString());
-        assertEquals("-11", DayNumber.create(-11).toString());
+        assertEquals("1", DayNumber.createAbsoluteDayNumber(1).toString());
+        assertEquals("0", DayNumber.createAbsoluteDayNumber(0).toString());
+        assertEquals("-11", DayNumber.createAbsoluteDayNumber(-11).toString());
     }
     
     public void testCreateFromDayAndCycleLengthInFirstCycle() throws Exception {
@@ -35,14 +35,22 @@ public class DayNumberTest extends StudyCalendarTestCase {
     }
 
     public void testCycleIsEvenForCycle4() throws Exception {
-        assertEquals("even", DayNumber.create(4, 3).getCycleEvenOrOdd());
+        assertEquals("even", DayNumber.createCycleDayNumber(37, 7).getCycleEvenOrOdd());
     }
 
     public void testCycleIsOddForCycle13() throws Exception {
-        assertEquals("odd", DayNumber.create(13, 3).getCycleEvenOrOdd());
+        assertEquals("odd", DayNumber.createCycleDayNumber(17, 7).getCycleEvenOrOdd());
     }
     
     public void testCycleIsNeitherOddOrEvenWithNoCycleInformation() throws Exception {
-        assertNull(DayNumber.create(3).getCycleEvenOrOdd());
+        assertNull(DayNumber.createAbsoluteDayNumber(3).getCycleEvenOrOdd());
+    }
+
+    public void testAbsoluteDayNumberInCycle() throws Exception {
+        assertEquals(50, DayNumber.createCycleDayNumber(50, 14).getAbsoluteDayNumber());
+    }
+
+    public void testAbsoluteDayNumberFromAbsolute() throws Exception {
+        assertEquals(34, DayNumber.createAbsoluteDayNumber(34).getAbsoluteDayNumber());
     }
 }
