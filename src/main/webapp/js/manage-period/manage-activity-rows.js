@@ -143,7 +143,8 @@ Object.extend(SC.MP, {
   
   updateUsedUnused: function(daysRow) {
     var count = daysRow.select(".marker").length
-    $$("tr." + SC.MP.findRowIndexClass(daysRow)).each(function(row) {
+    var rowSelector = "tr." + SC.MP.findRowIndexClass(daysRow);
+    $$(rowSelector).each(function(row) {
       row.removeClassName("used")
       row.removeClassName("unused")
       if (count == 0) {
@@ -152,6 +153,11 @@ Object.extend(SC.MP, {
         row.addClassName("used")
       }
     })
+    // IE sucks: it doesn't immediately show the view/edit button after the row class is changed to unused
+    // This ugly hack reminds it.
+    if (Prototype.Browser.IE && count != 0) {
+      $$("#notes " + rowSelector + " .notes-edit").first().hide().show()
+    }
   },
 
   createActivitiesAutocompleter: function() {
