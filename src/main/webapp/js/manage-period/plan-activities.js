@@ -273,6 +273,7 @@ Object.extend(SC.MP, {
   cellSize: function() {
     console.time('cell size')
     var aGroup = $$('#days tbody').first()
+    if (!aGroup) return { width: 1, height: 1 }
     var groupSize = aGroup.getDimensions()
     var headerSize = aGroup.select("tr.activity-type").first().getDimensions()
     var rows = aGroup.select("tr.activity")
@@ -301,8 +302,15 @@ Object.extend(SC.MP, {
   
   // Returns the view-relative bounds for an element
   viewportBounds: function(elt) {
-    var dim = $(elt).getDimensions()
-    var offset = $(elt).viewportOffset()
+    var e = $(elt);
+    var dim = e.getDimensions()
+    var offset = e.viewportOffset()
+
+    // This is a limited workaround for scroll-related misbehavior in Element#viewportOffset.
+    // It won't work in the general case, but is fine for this page.
+    offset.left += e.scrollLeft
+    offset.top  += e.scrollTop
+
     return SC.MP._bounds(dim, offset)
   },
 
@@ -327,7 +335,7 @@ Object.extend(SC.MP, {
   // Returns true if the center of the marker element is within the bounds of 
   // the container
   isDroppedWithin: function(container, marker) {
-    var containerBounds = SC.MP.bounds(container)
+    var containerBounds = SC.MP.viewportBounds(container)
     var markerBounds = marker.comparableBounds || SC.MP.viewportBounds(marker)
     console.log("container: %o | marker: %o", containerBounds, markerBounds)
     var inContainerX = containerBounds.left < markerBounds.center.x && 
@@ -374,6 +382,10 @@ Object.extend(SC.MP, {
     console.log("Search for %d in %d, %d", yOffset, lo, hi)
     if (!groups) {
       groups = $$("#days tbody.activity-type")
+      if (groups.length < 1) {
+        console.log("%d not in a droppable area", yOffset)
+        return null
+      }
       lo = 0
       hi = groups.length - 1
       console.log("Default lo %d, hi %d", lo, hi)
