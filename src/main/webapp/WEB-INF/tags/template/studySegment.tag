@@ -37,8 +37,27 @@
                 <c:if test="${editable}"><td class="controls"></td></c:if>
                 <th class="row">Day</th>
                 <c:forEach items="${month.periods[0].days}" var="day">
-                    <th class="column">${day.day.number}</th>
+                    <c:set var="n" value="${day.day.number}"/>
+                    <c:set var="thisCycle" value="${n.hasCycle ? n.cycleNumber : null}"/>
+                    <c:choose>
+                        <c:when test="${not n.hasCycle}">
+                            <th class="column no-cycle">${n}</th>
+                        </c:when>
+                        <c:when test="${empty thisCycle or empty lastCycle or thisCycle != lastCycle}">
+                            <th class="column with-cycle" title="${n}">
+                                <strong class="cycle-number">C${thisCycle}</strong><span class="day-number">D${n.dayNumber}</span>
+                            </th>
+                            <c:set var="lastCycle" value="${thisCycle}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <th class="column cycle-day" title="${n}">
+                                <span class="day-number">D${n.dayNumber}</span>
+                            </th>
+                        </c:otherwise>
+                    </c:choose>
                 </c:forEach>
+                <c:set var="n" value="${null}"/>
+                <c:set var="lastCycle" value="${null}"/>
             </tr>
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
@@ -94,7 +113,7 @@
             <c:forEach items="${month.days}" var="entry">
                 <c:if test="${not empty entry.value.events}">
                     <div class="day autoclear" style="display: none;">
-                        <h3>Day ${entry.key}</h3>
+                        <h3><c:if test="${not entry.value.number.hasCycle}">Day </c:if>${entry.value.number}</h3>
                         <ul>
                             <c:forEach items="${entry.value.events}" var="event">
                                 <li>

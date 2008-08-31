@@ -37,6 +37,10 @@ public abstract class DayNumber {
         return dayNumber;
     }
 
+    public boolean getHasCycle() {
+        return getCycleEvenOrOdd() != null;
+    }
+
     public abstract String getCycleEvenOrOdd();
 
     @Override

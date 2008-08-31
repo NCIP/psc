@@ -34,7 +34,7 @@
                 margin: 1em;
             }
             table.periods td, table.periods th {
-                width: 2em;
+                width: 2.8em;
             }
             table.periods th {
                 padding: 2px;
@@ -47,6 +47,13 @@
             }
             table.periods th.column {
                 border-top-width: 1px;
+                font-weight: normal
+            }
+            table.periods th.no-cycle, table.periods th .cycle-number {
+                font-weight: bold
+            }
+            table.periods th .day-number {
+                color: #444
             }
             table.periods tr.resume th {
                 border-right: 1px solid #ddd;
