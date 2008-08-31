@@ -6,12 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -60,10 +60,11 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         int periodId = ServletRequestUtils.getRequiredIntParameter(request, "period");
         Period period = deltaService.revise(periodDao.getById(periodId));
         Study study = templateService.findStudy(period);
+        StudySegment studySegment = templateService.findParent(period);
 
         PeriodActivitiesGrid grid
             = new PeriodActivitiesGrid(period,
-                null /* TODO */,
+                studySegment.getCycleLength(), 
                 collectActivities(study));
 
         ModelMap model = new ModelMap();

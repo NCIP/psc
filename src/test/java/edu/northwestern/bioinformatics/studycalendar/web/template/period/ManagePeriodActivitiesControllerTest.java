@@ -10,6 +10,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -37,14 +38,16 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     private Study parent;
     private SourceDao sourceDao;
     private List<Source> sources;
+    private StudySegment studySegment;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         period = createPeriod("7th", 10, 8, 4);
         parent = createBasicTemplate();
-        parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(period);
         parent.setDevelopmentAmendment(new Amendment("dev"));
+        studySegment = parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        studySegment.addPeriod(period);
         Fixtures.assignIds(parent);
 
         sources = asList(createNamedInstance("Source A", Source.class));
@@ -72,6 +75,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         expect(sourceDao.getAll()).andReturn(sources);
         expect(deltaService.revise(period)).andReturn(revisedPeriod);
         expect(templateService.findStudy(revisedPeriod)).andReturn(parent);
+        expect(templateService.findParent(revisedPeriod)).andReturn(studySegment);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -118,6 +122,13 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         assertGridRow(a1, true, it.next());
         assertGridRow(a2, false, it.next());
         assertGridRow(a3, false, it.next());
+    }
+    
+    public void testGridUsesCycleLengthIfAvailable() throws Exception {
+        studySegment.setCycleLength(18);
+
+        PeriodActivitiesGrid grid = (PeriodActivitiesGrid) doHandle().getModel().get("grid");
+        assertEquals((Integer) 18, grid.getCycleLength());
     }
 
     private void assertGridRow(Activity expectedActivity, boolean expectUsed, PeriodActivitiesGridRow actual) {

@@ -163,4 +163,8 @@ public class PeriodActivitiesGrid {
     public Period getPeriod() {
         return period;
     }
+
+    public Integer getCycleLength() {
+        return cycleLength;
+    }
 }
