@@ -500,8 +500,6 @@ function initMethods() {
     registerHoverTips();
     registerDraggablesAndDroppables();
     createAutocompleter();
-    initSearchField();
-
 }
 
 Event.observe(window, "load", initMethods)
@@ -1527,7 +1525,7 @@ table#manage-period {
         </c:forEach>
     </select>
     <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
-           value="Search for activity"/>
+           hint="Search for activity"/>
 
     <div id="activities-autocompleter-div" class="autocomplete"></div>
 

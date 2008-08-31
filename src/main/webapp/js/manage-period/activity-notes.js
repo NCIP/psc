@@ -96,11 +96,18 @@ Object.extend(SC.MP, {
       var noteInput = $('edit-notes-' + noteKind);
       // copy in current values from spans
       noteInput.value = noteSpan.innerHTML.unescapeHTML().strip()
+      SC.applyInputHint(noteInput)
       // observe the text field and update the span
       SC.MP.NOTES_OBSERVERS[noteKind] = new Form.Element.Observer(
         noteInput,
         0.4,
-        function(e, value) { noteSpan.innerHTML = value.strip() }
+        function(e, value) {
+          if (noteInput.hasClassName("input-hint")) {
+            noteSpan.innerHTML = ""
+          } else {
+            noteSpan.innerHTML = value.strip()
+          }
+        }
       )
     })
     $('edit-notes-lightbox').addClassName(rowClass)

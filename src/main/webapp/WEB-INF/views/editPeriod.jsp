@@ -206,7 +206,6 @@
         }
         Event.observe(window, "load", currentTemplateSelected)
         Event.observe(window, "load", createAutocompleter)
-        Event.observe(window, "load", initSearchField);
 
         // Temporary.  Validation should really be on the server side.
         $(document).observe("dom:loaded", function() {
@@ -303,7 +302,7 @@
             <form:form method="post" id="copy-form" >
                 <div class="row">
 
-                    <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" class="search"/>
+                    <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" hint="Search for study" class="autocomplete"/>
                     <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
                     <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
 

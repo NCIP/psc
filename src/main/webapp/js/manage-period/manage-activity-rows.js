@@ -189,6 +189,4 @@ Object.extend(SC.MP, {
 $(document).observe('dom:loaded', function() {
   $$('tr.activity').each(SC.MP.registerActivityHover)
   SC.MP.createActivitiesAutocompleter()
-  // TODO: refactor this method out of the global NS & make it automatically applied
-  initSearchField()
 })

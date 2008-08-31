@@ -342,7 +342,7 @@
             </c:forEach>
         </select>
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
-               value="With this name or code"/>
+               hint="With this name or code"/>
 
         <div style="position: relative">
             <div id="activities-autocompleter-div" class="autocomplete"></div>
@@ -380,7 +380,7 @@
                 <label for="edit-notes-details">Details</label>
             </div>
             <div class="value">
-                <input type="text" class="text" id="edit-notes-details" />
+                <input type="text" class="text" id="edit-notes-details" hint="No details" />
             </div>
         </div>
         <div class="row">
@@ -388,7 +388,7 @@
                 <label for="edit-notes-condition">Condition</label>
             </div>
             <div class="value">
-                <input type="text" class="text" id="edit-notes-condition" />
+                <input type="text" class="text" id="edit-notes-condition" hint="No condition" />
             </div>
         </div>
         <div class="row">

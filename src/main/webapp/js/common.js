@@ -318,35 +318,39 @@ function registerHeaderCollapse() {
     })
 }
 
-/////  autocompleter search fields
-function initSearchField() {
-    $$("input[type=text].autocomplete").each(function(theInput) {
-        /* Add event handlers */
-        Event.observe(theInput, 'focus', clearDefaultText);
-        Event.observe(theInput, 'blur', replaceDefaultText);
-        /* Save the current value */
-        if (theInput.value != '') {
-            theInput.defaultText = theInput.value;
-            theInput.className = 'pending-search';
-        }
-    });
-}
-function clearDefaultText(e) {
-    var target = window.event ? window.event.srcElement : e ? e.target : null;
-    if (!target) return;
-
-    if (target.value == target.defaultText) {
-        target.className = 'search';
-        target.value = '';
-    }
+SC.addInputHintBehavior = function(input) {
+  console.log("adding hint behavior to %o", input)
+  if (input.getAttribute("hint") && input.type == 'text') {
+    $(input).observe('focus', SC.inputHintFocus)
+    $(input).observe('blur', SC.inputHintBlur)
+    SC.applyInputHint(input)
+  } else {
+    console.log("Can't apply an input hint to %o -- it isn't a text input with the hint attribute.", input)
+  }
 }
 
-function replaceDefaultText(e) {
-    var target = window.event ? window.event.srcElement : e ? e.target : null;
-    if (!target) return;
-
-    if (target.value == '' && target.defaultText) {
-        target.className = 'pending-search';
-        target.value = target.defaultText;
-    }
+SC.inputHintFocus = function(evt) {
+  var input = Event.element(evt)
+  if (input.hasClassName("input-hint")) {
+    input.removeClassName("input-hint")
+    input.value = ""
+  }
 }
+
+SC.inputHintBlur = function(evt) {
+  var input = Event.element(evt)
+  SC.applyInputHint(input)
+}
+
+SC.applyInputHint = function(input) {
+  if (input.value.blank()) {
+    input.addClassName("input-hint")
+    input.value = input.getAttribute("hint")
+  } else {
+    input.removeClassName("input-hint")
+  }
+}
+
+$(document).observe("dom:loaded", function() {
+  $$("input[hint]").each(SC.addInputHintBehavior)
+})

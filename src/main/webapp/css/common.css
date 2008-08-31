@@ -147,13 +147,7 @@ input.autocomplete {
     background-color: #CCE6FF
 }
 
-input.pending-search {
-    color: gray;
+input.input-hint {
+    color: #999;
     font-style: italic;
-    background-color: #CCE6FF;
-}
-
-input.search {
-    font-style: normal;
-    background-color: #CCE6FF;
 }

@@ -51,8 +51,6 @@
 
         if (${isAssignByStudy}) {
             Event.observe(window, "load", createAutocompleter)
-            Event.observe(window, "load", initSearchField);
-
         } else {
             Event.observe(window, "load", registerSelector);
         }
@@ -123,17 +121,9 @@
             </div>
             <div class="value">
                 <c:if test="${isAssignByStudy}">
-                    <c:if test="${not empty selected}">
-                        <input id="studies-autocompleter-input" type="text" value="${selected.assignedIdentifier}"
-                               class="search" autocomplete="off"/>
-                    </c:if>
-                    <c:if test="${empty selected}">
-                        <input id="studies-autocompleter-input" type="text" value="Search for studies"
-                               class="autocomplete"
-                               autocomplete="off"/>
-                    </c:if>
+                    <input id="studies-autocompleter-input" type="text" value="${selected.assignedIdentifier}"
+                           hint="Search for studies" class="autocomplete" autocomplete="off"/>
                     <div id="studies-autocompleter-div" class="autocomplete"></div>
-
                 </c:if>
                 <c:if test="${not isAssignByStudy}">
                     <select id="selector">
