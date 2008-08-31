@@ -50,16 +50,23 @@ Object.extend(SC.MP, {
   },
   
   hideNotePreview: function(evt) {
-    $('notes-preview').hide()
+    var box = $('notes-preview')
+    box.hide()
   },
   
   updateNotePreview: function(evt) {
     var editButton = Event.element(evt)
     var notesRow = Event.findElement(evt, "tr")
-    var rowClass = $w(notesRow.className).detect(function(clz) { return clz.substring(0, 4) == "row-" })
-    
+    var rowClass = SC.MP.findRowIndexClass(notesRow)
+
     var box = $('notes-preview')
-    
+    $w(box.className).each(function(clz) {
+      if (clz.substring(0, 4) == "row-") {
+        box.removeClassName(clz)
+      }
+    })
+    box.addClassName(rowClass)
+
     // update contents
     box.select('h2').first().innerHTML = 
       $$("#activities ." + rowClass + " td").first().title
@@ -83,9 +90,17 @@ Object.extend(SC.MP, {
     box.show()
   },
 
-  editNotes: function(evt) {
+  clickEditButton: function(evt) {
     var editButton = Event.element(evt)
-    var notesRow = editButton.up("tr")
+    SC.MP.editNotes(editButton.up("tr"))
+  },
+
+  clickNotesPreview: function(evt) {
+    var rowClass = SC.MP.findRowIndexClass($('notes-preview'))
+    SC.MP.editNotes($$("#notes tr." + rowClass).first())
+  },
+
+  editNotes: function(notesRow) {
     var rowClass = SC.MP.findRowIndexClass(notesRow)
     var activity = SC.MP.findActivity(rowClass.substring(4))
     $$(".column ." + rowClass).invoke("addClassName", "emphasized")
@@ -152,7 +167,8 @@ $(document).observe("dom:loaded", function() {
     $(a).observe("click", SC.MP.selectDisplayedNotes)
   })
   $$(".notes-edit").each(SC.MP.registerNotePreviewHandler)
-  $$(".notes-edit").each(function(button) { button.observe("click", SC.MP.editNotes) })
+  $$(".notes-edit").each(function(button) { button.observe("click", SC.MP.clickEditButton) })
+  $('notes-preview').observe("click", SC.MP.clickNotesPreview)
   $('edit-notes-done').observe('click', SC.MP.finishEditingNotes)
   $$('#edit-notes-lightbox input').each(function(elt) {
     elt.observe('keyup', function(evt) {

@@ -259,6 +259,7 @@
                 <dt style="display: none">Labels</dt>
                 <dd style="display: none" class='none' id='labels-preview'>None</dd>
             </dl>
+            <p id="notes-preview-edit">Click to edit</p>
         </div>
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
