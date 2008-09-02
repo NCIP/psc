@@ -5,6 +5,7 @@
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <c:set var="editable" value="${not empty developmentRevision}"/>
 
@@ -20,6 +21,23 @@
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
         </c:if>
     </p>
+   <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
+   <form:form method="post" id="cycle-form" action="${cycleUrl}">
+     <div class="cycle" id="cycle">
+        <c:choose>
+        <c:when test="${editable}">
+               Set Cycle Length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/>
+        <input type="submit" value="Submit" id="cycleButton"/>
+         </c:when>
+         <c:when test="${empty studySegment.base.cycleLength}">
+               Cycle Length doesn't Set
+         </c:when>
+         <c:otherwise>
+               Cycle Length ${studySegment.base.cycleLength}
+         </c:otherwise>           
+        </c:choose>
+     </div>
+    </form:form>
     <c:if test="${editable and empty studySegment.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
