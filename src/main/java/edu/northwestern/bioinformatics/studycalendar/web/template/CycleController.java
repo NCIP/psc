@@ -1,0 +1,68 @@
+package edu.northwestern.bioinformatics.studycalendar.web.template;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.HashMap;
+
+/**
+* @author Jalpa Patel
+ * Date: Aug 26, 2008
+ */
+public class CycleController extends PscAbstractCommandController<CycleCommand> {
+    private static final Logger log = LoggerFactory.getLogger(CycleController.class.getName());
+    private StudySegmentDao studySegmentDao;
+    private TemplateService templateService;
+
+    public CycleController() {
+        setCommandClass(CycleCommand.class);
+    }
+
+    protected Object getCommand(HttpServletRequest httpServletRequest) throws Exception {
+        return new CycleCommand(studySegmentDao);
+    }
+
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
+    }
+
+    protected ModelAndView handle(CycleCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (!errors.hasErrors()) {
+             command.apply();
+        }
+        Study study;
+        study = templateService.findStudy(command.getStudySegment());
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("study",study.getId());
+        model.put("amendment",study.getDevelopmentAmendment().getId());
+        model.put("studySegment",command.getStudySegment().getId());
+
+        return new ModelAndView("redirectToCalendarTemplate", model);
+       
+    }
+
+
+    ////// CONFIGURATION
+
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
+    }
+
+    @Required 
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
+    
+}
