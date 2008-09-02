@@ -66,8 +66,13 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
         <property name="crumb.parent"><ref local="studyListController"/></property>
     </bean>
+
     <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudySegmentController"/>
+
+
+    <bean name="/cal/setCycleLength" id="cycleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.CycleController"/>
 
     <bean name="/cal/template/selectInDevelopmentAndReleasedStudy" id="selectInDevelopmentStudyController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudyController"/>
