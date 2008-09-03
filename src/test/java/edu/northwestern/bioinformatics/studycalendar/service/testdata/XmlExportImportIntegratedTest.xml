@@ -1,0 +1,15 @@
+<dataset>
+    <SOURCES id="-1" name="Test source" version="0"/>
+    <ACTIVITIES id="-1" name="Medical History" code="Hist" activity_type_id="4" source_id="-1"/>
+
+    <!-- For cleanup -->
+    <AMENDMENTS id="-1" amendment_date="2007-01-01"/>
+    <STUDIES id="-1" assigned_identifier="Don't care" long_title="Study"/>
+    <PLANNED_CALENDARS id="-1" study_id="-1"/>
+    <EPOCHS id="-1" planned_calendar_id="-1" name="Don't care"/>
+    <STUDY_SEGMENTS id="-1" epoch_id="-1" name="Don't care"/>
+    <PERIODS id="-1" study_segment_id="-1" name="Don't care" duration_quantity="1" duration_unit="day"/>
+    <PLANNED_ACTIVITIES id="-1" period_id="-1" activity_id="-1" day="1"/>
+    <DELTAS id="-1" node_id="-1" node_type="cal" amendment_id="-1"/>
+    <CHANGES id="-1" delta_id="-1" action="add"/>
+</dataset>

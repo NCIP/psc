@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -15,7 +14,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -49,7 +47,6 @@ public class StudyService {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
 
-
         for (StudySubjectAssignment assignment : subjectAssignments) {
             if (!assignment.isExpired()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
@@ -76,8 +73,6 @@ public class StudyService {
 
         }
         studyDao.save(study);
-
-
     }
 
     public String getNewStudyName() {
@@ -154,6 +149,7 @@ public class StudyService {
         return study;
     }
 
+    @SuppressWarnings({ "unchecked" })
     private void initializeAmendment(Amendment amendment) {
         Hibernate.initialize(amendment);
         if (amendment != null) {
@@ -207,6 +203,7 @@ public class StudyService {
         this.studyDao = studyDao;
     }
 
+    @Required
     public StudyDao getStudyDao() {
         return studyDao;
     }
@@ -215,7 +212,6 @@ public class StudyService {
     public void setDeltaService(final DeltaService deltaService) {
         this.deltaService = deltaService;
     }
-
 
     @Required
     public void setTemplateService(final TemplateService templateService) {
@@ -232,6 +228,7 @@ public class StudyService {
         this.nowFactory = nowFactory;
     }
 
+    @Required
     public void setScheduledActivityDao(final ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
     }
