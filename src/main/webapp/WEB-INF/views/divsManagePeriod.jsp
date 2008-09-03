@@ -391,7 +391,7 @@
         SC.MP.addActivityRow({
             name: '${selectedActivity.name}',
             code: '${selectedActivity.code}',
-            source: '${selectedActivity.source.name}',
+            source: '${selectedActivity.source.name}'
         }, {
             id: ${selectedActivity.type.id},
             name: '${selectedActivity.type.name}'
