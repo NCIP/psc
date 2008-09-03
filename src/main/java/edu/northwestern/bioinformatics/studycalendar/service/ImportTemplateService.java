@@ -8,9 +8,11 @@ import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSeriali
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPreProcessor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 
 @Transactional
 public class ImportTemplateService {
@@ -24,11 +26,18 @@ public class ImportTemplateService {
      * @param stream
      */
     public void readAndSaveTemplate(InputStream stream) {
-        String id = studyXmlSerializer.readAssignedIdentifier(stream);
-        Study study = studyDao.getByAssignedIdentifier(id);
-        resetStream(stream);
+        // TODO: it should be possible to do this without re-reading the stream
+        // (or relying on reset, which is not always available)
+        byte[] contents;
+        try {
+            contents = IOUtils.toByteArray(stream);
+        } catch (IOException e) {
+            throw new StudyCalendarSystemException("Reading imported stream failed", e);
+        }
 
-        readAndSaveTemplate(study, stream);
+        String id = studyXmlSerializer.readAssignedIdentifier(new ByteArrayInputStream(contents));
+        Study study = studyDao.getByAssignedIdentifier(id);
+        readAndSaveTemplate(study, new ByteArrayInputStream(contents));
     }
 
     public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
@@ -41,15 +50,6 @@ public class ImportTemplateService {
         studyPostProcessor.process(study);
 
         return study;
-    }
-
-    ////// Helper Methods
-    private void resetStream(InputStream stream) {
-        try {
-            stream.reset();
-        } catch (IOException ioe) {
-            throw new StudyCalendarSystemException("Problem importing template " + ioe.getMessage());
-        }
     }
 
     ////// Bean Setters

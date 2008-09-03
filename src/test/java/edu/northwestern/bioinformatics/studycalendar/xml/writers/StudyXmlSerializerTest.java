@@ -145,6 +145,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWhereElementExists() {
         expectResolveStudy("Study A", study);
         expectDeserializeAmendments();
+        expectDeserializePopulation();
         expectDesearializeDevelopmentAmendment();
         replayMocks();
 

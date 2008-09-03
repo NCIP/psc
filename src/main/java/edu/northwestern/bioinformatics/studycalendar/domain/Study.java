@@ -196,6 +196,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     @OneToMany(mappedBy = "study")
     @OrderBy(value = "name")
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})    
     public Set<Population> getPopulations() {
         return populations;
     }

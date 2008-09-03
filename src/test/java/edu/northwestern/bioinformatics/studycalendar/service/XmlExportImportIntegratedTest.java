@@ -2,16 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -19,6 +16,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Simulates a round trip XML export and import.
@@ -118,7 +116,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
     }
-    
+
     public void testExportImportWithReleasedAmendmentAndNewReleasedAmendment() throws Exception {
         amendmentService.amend(reload());
 
@@ -144,5 +142,38 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch actualE1 = actual.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Segment not added to live plan tree", 2, actualE1.getStudySegments().size());
         assertEquals("Wrong segment added to live plan tree", "New Segment", actualE1.getStudySegments().get(1).getName());
+    }
+
+    public void testImportWithNewPopulation() throws Exception {
+        amendmentService.amend(reload());
+
+        Study study = reload().transientClone();
+        study.setDevelopmentAmendment(createAmendment("A0", new Date()));
+        Population population = Fixtures.createPopulation("P0", "New Population");
+        study.addPopulation(population);
+
+        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
+        StudySegment studySegment = epoch.getStudySegments().get(1);
+
+        Period period = createPeriod(3, 4, 18);
+        PlannedActivity pa = createPlannedActivity(activityDao.getById(-1), 1);
+        pa.setPopulation(population);
+        period.addPlannedActivity(pa);
+
+        deltaService.updateRevision(study.getDevelopmentAmendment(), studySegment, Add.create(period));
+        Fixtures.amend(study);
+
+        InputStream xml = export(study);
+        Study importedStudy = doImport(xml);
+
+        StudySegment actualE0S1 = importedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
+        assertEquals("Wrong number of periods in E0S1", 1, actualE0S1.getPeriods().size());
+        Period actualPeriod = actualE0S1.getPeriods().first();
+        assertEquals("Added planned activity not present", 1, actualPeriod.getPlannedActivities().size());
+        Population actualPop = actualPeriod.getPlannedActivities().get(0).getPopulation();
+        assertNotNull("Added planned activity does not have population", actualPop);
+        assertEquals("Added planned activity does not have correct population", population.getAbbreviation(), actualPop.getAbbreviation());
+        assertEquals("Added planned activity does not have correct population", population.getName(), actualPop.getName());
+        assertEquals("Population is null", 1, importedStudy.getPopulations().size());
     }
 }
