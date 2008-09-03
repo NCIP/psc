@@ -138,9 +138,19 @@
     <div class='activities heading column' id='activities-heading'></div>
     <div class='days heading column' id='days-heading'>
         <table>
-            <tr>
+            <%--
+            <tr id="period-duration-reference" title="Relative to period">
+                <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
+                    <td>${grid.period.duration.unit} ${cell.count}</td>
+                </c:forEach>
+            </tr>
+            --%>
+            <tr title="Relative to study segment">
                 <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
                     <td class="day" day-number="${grid.columnDayNumbers[cell.index]}">
+                        <div class="period-duration-reference" title="Relative to period">
+                            ${grid.period.duration.unit} ${cell.count}
+                        </div>
                         <c:forEach items="${oneDay}" var="dayNumber">
                             <c:choose>
                                 <c:when test="${empty dayNumber}">

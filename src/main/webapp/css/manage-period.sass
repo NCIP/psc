@@ -14,7 +14,7 @@
     :border = 0px solid !border_color
     :padding 0
 #heading-section
-  :height 6em
+  :height 7.5em
 #data-section
   height: 18em
   tr.unused
@@ -90,23 +90,32 @@ tr.activity-type
 .days
   :left = !activities_width
   :width = !days_width
-  td
+  td, th
     :white-space nowrap
     :text-align center
     :width 4em
+    :padding 3px 0
 #days, #days-heading
   :border = 1px solid !contrast_color
 #days-heading
   :border-width 1px 1px 0 1px
   table
     :bottom 0px
-  td
+  td, th
     :border-bottom-width 0px
   .cycle-number
     :padding 2px
   .odd
     :background-color #666
     :color #fff
+  div.period-duration-reference
+    :font-size 0.8em
+    :background-color= !contrast_color
+    :color #999
+    :margin 0
+    :margin-bottom 3px
+    :padding 2px
+    :overflow hidden
 #days
   :overflow auto
   :border-width 0 1px 1px 1px

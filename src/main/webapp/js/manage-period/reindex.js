@@ -23,7 +23,7 @@ Object.extend(SC.MP, {
         rowNums[i].innerHTML = i + 1
       }
     })
-    $('days').setAttribute('day-count', $$("#days-heading td").length - 1) // -1 to remove trailer cell
+    $('days').setAttribute('day-count', $$("#days-heading td.day").length)
     $w("activities days notes").each(SC.MP.applyActivityRowIndex)
     console.timeEnd("reindex")
   },
