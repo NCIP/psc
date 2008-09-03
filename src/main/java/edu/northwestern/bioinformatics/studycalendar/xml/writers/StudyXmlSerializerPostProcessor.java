@@ -20,15 +20,14 @@ import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author John Dzak
@@ -47,7 +46,7 @@ public class StudyXmlSerializerPostProcessor {
         resolveExistingActivitiesAndSources(study);
         resolveChangeChildrenFromPlanTreeNodeTree(study);
     }
-    
+
     protected void resolveExistingActivitiesAndSources(Study study) {
         List<PlannedActivity> all = new LinkedList<PlannedActivity>();
 
@@ -101,33 +100,34 @@ public class StudyXmlSerializerPostProcessor {
     }
 
     protected void resolveChangeChildrenFromPlanTreeNodeTree(Study study) {
-        List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
-        Amendment development = study.getDevelopmentAmendment();
-        Collections.reverse(amendments);
-        study.setAmendment(null);
+        Amendment newDevelopment = study.getDevelopmentAmendment();
         study.setDevelopmentAmendment(null);
+
+        List<Amendment> toApply = new ArrayList<Amendment>();
+        Amendment cur = study.getAmendment();
+        while (cur != null && cur.getId() == null) {
+            toApply.add(cur);
+            cur = cur.getPreviousAmendment();
+        }
+        study.setAmendment(cur);
+        Collections.reverse(toApply);
 
         // StudyDao is being used instead of StudyService because we don't want to cascade to the amendments yet
         studyDao.save(study);
 
-        for (Amendment amendment : amendments) {
-            // If amendment already exists, we don't want to amend the study with it twice.
-            if (amendment.getId() == null) {
-                resolveDeltaNodesAndChangeChildren(amendment);
+        for (Amendment amendment : toApply) {
+            resolveDeltaNodesAndChangeChildren(amendment);
 
-                study.setDevelopmentAmendment(amendment);
-                study.setAmendment(amendment.getPreviousAmendment());
-                amendmentService.amend(study);
-            }
+            study.setDevelopmentAmendment(amendment);
+            amendmentService.amend(study);
         }
 
         // Resolve delta nodes and child nodes for development amendment
-        if (development != null) {
-            resolveDeltaNodesAndChangeChildren(development);
+        if (newDevelopment != null) {
+            resolveDeltaNodesAndChangeChildren(newDevelopment);
         }
-        study.setDevelopmentAmendment(development);
+        study.setDevelopmentAmendment(newDevelopment);
         studyService.save(study);
-
     }
 
     /**

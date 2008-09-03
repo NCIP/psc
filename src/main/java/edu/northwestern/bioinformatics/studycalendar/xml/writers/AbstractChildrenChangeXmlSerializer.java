@@ -12,12 +12,12 @@ import org.springframework.beans.factory.BeanFactoryAware;
 public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer implements BeanFactoryAware {
     private static final String CHILD_ID = "child-id";
     protected DaoFinder daoFinder;
-    protected Class childClass;
+    protected Class<? extends PlanTreeNode> childClass;
 
     protected void addAdditionalAttributes(final Change change, Element element) {
         //element.addAttribute(CHILD_ID, ((ChildrenChange)change).getChild().getGridId());
         // Child is not stored on ChildChange, must retreive from object id
-        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild(((ChildrenChange)change).getChildId(), childClass);
+        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
         element.addAttribute(CHILD_ID, child.getGridId());
     }
 
@@ -30,9 +30,13 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     }
 
     // Methods to get child from child id
-    public DomainObject getChild(Integer childId, Class childClass) {
-        DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
-        return dao.getById(childId);
+    protected DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+        if (change.getChild() != null) {
+            return change.getChild();
+        } else {
+            DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
+            return dao.getById(change.getChildId());
+        }
     }
 
     public void setChildClass(Class childClass) {

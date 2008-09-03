@@ -26,7 +26,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
             element.addAttribute(INDEX, add.getIndex().toString());
         }
 
-        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild(((ChildrenChange)change).getChildId(), childClass);
+        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
         AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
         Element ePlanTreeNode = serializer.createElement(child);
         element.add(ePlanTreeNode);

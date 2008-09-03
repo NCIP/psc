@@ -2,17 +2,18 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Calendar;
 
 /**
  * Simulates a round trip XML export and import.
@@ -54,14 +55,22 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
     }
 
     private InputStream export() {
-        String xml = serializer.createDocumentString(reload());
+        return export(null);
+    }
+
+    private InputStream export(Study study) {
+        String xml = serializer.createDocumentString(study == null ? reload() : study);
         ByteArrayInputStream input = new ByteArrayInputStream(xml.getBytes());
         interruptSession();
         return input;
     }
 
     private Study reimport() {
-        importTemplateService.readAndSaveTemplate(reload(), export());
+        return doImport(export());
+    }
+
+    private Study doImport(InputStream export) {
+        importTemplateService.readAndSaveTemplate(reload(), export);
         interruptSession();
         return reload();
     }
@@ -86,7 +95,6 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         // assuming everything else
     }
 
-    /* TODO: This test fails -- make it work
     public void testExportImportWithSingleReleasedAmendment() throws Exception {
         amendmentService.amend(reload());
 
@@ -101,5 +109,31 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
     }
-    */
+    
+    public void testExportImportWithReleasedAmendmentAndNewReleasedAmendment() throws Exception {
+        amendmentService.amend(reload());
+
+        Study expectedExport = reload().transientClone();
+        Epoch e1 = expectedExport.getPlannedCalendar().getEpochs().get(1);
+        assertEquals("Test setup failure -- expected 1 segment in epoch 1 to start", 1, e1.getStudySegments().size());
+        Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
+        Add newSegment = Add.create(Fixtures.createNamedInstance("New Segment", StudySegment.class));
+        dev.addDelta(Delta.createDeltaFor(e1, newSegment));
+        expectedExport.setDevelopmentAmendment(dev);
+        Fixtures.amend(expectedExport);
+
+        InputStream xml = export(expectedExport);
+        Study actual = doImport(xml);
+
+        assertNull("Should have no dev amendment", actual.getDevelopmentAmendment());
+        assertNotNull("Should have a released amendment", actual.getAmendment());
+        assertEquals("Released amendment should be A0", "A0", actual.getAmendment().getName());
+        assertNotNull("Should have two released amendments, actually", actual.getAmendment().getPreviousAmendment());
+        assertEquals("Prev amendment should be original", Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME,
+            actual.getAmendment().getPreviousAmendment().getName());
+
+        Epoch actualE1 = actual.getPlannedCalendar().getEpochs().get(1);
+        assertEquals("Segment not added to live plan tree", 2, actualE1.getStudySegments().size());
+        assertEquals("Wrong segment added to live plan tree", "New Segment", actualE1.getStudySegments().get(1).getName());
+    }
 }

@@ -48,7 +48,7 @@ public class ImportTemplateService {
         try {
             stream.reset();
         } catch (IOException ioe) {
-            throw new StudyCalendarSystemException("Problem importing template");
+            throw new StudyCalendarSystemException("Problem importing template " + ioe.getMessage());
         }
     }
 
