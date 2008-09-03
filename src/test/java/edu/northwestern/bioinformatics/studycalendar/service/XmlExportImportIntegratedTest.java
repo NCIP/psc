@@ -2,8 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -40,6 +45,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
 
     private int studyId;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         Study created = TemplateSkeletonCreator.BASIC.create("Exportable");
@@ -84,11 +90,13 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
     public void testExportImportWithDevAmendmentOnly() throws Exception {
         Study actual = reimport();
         assertNotNull("Dev amendment missing", actual.getDevelopmentAmendment());
+        assertEquals("Dev amendment should be initial", Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME,
+            actual.getDevelopmentAmendment().getName());
         assertNull("Should be no released amendments", actual.getAmendment());
 
         Add add = (Add) actual.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
         assertNotNull("Add not found", add);
-        PlanTreeNode child = deltaService.findChangeChild(add);
+        PlanTreeNode<?> child = deltaService.findChangeChild(add);
         assertTrue(child instanceof Epoch);
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
@@ -101,10 +109,11 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Study actual = reimport();
         assertNull("Should have no dev amendment", actual.getDevelopmentAmendment());
         assertNotNull("Should have a released amendment", actual.getAmendment());
+        assertEquals("Released amendment should be initial", Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME, actual.getAmendment().getName());
 
         Add add = (Add) actual.getAmendment().getDeltas().get(0).getChanges().get(0);
         assertNotNull("Add not found", add);
-        PlanTreeNode child = deltaService.findChangeChild(add);
+        PlanTreeNode<?> child = deltaService.findChangeChild(add);
         assertTrue(child instanceof Epoch);
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
@@ -117,8 +126,8 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch e1 = expectedExport.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Test setup failure -- expected 1 segment in epoch 1 to start", 1, e1.getStudySegments().size());
         Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
-        Add newSegment = Add.create(Fixtures.createNamedInstance("New Segment", StudySegment.class));
-        dev.addDelta(Delta.createDeltaFor(e1, newSegment));
+        Add newSegment = setGridId("ADD", Add.create(setGridId("NS", Fixtures.createNamedInstance("New Segment", StudySegment.class))));
+        dev.addDelta(setGridId("D", Delta.createDeltaFor(e1, newSegment)));
         expectedExport.setDevelopmentAmendment(dev);
         Fixtures.amend(expectedExport);
 
