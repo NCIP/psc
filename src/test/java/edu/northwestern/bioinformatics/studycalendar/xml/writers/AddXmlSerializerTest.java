@@ -1,19 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import org.dom4j.Element;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
 import java.util.Collections;
-
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AddXmlSerializer serializer;
@@ -53,6 +53,8 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateElement() {
+        add.setChild(null);
+        add.setChildId(1);
         expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.createElement(epoch)).andReturn(eEpoch);
         expect(daoFinder.findDao(PlannedCalendar.class)).andReturn(domainObjectDao);
