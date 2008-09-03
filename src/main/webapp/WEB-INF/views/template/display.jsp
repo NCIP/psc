@@ -28,6 +28,11 @@
                 float: left;
             }
 
+            #cycle-form {
+                border-width: 0 0 1px 0;
+                font-size: inherit;
+                font-weight: normal;
+            }
             table.periods, table.periods tr, table.periods td, table.periods th {
                 border-spacing: 0;
                 border: 0 solid #666;

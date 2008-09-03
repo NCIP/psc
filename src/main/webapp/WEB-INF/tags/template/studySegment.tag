@@ -12,6 +12,20 @@
 <div id="selected-studySegment-content"<c:if test="${not visible}"> style="display: none"</c:if>>
 <laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
+    <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
+    <form:form method="post" id="cycle-form" action="${cycleUrl}">
+        <div id="cycle">
+            <c:choose>
+                <c:when test="${editable}">
+                    Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
+                    <input type="submit" value="Update" id="cycleButton"/>
+                </c:when>
+                <c:when test="${not empty studySegment.base.cycleLength}">
+                    The cycle length of this segment is ${studySegment.base.cycleLength} days.
+                </c:when>
+            </c:choose>
+        </div>
+    </form:form>
     <p class="controls">
         <c:if test="${editable}">
             <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">Add period</a>
@@ -21,23 +35,6 @@
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
         </c:if>
     </p>
-   <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
-   <form:form method="post" id="cycle-form" action="${cycleUrl}">
-     <div class="cycle" id="cycle">
-        <c:choose>
-        <c:when test="${editable}">
-               Set Cycle Length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/>
-        <input type="submit" value="Submit" id="cycleButton"/>
-         </c:when>
-         <c:when test="${empty studySegment.base.cycleLength}">
-               Cycle Length doesn't Set
-         </c:when>
-         <c:otherwise>
-               Cycle Length ${studySegment.base.cycleLength}
-         </c:otherwise>           
-        </c:choose>
-     </div>
-    </form:form>
     <c:if test="${editable and empty studySegment.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
