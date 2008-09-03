@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
-import org.springframework.validation.Errors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.Errors;
 
 /**
  * @author Jaron Sampson
@@ -17,7 +16,7 @@ public class NewActivityCommand implements Validatable {
 
     private static final Logger log = LoggerFactory.getLogger(NewActivityCommand.class.getName());
 
-    private Integer returnToPeriodId;
+    private Integer returnToPeriod;
     private String activityName;
     private String activityDescription;
     private ActivityType activityType;
@@ -68,12 +67,12 @@ public class NewActivityCommand implements Validatable {
         this.activityType = activityType;
     }
 
-    public Integer getReturnToPeriodId() {
-        return returnToPeriodId;
+    public Integer getReturnToPeriod() {
+        return returnToPeriod;
     }
 
-    public void setReturnToPeriodId(Integer returnToPeriodId) {
-        this.returnToPeriodId = returnToPeriodId;
+    public void setReturnToPeriod(Integer returnToPeriod) {
+        this.returnToPeriod = returnToPeriod;
     }
 
     public Source getActivitySource() {

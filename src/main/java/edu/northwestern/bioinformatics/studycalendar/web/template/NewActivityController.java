@@ -12,8 +12,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
@@ -35,8 +33,6 @@ public class NewActivityController extends PscSimpleFormController {
 
     private ActivityDao activityDao;
     private PeriodDao periodDao;
-
-    private static final Logger log = LoggerFactory.getLogger(NewActivityController.class.getName());
     private SourceDao sourceDao;
 
     public NewActivityController() {
@@ -48,7 +44,6 @@ public class NewActivityController extends PscSimpleFormController {
         setCrumb(new Crumb());
     }
 
-
     @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -56,7 +51,7 @@ public class NewActivityController extends PscSimpleFormController {
         refdata.put("action", "New");
         refdata.put("sourceName", PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME);
 
-        Integer periodId = ((NewActivityCommand) command).getReturnToPeriodId();
+        Integer periodId = ((NewActivityCommand) command).getReturnToPeriod();
 
         if (periodId != null) {
             getControllerTools().addHierarchyToModel(periodDao.getById(periodId), refdata);
@@ -74,25 +69,22 @@ public class NewActivityController extends PscSimpleFormController {
         NewActivityCommand command = (NewActivityCommand) oCommand;
         command.setActivitySource(sourceDao.getByName(PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME));
         Activity activity = command.createActivity();
-        // TODO: transaction
         activityDao.save(activity);
 
-        if (command.getReturnToPeriodId() == null) {
+        if (command.getReturnToPeriod() == null) {
             Map<String, Object> model = errors.getModel();
             model.put("activity", activity);
             return new ModelAndView(getSuccessView(), model);
         } else {
-            ModelMap model = new ModelMap("id", command.getReturnToPeriodId())
+            ModelMap model = new ModelMap("period", command.getReturnToPeriod())
                     .addObject("selectedActivity", activity.getId());
             return new ModelAndView("redirectToManagePeriod", model);
         }
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        NewActivityCommand command = new NewActivityCommand(activityDao);
-        return command;
+        return new NewActivityCommand(activityDao);
     }
-
 
     private static class Crumb extends DefaultCrumb {
         public Crumb() {
@@ -101,7 +93,7 @@ public class NewActivityController extends PscSimpleFormController {
 
         @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
-            return Collections.singletonMap("returnToPeriodId", context.getPeriod().getId().toString());
+            return Collections.singletonMap("returnToPeriod", context.getPeriod().getId().toString());
         }
     }
 

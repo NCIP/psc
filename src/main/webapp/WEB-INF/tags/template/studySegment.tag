@@ -88,7 +88,7 @@
                                     <c:set var="dayCheck">${day['empty'] ? '&nbsp;' : '&times;'}</c:set>
                                     <c:choose>
                                         <c:when test="${not editable}"><span>${dayCheck}</span></c:when>
-                                        <c:otherwise><a href="<c:url value="/pages/cal/managePeriod?id=${day.id}"/>">${dayCheck}</a></c:otherwise>
+                                        <c:otherwise><a href="<c:url value="/pages/cal/managePeriodActivities?period=${day.id}"/>">${dayCheck}</a></c:otherwise>
                                     </c:choose>
                                 </td>
                             </c:when>
@@ -135,7 +135,7 @@
                                     <c:if test="${not empty event.population}">${event.population.abbreviation}:</c:if>
                                     <c:choose>
                                         <c:when test="${not editable}"><span>${event.activity.name}</span></c:when>
-                                        <c:otherwise><a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a></c:otherwise>
+                                        <c:otherwise><a href="<c:url value="/pages/cal/managePeriodActivities?period=${event.period.id}"/>">${event.activity.name}</a></c:otherwise>
                                     </c:choose>
                                     <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
                                 </li>

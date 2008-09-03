@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.*;
@@ -63,11 +62,11 @@ public class NewActivityControllerTest extends ControllerTestCase {
     public void testSuccessResponseWithReturn() throws Exception {
         expectSuccessfulSubmit();
         replayMocks();
-        request.addParameter("returnToPeriodId", "14");
+        request.addParameter("returnToPeriod", "14");
         ModelAndView mv = controller.handleRequest(request, response);
         assertEquals("redirectToManagePeriod", mv.getViewName());
         assertEquals(2, mv.getModel().size());
-        assertEquals(14, mv.getModel().get("id"));
+        assertEquals(14, mv.getModel().get("period"));
         assertTrue(mv.getModel().containsKey("selectedActivity"));
     }
 

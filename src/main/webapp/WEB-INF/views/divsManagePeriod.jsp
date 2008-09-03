@@ -5,6 +5,7 @@
     value="/api/v1/studies/${study.name}/template/development/epochs/${epoch.name}/study-segments/${studySegment.name}/periods/${period.gridId}/planned-activities"/>
 <html>
 <head>
+    <title>Manage ${period.displayName} activities</title>
     <tags:javascriptLink name="manage-period/plan-activities" />
     <tags:javascriptLink name="manage-period/manage-activity-rows" />
     <tags:javascriptLink name="manage-period/activity-notes" />
@@ -81,6 +82,7 @@
         </li>
     </tags:resigTemplate>
 
+    <tags:stylesheetLink name="main"/>
     <tags:sassLink name="manage-period"/>
     <style type="text/css">
         .days table { width: 40em; }
@@ -92,7 +94,7 @@
 </head>
 <body>
 
-<laf:box title="Manage period">
+<laf:box title="Manage ${period.displayName} activities">
 <laf:division>
 
 <!--
@@ -138,18 +140,11 @@
     <div class='activities heading column' id='activities-heading'></div>
     <div class='days heading column' id='days-heading'>
         <table>
-            <%--
-            <tr id="period-duration-reference" title="Relative to period">
-                <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
-                    <td>${grid.period.duration.unit} ${cell.count}</td>
-                </c:forEach>
-            </tr>
-            --%>
             <tr title="Relative to study segment">
                 <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
                     <td class="day" day-number="${grid.columnDayNumbers[cell.index]}">
                         <div class="period-duration-reference" title="Relative to period">
-                            ${grid.period.duration.unit} ${cell.count}
+                            ${grid.period.duration.unit}&nbsp;${cell.count}
                         </div>
                         <c:forEach items="${oneDay}" var="dayNumber">
                             <c:choose>
@@ -355,16 +350,28 @@
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
                hint="With this name or code"/>
 
+        <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}"/>">Create new activity</a>
+
         <div style="position: relative">
             <div id="activities-autocompleter-div" class="autocomplete"></div>
         </div>
-
-        <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity (TODO)</a>
     </div>
 
 </laf:division>
 
+<laf:division>
+    <a class="control" href="<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>">
+        Return to template
+    </a>
+</laf:division>
+
 </laf:box>
+
+<c:if test="${configuration.map.showDebugInformation}">
+    <a class="control" href="<c:url value="/pages/cal/oldManagePeriod?id=${period.id}"/>">
+        View the old manage periods page
+    </a>
+</c:if>
 
 <script type="text/javascript">
     // Sync scrolling
@@ -380,6 +387,16 @@
         if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
             $$("#heading-section .trailer").invoke("hide")
         }
+        <c:if test="${not empty selectedActivity}">
+        SC.MP.addActivityRow({
+            name: '${selectedActivity.name}',
+            code: '${selectedActivity.code}',
+            source: '${selectedActivity.source.name}',
+        }, {
+            id: ${selectedActivity.type.id},
+            name: '${selectedActivity.type.name}'
+        })
+        </c:if>
     })
 </script>
 

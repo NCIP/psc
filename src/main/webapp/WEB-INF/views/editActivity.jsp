@@ -75,7 +75,7 @@
                     <input type="submit" value="Create"/>
                 </div>
             </div>
-            <form:hidden path="returnToPeriodId"/>
+            <form:hidden path="returnToPeriod"/>
         </form:form>
     </laf:division>
 </laf:box>

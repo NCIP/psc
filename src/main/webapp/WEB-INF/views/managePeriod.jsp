@@ -1328,7 +1328,7 @@ table#manage-period {
     It begins on day ${period.startDay} of ${studySegment.qualifiedName}.
 </p>
 <p>
-    <a href="<c:url value="/pages/cal/newManagePeriod?period=${period.id}"/>">View this period on the new manage periods page</a>.
+    <a href="<c:url value="/pages/cal/managePeriodActivities?period=${period.id}"/>">View this period on the new manage periods page</a>.
 </p>
 
 <div class="palette autoclear">
