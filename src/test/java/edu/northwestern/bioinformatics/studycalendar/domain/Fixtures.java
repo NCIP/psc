@@ -6,7 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
@@ -27,12 +29,18 @@ import java.util.Date;
 public class Fixtures {
     private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     private static final DeltaService deltaService = new DeltaService();
+    private static final AmendmentService amendmentService = new AmendmentService();
     public static final ActivityType DEFAULT_ACTIVITY_TYPE = ActivityType.LAB_TEST;
     public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
 
     static {
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
         deltaService.setTemplateService(new TestingTemplateService());
+
+        amendmentService.setDeltaService(deltaService);
+        amendmentService.setStudyService(new StudyService() {
+            public void save(Study study) { /* No-op */ }
+        });
     }
 
     public static <T extends DomainObject> T setId(Integer id, T target) {
@@ -142,12 +150,15 @@ public class Fixtures {
     private static Study createApprovedTemplate(TemplateSkeletonCreator skeletonCreator) {
         log.debug("Creating concrete template from skeleton");
         Study dev = skeletonCreator.create(null);
-        deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
-        // This is a partial implementation of DeltaService#amend 
-        deltaService.apply(dev, dev.getDevelopmentAmendment());
-        dev.setAmendment(dev.getDevelopmentAmendment());
-        dev.setDevelopmentAmendment(null);
+        amendmentService.amend(dev);
         return dev;
+    }
+
+    /**
+     * A fixture-compatible version of AmendmentService#amend
+     */
+    public static void amend(Study study) {
+        amendmentService.amend(study);
     }
 
     public static Study revise(Study study, Revision revision) {

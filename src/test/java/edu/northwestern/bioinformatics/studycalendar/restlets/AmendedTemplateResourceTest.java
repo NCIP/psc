@@ -30,6 +30,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
         study = createBasicTemplate();
+        study.getAmendment().setReleasedDate(null);
         amendedStudy = study.transientClone();
     }
 
