@@ -390,6 +390,19 @@
         </property>
     </bean>
 
+    <bean name="/admin/diagnostics" id="diagnosticsController" autowire="byName" lazy-init="true"
+              class="edu.northwestern.bioinformatics.studycalendar.web.admin.DiagnosticsController">
+            <property name="crumb">
+                <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                    <property name="name"><value>Grid Services Configuration</value></property>
+                    <property name="parent"><ref local="administrationController"/></property>
+                </bean>
+            </property>
+        <property name="mailSender" ref="mailSender"/>
+        <property name="mailMessageFactory" ref="mailMessageFactory"/>
+        </bean>
+
+
     <bean name="/admin/configureAuthentication" id="authConfigurationController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemConfigurationController">
         <property name="crumb">
@@ -585,6 +598,11 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Configure authentication</value></property>
                                 <property name="linkName"><value>authConfigurationController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Grid Services Configuration</value></property>
+                                <property name="linkName"><value>diagnosticsController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                         </list>
