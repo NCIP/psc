@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -56,27 +58,13 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     
     @Transient
     public List<Integer> getDaysInStudySegment() {
-        int day = getDay();
-        int actualDay = calculateDay(day);
+        int dayInStudySegment = getPeriod().getStartDay() + getDay() - 1;
         List<Integer> days = new ArrayList<Integer>();
         while (days.size() < getPeriod().getRepetitions()) {
-            days.add(actualDay);
-            actualDay += getPeriod().getDuration().getDays();
+            days.add(dayInStudySegment);
+            dayInStudySegment += getPeriod().getDuration().getDays();
         }
         return days;
-    }
-
-    private int calculateDay(int day) {
-        int daysInDuration = getPeriod().getDuration().getUnit().inDays();
-        int dayToReturn;
-        if(daysInDuration != 1 && day > 1) {
-            int multiplication = day-1;
-            dayToReturn = daysInDuration * multiplication + getPeriod().getStartDay();
-        } else {
-            //else case is for days, where everything should stay as before. no shifting is needed
-            dayToReturn =  getPeriod().getStartDay() + getDay() - 1;
-        }
-        return dayToReturn;
     }
 
     @Transient

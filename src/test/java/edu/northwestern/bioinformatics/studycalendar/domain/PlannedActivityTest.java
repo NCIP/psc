@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
 
@@ -34,12 +34,6 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         assertDaysInStudySegment(pa1, 2);
     }
 
-    private void changePeriod(int startDay, int dayCount, int repetitions) {
-        Period p0 = createPeriod("P0", startDay, dayCount, repetitions);
-        p0.addPlannedActivity(pa0);
-        p0.addPlannedActivity(pa1);
-    }
-
     public void testDaysInStudySegmentOffset() throws Exception {
         changePeriod(17, 7, 1);
         assertDaysInStudySegment(pa0, 17);
@@ -56,6 +50,22 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         changePeriod(-21, 7, 2);
         assertDaysInStudySegment(pa0, -21, -14);
         assertDaysInStudySegment(pa1, -20, -13);
+    }
+
+    public void testDaysInStudySegmentWithUnit() throws Exception {
+        changePeriod(4, Duration.Unit.month, 2, 4);
+        assertDaysInStudySegment(pa0, 4, 60, 116, 172);
+        assertDaysInStudySegment(pa1, 5, 61, 117, 173);
+    }
+
+    private void changePeriod(int startDay, int dayCount, int repetitions) {
+        changePeriod(startDay, Duration.Unit.day, dayCount, repetitions);
+    }
+
+    private void changePeriod(int startDay, Duration.Unit unit, int quantity, int repetitions) {
+        Period p0 = createPeriod("P0", startDay, unit, quantity, repetitions);
+        p0.addPlannedActivity(pa0);
+        p0.addPlannedActivity(pa1);
     }
 
     private void assertDaysInStudySegment(PlannedActivity e, int... expectedDays) {
