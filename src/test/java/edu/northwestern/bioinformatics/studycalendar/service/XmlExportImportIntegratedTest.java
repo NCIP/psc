@@ -2,13 +2,18 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -155,12 +160,14 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         StudySegment studySegment = epoch.getStudySegments().get(1);
 
-        Period period = createPeriod(3, 4, 18);
-        PlannedActivity pa = createPlannedActivity(activityDao.getById(-1), 1);
+        Period period = setGridId("PG", createPeriod(3, 4, 18));
+        PlannedActivity pa = setGridId("PA", createPlannedActivity(activityDao.getById(-1), 1));
         pa.setPopulation(population);
         period.addPlannedActivity(pa);
 
-        deltaService.updateRevision(study.getDevelopmentAmendment(), studySegment, Add.create(period));
+        Add add = setGridId("A", Add.create(period));
+        Delta delta = setGridId("Delt", Delta.createDeltaFor(studySegment, add));
+        study.getDevelopmentAmendment().addDelta(delta);
         Fixtures.amend(study);
 
         InputStream xml = export(study);
