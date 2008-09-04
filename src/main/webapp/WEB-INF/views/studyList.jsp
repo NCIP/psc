@@ -139,7 +139,8 @@
         function updateActivity(input, li) {
             $('selected-study').style.display = 'inline';
             $('selected-study-itself').innerHTML= li.innerHTML;
-            $('selected-study-itself').href= "/studycalendar/pages/cal/template?study=" + li.id;
+            $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + li.id;
+   
         }
 
 
