@@ -77,12 +77,13 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
         PlannedActivity newPlannedActivity = form.createDescribedPlannedActivity();
 
         try {
-            amendmentService.updateDevelopmentAmendment(getRequestedObject(), Add.create(newPlannedActivity));
+            log.debug("Attempting to merge {} into the current dev amendment for {}", newPlannedActivity, getRequestedObject());
+            amendmentService.updateDevelopmentAmendmentAndSave(
+                getRequestedObject(), Add.create(newPlannedActivity));
         } catch (StudyCalendarUserException e) {
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage(), e);
         }
 
-        studyService.saveStudyFor(getRequestedObject());
         getResponse().setStatus(Status.SUCCESS_CREATED);
         getResponse().setLocationRef(
             getRequest().getResourceRef().addSegment(newPlannedActivity.getGridId()));

@@ -119,14 +119,39 @@ public class AmendmentService {
     /**
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.
+     * @return the study that the
      */
-    public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change change) {
+    public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change... changes) {
+        updateDevelopmentAmendmentInternal(node, changes);
+    }
+
+    // internal helper to avoid changing the widely-used signature of updateDevelopmentAmendment
+    // immediately before 2.2.  TODO: merge back with updateDevelopmentAmendment later.
+    private Study updateDevelopmentAmendmentInternal(PlanTreeNode<?> node, Change... changes) {
+        log.debug("Updating dev amendment for node {} with {} change(s)", node, changes.length);
         node = templateService.findCurrentNode(node);
+        log.debug("Current persistent node is {}", node);
         Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
         if (!study.isInDevelopment()) {
             throw new StudyCalendarSystemException("The study %s is not open for editing or amending", study);
         }
-        deltaService.updateRevision(study.getDevelopmentAmendment(), node, change);
+        for (Change change : changes) {
+            deltaService.updateRevision(study.getDevelopmentAmendment(), node, change);
+        }
+        return study;
+    }
+
+    /**
+     * Applies a series of changes to the development amendment for the study associated
+     * with the node and then saves the associated study.  Unlike #updateDevelopmentAmendment,
+     * this method occurs in a single transaction.
+     * @see StudyService#saveStudyFor
+     */
+    @Transactional
+    public Study updateDevelopmentAmendmentAndSave(PlanTreeNode<?> node, Change... changes) {
+        Study study = updateDevelopmentAmendmentInternal(node, changes);
+        studyService.save(study);
+        return study;
     }
 
     /**

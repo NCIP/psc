@@ -114,7 +114,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
 
         PlannedActivity expectedPlannedActivity = setGridId(expectedIdent, createPlannedActivity(activity, 6));
 
-        amendmentService.updateDevelopmentAmendment(period, Add.create(expectedPlannedActivity));
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(period, Add.create(expectedPlannedActivity))).andReturn(study);
 
         doPut();
 
@@ -149,13 +149,14 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expectFindActivityByCodeAndSource();
         expectFindPopulation();
 
-        amendmentService.updateDevelopmentAmendment(plannedActivity, PropertyChange.create("day", 4, 6));
-        amendmentService.updateDevelopmentAmendment(plannedActivity,
-            PropertyChange.create("activity", activity, activity));
-        amendmentService.updateDevelopmentAmendment(plannedActivity, PropertyChange.create("details", null, "sharp"));
-        amendmentService.updateDevelopmentAmendment(plannedActivity, PropertyChange.create("condition", null, "enough"));
-        amendmentService.updateDevelopmentAmendment(plannedActivity,
-            PropertyChange.create("population", null, population));
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(
+            plannedActivity,
+            PropertyChange.create("day", 4, 6),
+            PropertyChange.create("activity", activity, activity),
+            PropertyChange.create("population", null, population),
+            PropertyChange.create("details", null, "sharp"),
+            PropertyChange.create("condition", null, "enough")
+        )).andReturn(study);
 
         doPut();
 
@@ -187,7 +188,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expect(helper.drillDown(PlannedActivity.class)).andReturn(plannedActivity);
         expectIsDevelopmentRequest();
 
-        amendmentService.updateDevelopmentAmendment(period, Remove.create(plannedActivity));
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(period, Remove.create(plannedActivity))).andReturn(study);
 
         doDelete();
 

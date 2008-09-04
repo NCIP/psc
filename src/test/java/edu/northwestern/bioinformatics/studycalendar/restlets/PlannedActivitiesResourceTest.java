@@ -17,7 +17,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import static org.easymock.EasyMock.expectLastCall;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
@@ -240,8 +239,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectFindActivity();
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
-        amendmentService.updateDevelopmentAmendment(revisedPeriod, Add.create(expectedPlannedActivity));
-        expectLastCall().andThrow(new StudyCalendarValidationException("I have some bad news"));
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod, Add.create(expectedPlannedActivity)))
+            .andThrow(new StudyCalendarValidationException("I have some bad news"));
 
         doPost();
 
@@ -270,8 +269,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     ////// EXPECTATIONS
 
     private void expectPlannedActivityAdd(PlannedActivity expectedPlannedActivity) {
-        amendmentService.updateDevelopmentAmendment(revisedPeriod, Add.create(expectedPlannedActivity));
-        expect(studyService.saveStudyFor(revisedPeriod)).andReturn(study);
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod, Add.create(expectedPlannedActivity))).andReturn(study);
     }
 
     private void expectSuccessfulDrillDown() {

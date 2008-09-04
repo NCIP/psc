@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -24,6 +25,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -95,11 +97,13 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         PlannedActivity fromForm = form.createDescribedPlannedActivity();
         BeanWrapper src = new BeanWrapperImpl(getRequestedObject());
         BeanWrapper dst = new BeanWrapperImpl(fromForm);
+        List<PropertyChange> changes = new ArrayList<PropertyChange>(PLANNED_ACTIVITY_PROPERTIES.size());
         for (String property : PLANNED_ACTIVITY_PROPERTIES) {
-            amendmentService.updateDevelopmentAmendment(getRequestedObject(),
-                PropertyChange.create(property,
-                    src.getPropertyValue(property), dst.getPropertyValue(property)));
+            changes.add(PropertyChange.create(property,
+                src.getPropertyValue(property), dst.getPropertyValue(property)));
         }
+        amendmentService.updateDevelopmentAmendmentAndSave(getRequestedObject(),
+            changes.toArray(new Change[changes.size()]));
     }
 
     private void createNewPlannedActivityFrom(PlannedActivityForm form) throws ResourceException {
@@ -113,7 +117,7 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         }
         
         PlannedActivity pa = form.createDescribedPlannedActivity();
-        amendmentService.updateDevelopmentAmendment(helper.drillDown(Period.class),
+        amendmentService.updateDevelopmentAmendmentAndSave(helper.drillDown(Period.class),
             Add.create(pa));
     }
 
@@ -127,7 +131,7 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                 "You can only delete planned activities from the development version of the template");
         }
-        amendmentService.updateDevelopmentAmendment(
+        amendmentService.updateDevelopmentAmendmentAndSave(
             templateService.findParent(getRequestedObject()), Remove.create(getRequestedObject()));
         getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
     }
