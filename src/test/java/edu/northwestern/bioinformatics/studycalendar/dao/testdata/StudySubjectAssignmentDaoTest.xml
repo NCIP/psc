@@ -10,6 +10,8 @@
 
     <SUBJECTS id="-20" first_name="R" last_name="J" birth_date="1950-02-04" gender="M" person_id="DC"/>
 
+    <SUBJECTS id="-22" first_name="Alburt" last_name="Barren" birth_date="1950-06-10" gender="M" person_id="AB"/>    
+
     <SUBJECTS id="-21" first_name="Alice" last_name="Childress" birth_date="1960-01-01" gender="F"
               person_id="UNIVERSAL"/>
 

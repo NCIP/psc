@@ -49,6 +49,30 @@
         study_id="-101"
         site_id="-40"
         />
+    <SUBJECTS
+            id="-22"
+            first_name="Marvin"
+            last_name="Houseman"
+            birth_date="1950-01-01"
+            gender="M"
+            person_id="11/8"
+            />
+        <SUBJECTS
+            id="-21"
+            first_name="Alice"
+            last_name="Zeppo"
+            birth_date="1950-01-01"
+            gender="F"
+            person_id="42F"
+            />
+        <SUBJECTS
+            id="-20"
+            first_name="Yancey"
+            last_name="Fry"
+            birth_date="1950-01-01"
+            gender="M"
+            person_id="37B"
+            />    
 
     <SUBJECT_ASSIGNMENTS
         id="-10"
@@ -75,30 +99,6 @@
         current_amendment_id="-45"
         />
 
-    <SUBJECTS
-        id="-22"
-        first_name="Marvin"
-        last_name="Houseman"
-        birth_date="1950-01-01"
-        gender="M"
-        person_id="11/8"
-        />
-    <SUBJECTS
-        id="-21"
-        first_name="Alice"
-        last_name="Zeppo"
-        birth_date="1950-01-01"
-        gender="F"
-        person_id="42F"
-        />
-    <SUBJECTS
-        id="-20"
-        first_name="Yancey"
-        last_name="Fry"
-        birth_date="1950-01-01"
-        gender="M"
-        person_id="37B"
-        />
 
     <POPULATIONS
         id="-64"
