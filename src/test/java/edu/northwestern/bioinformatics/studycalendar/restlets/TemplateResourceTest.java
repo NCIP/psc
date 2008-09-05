@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
@@ -40,7 +43,9 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
         study.setDevelopmentAmendment(new Amendment());
-        study.getDevelopmentAmendment().setUpdatedDate(lastModifiedDate);
+        Delta<Epoch> delta = Delta.createDeltaFor(new Epoch(), PropertyChange.create("name", "A", "B"));
+        study.getDevelopmentAmendment().addDelta(delta);
+        delta.getChanges().get(0).setUpdatedDate(lastModifiedDate);
         Fixtures.assignIds(study);
     }
 
@@ -68,7 +73,6 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertResponseIsCreatedXml();
 
         assertEquals("modification date incorrect", lastModifiedDate, response.getEntity().getModificationDate());
-
     }
 
     public void testGet404sWhenStudyNotFound() throws Exception {

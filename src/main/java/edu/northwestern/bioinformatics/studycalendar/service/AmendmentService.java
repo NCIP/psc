@@ -147,7 +147,7 @@ public class AmendmentService {
      * this method occurs in a single transaction.
      * @see StudyService#saveStudyFor
      */
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Study updateDevelopmentAmendmentAndSave(PlanTreeNode<?> node, Change... changes) {
         Study study = updateDevelopmentAmendmentInternal(node, changes);
         studyService.save(study);

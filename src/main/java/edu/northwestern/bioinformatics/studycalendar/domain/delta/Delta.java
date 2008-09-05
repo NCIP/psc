@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -93,14 +94,14 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         return this;
     }
 
-    public Delta<T> removeChange(Change change) {
+    public Delta<T> removeChange(Change change, Date updateTime) {
         int removedIndex = getChangesInternal().indexOf(change);
         if (getChangesInternal().remove(change)) {
             for (ListIterator<Change> it = getChanges().listIterator(); it.hasNext();) {
                 Change sib = it.next();
                 int sibOriginalIdx = it.previousIndex();
                 if (removedIndex <= sibOriginalIdx) sibOriginalIdx++;
-                sib.siblingDeleted(this, change, removedIndex, sibOriginalIdx);
+                sib.siblingDeleted(this, change, removedIndex, sibOriginalIdx, updateTime);
             }
             change.setDelta(null);
         }

@@ -16,6 +16,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class Fixtures {
     static {
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
         deltaService.setTemplateService(new TestingTemplateService());
+        StaticNowFactory nowFactory = new StaticNowFactory();
+        nowFactory.setNowTimestamp(DateTools.createTimestamp(2000, Calendar.MARCH, 9));
+        deltaService.setNowFactory(nowFactory);
 
         amendmentService.setDeltaService(deltaService);
         amendmentService.setStudyService(new StudyService() {
@@ -346,7 +350,7 @@ public class Fixtures {
         amendment.setMandatory(mandatory);
         amendment.setName(name);
         amendment.setDate(date);
-        amendment.setUpdatedDate(date);
+        amendment.setReleasedDate(date);
         return amendment;
     }
 

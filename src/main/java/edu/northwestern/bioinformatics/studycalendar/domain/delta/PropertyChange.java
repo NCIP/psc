@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -54,8 +55,8 @@ public class PropertyChange extends Change {
     }
 
     @Override
-    protected MergeLogic createMergeLogic(Delta<?> delta) {
-        return new PropertyMergeLogic(delta);
+    protected MergeLogic createMergeLogic(Delta<?> delta, Date updateTime) {
+        return new PropertyMergeLogic(delta, updateTime);
     }
 
     ////// BEAN PROPERTIES
@@ -124,24 +125,27 @@ public class PropertyChange extends Change {
 
     private class PropertyMergeLogic extends MergeLogic {
         private Delta<?> delta;
+        private Date updateTime;
 
-        public PropertyMergeLogic(Delta<?> delta) {
+        public PropertyMergeLogic(Delta<?> delta, Date updateTime) {
             this.delta = delta;
+            this.updateTime = updateTime;
         }
 
         @Override
         public boolean encountered(PropertyChange change) {
             if (change.getPropertyName().equals(getPropertyName())) {
                 change.setNewValue(getNewValue());
+                change.setUpdatedDate(updateTime);
                 return true;
             }
             return false;
         }
 
-
         @Override
         public void postProcess(boolean merged) {
             if (!merged) {
+                PropertyChange.this.setUpdatedDate(updateTime);
                 delta.addChange(PropertyChange.this);
             }
         }

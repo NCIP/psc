@@ -9,6 +9,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -43,15 +44,15 @@ public class Add extends ChildrenChange {
     }
 
     @Override
-    protected MergeLogic createMergeLogic(Delta<?> delta) {
-        return new AddMergeLogic(delta);
+    protected MergeLogic createMergeLogic(Delta<?> delta, Date updateTime) {
+        return new AddMergeLogic(delta, updateTime);
     }
 
     @Override
     protected SiblingDeletedLogic createSiblingDeletedLogic(
-        Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition
+        Delta<?> delta, Date updateTime, int deletedChangePosition, int thisPreDeletePosition
     ) {
-        return new AddSibDeletedLogic(delta, deletedChangePosition, thisPreDeletePosition);
+        return new AddSibDeletedLogic(delta, updateTime, deletedChangePosition, thisPreDeletePosition);
     }
 
     @Override // in order to map
@@ -108,9 +109,11 @@ public class Add extends ChildrenChange {
 
     private class AddMergeLogic extends MergeLogic {
         private final Delta<?> delta;
+        private Date updateTime;
 
-        public AddMergeLogic(Delta<?> delta) {
+        public AddMergeLogic(Delta<?> delta, Date updateTime) {
             this.delta = delta;
+            this.updateTime = updateTime;
         }
 
         @Override
@@ -127,11 +130,12 @@ public class Add extends ChildrenChange {
         public boolean encountered(Remove change) {
             if (change.isSameChild(Add.this)) {
                 log.debug("Found equivalent remove ({}).  Canceling.", change);
-                delta.removeChange(change);
+                delta.removeChange(change, updateTime);
                 if (getIndex() != null) {
                     Reorder reorder = new Reorder();
                     reorder.setToSameChildAs(Add.this);
                     reorder.setNewIndex(getIndex());
+                    reorder.setUpdatedDate(updateTime);
                     delta.addChange(reorder);
                     log.debug("Replaced with {}", reorder);
                 }
@@ -157,6 +161,7 @@ public class Add extends ChildrenChange {
         @Override
         public void postProcess(boolean merged) {
             if (!merged && !nodeHasChildAlready()) {
+                Add.this.setUpdatedDate(updateTime);
                 delta.addChange(Add.this);
             }
         }
@@ -164,10 +169,12 @@ public class Add extends ChildrenChange {
 
     private class AddSibDeletedLogic extends SiblingDeletedLogic {
         private Delta<?> delta;
+        private Date updateTime;
         private boolean thisAfter;
 
-        public AddSibDeletedLogic(Delta<?> delta, int delIndex, int thisIndex) {
+        public AddSibDeletedLogic(Delta<?> delta, Date updateTime, int delIndex, int thisIndex) {
             this.delta = delta;
+            this.updateTime = updateTime;
             thisAfter = delIndex < thisIndex;
         }
 
@@ -203,11 +210,17 @@ public class Add extends ChildrenChange {
         }
 
         private void incrementIf(boolean condition) {
-            if (condition) setIndex(getIndex() + 1);
+            if (condition) {
+                setIndex(getIndex() + 1);
+                Add.this.setUpdatedDate(updateTime);
+            }
         }
 
         private void decrementIf(boolean condition) {
-            if (condition) setIndex(getIndex() - 1);
+            if (condition) {
+                setIndex(getIndex() - 1);
+                Add.this.setUpdatedDate(updateTime);
+            }
         }
     }
 }

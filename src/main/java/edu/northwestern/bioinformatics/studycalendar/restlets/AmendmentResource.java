@@ -48,6 +48,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
 
         AmendmentXmlSerializer studyXmlSerializer = getXmlSerializer();
         try {
+            // TODO: this is crazy -- why not just get the last modified date directly from the amendment
+            // also, why is it being retrieved from the study?
             Date modifiedDate = studyXmlSerializer.readLastModifiedDate(representation.getStream());
             representation.setModificationDate(modifiedDate);
         } catch (IOException e) {

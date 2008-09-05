@@ -1,15 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class ReorderTest extends StudyCalendarTestCase {
+    private static final Date NOW = DateTools.createDate(2009, Calendar.APRIL, 5);
+
     private Reorder reorder;
     private Epoch epoch;
     private StudySegment ssa, ssb, ssc;
@@ -51,9 +57,10 @@ public class ReorderTest extends StudyCalendarTestCase {
     public void testMergeIntoEmptyDelta() throws Exception {
         setReorderProperties(ssb, 1, 2);
         
-        reorder.mergeInto(delta);
+        reorder.mergeInto(delta, NOW);
         assertEquals("Change not added", 1, delta.getChanges().size());
         assertSame("Wrong change added", reorder, delta.getChanges().get(0));
+        assertChangeTime("Update time not set", NOW, reorder);
     }
     
     public void testMergeIntoDeltaWithEarlierReorderForSame() throws Exception {
@@ -61,10 +68,11 @@ public class ReorderTest extends StudyCalendarTestCase {
         
         reorder.setChild(ssb);
         reorder.setNewIndex(2);
-        reorder.mergeInto(delta);
+        reorder.mergeInto(delta, NOW);
         
         assertEquals("Extra change added", 1, delta.getChanges().size());
         assertReorder("Reorder index not updated", ssb, 1, 2, delta.getChanges().get(0));
+        assertChangeTime("Update time not set", NOW, delta.getChanges().get(0));
     }
     
     public void testMergeIntoDeltaWithInterveningReorder() throws Exception {
@@ -73,7 +81,7 @@ public class ReorderTest extends StudyCalendarTestCase {
             Reorder.create(ssa, 1, 0));
 
         setReorderProperties(ssb, 0, 2);
-        reorder.mergeInto(delta);
+        reorder.mergeInto(delta, NOW);
 
         assertEquals("Wrong number of changes: " + delta.getChanges(), 3, delta.getChanges().size());
         assertReorder("Wrong change 0", ssb, 1, 0, delta.getChanges().get(0));
@@ -87,7 +95,7 @@ public class ReorderTest extends StudyCalendarTestCase {
             Remove.create(ssa));
 
         setReorderProperties(ssb, 0, 1);
-        reorder.mergeInto(delta);
+        reorder.mergeInto(delta, NOW);
 
         assertEquals("Wrong number of changes", 3, delta.getChanges().size());
         assertReorder("Wrong change 0", ssb, 1, 0, delta.getChanges().get(0));
@@ -101,7 +109,7 @@ public class ReorderTest extends StudyCalendarTestCase {
             Add.create(ssc));
 
         setReorderProperties(ssb, 0, 2);
-        reorder.mergeInto(delta);
+        reorder.mergeInto(delta, NOW);
 
         assertEquals("Wrong number of changes", 3, delta.getChanges().size());
         assertReorder("Wrong change 0", ssb, 1, 0, delta.getChanges().get(0));
@@ -117,16 +125,17 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc, 0);
         setReorderProperties(ssb, 2, 1);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
         assertEquals("New not decremented", 0, (int) reorder.getNewIndex());
+        assertChangeTime("Not updated", NOW, reorder);
     }
 
     public void testSiblingIndexedAddDeletedWhenMoveDown() throws Exception {
         Add add = Add.create(ssc, 0);
         setReorderProperties(ssa, 1, 2);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old not decremented", 0, (int) reorder.getOldIndex());
         assertEquals("New not decremented", 1, (int) reorder.getNewIndex());
     }
@@ -135,7 +144,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc, 1);
         setReorderProperties(ssb, 2, 0);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
         assertEquals("New decremented", 0, (int) reorder.getNewIndex());
     }
@@ -144,7 +153,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc, 1);
         setReorderProperties(ssa, 0, 2);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
         assertEquals("New not decremented", 1, (int) reorder.getNewIndex());
     }
@@ -153,7 +162,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc, 2);
         setReorderProperties(ssb, 1, 0);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old decremented", 1, (int) reorder.getOldIndex());
         assertEquals("New decremented", 0, (int) reorder.getNewIndex());
     }
@@ -162,7 +171,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc, 2);
         setReorderProperties(ssa, 0, 1);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
         assertEquals("New decremented", 1, (int) reorder.getNewIndex());
     }
@@ -171,7 +180,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Add add = Add.create(ssc);
         setReorderProperties(ssb, 1, 2);
 
-        reorder.siblingDeleted(delta, add, 0, 1);
+        reorder.siblingDeleted(delta, add, 0, 1, NOW);
         assertEquals("Old decremented", 1, (int) reorder.getOldIndex());
         assertEquals("New decremented", 2, (int) reorder.getNewIndex());
     }
@@ -183,7 +192,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssa);
         setReorderProperties(ssc, 1, 0);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
         assertEquals("New not incremented", 1, (int) reorder.getNewIndex());
     }
@@ -193,7 +202,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssa);
         setReorderProperties(ssb, 0, 1);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old not incremented", 1, (int) reorder.getOldIndex());
         assertEquals("New not incremented", 2, (int) reorder.getNewIndex());
     }
@@ -203,7 +212,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssb);
         setReorderProperties(ssc, 1, 0);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
         assertEquals("New incremented", 0, (int) reorder.getNewIndex());
     }
@@ -213,7 +222,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssb);
         setReorderProperties(ssa, 0, 1);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
         assertEquals("New not incremented", 2, (int) reorder.getNewIndex());
     }
@@ -223,7 +232,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssc);
         setReorderProperties(ssb, 1, 0);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old incremented", 1, (int) reorder.getOldIndex());
         assertEquals("New incremented", 0, (int) reorder.getNewIndex());
     }
@@ -233,7 +242,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Remove remove = Remove.create(ssc);
         setReorderProperties(ssb, 0, 1);
 
-        reorder.siblingDeleted(delta, remove, 0, 1);
+        reorder.siblingDeleted(delta, remove, 0, 1, NOW);
         assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
         assertEquals("New incremented", 1, (int) reorder.getNewIndex());
     }
@@ -245,7 +254,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Reorder first = Reorder.create(ssc, 2, 0);
         setReorderProperties(ssa, 1, 2);
 
-        reorder.siblingDeleted(delta, first, 0, 1);
+        reorder.siblingDeleted(delta, first, 0, 1, NOW);
         assertEquals("Old not decremented", 0, (int) reorder.getOldIndex());
         assertEquals("New changed", 2, (int) reorder.getNewIndex());
     }
@@ -255,7 +264,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Reorder first = Reorder.create(ssc, 2, 0);
         setReorderProperties(ssb, 2, 0);
 
-        reorder.siblingDeleted(delta, first, 0, 1);
+        reorder.siblingDeleted(delta, first, 0, 1, NOW);
         assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
         assertEquals("New changed", 0, (int) reorder.getNewIndex());
     }
@@ -265,7 +274,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Reorder first = Reorder.create(ssc, 2, 1);
         setReorderProperties(ssa, 0, 1);
 
-        reorder.siblingDeleted(delta, first, 0, 1);
+        reorder.siblingDeleted(delta, first, 0, 1, NOW);
         assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
         assertEquals("New changed", 1, (int) reorder.getNewIndex());
     }
@@ -275,7 +284,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Reorder first = Reorder.create(ssa, 0, 2);
         setReorderProperties(ssc, 1, 2);
 
-        reorder.siblingDeleted(delta, first, 0, 1);
+        reorder.siblingDeleted(delta, first, 0, 1, NOW);
         assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
         assertEquals("New changed", 2, (int) reorder.getNewIndex());
     }
@@ -287,7 +296,7 @@ public class ReorderTest extends StudyCalendarTestCase {
         Reorder first = Reorder.create(ssc, 2, 1);
         setReorderProperties(ssa, 0, 1);
 
-        reorder.siblingDeleted(delta, first, 0, 1);
+        reorder.siblingDeleted(delta, first, 0, 1, NOW);
         assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
         assertEquals("New changed", 1, (int) reorder.getNewIndex());
     }

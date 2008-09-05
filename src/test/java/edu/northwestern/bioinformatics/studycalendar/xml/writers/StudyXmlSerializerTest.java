@@ -84,7 +84,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         secondAmendment.setPreviousAmendment(firstAmendment);
 
         developmentAmendment = createAmendment("[Development]", createDate(2008, Calendar.FEBRUARY, 13), true);
-        developmentAmendment.setPreviousAmendment(secondAmendment);
+        developmentAmendment.setReleasedDate(null);
 
         study = createStudy();
 
@@ -187,11 +187,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         expected.append(format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
         expected.append(format("<population abbreviation=\"{0}\" name=\"{1}\" />", population.getAbbreviation(), population.getName()));
-        expected.append(format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" updated-date=\"{3}\" />", firstAmendment.getName()
-                , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory()), dateTimeFormat.format(firstAmendment.getUpdatedDate())));
-        expected.append(format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" updated-date=\"{3}\" previous-amendment-key=\"{4}\"/>",
-                developmentAmendment.getName(), formatter.format(developmentAmendment.getDate()), String.valueOf(developmentAmendment.isMandatory()),
-                dateTimeFormat.format(developmentAmendment.getUpdatedDate()), developmentAmendment.getPreviousAmendment().getNaturalKey()));
+        expected.append(format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" released-date=\"{3}\" />", firstAmendment.getName()
+                , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory()), dateTimeFormat.format(firstAmendment.getReleasedDate())));
+        expected.append(format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>",
+            developmentAmendment.getName(), formatter.format(developmentAmendment.getDate()), String.valueOf(developmentAmendment.isMandatory())));
 
         expected.append("</study>");
 

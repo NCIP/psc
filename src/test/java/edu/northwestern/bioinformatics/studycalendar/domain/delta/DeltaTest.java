@@ -1,19 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class DeltaTest extends StudyCalendarTestCase {
+    private static final Date NOW = DateTools.createDate(2005, Calendar.SEPTEMBER, 5);
+
     public void testDeltaForPlannedCalendar() throws Exception {
         assertDeltaFor(new PlannedCalendar(), PlannedCalendarDelta.class);
     }
@@ -49,12 +54,12 @@ public class DeltaTest extends StudyCalendarTestCase {
         Delta<?> delta = new EpochDelta();
         delta.getChangesInternal().addAll(Arrays.asList(sib0, sib1, sib2));
 
-        sib0.siblingDeleted(delta, sib1, 1, 0);
-        sib2.siblingDeleted(delta, sib1, 1, 2);
+        sib0.siblingDeleted(delta, sib1, 1, 0, NOW);
+        sib2.siblingDeleted(delta, sib1, 1, 2, NOW);
         sib1.setDelta(null);
 
         replayMocks();
-        delta.removeChange(sib1);
+        delta.removeChange(sib1, NOW);
         verifyMocks();
     }
 
@@ -67,7 +72,7 @@ public class DeltaTest extends StudyCalendarTestCase {
         delta.getChangesInternal().addAll(Arrays.asList(sib0, sib2));
 
         replayMocks();
-        delta.removeChange(sib1);
+        delta.removeChange(sib1, NOW);
         verifyMocks();
     }
 

@@ -1,14 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class RemoveTest extends StudyCalendarTestCase {
+    private static final Date NOW = DateTools.createDate(2010, Calendar.JANUARY, 1);
+
     private Remove remove;
     private Epoch epoch;
     private StudySegment ssa, ssb, ssc;
@@ -55,17 +62,18 @@ public class RemoveTest extends StudyCalendarTestCase {
 
     public void testMergeWithNoOtherChanges() throws Exception {
         remove.setChild(ssa);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Remove should have been added", 1, delta.getChanges().size());
         assertSame(remove, delta.getChanges().get(0));
+        assertEquals("Updated date not set", NOW, remove.getUpdatedDate());
     }
 
     public void testMergeWithEquivalentAddPresent() throws Exception {
         delta.addChange(Add.create(ssc, 2));
 
         remove.setChild(ssc);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Remove should have canceled add", 0, delta.getChanges().size());
     }
@@ -75,7 +83,7 @@ public class RemoveTest extends StudyCalendarTestCase {
         delta.addChange(expectedRemove);
 
         remove.setChild(ssb);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Duplicate remove should not have been added", 1, delta.getChanges().size());
         assertEquals(expectedRemove, delta.getChanges().get(0));
@@ -83,7 +91,7 @@ public class RemoveTest extends StudyCalendarTestCase {
 
     public void testMergeWithChildNotInNode() throws Exception {
         remove.setChild(ssc);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Remove should not have been added", 0, delta.getChanges().size());
     }
@@ -98,22 +106,25 @@ public class RemoveTest extends StudyCalendarTestCase {
         delta.addChange(Add.create(retained2, 5));
 
         remove.setChild(ssc);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
         assertEquals("Wrong number of changes in delta", 3, delta.getChanges().size());
         Add add0 = (Add) delta.getChanges().get(0);
         Add add1 = (Add) delta.getChanges().get(1);
         Add add2 = (Add) delta.getChanges().get(2);
-        DeltaAssertions.assertAdd("Index for earlier retained add updated",   retained0, 2, add0);
-        DeltaAssertions.assertAdd("Index for later retained add not updated", retained1, 3, add1);
-        DeltaAssertions.assertAdd("Index for later retained add not updated", retained2, 4, add2);
+        assertAdd("Index for earlier retained add updated",   retained0, 2, add0);
+        assertChangeTime("Unchanged add time incorrectly updated", null, add0);
+        assertAdd("Index for later retained add not updated", retained1, 3, add1);
+        assertChangeTime("Updated add time not updated", NOW, add1);
+        assertAdd("Index for later retained add not updated", retained2, 4, add2);
+        assertChangeTime("Updated add time not updated", NOW, add2);
     }
     
     public void testMergeWithAddFollowedByReorderCancelsBoth() throws Exception {
         delta.addChange(Add.create(ssc, 2));
-        Reorder.create(ssc, 2, 1).mergeInto(delta);
+        Reorder.create(ssc, 2, 1).mergeInto(delta, NOW);
 
         remove.setChild(ssc);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Remove should have canceled add and reorder", 0, delta.getChanges().size());
     }
@@ -122,7 +133,7 @@ public class RemoveTest extends StudyCalendarTestCase {
         delta.addChange(Reorder.create(ssa, 0, 1));
 
         remove.setChild(ssa);
-        remove.mergeInto(delta);
+        remove.mergeInto(delta, NOW);
 
         assertEquals("Remove should not have canceled anything", 2, delta.getChanges().size());
     }

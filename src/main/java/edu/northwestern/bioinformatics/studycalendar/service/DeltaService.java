@@ -22,6 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactor
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -44,6 +45,7 @@ public class DeltaService {
     private DeltaDao deltaDao;
     private ChangeDao changeDao;
     private TemplateService templateService;
+    private NowFactory nowFactory;
 
     /**
      * Applies all the deltas in the given revision to the source study,
@@ -161,7 +163,7 @@ public class DeltaService {
                 target.getDeltas().add(Delta.createDeltaFor(node, change));
             } else {
                 log.debug("  - it has been changed before; merge into existing delta {}", existing);
-                change.mergeInto(existing);
+                change.mergeInto(existing, nowFactory.getNow());
             }
         }
     }
@@ -190,15 +192,20 @@ public class DeltaService {
         }
         findDaoAndSave((MutableDomainObject) revision);
         for (Delta<?> delta : revision.getDeltas()) {
+            log.debug("saveRevision: examining delta {}", delta);
             for (Change change : delta.getChanges()) {
                 if (change.getAction() == ChangeAction.ADD) {
+                    log.debug("saveRevision: examining add {}", change);
                     PlanTreeNode<?> child = ((Add) change).getChild();
                     if (child != null) {
+                        log.debug("saveRevision: saving added child {}", child);
                         findDaoAndSave(child);
                     }
                 }
             }
+            log.debug("saveRevision: saving delta node {}", delta.getNode());
             findDaoAndSave(delta.getNode());
+            log.debug("saveRevision: saving delta {}", delta);
             deltaDao.save(delta);
         }
     }
@@ -221,12 +228,13 @@ public class DeltaService {
             }
         }
         for (Change change : new ArrayList<Change>(delta.getChanges())) {
-            delta.removeChange(change);
+            delta.removeChange(change, nowFactory.getNow());
             changeDao.delete(change);
         }
         deltaDao.delete(delta);
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     public PlanTreeNode findChangeChild(ChildrenChange change) {
         PlanTreeNode child = change.getChild();
         if (child == null) {
@@ -267,5 +275,10 @@ public class DeltaService {
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setNowFactory(NowFactory nowFactory) {
+        this.nowFactory = nowFactory;
     }
 }

@@ -156,60 +156,39 @@ public class StudyTest extends StudyCalendarTestCase {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
         a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-
         study.pushAmendment(a);
-        assertSame(a, study.getAmendment());
+
         Amendment b = new Amendment();
         b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
-        b.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
-
         study.pushAmendment(b);
 
         Amendment c = new Amendment();
-        c.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
-        c.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 24));
-
+        c.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 24));
         study.pushAmendment(c);
-
-
         assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 24), study.getLastModifiedDate());
-
-
     }
 
     public void testLastModifiedDateWhenStudyIsAmended() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
         a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-
         study.pushAmendment(a);
-        assertSame(a, study.getAmendment());
-        Amendment b = new Amendment();
-        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
-        b.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
 
+        Amendment b = new Amendment();
+        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
         study.setDevelopmentAmendment(b);
 
-
         assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 23), study.getLastModifiedDate());
-
-
     }
 
     public void testLastModifiedDateForNewlyCreatedStudy() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
         a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 18));
 
         study.setDevelopmentAmendment(a);
         assertSame(a, study.getDevelopmentAmendment());
 
         assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
-
-
     }
-
 }

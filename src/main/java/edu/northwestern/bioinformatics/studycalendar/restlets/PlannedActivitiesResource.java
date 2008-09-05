@@ -84,6 +84,13 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage(), e);
         }
 
+        if (newPlannedActivity.getGridId() == null) {
+            // this is not great -- it would be better to throw an exception
+            // however, it is very difficult to simulate this side-effect using mocks
+            // and I don't have time -- RMS20080904
+            log.error("Planned activity not saved, somehow");
+        }
+
         getResponse().setStatus(Status.SUCCESS_CREATED);
         getResponse().setLocationRef(
             getRequest().getResourceRef().addSegment(newPlannedActivity.getGridId()));
