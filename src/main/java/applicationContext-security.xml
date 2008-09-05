@@ -12,8 +12,6 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
         default-lazy-init="true"
         >
-    <tx:annotation-driven proxy-target-class="true"/>
-
     <bean id="csmContextName" class="java.lang.String">
         <constructor-arg value="study_calendar"/>
     </bean>
