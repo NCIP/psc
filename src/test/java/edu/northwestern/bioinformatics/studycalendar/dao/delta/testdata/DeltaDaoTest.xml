@@ -39,6 +39,7 @@
         new_value="4"
         attribute="day"
         delta_id="-210"
+        updated_date="2008-04-01 12:10:34"
         />
     <CHANGES id="-11"
         action="remove"
@@ -58,6 +59,7 @@
         new_value="-3"
         attribute="1"
         delta_id="-100"
+        updated_date="2008-04-01 12:10:34"
     />
     <CHANGES
         id="-4"
@@ -65,6 +67,7 @@
         new_value="-2"
         attribute="0"
         delta_id="-100"
+        updated_date="2008-04-01 12:10:38"
     />
     <CHANGES
         id="-5"

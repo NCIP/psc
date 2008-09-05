@@ -1,20 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class DeltaDaoTest extends DaoTestCase {
@@ -81,6 +83,10 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong old value", "7", prop.getOldValue());
         assertEquals("Wrong new value", "4", prop.getNewValue());
         assertEquals("Wrong property", "day", prop.getPropertyName());
+        StudyCalendarTestCase.assertDayOfDate("Wrong update date",
+            2008, Calendar.APRIL, 1, prop.getUpdatedDate());
+        StudyCalendarTestCase.assertTimeOfDate("Wrong update date time",
+            12, 10, 34, 0, prop.getUpdatedDate());
         assertSame("Reverse relationship not loaded", actualDelta, prop.getDelta());
     }
 

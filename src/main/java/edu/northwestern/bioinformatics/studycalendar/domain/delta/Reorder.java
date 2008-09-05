@@ -2,15 +2,15 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
-
-import javax.persistence.Entity;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
-import javax.persistence.Column;
-
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+import java.util.Date;
 
 /**
  * A {@link Change} representing the reordering of the node's children.  Specifically,
@@ -70,13 +70,13 @@ public class Reorder extends ChildrenChange {
     public ChangeAction getAction() { return ChangeAction.REORDER; }
 
     @Override
-    protected MergeLogic createMergeLogic(Delta<?> delta) {
-        return new ReorderMergeLogic(delta);
+    protected MergeLogic createMergeLogic(Delta<?> delta, Date updateTime) {
+        return new ReorderMergeLogic(delta, updateTime);
     }
 
     @Override
-    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
-        return new ReorderSibDeletedLogic(delta, deletedChangePosition, thisPreDeletePosition);
+    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, Date updateTime, int deletedChangePosition, int thisPreDeletePosition) {
+        return new ReorderSibDeletedLogic(delta, updateTime, deletedChangePosition, thisPreDeletePosition);
     }
 
     @Override
@@ -142,16 +142,19 @@ public class Reorder extends ChildrenChange {
 
     private class ReorderMergeLogic extends MergeLogic {
         private Delta<?> delta;
+        private Date updateTime;
         private boolean merged = false;
 
-        public ReorderMergeLogic(Delta<?> delta) {
+        public ReorderMergeLogic(Delta<?> delta, Date updateTime) {
             this.delta = delta;
+            this.updateTime = updateTime;
         }
 
         @Override
         public boolean encountered(Reorder change) {
             if (change.isSameChild(Reorder.this)) {
                 change.setNewIndex(getNewIndex());
+                change.setUpdatedDate(updateTime);
                 merged = true;
             }
             return true;
@@ -164,6 +167,7 @@ public class Reorder extends ChildrenChange {
         @Override
         public void postProcess(boolean shortCircuited) {
             if (!merged || !shortCircuited) {
+                Reorder.this.setUpdatedDate(updateTime);
                 delta.addChanges(Reorder.this);
             }
         }
@@ -173,11 +177,13 @@ public class Reorder extends ChildrenChange {
     // shared base class
     private class ReorderSibDeletedLogic extends SiblingDeletedLogic {
         private Delta<?> delta;
+        private Date updateTime;
         private boolean thisAfter;
         private BeanWrapper thisWrapped;
 
-        public ReorderSibDeletedLogic(Delta<?> delta, int delIndex, int thisIndex) {
+        public ReorderSibDeletedLogic(Delta<?> delta, Date updateTime, int delIndex, int thisIndex) {
             this.delta = delta;
+            this.updateTime = updateTime;
             thisAfter = delIndex < thisIndex;
             thisWrapped = new BeanWrapperImpl(Reorder.this);
         }
@@ -219,12 +225,14 @@ public class Reorder extends ChildrenChange {
         private void incrementIf(String property, boolean condition) {
             if (condition) {
                 thisWrapped.setPropertyValue(property, getIntProperty(property) + 1);
+                Reorder.this.setUpdatedDate(updateTime);
             }
         }
 
         private void decrementIf(String property, boolean condition) {
             if (condition) {
                 thisWrapped.setPropertyValue(property, getIntProperty(property) - 1);
+                Reorder.this.setUpdatedDate(updateTime);
             }
         }
 

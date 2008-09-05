@@ -106,7 +106,6 @@ public class StudyService {
             }
         }
         if (study.getDevelopmentAmendment() != null) {
-            study.getDevelopmentAmendment().setUpdatedDate(new Date());
             deltaService.saveRevision(study.getDevelopmentAmendment());
         }
     }
@@ -183,7 +182,7 @@ public class StudyService {
         List<Epoch> epochs = new ArrayList<Epoch>(example.getPlannedCalendar().getEpochs());
         example.getPlannedCalendar().getEpochs().clear();
         for (Epoch epoch : epochs) {
-            Add.create(epoch).mergeInto(delta);
+            Add.create(epoch).mergeInto(delta, nowFactory.getNow());
         }
         newDev.addDelta(delta);
 

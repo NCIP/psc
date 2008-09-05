@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -116,18 +119,80 @@ public class AmendmentTest extends StudyCalendarTestCase {
         assertNull("Wrong name", actual.getName());
     }
 
-    public void testLastModifiedDate() throws Exception {
+    private void ensureUpdatedDate(Amendment expectedAmendment, Date expectedDate) {
+        expectedAmendment.getDeltas().clear();
+        Delta<?> delta = Delta.createDeltaFor(new Epoch(), PropertyChange.create("name", "A", "B"));
+        delta.getChanges().get(0).setUpdatedDate(expectedDate);
+        expectedAmendment.addDelta(delta);
+    }
+
+    public void testLastModifiedDateIsNullIfAllDatesAreNull() throws Exception {
+        a3.setReleasedDate(null);
+        ensureUpdatedDate(a3, null);
+
+        assertNull(a3.getLastModifiedDate());
+    }
+
+    public void testLastModifiedDatePrefersUpdatedDateIfLater() throws Exception {
         a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
-        a3.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+        ensureUpdatedDate(a3, DateUtils.createDate(2007, Calendar.OCTOBER, 20));
 
+        assertDayOfDate(2007, Calendar.OCTOBER, 20, a3.getLastModifiedDate());
+    }
 
-        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 20), a3.getLastModifiedDate());
-
+    public void testLastModifiedDatePrefersReleasedDateIfLater() throws Exception {
         a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
-        a3.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+        ensureUpdatedDate(a3, DateUtils.createDate(2007, Calendar.OCTOBER, 20));
 
+        assertDayOfDate(2007, Calendar.OCTOBER, 21, a3.getLastModifiedDate());
+    }
 
-        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 21), a3.getLastModifiedDate());
+    public void testLastModifiedDatePrefersUpdatedDateIfReleasedDateNull() throws Exception {
+        a3.setReleasedDate(null);
+        ensureUpdatedDate(a3, DateUtils.createDate(2007, Calendar.OCTOBER, 20));
 
+        assertDayOfDate(2007, Calendar.OCTOBER, 20, a3.getLastModifiedDate());
+    }
+
+    public void testLastModifiedDatePrefersReleasedDateIfNoDeltas() throws Exception {
+        a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+        a3.getDeltas().clear();
+
+        assertDayOfDate(2007, Calendar.OCTOBER, 20, a3.getLastModifiedDate());
+    }
+
+    public void testLastModifiedDatePrefersReleasedDateIfNoChanges() throws Exception {
+        a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+        a3.addDelta(new EpochDelta());
+
+        assertDayOfDate(2007, Calendar.OCTOBER, 20, a3.getLastModifiedDate());
+    }
+
+    public void testUpdatedDateWhenOneChangeHasAnUpdatedDate() throws Exception {
+        a3.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
+        a3.getDeltas().get(0).getChanges().get(0).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 3));
+
+        assertDayOfDate(2005, Calendar.MAY, 3, a3.getUpdatedDate());
+    }
+
+    public void testUpdatedDateIsMaxWithinOneDelta() throws Exception {
+        a3.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
+        a3.getDeltas().get(0).getChanges().get(0).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 3));
+        a3.getDeltas().get(0).getChanges().get(1).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 4));
+
+        assertDayOfDate(2005, Calendar.MAY, 4, a3.getUpdatedDate());
+    }
+    
+    public void testUpdatedDateIsMaxAcrossDeltas() throws Exception {
+        a3.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B")));
+        a3.addDelta(Delta.createDeltaFor(new Epoch(),
+            Add.create(new StudySegment())));
+        a3.getDeltas().get(0).getChanges().get(0).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 3));
+        a3.getDeltas().get(1).getChanges().get(0).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 4));
+
+        assertDayOfDate(2005, Calendar.MAY, 4, a3.getUpdatedDate());
     }
 }

@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import javax.persistence.Entity;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
-import javax.persistence.Column;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -34,8 +34,8 @@ public class Remove extends ChildrenChange {
     }
 
     @Override
-    protected MergeLogic createMergeLogic(Delta<?> delta) {
-        return new RemoveMergeLogic(delta);
+    protected MergeLogic createMergeLogic(Delta<?> delta, Date updateTime) {
+        return new RemoveMergeLogic(delta, updateTime);
     }
 
     ////// BEAN PROPERTIES
@@ -57,18 +57,20 @@ public class Remove extends ChildrenChange {
 
     private class RemoveMergeLogic extends MergeLogic {
         private Delta<?> delta;
+        private Date updateTime;
         private Reorder precedingReorder;
         private boolean hadPrecedingAdd;
 
-        public RemoveMergeLogic(Delta<?> delta) {
+        public RemoveMergeLogic(Delta<?> delta, Date updateTime) {
             this.delta = delta;
+            this.updateTime = updateTime;
         }
 
         @Override
         public boolean encountered(Add change) {
             if (change.isSameChild(Remove.this)) {
                 log.debug("Found equivalent add ({}).  Canceling.", change);
-                delta.removeChange(change);
+                delta.removeChange(change, updateTime);
                 hadPrecedingAdd = true;
                 return true;
             }
@@ -108,9 +110,10 @@ public class Remove extends ChildrenChange {
         @Override
         public void postProcess(boolean merged) {
             if (hadPrecedingAdd && precedingReorder != null) {
-                delta.removeChange(precedingReorder);
+                delta.removeChange(precedingReorder, updateTime);
             }
             if (!merged && nodeHasChildToRemove()) {
+                Remove.this.setUpdatedDate(updateTime);
                 delta.addChange(Remove.this);
             }
         }

@@ -3,12 +3,22 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,9 +44,9 @@ import java.util.List;
 @Entity
 @Table(name = "amendments")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
+    parameters = {
         @Parameter(name = "sequence", value = "seq_amendments_id")
-                }
+    }
 )
 public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
@@ -47,7 +57,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
     private List<Delta<?>> deltas;
     private boolean mandatory;
     private Date releasedDate;
-    private Date updatedDate;
 
     public Amendment() {
         this(null);
@@ -140,12 +149,38 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         delta.setRevision(this);
     }
 
+    @Transient
+    public Date getLastModifiedDate() {
+        if (this.getReleasedDate() == null) {
+            return this.getUpdatedDate();
+        }
+        if (this.getUpdatedDate() != null && this.getUpdatedDate().compareTo(this.getReleasedDate()) > 0) {
+            return this.getUpdatedDate();
+        } else {
+            return this.getReleasedDate();
+        }
+    }
+
+    @Transient
+    public Date getUpdatedDate() {
+        Date updated = null;
+        for (Delta<?> delta : getDeltas()) {
+            for (Change change : delta.getChanges()) {
+                if (updated == null) {
+                    updated = change.getUpdatedDate();
+                } else if (ComparisonUtils.nullSafeCompare(updated, change.getUpdatedDate()) < 0) {
+                    updated = change.getUpdatedDate();
+                }
+            }
+        }
+        return updated;
+    }
+
     ////// BEAN PROPERTIES
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @OrderBy
-    // order by ID for testing consistency
+    @OrderBy // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -188,6 +223,14 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    public Date getReleasedDate() {
+        return releasedDate;
+    }
+
+    public void setReleasedDate(final Date releasedDate) {
+        this.releasedDate = releasedDate;
     }
 
     ////// OBJECT METHODS
@@ -254,35 +297,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
                 sb.append('~').append(getName());
             }
             return sb.toString();
-        }
-    }
-
-    public Date getReleasedDate() {
-        return releasedDate;
-    }
-
-    public void setReleasedDate(final Date releasedDate) {
-        this.releasedDate = releasedDate;
-    }
-
-    public Date getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(final Date updatedDate) {
-        this.updatedDate = updatedDate;
-    }
-
-    @Transient
-    public Date getLastModifiedDate() {
-
-        if (this.getReleasedDate() == null) {
-            return this.getUpdatedDate();
-        }
-        if (this.getUpdatedDate() != null && this.getUpdatedDate().compareTo(this.getReleasedDate()) > 0) {
-            return this.getUpdatedDate();
-        } else {
-            return this.getReleasedDate();
         }
     }
 }

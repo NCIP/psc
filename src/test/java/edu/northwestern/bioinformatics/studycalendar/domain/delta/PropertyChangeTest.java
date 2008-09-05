@@ -5,12 +5,19 @@ import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.assertPropertyChange;
+import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class PropertyChangeTest extends StudyCalendarTestCase {
+    private static final Date NOW = DateTools.createDate(2025, Calendar.MAY, 9);
+
     private PropertyChange change;
     private Period period;
     private Delta<?> delta;
@@ -36,9 +43,10 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         change.setOldValue("5");
         change.setNewValue("8");
 
-        change.mergeInto(delta);
+        change.mergeInto(delta, NOW);
         assertEquals("Wrong number of changes", 1, delta.getChanges().size());
         assertSame("Wrong change", change, delta.getChanges().get(0));
+        assertChangeTime("Time not updated", NOW, change);
     }
 
     public void testMergeWithExistingChangeForProperty() throws Exception {
@@ -47,17 +55,18 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         change.setPropertyName("startDay");
         change.setOldValue("5");
         change.setNewValue("8");
-        change.mergeInto(delta);
+        change.mergeInto(delta, NOW);
 
         assertEquals("Change not merged", 1, delta.getChanges().size());
         assertPropertyChange("Result values not merged", "startDay", "2", "8", delta.getChanges().get(0));
+        assertChangeTime("Merged change not timestamped", NOW, delta.getChanges().get(0));
     }
 
     public void testMergeWithNoop() throws Exception {
         change.setPropertyName("startDay");
         change.setOldValue("5");
         change.setNewValue("5");
-        change.mergeInto(delta);
+        change.mergeInto(delta, NOW);
 
         assertEquals("Change should not have been merged", 0, delta.getChanges().size());
     }
@@ -68,7 +77,7 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         change.setPropertyName("duration.quantity");
         change.setOldValue("3");
         change.setNewValue("6");
-        change.mergeInto(delta);
+        change.mergeInto(delta, NOW);
 
         assertEquals("Changes incorrectly merged", 2, delta.getChanges().size());
         assertPropertyChange("Wrong change 0", "name", "Second", "First",

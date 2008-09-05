@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import static junit.framework.Assert.*;
+
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -47,5 +48,9 @@ public class DeltaAssertions {
         assertEquals(msg + ": wrong property", expectedProperty, actualChange.getPropertyName());
         assertEquals(msg + ": wrong old value", expectedOld, actualChange.getOldValue());
         assertEquals(msg + ": wrong new value", expectedNew, actualChange.getNewValue());
+    }
+
+    public static void assertChangeTime(String msg, Date expected, Change actual) {
+        assertEquals(msg, expected, actual.getUpdatedDate());
     }
 }

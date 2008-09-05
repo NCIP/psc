@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,10 +33,11 @@ import java.util.List;
 public abstract class Change extends AbstractMutableDomainObject {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+    private Date updatedDate;
     private Delta<?> delta;
 
     /**
-     * Return the action used by this change.  It should match the discriminator value for the class.
+     * Return the action used by this change.  It must match the discriminator value for the class.
      * @return
      */
     @Transient
@@ -54,13 +56,14 @@ public abstract class Change extends AbstractMutableDomainObject {
      * may extend to removing or modifying other changes.  Or, if this change is
      * already represented in the delta, this method may do nothing.
      * @param targetDelta
+     * @param updateTime
      */
-    public void mergeInto(Delta<?> targetDelta) {
+    public void mergeInto(Delta<?> targetDelta, Date updateTime) {
         if (this.isNoop()) return;
         log.debug("Merging {} into {}", this, targetDelta);
         List<Change> changes = targetDelta.getChanges();
         boolean merged = false;
-        MergeLogic logic = createMergeLogic(targetDelta);
+        MergeLogic logic = createMergeLogic(targetDelta, updateTime);
         // walk back through changes until the merge logic says to stop
         for (int i = changes.size() - 1; i >= 0; i--) {
             Change c = changes.get(i);
@@ -78,7 +81,7 @@ public abstract class Change extends AbstractMutableDomainObject {
         logic.postProcess(merged);
     }
 
-    protected abstract MergeLogic createMergeLogic(Delta<?> delta);
+    protected abstract MergeLogic createMergeLogic(Delta<?> delta, Date updateTime);
 
     /**
      * Notifies this change that another change in the same delta was removed.
@@ -87,9 +90,10 @@ public abstract class Change extends AbstractMutableDomainObject {
      * @param deleted
      * @param deletedChangePosition The index of the deleted change in the delta (before it was deleted)
      * @param thisPreDeletePosition The index of this change in the delta (before the sibling was deleted)
+     * @param updateTime
      */
-    public void siblingDeleted(Delta<?> parent, Change deleted, int deletedChangePosition, int thisPreDeletePosition) {
-        SiblingDeletedLogic logic = createSiblingDeletedLogic(parent, deletedChangePosition, thisPreDeletePosition);
+    public void siblingDeleted(Delta<?> parent, Change deleted, int deletedChangePosition, int thisPreDeletePosition, Date updateTime) {
+        SiblingDeletedLogic logic = createSiblingDeletedLogic(parent, updateTime, deletedChangePosition, thisPreDeletePosition);
         if (logic == null) return;
         if (deleted.getAction() == ChangeAction.ADD) {
             logic.siblingDeleted((Add) deleted);
@@ -102,7 +106,7 @@ public abstract class Change extends AbstractMutableDomainObject {
         }
     }
 
-    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
+    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, Date updateTime, int deletedChangePosition, int thisPreDeletePosition) {
         return null;
     }
 
@@ -116,6 +120,14 @@ public abstract class Change extends AbstractMutableDomainObject {
 
     public void setDelta(Delta<?> delta) {
         this.delta = delta;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     ////// INNER CLASSES

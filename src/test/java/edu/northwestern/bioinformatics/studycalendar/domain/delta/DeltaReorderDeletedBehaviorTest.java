@@ -12,6 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactor
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 
+import java.util.Date;
+
 /**
  * A series of higher-level tests which examine the behavior for
  * various indexed change deletions.
@@ -151,7 +153,7 @@ public class DeltaReorderDeletedBehaviorTest extends StudyCalendarTestCase {
 
     private void removeFirstAndExpectOrder(String expectedInitialOrder, String expectedOrderAfterRemove) {
         assertEquals("Order not as expected initially", expectedInitialOrder, studySegmentOrder());
-        delta.removeChange(firstReorder);
+        delta.removeChange(firstReorder, new Date());
         assertEquals("Order not as expected after first reorder deleted", expectedOrderAfterRemove, studySegmentOrder());
         for (Change change : delta.getChanges()) {
             if (change instanceof Reorder) {

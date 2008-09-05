@@ -269,7 +269,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     ////// EXPECTATIONS
 
     private void expectPlannedActivityAdd(PlannedActivity expectedPlannedActivity) {
-        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod, Add.create(expectedPlannedActivity))).andReturn(study);
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod,
+            Add.create(expectedPlannedActivity))).andReturn(study);
     }
 
     private void expectSuccessfulDrillDown() {

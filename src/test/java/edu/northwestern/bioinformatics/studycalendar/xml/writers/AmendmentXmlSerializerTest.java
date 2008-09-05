@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -38,6 +39,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
 
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -52,6 +54,8 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         delta = setGridId("grid1", new PlannedCalendarDelta());
         delta.setNode(setGridId("grid2", new PlannedCalendar()));
+        delta.addChange(Add.create(new Epoch()));
+        delta.getChanges().get(0).setUpdatedDate(createDate(2008, Calendar.JANUARY, 4));
 
         amendment1 = new Amendment();
         amendment1.setMandatory(true);
@@ -59,7 +63,6 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendment1.setPreviousAmendment(amendment0);
         amendment1.setDate(createDate(2008, Calendar.JANUARY, 2));
         amendment1.setReleasedDate(createDate(2008, Calendar.JANUARY, 3));
-        amendment1.setUpdatedDate(createDate(2008, Calendar.JANUARY, 4));
         amendment1.addDelta(delta);
 
         QName qDelta = DocumentHelper.createQName("planned-calendar-delta", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
@@ -76,7 +79,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         study.setAmendment(amendment0);
 
         serializer = new AmendmentXmlSerializer() {
-            public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
+            @Override public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
                 return deltaSerializerFactory;
             }
 

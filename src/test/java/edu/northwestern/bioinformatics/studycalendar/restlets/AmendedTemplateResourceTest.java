@@ -53,7 +53,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
     public void testSuccessfulResponseIncludesLastModified() throws Exception {
         Date expectedLastMod = DateUtils.createDate(2007, Calendar.APRIL, 6);
-        amendedStudy.getAmendment().setUpdatedDate(expectedLastMod);
+        amendedStudy.getAmendment().setReleasedDate(expectedLastMod);
         assertEquals("Sanity check failed", expectedLastMod, amendedStudy.getLastModifiedDate());
 
         expect(helper.getAmendedTemplate()).andReturn(amendedStudy);

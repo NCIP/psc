@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE dataset [
-    <!ELEMENT dataset (AMENDMENTS*, STUDIES*, DELTAS*, PLANNED_CALENDARS*) >
+    <!ELEMENT dataset (AMENDMENTS*, STUDIES*, DELTAS*, CHANGES*, PLANNED_CALENDARS*) >
 
     <!ELEMENT AMENDMENTS EMPTY>
     <!ATTLIST AMENDMENTS
@@ -26,6 +26,17 @@
         amendment_id CDATA #REQUIRED
         grid_id CDATA #IMPLIED
         node_type CDATA #REQUIRED
+    >
+    <!ELEMENT CHANGES EMPTY>
+    <!ATTLIST CHANGES
+        id CDATA #REQUIRED
+        grid_id CDATA #IMPLIED
+        delta_id CDATA #REQUIRED
+        old_value CDATA #IMPLIED
+        new_value CDATA #IMPLIED
+        attribute CDATA #IMPLIED
+        action CDATA #REQUIRED
+        updated_date CDATA #IMPLIED
     >
     <!ELEMENT PLANNED_CALENDARS EMPTY>
     <!ATTLIST PLANNED_CALENDARS
@@ -99,6 +110,24 @@
         node_id="-22"
         node_type="cal"
         amendment_id="-100"
+        />
+    <CHANGES
+        action="property"
+        id="-1020"
+        delta_id="-102"
+        updated_date="2008-04-01 12:11:10"
+        />
+    <CHANGES
+        action="property"
+        id="-1021"
+        delta_id="-102"
+        updated_date="2008-04-01 12:11:08"
+        />
+    <CHANGES
+        action="property"
+        id="-1022"
+        delta_id="-102"
+        updated_date="2008-04-01 12:11:11"
         />
     <STUDIES
         id="-20"
