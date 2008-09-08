@@ -81,4 +81,15 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
     public void setStudy(Study study) {
         this.study = study;
     }
+
+    public StringBuffer validateElement(Change change, Element eChange) {
+
+        String gridId = eChange.attributeValue(ID);
+        if (!change.getGridId().equals(gridId))
+            return new StringBuffer(String.format("grid id is different. expected:%s , found (in imported document) :%s \n", change.getGridId(), gridId));
+
+        return new StringBuffer("");
+
+
+    }
 }

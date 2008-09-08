@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
@@ -27,9 +28,9 @@ public class PropertyChangeXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testCreateElement() {
         Element actual = serializer.createElement(propertyChange);
 
-        assertEquals("Wrong property",  "name", actual.attributeValue("property-name"));
-        assertEquals("Wrong old value",  "Epoch X", actual.attributeValue("old-value"));
-        assertEquals("Wrong new value",  "Epoch A", actual.attributeValue("new-value"));
+        assertEquals("Wrong property", "name", actual.attributeValue("property-name"));
+        assertEquals("Wrong old value", "Epoch X", actual.attributeValue("old-value"));
+        assertEquals("Wrong new value", "Epoch A", actual.attributeValue("new-value"));
     }
 
     public void testReadElement() {
@@ -46,5 +47,39 @@ public class PropertyChangeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong property", "name", actual.getPropertyName());
         assertEquals("Wrong old value", "Epoch X", actual.getOldValue());
         assertEquals("Wrong new value", "Epoch A", actual.getNewValue());
+    }
+
+    public void testValidateElement() throws Exception {
+        PropertyChange propertyChange = createPropertyChange();
+        Element actual = serializer.createElement(propertyChange);
+        assertTrue(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+        propertyChange.setOldValue("wrong");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+
+        propertyChange = createPropertyChange();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+        propertyChange.setNewValue(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+
+        propertyChange = createPropertyChange();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+        propertyChange.setPropertyName(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+
+        propertyChange = createPropertyChange();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+        propertyChange.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(propertyChange, actual).toString()));
+
+
+        
+
+    }
+
+    private PropertyChange createPropertyChange() {
+        PropertyChange propertyChange = PropertyChange.create("name", "old name", "new name");
+        propertyChange.setGridId("grid id");
+
+        return propertyChange;
     }
 }

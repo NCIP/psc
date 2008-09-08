@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactoryAware;
 
@@ -37,6 +38,28 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
             DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
             return dao.getById(change.getChildId());
         }
+    }
+
+    @Override
+    public StringBuffer validateElement(Change change, Element eChange) {
+
+        if (change == null && eChange == null) {
+            return new StringBuffer("");
+        } else if ((change == null && eChange != null) || (change != null && eChange == null)) {
+            return new StringBuffer("either change or element is null");
+        }
+
+        StringBuffer errorMessageStringBuffer = super.validateElement(change, eChange);
+        ChildrenChange childrenChange = (ChildrenChange) change;
+
+        if (eChange.attributeValue(CHILD_ID) != null) {
+            String childId = childrenChange.getChild() != null ? childrenChange.getChild().getGridId() : null;
+            if (!StringUtils.equals(childId, eChange.attributeValue(CHILD_ID))) {
+                errorMessageStringBuffer.append(String.format("childId  is different. expected:%s , found (in imported document) :%s \n", childId, eChange.attributeValue(CHILD_ID)));
+            }
+        }
+
+        return errorMessageStringBuffer;
     }
 
     public void setChildClass(Class childClass) {

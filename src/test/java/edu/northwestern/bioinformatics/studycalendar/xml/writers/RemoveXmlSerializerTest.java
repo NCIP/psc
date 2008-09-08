@@ -4,8 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -34,6 +37,11 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new RemoveXmlSerializer(){
             protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
                 return planTreeNodeSerializerFactory;
+            }
+
+            @Override
+            protected DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+                return epoch;
             }
         };
         serializer.setChangeDao(changeDao);
@@ -80,6 +88,30 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element node = serializer.findNodeById(nodes, "4");
         assertEquals("wrong node", "fourth", node.getName());
+    }
+
+     public void testValidateElement() throws Exception {
+        Remove remove = createRemove();
+        Element actual = serializer.createElement(remove);
+        assertTrue(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
+        remove.setChild(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
+
+        remove = createRemove();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
+        remove.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
+
+
+        assertFalse(StringUtils.isBlank(serializer.validateElement(null, actual).toString()));
+
+
+    }
+
+    private Remove createRemove() {
+        Remove remove= Remove.create(epoch);
+        remove.setGridId("grid id");
+        return remove;
     }
 
     private void expectGetElementByIdCalls() {
