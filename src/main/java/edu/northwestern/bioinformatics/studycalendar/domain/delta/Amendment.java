@@ -9,16 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,9 +35,9 @@ import java.util.List;
 @Entity
 @Table(name = "amendments")
 @GenericGenerator(name = "id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name = "sequence", value = "seq_amendments_id")
-    }
+        parameters = {
+                @Parameter(name = "sequence", value = "seq_amendments_id")
+        }
 )
 public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
@@ -180,7 +171,8 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @OrderBy // order by ID for testing consistency
+    @OrderBy
+    // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -244,6 +236,18 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
                 .append(']').toString();
     }
 
+    @Transient
+    public Delta getMatchingDelta(String gridId, String nodeId) {
+        for (Delta delta : this.getDeltas()) {
+            if (delta.getGridId().equals(gridId) && delta.getNode() != null && delta.getNode().getGridId().equals(nodeId)) {
+                return delta;
+
+            }
+        }
+
+        return null;
+    }
+
     public static final class Key {
         private Date date;
         private String name;
@@ -299,4 +303,5 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
             return sb.toString();
         }
     }
+
 }
