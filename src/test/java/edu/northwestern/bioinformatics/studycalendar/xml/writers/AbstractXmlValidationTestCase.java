@@ -14,7 +14,7 @@ import java.util.Calendar;
 /**
  * @author Saurabh Agrawal
  */
-public abstract class AbstractXmlValidationTest extends AbstractTestCase {
+public abstract class AbstractXmlValidationTestCase extends AbstractTestCase {
 
     protected static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 

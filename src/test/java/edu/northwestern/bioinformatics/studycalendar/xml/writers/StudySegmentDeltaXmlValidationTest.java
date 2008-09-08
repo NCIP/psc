@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  *@author  Saurabh Agrawal.
  */
-public class StudySegmentDeltaXmlValidationTest extends AbstractXmlValidationTest {
+public class StudySegmentDeltaXmlValidationTest extends AbstractXmlValidationTestCase {
     private Element eStudySegment;
 
     @Override

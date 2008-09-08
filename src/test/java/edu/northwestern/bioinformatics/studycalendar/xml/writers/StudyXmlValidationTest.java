@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * @author Saurabh Agrawal
  */
-public class StudyXmlValidationTest extends AbstractXmlValidationTest {
+public class StudyXmlValidationTest extends AbstractXmlValidationTestCase {
     private Element eStudy;
 
     @Override

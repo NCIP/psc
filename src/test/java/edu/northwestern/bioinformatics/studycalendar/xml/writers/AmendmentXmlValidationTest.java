@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Saurabh Agrawal
  */
-public class AmendmentXmlValidationTest extends AbstractXmlValidationTest {
+public class AmendmentXmlValidationTest extends AbstractXmlValidationTestCase {
 
     private Element eDelta;
     private Element eAmendment;

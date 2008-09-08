@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * @author Saurabh Agrawal
  */
-public class EpochDeltaXmlValidationTest extends AbstractXmlValidationTest {
+public class EpochDeltaXmlValidationTest extends AbstractXmlValidationTestCase {
 
     private Element eDelta;
 
