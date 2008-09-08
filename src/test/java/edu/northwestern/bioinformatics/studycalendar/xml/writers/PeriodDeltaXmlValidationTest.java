@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  *@author  Saurabh Agrawal.
  */
-public class PeriodDeltaXmlValidationTest extends AbstractXmlValidationTest {
+public class PeriodDeltaXmlValidationTest extends AbstractXmlValidationTestCase {
     private Element ePeriod ;
 
     @Override
