@@ -7,15 +7,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import org.dom4j.Element;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
  * @author Saurabh Agrawal
  */
-public class AbstractXmlValidationTest extends CoreTestCase {
+public abstract class AbstractXmlValidationTest extends CoreTestCase {
 
     protected static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -24,7 +22,6 @@ public class AbstractXmlValidationTest extends CoreTestCase {
     private Population population;
     protected Element ePopulation;
     protected Amendment amendment;
-    protected InputStream validStudyXml;
     protected PlannedCalendarDelta plannedCalendarDelta;
     protected PeriodDeltaXmlSerializer periodDeltaXmlSerializer;
     protected PlannedCalendar plannedCalendar;
@@ -69,7 +66,6 @@ public class AbstractXmlValidationTest extends CoreTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        validStudyXml = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data/StudyXMLValidatorTest.xml");
         source = new Source();
         source.setName("NU Sample Activities");
 
