@@ -63,6 +63,12 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
     protected Add add3;
     protected EpochDelta epochDelta;
     protected EpochDeltaXmlSerializer epochDeltaXmlSerializer;
+    protected DeltaXmlSerializerFactory deltaSerializerFactory;
+    protected AmendmentXmlSerializer amendmentSerializer;
+    protected PopulationXmlSerializer populationSerializer;
+    protected PlannedCalendarXmlSerializer plannedCalendarSerializer;
+    protected AmendmentXmlSerializer developmentAmendmentSerializer;
+    protected Amendment firstAmendment;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -170,12 +176,11 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
 
 
         amendment = Fixtures.createAmendment("[Second Expected]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.AUGUST, 16), true);
+        firstAmendment = Fixtures.createAmendment("[First]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.JANUARY, 2), true);
 
 
         study = createStudy();
 
-
-       
 
         activityXmlSerializer = new ActivityXmlSerializer();
         plannedActivityXmlSerializer = new PlannedActivityXmlSerializer();
@@ -311,7 +316,53 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
             }
         };
 
+        deltaSerializerFactory = new DeltaXmlSerializerFactory() {
+            @Override
+            public AbstractDeltaXmlSerializer createXmlSerializer(Element delta) {
+                if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
+                    return plannedCalendarDeltaXmlSerializer;
+                } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
+                    return epochDeltaXmlSerializer;
+                } else if (StudySegmentDeltaXmlSerializer.STUDY_SEGMENT_DELTA.equals(delta.getName())) {
+                    return studySegmentDeltaXmlSerializer;
+                } else if (PeriodDeltaXmlSerializer.PERIOD_DELTA.equals(delta.getName())) {
+                    return periodDeltaXmlSerializer;
+                } else if (PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
+                    return null;
+                } else {
+                    throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
+                }
 
+            }
+
+            @Override
+            public AbstractDeltaXmlSerializer createXmlSerializer(Delta delta) {
+                if (delta instanceof PlannedCalendarDelta) {
+                    return plannedCalendarDeltaXmlSerializer;
+                } else if (delta instanceof EpochDelta) {
+                    return epochDeltaXmlSerializer;
+                } else if (delta instanceof StudySegmentDelta) {
+                    return studySegmentDeltaXmlSerializer;
+                } else if (delta instanceof PeriodDelta) {
+                    return periodDeltaXmlSerializer;
+                } else if (delta instanceof PlannedActivityDelta) {
+                    return null;
+                } else {
+                    throw new StudyCalendarError("Problem importing template. Could not find delta type");
+                }
+
+            }
+        };
+        amendmentSerializer = new AmendmentXmlSerializer() {
+            public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
+                return deltaSerializerFactory;
+            }
+
+        };
+        populationSerializer = new PopulationXmlSerializer();
+        plannedCalendarSerializer = new PlannedCalendarXmlSerializer();
+        developmentAmendmentSerializer = new AmendmentXmlSerializer();
+        developmentAmendmentSerializer.setStudy(study);
 
 
     }

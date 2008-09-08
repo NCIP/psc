@@ -34,7 +34,14 @@ public class PropertyChangeXmlSerializer extends AbstractChangeXmlSerializer {
 
     @Override
     public StringBuffer validateElement(Change change, Element eChange) {
+        if (change == null && eChange == null) {
+            return new StringBuffer("");
+        } else if ((change == null && eChange != null) || (change != null && eChange == null)) {
+            return new StringBuffer("either change or element is null");
+        }
+
         StringBuffer errorMessageStringBuffer = super.validateElement(change, eChange);
+
 
         String expectedPropertyName = ((PropertyChange) change).getPropertyName();
         String oldValue = ((PropertyChange) change).getOldValue();
