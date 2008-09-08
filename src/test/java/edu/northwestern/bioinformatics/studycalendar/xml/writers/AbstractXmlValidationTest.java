@@ -1,12 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAddChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import org.dom4j.Element;
 
@@ -22,22 +19,15 @@ public class AbstractXmlValidationTest extends CoreTestCase {
 
     protected static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    protected StudyXmlSerializer serializer;
     protected Study study;
     private PlannedCalendar calendar;
-    private PopulationXmlSerializer populationSerializer;
     private Population population;
     protected Element ePopulation;
-    private PlannedCalendarXmlSerializer plannedCalendarSerializer;
-    private AmendmentXmlSerializer amendmentSerializer;
-    private AmendmentXmlSerializer developmentAmendmentSerializer;
     protected Amendment amendment;
     protected InputStream validStudyXml;
     protected PlannedCalendarDelta plannedCalendarDelta;
     protected PeriodDeltaXmlSerializer periodDeltaXmlSerializer;
     protected PlannedCalendar plannedCalendar;
-    private DeltaXmlSerializerFactory deltaSerializerFactory;
-    protected StudyService studyService;
     protected Activity activity1;
     private Activity activity2;
     protected PlannedActivity plannedActivity1;
@@ -62,8 +52,6 @@ public class AbstractXmlValidationTest extends CoreTestCase {
     protected Add add1;
     protected Reorder reorder;
     protected Amendment expectedDevelopmentAmendment;
-    protected ImportTemplateService importTemplateService;
-    private StudyDao studyDao;
     protected PeriodDelta periodDelta;
     protected Add add2;
     protected PropertyChange propertyChange1;
@@ -327,63 +315,8 @@ public class AbstractXmlValidationTest extends CoreTestCase {
             }
         };
 
-        deltaSerializerFactory = new DeltaXmlSerializerFactory() {
-            @Override
-            public AbstractDeltaXmlSerializer createXmlSerializer(Element delta) {
-                if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
-                    return plannedCalendarDeltaXmlSerializer;
-                } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
-                    return epochDeltaXmlSerializer;
-                } else if (StudySegmentDeltaXmlSerializer.STUDY_SEGMENT_DELTA.equals(delta.getName())) {
-                    return studySegmentDeltaXmlSerializer;
-                } else if (PeriodDeltaXmlSerializer.PERIOD_DELTA.equals(delta.getName())) {
-                    return periodDeltaXmlSerializer;
-                } else if (PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
-                    return null;
-                } else {
-                    throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
-                }
-
-            }
 
 
-        };
-        amendmentSerializer = new AmendmentXmlSerializer() {
-            public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
-                return deltaSerializerFactory;
-            }
-
-        };
-
-        populationSerializer = new PopulationXmlSerializer();
-        plannedCalendarSerializer = new PlannedCalendarXmlSerializer();
-        developmentAmendmentSerializer = new AmendmentXmlSerializer();
-
-        serializer = new StudyXmlSerializer() {
-            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
-                return plannedCalendarSerializer;
-            }
-
-            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
-                return populationSerializer;
-            }
-
-            public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
-//                amendmentSerializer.setStudy(study);
-                return amendmentSerializer;
-            }
-
-            protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
-                developmentAmendmentSerializer.setStudy(study);
-                return developmentAmendmentSerializer;
-            }
-        };
-        serializer.setStudyService(studyService);
-
-
-        importTemplateService = new ImportTemplateService();
-        importTemplateService.setStudyXmlSerializer(serializer);
-        importTemplateService.setStudyDao(studyDao);
 
     }
 
