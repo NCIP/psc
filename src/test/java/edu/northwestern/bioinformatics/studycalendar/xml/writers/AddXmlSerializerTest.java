@@ -3,12 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
@@ -63,7 +66,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element element = serializer.createElement(add);
         verifyMocks();
-        
+
         assertEquals("Wrong grid id", "grid0", element.attributeValue("id"));
         assertEquals("Wrong index", "0", element.attributeValue("index"));
         assertFalse("Wrong child id", element.elements("epoch").isEmpty());
@@ -76,7 +79,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Add actual = (Add) serializer.readElement(element);
         verifyMocks();
-        
+
         assertSame("Change objects should be the same", add, actual);
     }
 
@@ -94,5 +97,92 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
         assertEquals("Wrong grid index", 0, (int) actual.getIndex());
+    }
+
+    public void testValidateElementIfEpochIsChild() throws Exception {
+        Add add = createAdd();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(planTreeNodeSerializer);
+
+
+        expect(planTreeNodeSerializer.createElement(epoch)).andReturn(eEpoch);
+
+        replayMocks();
+        Element actual = serializer.createElement(add);
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
+        replayMocks();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        add.setIndex(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
+        replayMocks();
+        add = createAdd();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("grid id is different");
+        replayMocks();
+
+        add.setChild(epoch);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
+        replayMocks();
+        add = createAdd();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(null, eEpoch)).andReturn("child is null");
+        replayMocks();
+
+        add.setChild(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
+        replayMocks();
+
+        add = createAdd();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        verifyMocks();
+
+        resetMocks();
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(eEpoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.validateElement(epoch, eEpoch)).andReturn("");
+        replayMocks();
+        add.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(add, actual).toString()));
+        
+        verifyMocks();
+
+
+        assertFalse(StringUtils.isBlank(serializer.validateElement(null, actual).toString()));
+
+
+    }
+
+    private Add createAdd() {
+        Add add = Fixtures.createAddChange(1, 0);
+        add.setChild(epoch);
+        add.setGridId("cb6e3130-9d2e-44e8-80ac-170d1875db5c");
+
+        return add;
     }
 }
