@@ -82,9 +82,10 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
             valid = false;
         }
 
-        if (!embeddedInSource) {
+        if (!embeddedInSource &&!(activity.getSource()==null && XsdAttribute.ACTIVITY_SOURCE.from(element)==null)) {
 
             if ((activity.getSource() == null && XsdAttribute.ACTIVITY_SOURCE.from(element) != null)
+                    || (activity.getSource() != null && XsdAttribute.ACTIVITY_SOURCE.from(element) == null)
                     || (!StringUtils.equals(activity.getSource().getName(), XsdAttribute.ACTIVITY_SOURCE.from(element)))) {
                 valid = false;
             }
