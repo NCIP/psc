@@ -1,26 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.List;
 
 public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXmlSerializer<Delta> {
     protected Study study;
-    
+
     private static final String NODE_ID = "node-id";
     private DeltaDao deltaDao;
     private TemplateService templateService;
 
     protected abstract Delta deltaInstance();
+
     protected abstract PlanTreeNode<?> nodeInstance();
+
     protected abstract String elementName();
 
     public Element createElement(Delta delta) {
@@ -51,7 +54,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
             List<Element> eChanges = element.elements();
             for (Element eChange : eChanges) {
-                AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange,  node);
+                AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
                 Change change = changeSerializer.readElement(eChange);
                 delta.addChange(change);
             }
@@ -76,4 +79,66 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
         factory.setStudy(study);
         return factory;
     }
+
+    public String validate(Amendment releasedAmendment, Element eDelta) {
+
+        String gridId = eDelta.attributeValue(ID);
+        String nodeId = eDelta.attributeValue(NODE_ID);
+
+        StringBuffer errorMessageBuffer = new StringBuffer("");
+
+
+        Delta delta = releasedAmendment.getMatchingDelta(gridId, nodeId);
+
+        if (delta == null) {
+            errorMessageBuffer.append(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta \n",
+                    gridId, nodeId));
+
+        } else {
+
+            //now validate the changes also
+            List<Element> eChanges = eDelta.elements();
+
+            List<Change> changes = delta.getChanges();
+            if ((eChanges == null && eChanges != null)
+                    || (eChanges != null && eChanges == null)
+                    || (changes.size() != eChanges.size())) {
+                errorMessageBuffer.append("Imported document has different number of Changes for following delta.  Please make sure changes are identical and they are in same order.");
+                errorMessageBuffer.append("\n" + eDelta.asXML());
+
+            } else {
+                for (int i = 0; i < eChanges.size(); i++) {
+                    Element eChange = eChanges.get(i);
+                    AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, nodeInstance());
+                    AbstractChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i), nodeInstance());
+
+                    if (!changeSerializer.getClass().isAssignableFrom(abstractChangeXmlSerializer.getClass())) {
+                        errorMessageBuffer.append(String.format("\nChange present in imporated document %s  \n are in different order " +
+                                "to the change %s present in system. Please make sure changes are in same order. ", eChange.asXML(), changes.get(i).toString()));
+
+                        break;
+
+                    }
+                    //changes must be in the same order
+                    String changeError = changeSerializer.validateElement(changes.get(i), eChange).toString();
+                    if (!StringUtils.isEmpty(changeError)) {
+                        errorMessageBuffer.append(String.format("\nChange present in imporated document %s  \n is not identical to the change %s present in system. Please make sure changes are identical " +
+                                "and they are in same order. ", eChange.asXML(), changes.get(i).toString()));
+                        errorMessageBuffer.append("\n The error message is : " + changeError);
+
+                        break;
+
+                    }
+
+
+                }
+            }
+        }
+        if (StringUtils.isEmpty(errorMessageBuffer.toString())) {
+            return "";
+        }
+        return errorMessageBuffer.toString();
+    }
+
+
 }

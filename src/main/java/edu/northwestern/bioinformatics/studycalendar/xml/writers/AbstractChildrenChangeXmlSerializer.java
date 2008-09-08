@@ -27,7 +27,7 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
         Element child = getElementById(element, childId);
         AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
         PlanTreeNode<?> node = serializer.readElement(child);
-        ((ChildrenChange)change).setChild(node);
+        ((ChildrenChange) change).setChild(node);
     }
 
     // Methods to get child from child id
@@ -42,12 +42,6 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
 
     @Override
     public StringBuffer validateElement(Change change, Element eChange) {
-
-        if (change == null && eChange == null) {
-            return new StringBuffer("");
-        } else if ((change == null && eChange != null) || (change != null && eChange == null)) {
-            return new StringBuffer("either change or element is null");
-        }
 
         StringBuffer errorMessageStringBuffer = super.validateElement(change, eChange);
         ChildrenChange childrenChange = (ChildrenChange) change;
