@@ -19,8 +19,8 @@ import java.util.*;
 @Table(name = "studies")
 @GenericGenerator(name = "id-generator", strategy = "native",
         parameters = {
-        @Parameter(name = "sequence", value = "seq_studies_id")
-                }
+                @Parameter(name = "sequence", value = "seq_studies_id")
+        }
 )
 @Where(clause = "load_status > 0")
 public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable, NaturallyKeyed {
@@ -196,7 +196,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     @OneToMany(mappedBy = "study")
     @OrderBy(value = "name")
-    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})    
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public Set<Population> getPopulations() {
         return populations;
     }
@@ -291,8 +291,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
             if (lastModifiedDate == null) {
                 lastModifiedDate = amendment.getLastModifiedDate();
-            } else
-            if (amendment.getLastModifiedDate() != null && amendment.getLastModifiedDate().compareTo(lastModifiedDate) > 0) {
+            } else if (amendment.getLastModifiedDate() != null && amendment.getLastModifiedDate().compareTo(lastModifiedDate) > 0) {
                 lastModifiedDate = amendment.getLastModifiedDate();
 
             }
@@ -300,6 +299,18 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
 
         return lastModifiedDate;
+    }
+
+    @Transient
+    public List<Amendment> getAmendmentsListInReverseOrder() {
+        List<Amendment> amendments = new LinkedList<Amendment>();
+        Amendment current = getAmendment();
+        while (current != null) {
+            amendments.add(current);
+            current = current.getPreviousAmendment();
+        }
+        Collections.reverse(amendments);
+        return Collections.unmodifiableList(amendments);
     }
 
 

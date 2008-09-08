@@ -1,19 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.LAST_MODIFIED_DATE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -22,6 +26,7 @@ import java.util.List;
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
 
     private StudyDao studyDao;
+    private StudyService studyService;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -97,11 +102,60 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return study;
     }
 
+    public boolean validate(Element element) {
+
+        String key = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(element);
+
+        //initialize the study
+        Study study = studyService.getStudyByAssignedIdentifier(key);
+        if (study != null) {
+            List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
+
+            Element currAmendment = findOriginalAmendment(eAmendments);
+
+            StringBuffer errorMessageBuffer = new StringBuffer("");
+
+            List<Amendment> list = study.getAmendmentsListInReverseOrder();
+            if (list.size() > eAmendments.size()) {
+                String errorMessage = String.format("Imported document must have all released amendment presents in system. Study present in system has %s number of released amendments",
+                        list.size());
+                errorMessageBuffer.append(errorMessage);
+
+            } else {
+                for (Amendment amendment : list) {
+                    if (currAmendment != null) {
+
+                        errorMessageBuffer.append(getAmendmentSerializer(study).validate(amendment, currAmendment));
+                    } else {
+                        //throw the expection
+                    }
+
+                    currAmendment = findNextAmendment(currAmendment, eAmendments);
+                }
+            }
+            Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
+            if (developmentAmendmentElement != null) {
+                errorMessageBuffer.append(getDevelopmentAmendmentSerializer(study).validateDevelopmentAmendment(developmentAmendmentElement));
+            }
+
+            if (!StringUtils.isEmpty(errorMessageBuffer.toString())) {
+                log.error(errorMessageBuffer.toString());
+
+                StudyImportException studyImportException = new StudyImportException(errorMessageBuffer.toString());
+
+                throw studyImportException;
+            }
+
+        }
+
+        return true;
+    }
+
+
     private void validateElement(Element element) {
         if (element.getName() != null && (!element.getName().equals(STUDY.xmlName()))) {
             throw new StudyCalendarValidationException("Element type is other than <study>");
-        } else
-        if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
+        } else if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
             throw new StudyCalendarValidationException("<study> must have at minimum an <amendment> or <development-amendment> child");
         }
     }
@@ -157,7 +211,13 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return amendmentSerializer;
     }
 
+    @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 }

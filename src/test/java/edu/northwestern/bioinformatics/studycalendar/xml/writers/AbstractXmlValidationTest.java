@@ -4,7 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAddChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.testing.AbstractTestCase;
 import org.dom4j.Element;
 
 import java.text.SimpleDateFormat;
@@ -13,7 +14,7 @@ import java.util.Calendar;
 /**
  * @author Saurabh Agrawal
  */
-public abstract class AbstractXmlValidationTest extends CoreTestCase {
+public abstract class AbstractXmlValidationTest extends AbstractTestCase {
 
     protected static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -69,6 +70,9 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
     protected PlannedCalendarXmlSerializer plannedCalendarSerializer;
     protected AmendmentXmlSerializer developmentAmendmentSerializer;
     protected Amendment firstAmendment;
+
+    protected StudyService studyService;
+    protected StudyXmlSerializer studyXmlserializer;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -359,6 +363,29 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
             }
 
         };
+        studyService = registerMockFor(StudyService.class);
+        studyXmlserializer = new StudyXmlSerializer() {
+            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
+                return plannedCalendarSerializer;
+            }
+
+            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
+                return populationSerializer;
+            }
+
+            public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
+//                amendmentSerializer.setStudy(study);
+                return amendmentSerializer;
+            }
+
+            protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
+                developmentAmendmentSerializer.setStudy(study);
+                developmentAmendmentSerializer.setDevelopmentAmendment(true);
+                return developmentAmendmentSerializer;
+            }
+        };
+        studyXmlserializer.setStudyService(studyService);
+
         populationSerializer = new PopulationXmlSerializer();
         plannedCalendarSerializer = new PlannedCalendarXmlSerializer();
         developmentAmendmentSerializer = new AmendmentXmlSerializer();
@@ -369,7 +396,7 @@ public abstract class AbstractXmlValidationTest extends CoreTestCase {
 
 
     private Study createStudy() {
-        Study study = edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance("Study A", Study.class);
+        Study study = Fixtures.createNamedInstance("Study A", Study.class);
         study.setPlannedCalendar(calendar);
         study.addPopulation(population);
         return study;
