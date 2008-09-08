@@ -1,9 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.util.List;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
@@ -62,12 +69,47 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         Element eActivity = activityXmlSerializer.createElement(((PlannedActivity) node).getActivity());
         element.add(eActivity);
     }
-    
+
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
     }
 
     public void setActivityXmlSerializer(ActivityXmlSerializer activityXmlSerializer) {
         this.activityXmlSerializer = activityXmlSerializer;
+    }
+
+    @Override
+    public String validateElement(PlanTreeNode<?> planTreeNode, Element element) {
+
+        StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
+        PlannedActivity plannedActivity = (PlannedActivity) planTreeNode;
+        if (!activityXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
+            errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()).asXML()));
+        }
+
+        return errorMessageStringBuffer.toString();
+    }
+
+    public PlannedActivity getPlannedActivityWithMatchingAttributes(List<PlannedActivity> plannedActivities, Element element) {
+        for (PlannedActivity plannedActivity : plannedActivities) {
+            if ((StringUtils.equals(plannedActivity.getDetails(), element.attributeValue(DETAILS)))
+                    && (StringUtils.equals(StringTools.valueOf(plannedActivity.getDay()), element.attributeValue(DAY)))
+                    && (StringUtils.equals(plannedActivity.getCondition(), element.attributeValue(CONDITION)))) {
+
+                if (plannedActivity.getPopulation() != null && element.attributeValue(POPULATION) != null) {
+                    Population population = plannedActivity.getPopulation();
+                    if ((StringUtils.equals(population.getAbbreviation(), element.attributeValue(POPULATION)))) {
+                        return plannedActivity;
+                    }
+                } else if (plannedActivity.getPopulation() == null && element.attributeValue(POPULATION) == null) {
+                    return plannedActivity;
+
+                }
+
+            }
+        }
+        return null;
+
     }
 }

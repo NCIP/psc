@@ -24,17 +24,62 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
-        activity = Fixtures.createActivity("Pogo", "PG", source,
-            ActivityType.OTHER, "15 minutes, at least");
+        activity = createActivity();
         standalone = new ActivityXmlSerializer(false);
         embedded = new ActivityXmlSerializer(true);
+    }
+
+
+    public void testValidateElementForStandalone() throws Exception {
+        Element actual = standalone.createElement(activity);
+        assertFalse(standalone.validateElement(null, actual));
+
+        Activity anotherActivity = createActivity();
+
+        assertTrue(standalone.validateElement(activity, actual));
+        anotherActivity.setSource(null);
+        assertFalse(standalone.validateElement(anotherActivity, actual));
+
+
+        anotherActivity = createActivity();
+        assertTrue(standalone.validateElement(activity, actual));
+        anotherActivity.getSource().setName("wrong code");
+        assertFalse(standalone.validateElement(anotherActivity, actual));
+
+    }
+
+    public void testValidateElementForEmbeded() throws Exception {
+        Element actual = embedded.createElement(activity);
+        assertFalse(embedded.validateElement(null, actual));
+
+        Activity anotherActivity = createActivity();
+        assertTrue(embedded.validateElement(activity, actual));
+        anotherActivity.setCode("wrong code");
+        assertFalse(embedded.validateElement(anotherActivity, actual));
+
+        anotherActivity = createActivity();
+        assertTrue(embedded.validateElement(activity, actual));
+        anotherActivity.setType(ActivityType.DISEASE_MEASURE);
+        assertFalse(embedded.validateElement(anotherActivity, actual));
+
+        anotherActivity = createActivity();
+        assertTrue(embedded.validateElement(activity, actual));
+        anotherActivity.setName("wrong name");
+        assertFalse(embedded.validateElement(anotherActivity, actual));
+
+        anotherActivity = createActivity();
+        assertTrue(embedded.validateElement(activity, actual));
+        anotherActivity.setDescription("wrong desc");
+        assertFalse(embedded.validateElement(anotherActivity, actual));
+
+
     }
 
     public void testCreateElementStandalone() throws Exception {
         Element actual = standalone.createElement(activity);
         assertBasicActivityElement(activity, actual);
         assertEquals("Missing source reference", SOURCE_NAME,
-            ACTIVITY_SOURCE.from(actual));
+                ACTIVITY_SOURCE.from(actual));
     }
 
     public void testCreateElementEmbedded() throws Exception {
@@ -45,22 +90,22 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     public static void assertEmbeddedActivityElement(Activity expectedActivity, Element actualElement) {
         assertBasicActivityElement(expectedActivity, actualElement);
         assertNull("Activity embedded in source should not have source attribute",
-            ACTIVITY_SOURCE.from(actualElement));
+                ACTIVITY_SOURCE.from(actualElement));
     }
 
     private static void assertBasicActivityElement(Activity expectedActivity, Element actualElement) {
         assertEquals("Wrong element name", XsdElement.ACTIVITY.xmlName(), actualElement.getName());
         assertEquals("Should have no children", 0, actualElement.elements().size());
         assertEquals("Wrong code", expectedActivity.getCode(),
-            ACTIVITY_CODE.from(actualElement));
+                ACTIVITY_CODE.from(actualElement));
         assertEquals("Wrong name", expectedActivity.getName(),
-            ACTIVITY_NAME.from(actualElement));
+                ACTIVITY_NAME.from(actualElement));
         assertEquals("Wrong desc", expectedActivity.getDescription(),
-            ACTIVITY_DESC.from(actualElement));
+                ACTIVITY_DESC.from(actualElement));
         assertEquals("Wrong type", expectedActivity.getType().getId() + "",
-            ACTIVITY_TYPE.from(actualElement));
+                ACTIVITY_TYPE.from(actualElement));
     }
-    
+
     public void testReadEmbeddedElement() throws Exception {
         Element param = XsdElement.ACTIVITY.create();
         ACTIVITY_NAME.addTo(param, "Aleph");
@@ -101,5 +146,11 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertNull(readSource.getId());
         assertNull(readSource.getGridId());
         assertEquals("Ether", readSource.getNaturalKey());
+    }
+
+    private Activity createActivity() {
+        activity = Fixtures.createActivity("Pogo", "PG", source,
+                ActivityType.OTHER, "15 minutes, at least");
+        return activity;
     }
 }

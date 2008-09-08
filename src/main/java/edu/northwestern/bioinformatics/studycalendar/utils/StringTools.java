@@ -9,6 +9,11 @@ public class StringTools {
         return className.replaceAll("([A-Z])", " $1").trim().toLowerCase();
     }
 
+    public static String valueOf(Object obj) {
+        return obj != null ? String.valueOf(obj) : null;
+    }
+
     // static class
-    private StringTools() { }
+    private StringTools() {
+    }
 }

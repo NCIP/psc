@@ -5,7 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
@@ -73,4 +75,33 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertSame("Wrong Epoch", epoch, actual);
     }
+
+    public void testValidateElement() throws Exception {
+        Epoch epoch = createEpoch();
+        Element actual = serializer.createElement(epoch);
+        assertTrue(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+        epoch.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+
+        epoch = createEpoch();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+        epoch.setName("wrong name");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+
+        epoch = createEpoch();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+        epoch.getChildren().add(new StudySegment());
+        assertFalse(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
+
+
+        
+
+    }
+
+    private Epoch createEpoch() {
+        Epoch epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
+        return epoch;
+    }
+
+
 }

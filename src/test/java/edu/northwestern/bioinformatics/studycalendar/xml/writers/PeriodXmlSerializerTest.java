@@ -1,16 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
 import static java.util.Collections.emptyList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PeriodXmlSerializer serializer;
@@ -18,6 +22,8 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private Period period;
     private PlannedActivityXmlSerializer plannedActivitySerializer;
+    private SortedSet<Period> periods;
+
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -27,8 +33,8 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         plannedActivitySerializer = registerMockFor(PlannedActivityXmlSerializer.class);
 
         Study study = createNamedInstance("Study A", Study.class);
-        
-        serializer = new PeriodXmlSerializer(){
+
+        serializer = new PeriodXmlSerializer() {
             protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
                 return plannedActivitySerializer;
             }
@@ -37,6 +43,8 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setStudy(study);
 
         period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
+
+        periods = new TreeSet<Period>();
     }
 
     public void testCreateElementEpoch() {
@@ -70,7 +78,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
         assertEquals("Wrong period name", "Period A", actual.getName());
         assertEquals("Wrong period duration unit", "day", actual.getDuration().getUnit().toString());
-        assertEquals("Wrong period duration quantity",  new Integer(7), actual.getDuration().getQuantity());
+        assertEquals("Wrong period duration quantity", new Integer(7), actual.getDuration().getQuantity());
         assertEquals("Wrong period start day", new Integer(1), actual.getStartDay());
         assertEquals("Wrong period repetitions", 3, actual.getRepetitions());
     }
@@ -85,5 +93,64 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertSame("Wrong Period", period, actual);
+    }
+
+    public void testValidateElement() throws Exception {
+        Period period = createPeriod();
+        Element actual = serializer.createElement(period);
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+    }
+
+    public void testGetPeriodWithMatchingAttributes() throws Exception {
+        Element actual = serializer.createElement(period);
+
+        Period period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        assertEquals("serializer must have a matching period",period,serializer.getPeriodWithMatchingAttributes(periods,actual));
+        period.setDuration(null);
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        period.setDuration(new Duration());
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        period.getDuration().setQuantity(5);
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        period.getDuration().setUnit(Duration.Unit.fortnight);
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        period.setName("wrong name");
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        period.setStartDay(7);
+        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+        period = createPeriod();
+        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+
+    }
+
+
+    private Period createPeriod() {
+        Period period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
+        periods.clear();
+        periods.add(period);
+        return period;
     }
 }

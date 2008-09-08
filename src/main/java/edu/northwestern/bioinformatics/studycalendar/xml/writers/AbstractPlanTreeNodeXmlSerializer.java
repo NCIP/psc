@@ -15,13 +15,21 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
     protected Study study;
 
     protected abstract PlanTreeNode<?> nodeInstance();
+
     protected abstract String elementName();
+
     protected abstract PlanTreeNode<?> getFromId(String id);
+
     protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
-    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {}
-    protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {}
-    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment){}
+    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {
+    }
+
+    protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
+    }
+
+    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
+    }
 
     public Element createElement(PlanTreeNode<?> node) {
         Element element = element(elementName());
@@ -31,7 +39,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         if (getChildSerializer() != null) {
             addChildrenElements(PlanTreeInnerNode.cast(node), element);
         }
-        
+
         return element;
     }
 
@@ -39,7 +47,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         if (!element.getName().equals(elementName())) {
             return null;
         }
-        
+
         String key = element.attributeValue(ID);
         PlanTreeNode<?> node = key == null ? null : getFromId(key);
         if (node == null) {
@@ -90,4 +98,23 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
     public void setStudy(Study study) {
         this.study = study;
     }
+
+    public String validateElement(PlanTreeNode<?> planTreeNode, Element ePlanTreeNode) {
+        StringBuffer errorMessageStringBuffer = new StringBuffer("");
+
+
+        if (!ePlanTreeNode.getName().equals(elementName())) {
+            errorMessageStringBuffer.append(String.format("name  is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", ePlanTreeNode.getName(), elementName()));
+        }
+
+        String key = ePlanTreeNode.attributeValue(ID);
+        if (!planTreeNode.getGridId().equals(key)) {
+            errorMessageStringBuffer.append(String.format("grid id is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", planTreeNode.getGridId(), key));
+        }
+
+        return errorMessageStringBuffer.toString();
+    }
+
 }

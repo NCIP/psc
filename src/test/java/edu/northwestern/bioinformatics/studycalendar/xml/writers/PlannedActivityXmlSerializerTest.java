@@ -1,13 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedActivityXmlSerializer serializer;
@@ -16,6 +20,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedActivity plannedActivity;
     private ActivityXmlSerializer activitySerializer;
     private Element eActivity;
+    private List<PlannedActivity> plannedActivities;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -37,6 +42,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setPlannedActivityDao(plannedActivityDao);
         serializer.setStudy(study);
         serializer.setActivityXmlSerializer(activitySerializer);
+        plannedActivities = new ArrayList<PlannedActivity>();
     }
 
     public void testCreateElementPlannedActivity() {
@@ -88,5 +94,68 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertSame("Wrong Planned Activity", plannedActivity, actual);
+    }
+
+    public void testValidateElement() throws Exception {
+        activitySerializer = new ActivityXmlSerializer();
+        serializer.setActivityXmlSerializer(activitySerializer);
+        PlannedActivity plannedActivity = createPlannedActivity();
+
+        Element actual = serializer.createElement(plannedActivity);
+
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+        plannedActivity.setGridId("wrong grid id");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+    }
+
+    public void testGetPlannedActivityWithMatchingAttributes() throws Exception {
+        activitySerializer = new ActivityXmlSerializer();
+        serializer.setActivityXmlSerializer(activitySerializer);
+        PlannedActivity plannedActivity = createPlannedActivity();
+
+        Element actual = serializer.createElement(plannedActivity);
+
+        plannedActivities.add(plannedActivity);
+
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        plannedActivity.setDay(null);
+        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+        plannedActivity = createPlannedActivity();
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        plannedActivity.setCondition("wrong condition");
+        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+        plannedActivity = createPlannedActivity();
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        plannedActivity.setDetails(null);
+        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+
+        plannedActivity = createPlannedActivity();
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        plannedActivity.setPopulation(null);
+        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+        Population population = Fixtures.createPopulation("wrong MP", "Populaiton");
+        plannedActivity = createPlannedActivity();
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        plannedActivity.setPopulation(population);
+        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+        population = Fixtures.createPopulation("MP", "wrong Populaiton");
+        plannedActivity = createPlannedActivity();
+        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+
+    }
+
+    private PlannedActivity createPlannedActivity() {
+
+        Population population = Fixtures.createPopulation("MP", "My Populaiton");
+        PlannedActivity plannedActivity = setGridId("grid0", Fixtures.createPlannedActivity("Bone Scan", 2, "scan details", "no mice"));
+        plannedActivity.setPopulation(population);
+        plannedActivities.clear();
+        plannedActivities.add(plannedActivity);
+        return plannedActivity;
     }
 }

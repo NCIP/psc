@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
@@ -63,5 +64,33 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         }
 
         return activity;
+    }
+
+    public boolean validateElement(Activity activity, Element element) {
+        boolean valid = true;
+        if (element == null && activity == null) {
+            return true;
+        } else if ((element != null && activity == null) || (activity != null && element == null)) {
+            return false;
+        } else if (!StringUtils.equals(activity.getName(), XsdAttribute.ACTIVITY_NAME.from(element))) {
+            valid = false;
+        } else if (!StringUtils.equals(activity.getCode(), XsdAttribute.ACTIVITY_CODE.from(element))) {
+            valid = false;
+        } else if (!StringUtils.equals(activity.getDescription(), XsdAttribute.ACTIVITY_DESC.from(element))) {
+            valid = false;
+        } else if (!StringUtils.equals(String.valueOf(activity.getType().getId()), XsdAttribute.ACTIVITY_TYPE.from(element))) {
+            valid = false;
+        }
+
+        if (!embeddedInSource) {
+
+            if ((activity.getSource() == null && XsdAttribute.ACTIVITY_SOURCE.from(element) != null)
+                    || (!StringUtils.equals(activity.getSource().getName(), XsdAttribute.ACTIVITY_SOURCE.from(element)))) {
+                valid = false;
+            }
+
+        }
+
+        return valid;
     }
 }
