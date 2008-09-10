@@ -6,13 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPostProcessor;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPreProcessor;
+import org.apache.commons.io.IOUtils;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.io.IOUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 
 @Transactional
 public class ImportTemplateService {
@@ -23,6 +25,7 @@ public class ImportTemplateService {
 
     /**
      * This method will be called when importing from within the Import Template Page
+     *
      * @param stream
      */
     public void readAndSaveTemplate(InputStream stream) {
@@ -41,11 +44,17 @@ public class ImportTemplateService {
     }
 
     public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
+
+        Document document = studyXmlSerializer.deserializeDocument(stream);
+        Element element = document.getRootElement();
+
+        studyXmlSerializer.validate(element);
+
         if (existingStudy != null) {
             studyPreProcessor.process(existingStudy);
         }
 
-        Study study = studyXmlSerializer.readDocument(stream);
+        Study study = studyXmlSerializer.readElement(element);
 
         studyPostProcessor.process(study);
 

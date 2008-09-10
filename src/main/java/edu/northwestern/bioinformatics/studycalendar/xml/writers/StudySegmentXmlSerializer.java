@@ -75,16 +75,18 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
         if ((childElements == null && periods != null)
                 || (childElements != null && periods == null)
                 || (periods.size() != childElements.size())) {
-            errorMessageStringBuffer.append(String.format("%s present in the system and in the imported document must have identical number of periods.\n", studySegment.toString()));
+            errorMessageStringBuffer.append(String.format("%s present in the system and in the imported document must have identical number of periods.\n",
+                    studySegment.toString()));
 
 
         } else {
             for (int i = 0; i < childElements.size(); i++) {
                 Element childElement = (Element) childElements.get(i);
 
-                Period period = getPeriodXmlSerializer().getPeriodWithMatchingAttributes(periods, childElement);
+                Period period = getPeriodXmlSerializer().getPeriodWithMatchingGridId(periods, childElement);
                 if (period == null) {
-                    errorMessageStringBuffer.append(String.format("A period %s present in imported document is not present in system. \n", childElement.asXML()));
+                    errorMessageStringBuffer.append(String.format("A period with grid id %s present in imported document is not present in system. \n",
+                            childElement.attributeValue(ID)));
                     break;
                 }
                 errorMessageStringBuffer.append(getPeriodXmlSerializer().validateElement(period, childElement));

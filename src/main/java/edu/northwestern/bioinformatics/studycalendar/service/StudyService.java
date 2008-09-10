@@ -1,27 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Required;
@@ -42,6 +26,7 @@ public class StudyService {
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
+    protected DaoFinder daoFinder;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -148,7 +133,7 @@ public class StudyService {
         return study;
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     private void initializeAmendment(Amendment amendment) {
         Hibernate.initialize(amendment);
         if (amendment != null) {
@@ -158,9 +143,28 @@ public class StudyService {
                 Hibernate.initialize(delta.getChanges());
                 List<Change> changes = delta.getChanges();
                 for (Change change : changes) {
+
                     Hibernate.initialize(change);
+
+                    if (change instanceof ChildrenChange) {
+
+                        ChildrenChange childrenChange = (ChildrenChange) change;
+                        childrenChange.setChild((PlanTreeNode<?>) getChild(childrenChange, ((PlanTreeInnerNode) delta.getNode()).childClass()));
+
+
+                    }
                 }
             }
+        }
+    }
+
+    // Methods to get child from child id
+    private DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+        if (change.getChild() != null) {
+            return change.getChild();
+        } else {
+            DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
+            return dao.getById(change.getChildId());
         }
     }
 
@@ -235,5 +239,14 @@ public class StudyService {
     @Required
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    public DaoFinder getDaoFinder() {
+        return daoFinder;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }

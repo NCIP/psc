@@ -79,7 +79,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         return readElement(document.getRootElement());
     }
 
-    protected Document deserializeDocument(InputStream in) {
+    public Document deserializeDocument(InputStream in) {
         Document document;
         try {
             SAXReader saxReader = new SAXReader();

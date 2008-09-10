@@ -22,7 +22,7 @@ public class PeriodDeltaXmlValidationTest extends AbstractXmlValidationTestCase 
     public void testValidteElement() {
         amendment.getDeltas().clear();
         assertFalse(StringUtils.isBlank(periodDeltaXmlSerializer.validate(amendment, ePeriod)));
-        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta \n",
+        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta.\n",
                 periodDelta.getGridId(), period3.getGridId()), periodDeltaXmlSerializer.validate(amendment, ePeriod).toString());
 
         amendment.addDelta(periodDelta);
@@ -35,7 +35,7 @@ public class PeriodDeltaXmlValidationTest extends AbstractXmlValidationTestCase 
 
         periodDelta.addChange(add1);
         amendment.addDelta(periodDelta);
-        assertEquals(String.format("Imported document has different number of Changes for following delta.  Please make sure changes are identical and they are in same order.\n" + ePeriod.asXML())
+        assertEquals(String.format("Imported document has different number of Changes for  delta (id :%s).  Please make sure changes are identical and they are in same order." , periodDelta.getGridId())
                 , periodDeltaXmlSerializer.validate(amendment, ePeriod).toString());
 
 

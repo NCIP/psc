@@ -199,7 +199,8 @@ public class AmendmentXmlValidationTest extends AbstractXmlValidationTestCase {
         ((Epoch) add1.getChild()).getStudySegments().get(0).getPeriods().last().getPlannedActivities().get(0).setDay(9);
 
         String message = amendmentSerializer.validate(amendment, eAmendment);
-        assertTrue(message.contains("A planned activity "));
+
+        assertTrue(message.contains("days  are different for PlannedActivity"));
 
 
     }
@@ -207,7 +208,7 @@ public class AmendmentXmlValidationTest extends AbstractXmlValidationTestCase {
 
     public void testValidteElement() {
         assertFalse(StringUtils.isBlank(epochDeltaXmlSerializer.validate(amendment, eDelta)));
-        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta \n",
+        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta.\n",
                 epochDelta.getGridId(), epoch1.getGridId()), epochDeltaXmlSerializer.validate(amendment, eDelta).toString());
 
         amendment.addDelta(epochDelta);
@@ -220,7 +221,7 @@ public class AmendmentXmlValidationTest extends AbstractXmlValidationTestCase {
 
         epochDelta.addChange(add1);
         amendment.addDelta(epochDelta);
-        assertEquals(String.format("Imported document has different number of Changes for following delta.  Please make sure changes are identical and they are in same order.\n" + eDelta.asXML())
+        assertEquals(String.format("Imported document has different number of Changes for  delta (id :%s).  Please make sure changes are identical and they are in same order." , epochDelta.getGridId())
                 , epochDeltaXmlSerializer.validate(amendment, eDelta).toString());
 
 

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
@@ -8,6 +9,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class ImportTemplateXmlController extends PscSimpleFormController {
@@ -20,10 +22,18 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
         setSuccessView("redirectToStudyList");
     }
 
-    protected ModelAndView onSubmit(Object o, BindException errors) throws Exception {
-        ImportTemplateXmlCommand command = (ImportTemplateXmlCommand) o;
-        command.apply();
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object o, BindException errors) throws Exception {
 
+        ImportTemplateXmlCommand command = (ImportTemplateXmlCommand) o;
+        try {
+            command.apply();
+        } catch (StudyImportException e) {
+            errors.reject("error.problem.importing.file", new String[]{e.getMessage()}, e.getMessage());
+
+        }
+        if (errors.hasErrors()) {
+            return showForm(request, response, errors);
+        }
         Map<String, Object> model = errors.getModel();
 
         return new ModelAndView(getSuccessView(), model);

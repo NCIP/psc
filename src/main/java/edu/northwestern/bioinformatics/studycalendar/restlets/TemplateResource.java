@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -65,8 +66,11 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
             }
 
             study = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
-        } catch (IOException e) {                                   
+        } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
+            throw new ResourceException(e);
+        } catch (StudyImportException e) {
+            log.error("error importing xml.", e.getMessage());
             throw new ResourceException(e);
         }
         getResponse().setEntity(createXmlRepresentation(study));

@@ -78,6 +78,29 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
 
         Period period = (Period) planTreeNode;
 
+        if (!StringUtils.equals(period.getName(), element.attributeValue(NAME))) {
+            errorMessageStringBuffer.append(String.format("name  is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s. \n", period.getName(), element.getName()));
+        } else if (!StringUtils.equals(String.valueOf(period.getRepetitions()), element.attributeValue(REPETITIONS))) {
+            errorMessageStringBuffer.append(String.format("repetitions  is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s. \n", period.getRepetitions(), element.attributeValue(REPETITIONS)));
+        } else if (!StringUtils.equals(StringTools.valueOf(period.getStartDay()), element.attributeValue(START_DAY))) {
+            errorMessageStringBuffer.append(String.format("startDay  is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s. \n", period.getStartDay(), element.attributeValue(START_DAY)));
+        }
+
+        if (period.getDuration() != null && element.attributeValue(DURATION_QUANTITY) != null) {
+            Duration duration = period.getDuration();
+            if (!StringUtils.equals(StringTools.valueOf(duration.getQuantity()), element.attributeValue(DURATION_QUANTITY))) {
+                errorMessageStringBuffer.append(String.format("duration quantity  is different for " + planTreeNode.getClass().getSimpleName()
+                        + ". expected:%s , found (in imported document) :%s. \n", duration.getQuantity(), element.attributeValue(DURATION_QUANTITY)));
+            } else if (!StringUtils.equals(StringTools.valueOf(duration.getUnit()), element.attributeValue(DURATION_UNIT))) {
+                errorMessageStringBuffer.append(String.format("duration unit  is different for " + planTreeNode.getClass().getSimpleName()
+                        + ". expected:%s , found (in imported document) :%s. \n", duration.getUnit(), element.attributeValue(DURATION_UNIT)));
+            }
+
+        }
+
         List<PlannedActivity> plannedActivities = period.getPlannedActivities();
 
         List childElements = element.elements();
@@ -92,10 +115,12 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
             for (int i = 0; i < childElements.size(); i++) {
                 Element childElement = (Element) childElements.get(i);
 
-                PlannedActivity plannedActivity = getPlannedActivityXmlSerializer().getPlannedActivityWithMatchingAttributes(plannedActivities, childElement);
+                PlannedActivity plannedActivity = getPlannedActivityXmlSerializer().getPlannedActivityWithMatchingGridId(plannedActivities, childElement);
                 if (plannedActivity == null) {
-                    errorMessageStringBuffer.append(String.format("A planned activity %s present in imported document is not present in system. \n", childElement.asXML()));
-                    errorMessageStringBuffer.append(String.format("Imported document has following planned activities for same period :\n  %s", getErrorStringForPlannedActivities(plannedActivities)));
+                    errorMessageStringBuffer.append(String.format("A planned activity (id:%s) present in imported document is not present in system. \n",
+                            childElement.attributeValue(ID)));
+                    errorMessageStringBuffer.append(String.format("Imported document has following planned activities for same period :\n  %s",
+                            getErrorStringForPlannedActivities(plannedActivities)));
 
                     break;
                 }
@@ -110,33 +135,22 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private String getErrorStringForPlannedActivities(List<PlannedActivity> plannedActivities) {
         StringBuffer errorMessageStringBuffer = new StringBuffer("");
         for (PlannedActivity plannedActivity : plannedActivities) {
-            errorMessageStringBuffer.append(String.format("%s ;grid id=%s \n", plannedActivity.toString(), plannedActivity.getGridId()));
+            errorMessageStringBuffer.append(String.format("%s ;id=%s \n", plannedActivity.toString(), plannedActivity.getGridId()));
         }
 
         return errorMessageStringBuffer.toString();
     }
 
-    public Period getPeriodWithMatchingAttributes(SortedSet<Period> periods, Element childElement) {
+    public Period getPeriodWithMatchingGridId(SortedSet<Period> periods, Element childElement) {
 
         for (Iterator<Period> iterator = periods.iterator(); iterator.hasNext();) {
             Period period = iterator.next();
-            if ((StringUtils.equals(period.getName(), childElement.attributeValue(NAME)))
-                    && (StringUtils.equals(String.valueOf(period.getRepetitions()), childElement.attributeValue(REPETITIONS)))
-                    && (StringUtils.equals(StringTools.valueOf(period.getStartDay()), childElement.attributeValue(START_DAY)))) {
-
-                if (period.getDuration() != null && childElement.attributeValue(DURATION_QUANTITY) != null) {
-                    Duration duration = period.getDuration();
-                    if ((StringUtils.equals(StringTools.valueOf(duration.getQuantity()), childElement.attributeValue(DURATION_QUANTITY)))
-                            && (StringUtils.equals(StringTools.valueOf(duration.getUnit()), childElement.attributeValue(DURATION_UNIT)))) {
-
-                        return period;
-                    }
-                } else if (period.getDuration() == null && childElement.attributeValue(DURATION_QUANTITY) == null) {
-                    return period;
-                }
+            if (StringUtils.equals(period.getGridId(), childElement.attributeValue(ID))) {
+                return period;
 
             }
         }
+
 
         return null;
 

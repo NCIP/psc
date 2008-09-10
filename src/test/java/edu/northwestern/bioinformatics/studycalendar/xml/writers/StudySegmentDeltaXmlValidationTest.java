@@ -22,7 +22,7 @@ public class StudySegmentDeltaXmlValidationTest extends AbstractXmlValidationTes
     public void testValidteElement() {
         amendment.getDeltas().clear();
         assertFalse(StringUtils.isBlank(studySegmentDeltaXmlSerializer.validate(amendment, eStudySegment)));
-        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta \n",
+        assertEquals(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta.\n",
                 studySegmentDelta.getGridId(), studySegment1.getGridId()), studySegmentDeltaXmlSerializer.validate(amendment, eStudySegment).toString());
 
         amendment.addDelta(studySegmentDelta);
@@ -35,7 +35,7 @@ public class StudySegmentDeltaXmlValidationTest extends AbstractXmlValidationTes
 
         studySegmentDelta.addChange(add1);
         amendment.addDelta(studySegmentDelta);
-        assertEquals(String.format("Imported document has different number of Changes for following delta.  Please make sure changes are identical and they are in same order.\n" + eStudySegment.asXML())
+        assertEquals(String.format("Imported document has different number of Changes for  delta (id :%s).  Please make sure changes are identical and they are in same order." , studySegmentDelta.getGridId())
                 , studySegmentDeltaXmlSerializer.validate(amendment, eStudySegment).toString());
 
 

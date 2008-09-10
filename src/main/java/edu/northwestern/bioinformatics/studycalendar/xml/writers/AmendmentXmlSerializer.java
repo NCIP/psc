@@ -158,8 +158,8 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
                     , releasedAmendment.getDisplayName());
 
             errorMessageBuffer.append(errorMessage);
-            errorMessageBuffer.append(String.format("\n name: %s , gridId: %s,mandatory: %s,date: %s\n", releasedAmendment.getName(),
-                    releasedAmendment.getGridId(), releasedAmendment.isMandatory(), formatter.format(releasedAmendment.getDate())));
+            errorMessageBuffer.append(String.format("\n name: %s , mandatory: %s,date: %s\n", releasedAmendment.getName(),
+                     releasedAmendment.isMandatory(), formatter.format(releasedAmendment.getDate())));
 
 
         } else {
@@ -183,9 +183,9 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
         if (StringUtils.isEmpty(errorMessageBuffer.toString())) {
             return "";
         }
-        errorMessageBuffer.append(getErrorStringForDeltas(releasedAmendment));
+        //errorMessageBuffer.append(getErrorStringForDeltas(releasedAmendment));
 
-        errorMessageBuffer.append("\n Imported document has following amendment:\n" + currAmendment.asXML());
+       // errorMessageBuffer.append("\n Imported document has following amendment:\n" + currAmendment.asXML());
         errorMessageBuffer.append("\n\n Both amendment must be identical and they should appear in the same order.\n\n");
 
         return errorMessageBuffer.toString();
@@ -238,10 +238,9 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
                         , releasedAmendment.getDisplayName());
 
                 errorMessageBuffer.append(errorMessage);
-                errorMessageBuffer.append(String.format("\n name: %s , gridId: %s,mandatory: %s,date: %s \n", releasedAmendment.getName(),
-                        releasedAmendment.getGridId(), releasedAmendment.isMandatory(), formatter.format(releasedAmendment.getDate())));
+                errorMessageBuffer.append(String.format("\n name: %s ,mandatory: %s,date: %s \n", releasedAmendment.getName(),
+                         releasedAmendment.isMandatory(), formatter.format(releasedAmendment.getDate())));
                
-                errorMessageBuffer.append("\n Imported document has following devlopment amendment:" + developmentAmendment.asXML());
                 errorMessageBuffer.append("\n Imported document must not have any development amendment which matches with any relased amendment present in system.");
 
 

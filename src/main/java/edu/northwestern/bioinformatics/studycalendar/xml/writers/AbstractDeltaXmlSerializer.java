@@ -91,7 +91,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
         Delta delta = releasedAmendment.getMatchingDelta(gridId, nodeId);
 
         if (delta == null) {
-            errorMessageBuffer.append(String.format("\n released amendment present in the system does have  any delta matching with provied grid id %s and node id  %s of delta \n",
+            errorMessageBuffer.append(String.format("\n released amendment present in the system does have  " +
+                    "any delta matching with provied grid id %s and node id  %s of delta.\n",
                     gridId, nodeId));
 
         } else {
@@ -103,8 +104,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
             if ((eChanges == null && eChanges != null)
                     || (eChanges != null && eChanges == null)
                     || (changes.size() != eChanges.size())) {
-                errorMessageBuffer.append("Imported document has different number of Changes for following delta.  Please make sure changes are identical and they are in same order.");
-                errorMessageBuffer.append("\n" + eDelta.asXML());
+                errorMessageBuffer.append(String.format("Imported document has different number of Changes for  delta (id :%s).  " +
+                        "Please make sure changes are identical and they are in same order.", gridId));
 
             } else {
                 for (int i = 0; i < eChanges.size(); i++) {
@@ -113,8 +114,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
                     AbstractChangeXmlSerializer abstractChangeXmlSerializer = getChangeXmlSerializerFactory().createXmlSerializer(changes.get(i), nodeInstance());
 
                     if (!changeSerializer.getClass().isAssignableFrom(abstractChangeXmlSerializer.getClass())) {
-                        errorMessageBuffer.append(String.format("\nChange present in imporated document %s  \n are in different order " +
-                                "to the change %s present in system. Please make sure changes are in same order. ", eChange.asXML(), changes.get(i).toString()));
+                        errorMessageBuffer.append(String.format("\nChange (id :%s) present in imporated document   \n are in different order " +
+                                "to the change %s present in system. Please make sure changes are in same order. ", eChange.attributeValue(ID), changes.get(i).toString()));
 
                         break;
 
@@ -122,8 +123,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
                     //changes must be in the same order
                     String changeError = changeSerializer.validateElement(changes.get(i), eChange).toString();
                     if (!StringUtils.isEmpty(changeError)) {
-                        errorMessageBuffer.append(String.format("\nChange present in imporated document %s  \n is not identical to the change %s present in system. Please make sure changes are identical " +
-                                "and they are in same order. ", eChange.asXML(), changes.get(i).toString()));
+                        errorMessageBuffer.append(String.format("\nChange (id: %s) present in imporated document  is not identical to the change %s present in system. Please make sure changes are identical. " +
+                                "and they are in same order. ", eChange.attributeValue(ID), changes.get(i).toString()));
                         errorMessageBuffer.append("\n The error message is : " + changeError);
 
                         break;

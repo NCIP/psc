@@ -105,13 +105,13 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
         if (!ePlanTreeNode.getName().equals(elementName())) {
             errorMessageStringBuffer.append(String.format("name  is different for " + planTreeNode.getClass().getSimpleName()
-                    + ". expected:%s , found (in imported document) :%s \n", ePlanTreeNode.getName(), elementName()));
+                    + ". expected:%s , found (in imported document) :%s. \n", ePlanTreeNode.getName(), elementName()));
         }
 
         String key = ePlanTreeNode.attributeValue(ID);
         if (!planTreeNode.getGridId().equals(key)) {
-            errorMessageStringBuffer.append(String.format("grid id is different for " + planTreeNode.getClass().getSimpleName()
-                    + ". expected:%s , found (in imported document) :%s \n", planTreeNode.getGridId(), key));
+            errorMessageStringBuffer.append(String.format("id is different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s. \n", planTreeNode.getGridId(), key));
         }
 
         return errorMessageStringBuffer.toString();

@@ -85,30 +85,54 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         PlannedActivity plannedActivity = (PlannedActivity) planTreeNode;
         if (!activityXmlSerializer.validateElement(plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()))) {
             errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
-                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getActivity(), element.element(XsdElement.ACTIVITY.xmlName()).asXML()));
+                    + ". expected:%s. \n", plannedActivity.getActivity()));
+        }
+        if (!StringUtils.equals(plannedActivity.getDetails(), element.attributeValue(DETAILS))) {
+            errorMessageStringBuffer.append(String.format("details  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getDetails(),
+                    element.attributeValue(DETAILS)));
+
+        } else if (!StringUtils.equals(StringTools.valueOf(plannedActivity.getDay()), element.attributeValue(DAY))) {
+            errorMessageStringBuffer.append(String.format("days  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getDay(),
+                    element.attributeValue(DAY)));
+
+        } else if (!StringUtils.equals(plannedActivity.getCondition(), element.attributeValue(CONDITION))) {
+            errorMessageStringBuffer.append(String.format("conditions  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getCondition(),
+                    element.attributeValue(CONDITION)));
+
         }
 
+        if (plannedActivity.getPopulation() != null && element.attributeValue(POPULATION) != null) {
+            Population population = plannedActivity.getPopulation();
+            if (!StringUtils.equals(population.getAbbreviation(), element.attributeValue(POPULATION))) {
+                errorMessageStringBuffer.append(String.format("populations  are different for " + planTreeNode.getClass().getSimpleName()
+                        + ". expected:%s , found (in imported document) :%s \n", population.getAbbreviation(),
+                        element.attributeValue(POPULATION)));
+
+
+            }
+
+        } else if ((plannedActivity.getPopulation() == null && element.attributeValue(POPULATION) != null) || (plannedActivity.getPopulation() != null && element.attributeValue(POPULATION) == null)) {
+            errorMessageStringBuffer.append(String.format("populations  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getPopulation(),
+                    element.attributeValue(POPULATION)));
+
+        }
         return errorMessageStringBuffer.toString();
     }
 
-    public PlannedActivity getPlannedActivityWithMatchingAttributes(List<PlannedActivity> plannedActivities, Element element) {
+    public PlannedActivity getPlannedActivityWithMatchingGridId(List<PlannedActivity> plannedActivities, Element element) {
         for (PlannedActivity plannedActivity : plannedActivities) {
-            if ((StringUtils.equals(plannedActivity.getDetails(), element.attributeValue(DETAILS)))
-                    && (StringUtils.equals(StringTools.valueOf(plannedActivity.getDay()), element.attributeValue(DAY)))
-                    && (StringUtils.equals(plannedActivity.getCondition(), element.attributeValue(CONDITION)))) {
+            if (StringUtils.equals(plannedActivity.getGridId(), element.attributeValue(ID))) {
 
-                if (plannedActivity.getPopulation() != null && element.attributeValue(POPULATION) != null) {
-                    Population population = plannedActivity.getPopulation();
-                    if ((StringUtils.equals(population.getAbbreviation(), element.attributeValue(POPULATION)))) {
-                        return plannedActivity;
-                    }
-                } else if (plannedActivity.getPopulation() == null && element.attributeValue(POPULATION) == null) {
-                    return plannedActivity;
-
-                }
+                return plannedActivity;
 
             }
+
         }
+
         return null;
 
     }

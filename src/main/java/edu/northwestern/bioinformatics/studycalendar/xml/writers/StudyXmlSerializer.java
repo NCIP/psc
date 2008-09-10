@@ -123,12 +123,8 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
             } else {
                 for (Amendment amendment : list) {
-                    if (currAmendment != null) {
 
-                        errorMessageBuffer.append(getAmendmentSerializer(study).validate(amendment, currAmendment));
-                    } else {
-                        //throw the expection
-                    }
+                    errorMessageBuffer.append(getAmendmentSerializer(study).validate(amendment, currAmendment));
 
                     currAmendment = findNextAmendment(currAmendment, eAmendments);
                 }

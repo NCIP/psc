@@ -106,6 +106,38 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
         plannedActivity.setGridId("wrong grid id");
         assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+        plannedActivity = createPlannedActivity();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+        plannedActivity.setDay(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+        plannedActivity = createPlannedActivity();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+        plannedActivity.setCondition("wrong condition");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+        plannedActivity = createPlannedActivity();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+        plannedActivity.setPopulation(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+        Population population = Fixtures.createPopulation("wrong MP", "Populaiton");
+
+        plannedActivity = createPlannedActivity();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+        plannedActivity.setPopulation(population);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+        plannedActivity = createPlannedActivity();
+        population = Fixtures.createPopulation("MP", "wrong Populaiton");
+        plannedActivity.setPopulation(population);
+        actual = serializer.createElement(plannedActivity);
+        assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+       plannedActivity.setPopulation(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
+
+
     }
 
     public void testGetPlannedActivityWithMatchingAttributes() throws Exception {
@@ -115,37 +147,9 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element actual = serializer.createElement(plannedActivity);
 
-        plannedActivities.add(plannedActivity);
 
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-        plannedActivity.setDay(null);
-        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
+        assertNotNull(serializer.getPlannedActivityWithMatchingGridId(plannedActivities, actual));
 
-        plannedActivity = createPlannedActivity();
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-        plannedActivity.setCondition("wrong condition");
-        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-
-        plannedActivity = createPlannedActivity();
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-        plannedActivity.setDetails(null);
-        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-
-
-        plannedActivity = createPlannedActivity();
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-        plannedActivity.setPopulation(null);
-        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-
-        Population population = Fixtures.createPopulation("wrong MP", "Populaiton");
-        plannedActivity = createPlannedActivity();
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-        plannedActivity.setPopulation(population);
-        assertNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
-
-        population = Fixtures.createPopulation("MP", "wrong Populaiton");
-        plannedActivity = createPlannedActivity();
-        assertNotNull(serializer.getPlannedActivityWithMatchingAttributes(plannedActivities, actual));
 
     }
 

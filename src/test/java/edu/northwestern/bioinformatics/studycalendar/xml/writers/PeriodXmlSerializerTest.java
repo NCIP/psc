@@ -103,46 +103,52 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
 
 
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.setDuration(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.getDuration().setQuantity(5);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.setDuration(null);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.getDuration().setUnit(Duration.Unit.fortnight);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.setName("wrong name");
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
+
+        period = createPeriod();
+        assertTrue(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+        period.setStartDay(7);
+        assertFalse(StringUtils.isBlank(serializer.validateElement(period, actual).toString()));
+
     }
 
     public void testGetPeriodWithMatchingAttributes() throws Exception {
         Element actual = serializer.createElement(period);
 
         Period period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        assertEquals("serializer must have a matching period",period,serializer.getPeriodWithMatchingAttributes(periods,actual));
-        period.setDuration(null);
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
+        assertNotNull(serializer.getPeriodWithMatchingGridId(periods, actual));
+        assertEquals("serializer must have a matching period", period, serializer.getPeriodWithMatchingGridId(periods, actual));
+        period.setGridId("wrong grid id");
+        assertNull(serializer.getPeriodWithMatchingGridId(periods, actual));
 
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        period.setDuration(new Duration());
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-
-
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        period.getDuration().setQuantity(5);
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        period.getDuration().setUnit(Duration.Unit.fortnight);
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-
-
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        period.setName("wrong name");
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-        period.setStartDay(7);
-        assertNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
-
-        period = createPeriod();
-        assertNotNull(serializer.getPeriodWithMatchingAttributes(periods, actual));
 
     }
 
