@@ -197,10 +197,10 @@ public class Fixtures {
 
     public static StudySubjectAssignment createAssignment(Study study, Site site, Subject subject) {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
-        StudySite ss = createStudySite(study, site);
-        assignment.setStudySite(ss);
-        assignment.setSubject(subject);
         assignment.setScheduledCalendar(new ScheduledCalendar());
+        if (subject != null) subject.addAssignment(assignment);
+        StudySite ss = createStudySite(study, site);
+        ss.addStudySubjectAssignment(assignment);
         return assignment;
     }
 

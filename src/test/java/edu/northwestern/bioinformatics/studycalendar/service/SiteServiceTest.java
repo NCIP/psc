@@ -128,37 +128,38 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testCheckIfSiteCanBeDeleted() throws Exception {
+    public void testCheckIfSiteCanBeDeletedWhenItIsDeletable() throws Exception {
         Site site = new Site();
         site.setId(1);
-        assertTrue("site can not be deleted", service.checkIfSiteCanBeDeleted(site));
-
-        StudySite studySite = new StudySite();
-
-        studySite.getStudySubjectAssignments().add(new StudySubjectAssignment());
-        site.addStudySite(studySite);
-
-        assertFalse("site can  be deleted", service.checkIfSiteCanBeDeleted(site));
-
+        assertTrue("site should be deletable", service.checkIfSiteCanBeDeleted(site));
     }
 
-    public void testRemoveSite() throws Exception {
+    public void testCheckIfSiteCanBeDeletedWhenItIsNotDeletable() throws Exception {
+        Site site = setId(4, new Site());
+        Fixtures.createAssignment(new Study(), site, new Subject());
+
+        assertFalse("site should not be deletable", service.checkIfSiteCanBeDeleted(site));
+    }
+
+    public void testRemoveRemoveableSite() throws Exception {
         Site site = new Site();
         site.setId(1);
 
         authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         siteDao.delete(site);
+
         replayMocks();
         service.removeSite(site);
         verifyMocks();
-        StudySite studySite = new StudySite();
+    }
+    
+    public void testRemoveSiteWhenSiteMayNotBeRemoved() throws Exception {
+        Site site = setId(4, new Site());
+        Fixtures.createAssignment(new Study(), site, new Subject());
 
-        studySite.getStudySubjectAssignments().add(new StudySubjectAssignment());
-        site.addStudySite(studySite);
-
+        replayMocks(); // expect nothing to happen
         service.removeSite(site);
-
-
+        verifyMocks();
     }
 
     public void testCreateOrMergeSiteForCreateSite() throws Exception {
