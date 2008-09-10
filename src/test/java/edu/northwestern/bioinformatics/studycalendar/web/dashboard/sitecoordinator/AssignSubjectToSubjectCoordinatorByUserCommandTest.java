@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import static java.util.Arrays.asList;
-
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-
 import java.util.List;
 
 public class AssignSubjectToSubjectCoordinatorByUserCommandTest extends StudyCalendarTestCase {
@@ -45,11 +45,6 @@ public class AssignSubjectToSubjectCoordinatorByUserCommandTest extends StudyCal
 
         assignment0.setSubjectCoordinator(pcOld);
         assignment1.setSubjectCoordinator(pcOld);
-
-        subject0.addAssignment(assignment0);
-        subject1.addAssignment(assignment1);
-
-
     }
 
     public void testAssignSubjectsToSubjectCoordinator() {
