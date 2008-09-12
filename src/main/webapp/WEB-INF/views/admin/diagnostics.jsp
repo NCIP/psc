@@ -50,7 +50,7 @@
                 <c:choose>
                     <c:when test="${caaersAvail}">
                         <div class="value">
-                            <tags:urlFromTemplate property="caaersAvail"></tags:urlFromTemplate>
+                            <tags:urlFromTemplate property="caAERSBaseUrl"></tags:urlFromTemplate>
                         </div>
 
                     </c:when>
