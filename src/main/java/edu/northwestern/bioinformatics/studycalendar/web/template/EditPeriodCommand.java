@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -15,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -48,30 +51,34 @@ public class EditPeriodCommand implements PeriodCommand {
     }
 
     public boolean apply() {
-        updateRevWithChangedProperties();
-        removeInvalidPlannedActivities();
+        List<Change> changes = new ArrayList<Change>();
+        updateRevWithChangedProperties(changes);
+        removeInvalidPlannedActivities(changes);
+        if (!changes.isEmpty()) {
+            amendmentService.updateDevelopmentAmendment(originalPeriod,
+                changes.toArray(new Change[changes.size()]));
+        }
         return false;
     }
 
-    private void updateRevWithChangedProperties() {
+    private void updateRevWithChangedProperties(List<Change> target) {
         BeanWrapper originalWrapped = new BeanWrapperImpl(originalPeriod);
         BeanWrapper newWrapped = new BeanWrapperImpl(period);
         for (String prop : PROPERTIES_TO_UPDATE) {
             Object oldV = originalWrapped.getPropertyValue(prop);
             Object newV = newWrapped.getPropertyValue(prop);
             if (!ComparisonTools.nullSafeEquals(oldV, newV)) {
-                amendmentService.updateDevelopmentAmendment(originalPeriod,
-                    PropertyChange.create(prop, oldV, newV));
+                target.add(PropertyChange.create(prop, oldV, newV));
             }
         }
     }
 
-    private void removeInvalidPlannedActivities() {
+    private void removeInvalidPlannedActivities(List<Change> target) {
         // look for PlannedActivity that are now invalid
         DayRange peDayRange = new DefaultDayRange(1, getPeriod().getDuration().getDays());
         for (PlannedActivity event : originalPeriod.getPlannedActivities()) {
             if (!peDayRange.containsDay(event.getDay())) {
-                amendmentService.updateDevelopmentAmendment(originalPeriod, Remove.create(event));
+                target.add(Remove.create(event));
             }
         }
     }
