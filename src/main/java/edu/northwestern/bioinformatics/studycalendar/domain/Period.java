@@ -83,8 +83,8 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         int maxDay = getDuration().getDays();
         if (pa.getDay() < 1 || pa.getDay() > maxDay) {
             throw new StudyCalendarValidationException(
-                "Cannot add a planned activity for day %d to this period.  Planned activity days always start with 1.  The maximum for this period is %d.",
-                pa.getDay(), maxDay);
+                "Cannot add a planned activity for day %d to %s.  Planned activity days always start with 1.  The maximum for this period is %d.  The offending planned activity is %s.",
+                pa.getDay(), this, maxDay, pa);
         }
         super.addChild(pa);
     }
