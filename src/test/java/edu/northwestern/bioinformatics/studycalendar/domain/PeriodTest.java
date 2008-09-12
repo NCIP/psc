@@ -161,7 +161,7 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day 29 to this period.  Planned activity days always start with 1.  The maximum for this period is 28.",
+                "Cannot add a planned activity for day 29 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 28.  The offending planned activity is " + pa + '.',
                 scve.getMessage());
         }
     }
@@ -174,7 +174,7 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day -4 to this period.  Planned activity days always start with 1.  The maximum for this period is 51.",
+                "Cannot add a planned activity for day -4 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 51.  The offending planned activity is " + pa + '.',
                 scve.getMessage());
         }
     }
@@ -187,7 +187,7 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day 0 to this period.  Planned activity days always start with 1.  The maximum for this period is 196.",
+                "Cannot add a planned activity for day 0 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 196.  The offending planned activity is " + pa + '.',
                 scve.getMessage());
         }
     }
