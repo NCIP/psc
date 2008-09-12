@@ -72,7 +72,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
     public void testApplyNameChange() throws Exception {
         command.getPeriod().setName("Ethical");
 
-        expectPropertyUpdate("name", NAME, "Ethical");
+        expectSinglePropertyUpdate("name", NAME, "Ethical");
 
         replayMocks();
         command.apply();
@@ -82,7 +82,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
     public void testApplyStartDayChange() throws Exception {
         command.getPeriod().setStartDay(42);
 
-        expectPropertyUpdate("startDay", START_DAY.toString(), Integer.toString(42));
+        expectSinglePropertyUpdate("startDay", START_DAY.toString(), Integer.toString(42));
 
         replayMocks();
         command.apply();
@@ -93,8 +93,10 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         command.getPeriod().getDuration().setUnit(Duration.Unit.week);
         command.getPeriod().getDuration().setQuantity(10);
 
-        expectPropertyUpdate("duration.unit", "day", "week");
-        expectPropertyUpdate("duration.quantity", "71", "10");
+        amendmentService.updateDevelopmentAmendment(period,
+            PropertyChange.create("duration.quantity", "71", "10"),
+            PropertyChange.create("duration.unit", "day", "week")
+        );
 
         replayMocks();
         command.apply();
@@ -104,7 +106,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
     public void testApplyRepetitionsChange() throws Exception {
         command.getPeriod().setRepetitions(1000);
 
-        expectPropertyUpdate("repetitions", "1", "1000");
+        expectSinglePropertyUpdate("repetitions", "1", "1000");
 
         replayMocks();
         command.apply();
@@ -118,8 +120,8 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         period.addPlannedActivity(cbc);
         command.getPeriod().getDuration().setQuantity(60);
 
-        expectPropertyUpdate("duration.quantity", "71", "60");
-        amendmentService.updateDevelopmentAmendment(period, Remove.create(cbc));
+        amendmentService.updateDevelopmentAmendment(period,
+            PropertyChange.create("duration.quantity", "71", "60"), Remove.create(cbc));
 
         replayMocks();
         command.apply();
@@ -155,7 +157,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         return null;
     }
 
-    private void expectPropertyUpdate(String property, String oldV, String newV) {
+    private void expectSinglePropertyUpdate(String property, String oldV, String newV) {
         amendmentService.updateDevelopmentAmendment(
             same(period), eq(PropertyChange.create(property, oldV, newV)));
     }
