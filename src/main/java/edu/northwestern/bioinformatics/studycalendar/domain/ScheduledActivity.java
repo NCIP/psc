@@ -12,6 +12,8 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,6 +50,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     private Activity activity;
     private Amendment sourceAmendment;
     private Integer repetitionNumber;
+    private DayNumber dayNumber;
 
     ////// LOGIC
 
@@ -96,6 +99,31 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
             actualDate = getIdealDate();
         }
         return actualDate;
+    }
+    
+    @Transient
+    public DayNumber getDayNumber() {
+        int number;
+        int repetetionCount = repetitionNumber+1;
+        if (repetetionCount==1) {
+            number = plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1;
+            dayNumber = calculateDaynumber(number);
+        }
+        if (repetetionCount==2) {
+            number = (plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + plannedActivity.getPeriod().getDuration().getDays();
+            dayNumber = calculateDaynumber(number);
+        }
+        if (repetetionCount==3) {
+            number = (plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*2);
+            dayNumber = calculateDaynumber(number);
+        }
+
+        return dayNumber;
+    }
+
+    @Transient
+    public DayNumber calculateDaynumber(int number) {
+        return DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
     }
 
     @Transient
