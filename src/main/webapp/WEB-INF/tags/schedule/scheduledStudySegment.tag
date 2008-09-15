@@ -5,6 +5,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@attribute name="studySegment" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment" %>
 <%@attribute name="visible" type="java.lang.Boolean" %>
+<%@attribute name="studySegmentTemplate" type="edu.northwestern.bioinformatics.studycalendar.web.template.StudySegmentTemplate"%>
 <%@attribute name="modes" type="java.util.Collection" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -98,22 +99,16 @@
                                 </li>
                                 <li class="days_from_period" id="days_from_period" style="display:none;">
                                     <span class="event-details">
-                                        <c:set var="repetitionEnding" value="th"/>
-                                        <c:set var="repetition" value="${event.repetitionNumber +1}"/>
-                                        <c:if test="${fn:endsWith(repetition,'1')}">
-                                            <c:set var="repetitionEnding" value="st"/>
-                                        </c:if>
-                                        <c:if test="${fn:endsWith(repetition,'2')}">
-                                            <c:set var="repetitionEnding" value="nd"/>
-                                        </c:if>
-                                        <c:if test="${fn:endsWith(repetition,'3')}">
-                                            <c:set var="repetitionEnding" value="rd"/>
-                                        </c:if>
-
-                                        Day ${event.plannedActivity.day} of ${event.repetitionNumber +1}${repetitionEnding}
-                                        <c:if test="${empty event.plannedActivity.period.name}">"Unnamed period"</c:if>
-                                        <c:if test="${not empty event.plannedActivity.period.name}">${event.plannedActivity.period.name}</c:if>
-
+                                         <c:set var="day" value="${event.dayNumber}"/>
+                                         <c:set var="cycle" value="${day.hasCycle ? day.cycleNumber : null}"/>
+                                         <c:choose>
+                                             <c:when test="${not empty cycle}">
+                                                C${cycle}D${day.dayNumber}
+                                             </c:when>
+                                             <c:otherwise>
+                                                Day ${day.dayNumber}
+                                             </c:otherwise>
+                                         </c:choose>
                                     </span>
                                 </li>
                             </c:forEach>

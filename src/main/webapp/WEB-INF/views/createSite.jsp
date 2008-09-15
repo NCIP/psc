@@ -25,15 +25,21 @@
             <form:errors path="*"/>
             <div class="row">
                 <div class="label">
-                    <form:label path="name">Site Name</form:label>
+                    Site Name
                 </div>
                 <div class="value">
-                    <form:input path="name"/>
+                    <input id="name" name="name" value="${name.name}" size="30"/>
+                </div>
+                <div class="label">
+                    Assigned Identifier
+                </div>
+                <div class="value">
+                    <input id="assignedIdentifier" name="assignedIdentifier" value="${assignIdentifier}" size="30" />
                 </div>
             </div>
             <div class="row">
                 <div class="submit">
-                    <input type="submit" value="Create"/>
+                    <input type="submit" value="Save"/>
                 </div>
             </div>
         </form:form>
