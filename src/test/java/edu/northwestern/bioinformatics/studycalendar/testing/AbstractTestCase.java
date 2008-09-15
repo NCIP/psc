@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * @author Saurabh Agrawal
  */
-public class AbstractTestCase extends CoreTestCase {
+public abstract class AbstractTestCase extends CoreTestCase {
     protected Set<Object> mocks = new HashSet<Object>();
 
     protected <T> T registerMockFor(Class<T> forClass) {
