@@ -57,15 +57,8 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     ////// LOGIC
 
-    @Override
-    public Class<StudySegment> parentClass() {
-        return StudySegment.class;
-    }
-
-    @Override
-    public Class<PlannedActivity> childClass() {
-        return PlannedActivity.class;
-    }
+    public Class<StudySegment> parentClass() { return StudySegment.class; }
+    public Class<PlannedActivity> childClass() { return PlannedActivity.class; }
 
     public void addPlannedActivity(PlannedActivity pa) {
         addChild(pa);

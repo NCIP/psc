@@ -1,0 +1,19 @@
+package edu.northwestern.bioinformatics.studycalendar.domain;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+
+import java.util.Collection;
+
+/**
+ * @author Rhett Sutphin
+ */
+public interface Parent<C extends Child, G extends Collection<C>> extends MutableDomainObject, Changeable {
+    Class<C> childClass();
+
+    void addChild(C child);
+    C removeChild(C child);
+
+    G getChildren();
+    void setChildren(G children);
+}

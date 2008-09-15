@@ -1,8 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -73,7 +78,7 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     }
 
     @Override
-    public String validateElement(PlanTreeNode<?> planTreeNode, Element element) {
+    public String validateElement(MutableDomainObject planTreeNode, Element element) {
         StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
 
         Period period = (Period) planTreeNode;

@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 /**
  * @author Rhett Sutphin
  * @param <P> parent class
  */
 public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
-    implements Child<P>, Cloneable, TransientCloneable<PlanTreeNode<P>>
+    implements Child<P>, Cloneable
 {
     private P parent;
     private boolean memoryOnly;
@@ -37,8 +37,6 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
     }
 
     ////// Child IMPLEMENTATION
-
-    public abstract Class<P> parentClass();
 
     public P getParent() {
         return parent;

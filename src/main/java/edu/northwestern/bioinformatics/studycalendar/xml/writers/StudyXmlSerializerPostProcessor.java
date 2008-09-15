@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -14,20 +15,20 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author John Dzak
@@ -60,12 +61,13 @@ public class StudyXmlSerializerPostProcessor {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
                     if (change.getAction() == ChangeAction.ADD) {
-                        PlanTreeNode<?> child = deltaService.findChangeChild((Add) change);
+                        Child child = deltaService.findChangeChild((Add) change);
                         if (child == null) {
                             throw new StudyCalendarSystemException(
                                 "Could not resolve child for %s", change);
                         }
 
+                        // TODO: this will need to be modified to take into account PALabels
                         if (child instanceof PlannedActivity) {
                             all.add((PlannedActivity) child);
                         } else {
@@ -140,15 +142,15 @@ public class StudyXmlSerializerPostProcessor {
      *      a template Epoch (an epoch with the same grid id as the actual one) as a place holder for the actual Epoch
      *      until it is resolved.
      */
-    private PlanTreeNode<?> findRealNode(PlanTreeNode<?> nodeTemplate) {
-        GridIdentifiableDao dao = (GridIdentifiableDao) daoFinder.findDao(nodeTemplate.getClass());
-        return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
+    private <T extends Changeable> T findRealNode(T nodeTemplate) {
+        GridIdentifiableDao<T> dao = (GridIdentifiableDao<T>) daoFinder.findDao(nodeTemplate.getClass());
+        return dao.getByGridId(nodeTemplate.getGridId());
     }
 
     private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {
         for (Delta delta : amendment.getDeltas()) {
             // resolve node
-            PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
+            Changeable deltaNode = findRealNode(delta.getNode());
             if (deltaNode != null) {
                 delta.setNode(deltaNode);
             } else {
@@ -159,12 +161,12 @@ public class StudyXmlSerializerPostProcessor {
             for (Object oChange : delta.getChanges()) {
                 if (oChange instanceof ChildrenChange) {
                     ChildrenChange change = (ChildrenChange) oChange;
-                    PlanTreeNode<?> nodeTemplate = change.getChild();
+                    Child nodeTemplate = change.getChild();
 
                     // If nodeTemplate is not null, element has yet to be persisted (because we setChild in serializer).
                     // So since we have a template for the node, we want to find the actual node.
                     if (nodeTemplate != null) {
-                        PlanTreeNode<?> node = findRealNode(nodeTemplate);
+                        Child node = findRealNode(nodeTemplate);
                         if (node != null) {
                             change.setChild(node);
                         }

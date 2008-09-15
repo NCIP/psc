@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.List;
@@ -18,18 +19,18 @@ public class ReorderMutator implements Mutator {
         this.reorder = reorder;
     }
 
-    public void apply(PlanTreeNode<?> source) {
-        PlanTreeNode<?> match = removeMatchingChild(source);
-        PlanTreeOrderedInnerNode.cast(source).getChildren().add(reorder.getNewIndex(), match);
+    public void apply(Changeable source) {
+        PlanTreeNode<?> match = removeMatchingChild((PlanTreeNode<?>) source);
+        ((PlanTreeOrderedInnerNode<?, PlanTreeNode<?>>) source).getChildren().add(reorder.getNewIndex(), match);
     }
 
-    public void revert(PlanTreeNode<?> target) {
-        PlanTreeNode<?> match = removeMatchingChild(target);
-        PlanTreeOrderedInnerNode.cast(target).getChildren().add(reorder.getOldIndex(), match);
+    public void revert(Changeable target) {
+        PlanTreeNode<?> match = removeMatchingChild((PlanTreeNode<?>) target);
+        ((PlanTreeOrderedInnerNode<?, PlanTreeNode<?>>) target).getChildren().add(reorder.getOldIndex(), match);
     }
 
     private PlanTreeNode<?> removeMatchingChild(PlanTreeNode<?> source) {
-        List<PlanTreeNode<?>> children = PlanTreeOrderedInnerNode.cast(source).getChildren();
+        List<PlanTreeNode<?>> children = ((PlanTreeOrderedInnerNode<?, PlanTreeNode<?>>) source).getChildren();
         PlanTreeNode<?> match = null;
         for (PlanTreeNode<?> child : children) {
             if (reorder.isSameChild(child)) {

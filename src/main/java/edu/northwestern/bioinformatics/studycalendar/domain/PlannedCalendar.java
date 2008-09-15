@@ -29,8 +29,8 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
 
     ////// LOGIC
 
-    @Override public Class<Study> parentClass() { return Study.class; }
-    @Override public Class<Epoch> childClass() { return Epoch.class; }
+    public Class<Study> parentClass() { return Study.class; }
+    public Class<Epoch> childClass() { return Epoch.class; }
 
     public void addEpoch(Epoch epoch) {
         addChild(epoch);

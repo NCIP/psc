@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -14,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
@@ -104,7 +106,7 @@ public class DeltaService {
     public void apply(Study target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
         for (Delta<?> delta : revision.getDeltas()) {
-            PlanTreeNode<?> affected = findNodeForDelta(target, delta);
+            Changeable affected = findNodeForDelta(target, delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).apply(affected);
@@ -115,7 +117,7 @@ public class DeltaService {
     public void revert(Study target, Revision revision) {
         log.debug("Reverting {} from {}", revision, target);
         for (Delta<?> delta : revision.getDeltas()) {
-            PlanTreeNode<?> affected = findNodeForDelta(target, delta);
+            Changeable affected = findNodeForDelta(target, delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Rolling back change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).revert(affected);
@@ -126,7 +128,7 @@ public class DeltaService {
     private void apply(ScheduledCalendar target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
         for (Delta<?> delta : revision.getDeltas()) {
-            PlanTreeNode<?> affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);
+            Changeable affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
                 Mutator mutator = mutatorFactory.createMutator(affected, change);
@@ -173,8 +175,8 @@ public class DeltaService {
         mutatorFactory.createMutator(node, change).apply(node);
     }
 
-    private PlanTreeNode<?> findNodeForDelta(Study revised, Delta<?> delta) {
-        PlanTreeNode<?> affected = templateService.findEquivalentChild(revised, delta.getNode());
+    private <C extends Changeable> C findNodeForDelta(Study revised, Delta<C> delta) {
+        C affected = templateService.findEquivalentChild(revised, delta.getNode());
         if (affected == null) {
             throw new StudyCalendarSystemException(
                 "Could not find a node in the target study matching the node in %s", delta);
@@ -196,7 +198,7 @@ public class DeltaService {
             for (Change change : delta.getChanges()) {
                 if (change.getAction() == ChangeAction.ADD) {
                     log.debug("saveRevision: examining add {}", change);
-                    PlanTreeNode<?> child = ((Add) change).getChild();
+                    Child child = ((Add) change).getChild();
                     if (child != null) {
                         log.debug("saveRevision: saving added child {}", child);
                         findDaoAndSave(child);
@@ -223,7 +225,7 @@ public class DeltaService {
     public void delete(Delta<?> delta) {
         for (Change change : delta.getChanges()) {
             if (change.getAction() == ChangeAction.ADD) {
-                PlanTreeNode child = findChangeChild((Add) change);
+                Child child = findChangeChild((Add) change);
                 templateService.delete(child);
             }
         }
@@ -235,8 +237,8 @@ public class DeltaService {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    public PlanTreeNode findChangeChild(ChildrenChange change) {
-        PlanTreeNode child = change.getChild();
+    public Child findChangeChild(ChildrenChange change) {
+        Child child = change.getChild();
         if (child == null) {
             PlanTreeInnerNode parent = (PlanTreeInnerNode) change.getDelta().getNode();
             child = findDaoAndLoad(change.getChildId(), parent.childClass());

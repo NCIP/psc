@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractAddAndRemoveMutator implements Mutator {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected ChildrenChange change;
-    protected DomainObjectDao<? extends PlanTreeNode<?>> dao;
+    protected DomainObjectDao<? extends Child<?>> dao;
 
-    public AbstractAddAndRemoveMutator(ChildrenChange change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
+    public AbstractAddAndRemoveMutator(ChildrenChange change, DomainObjectDao<? extends Child<?>> dao) {
         this.dao = dao;
         this.change = change;
         if (dao == null && this.change.getChild() == null) {
@@ -27,30 +27,29 @@ abstract class AbstractAddAndRemoveMutator implements Mutator {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    protected PlanTreeNode findChild() {
+    protected Child findChild() {
         if (change.getChild() != null) {
             return change.getChild();
         } else {
-            return dao.getById(change.getChildId());
+            return (Child) dao.getById(change.getChildId());
         }
     }
 
     // accessor for testing
-    DomainObjectDao<? extends PlanTreeNode<?>> getDao() { return dao; }
+    DomainObjectDao<? extends Child> getDao() { return dao; }
 
-    protected void addTo(PlanTreeNode<?> source) {
-        PlanTreeNode<?> child = findChild();
+    protected <C extends Child> void addTo(Parent<C, ?> source) {
+        C child = (C) findChild();
         if (source.isMemoryOnly()) {
-            child = child.transientClone();
+            child = (C) child.transientClone();
         }
         log.debug("Adding {} to {}", child, source);
-        PlanTreeInnerNode.cast(source).addChild(child);
+        source.addChild(child);
     }
 
-    protected void removeFrom(PlanTreeNode<?> target) {
-        PlanTreeInnerNode<?, PlanTreeNode<?>, ?> inner = PlanTreeInnerNode.cast(target);
-        PlanTreeNode<?> toRemove = null;
-        for (PlanTreeNode<?> child : inner.getChildren()) {
+    protected <C extends Child> void removeFrom(Parent<C, ?> target) {
+        C toRemove = null;
+        for (C child : target.getChildren()) {
             if (change.isSameChild(child)) {
                 log.debug("Removing {} from {}", child, target);
                 toRemove = child;
@@ -61,7 +60,7 @@ abstract class AbstractAddAndRemoveMutator implements Mutator {
             log.warn("The child referenced in {} was not found in {}", change, target);
             return;
         }
-        inner.removeChild(toRemove);
+        target.removeChild(toRemove);
     }
 
     public boolean appliesToExistingSchedules() {

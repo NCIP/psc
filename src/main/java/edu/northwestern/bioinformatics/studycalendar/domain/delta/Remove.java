@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -17,7 +17,7 @@ import java.util.Date;
 @DiscriminatorValue("remove")
 public class Remove extends ChildrenChange {
 
-    public static Remove create(PlanTreeNode<?> object) {
+    public static Remove create(Child<?> object) {
         Remove remove = new Remove();
         remove.setChild(object);
         return remove;
@@ -96,9 +96,8 @@ public class Remove extends ChildrenChange {
 
         private boolean nodeHasChildToRemove() {
             // Is the child we're removing in the target?
-            Collection<PlanTreeNode<?>> children // the second cast is to work around a javac bug
-                = (Collection<PlanTreeNode<?>>) PlanTreeInnerNode.cast(delta.getNode()).getChildren();
-            for (PlanTreeNode<?> existing : children) {
+            Collection<Child<?>> children = ((Parent) delta.getNode()).getChildren();
+            for (Child<?> existing : children) {
                 if (isSameChild(existing)) {
                     return true;
                 }

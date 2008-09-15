@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.dom4j.Element;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
     }
 
     @Override
-    public String validateElement(PlanTreeNode<?> planTreeNode, Element element) {
+    public String validateElement(MutableDomainObject planTreeNode, Element element) {
         StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
         StudySegment studySegment = (StudySegment) planTreeNode;
         if (!studySegment.getName().equals(element.attributeValue(NAME))) {

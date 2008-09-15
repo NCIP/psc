@@ -261,7 +261,7 @@ public abstract class AbstractXmlValidationTestCase extends AbstractTestCase {
         };
         changeXmlSerializerFactory = new ChangeXmlSerializerFactory() {
             @Override
-            public AbstractChangeXmlSerializer createXmlSerializer(Element eChange, PlanTreeNode<?> deltaNode) {
+            public AbstractChangeXmlSerializer createXmlSerializer(Element eChange, Changeable deltaNode) {
                 if ((AddXmlSerializer.ADD).equals(eChange.getName())) {
                     return addXmlSerializer;
                 } else if ((RemoveXmlSerializer.REMOVE).equals(eChange.getName())) {
@@ -277,7 +277,7 @@ public abstract class AbstractXmlValidationTestCase extends AbstractTestCase {
             }
 
             @Override
-            public AbstractChangeXmlSerializer createXmlSerializer(Change change, PlanTreeNode<?> deltaNode) {
+            public AbstractChangeXmlSerializer createXmlSerializer(Change change, Changeable deltaNode) {
                 if ((ChangeAction.ADD).equals(change.getAction())) {
                     return addXmlSerializer;
                 } else if ((ChangeAction.REMOVE).equals(change.getAction())) {

@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -82,7 +83,7 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     }
 
     @Override
-    public String validateElement(PlanTreeNode<?> planTreeNode, Element element) {
+    public String validateElement(MutableDomainObject planTreeNode, Element element) {
 
         StringBuffer errorMessageStringBuffer = new StringBuffer(super.validateElement(planTreeNode, element));
 

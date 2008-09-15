@@ -52,8 +52,8 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
 
     ////// LOGIC
 
-    @Override public Class<PlannedCalendar> parentClass() { return PlannedCalendar.class; }
-    @Override public Class<StudySegment> childClass() { return StudySegment.class; }
+    public Class<PlannedCalendar> parentClass() { return PlannedCalendar.class; }
+    public Class<StudySegment> childClass() { return StudySegment.class; }
 
     public void addStudySegment(StudySegment studySegment) {
         addChild(studySegment);

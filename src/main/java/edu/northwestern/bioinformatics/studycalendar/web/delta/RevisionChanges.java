@@ -1,34 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import gov.nih.nci.cabig.ctms.lang.StringTools;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.lang.StringTools;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Exposes the changes in a revision for easy iteration and display.
@@ -68,7 +70,7 @@ public class RevisionChanges {
         return flattened;
     }
 
-    private boolean isChildOrTarget(PlanTreeNode node) {
+    private boolean isChildOrTarget(DomainObject node) {
         if (target == null) return true;
         if (node.getClass().isAssignableFrom(target.getClass()) || target.getClass().isAssignableFrom(node.getClass())) {
             return node.getId().equals(target.getId());
@@ -77,13 +79,13 @@ public class RevisionChanges {
             return false;
         }
         if (target instanceof PlanTreeInnerNode) {
-            return ((PlanTreeInnerNode) target).isAncestorOf(node);
+            return ((PlanTreeInnerNode) target).isAncestorOf((PlanTreeNode) node);
         }
         return false;
     }
 
     // visible for testing
-    static String getNodeName(PlanTreeNode node) {
+    static String getNodeName(DomainObject node) {
         StringBuilder sb = new StringBuilder();
         if (node == null) {
            sb.append("unknown");
@@ -109,7 +111,7 @@ public class RevisionChanges {
         return sb.toString();
     }
 
-    private static String nodeTypeName(PlanTreeNode node) {
+    private static String nodeTypeName(DomainObject node) {
         if (node instanceof PlannedCalendar) return "calendar";
         if (node instanceof Epoch) return "epoch";
         if (node instanceof StudySegment) return "studySegment";  // segment?
@@ -120,13 +122,14 @@ public class RevisionChanges {
         return node.getClass().getSimpleName().toLowerCase();
     }
 
-    private <C extends Change> Flat createFlat(PlanTreeNode node, C change) {
-        if (change instanceof ChildrenChange && node instanceof PlanTreeInnerNode) {
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    private <C extends Change> Flat createFlat(DomainObject node, C change) {
+        if (change instanceof ChildrenChange && node instanceof Parent) {
             ChildrenChange cChange = (ChildrenChange) change;
             if (cChange.getChild() == null) {
                 log.debug("Locating (potential) child with id {} for {}", cChange.getChildId(), node);
-                DomainObjectDao<PlanTreeNode> dao = daoFinder.findDao(((PlanTreeInnerNode) node).childClass());
-                cChange.setChild(dao.getById(cChange.getChildId()));
+                DomainObjectDao dao = daoFinder.findDao(((Parent) node).childClass());
+                cChange.setChild((Child<?>) dao.getById(cChange.getChildId()));
             }
         }
 
@@ -145,10 +148,10 @@ public class RevisionChanges {
     }
 
     public abstract class Flat<C extends Change> {
-        private PlanTreeNode<?> node;
+        private DomainObject node;
         private C change;
 
-        public Flat(PlanTreeNode node, C change) {
+        public Flat(DomainObject node, C change) {
             this.node = node;
             this.change = change;
         }
@@ -161,7 +164,7 @@ public class RevisionChanges {
             return change;
         }
 
-        public PlanTreeNode<?> getNode() {
+        public DomainObject getNode() {
             return node;
         }
 
@@ -176,7 +179,7 @@ public class RevisionChanges {
     }
 
     public class FlatAdd extends Flat<Add> {
-        public FlatAdd(PlanTreeNode node, Add change) { super(node, change); }
+        public FlatAdd(DomainObject node, Add change) { super(node, change); }
 
         @Override
         public String getSentence() {
@@ -186,7 +189,7 @@ public class RevisionChanges {
     }
 
     public class FlatRemove extends Flat<Remove> {
-        public FlatRemove(PlanTreeNode node, Remove change) { super(node, change); }
+        public FlatRemove(DomainObject node, Remove change) { super(node, change); }
 
         @Override
         public String getSentence() {
@@ -196,7 +199,7 @@ public class RevisionChanges {
     }
 
     public class FlatReorder extends Flat<Reorder> {
-        public FlatReorder(PlanTreeNode node, Reorder change) { super(node, change); }
+        public FlatReorder(DomainObject node, Reorder change) { super(node, change); }
 
         @Override
         public String getSentence() {
@@ -211,7 +214,7 @@ public class RevisionChanges {
     }
 
     public class FlatPropertyChange extends Flat<PropertyChange> {
-        public FlatPropertyChange(PlanTreeNode node, PropertyChange change) { super(node, change); }
+        public FlatPropertyChange(DomainObject node, PropertyChange change) { super(node, change); }
 
         @Override
         public String getSentence() {

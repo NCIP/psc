@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.BindException;
@@ -20,11 +20,11 @@ public class SimplePropertyChangeMutator implements Mutator {
         this.change = change;
     }
 
-    public void apply(PlanTreeNode<?> source) {
+    public void apply(Changeable source) {
         bind(source, getAssignableValue(change.getNewValue()));
     }
 
-    public void revert(PlanTreeNode<?> target) {
+    public void revert(Changeable target) {
         bind(target, getAssignableValue(change.getOldValue()));
     }
 

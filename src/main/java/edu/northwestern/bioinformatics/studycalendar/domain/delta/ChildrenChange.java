@@ -1,19 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-
-import javax.persistence.Transient;
-import javax.persistence.MappedSuperclass;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
+
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 /**
  * @author Rhett Sutphin
  */
 @MappedSuperclass
 public abstract class ChildrenChange extends Change {
-    private PlanTreeNode<?> child;
+    private Child<?> child;
     private Integer childId;
 
     ////// LOGIC
@@ -28,7 +26,7 @@ public abstract class ChildrenChange extends Change {
     }
 
     @Transient
-    public boolean isSameChild(PlanTreeNode<?> candidate) {
+    public boolean isSameChild(Child<?> candidate) {
         if (getChildId() != null) {
             return getChildId().equals(candidate.getId());
         } else {
@@ -64,11 +62,11 @@ public abstract class ChildrenChange extends Change {
     ////// BEAN PROPERTIES
 
     @Transient
-    public PlanTreeNode<?> getChild() {
+    public Child<?> getChild() {
         return child;
     }
 
-    public void setChild(PlanTreeNode<?> newChild) {
+    public void setChild(Child<?> newChild) {
         this.child = newChild;
     }
 

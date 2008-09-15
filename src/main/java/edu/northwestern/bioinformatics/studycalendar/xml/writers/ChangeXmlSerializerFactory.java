@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.BeansException;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import org.dom4j.Element;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 
 public class ChangeXmlSerializerFactory implements BeanFactoryAware {
     private Study study;
@@ -19,13 +19,13 @@ public class ChangeXmlSerializerFactory implements BeanFactoryAware {
     private String REORDER_SERIALIZER = "reorderXmlSerializer";
     private String PROPERTY_CHANGE_SERIALIZER = "propertyChangeXmlSerializer";
 
-    public AbstractChangeXmlSerializer createXmlSerializer(final Change change, final PlanTreeNode<?> deltaNode) {
+    public AbstractChangeXmlSerializer createXmlSerializer(final Change change, final Changeable deltaNode) {
         if ((ChangeAction.ADD).equals(change.getAction())) {
-            return getXmlSerialzier(ADD_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(ADD_SERIALIZER, ((Parent) deltaNode).childClass());
         } else if ((ChangeAction.REMOVE).equals(change.getAction())) {
-            return getXmlSerialzier(REMOVE_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(REMOVE_SERIALIZER, ((Parent) deltaNode).childClass());
         } else if (ChangeAction.REORDER.equals(change.getAction())) {
-            return getXmlSerialzier(REORDER_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(REORDER_SERIALIZER, ((Parent) deltaNode).childClass());
         } else if (ChangeAction.CHANGE_PROPERTY.equals(change.getAction())) {
             return getXmlSerialzier(PROPERTY_CHANGE_SERIALIZER);
         } else {
@@ -33,13 +33,13 @@ public class ChangeXmlSerializerFactory implements BeanFactoryAware {
         }
     }
 
-    public AbstractChangeXmlSerializer createXmlSerializer(final Element eChange, final PlanTreeNode<?> deltaNode) {
+    public AbstractChangeXmlSerializer createXmlSerializer(final Element eChange, final Changeable deltaNode) {
         if ((AddXmlSerializer.ADD).equals(eChange.getName())) {
-            return getXmlSerialzier(ADD_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(ADD_SERIALIZER, ((Parent) deltaNode).childClass());
         } else if ((RemoveXmlSerializer.REMOVE).equals(eChange.getName())) {
-            return getXmlSerialzier(REMOVE_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(REMOVE_SERIALIZER, ((Parent) deltaNode).childClass());
         } else if ((ReorderXmlSerializer.REORDER).equals(eChange.getName())) {
-            return getXmlSerialzier(REORDER_SERIALIZER, ((PlanTreeInnerNode)deltaNode).childClass());
+            return getXmlSerialzier(REORDER_SERIALIZER, ((Parent) deltaNode).childClass());
        } else if ((PropertyChangeXmlSerializer.PROPERTY_CHANGE).equals(eChange.getName())) {
             return getXmlSerialzier(PROPERTY_CHANGE_SERIALIZER);
         } else {

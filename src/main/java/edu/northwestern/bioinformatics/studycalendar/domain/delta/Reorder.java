@@ -199,10 +199,11 @@ public class Reorder extends ChildrenChange {
         }
 
         @Override
+        @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
         public void siblingDeleted(Remove change) {
             if (notApplicable()) return;
             if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
-                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
+                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf((PlanTreeNode) change.getChild());
                 incrementIf("oldIndex", removedElementIndex <= getOldIndex());
                 incrementIf("newIndex", removedElementIndex <= getNewIndex());
             }

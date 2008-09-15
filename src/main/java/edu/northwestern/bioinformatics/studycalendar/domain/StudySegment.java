@@ -37,8 +37,8 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
 
     ////// LOGIC
 
-    @Override public Class<Epoch> parentClass() { return Epoch.class; }
-    @Override public Class<Period> childClass() { return Period.class; }
+    public Class<Epoch> parentClass() { return Epoch.class; }
+    public Class<Period> childClass() { return Period.class; }
 
     @Override protected SortedSet<Period> createChildrenCollection() { return new TreeSet<Period>(); }
 

@@ -1,22 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
  * @author Rhett Sutphin
  */
 public class RemoveMutator extends AbstractAddAndRemoveMutator {
-    public RemoveMutator(Remove remove, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
+    public RemoveMutator(Remove remove, DomainObjectDao<? extends Child<?>> dao) {
         super(remove, dao);
     }
 
-    public void apply(PlanTreeNode<?> source) {
-        removeFrom(source);
+    public void apply(Changeable source) {
+        if (!(source instanceof Parent)) {
+            throw new StudyCalendarSystemException("You cannot apply a remove to a target which does not implement Parent");
+        }
+        removeFrom((Parent) source);
     }
 
-    public void revert(PlanTreeNode<?> target) {
-        addTo(target);
+    public void revert(Changeable target) {
+        if (!(target instanceof Parent)) {
+            throw new StudyCalendarSystemException("You cannot apply a remove to a target which does not implement Parent");
+        }
+        addTo((Parent) target);
     }
 }

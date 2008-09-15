@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
 
@@ -19,13 +20,13 @@ import java.util.Date;
 public class Add extends ChildrenChange {
     private Integer index;
 
-    public static Add create(PlanTreeNode<?> child, int index) {
+    public static Add create(Child<?> child, int index) {
         Add add = create(child);
         add.setIndex(index);
         return add;
     }
 
-    public static Add create(PlanTreeNode<?> child) {
+    public static Add create(Child<?> child) {
         Add add = new Add();
         add.setChild(child);
         return add;
@@ -147,9 +148,8 @@ public class Add extends ChildrenChange {
         private boolean nodeHasChildAlready() {
             // Is the child we're adding already in the target?
             // We check this here because there might have been a remove we needed to cancel
-            Collection<PlanTreeNode<?>> children // the second cast is to work around a javac bug
-                = (Collection<PlanTreeNode<?>>) PlanTreeInnerNode.cast(delta.getNode()).getChildren();
-            for (PlanTreeNode<?> existing : children) {
+            Collection<Child<?>> children = ((Parent) delta.getNode()).getChildren();
+            for (Child<?> existing : children) {
                 if (isSameChild(existing)) {
                     log.debug("Child was already applied to live plan tree.  Will not add again.");
                     return true;
@@ -187,10 +187,11 @@ public class Add extends ChildrenChange {
         }
 
         @Override
+        @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
         public void siblingDeleted(Remove change) {
             if (notApplicable()) return;
             if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
-                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
+                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf((PlanTreeNode) change.getChild());
                 incrementIf(removedElementIndex <= getIndex());
             }
         }

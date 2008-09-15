@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.easymock.IArgumentMatcher;
@@ -160,7 +160,7 @@ public class TemplateDevelopmentServiceTest extends StudyCalendarTestCase {
 
         public boolean matches(Object o) {
             assertTrue("Object is not an Add", o instanceof Add);
-            PlanTreeNode<?> child = ((Add) o).getChild();
+            Child<?> child = ((Add) o).getChild();
             assertNotNull("Add has no child", child);
             assertTrue("Add is not for a period", child instanceof Period);
             Period actual = (Period) child;

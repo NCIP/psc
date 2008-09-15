@@ -6,8 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -15,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
@@ -39,7 +41,7 @@ public class MutatorFactory implements ApplicationContextAware {
     private PopulationDao populationDao;
 
     @SuppressWarnings({ "unchecked" })
-    public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
+    public <T extends Changeable, D extends Change> Mutator createMutator(T target, D change) {
         if (change.getAction() == ChangeAction.ADD) {
             return createAddMutator(target, (Add) change);
         } else if (change.getAction() == ChangeAction.REMOVE) {
@@ -52,8 +54,8 @@ public class MutatorFactory implements ApplicationContextAware {
         throw new UnsupportedOperationException("Could not construct mutator for " + change);
     }
 
-    private <T extends PlanTreeNode<?>> Mutator createAddMutator(T target, Add add) {
-        DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
+    private <T extends Changeable> Mutator createAddMutator(T target, Add add) {
+        DomainObjectDao<? extends Child<?>> dao = findChildDao(target);
         if (target instanceof StudySegment) {
             return new AddPeriodMutator(add, (PeriodDao) dao, getSubjectService());
         } else if (target instanceof Period) {
@@ -66,14 +68,14 @@ public class MutatorFactory implements ApplicationContextAware {
         }
     }
 
-    private <T extends PlanTreeNode<?>> Mutator createRemoveMutator(T target, Remove remove) {
-        DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
+    private <T extends Changeable> Mutator createRemoveMutator(T target, Remove remove) {
+        DomainObjectDao<? extends Child<?>> dao = findChildDao(target);
         if (target instanceof StudySegment) {
             return new RemovePeriodMutator(remove, (PeriodDao) dao, getTemplateService());
         } else if (target instanceof Period) {
             return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);
         } else {
-            return new RemoveMutator(remove, dao);
+            return new RemoveMutator(remove,  dao);
         }
     }
 
@@ -81,7 +83,7 @@ public class MutatorFactory implements ApplicationContextAware {
         return new ReorderMutator(reorder);
     }
 
-    private <T extends PlanTreeNode<?>> Mutator createPropertyMutator(T target, PropertyChange change) {
+    private <T extends Changeable> Mutator createPropertyMutator(T target, PropertyChange change) {
         if (target instanceof Period) {
             if ("startDay".equals(change.getPropertyName())) {
                 return new ChangePeriodStartDayMutator(change, getTemplateService(), getScheduleService());
@@ -102,7 +104,7 @@ public class MutatorFactory implements ApplicationContextAware {
             } else if ("activity".equals(change.getPropertyName())) {
                 return new ChangePlannedActivityActivityMutator(change, scheduledActivityDao, activityDao);
             } else if ("population".equals(change.getPropertyName())) {
-                Study study = getTemplateService().findStudy(target);
+                Study study = getTemplateService().findStudy((PlanTreeNode<?>) target);
                 return new ChangePlannedActivityPopulationMutator(change, study, scheduledActivityDao, populationDao);
             }
             // fall through
@@ -113,9 +115,9 @@ public class MutatorFactory implements ApplicationContextAware {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    private <T extends PlanTreeNode<?>> DomainObjectDao<? extends PlanTreeNode<?>> findChildDao(T target) {
-        PlanTreeInnerNode inner = (PlanTreeInnerNode) target;
-        return (DomainObjectDao<? extends PlanTreeNode<?>>) findDao(inner.childClass());
+    private <T extends Changeable> DomainObjectDao<? extends Child<?>> findChildDao(T target) {
+        Parent inner = (Parent) target;
+        return (DomainObjectDao<? extends Child<?>>) findDao(inner.childClass());
     }
 
     protected <T extends PlanTreeNode<?>> DomainObjectDao<?> findDao(Class<T> klass) {

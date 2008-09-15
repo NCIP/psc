@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -70,7 +71,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
         Element ePlanTreeNode = ePlanTreeNodes.get(0);
 
         //fixme:Saurabh initialze the child also
-        PlanTreeNode<?> planTreeNode = add.getChild();
+        Child planTreeNode = add.getChild();
 
         AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(ePlanTreeNode);
 

@@ -41,7 +41,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     ////// LOGIC
 
-    @Override public Class<Period> parentClass() { return Period.class; }
+    public Class<Period> parentClass() { return Period.class; }
 
     public int compareTo(PlannedActivity other) {
         // by day

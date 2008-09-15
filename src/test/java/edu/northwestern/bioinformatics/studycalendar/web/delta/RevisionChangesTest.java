@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -159,7 +159,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals(1, actualFlattened.size());
-        PlanTreeNode<?> actualChild = ((ChildrenChange) actualFlattened.get(0).getChange()).getChild();
+        Child<?> actualChild = ((ChildrenChange) actualFlattened.get(0).getChange()).getChild();
         assertSame("Child not realized", expectedStudySegment, actualChild);
     }
 

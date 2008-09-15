@@ -2,11 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -99,7 +99,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
 
         Add add = (Add) actual.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
         assertNotNull("Add not found", add);
-        PlanTreeNode<?> child = deltaService.findChangeChild(add);
+        Child<?> child = deltaService.findChangeChild(add);
         assertTrue(child instanceof Epoch);
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
@@ -116,7 +116,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
 
         Add add = (Add) actual.getAmendment().getDeltas().get(0).getChanges().get(0);
         assertNotNull("Add not found", add);
-        PlanTreeNode<?> child = deltaService.findChangeChild(add);
+        Child<?> child = deltaService.findChangeChild(add);
         assertTrue(child instanceof Epoch);
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());

@@ -33,7 +33,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
         List<Change> changes = delta.getChanges();
         for (Change change : changes) {
-            AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(change, delta.getNode());
+            AbstractChangeXmlSerializer changeSerializer
+                = getChangeXmlSerializerFactory().createXmlSerializer(change, delta.getNode());
             Element eChange = changeSerializer.createElement(change);
             eDelta.add(eChange);
         }

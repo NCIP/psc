@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -37,7 +38,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         addAdditionalElementAttributes(node, element);
 
         if (getChildSerializer() != null) {
-            addChildrenElements(PlanTreeInnerNode.cast(node), element);
+            addChildrenElements((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) node, element);
         }
 
         return element;
@@ -99,7 +100,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         this.study = study;
     }
 
-    public String validateElement(PlanTreeNode<?> planTreeNode, Element ePlanTreeNode) {
+    public String validateElement(MutableDomainObject planTreeNode, Element ePlanTreeNode) {
         StringBuffer errorMessageStringBuffer = new StringBuffer("");
 
 

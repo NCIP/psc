@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -18,6 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -25,6 +28,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
 import org.slf4j.Logger;
@@ -361,16 +365,16 @@ public class TemplateService {
      * Finds the node in the given study which matches the type and id of parameter node.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public PlanTreeNode<?> findEquivalentChild(Study study, PlanTreeNode<?> node) {
+    public <C extends Changeable> C findEquivalentChild(Study study, C node) {
         return findEquivalentChild(study.getPlannedCalendar(), node);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> tree, PlanTreeNode<?> parameterNode) {
-        if (isEquivalent(tree, parameterNode)) return tree;
-        if (tree instanceof PlanTreeInnerNode) {
-            for (PlanTreeNode<?> child : ((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) tree).getChildren()) {
-                PlanTreeNode<?> match = findEquivalentChild(child, parameterNode);
+    public <C extends Changeable> C findEquivalentChild(MutableDomainObject tree, C parameterNode) {
+        if (isEquivalent(tree, parameterNode)) return (C) tree;
+        if (tree instanceof Parent) {
+            for (Object child : ((Parent) tree).getChildren()) {
+                C match = findEquivalentChild((Child) child, parameterNode);
                 if (match != null) return match;
             }
         }
@@ -378,7 +382,7 @@ public class TemplateService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
+    public boolean isEquivalent(MutableDomainObject node, MutableDomainObject toMatch) {
         return (toMatch == node) ||
                 (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
     }
@@ -394,12 +398,12 @@ public class TemplateService {
     }
 
     // This is not a general solution, but it will work for all PlanTreeNode subclasses
-    private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
+    private boolean sameClassIgnoringProxies(Object toMatch, Object node) {
         return toMatch.getClass().isAssignableFrom(node.getClass())
                 || node.getClass().isAssignableFrom(toMatch.getClass());
     }
 
-    private boolean identifiersMatch(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
+    private boolean identifiersMatch(MutableDomainObject toMatch, MutableDomainObject node) {
         boolean idMatch, gridIdMatch;
         idMatch = gridIdMatch = false;
 
@@ -579,8 +583,9 @@ public class TemplateService {
         for (T t : collection) delete(t);
     }
 
+    // TODO: this should be in a more generic service, perhaps
     @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
-    public <T extends PlanTreeNode> void delete(T object) {
+    public <T extends MutableDomainObject> void delete(T object) {
         DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
         if (!(dao instanceof DeletableDomainObjectDao)) {
             throw new StudyCalendarSystemException(
