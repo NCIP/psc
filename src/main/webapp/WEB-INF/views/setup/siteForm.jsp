@@ -31,6 +31,8 @@
             <div class="row">
                 <div class="label"><form:label path="name">Site name</form:label></div>
                 <div class="value"><form:input path="name" size="40"/></div>
+                <div Class="label"><form:label path="assignedIdentifier">Assigned Identifier</form:label></div>
+                <div class="value"><form:input path="assignedIdentifier" size="40"/></div>
             </div>
             <div class="row submit">
                 <input type="submit" value="Save"/>
