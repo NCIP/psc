@@ -104,28 +104,10 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     @Transient
     public DayNumber getDayNumber() {
         int number;
-        int repetetionCount = repetitionNumber+1;
-        if (repetetionCount==1) {
-            number = plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1;
-            dayNumber = calculateDaynumber(number);
-        }
-        if (repetetionCount==2) {
-            number = (plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + plannedActivity.getPeriod().getDuration().getDays();
-            dayNumber = calculateDaynumber(number);
-        }
-        if (repetetionCount==3) {
-            number = (plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*2);
-            dayNumber = calculateDaynumber(number);
-        }
-
+        number = ((plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*repetitionNumber));
+        dayNumber = DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
         return dayNumber;
     }
-
-    @Transient
-    public DayNumber calculateDaynumber(int number) {
-        return DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
-    }
-
     @Transient
     public boolean isConditionalState() {
         return ScheduledActivityMode.CONDITIONAL == getCurrentState().getMode();
