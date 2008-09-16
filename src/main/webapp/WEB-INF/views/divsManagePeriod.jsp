@@ -176,7 +176,8 @@
                 <a href='#condition'>Condition</a>
             </li>
             <!-- Labels will be enabled in 2.2.1 -->
-            <li class='labels' style="display: none">
+            <%--<li class='labels' style="display: none">--%>
+            <li class='labels'>
                 <a href='#labels'>Labels</a>
             </li>
         </ul>
@@ -261,8 +262,8 @@
                 <dt>Condition</dt>
                 <dd class='none' id='condition-preview'>None</dd>
                 <!-- Labels will be enabled in 2.2.1 -->
-                <dt style="display: none">Labels</dt>
-                <dd style="display: none" class='none' id='labels-preview'>None</dd>
+                <dt>Labels</dt>
+                <dd class='none' id='labels-preview'>None</dd>
             </dl>
             <p id="notes-preview-edit">Click to edit</p>
         </div>
@@ -290,7 +291,7 @@
                                     </span>
                                     <span class='labels' style='display: none'>
                                         <c:forEach items="${row.labels}" var="label">
-                                            <span class="label">${label}</span>
+                                            ${label.name}
                                         </c:forEach>
                                     </span>
                                 </div>
@@ -400,6 +401,34 @@
     })
 </script>
 
+
+
+
+<script type="text/javascript">
+    var labelAutocompleter;
+
+    function resetLabelAutocompleter() {
+        labelAutocompleter.reset();
+    }
+
+    function createLabelAutocompleter() {
+        var inputElement = $('edit-notes-labels')
+        var divElement = $('edit-notes-labels-div')
+        labelAutocompleter = new Ajax.ResetableAutocompleter(inputElement, divElement, '<c:url value="/pages/search/fragment/labels"/>',
+        {
+            method: 'get',
+            paramName: 'searchText'
+        });
+    }
+
+
+    function initMethods() {
+        createLabelAutocompleter();
+    }
+
+    Event.observe(window, "load", initMethods)
+</script>
+
 <div id="lightbox">
     <div id="edit-notes-lightbox">
         <h1>Editing planned activity notes for <span class="activity-name">[Not filled in]</span></h1>
@@ -417,6 +446,17 @@
             </div>
             <div class="value">
                 <input type="text" class="text" id="edit-notes-condition" hint="No condition" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="label">
+                <label for="edit-notes-labels">Labels</label>
+            </div>
+            <div class="value">
+                <!--<input type="text" class="text" id="edit-notes-labels" hint="No labels" />-->
+                <input id="edit-notes-labels" class="text" type="text" hint="No labels" autocomplete="off" />
+                <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"/>
             </div>
         </div>
         <div class="row">

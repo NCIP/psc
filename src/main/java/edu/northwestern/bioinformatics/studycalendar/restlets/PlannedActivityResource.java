@@ -3,15 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.dao.LabelDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.LabelService;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -44,6 +41,7 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
     private PopulationDao populationDao;
     private PlannedActivityDao plannedActivityDao;
     private TemplateService templateService;
+    private LabelService labelService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -75,8 +73,7 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                 "You can only update planned activities in the development version of the template");
         }
-        PlannedActivityForm form = new PlannedActivityForm(
-            entity, helper.getRealStudy(), activityDao, populationDao);
+        PlannedActivityForm form = new PlannedActivityForm(entity, helper.getRealStudy(), activityDao, populationDao, labelService);
         if (isAvailable()) {
             updatePlannedActivityFrom(form);
         } else {
@@ -102,6 +99,12 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             changes.add(PropertyChange.create(property,
                 src.getPropertyValue(property), dst.getPropertyValue(property)));
         }
+
+        List<PlannedActivityLabel> palabels = fromForm.getPlannedActivityLabels();
+        for (PlannedActivityLabel palabel: palabels) {
+            PlannedActivityLabel label = labelService.getOrCreatePlannedActivityLabel(palabel.getLabel(), getRequestedObject());
+        }
+
         amendmentService.updateDevelopmentAmendmentAndSave(getRequestedObject(),
             changes.toArray(new Change[changes.size()]));
     }
@@ -166,5 +169,10 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setLabelService(LabelService labelService) {
+        this.labelService = labelService;
     }
 }

@@ -2,11 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.LabelService;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -29,6 +26,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
     private Study study;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
+    private LabelService labelService;
 
     @Override
     protected void setUp() throws Exception {
@@ -36,10 +34,11 @@ public class PlannedActivityFormTest extends RestletTestCase {
         study = Fixtures.createBasicTemplate();
         activityDao = registerDaoMockFor(ActivityDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
+        labelService = registerMockFor(LabelService.class);
     }
 
     private PlannedActivityForm createForm() {
-        return new PlannedActivityForm(request.getEntity(), study, activityDao, populationDao);
+        return new PlannedActivityForm(request.getEntity(), study, activityDao, populationDao, labelService);
     }
 
     private PlannedActivity createPlannedActivityFromForm() throws ResourceException {
@@ -113,7 +112,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
         PlannedActivity actual = createPlannedActivityFromForm();
 
         assertNotNull(actual);
-        assertEquals((Object) 7, actual.getDay());
+        assertEquals((Integer)7, actual.getDay());
         assertEquals(ACTIVITY, actual.getActivity());
     }
 

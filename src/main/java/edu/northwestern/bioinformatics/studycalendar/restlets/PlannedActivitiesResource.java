@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.LabelService;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -34,6 +35,7 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     private PopulationDao populationDao;
     private TemplateService templateService;
     private StudyService studyService;
+    private LabelService labelService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -73,7 +75,7 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     }
 
     private void acceptForm(Representation entity) throws ResourceException {
-        PlannedActivityForm form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao);
+        PlannedActivityForm form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao, labelService);
         PlannedActivity newPlannedActivity = form.createDescribedPlannedActivity();
 
         try {
@@ -131,4 +133,11 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
     }
+
+    @Required
+    public void setLabelService(LabelService labelService) {
+        this.labelService = labelService;
+    }
 }
+
+

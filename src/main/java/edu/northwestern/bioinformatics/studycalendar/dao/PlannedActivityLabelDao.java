@@ -39,7 +39,7 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
     * @return      the plannedActivityLabels that corresponds to the plannedActivityId parameter
     */
     public PlannedActivityLabel getByPlannedActivityId(Integer plannedActivityId) {
-        List<PlannedActivityLabel> labels = getHibernateTemplate().find("from PlannedActivityLabel where pa_id = ?", plannedActivityId);
+        List<PlannedActivityLabel> labels = getHibernateTemplate().find("from PlannedActivityLabel where planned_activity_id = ?", plannedActivityId);
         if (labels.size() == 0) {
             return null;
         }
@@ -56,6 +56,39 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
     public List<Object> getRepetitionsByPlannedActivityIdAndLabelId(Integer plannedActivityId, Integer labelId) {
         List<Object> repetitions = getHibernateTemplate().find("select repetitionNumber from PlannedActivityLabel where planned_activity_id = ? and label_id = ?", new Object[] { plannedActivityId, labelId });
         return repetitions;
+    }
+
+
+    /**
+    * Finds the plannedActivityLabels by planned activity id and label id.
+    *
+    * @param  plannedActivityId  the planned activity id that used to get plannedActivityLabels
+    * @param  labelId  the label id that used to get plannedActivityLabels
+    * @return      the plannedActivityLabels that corresponds to the plannedActivityId and labelId parameters
+    */
+    public List<PlannedActivityLabel> getPALabelByPlannedActivityIdAndLabelId(Integer plannedActivityId, Integer labelId) {
+        List<PlannedActivityLabel> labels = getHibernateTemplate().find("from PlannedActivityLabel where planned_activity_id = ? and label_id = ?", new Object[] { plannedActivityId, labelId });
+        if(labels.size() == 0) {
+            return null;
+        }
+        return labels;
+    }
+
+    /**
+    * Finds the plannedActivityLabels by planned activity id, label id and repetition number.
+    *
+    * @param  plannedActivityId  the planned activity id that used to get plannedActivityLabels
+    * @param  labelId  the label id that used to get plannedActivityLabels
+    * @param  repetitionNumber the repetition number that is used to get plannedActivityLabels
+    * @return      the plannedActivityLabels that corresponds to the plannedActivityId parameter
+    */
+    public PlannedActivityLabel getPALabelByPlannedActivityIdLabelIdRepNum(Integer plannedActivityId, Integer labelId, Integer repetitionNumber) {
+        List<PlannedActivityLabel> labels =
+                getHibernateTemplate().find("from PlannedActivityLabel where planned_activity_id = ? and label_id = ? and rep_num = ?", new Object[] { plannedActivityId, labelId, repetitionNumber });
+        if(labels.size() == 0) {
+            return null;
+        }
+        return labels.get(0);
     }
 
     /**

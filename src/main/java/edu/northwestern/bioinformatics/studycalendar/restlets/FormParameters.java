@@ -13,6 +13,7 @@ public enum FormParameters {
     ACTIVITY_SOURCE,
     DETAILS,
     CONDITION,
+    LABELS,
     POPULATION;
 
     public String attributeName() {

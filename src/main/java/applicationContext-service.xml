@@ -78,4 +78,12 @@
     </bean>
     <bean id="activityService" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
+
+
+    <bean id="labelService" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.service.LabelService">
+        <property name="plannedActivityDao" ref="plannedActivityDao"></property>
+        <property name="labelDao" ref="labelDao"></property>
+        <property name="plannedActivityLabelDao" ref="plannedActivityLabelDao"></property>
+    </bean>
 </beans>
