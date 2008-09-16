@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class ScheduledActivityTest extends StudyCalendarTestCase {
     private ScheduledActivity scheduledActivity = new ScheduledActivity();
+    private PlannedActivity plannedActivity = new PlannedActivity();
 
     public void testGetActualDateCurrentDate() throws Exception {
         Date expected = DateUtils.createDate(2006, Calendar.AUGUST, 3);
@@ -42,7 +43,23 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         assertEquals(expected, scheduledActivity.getActualDate());
     }
 
+    public void testGetDayNumberWithRepetition() throws Exception {
+        plannedActivity.setDay(1);
+        scheduledActivity.setPlannedActivity(plannedActivity);
+        scheduledActivity.setRepetitionNumber(null);
+        assertEquals(null,scheduledActivity.getDayNumber());
+    }
+    
+    public void testGetDayNumberWithPeriod() throws Exception {
+        scheduledActivity.setPlannedActivity(null);
+        scheduledActivity.setRepetitionNumber(3);
+        assertEquals(null,scheduledActivity.getDayNumber());
+    }
+
     public void testChangeStateWithNoEvents() throws Exception {
+
+
+        
         scheduledActivity.changeState(new Canceled("A"));
         assertEquals("Wrong number of states in history", 1, scheduledActivity.getAllStates().size());
         assertTrue("Wrong curent state", scheduledActivity.getCurrentState() instanceof Canceled);

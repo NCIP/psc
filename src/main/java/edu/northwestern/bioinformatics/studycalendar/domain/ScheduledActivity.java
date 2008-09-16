@@ -103,10 +103,15 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     
     @Transient
     public DayNumber getDayNumber() {
-        int number;
-        number = ((plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*repetitionNumber));
-        dayNumber = DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
-        return dayNumber;
+        int number = 0;
+        if(repetitionNumber == null||plannedActivity == null) {
+            return null;
+        }
+        else {
+            number = ((plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*repetitionNumber));
+            dayNumber = DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
+            return dayNumber;
+       }
     }
     @Transient
     public boolean isConditionalState() {
