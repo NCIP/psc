@@ -38,12 +38,12 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
     * @param  plannedActivityId  the planned activity id that used to get plannedActivityLabels
     * @return      the plannedActivityLabels that corresponds to the plannedActivityId parameter
     */
-    public PlannedActivityLabel getByPlannedActivityId(Integer plannedActivityId) {
+    public List<PlannedActivityLabel> getByPlannedActivityId(Integer plannedActivityId) {
         List<PlannedActivityLabel> labels = getHibernateTemplate().find("from PlannedActivityLabel where planned_activity_id = ?", plannedActivityId);
         if (labels.size() == 0) {
             return null;
         }
-        return labels.get(0);
+        return labels;
     }
 
 

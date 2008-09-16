@@ -341,6 +341,20 @@ public class Fixtures {
         return population;
     }
 
+    public static Label createLabel(String name) {
+        Label label = new Label();
+        label.setName(name);
+        return label;
+    }
+
+    public static PlannedActivityLabel createPlannedActivityLabel(PlannedActivity activity, Label label, Integer repetitionNumber) {
+        PlannedActivityLabel paLabel = new PlannedActivityLabel();
+        paLabel.setPlannedActivity(activity);
+        paLabel.setLabel(label);
+        paLabel.setRepetitionNumber(repetitionNumber);
+        return paLabel;
+    }
+
     public static Amendment createAmendment(String name, Date date) {
         return createAmendment(name, date, true);
     }

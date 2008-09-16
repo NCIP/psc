@@ -1,0 +1,105 @@
+<dataset>
+    <PERIODS
+        id="-300"
+        study_segment_id="2"
+        version="0"
+        start_day="1"
+        name="Drug administration"
+        duration_quantity="1"
+        duration_unit="week"
+        repetitions="1"
+        />
+
+    <ACTIVITIES
+        id="-200"
+        version="0"
+        name="CT"
+        description="Not blank"
+        activity_type_id="3"
+        />
+
+    <ACTIVITIES
+        id="-201"
+        version="0"
+        name="BoneScan"
+        description="Descriptiton"
+        activity_type_id="4"
+        />
+
+    <STUDIES
+        id="-1"
+        assigned_identifier="ABC 1234"
+        />
+
+    <POPULATIONS
+        id="-45"
+        name="Pop"
+        abbreviation="P"
+        study_id="-1"
+        />
+
+    <PLANNED_ACTIVITIES
+        id="-12"
+        version="0"
+        period_id="-300"
+        activity_id="-200"
+        day="4"
+        condition="At least 37"
+        population_id="-45"
+        />
+
+    <PLANNED_ACTIVITIES
+        id="-13"
+        version="0"
+        period_id="-300"
+        activity_id="-201"
+        day="3"
+        condition="At least 37"
+        population_id="-45"
+        />
+
+    <LABELS
+        id="-15"
+        version="0"
+        name="Label1"
+        />
+
+    <LABELS
+        id="-17"
+        version="0"
+        name="Label2"
+        />
+
+    <PLANNED_ACTIVITY_LABELS
+        id="-29"
+        version="0"
+        planned_activity_id="-12"
+        rep_num="2"
+        label_id="-15"
+        />
+
+    <PLANNED_ACTIVITY_LABELS
+        id="-30"
+        version="0"
+        planned_activity_id="-12"
+        rep_num="2"
+        label_id="-17"
+        />
+
+    <PLANNED_ACTIVITY_LABELS
+        id="-31"
+        version="0"
+        planned_activity_id="-12"
+        rep_num="4"
+        label_id="-17"
+        />
+
+
+    <PLANNED_ACTIVITY_LABELS
+        id="-32"
+        version="0"
+        planned_activity_id="-13"
+        rep_num="4"
+        label_id="-15"
+        />
+</dataset>
