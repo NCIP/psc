@@ -23,8 +23,8 @@ public class WebSSOAuthoritiesPopulatorTest extends StudyCalendarTestCase {
     }
 
     public void testPopulation() throws Exception {
-        String expectedSsoUserId = "CAGRID_SSO_EMAIL_ID^jo@org.org$CAGRID_SSO_FIRST_NAME^Josephine$CAGRID_SSO_LAST_NAME^Miller$CAGRID_SSO_GRID_IDENTITY^ablablab";
-        String expectedAddress = "jo@org.org";
+        String expectedSsoUserId = "CAGRID_SSO_EMAIL_ID^jo@org.org$CAGRID_SSO_FIRST_NAME^Josephine$CAGRID_SSO_LAST_NAME^Miller$CAGRID_SSO_GRID_IDENTITY^/CN=ablablab";
+        String expectedAddress = "ablablab";    //CAGRID_SSO_GRID_IDENTITY has /CN=user_name format. For ex : /C=US/O=NCI/OU=CBIIT/OU=CCTS/OU=DEV/OU=Dorian IdP/CN=ccts@nih.gov
         expect(userDetailsService.loadUserByUsername(expectedAddress)).andReturn(
             new User(expectedAddress, "ignored", true, true, true, true, new Role[] { Role.STUDY_ADMIN }));
         replayMocks();
