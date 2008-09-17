@@ -29,8 +29,16 @@
     padding: 2px;
     margin: 0;
 }
+
+.notifications-card {
+    width: 30%;
+    margin-right:1em;
+    margin-bottom:1em;
+}
+
 .controls-card {
     margin-left: 32%;
+    margin-bottom:1em;
 }
 
 .subsection {

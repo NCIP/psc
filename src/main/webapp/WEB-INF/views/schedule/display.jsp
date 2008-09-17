@@ -5,6 +5,7 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
     <title>Subject Schedule</title>
@@ -173,7 +174,11 @@
             border-color: #600;
         }
         .ae h2 {
-            background-color: #911;
+            /*background-color: #911;*/
+        }
+
+        .float-right {
+            float:right;
         }
         .ae h3 {
             background-color: #c99;
@@ -331,11 +336,6 @@
             registerDismissControl();
         }
 
-//        Event.observe(window, "load", registerSelectStudySegmentHandlers);
-//        Event.observe(window, "load", registerSelectNextStudySegmentHandlers);
-//        Event.observe(window, "load", registerDefaultDateSetterHandlers);
-//        Event.observe(window, "load", registerHeaderCollapse);
-//        Event.observe(window, "load", registerDismissControl);
         Event.observe(window, "load", registerFunctions);
     
     </script>
@@ -428,29 +428,43 @@
                 <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerBaseUrl" cssClass="control">lab results</tags:externalLink>
             </c:if>
 
-            <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-                <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-                    <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
-                    <div class="content" style="display: none">
-                        <p>
-                            An adverse event was reported for this subject.  Please consider how
-                            this should impact future scheduling.
-                        </p>
-                        <h3>Details</h3>
-                        <p>${aeNote.message}</p>
-                        <p>
-                            <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                            <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                                View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>
-                            </c:if>
-                        </p>
-                    </div>
-                </div>
-            </c:forEach>
         </c:if>
     </div>
 
     <%--<c:if test="${configuration.}"--%>
+</div>
+
+<div class="card notifications-card">
+    <div class="header">Notifications</div>
+    <c:set var="rowCount" value="0"/>
+    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+        <c:set var="evenOddRow" value="row odd"/>
+        <c:if test="${rowCount mod 2 == 0}">
+            <c:set var="evenOddRow" value="row even"/>
+        </c:if>
+        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear ${evenOddRow}">
+            <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
+            <div id="contentDiv" class="content" style="display: none;" >
+                <c:set var="message" value="${aeNote.message}"/>
+                <p>
+                    <c:choose>
+                        <c:when test="${fn:startsWith(message, '/')}">
+                            <a href="<c:url value="${message}"/>"> More Information </a>
+                        </c:when>
+                        <c:otherwise>
+                            ${aeNote.message}
+                        </c:otherwise>
+                    </c:choose>
+                    <a class="control float-right" style="margin-left:5em;" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                    <%--<c:if test="${not empty configuration.map.caAERSBaseUrl}">--%>
+                        <%--View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>--%>
+                    <%--</c:if>--%>
+                </p>
+            </div>
+            <c:set var="rowCount" value="${rowCount +1}"/>
+        </div>
+    </c:forEach>
+
 </div>
 
 <c:if test="${assignment.endDateEpoch == null}">
