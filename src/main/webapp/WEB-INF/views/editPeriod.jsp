@@ -41,17 +41,23 @@
                 numberOfDaysInUnit =1;
             }
             totalDays = reps * duration * numberOfDaysInUnit;
-            Element.update("summary-days", totalDays + " day" + (totalDays != 1 ? "s" : ""))
-            highlightOdd("summary-days")
+            if (isCorrectInput()) {
+                Element.update("summary-beginning", " The configured period will last for ")
+                Element.update("summary-days", totalDays + " day" + (totalDays != 1 ? "s" : ""))
+                highlightOdd("summary-days")
 
-            if (duration > 1) {
-                Element.update("summary-day-range", "(" + startDay + " to " + (startDay + duration * reps - 1) + ")")
+                resetElement("periodError","");
+                if (duration > 1) {
+                    Element.update("summary-day-range", "(" + startDay + " to " + (startDay + duration * numberOfDaysInUnit * reps - 1) + ")")
+                } else {
+                    Element.update("summary-day-range", "(day " + startDay + ")")
+                }
             } else {
-                Element.update("summary-day-range", "(day " + startDay + ")")
+                disableSummaryFields()
             }
             highlightOdd("summary-day-range")
 
-            if (reps > 1 && duration >= 1) {
+            if (reps > 1 && duration >= 1 && isCorrectStartDay()) {
                 var sameDay = [startDay]
                 while (sameDay.length < reps) {
                     sameDay.push(sameDay.last() + duration * numberOfDaysInUnit)
@@ -72,6 +78,12 @@
             } else {
                 $("summary-repetitions").hide()
             }
+        }
+
+        function disableSummaryFields(){
+            Element.update("summary-beginning", "Incorrect input")
+            Element.update("summary-days", "")
+            Element.update("summary-day-range", "")
         }
 
         function highlightOdd(elt) {
@@ -265,14 +277,14 @@
                 </div>
                 <div class="value">
                     <form:input path="period.duration.quantity" size="3" maxlength="3"/>
-                    <form:select path="period.duration.unit">
+                    <form:select path="period.duration.unit">                                   
                         <form:options items="${durationUnits}"/>
                     </form:select>
                 </div>
             </div>
             <div class="row even">
                 <div class="label">
-                    <form:label path="period.repetitions">Repetitions</form:label>
+                    <form:label path="period.repetitions">Occurrences</form:label>
                 </div>
                 <div class="tip" id="repetitionsText">
                     The number of times the days of this period will occur.
@@ -283,9 +295,10 @@
             </div>
             <div class="row odd" id="summary">
                 <div class="label">Summary</div>
-                <div class="value">
-                    The configured period will last for <span id="summary-days">1 day</span>
-                    <span id="summary-day-range">(day 1)</span>.
+                <div class="value" id="summaryValue">
+                   <span id="summary-beginning"> The configured period will last for </span>
+                   <span id="summary-days">1 day</span>
+                   <span id="summary-day-range">(day 1)</span>.
             <span id="summary-repetitions">
                 It will have the same events on days <span id="summary-event-days"></span>.
             </span>
