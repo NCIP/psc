@@ -10,7 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
@@ -30,13 +32,14 @@ import java.util.Map;
  * @author John Dzak
  */
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
-public class ScheduledActivitiesReportController extends AbstractCommandController {
+public class ScheduledActivitiesReportController extends PscAbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
     private ControllerTools controllerTools;
     private UserDao userDao;
 
     public ScheduledActivitiesReportController() {
         setCommandClass(ScheduledActivitiesReportCommand.class);
+        setCrumb(new DefaultCrumb("Report"));
     }
 
     protected Object getCommand(HttpServletRequest request) throws Exception {
@@ -55,7 +58,8 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         binder.registerCustomEditor(User.class, "filters.subjectCoordinator", new DaoBasedEditor(userDao));
     }
 
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+    @Override
+    protected ModelAndView handle(Object oCommand, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ScheduledActivitiesReportCommand command = (ScheduledActivitiesReportCommand) oCommand;
         return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, search(errors, command)));
     }
