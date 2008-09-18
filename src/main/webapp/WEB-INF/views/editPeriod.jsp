@@ -57,7 +57,7 @@
             }
             highlightOdd("summary-day-range")
 
-            if (reps > 1 && duration >= 1 && isCorrectStartDay()) {
+            if (reps > 1 && duration >= 1 && isCorrectInput()) {
                 var sameDay = [startDay]
                 while (sameDay.length < reps) {
                     sameDay.push(sameDay.last() + duration * numberOfDaysInUnit)
@@ -108,7 +108,7 @@
         function isCorrectStartDay() {
             var startDay = document.getElementById("period.startDay").value;
             var isDataCorrect = true;
-            if(startDay.length <= 0 || (isNaN(startDay*1))) {
+            if(startDay.length <= 0 || startDay.indexOf(".")>0 || startDay.indexOf(",") > 0 || (isNaN(startDay*1))) {
                 isDataCorrect = false;
                 resetElement("periodError",
                   "ERROR: Start Day must be positive, negative, or zero.", "black");
@@ -119,7 +119,7 @@
         function isCorrectDuration() {
             var duration = document.getElementById("period.duration.quantity").value;
             var isDataCorrect = true;
-            if (duration.length <=0 || ((isNaN(duration*1)) || (duration <=0))) {
+            if (duration.length <=0 ||duration.indexOf(".")>0 || duration.indexOf(",") > 0 || ((isNaN(duration*1)) || (duration <=0))) {
                 isDataCorrect = false;
                 resetElement("periodError",
                   "ERROR: Duration must be a positive number.", "black");
@@ -130,7 +130,8 @@
         function isCorrectRepetitions() {
             var repetitions = document.getElementById("period.repetitions").value;
             var isDataCorrect = true;
-            if (repetitions.length <=0 || ((isNaN(repetitions*1)) || (repetitions <=0))) {
+            if (repetitions.length <=0 || repetitions.indexOf(".")>0 || repetitions.indexOf(",") > 0
+                    ||((isNaN(repetitions*1)) || (repetitions <=0))) {
                 isDataCorrect = false;
                 resetElement("periodError",
                                   "ERROR: Repetitions must be a positive number.", "black");
