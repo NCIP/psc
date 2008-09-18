@@ -120,12 +120,7 @@
                 <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true"/>
                 <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"  sortable="true"/>
                 <display:column title="Scheduled Date"  sortable="true">
-                    <c:if test="${row.scheduledActivity.currentState.mode.name == 'canceled'}">
-                        -
-                    </c:if>
-                    <c:if test="${row.scheduledActivity.currentState.mode.name != 'canceled'}">
                         <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
-                    </c:if>
                 </display:column>
                 <display:column title="Ideal Date"  sortable="true">
                     <tags:formatDate value="${row.scheduledActivity.idealDate}"/>

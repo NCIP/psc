@@ -58,9 +58,9 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeGetCanceled() throws Exception {
-        expectGetStateFields(CANCELED, false);
+        expectGetStateFields(CANCELED, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(Canceled.class, REASON, state);
+        assertScheduledActivityState(Canceled.class, REASON, DATE, state);
     }
 
     public void testNullSafeGetConditional() throws Exception {
@@ -70,9 +70,9 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeGetNotAvailable() throws Exception {
-        expectGetStateFields(NOT_APPLICABLE, false);
+        expectGetStateFields(NOT_APPLICABLE, true);
         ScheduledActivityState state = doNullSafeGet();
-        assertScheduledActivityState(NotApplicable.class, REASON, state);
+        assertScheduledActivityState(NotApplicable.class, REASON, DATE, state);
     }
     // TODO (requires changes to ControlledVocabularyObjectType)
 //    public void testNullSafeGetNull() throws Exception {
@@ -101,7 +101,7 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
         assertEquals("Wrong type", expectedType, actual.getClass());
         assertEquals("Wrong reason", expectedReason, actual.getReason());
         if (expectedDate != null) {
-            assertEquals("Wrong date", expectedDate, ((DatedScheduledActivityState) actual).getDate());
+            assertEquals("Wrong date", expectedDate, actual.getDate());
         }
     }
 
@@ -116,8 +116,8 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeSetCanceled() throws Exception {
-        expectSetStateFields(CANCELED, 7, false);
-        doNullSafeSet(new Canceled(REASON), 7);
+        expectSetStateFields(CANCELED, 7, true);
+        doNullSafeSet(new Canceled(REASON, DATE), 7);
     }
 
     public void testNullSafeSetConditional() throws Exception {
@@ -126,8 +126,8 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeSetNotAvailable() throws Exception {
-        expectSetStateFields(NOT_APPLICABLE, 6, false);
-        doNullSafeSet(new NotApplicable(REASON), 6);
+        expectSetStateFields(NOT_APPLICABLE, 6, true);
+        doNullSafeSet(new NotApplicable(REASON, DATE), 6);
     }
 
     private void doNullSafeSet(ScheduledActivityState expectedState, int index) throws SQLException {

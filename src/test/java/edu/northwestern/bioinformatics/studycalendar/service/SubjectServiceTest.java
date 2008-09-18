@@ -280,7 +280,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 2,
             new Occurred(null, DateUtils.createDate(2005, AUGUST, 4))));
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, AUGUST, 3,
-            new Canceled(null)));
+            new Canceled(null,DateUtils.createDate(2005, AUGUST, 4))));
 
         calendar.addStudySegment(existingStudySegment);
 

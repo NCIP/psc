@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
@@ -60,7 +59,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
         ScheduledActivityState currentState = event.getCurrentState();
         assertTrue(currentState instanceof Occurred);
-        assertDayOfDate("Wrong current state date", 2006, Calendar.OCTOBER, 25, ((DatedScheduledActivityState) currentState).getDate());
+        assertDayOfDate("Wrong current state date", 2006, Calendar.OCTOBER, 25, currentState.getDate());
         assertEquals("Wrong current state mode", ScheduledActivityMode.OCCURRED, currentState.getMode());
         assertEquals("Wrong current state reason", "Success", currentState.getReason());
 
@@ -75,7 +74,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
     public void testChangeStateAndSave() throws Exception {
         {
             ScheduledCalendar cal = getDao().getById(-20);
-            cal.getScheduledStudySegments().get(0).getActivities().get(0).changeState(new Canceled("For great victory"));
+            cal.getScheduledStudySegments().get(0).getActivities().get(0).changeState(new Canceled("For great victory",DateUtils.createDate(2006, Calendar.OCTOBER, 25)));
             getDao().save(cal);
         }
 
@@ -100,7 +99,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong ID", expectedId, actualState.getId());
         assertEquals("Wrong mode", expectedMode, actualState.getMode());
         assertEquals("Wrong reason", expectedReason, actualState.getReason());
-        if (expectedDate != null) assertSameDay("Wrong date", expectedDate, ((DatedScheduledActivityState)actualState).getDate());
+        if (expectedDate != null) assertSameDay("Wrong date", expectedDate, actualState.getDate());
     }
 
     public void testSave() throws Exception {
@@ -156,7 +155,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
         ScheduledActivityState currentState = loadedEvent.getCurrentState();
         assertTrue(currentState instanceof Occurred);
-        assertSameDay("Wrong current state date", expectedActualDate, ((DatedScheduledActivityState) currentState).getDate());
+        assertSameDay("Wrong current state date", expectedActualDate, currentState.getDate());
         assertEquals("Wrong current state mode", expectedMode, currentState.getMode());
         assertEquals("Wrong current state reason", expectedReason, currentState.getReason());
 

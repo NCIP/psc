@@ -33,7 +33,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         scheduledActivity.setIdealDate(DateUtils.createDate(2006, Calendar.AUGUST, 1));
         scheduledActivity.changeState(new Scheduled(null, DateUtils.createDate(2006, Calendar.AUGUST, 4)));
         scheduledActivity.changeState(new Scheduled(null, expected));
-        scheduledActivity.changeState(new Canceled());
+        scheduledActivity.changeState(new Canceled(null, expected));
         assertEquals(expected, scheduledActivity.getActualDate());
     }
 
@@ -60,7 +60,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
 
         
-        scheduledActivity.changeState(new Canceled("A"));
+        scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
         assertEquals("Wrong number of states in history", 1, scheduledActivity.getAllStates().size());
         assertTrue("Wrong curent state", scheduledActivity.getCurrentState() instanceof Canceled);
         assertEquals("Wrong curent state", "A", scheduledActivity.getCurrentState().getReason());
@@ -68,8 +68,8 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
     }
 
     public void testChangeStateWithCurrentEventOnly() throws Exception {
-        scheduledActivity.changeState(new Canceled("A"));
-        scheduledActivity.changeState(new Canceled("B"));
+        scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(new Canceled("B",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
         assertEquals("Wrong number of states in history", 2, scheduledActivity.getAllStates().size());
         assertEquals("Wrong current state", "B", scheduledActivity.getCurrentState().getReason());
         assertEquals("Wrong number of previous states", 1, scheduledActivity.getPreviousStates().size());
@@ -77,9 +77,9 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
     }
     
     public void testChangeStateWithExistingHistory() throws Exception {
-        scheduledActivity.changeState(new Canceled("A"));
-        scheduledActivity.changeState(new Canceled("B"));
-        scheduledActivity.changeState(new Canceled("C"));
+        scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(new Canceled("B",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(new Canceled("C",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
         assertEquals("Wrong number of states in history", 3, scheduledActivity.getAllStates().size());
         assertEquals("Wrong current state", "C", scheduledActivity.getCurrentState().getReason());
         assertEquals("Wrong number of previous states", 2, scheduledActivity.getPreviousStates().size());
@@ -93,16 +93,16 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
     public void testGetAllWithCurrentOnly() throws Exception {
         scheduledActivity.setPreviousStates(null); // paranoia
-        scheduledActivity.changeState(new Canceled("A"));
+        scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
         List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(1, all.size());
         assertEquals("A", all.get(0).getReason());
     }
     
     public void testGetAllWithHistory() throws Exception {
-        scheduledActivity.changeState(new Canceled("A"));
-        scheduledActivity.changeState(new Canceled("B"));
-        scheduledActivity.changeState(new Canceled("C"));
+        scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(new Canceled("B",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
+        scheduledActivity.changeState(new Canceled("C",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
 
         List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(3, all.size());
@@ -118,10 +118,10 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         calendar.setAssignment(assignment);
         calendar.addStudySegment(new ScheduledStudySegment());
         calendar.getScheduledStudySegments().get(0).addEvent(scheduledActivity);
-        scheduledActivity.changeState(new Canceled());
+        scheduledActivity.changeState(new Canceled("Canceled",DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
         assignment.setEndDateEpoch(DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
         
-        scheduledActivity.changeState(new Occurred());
+        //scheduledActivity.changeState(new Occurred());
         assertEquals("Wrong states size", 2, scheduledActivity.getAllStates().size());
         assertEquals("Wrong event state", ScheduledActivityMode.CANCELED, scheduledActivity.getCurrentState().getMode());
     }

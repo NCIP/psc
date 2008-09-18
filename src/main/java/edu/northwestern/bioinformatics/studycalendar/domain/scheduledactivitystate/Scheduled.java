@@ -16,7 +16,7 @@ import org.hibernate.annotations.Parameter;
  */
 @Entity
 @DiscriminatorValue(value = "1")
-public class Scheduled extends DatedScheduledActivityState {
+public class Scheduled extends ScheduledActivityState {
     public Scheduled() { }
 
     public Scheduled(String reason, Date date) {

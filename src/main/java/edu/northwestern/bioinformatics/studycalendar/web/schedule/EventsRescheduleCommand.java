@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +64,8 @@ public class EventsRescheduleCommand {
     private void changeState(ScheduledActivity event) {
         ScheduledActivityState newState = event.getCurrentState().getMode().createStateInstance();
         newState.setReason(createReason());
-        if (newState instanceof DatedScheduledActivityState) {
-            ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
-        }
+        newState.setDate(createDate(event.getActualDate()));
+
         event.changeState(newState);
     }
 

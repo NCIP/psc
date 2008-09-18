@@ -90,7 +90,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForCanceledScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new Canceled("DC"));
+            new Canceled("DC",DateTools.createDate(2004, Calendar.APRIL, 24)));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);
@@ -101,7 +101,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
     public void testReviseDateForNotApplicableScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
-            new NotApplicable("DC"));
+            new NotApplicable("DC",DateTools.createDate(2004, Calendar.APRIL, 24)));
         scheduledStudySegment.addEvent(event);
 
         service.reviseDate(event, -7, amendment);

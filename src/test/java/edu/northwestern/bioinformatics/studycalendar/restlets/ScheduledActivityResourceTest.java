@@ -139,7 +139,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
         StringBuffer expected = new StringBuffer();
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel");
+        ScheduledActivityState scheduledActivityState = new Canceled("cancel",null);
 
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         PlannedActivity plannedActivity = scheduledActivity.getPlannedActivity();
@@ -167,7 +167,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     public void testPostInvalidXml() throws Exception {
         StringBuffer expected = new StringBuffer();
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel");
+        ScheduledActivityState scheduledActivityState = new Canceled("cancel",null);
 
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 //        expected.append("<scheduled-activities");

@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import org.apache.commons.lang.StringUtils;
@@ -212,8 +212,8 @@ public class SubjectService {
         event.setRepetitionNumber(repetitionNumber);
         event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetStudySegment.getStartDate()));
 
-        DatedScheduledActivityState initialState
-            = (DatedScheduledActivityState) plannedActivity.getInitialScheduledMode().createStateInstance();
+        ScheduledActivityState initialState
+            =  plannedActivity.getInitialScheduledMode().createStateInstance();
         initialState.setReason(reason);
         initialState.setDate(event.getIdealDate());
         event.changeState(initialState);
@@ -356,9 +356,9 @@ public class SubjectService {
 
         for(ScheduledActivity event: upcomingScheduledActivities) {
             if (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()) {
-                event.changeState(new Canceled("Off Study"));
+                event.changeState(new Canceled("Off Study",event.getCurrentState().getDate()));
             } else if (ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode()) {
-                event.changeState(new NotApplicable("Off Study"));
+                event.changeState(new NotApplicable("Off Study",event.getCurrentState().getDate()));
             }
         }
 

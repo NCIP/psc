@@ -9,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
@@ -61,7 +60,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         ScheduledActivityState created = command.createState();
         assertTrue(created instanceof Scheduled);
         assertEquals(NEW_REASON, created.getReason());
-        assertEquals(NEW_DATE, ((DatedScheduledActivityState) created).getDate());
+        assertEquals(NEW_DATE, (created).getDate());
     }
     
     public void testCreateOccurredState() throws Exception {
@@ -71,7 +70,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         ScheduledActivityState created = command.createState();
         assertTrue(created instanceof Occurred);
         assertEquals(NEW_REASON, created.getReason());
-        assertEquals(NEW_DATE, ((DatedScheduledActivityState) created).getDate());
+        assertEquals(NEW_DATE, (created).getDate());
     }
 
     public void testChangeState() throws Exception {

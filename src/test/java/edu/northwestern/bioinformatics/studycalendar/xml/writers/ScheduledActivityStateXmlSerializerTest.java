@@ -108,7 +108,7 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
     }
 
 
-    private ScheduledActivityState setDateAttributes(DatedScheduledActivityState state) {
+    private ScheduledActivityState setDateAttributes(ScheduledActivityState state) {
         state.setDate(DateUtils.createDate(2008, JANUARY, 5));
         return setBaseAttributes(state);
     }

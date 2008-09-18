@@ -3,17 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivityst
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.GenericGenerator;
@@ -35,12 +30,16 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class ScheduledActivityState extends AbstractMutableDomainObject implements Cloneable, Serializable {
     private String reason;
+    private Date date;
 
     protected ScheduledActivityState() { }
 
-    protected ScheduledActivityState(String reason) {
+    protected ScheduledActivityState(String reason, Date date) {
         this.reason = reason;
+        this.date = date;
     }
+
+
 
     ////// LOGIC
 
@@ -53,7 +52,17 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
         return sb.toString();
     }
 
-    protected void appendSummaryMiddle(StringBuilder sb) { }
+    @Transient
+    protected void appendSummaryMiddle(StringBuilder sb) {
+        sb.append(' ');
+        appendPreposition(sb);
+        sb.append(' ');
+        // TODO: centrally configure date format
+        if (getDate() != null) sb.append(new SimpleDateFormat("M/d/yyyy").format(getDate()));
+    }
+
+    protected abstract void appendPreposition(StringBuilder sb);
+
 
     @Transient
     public List<Class<? extends ScheduledActivityState>> getAvailableConditionalStates(boolean conditional) {
@@ -81,6 +90,15 @@ public abstract class ScheduledActivityState extends AbstractMutableDomainObject
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+    @Column(name = "actual_date")
+    @Temporal(TemporalType.DATE)
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     ////// OBJECT METHODS

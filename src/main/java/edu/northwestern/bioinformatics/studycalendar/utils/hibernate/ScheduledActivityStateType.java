@@ -11,7 +11,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -95,9 +94,8 @@ public class ScheduledActivityStateType implements CompositeUserType {
         if (loaded == null) return null;
 
         loaded.setReason(rs.getString(names[REASON_INDEX]));
-        if (loaded instanceof DatedScheduledActivityState) {
-            ((DatedScheduledActivityState) loaded).setDate(rs.getDate(names[DATE_INDEX]));
-        }
+        loaded.setDate(rs.getDate(names[DATE_INDEX]));
+
         return loaded;
     }
 
@@ -109,10 +107,9 @@ public class ScheduledActivityStateType implements CompositeUserType {
         if (toSet != null) {
             mode = toSet.getMode();
             reason = toSet.getReason();
-            if (toSet instanceof DatedScheduledActivityState) {
-                Date dateToSet = ((DatedScheduledActivityState) toSet).getDate();
+
+                Date dateToSet = toSet.getDate();
                 date = dateToSet == null ? null : new java.sql.Date(dateToSet.getTime());
-            }
         }
 
         HibernateTypeUtils.logBind(log, index + DATE_INDEX, date);

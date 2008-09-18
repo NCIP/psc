@@ -18,7 +18,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @DiscriminatorValue(value = "2")
-public class Occurred extends DatedScheduledActivityState {
+public class Occurred extends ScheduledActivityState {
     public Occurred() { }
 
     public Occurred(String reason, Date date) {

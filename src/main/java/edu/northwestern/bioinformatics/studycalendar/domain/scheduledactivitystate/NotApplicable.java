@@ -11,6 +11,7 @@ import javax.persistence.Transient;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
 import java.util.List;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -21,20 +22,14 @@ public class NotApplicable extends ScheduledActivityState {
 
     public NotApplicable() { }
 
-    public NotApplicable(String reason) {
-        super(reason);
+    public NotApplicable(String reason,Date date) {
+        super(reason,date);
     }
 
     ////// LOGIC
 
-    @Override
-    @Transient
-    public String getTextSummary() {
-        StringBuilder sb = new StringBuilder().append(StringUtils.capitalize(getMode().getName()));
-        if (getReason() != null) {
-            sb.append(" - ").append(getReason());
-        }
-        return sb.toString();
+    protected void appendPreposition(StringBuilder sb) {
+        sb.append("on");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
@@ -23,9 +22,7 @@ public abstract class AbstractScheduledActivityStateXmlSerializer extends Abstra
     public Element createElement(ScheduledActivityState state) {
         Element elt = element().create();
         SCHEDULED_ACTIVITY_STATE_REASON.addTo(elt, state.getReason());
-        if (state instanceof DatedScheduledActivityState) {
-            SCHEDULED_ACTIVITY_STATE_DATE.addTo(elt, ((DatedScheduledActivityState) state).getDate());
-        }
+        SCHEDULED_ACTIVITY_STATE_DATE.addTo(elt, state.getDate());
 
         if (ScheduledActivityMode.SCHEDULED.equals(state.getMode())) {
             SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, SCHEDULED);

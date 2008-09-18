@@ -43,8 +43,8 @@ public class CurrentScheduledActivityStateXmlSerializer  extends AbstractSchedul
             return scheduledActivityState;
         }
 
-        if (date != null && scheduledActivityState instanceof DatedScheduledActivityState) {
-            ((DatedScheduledActivityState) scheduledActivityState).setDate(date);
+        if (date != null) {
+            scheduledActivityState.setDate(date);
         }
         if (reason != null && StringUtils.isNotEmpty(reason)) {
             scheduledActivityState.setReason(reason);

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
@@ -90,11 +89,10 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
         List<ScheduledActivityState> states = getAllStates();
         Collections.reverse(states);
         for (ScheduledActivityState state : states) {
-            if (state instanceof DatedScheduledActivityState) {
-                actualDate = ((DatedScheduledActivityState) state).getDate();
-                break;
-            }
+             actualDate = state.getDate();
+             break;
         }
+        
         if (actualDate == null) {
             actualDate = getIdealDate();
         }

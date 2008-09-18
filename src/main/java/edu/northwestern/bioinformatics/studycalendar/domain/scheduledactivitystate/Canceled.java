@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -20,17 +21,10 @@ public class Canceled extends ScheduledActivityState {
 
     public Canceled() { }
 
-    public Canceled(String reason) { super(reason); }
+    public Canceled(String reason,Date date) { super(reason, date); }
 
-    ////// LOGIC
-
-    @Transient
-    public String getTextSummary() {
-        StringBuilder sb = new StringBuilder().append(StringUtils.capitalize(getMode().getName()));
-        if (getReason() != null) {
-            sb.append(" - ").append(getReason());
-        }
-        return sb.toString();
+    protected void appendPreposition(StringBuilder sb) {
+        sb.append("for");
     }
 
     @Transient

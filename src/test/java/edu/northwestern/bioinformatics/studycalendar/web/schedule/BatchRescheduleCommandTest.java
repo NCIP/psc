@@ -93,14 +93,14 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.SCHEDULED, prevSched0.getCurrentState().getMode());
         assertEquals("Wrong new state for previously scheduled event", "Batch change: Vacation", prevSched0.getCurrentState().getReason());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 11,
-            ((DatedScheduledActivityState) prevSched0.getCurrentState()).getDate());
+            ( prevSched0.getCurrentState()).getDate());
 
         ScheduledActivity prevSched1 = calendar.getScheduledStudySegments().get(1).getActivities().get(2);
         assertEquals("New state not added to scheduled event in studySegment 1", 2, prevSched1.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.SCHEDULED, prevSched1.getCurrentState().getMode());
         assertEquals("Wrong new state for previously scheduled event", "Batch change: Vacation", prevSched1.getCurrentState().getReason());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 21,
-            ((DatedScheduledActivityState) prevSched1.getCurrentState()).getDate());
+            ( prevSched1.getCurrentState()).getDate());
     }
 
     public void testApplyOccured() throws Exception {
@@ -117,7 +117,7 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("New state not added to scheduled event in studySegment 0", 2, prevSched0.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.OCCURRED, prevSched0.getCurrentState().getMode());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 4,
-            ((DatedScheduledActivityState) prevSched0.getCurrentState()).getDate());
+            (prevSched0.getCurrentState()).getDate());
         ScheduledActivity prevSched1 = calendar.getScheduledStudySegments().get(1).getActivities().get(0);
         assertEquals("New state added to scheduled event in studySegment 1", 2, prevSched1.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.CANCELED, prevSched1.getCurrentState().getMode());

@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue(value = "4")
-public class Conditional extends DatedScheduledActivityState {
+public class Conditional extends ScheduledActivityState {
     public Conditional() { }
 
     public Conditional(String reason, Date date) {

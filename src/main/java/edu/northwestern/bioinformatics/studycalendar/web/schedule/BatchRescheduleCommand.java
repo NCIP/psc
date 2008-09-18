@@ -52,10 +52,7 @@ public class BatchRescheduleCommand {
             newState = getNewMode().createStateInstance();
         }
         newState.setReason(createReason());
-
-        if (newState instanceof DatedScheduledActivityState) {
-            ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
-        }
+        newState.setDate(createDate(event.getActualDate()));
 
         if (event.getCurrentState() instanceof Conditional && newState instanceof Canceled) {
             event.changeState(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance());
