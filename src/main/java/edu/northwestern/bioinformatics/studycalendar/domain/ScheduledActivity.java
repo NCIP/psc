@@ -5,19 +5,21 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,6 +29,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -45,6 +49,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     private String notes;
     private ScheduledActivityState currentState;
     private List<ScheduledActivityState> previousStates = new LinkedList<ScheduledActivityState>();
+    private SortedSet<String> labels = new TreeSet<String>();
     private String details;
     private Activity activity;
     private Amendment sourceAmendment;
@@ -228,6 +233,18 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
         this.sourceAmendment = sourceAmendment;
     }
 
+    @CollectionOfElements
+    @Sort(type = SortType.COMPARATOR, comparator = LabelComparator.class)
+    @JoinTable(name = "scheduled_activity_labels", joinColumns = @JoinColumn(name = "scheduled_activity_id"))
+    @Column(name = "label", nullable = false)
+    public SortedSet<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(SortedSet<String> labels) {
+        this.labels = labels;
+    }
+
     /**
      * The repetition of the source period from which this event was created.
      * Zero-based.
@@ -259,6 +276,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
                 sb.append("; plannedActivity=").append(getPlannedActivity().getId());
             }
             sb.append("; repetition=").append(getRepetitionNumber())
+              .append("; labels=").append(getLabels())
               .append(']');
         return sb.toString();
     }

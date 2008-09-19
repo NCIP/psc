@@ -48,6 +48,9 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEquals("Wrong number of previous states", 3, loaded.getPreviousStates().size());
 
         assertEquals("Wrong details", "Nice Details!!", loaded.getDetails());
+        assertEquals("Wrong number of labels", 2, loaded.getLabels().size());
+        assertEquals("Wrong first label", "clean-only", loaded.getLabels().first());
+        assertEquals("Wrong second label", "soc", loaded.getLabels().last());
     }
     
     public void testGetScheduledActivitiesFromPlannedActivity() throws Exception {
@@ -104,5 +107,21 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         for (int expectedId : expectedIds) {
             assertContains("Missing event", actualIds, expectedId);
         }
+    }
+    
+    public void testSaveUpdatesLabels() throws Exception {
+        {
+            ScheduledActivity loaded = getDao().getById(-10);
+            loaded.getLabels().remove("soc");
+            loaded.getLabels().add("research");
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledActivity reloaded = getDao().getById(-10);
+        assertEquals("Wrong number of labels", 2, reloaded.getLabels().size());
+        assertEquals("Wrong first label", "clean-only", reloaded.getLabels().first());
+        assertEquals("Wrong second label", "research", reloaded.getLabels().last());
     }
 }

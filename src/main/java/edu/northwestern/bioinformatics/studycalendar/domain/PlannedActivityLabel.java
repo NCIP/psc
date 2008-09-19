@@ -28,7 +28,7 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
 {
     private Comparator<PlannedActivityLabel> COMPARATOR
         = new BeanPropertyListComparator<PlannedActivityLabel>().
-            addProperty("label", labelOrder()).addProperty("repetitionNumber");
+            addProperty("label", LabelComparator.INSTANCE).addProperty("repetitionNumber");
 
     private PlannedActivity plannedActivity;
     private Integer repetitionNumber;
@@ -40,10 +40,6 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
     @Transient
     public boolean isAllRepetitions() {
         return getRepetitionNumber() == null;
-    }
-
-    public static Comparator<String> labelOrder() {
-        return String.CASE_INSENSITIVE_ORDER;
     }
 
     private static String normalizeLabel(String input) {

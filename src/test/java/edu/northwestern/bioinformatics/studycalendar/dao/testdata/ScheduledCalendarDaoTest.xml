@@ -91,6 +91,14 @@
         actual_date="2006-10-25"
         reason="Called to reschedule"
         />
+    <SCHEDULED_ACTIVITY_LABELS
+        label="soc"
+        scheduled_activity_id="-10"
+        />
+    <SCHEDULED_ACTIVITY_LABELS
+        label="clean-only"
+        scheduled_activity_id="-10"
+        />
     <SCHEDULED_ACTIVITIES
         id="-15"
         scheduled_study_segment_id="-22"
