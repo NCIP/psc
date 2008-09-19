@@ -442,39 +442,40 @@
 
     <%--<c:if test="${configuration.}"--%>
 </div>
-
-<div class="card notifications-card">
-    <div class="header">Notifications</div>
-    <c:set var="rowCount" value="0"/>
-    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-        <c:set var="evenOddRow" value="row odd"/>
-        <c:if test="${rowCount mod 2 == 0}">
-            <c:set var="evenOddRow" value="row even"/>
-        </c:if>
-        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear ${evenOddRow}">
-            <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
-            <div id="contentDiv" class="content" style="display: none;" >
-                <c:set var="message" value="${aeNote.message}"/>
-                <p>
-                    <c:choose>
-                        <c:when test="${fn:startsWith(message, '/')}">
-                            <a href="<c:url value="${message}"/>"> More Information </a>
-                        </c:when>
-                        <c:otherwise>
-                            ${aeNote.message}
-                        </c:otherwise>
-                    </c:choose>
-                    <a class="control float-right" style="margin-left:5em;" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                    <%--<c:if test="${not empty configuration.map.caAERSBaseUrl}">--%>
-                        <%--View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>--%>
-                    <%--</c:if>--%>
-                </p>
+<c:if test="${not empty assignment.currentAeNotifications}">
+    <div class="card notifications-card">
+        <div class="header">Notifications</div>
+        <c:set var="rowCount" value="0"/>
+        <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+            <c:set var="evenOddRow" value="row odd"/>
+            <c:if test="${rowCount mod 2 == 0}">
+                <c:set var="evenOddRow" value="row even"/>
+            </c:if>
+            <div id="sae-${aeNote.id}" class="section ae collapsible autoclear ${evenOddRow}">
+                <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
+                <div id="contentDiv" class="content" style="display: none;" >
+                    <c:set var="message" value="${aeNote.message}"/>
+                    <p>
+                        <c:choose>
+                            <c:when test="${fn:startsWith(message, '/')}">
+                                <a href="<c:url value="${message}"/>"> More Information </a>
+                            </c:when>
+                            <c:otherwise>
+                                ${aeNote.message}
+                            </c:otherwise>
+                        </c:choose>
+                        <a class="control float-right" style="margin-left:5em;" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                        <%--<c:if test="${not empty configuration.map.caAERSBaseUrl}">--%>
+                            <%--View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>--%>
+                        <%--</c:if>--%>
+                    </p>
+                </div>
+                <c:set var="rowCount" value="${rowCount +1}"/>
             </div>
-            <c:set var="rowCount" value="${rowCount +1}"/>
-        </div>
-    </c:forEach>
+        </c:forEach>
 
-</div>
+    </div>
+</c:if>
 
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box title="Modify entire schedule">
