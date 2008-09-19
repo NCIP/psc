@@ -4,15 +4,17 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
@@ -40,7 +42,8 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
             epochDao = registerDaoMockFor(EpochDao.class),
             studySegmentDao = registerDaoMockFor(StudySegmentDao.class),
             registerDaoMockFor(PeriodDao.class),
-            registerDaoMockFor(PlannedActivityDao.class)
+            registerDaoMockFor(PlannedActivityDao.class),
+            registerDaoMockFor(PlannedActivityLabelDao.class)
         );
         TemplateService templateService = registerMockFor(TemplateService.class);
 
@@ -152,6 +155,13 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("day", "4", "18"));
         assertNotNull(actual);
         assertEquals(ChangePlannedActivityDayMutator.class, actual.getClass());
+    }
+
+    public void testCreatePlannedActivityAddLabelMutator() throws Exception {
+        Mutator actual = factory.createMutator(new PlannedActivity(), Add.create(Fixtures.createPlannedActivityLabel("elab")));
+        assertNotNull(actual);
+        // This will work until the schedule is involved
+        assertEquals(CollectionAddMutator.class, actual.getClass());
     }
 
     public void testCreateReorderMutator() throws Exception {

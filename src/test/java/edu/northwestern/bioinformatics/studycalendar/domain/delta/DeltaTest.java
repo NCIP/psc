@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
@@ -37,6 +37,10 @@ public class DeltaTest extends StudyCalendarTestCase {
 
     public void testDeltaForPlannedActivity() throws Exception {
         assertDeltaFor(new PlannedActivity(), PlannedActivityDelta.class);
+    }
+
+    public void testDeltaForPlannedActivityLabel() throws Exception {
+        assertDeltaFor(new PlannedActivityLabel(), PlannedActivityLabelDelta.class);
     }
 
     public void testAddChange() throws Exception {
@@ -86,7 +90,7 @@ public class DeltaTest extends StudyCalendarTestCase {
         }
     }
 
-    private static <T extends PlanTreeNode<?>> void assertDeltaFor(T node, Class<?> expectedClass) {
+    private static <T extends Changeable> void assertDeltaFor(T node, Class<?> expectedClass) {
         Delta<T> actual = Delta.createDeltaFor(node);
         assertNotNull(actual);
         assertEquals("Wrong class", expectedClass, actual.getClass());

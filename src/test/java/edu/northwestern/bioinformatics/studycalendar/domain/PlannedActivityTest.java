@@ -1,9 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 public class PlannedActivityTest extends StudyCalendarTestCase {
     private PlannedActivity pa0, pa1;
@@ -98,7 +103,7 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         PlannedActivityLabel expected = new PlannedActivityLabel();
         pa0.addPlannedActivityLabel(expected);
         assertEquals("Wrong number of labels", 1, pa0.getPlannedActivityLabels().size());
-        assertSame("Wrong label added", expected, pa0.getPlannedActivityLabels().get(0));
+        assertSame("Wrong label added", expected, pa0.getPlannedActivityLabels().iterator().next());
         assertSame("Reverse relationship not preserved", pa0, expected.getPlannedActivity());
     }
 
@@ -109,18 +114,37 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
     public void testGetLabels() throws Exception {
         labelPlannedActivity(pa0, "foo");
         labelPlannedActivity(pa0, "bar");
-        List<Label> actual = pa0.getLabels();
+        Set<String> actual = pa0.getLabels();
         assertEquals("Wrong number of labels returned", 2, actual.size());
-        assertEquals("Wrong first label", "foo", actual.get(0).getName());
-        assertEquals("Wrong second label", "bar", actual.get(1).getName());
+        Iterator<String> it = actual.iterator();
+        assertEquals("Wrong first label", "bar", it.next());
+        assertEquals("Wrong second label", "foo", it.next());
     }
 
-    public void testGetLabelsText() throws Exception {
-        labelPlannedActivity(pa0, "foo");
+    public void testGetLabelsForRepetition() throws Exception {
+        Period p = createPeriod(5, 5, 3);
+        p.addPlannedActivity(pa0);
+
         labelPlannedActivity(pa0, "bar");
-        List<String> actual = pa0.getLabelNames();
-        assertEquals("Wrong number of labels returned", 2, actual.size());
-        assertEquals("Wrong first label", "foo", actual.get(0));
-        assertEquals("Wrong second label", "bar", actual.get(1));
+        labelPlannedActivity(pa0, 2, "foo", "baz");
+        labelPlannedActivity(pa0, 0, "quux");
+
+        List<SortedSet<String>> actual = pa0.getLabelsByRepetition();
+        assertEquals("Wrong number of labels for rep 0", 2, actual.get(0).size());
+        assertTrue("Wrong labels for rep 0", actual.get(0).containsAll(Arrays.asList("bar", "quux")));
+        assertEquals("Wrong number of labels for rep 1", 1, actual.get(1).size());
+        assertTrue("Wrong labels for rep 1: " + actual.get(1), actual.get(1).containsAll(Arrays.asList("bar")));
+        assertEquals("Wrong number of labels for rep 2", 3, actual.get(2).size());
+        assertTrue("Wrong labels for rep 2: " + actual.get(2), actual.get(2).containsAll(Arrays.asList("bar", "baz", "foo")));
+    }
+
+    public void testGetLabelsByRepetitionDoesNotWorkWhenDetached() throws Exception {
+        pa0.setParent(null);
+        labelPlannedActivity(pa0, "zem");
+        try {
+            pa0.getLabelsByRepetition();
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("This method does not work unless the planned activity is part of a period", scse.getMessage());
+        }
     }
 }

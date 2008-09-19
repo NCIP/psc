@@ -5,9 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Comparator;
+
 /**
  * @author Rhett Sutphin
  */
+// TODO: re-merge this with AbstractTestCase
 public abstract class StudyCalendarTestCase extends AbstractTestCase {
     private static ApplicationContext applicationContext = null;
     private static Throwable acLoadingFailure = null;
@@ -30,6 +33,16 @@ public abstract class StudyCalendarTestCase extends AbstractTestCase {
             }
             return applicationContext;
         }
+    }
+
+    public static <T extends Comparable<T>> void assertOrder(T first, T second) {
+        assertNegative(first.compareTo(second));
+        assertPositive(second.compareTo(first));
+    }
+
+    public static <T> void assertOrder(Comparator<T> comparator, T first, T second) {
+        assertNegative(comparator.compare(first, second));
+        assertPositive(comparator.compare(second, first));
     }
 
     ////// MOCK REGISTRATION AND HANDLING

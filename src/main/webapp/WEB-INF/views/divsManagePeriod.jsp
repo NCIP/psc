@@ -291,7 +291,7 @@
                                     </span>
                                     <span class='labels' style='display: none'>
                                         <c:forEach items="${row.labels}" var="label">
-                                            ${label.name}
+                                            ${label}
                                         </c:forEach>
                                     </span>
                                 </div>
@@ -368,12 +368,6 @@
 
 </laf:box>
 
-<c:if test="${configuration.map.showDebugInformation}">
-    <a class="control" href="<c:url value="/pages/cal/oldManagePeriod?id=${period.id}"/>">
-        View the old manage periods page
-    </a>
-</c:if>
-
 <script type="text/javascript">
     // Sync scrolling
     $('days').observe('scroll', function() {
@@ -399,34 +393,6 @@
         })
         </c:if>
     })
-</script>
-
-
-
-
-<script type="text/javascript">
-    var labelAutocompleter;
-
-    function resetLabelAutocompleter() {
-        labelAutocompleter.reset();
-    }
-
-    function createLabelAutocompleter() {
-        var inputElement = $('edit-notes-labels')
-        var divElement = $('edit-notes-labels-div')
-        labelAutocompleter = new Ajax.ResetableAutocompleter(inputElement, divElement, '<c:url value="/pages/search/fragment/labels"/>',
-        {
-            method: 'get',
-            paramName: 'searchText'
-        });
-    }
-
-
-    function initMethods() {
-        createLabelAutocompleter();
-    }
-
-    Event.observe(window, "load", initMethods)
 </script>
 
 <div id="lightbox">

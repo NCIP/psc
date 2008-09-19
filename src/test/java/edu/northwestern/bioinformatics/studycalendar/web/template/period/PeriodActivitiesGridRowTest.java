@@ -6,12 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * @author Rhett Sutphin
@@ -223,20 +223,13 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         assertOrder(rowB, rowA);
     }
 
-    private void assertOrder(PeriodActivitiesGridRow first, PeriodActivitiesGridRow second) {
-        assertNegative(first.compareTo(second));
-        assertPositive(second.compareTo(first));
-    }
-
     private void addLabels(PeriodActivitiesGridRow row, String... labels) {
-        for (String label : labels) {
-            row.getLabels().add(createNamedInstance(label, Label.class));
-        }
+        row.getLabels().addAll(Arrays.asList(labels));
     }
 
     private static class TestKey extends PeriodActivitiesGridRowKey {
         public TestKey(Integer activityId) {
-            super(activityId, null, null, Collections.<Label>emptySet());
+            super(activityId, null, null, Collections.<String>emptySet());
         }
 
         public void setDetails(String details) {

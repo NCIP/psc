@@ -688,9 +688,16 @@
                 omit this parameter.
             </doc>
         </param>
-        <!-- coming soon
-        <param name="labels" style="query"/>
-        -->
+        <param name="label" style="query">
+            <doc>
+                A single label for this planned activity.  This parameter may be repeated
+                for multiple labels.  A simple label parameter would look like
+                <html:code>label=soc</html:code>.  To restrict the label to only certain
+                repetitions of the period to which this planned activity belongs, append
+                a semi-colon and list the repetitions separated by whitespace:
+                <html:code>label=soc;1 3 5</html:code>.  No labels are required.
+            </doc>
+        </param>
         <param name="population" style="query">
             <doc>
                 The abbreviation for the population for which this planned activity applies.

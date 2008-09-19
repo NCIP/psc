@@ -86,12 +86,10 @@
                                     </span>
                                     <br>
                                     <span class="event-details" style="margin-left:3.5em">
-                                        <c:if test="${not empty event.plannedActivity.plannedActivityLabels}">
-                                            Available label(s):
-                                            <c:forEach items="${event.plannedActivity.plannedActivityLabels}" var="label" varStatus="labelStatus">
-                                                <c:if test="${label.repetitionNumber-1 == event.repetitionNumber}">
-                                                    ${label.label.name},
-                                                </c:if>
+                                        <c:if test="${not empty event.plannedActivity.labelsByRepetition[event.repetitionNumber]}">
+                                            Label(s):
+                                            <c:forEach items="${event.plannedActivity.labelsByRepetition[event.repetitionNumber]}" var="label">
+                                                ${label.label},
                                             </c:forEach>
                                         </c:if>
                                     </span>

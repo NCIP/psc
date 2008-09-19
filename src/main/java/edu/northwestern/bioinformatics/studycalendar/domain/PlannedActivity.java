@@ -1,20 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -27,16 +32,16 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_planned_activities_id")
     }
 )
-public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<PlannedActivity> {
+public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<PlannedActivity>, Parent<PlannedActivityLabel, SortedSet<PlannedActivityLabel>> {
     private Activity activity;
     private Population population;
     private Integer day;
     private String details;
     private String condition;
-    private List<PlannedActivityLabel> plannedActivityLabels;
+    private SortedSet<PlannedActivityLabel> plannedActivityLabels;
 
     public PlannedActivity() {
-        plannedActivityLabels = new ArrayList<PlannedActivityLabel>();
+        plannedActivityLabels = new TreeSet<PlannedActivityLabel>();
     }
 
     ////// LOGIC
@@ -54,6 +59,15 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     public void addPlannedActivityLabel(PlannedActivityLabel paLabel) {
         paLabel.setPlannedActivity(this);
         getPlannedActivityLabels().add(paLabel);
+    }
+
+    public PlannedActivityLabel removePlannedActivityLabel(PlannedActivityLabel paLabel) {
+        if (getPlannedActivityLabels().remove(paLabel)) {
+            paLabel.setParent(null);
+            return paLabel;
+        } else {
+            return null;
+        }
     }
     
     @Transient
@@ -76,9 +90,13 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         }
     }
 
+    /**
+     * Returns all the labels that are used for any repetition in the planned activity
+     * @return
+     */
     @Transient
-    public List<Label> getLabels() {
-        List<Label> labels = new ArrayList<Label>(getPlannedActivityLabels().size());
+    public SortedSet<String> getLabels() {
+        SortedSet<String> labels = new TreeSet<String>();
         for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
             labels.add(paLabel.getLabel());
         }
@@ -86,12 +104,44 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     }
 
     @Transient
-    public List<String> getLabelNames() {
-        List<String> labels = new ArrayList<String>(getPlannedActivityLabels().size());
-        for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
-            labels.add(paLabel.getLabel().getName());
+    public List<SortedSet<String>> getLabelsByRepetition() {
+        if (getParent() == null) {
+            throw new StudyCalendarSystemException("This method does not work unless the planned activity is part of a period");
         }
-        return labels;
+        int reps = getParent().getRepetitions();
+        List<SortedSet<String>> byReps = new ArrayList<SortedSet<String>>(reps);
+        while (byReps.size() < getParent().getRepetitions()) {
+            int rep = byReps.size();
+            SortedSet<String> labels = new TreeSet<String>(PlannedActivityLabel.labelOrder());
+            for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
+                if (paLabel.getRepetitionNumber() == null || paLabel.getRepetitionNumber() == rep) {
+                    labels.add(paLabel.getLabel());
+                }
+            }
+            byReps.add(labels);
+        }
+        return byReps;
+    }
+
+    public Class<PlannedActivityLabel> childClass() {
+        return PlannedActivityLabel.class;
+    }
+
+    public void addChild(PlannedActivityLabel child) {
+        addPlannedActivityLabel(child);
+    }
+
+    public PlannedActivityLabel removeChild(PlannedActivityLabel child) {
+        return removePlannedActivityLabel(child);
+    }
+
+    @Transient
+    public SortedSet<PlannedActivityLabel> getChildren() {
+        return getPlannedActivityLabels();
+    }
+
+    public void setChildren(SortedSet<PlannedActivityLabel> children) {
+        setPlannedActivityLabels(children);
     }
 
     ////// BEAN PROPERTIES
@@ -122,16 +172,13 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     }
 
     @OneToMany(mappedBy = "plannedActivity")
-    @OrderBy // order by ID for testing consistency
-    // TODO: why isn't this just "ALL"?
-    @Cascade(value = { org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.MERGE,
-            org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.REFRESH, org.hibernate.annotations.CascadeType.REMOVE, org.hibernate.annotations.CascadeType.REPLICATE,
-            org.hibernate.annotations.CascadeType.SAVE_UPDATE })
-    public List<PlannedActivityLabel> getPlannedActivityLabels() {
+    @Cascade(value = { CascadeType.ALL })
+    @Sort(type = SortType.NATURAL)
+    public SortedSet<PlannedActivityLabel> getPlannedActivityLabels() {
         return plannedActivityLabels;
     }
 
-    public void setPlannedActivityLabels(List<PlannedActivityLabel> plannedActivityLabels){
+    public void setPlannedActivityLabels(SortedSet<PlannedActivityLabel> plannedActivityLabels){
         this.plannedActivityLabels = plannedActivityLabels;
     }
 
@@ -168,7 +215,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     @Override
     public PlannedActivity clone() {
         PlannedActivity clone = (PlannedActivity) super.clone();
-        List<PlannedActivityLabel> clonedPlannedActivityLabels = new ArrayList<PlannedActivityLabel>();
+        SortedSet<PlannedActivityLabel> clonedPlannedActivityLabels
+            = new TreeSet<PlannedActivityLabel>();
         for (PlannedActivityLabel label: getPlannedActivityLabels()){
             clonedPlannedActivityLabels.add(label.clone());
         }
@@ -205,7 +253,6 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         result = 31 * result + (day != null ? day.hashCode() : 0);
         result = 31 * result + (details != null ? details.hashCode() : 0);
         result = 31 * result + (condition != null ? condition.hashCode() : 0);
-        result = 31 * result + (plannedActivityLabels != null ? plannedActivityLabels.hashCode() : 0);
         return result;
     }
 
@@ -216,6 +263,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
             append("; activity=").append(getActivity()).
             append("; day=").append(getDay()).
             append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
+            append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
             append(']').toString();
     }
 }

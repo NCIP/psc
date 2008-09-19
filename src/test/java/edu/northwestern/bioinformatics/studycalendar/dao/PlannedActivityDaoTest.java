@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 import java.util.List;
@@ -55,5 +56,27 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         PlannedActivity loaded = getDao().getById(id);
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong event loaded", 5, (int) loaded.getDay());
+    }
+    
+    public void testSaveCascadesToLabels() throws Exception {
+        int id;
+        {
+            PlannedActivity plannedActivity = new PlannedActivity();
+            plannedActivity.setDay(5);
+            plannedActivity.setActivity(getDao().getById(-12).getActivity());
+
+            plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("bar"));
+            plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("zam"));
+
+            getDao().save(plannedActivity);
+            assertNotNull("not saved", plannedActivity.getId());
+            id = plannedActivity.getId();
+        }
+
+        interruptSession();
+
+        PlannedActivity loaded = getDao().getById(id);
+        assertNotNull("Could not reload", loaded);
+        assertEquals("Wrong number of labels", 2, loaded.getPlannedActivityLabels().size());
     }
 }

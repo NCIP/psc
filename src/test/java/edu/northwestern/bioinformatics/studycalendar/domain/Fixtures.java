@@ -129,11 +129,34 @@ public class Fixtures {
     }
 
     public static void labelPlannedActivity(PlannedActivity pa, String... labels) {
+        labelPlannedActivity(pa, null, labels);
+    }
+
+    public static void labelPlannedActivity(PlannedActivity pa, Integer repetitionNumber, String... labels) {
         for (String label : labels) {
             PlannedActivityLabel paLabel = new PlannedActivityLabel();
-            paLabel.setLabel(createNamedInstance(label, Label.class));
+            paLabel.setLabel(label);
+            paLabel.setRepetitionNumber(repetitionNumber);
             pa.addPlannedActivityLabel(paLabel);
         }
+    }
+
+    public static PlannedActivityLabel createPlannedActivityLabel(String label) {
+        PlannedActivityLabel pal = new PlannedActivityLabel();
+        pal.setLabel(label);
+        return pal;
+    }
+
+    public static PlannedActivityLabel createPlannedActivityLabel(String label, Integer repetitionNumber) {
+        PlannedActivityLabel pal = createPlannedActivityLabel(label);
+        pal.setRepetitionNumber(repetitionNumber);
+        return pal;
+    }
+
+    public static PlannedActivityLabel createPlannedActivityLabel(PlannedActivity activity, String label, Integer repetitionNumber) {
+        PlannedActivityLabel paLabel = createPlannedActivityLabel(label, repetitionNumber);
+        paLabel.setPlannedActivity(activity);
+        return paLabel;
     }
 
     public static Study createSingleEpochStudy(String studyName, String epochName, String... studySegmentNames) {
@@ -339,20 +362,6 @@ public class Fixtures {
         population.setAbbreviation(abbreviation);
         population.setName(name);
         return population;
-    }
-
-    public static Label createLabel(String name) {
-        Label label = new Label();
-        label.setName(name);
-        return label;
-    }
-
-    public static PlannedActivityLabel createPlannedActivityLabel(PlannedActivity activity, Label label, Integer repetitionNumber) {
-        PlannedActivityLabel paLabel = new PlannedActivityLabel();
-        paLabel.setPlannedActivity(activity);
-        paLabel.setLabel(label);
-        paLabel.setRepetitionNumber(repetitionNumber);
-        return paLabel;
     }
 
     public static Amendment createAmendment(String name, Date date) {

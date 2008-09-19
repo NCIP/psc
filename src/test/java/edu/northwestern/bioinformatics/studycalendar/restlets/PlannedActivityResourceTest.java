@@ -4,12 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
@@ -156,6 +158,103 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("population", null, population),
             PropertyChange.create("details", null, "sharp"),
             PropertyChange.create("condition", null, "enough")
+        )).andReturn(study);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertEntityTextContains("day=6");
+    }
+
+    public void testPutRecordsAddsForNewAllRepsLabels() throws Exception {
+        expectWriteOperationMayProceed();
+        expectMinimumPutEntity();
+        expectRequestEntityFormAttribute("label", "jones");
+        expectFindActivityByCodeAndSource();
+
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(
+            plannedActivity,
+            PropertyChange.create("day", 4, 6),
+            PropertyChange.create("activity", activity, activity),
+            PropertyChange.create("population", null, null),
+            PropertyChange.create("details", null, null),
+            PropertyChange.create("condition", null, null),
+            Add.create(Fixtures.createPlannedActivityLabel("jones"))
+        )).andReturn(study);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertEntityTextContains("day=6");
+    }
+
+    public void testPutRecordsAddsForNewRepsOfExistingLabels() throws Exception {
+        expectWriteOperationMayProceed();
+        expectMinimumPutEntity();
+        expectFindActivityByCodeAndSource();
+
+        expectRequestEntityFormAttribute("label", "jones;1 4");
+        plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("jones", 4));
+
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(
+            plannedActivity,
+            PropertyChange.create("day", 4, 6),
+            PropertyChange.create("activity", activity, activity),
+            PropertyChange.create("population", null, null),
+            PropertyChange.create("details", null, null),
+            PropertyChange.create("condition", null, null),
+            Add.create(Fixtures.createPlannedActivityLabel("jones", 1))
+        )).andReturn(study);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertEntityTextContains("day=6");
+    }
+
+    public void testPutRecordsRemoveWhenDeletingExistingAllRepsLabel() throws Exception {
+        expectWriteOperationMayProceed();
+        expectMinimumPutEntity();
+        expectFindActivityByCodeAndSource();
+
+        PlannedActivityLabel existing = Fixtures.createPlannedActivityLabel("thirteen");
+        plannedActivity.addPlannedActivityLabel(existing);
+
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(
+            plannedActivity,
+            PropertyChange.create("day", 4, 6),
+            PropertyChange.create("activity", activity, activity),
+            PropertyChange.create("population", null, null),
+            PropertyChange.create("details", null, null),
+            PropertyChange.create("condition", null, null),
+            Remove.create(existing)
+        )).andReturn(study);
+
+        doPut();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertEntityTextContains("day=6");
+    }
+
+    public void testPutRecordsRemoveWhenDeletingExistingSingleRepLabel() throws Exception {
+        expectWriteOperationMayProceed();
+        expectMinimumPutEntity();
+        expectFindActivityByCodeAndSource();
+
+        expectRequestEntityFormAttribute("label", "city;1");
+        PlannedActivityLabel existing1 = Fixtures.createPlannedActivityLabel("city", 1);
+        PlannedActivityLabel existing3 = Fixtures.createPlannedActivityLabel("city", 3);
+        plannedActivity.addPlannedActivityLabel(existing1);
+        plannedActivity.addPlannedActivityLabel(existing3);
+
+        expect(amendmentService.updateDevelopmentAmendmentAndSave(
+            plannedActivity,
+            PropertyChange.create("day", 4, 6),
+            PropertyChange.create("activity", activity, activity),
+            PropertyChange.create("population", null, null),
+            PropertyChange.create("details", null, null),
+            PropertyChange.create("condition", null, null),
+            Remove.create(existing3)
         )).andReturn(study);
 
         doPut();

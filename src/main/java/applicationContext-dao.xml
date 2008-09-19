@@ -76,7 +76,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.Label</value>
 
                 <value>edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfigurationEntry</value>
             </list>
@@ -175,7 +174,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.Label</value>
             </list>
 		</property>
 		<property name="auditAll"><value>false</value></property>
@@ -253,7 +251,5 @@
     <bean id="sourceDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SourceDao"/>
     <bean id="changeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao"/>
     <bean id="scheduledActivitiesReportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao"/>
-
-    <bean id="labelDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.LabelDao"/>
     <bean id="plannedActivityLabelDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao"/>    
 </beans>

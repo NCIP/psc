@@ -91,11 +91,13 @@ Object.extend(SC.MP, {
   },
 
   clickEditButton: function(evt) {
+    Event.stop(evt)
     var editButton = Event.element(evt)
     SC.MP.editNotes(editButton.up("tr"))
   },
 
   clickNotesPreview: function(evt) {
+    Event.stop(evt)
     var rowClass = SC.MP.findRowIndexClass($('notes-preview'))
     SC.MP.editNotes($$("#notes tr." + rowClass).first())
   },
@@ -110,7 +112,7 @@ Object.extend(SC.MP, {
       var noteSpan = notesRow.select(".notes-content ." + noteKind).first();
       var noteInput = $('edit-notes-' + noteKind);
       // copy in current values from spans
-      noteInput.value = noteSpan.innerHTML.unescapeHTML().strip()
+      noteInput.value = noteSpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
       SC.applyInputHint(noteInput)
       // observe the text field and update the span
       SC.MP.NOTES_OBSERVERS[noteKind] = new Form.Element.Observer(

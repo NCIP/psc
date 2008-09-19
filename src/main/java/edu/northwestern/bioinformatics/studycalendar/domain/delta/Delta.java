@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -60,7 +60,7 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
     ////// FACTORY
 
     @SuppressWarnings({ "unchecked" })
-    public static <T extends PlanTreeNode<?>> Delta<T> createDeltaFor(T node, Change... changes) {
+    public static <T extends Changeable> Delta<T> createDeltaFor(T node, Change... changes) {
         Delta<?> delta;
         if (node instanceof PlannedCalendar) {
             delta = new PlannedCalendarDelta((PlannedCalendar) node);
@@ -72,8 +72,10 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
             delta = new PeriodDelta((Period) node);
         } else if (node instanceof PlannedActivity) {
             delta = new PlannedActivityDelta((PlannedActivity) node);
+        } else if (node instanceof PlannedActivityLabel) {
+            delta = new PlannedActivityLabelDelta((PlannedActivityLabel) node);
         } else {
-            throw new StudyCalendarError("Unimplemented node type: %s", node.getClass().getName());
+            throw new StudyCalendarError("Unimplemented changeable type: %s", node.getClass().getName());
         }
         delta.addChanges(changes);
         return (Delta<T>) delta;

@@ -2,13 +2,20 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.LabelService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -26,7 +33,6 @@ public class PlannedActivityFormTest extends RestletTestCase {
     private Study study;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
-    private LabelService labelService;
 
     @Override
     protected void setUp() throws Exception {
@@ -34,11 +40,10 @@ public class PlannedActivityFormTest extends RestletTestCase {
         study = Fixtures.createBasicTemplate();
         activityDao = registerDaoMockFor(ActivityDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
-        labelService = registerMockFor(LabelService.class);
     }
 
     private PlannedActivityForm createForm() {
-        return new PlannedActivityForm(request.getEntity(), study, activityDao, populationDao, labelService);
+        return new PlannedActivityForm(request.getEntity(), study, activityDao, populationDao);
     }
 
     private PlannedActivity createPlannedActivityFromForm() throws ResourceException {
@@ -167,6 +172,108 @@ public class PlannedActivityFormTest extends RestletTestCase {
         } catch (ResourceException actual) {
             assertEquals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, actual.getStatus());
             assertEquals("Population not found", actual.getStatus().getDescription());
+        }
+    }
+
+    public void testWithLabelForAllReps() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "research");
+
+        PlannedActivity actual = createPlannedActivityFromForm();
+        assertNotNull(actual);
+
+        assertEquals("Wrong number of labels", 1, actual.getPlannedActivityLabels().size());
+        assertPlannedActivityLabel("Single label", "research", null, actual.getPlannedActivityLabels().first());
+    }
+
+    public void testWithLabelForAllRepsWithTrailingSemicolon() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "research;");
+
+        PlannedActivity actual = createPlannedActivityFromForm();
+        assertNotNull(actual);
+
+        assertEquals("Wrong number of labels", 1, actual.getPlannedActivityLabels().size());
+        assertPlannedActivityLabel("Single label", "research", null, actual.getPlannedActivityLabels().first());
+    }
+
+    public void testWithLabelForSomeReps() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "soc;1 3\t5");
+
+        PlannedActivity actual = createPlannedActivityFromForm();
+        assertNotNull(actual);
+
+        assertEquals("Wrong number of labels", 3, actual.getPlannedActivityLabels().size());
+        List<PlannedActivityLabel> actualLabels = new ArrayList<PlannedActivityLabel>(actual.getPlannedActivityLabels());
+        assertPlannedActivityLabel("PAL 0", "soc", 1, actualLabels.get(0));
+        assertPlannedActivityLabel("PAL 1", "soc", 3, actualLabels.get(1));
+        assertPlannedActivityLabel("PAL 2", "soc", 5, actualLabels.get(2));
+    }
+
+    public void testWithMultipleLabels() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "soc;1 3 5");
+        expectRequestEntityFormAttribute("label", "important; 5 2");
+        expectRequestEntityFormAttribute("label", "shiny");
+
+        PlannedActivity actual = createPlannedActivityFromForm();
+        assertNotNull(actual);
+
+        assertEquals("Wrong number of labels", 6, actual.getPlannedActivityLabels().size());
+        List<PlannedActivityLabel> actualLabels = new ArrayList<PlannedActivityLabel>(actual.getPlannedActivityLabels());
+        assertPlannedActivityLabel("PAL 0", "important", 2, actualLabels.get(0));
+        assertPlannedActivityLabel("PAL 1", "important", 5, actualLabels.get(1));
+        assertPlannedActivityLabel("PAL 2", "shiny", null, actualLabels.get(2));
+        assertPlannedActivityLabel("PAL 3", "soc", 1, actualLabels.get(3));
+        assertPlannedActivityLabel("PAL 4", "soc", 3, actualLabels.get(4));
+        assertPlannedActivityLabel("PAL 5", "soc", 5, actualLabels.get(5));
+    }
+
+    public void testWithInvalidNumberInLabelSpec() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "soc;1 B");
+
+        try {
+            createPlannedActivityFromForm();
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("The label 'soc;1 B' is invalid.  All rep numbers must be nonnegative integers.",
+                scve.getMessage());
+        }
+    }
+
+    public void testWithNegativeNumberInLabelSpec() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "soc;4 -7");
+
+        try {
+            createPlannedActivityFromForm();
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("The label 'soc;4 -7' is invalid.  All rep numbers must be nonnegative integers.",
+                scve.getMessage());
+        }
+    }
+
+    private void assertPlannedActivityLabel(String message, String expectedLabel, Integer expectedRepNumber, PlannedActivityLabel actual) {
+        assertEquals(message + ": wrong label", expectedLabel, actual.getLabel());
+        if (expectedRepNumber == null) {
+            assertNull(message + ": should be for all reps", actual.getRepetitionNumber());
+        } else {
+            assertEquals(message + ": wrong rep number", expectedRepNumber, actual.getRepetitionNumber());
         }
     }
 

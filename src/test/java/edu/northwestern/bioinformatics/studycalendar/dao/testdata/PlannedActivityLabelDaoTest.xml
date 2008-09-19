@@ -58,24 +58,12 @@
         population_id="-45"
         />
 
-    <LABELS
-        id="-15"
-        version="0"
-        name="Label1"
-        />
-
-    <LABELS
-        id="-17"
-        version="0"
-        name="Label2"
-        />
-
     <PLANNED_ACTIVITY_LABELS
         id="-29"
         version="0"
         planned_activity_id="-12"
         rep_num="2"
-        label_id="-15"
+        label="Label1"
         />
 
     <PLANNED_ACTIVITY_LABELS
@@ -83,7 +71,7 @@
         version="0"
         planned_activity_id="-12"
         rep_num="2"
-        label_id="-17"
+        label="Label2"
         />
 
     <PLANNED_ACTIVITY_LABELS
@@ -91,15 +79,14 @@
         version="0"
         planned_activity_id="-12"
         rep_num="4"
-        label_id="-17"
+        label="Label2"
         />
-
 
     <PLANNED_ACTIVITY_LABELS
         id="-32"
         version="0"
         planned_activity_id="-13"
         rep_num="4"
-        label_id="-15"
+        label="Label1"
         />
 </dataset>

@@ -101,35 +101,6 @@
     <bean name="/cal/template/import" id="importTemplateXmlController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportTemplateXmlController"/>
 
-    <!--to separate ManagePeriodCommands to a separate commands-->
-    <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName" value="addToPeriodCommand"/>
-    </bean>
-
-    <bean name="/cal/managePeriod/remove" id="deleteFromPeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName" value="deleteFromPeriodCommand"/>
-    </bean>
-
-    <bean name="/cal/managePeriod/update" id="updatePeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName" value="updatePeriodCommand"/>
-    </bean>
-
-    <bean name="/cal/managePeriod/move" id="moveEventController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName" value="moveEventCommand"/>
-    </bean>
-
-    <bean name="/cal/managePeriod/addLabel" id="manageLabelController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName" value="addLabelCommand"/>
-    </bean>
-
-    <bean name="/cal/managePeriod/addLabelWithRepetitions" id="addLabelWithRepetitionsController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.AddLabelWithRepetitionsController"/>
-
     <bean name="/cal/managePeriodActivities" id="managePeriodActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.period.ManagePeriodActivitiesController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
@@ -332,11 +303,6 @@
     <bean name="/cal/template/population/suggest" id="suggestPopulationAbbreviationController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SuggestPopulationAbbreviationController"/>
 
-    <bean name="/cal/oldManagePeriod" id="managePeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
-    </bean>
-
     <bean name="/cal/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
@@ -506,14 +472,6 @@
 
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
-
-
-    <bean name="/search/fragment/labels" id="searchLabelsController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchLabelsController"/>
-
-    <bean name="/search/fragment/mapOfRepetitions" id="searchRepetitionsController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchRepetitionsController"/>
-
 
     <bean name="/cal/search/fragment/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>

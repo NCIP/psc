@@ -12,6 +12,7 @@ public interface Parent<C extends Child, G extends Collection<C>> extends Mutabl
     Class<C> childClass();
 
     void addChild(C child);
+    /** Remove the child from children.  Should return the child IFF it was actually present and was removed. */
     C removeChild(C child);
 
     G getChildren();

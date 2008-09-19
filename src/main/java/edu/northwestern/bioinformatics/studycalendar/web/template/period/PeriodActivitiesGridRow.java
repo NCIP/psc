@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.utils.BeanPropertyListComparator;
@@ -122,7 +121,7 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
         return getKey().getCondition();
     }
 
-    public Collection<Label> getLabels() {
+    public Collection<String> getLabels() {
         return getKey().getLabels();
     }
 

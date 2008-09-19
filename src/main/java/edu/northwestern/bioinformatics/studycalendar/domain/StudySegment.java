@@ -105,9 +105,9 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
         setParent(epoch);
     }
 
-    @OneToMany (mappedBy = "studySegment")
-    @Cascade (value = { CascadeType.ALL })
-    @Sort (type = SortType.NATURAL)
+    @OneToMany(mappedBy = "studySegment")
+    @Cascade(value = { CascadeType.ALL })
+    @Sort(type = SortType.NATURAL)
     public SortedSet<Period> getPeriods() {
         return getChildren();
     }

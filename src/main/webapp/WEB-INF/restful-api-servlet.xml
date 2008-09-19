@@ -73,10 +73,7 @@
 
     <bean name="/studies/{study-identifier}/template/{amendment-identifier}/epochs/{epoch-name}/study-segments/{study-segment-name}/periods/{period-identifier}/planned-activities/{planned-activity-identifier}"
           id="plannedActivityResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.PlannedActivityResource"
-            >
-          <property name="labelService" ref="labelService"/>
-    </bean>
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.PlannedActivityResource"/>
 
     <bean name="/studies/{study-identifier}/template/amendments/{amendment-identifier}"
           id="amendedResource" autowire="byName" scope="prototype"
