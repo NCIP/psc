@@ -305,7 +305,7 @@
             </span>
                 </div>
             </div>
-            <div class="even row submit">
+            <div class="row">
                 <input id="submitButton" type="submit" value="Submit"/>
             </div>
         </form:form>
@@ -326,7 +326,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="even row submit">
+                <div class="row">
                     <input id="copy" type="submit" value="Copy"/>
                 </div>
             </form:form>
