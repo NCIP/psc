@@ -551,11 +551,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.addPopulation(plannedActivity.getPopulation());
-        ScheduledStudySegment segment = new ScheduledStudySegment();
-        segment.setScheduledCalendar(new ScheduledCalendar());
-        segment.getScheduledCalendar().setAssignment(assignment);
-        segment.setStartDay(1);
-        segment.setStartDate(new Date());
+        ScheduledStudySegment segment = createScheduledStudySegment(assignment);
 
         service.schedulePlannedActivity(plannedActivity, period, new Amendment(),
             "Initialized from template", segment);
@@ -572,15 +568,40 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.addPopulation(createNamedInstance("Different population", Population.class));
+        ScheduledStudySegment segment = createScheduledStudySegment(assignment);
+
+        service.schedulePlannedActivity(plannedActivity, period, new Amendment(), "DC", segment);
+
+        assertEquals("No activites should have been scheduled", 0, segment.getActivities().size());
+    }
+
+    public void testSchedulePlannedActivityCopiesLabelsForCorrectRepetitionOnly() throws Exception {
+        PlannedActivity plannedActivity = Fixtures.createPlannedActivity("elph", 4);
+        labelPlannedActivity(plannedActivity, "all");
+        labelPlannedActivity(plannedActivity, 0, "zero");
+        Period period = Fixtures.createPeriod("DC", 2, 7, 2);
+
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        ScheduledStudySegment segment = createScheduledStudySegment(assignment);
+
+        service.schedulePlannedActivity(plannedActivity, period, new Amendment(),
+            "Initialized from template", segment);
+
+        assertEquals("Wrong number of activites scheduled", 2, segment.getActivities().size());
+        assertEquals("Wrong number of labels for SA 0", 2, segment.getActivities().get(0).getLabels().size());
+        assertEquals("Wrong first label for SA 0", "all", segment.getActivities().get(0).getLabels().first());
+        assertEquals("Wrong second label for SA 0", "zero", segment.getActivities().get(0).getLabels().last());
+        assertEquals("Wrong number of labels for SA 1", 1, segment.getActivities().get(1).getLabels().size());
+        assertEquals("Wrong label for SA 1", "all", segment.getActivities().get(1).getLabels().first());
+    }
+
+    private ScheduledStudySegment createScheduledStudySegment(StudySubjectAssignment assignment) {
         ScheduledStudySegment segment = new ScheduledStudySegment();
         segment.setScheduledCalendar(new ScheduledCalendar());
         segment.getScheduledCalendar().setAssignment(assignment);
         segment.setStartDay(1);
         segment.setStartDate(new Date());
-
-        service.schedulePlannedActivity(plannedActivity, period, new Amendment(), "DC", segment);
-
-        assertEquals("No activites should have been scheduled", 0, segment.getActivities().size());
+        return segment;
     }
 
     public void testFindSubjectWithAllAttributes() {

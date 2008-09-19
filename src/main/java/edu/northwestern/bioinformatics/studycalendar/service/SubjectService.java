@@ -165,6 +165,7 @@ public class SubjectService {
     public void schedulePlannedActivity(
         PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, String reason, ScheduledStudySegment targetStudySegment
     ) {
+        // TODO: this seems to be ignoring the PA's population.  Examine and determine whether this is a bug.  RMS20080919.
         schedulePlannedActivity(plannedActivity, period, sourceAmendment, reason, null, targetStudySegment);
     }
 
@@ -220,6 +221,7 @@ public class SubjectService {
 
         event.setDetails(plannedActivity.getDetails());
         event.setActivity(plannedActivity.getActivity());
+        event.setLabels(plannedActivity.getLabelsForRepetition(repetitionNumber));
         event.setSourceAmendment(sourceAmendment);
 
         targetStudySegment.addEvent(event);

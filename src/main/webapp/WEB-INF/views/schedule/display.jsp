@@ -160,7 +160,16 @@
         }
 
         li img {
-            vertical-align:middle;            
+            vertical-align: middle;
+        }
+
+        ul.day-activities {
+            font-weight: normal
+        }
+
+        ul.day-activities span.label {
+            border: 1px dotted #444;
+            padding: 2px; 
         }
 
         .ae a.dismiss-control {

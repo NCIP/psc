@@ -76,32 +76,40 @@
 <laf:box title="Edit activity for ${subject.fullName}">
     <laf:division>
         <form:form>
-            <div class="row even">
+            <c:set var="count" value="0"/>
+            <div class="row ${commons:parity(count)}">
                 <div class="label">Activity</div>
                 <div class="value">${scheduledActivity.activity.name}</div>
             </div>
-            <div class="row odd">
+            <c:set var="count" value="${count + 1}"/>
+            <div class="row ${commons:parity(count)}">
                 <div class="label">Code</div>
                 <div class="value">${scheduledActivity.activity.code}</div>
             </div>
-            <div class="row even">
+            <c:set var="count" value="${count + 1}"/>
+            <div class="row ${commons:parity(count)}">
                 <div class="label">Details</div>
                 <div class="value">${scheduledActivity.details}</div>
             </div>
+            <c:set var="count" value="${count + 1}"/>
             <c:if test="${not empty scheduledActivity.plannedActivity.condition}">
-                <div class="row odd">
+                <div class="row ${commons:parity(count)}">
                     <div class="label">Condition</div>
                     <div class="value">${scheduledActivity.plannedActivity.condition}</div>
                 </div>
+                <c:set var="count" value="${count + 1}"/>
             </c:if>
-            <c:choose>
-                <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
-                    <div class="row even">
-                </c:when>
-                <c:otherwise>
-                    <div class="row odd">
-                </c:otherwise>
-            </c:choose>
+            <c:if test="${not empty scheduledActivity.labels}">
+                <div class="row ${commons:parity(count)}">
+                    <div class="label">Labels</div>
+                    <div class="value">
+                        ${commons:join(scheduledActivity.labels, " ")}
+                    </div>
+                </div>
+                <c:set var="count" value="${count + 1}"/>
+            </c:if>
+            
+            <div class="row ${commons:parity(count)}">
                 <div class="label">
                     Status
                     <a href="#" class="control" id="show-history-control">Show history</a>
@@ -124,20 +132,15 @@
                     <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
                 </div>
             </div>
+            <c:set var="count" value="${count + 1}"/>
 
-            <c:choose>
-                <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
-                    <div class="row odd">
-                </c:when>
-                <c:otherwise>
-                    <div class="row even">
-                </c:otherwise>
-            </c:choose>
+            <div class="row ${commons:parity(count)}">
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
                 <div class="value">
                     <form:textarea path="newNotes" rows="6" cols="30"/>
                 </div>
             </div>
+            <c:set var="count" value="${count + 1}"/>
 
             <div class="row submit">
                 <input type="submit" value="Save"/>

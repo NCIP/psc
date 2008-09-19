@@ -6,7 +6,7 @@
 <%@attribute name="studySegment" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment" %>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@attribute name="modes" type="java.util.Collection" %>
-<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
@@ -69,7 +69,7 @@
                     <div class="day autoclear ${commons:parity(status.index)}">
                         <h3><tags:formatDate value="${entry.key}"/></h3>
 
-                        <ul>
+                        <ul class="day-activities">
                             <c:forEach items="${entry.value}" var="event">
                                 <li>
                                     <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if><c:if test="${entry.key < studySegment.todayDate}">past-due-event</c:if>"/>
@@ -83,17 +83,12 @@
                                         <c:if test="${not empty event.plannedActivity.condition}">
                                             Condition: ${event.plannedActivity.condition}
                                         </c:if>
-                                    </span>
-                                    <br>
-                                    <span class="event-details" style="margin-left:3.5em">
-                                        <c:if test="${not empty event.plannedActivity.labelsByRepetition[event.repetitionNumber]}">
-                                            Label(s):
-                                            <c:forEach items="${event.plannedActivity.labelsByRepetition[event.repetitionNumber]}" var="label">
-                                                ${label.label},
-                                            </c:forEach>
+                                        <c:if test="${not empty event.labels}">
+                                            <span class='label'>${commons:join(event.labels, "</span>&nbsp;<span class='label'>")}</span>
                                         </c:if>
                                     </span>
                                 </li>
+                                <%-- TODO: this shouldn't be another LI --%>
                                 <li class="days_from_period" id="days_from_period" style="display:none;">
                                     <span class="event-details">
                                          <c:set var="repetition" value="${event.repetitionNumber}"/>

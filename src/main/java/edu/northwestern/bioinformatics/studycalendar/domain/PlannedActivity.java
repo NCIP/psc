@@ -111,16 +111,19 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         int reps = getParent().getRepetitions();
         List<SortedSet<String>> byReps = new ArrayList<SortedSet<String>>(reps);
         while (byReps.size() < getParent().getRepetitions()) {
-            int rep = byReps.size();
-            SortedSet<String> labels = new TreeSet<String>(LabelComparator.INSTANCE);
-            for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
-                if (paLabel.getRepetitionNumber() == null || paLabel.getRepetitionNumber() == rep) {
-                    labels.add(paLabel.getLabel());
-                }
-            }
-            byReps.add(labels);
+            byReps.add(getLabelsForRepetition(byReps.size()));
         }
         return byReps;
+    }
+
+    public SortedSet<String> getLabelsForRepetition(int rep) {
+        SortedSet<String> labels = new TreeSet<String>(LabelComparator.INSTANCE);
+        for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
+            if (paLabel.getRepetitionNumber() == null || paLabel.getRepetitionNumber() == rep) {
+                labels.add(paLabel.getLabel());
+            }
+        }
+        return labels;
     }
 
     public Class<PlannedActivityLabel> childClass() {
