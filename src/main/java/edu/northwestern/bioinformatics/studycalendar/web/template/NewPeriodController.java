@@ -56,7 +56,7 @@ public class NewPeriodController extends AbstractPeriodController<PeriodCommand>
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = super.referenceData(request, command, errors);
-        refdata.put("verb", "add");
+        refdata.put("verb", "Create new");
         Study study = templateService.findStudy(((PeriodCommand) command).getStudySegment());
         if (study.getDevelopmentAmendment() != null) {
             Study revisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());

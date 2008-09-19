@@ -241,7 +241,7 @@
     </script>
 </head>
 <body>
-<laf:box title="${commons:capitalize(verb)} Period">
+<laf:box title="${commons:capitalize(verb)} period">
     <laf:division>
         <%--<h2>${commons:capitalize(verb)} Period</h2>--%>
         <form:form method="post" id="period-form" >
@@ -310,32 +310,28 @@
             </div>
         </form:form>
     </laf:division>
-
-    <c:if test="${period.id == null}">
-        <laf:division title="Copy from another period">
+</laf:box>
+<c:if test="${period.id == null}">
+    <laf:box title="Copy existing period">
+        <laf:division>
             <form:form method="post" id="copy-form" >
                 <div class="row">
-
                     <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" hint="Search for study" class="autocomplete"/>
                     <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
                     <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
-
                     <div id="template-autocompleter-div" class="autocomplete"></div>
                     <div class="row" id="periods">
                         <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
-
                         <div class="row" id="selected-epochs">
-
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
+                <div class="even row submit">
                     <input id="copy" type="submit" value="Copy"/>
                 </div>
             </form:form>
         </laf:division>
-    </c:if>
-</laf:box>
+    </laf:box>
+</c:if>
 </body>
 </html>

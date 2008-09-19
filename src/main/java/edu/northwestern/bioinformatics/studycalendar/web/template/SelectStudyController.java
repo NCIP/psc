@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * @author Saurabh Agrawal
@@ -45,8 +47,17 @@ public class SelectStudyController implements Controller {
         }
 
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
+        List<Epoch> displayEpochs = new LinkedList<Epoch>();
+        for (Epoch epoch : epochs) {
+            List<StudySegment> studySegments = epoch.getStudySegments();
+            for (StudySegment studySegment:studySegments) {
+                if (!studySegment.getPeriods().isEmpty()){
+                       displayEpochs.add(epoch);
+                }
+            }
+        }
         Map model = new HashMap();
-        model.put("epochs", epochs);
+        model.put("epochs", displayEpochs);
         return new ModelAndView("template/ajax/displayEpochs", model);
     }
 
