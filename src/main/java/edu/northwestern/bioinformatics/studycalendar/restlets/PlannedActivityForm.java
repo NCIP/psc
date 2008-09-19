@@ -83,7 +83,9 @@ public class PlannedActivityForm extends ValidatingForm {
 
     private void addDescribedLabels(PlannedActivity target) {
         for (String serializedPaLabel : this.getValuesArray(FormParameters.LABEL.attributeName())) {
-            addDescribedLabels(target, serializedPaLabel);
+            if (!StringUtils.isBlank(serializedPaLabel)) {
+                addDescribedLabels(target, serializedPaLabel);
+            }
         }
     }
 

@@ -188,6 +188,18 @@ public class PlannedActivityFormTest extends RestletTestCase {
         assertPlannedActivityLabel("Single label", "research", null, actual.getPlannedActivityLabels().first());
     }
 
+    public void testBlankLabelIgnored() throws Exception {
+        expectMinimumEntityAttributes();
+        expectFindActivity();
+
+        expectRequestEntityFormAttribute("label", "");
+
+        PlannedActivity actual = createPlannedActivityFromForm();
+        assertNotNull(actual);
+
+        assertEquals("Wrong number of labels", 0, actual.getPlannedActivityLabels().size());
+    }
+
     public void testWithLabelForAllRepsWithTrailingSemicolon() throws Exception {
         expectMinimumEntityAttributes();
         expectFindActivity();
