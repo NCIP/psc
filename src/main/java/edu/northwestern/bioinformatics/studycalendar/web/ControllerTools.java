@@ -9,6 +9,8 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,14 +24,8 @@ import java.util.Map;
 public class ControllerTools {
     private TemplateService templateService;
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     // TODO: make date format externally configurable
-    public PropertyEditor getDateEditor(boolean required) {
-        // note that date formats are not threadsafe, so we have to create a new one each time
-        //return new CustomDateEditor(FormatTools.createDateFormat(), !required);
-        int exactDateLength = 10;       //ex: String validDate = "01/01/2005";
-
-        return getDateEditor(required,exactDateLength);
-    }
 
     /**
      * Create a new CustomDateEditor instance, using the given DateFormat
@@ -43,11 +39,10 @@ public class ControllerTools {
      * not even with <code>setLenient(false)</code>. Without an "exactDateLength"
      * specified, the "01/01/05" would get parsed to "01/01/0005".
      *
-     * @param exactDateLength the exact expected length of the date String
      */
-    private PropertyEditor getDateEditor(boolean required, int exactDateLength) {
+    public PropertyEditor getDateEditor(boolean required) {
         // note that date formats are not threadsafe, so we have to create a new one each time
-        return new CustomDateEditor(FormatTools.createDateFormat(), !required, exactDateLength);
+        return new DateCustomEditor(FormatTools.createDateFormat(), !required);
     }
 
     public void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {

@@ -47,7 +47,8 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
    	public void testCustomDateEditorWithExactDateLength() {
    		int maxLength = 10;
    		String validDate = "01/01/2005";
-   		String invalidDate = "01/01/05";
+        String alsoValidDate = "1/1/2005";
+        String invalidDate = "01/01/05";
 
    		assertTrue(validDate.length() == maxLength);
    		assertFalse(invalidDate.length() == maxLength);
@@ -67,9 +68,16 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
    			fail("Exception should be thrown because this is an invalid date");
    		}
   		catch (IllegalArgumentException ex) {
-   			// expected
-   			assertTrue(ex.getMessage().indexOf("10") != -1);
+   			// expected to have the error message on failing year
+   			assertTrue(ex.getMessage().indexOf("05") != -1);
    		}
-   	}
+
+   		try {
+   		    dateEditor.setAsText(alsoValidDate);
+   		}
+   		catch (IllegalArgumentException ex) {
+   			fail("Exception shouldn't be thrown because this is a valid date");
+   		}
+    }
     
 }
