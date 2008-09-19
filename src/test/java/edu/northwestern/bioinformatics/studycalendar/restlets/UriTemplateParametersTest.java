@@ -29,4 +29,11 @@ public class UriTemplateParametersTest extends StudyCalendarTestCase {
 
         assertEquals("Sinus cavity", ACTIVITY_SOURCE_NAME.extractFrom(request));
     }
+    
+    public void testExtractDecodesNullsIntoSlashes() throws Exception {
+        Request request = new Request();
+        request.getAttributes().put(ACTIVITY_SOURCE_NAME.attributeName(), "Sinus%04Cavity");
+
+        assertEquals("Sinus/Cavity", ACTIVITY_SOURCE_NAME.extractFrom(request));
+    }
 }

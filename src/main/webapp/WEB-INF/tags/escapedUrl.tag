@@ -5,9 +5,9 @@
 <%@attribute name="var" required="true" type="java.lang.String" %>
 <%@attribute name="value" required="true" type="java.lang.String" %>
 <%
-    String[] components = ((String) jspContext.getAttribute("value")).split("/");
-    for (int i = 0; i < components.length; i++) components[i] = Reference.encode(components[i]);
-    jspContext.setAttribute("escapedValue", StringUtils.join(components, '/'));
+    String[] components = ((String) jspContext.getAttribute("value")).split("~");
+    for (int i = 0; i < components.length; i++)components[i] = Reference.encode(components[i].replaceAll("/", "\04"));
+    jspContext.setAttribute("escapedValue", "/" + StringUtils.join(components, '/'));
 %>
 <c:url value="${escapedValue}" var="escapedUrl"/>
 <% request.setAttribute((String) jspContext.getAttribute("var"), jspContext.getAttribute("escapedUrl")); %>

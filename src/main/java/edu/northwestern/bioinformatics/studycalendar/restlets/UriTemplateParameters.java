@@ -29,7 +29,7 @@ public enum UriTemplateParameters {
 
     public String extractFrom(Request request) {
         return hasParameter(request)
-                ? Reference.decode((String) request.getAttributes().get(attributeName()))
+                ? Reference.decode((String) request.getAttributes().get(attributeName())).replaceAll("\04", "/")
                 : null;
     }
 
