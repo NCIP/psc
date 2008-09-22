@@ -164,8 +164,9 @@ function isCorrectOcurringInput() {
         } else {
             date = date.split("/");
             if ((isNaN(date[0]) || ((date[0] <= 0 || date[0] > 12) ) ||
-                 isNaN(date[1]) || (date[1] <= 0 || date[1] > 31))
-                    ) {
+                 isNaN(date[1]) || (date[1] <= 0 || date[1] > 31) ||
+                 ((date[0]==4 || date[0]==6 || date[0]==9 || date[0]==11) && date[1]>30) ||(date[0]==2 && date[1]>29)) 
+               ) {
                 isDataCorrect = false;
                 resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
                 resetElement("recurringDateText", "Error enterring the date -<br>" +
@@ -209,7 +210,9 @@ function isCorrectNonOccuringInput() {
                 (
                         ((isNaN(date[0]) || (date[0] <= 0 || date[0] > 12) ) ||
                          (isNaN(date[1]) || (date[1] <= 0 || date[1] > 31) ) ||
-                         (isNaN(date[2]) || (date[2] <= 1900)) )
+                         (isNaN(date[2]) || (date[2] <= 1900)) ) ||
+                         ((date[0]==4 || date[0]==6 || date[0]==9 || date[0]==11) && date[1]>30) ||
+                         (date[0]==2 && date[2]%4!=0 && date[1]>28) || (date[0]==2 && date[1]>29)
                         )
                     ) {
                 isDataCorrect = false;
