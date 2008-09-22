@@ -24,7 +24,7 @@
             <c:forEach items="${sites}" var="site">
                 <tr>
                     <td>${site.name}</td>
-                    <td><a href="<c:url value="/pages/admin/manage/holidays?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
+                    <td><a href="<c:url value="/pages/admin/manage/blackoutDates?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
                     <td></td>
                     <td><a href="<c:url value="/pages/admin/manage/newSite?site=${site.id}"/>">Edit</a></td>
                        <c:forEach items="${enableDeletes}" var="enableDelete">
