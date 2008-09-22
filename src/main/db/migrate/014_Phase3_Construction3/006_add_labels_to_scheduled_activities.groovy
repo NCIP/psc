@@ -5,8 +5,8 @@ class AddLabelsToScheduledActivities extends edu.northwestern.bioinformatics.ber
             t.addColumn("scheduled_activity_id", "integer", nullable: false)
             t.addColumn("label", "string", nullable: false, limit: 255)
         }
-        execute("ALTER TABLE scheduled_activity_labels ADD CONSTRAINT fk_sched_act_label_sched_act FOREIGN KEY (scheduled_activity_id) REFERENCES scheduled_activities");
         execute("ALTER TABLE scheduled_activity_labels ADD CONSTRAINT pk_sched_act_label PRIMARY KEY (scheduled_activity_id, label)");
+        execute("ALTER TABLE scheduled_activity_labels ADD CONSTRAINT fk_sched_act_label_sched_act FOREIGN KEY (scheduled_activity_id) REFERENCES scheduled_activities");
     }
 
     public void down() {
