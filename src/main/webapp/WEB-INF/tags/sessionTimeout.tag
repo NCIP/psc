@@ -6,6 +6,7 @@
     <c:set var="sessionTimeoutWarning" value="${sessionTimeout - 300}"/>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
-        new SC.HttpSessionExpirationManager(${sessionTimeoutWarning}, ${sessionTimeout}, '<c:url value="/pages/ping"/>', '<c:url value=""/>')
+        //changes for the last url tag, since empty value was interptete as a base URL on IE7
+        new SC.HttpSessionExpirationManager(${sessionTimeoutWarning}, ${sessionTimeout}, '<c:url value="/pages/ping"/>', location.href)
     </script>
 </c:if>
