@@ -16,6 +16,17 @@
         table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
         table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
     </style>
+    <script type="text/javascript">
+        function resetFilters() {
+           document.getElementById("filters.studyAssignedIdentifier").value = "";
+           document.getElementById("filters.siteName").value = "";
+           document.getElementById("filters.currentStateMode").value = "";
+           document.getElementById("filters.activityType").value = "";
+           document.getElementById("actual-date-start").value = "";
+           document.getElementById("actual-date-stop").value = "";
+           document.getElementById("filters.subjectCoordinator").value = "";
+        }
+    </script>
 </head>
 <body>
 <laf:box title="Scheduled Activities Report">
@@ -26,7 +37,7 @@
              <div class="search_box">
                  <input type="submit" value="Search" class="button"/>
                  ${fn:length(results)} results
-                 <input id="resetButton" class="button" type="reset" value="Reset Filters"/>
+                 <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
             <div class="search-filters">
                 <div class="filterGroup">
@@ -34,8 +45,7 @@
                         <form:label path="filters.studyAssignedIdentifier" >
                             Study name:
                         </form:label>
-
-                        <form:input path="filters.studyAssignedIdentifier"/>
+                        <form:input id="filters.studyAssignedIdentifier" path="filters.studyAssignedIdentifier"/>
                     </span>
                 </div>
                 <div class="filterGroup">
@@ -43,7 +53,7 @@
                         <form:label path="filters.siteName" >
                             Site name:
                         </form:label>
-                        <form:input path="filters.siteName"/>
+                        <form:input id="filters.siteName" path="filters.siteName"/>
                     </span>
                 </div>
                 <div class="filterGroup">
@@ -52,7 +62,7 @@
                             Activity status:
                         </form:label>
 
-                        <form:select path="filters.currentStateMode" >
+                        <form:select path="filters.currentStateMode" id="filters.currentStateMode" >
                             <form:option value="" label=""/>
                             <form:options items="${modes}" itemLabel="name" itemValue="id"/>
                         </form:select>
@@ -64,7 +74,7 @@
                             Activity type:
                         </form:label>
 
-                        <form:select path="filters.activityType" >
+                        <form:select path="filters.activityType" id="filters.activityType" >
                             <form:option value="" label=""/>
                             <form:options items="${types}" itemLabel="name" itemValue="id"/>
                         </form:select>
@@ -101,7 +111,7 @@
                             Subject coordinator:
                         </form:label>
 
-                        <form:select path="filters.subjectCoordinator" >
+                        <form:select path="filters.subjectCoordinator" id="filters.subjectCoordinator" >
                             <form:option value="" label=""/>
                             <form:options items="${coordinators}" itemLabel="displayName" itemValue="id"/>
                         </form:select>
@@ -111,10 +121,9 @@
 
             </div>
 
+          <br style="clear:both"/>
 
-
-            <br style="clear:both"/>
-
+            <div id="qurey-result-display">
             <display:table name="results" class="query-results" id="row" requestURI="scheduledActivitiesReport" export="true">
                 <display:setProperty name="basic.msg.empty_list" value="No results.  Please select filters and press the <b>Search</b> button."/>
                 <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true"/>
@@ -131,7 +140,8 @@
                 <display:column property="study.assignedIdentifier" title="Study Name" sortable="true"/>
                 <display:column property="site.name" title="Site Name"  sortable="true"/>
             </display:table>
-
+          </div>
+        
         </form:form>
     </laf:division>
 </laf:box>
