@@ -3,13 +3,13 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import aenotification.AENotificationType;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumerI;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.RegistrationFailed;
+import gov.nih.nci.cabig.ccts.ae.domain.AENotificationType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oasis.wsrf.properties.*;
