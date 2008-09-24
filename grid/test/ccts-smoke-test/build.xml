@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<project name="psc-smoketest-clean-up" basedir=".">
+    <!-- Give user the chance to override properties -->
+    <property environment="env"/>
+    <property file="${env.CATALINA_HOME}/conf/psc/datasource.properties"/>
+
+    <property name="participant.grid_id" value="91dd4580-801b-4874-adeb-a174361bacea"/>
+    <!--<property name="study.grid_id" value="51bd374c-d8b5-4759-84b3-ac6259d58648"/>-->
+    <property name="assignment.grid_id" value="6115c43c-851e-425c-8312-fd78367aaef3"/>
+    <property name="study.assigned_identifier" value="SMOKE_TEST"></property>
+
+    <path id="cp.jdbc">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="cleanPSCSmokeTestData" depends="cleanAE,cleanAssignment,cleanStudy">
+    </target>
+
+    <!--<target name="cleanParticipant" description="Clean Participant smoke test data" depends="cleanAssignment">-->
+        <!--<sql-->
+                <!--driver="${datasource.driver}"-->
+                <!--url="${datasource.url}"-->
+                <!--userid="${datasource.username}"-->
+                <!--password="${datasource.password}"-->
+                <!-->-->
+            <!--<classpath refid="cp.jdbc"/>-->
+            <!--delete from participants where grid_id='${participant.grid_id}';-->
+        <!--</sql>-->
+        <!--<echo message="Deleted participant with grid id ${participant.grid_id}"/>-->
+    <!--</target>-->
+
+    <target name="cleanStudy" description="Clean Study smoke test data" depends="cleanAssignment">
+        <sql
+                driver="${datasource.driver}"
+                url="${datasource.url}"
+                userid="${datasource.username}"
+                password="${datasource.password}"
+                >
+            <classpath refid="cp.jdbc"/>
+
+            delete from user_role_study_sites where study_site_id in (select id from study_sites where study_id in
+            (select id from studies where
+            assigned_identifier='${study.assigned_identifier}'));
+
+            delete from amendment_approvals where study_site_id in ( select id from study_sites where study_id in
+            (select id from studies where
+            assigned_identifier='${study.assigned_identifier}')) ;
+
+            delete from study_sites where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}');
+
+            delete from planned_activities where period_id in (select id from periods where study_segment_id in (select
+            id from study_segments where epoch_id in (select id
+            from epochs where planned_calendar_id in ( select id
+            from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}')))));
+
+            delete from periods where study_segment_id in (select id from study_segments where epoch_id in (select id
+            from epochs where planned_calendar_id in ( select id
+            from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}')))) ;
+
+            delete from study_segments where epoch_id in (select id from epochs where planned_calendar_id in ( select id
+            from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}')));
+
+            delete from epochs where planned_calendar_id in ( select id from planned_calendars where study_id in (select
+            id from studies where assigned_identifier='${study.assigned_identifier}'));
+
+            delete from changes where delta_id in (select id from deltas where amendment_id in (select id from
+            amendments where id in (select dev_amendment_id
+            from studies where assigned_identifier='${study.assigned_identifier}')));
+
+
+            delete from changes where delta_id in (select id from deltas where amendment_id in (select id from
+            amendments where id in (select amendment_id
+            from studies where assigned_identifier='${study.assigned_identifier}')));
+
+
+            delete from deltas where amendment_id in (select id from amendments where id in (select dev_amendment_id
+            from studies where assigned_identifier='${study.assigned_identifier}'));
+
+
+            delete from deltas where amendment_id in (select id from amendments where id in (select amendment_id
+            from studies where assigned_identifier='${study.assigned_identifier}'));
+
+
+            delete from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}');
+
+            delete from studies where assigned_identifier='${study.assigned_identifier}';
+
+            delete from amendments where id in (select dev_amendment_id from studies where
+            assigned_identifier='${study.assigned_identifier}');
+            delete from amendments where id in (select amendment_id from studies where
+            assigned_identifier='${study.assigned_identifier}');
+
+        </sql>
+        <echo message="Deleted study with assigned identifier ${study.assigned_identifier}"/>
+    </target>
+
+    <target name="cleanAssignment" description="Clean Assignment smoke test data" depends="cleanAE">
+        <sql
+                driver="${datasource.driver}"
+                url="${datasource.url}"
+                userid="${datasource.username}"
+                password="${datasource.password}"
+                >
+            <classpath refid="cp.jdbc"/>
+
+            delete from subject_populations where assignment_id=(select id from subject_assignments sa where
+            sa.grid_id='${assignment.grid_id}');
+
+            delete from scheduled_activities where scheduled_study_segment_id in ( select id from
+            scheduled_study_segments
+            where scheduled_calendar_id in (select id from scheduled_calendars where assignment_id=(select id from
+            subject_assignments sa where sa.grid_id='${assignment.grid_id}')));
+
+            delete from scheduled_study_segments
+            where scheduled_calendar_id in (select id from scheduled_calendars where assignment_id=(select id from
+            subject_assignments sa where sa.grid_id='${assignment.grid_id}'));
+
+            delete from scheduled_calendars where assignment_id=(select id from subject_assignments sa where
+            sa.grid_id='${assignment.grid_id}');
+
+            delete from subject_assignments where grid_id='${assignment.grid_id}';
+        </sql>
+        <echo message="Deleted assigment with grid id ${assignment.grid_id}"/>
+    </target>
+
+    <target name="cleanAE" description="Clean AE smoke test data">
+        <sql
+                driver="${datasource.driver}"
+                url="${datasource.url}"
+                userid="${datasource.username}"
+                password="${datasource.password}"
+                >
+            <classpath refid="cp.jdbc"/>
+            delete from notifications where assignment_id=(select id from subject_assignments sa where
+            sa.grid_id='${assignment.grid_id}');
+        </sql>
+        <echo message="Deleted notifications with grid id ${assignment.grid_id}"/>
+    </target>
+</project>
