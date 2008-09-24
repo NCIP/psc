@@ -17,6 +17,7 @@
         <div id="cycle">
             <c:choose>
                 <c:when test="${editable}">
+                    <h5 id="cycleError"></h5>
                     Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
                     <input type="submit" value="Update" id="cycleButton"/>
                 </c:when>
