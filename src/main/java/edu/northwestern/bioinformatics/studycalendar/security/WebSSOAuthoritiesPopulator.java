@@ -50,11 +50,24 @@ public class WebSSOAuthoritiesPopulator implements CasAuthoritiesPopulator {
                     attributeKeyValuePair.substring(attributeKeyValuePair.indexOf(KEY_VALUE_PAIR_DELIMITER) + 1, attributeKeyValuePair.length()));
         }
 
-        log.debug("Getting details for user with userId:" + attributeMap.get(CCTS_USER_ID_KEY) + " from provided user details service");
 
-        //assuming CSM userid is the email address
-        WebSSOUser user = new WebSSOUser(userDetailsService.loadUserByUsername(attributeMap.get(CCTS_USER_ID_KEY)));
-        user.setGridId(attributeMap.get(CCTS_USER_ID_KEY));
+        String gridIdentity = attributeMap.get(CAGRID_SSO_GRID_IDENTITY);
+
+        String userName = "";
+        if (gridIdentity != null) {
+            userName = gridIdentity.substring(gridIdentity.indexOf("/CN=") + 4, gridIdentity.length());
+        } else {
+            log.error(CAGRID_SSO_GRID_IDENTITY + " is null");
+        }
+        log.debug("Getting details for user with userId:" + userName + " from provided user details service");
+
+
+        //        //assuming CSM userid is the email address
+        //        WebSSOUser user = new WebSSOUser(userDetailsService.loadUserByUsername(attributeMap.get(CCTS_USER_ID_KEY)));
+        WebSSOUser user = new WebSSOUser(userDetailsService.loadUserByUsername(userName));
+
+
+        user.setGridId(userName);
         user.setFirstName(attributeMap.get(CAGRID_SSO_FIRST_NAME));
         user.setLastName(attributeMap.get(CAGRID_SSO_LAST_NAME));
 

@@ -27,6 +27,8 @@
                     <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/diagnostics">Grid Services Configuration</tags:restrictedListItem>
+
                 </ul>
             </laf:division>
         </laf:box>
