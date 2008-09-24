@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFacto
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -68,18 +69,20 @@ public class NotificationService {
     public void notifyUsersForNewScheduleNotifications(final Notification notification) {
         //first find the email address of subject coordinators
         String userName = ApplicationSecurityManager.getUser();
-        User user = userService.getUserByName(userName);
+        if (!StringUtils.isBlank(userName)) {
+            User user = userService.getUserByName(userName);
 
-        String toAddress = userService.getEmailAddresssForUser(user);
-        ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
-        if (mailMessage != null) {
-            try {
-                mailSender.send(mailMessage);
-                logger.debug("sending notification to:" + toAddress);
-            } catch (MailException e) {
-                logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
-            } catch (Exception e) {
-                logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
+            String toAddress = userService.getEmailAddresssForUser(user);
+            ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
+            if (mailMessage != null) {
+                try {
+                    mailSender.send(mailMessage);
+                    logger.debug("sending notification to:" + toAddress);
+                } catch (MailException e) {
+                    logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
+                } catch (Exception e) {
+                    logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
+                }
             }
         }
 
