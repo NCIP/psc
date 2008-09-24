@@ -260,7 +260,8 @@
 				 allDaysArePresent = false;
 				 allDaysAreHidden = true;
 				 init = true;
-            }
+                 
+             }
 			function check()
 			{
 
@@ -577,7 +578,8 @@
 					arrowSetup()
 					showMonthSetup()
 					hideMonthSetup()
-				}
+
+                }
 
 			}
 
@@ -613,6 +615,37 @@
 
                 return true;
             }
+            // Temporary.  Validation should really be on the server side.
+            function isCorrectCycleLength() {
+                var cycleLength = document.getElementById("cycleLength").value;
+                var isCorrectInput = true;
+                if (cycleLength != "" && cycleLength <=0) {
+                isCorrectInput = false;
+                document.getElementById("cycleError").innerHTML = "Cycle Length must be a positive number.";
+             }
+            return isCorrectInput;
+            }
+
+            function updateCycleError() {
+                 if (isCorrectCycleLength()){
+                document.getElementById("cycleError").innerHTML = "";
+                }
+            }
+
+            Element.observe(window, "load", function() {
+                $$("#cycleLength").each(function(fn) {
+                new Form.Element.Observer(fn, 1, updateCycleError);
+                })
+                updateCycleError();
+            })
+
+            $(document).observe("dom:loaded", function() {
+                $('cycle-form').observe("submit", function(fn) {
+                if (!isCorrectCycleLength()) {
+                    Event.stop(fn);
+                }
+                })
+            })
 
             function generalSetup() {
                 epochsAreaSetup();
@@ -648,6 +681,7 @@
             <c:if test="${empty developmentRevision && not empty studySegment.months}">
                 Event.observe(window, "load", loadFunctionsForStudySegment)
             </c:if>
+
 
         </script>
     </head>
@@ -825,7 +859,9 @@
         <div id="selected-studySegment" class="section">
             <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true"/>
         </div>
+        <script type="text/javascript">
 
+        </script>
         <c:if test="${showChanges}"></div></c:if>
 
     </body>
