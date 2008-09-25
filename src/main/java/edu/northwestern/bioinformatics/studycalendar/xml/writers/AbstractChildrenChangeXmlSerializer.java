@@ -13,7 +13,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer implements BeanFactoryAware {
     private static final String CHILD_ID = "child-id";
     protected DaoFinder daoFinder;
-    protected Class<? extends PlanTreeNode> childClass;
+    protected Class<? extends DomainObject> childClass;
 
     protected void addAdditionalAttributes(final Change change, Element element) {
         //element.addAttribute(CHILD_ID, ((ChildrenChange)change).getChild().getGridId());
@@ -31,7 +31,7 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     }
 
     // Methods to get child from child id
-    protected DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+    protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
         if (change.getChild() != null) {
             return change.getChild();
         } else {

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -21,13 +20,10 @@ public class ReorderXmlSerializerTest extends StudyCalendarXmlTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         xmlSerializer = new ReorderXmlSerializer() {
-
             @Override
-            protected DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+            protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
                 return epoch1;
             }
-
-
         };
         createReorder();
 
