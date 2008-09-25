@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -29,10 +30,16 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
             element.addAttribute(INDEX, add.getIndex().toString());
         }
 
-        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
-        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
-        Element ePlanTreeNode = serializer.createElement(child);
-        element.add(ePlanTreeNode);
+        DomainObject child = getChild(add, childClass);
+        if (child instanceof PlanTreeNode) {
+            PlanTreeNode<?> added = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
+            AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(added);
+            Element ePlanTreeNode = serializer.createElement(added);
+            element.add(ePlanTreeNode);
+        } else {
+            // TEMPORARY -- see issue #494/#496
+            throw new IllegalStateException("Not currently capable of serializing Add for " + child.getClass().getName());
+        }
     }
 
     protected void setAdditionalProperties(final Element element, Change add) {

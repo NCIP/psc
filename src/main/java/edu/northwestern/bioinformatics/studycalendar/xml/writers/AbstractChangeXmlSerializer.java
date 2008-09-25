@@ -22,8 +22,14 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
     public Element createElement(Change change) {
         Element element = element(elementName());
         element.addAttribute(ID, change.getGridId());
-        addAdditionalAttributes(change, element);
-        return element;
+        try {
+            addAdditionalAttributes(change, element);
+            return element;
+        } catch (IllegalStateException ise) {
+            // This is probably temporary.  See AddXmlSerializer and issue #494/#496.
+            log.warn("XML incomplete: " + ise.getMessage());
+            return null;
+        }
     }
 
     public Change readElement(Element element) {
