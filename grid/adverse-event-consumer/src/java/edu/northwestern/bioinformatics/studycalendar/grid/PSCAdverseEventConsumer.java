@@ -3,10 +3,10 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import aenotification.AENotificationType;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import gov.nih.nci.cabig.ccts.ae.domain.AENotificationType;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumerI;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.RegistrationFailed;
@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
- * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
+ * @author <a href="mailto:saurabh.agrawals@semanticbits.com>Saurabh Agrawal</a>
  */
 
 @Transactional(readOnly = false)
@@ -30,7 +30,6 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     private static final Log logger = LogFactory.getLog(PSCAdverseEventConsumer.class);
 
     private ScheduledCalendarService scheduledCalendarService;
-
 
 
     public void register(final AENotificationType aeNotification) throws java.rmi.RemoteException, InvalidRegistration, RegistrationFailed {

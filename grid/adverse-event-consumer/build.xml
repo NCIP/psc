@@ -1,22 +1,21 @@
 <project name="adverse-event-consumer">
 
-	<property environment="env" />
+    <property environment="env"/>
 
-	<property name="src.dir" value="src/java"/>
-	<property name="build.dir" value="build/classes"/>
-	<property name="lib.dir" value="lib"/>
-	<property name="ext.lib.dir" value="ext/lib"></property>
+    <property name="src.dir" value="src/java"/>
+    <property name="build.dir" value="build/classes"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="ext.lib.dir" value="ext/lib"></property>
 
-	<property name="test.src.dir" value="test/${src.dir}"/>
-	<property name="test.build.dir" value="test/${build.dir}"/>
-	<property name="test.lib.dir" value="test/${lib.dir}"/>
-	<property name="test.report.dir" value="test/report"/>
-	<property name="jar.name" value="psc-adverse-event-consumer.jar"/>
+    <property name="test.src.dir" value="test/${src.dir}"/>
+    <property name="test.build.dir" value="test/${build.dir}"/>
+    <property name="test.lib.dir" value="../test/${lib.dir}"/>
+    <property name="test.report.dir" value="test/report"/>
+    <property name="jar.name" value="psc-adverse-event-consumer.jar"/>
 
-	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
-	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>
-
-
+    <property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
+    <property name="deploy.etc.ext.dir"
+              value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>
 
 
     <target name="get-jars">
@@ -35,90 +34,98 @@
 
             <fileset dir="../../src/main/webapp/WEB-INF/lib">
                 <include name="*.jar"/>
-              </fileset>
+            </fileset>
         </copy>
     </target>
 
-	<target name="checkGlobus" depends="setGlobus">
-		<condition property="globus.not.found">
-			<or>
-				<not>
-					<isset property="ext.globus.dir"/>
-				</not>
-				<equals arg1="${ext.globus.dir}" arg2=""/>
-			</or>
-		</condition>
-		<fail message="Globus installation is not set in either GLOBUS_LOCATION or ext.globus.dir"
-			if="globus.not.found"/>
-		<echo message="Globus: ${ext.globus.dir}"/>
-	</target>
+    <target name="checkGlobus" depends="setGlobus">
+        <condition property="globus.not.found">
+            <or>
+                <not>
+                    <isset property="ext.globus.dir"/>
+                </not>
+                <equals arg1="${ext.globus.dir}" arg2=""/>
+            </or>
+        </condition>
+        <fail message="Globus installation is not set in either GLOBUS_LOCATION or ext.globus.dir"
+              if="globus.not.found"/>
+        <echo message="Globus: ${ext.globus.dir}"/>
+    </target>
 
-	<target name="setGlobus" if="env.GLOBUS_LOCATION">
-		<property name="ext.globus.dir" value="${env.GLOBUS_LOCATION}"/>
-	</target>
+    <target name="setGlobus" if="env.GLOBUS_LOCATION">
+        <property name="ext.globus.dir" value="${env.GLOBUS_LOCATION}"/>
+    </target>
 
-	<target name="defineClasspaths">
-		<path id="compile.cp">
-			<fileset dir="${ext.lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${ext.globus.dir}/lib">
-				<include name="*.jar"/>
-			</fileset>
-			<pathelement location="../../tools/tomcat/lib/common/servlet-api.jar"/>
-		</path>
+    <path id="test.compile.cp">
+        <pathelement location="test/resources"/>
+        <path refid="compile.cp"/>
+        <fileset dir="${test.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
 
-		<path id="test.compile.cp">
-			<pathelement location="test/resources"/>
-			<path refid="compile.cp"/>
-			<fileset dir="${test.lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
 
-			<pathelement location="${build.dir}"/>
+        <pathelement location="${build.dir}"/>
 
-		</path>
+    </path>
 
-		<path id="test.run.cp">
-			<path refid="test.compile.cp"/>
-			<pathelement location="${test.build.dir}"/>
-		</path>
-	</target>
+    <target name="defineClasspaths" depends="checkGlobus">
+        <path id="compile.cp">
+            <fileset dir="${ext.lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${ext.globus.dir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <pathelement location="../../tools/tomcat/lib/common/servlet-api.jar"/>
+        </path>
 
-	<target name="compile" depends="checkGlobus, get-jars, defineClasspaths">
-		<mkdir dir="${build.dir}"/>
-		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true">
-			<classpath refid="compile.cp"/>
-		</javac>
-		<copy todir="${build.dir}">
-			<fileset dir="${src.dir}">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</copy>
-	</target>
+        <path refid="test.compile.cp">
+
+        </path>
+
+        <path id="test.run.cp">
+            <path refid="test.compile.cp"/>
+            <pathelement location="${test.build.dir}"/>
+        </path>
+    </target>
+
+    <target name="compile" depends="checkGlobus, get-jars, defineClasspaths">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" debug="true">
+            <classpath refid="compile.cp"/>
+        </javac>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
     <target name="get-ae" depends="get-ae-jar,update-wsdd"
-               description="create study consumer wsrf and update the server-config.wsdd">
-       </target>
+            description="create study consumer wsrf and update the server-config.wsdd">
+    </target>
 
-    <target name="get-ae-jar" depends="jar,checkCaaers,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
+
+    <target name="get-ae-jar" depends="jar,checkCaaers,checkGridServiceDeployDir"
+            description="crate adverse event consumer wsrf ">
 
         <mkdir dir="ext/lib"/>
 
         <!--<subant buildpath="${env.GLOBUS_LOCATION}" antfile="share/globus_wsrf_common/tomcat/tomcat.xml"-->
-                <!--target="deployTomcat"-->
-                <!--inheritAll="false">-->
-            <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
+        <!--target="deployTomcat"-->
+        <!--inheritAll="false">-->
+        <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
 
         <!--</subant>-->
 
         <!--<ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="ivy-build.xml"-->
-             <!--target="publish-local" inheritAll="false"/>-->
+        <!--target="publish-local" inheritAll="false"/>-->
 
         <ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService1.2" antfile="build.xml"
-                     target="deployTomcat" inheritAll="false"/>
+             target="deployTomcat" inheritAll="false"/>
 
 
         <copy todir="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib" overwrite="true">
@@ -134,45 +141,44 @@
     </target>
 
     <path id="xml-task-dir">
-            <fileset dir="../../test/infrastructure/lib">
-                <include name="**/*.jar"/>
-            </fileset>
-        </path>
-        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="xml-task-dir"/>
+        <fileset dir="../../test/infrastructure/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="xml-task-dir"/>
 
-        <target name="update-wsdd">
-            <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
-                     dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
-                     failWithoutMatch="true">
-                <insert path="/:deployment/:service" position="before">
-                    <![CDATA[
-              <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoRequestHandler"
-                type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler"/>
+    <target name="update-wsdd">
+        <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                 dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                 failWithoutMatch="true">
+            <insert path="/:deployment/:service" position="before">
+                <![CDATA[
+          <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoRequestHandler"
+            type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler"/>
 
-            <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoResponseHandler"
-                type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler"/>
-              ]]>
-                </insert>
-            </xmltask>
+        <handler xmlns="http://xml.apache.org/axis/wsdd/"  name="auditInfoResponseHandler"
+            type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler"/>
+          ]]>
+            </insert>
+        </xmltask>
 
-            <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
-                     dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
-                     failWithoutMatch="true">
-                <insert path="/:deployment/:service">
-                    <![CDATA[
-              <requestFlow xmlns="http://xml.apache.org/axis/wsdd/" >
-                    <handler type="auditInfoRequestHandler"/>
-                </requestFlow>
-                <responseFlow xmlns="http://xml.apache.org/axis/wsdd/" >
-                    <handler type="auditInfoResponseHandler"/>
-                </responseFlow>
-              ]]>
-                </insert>
-            </xmltask>
+        <xmltask source="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                 dest="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+                 failWithoutMatch="true">
+            <insert path="/:deployment/:service">
+                <![CDATA[
+          <requestFlow xmlns="http://xml.apache.org/axis/wsdd/" >
+                <handler type="auditInfoRequestHandler"/>
+            </requestFlow>
+            <responseFlow xmlns="http://xml.apache.org/axis/wsdd/" >
+                <handler type="auditInfoResponseHandler"/>
+            </responseFlow>
+          ]]>
+            </insert>
+        </xmltask>
 
-        </target>
+    </target>
 
-      
 
     <target name="checkCaaers" depends="setCaaers">
         <condition property="caaers.not.found">
@@ -211,108 +217,114 @@
     </target>
 
     <target name="compileTests" depends="compile">
-		<mkdir dir="${test.build.dir}"/>
-		<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="true">
-			<classpath refid="test.compile.cp"/>
-		</javac>
-	</target>
+        <mkdir dir="${test.build.dir}"/>
+        <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="true">
+            <classpath refid="test.compile.cp"/>
+        </javac>
+        <copy todir="${test.build.dir}">
+            <fileset dir="../../src/test/java">
+                <include name="logback-test.xml"/>
+            </fileset>
+        </copy>
 
-	<target name="jar" depends="compile">
-		<jar basedir="${build.dir}" destfile="${jar.name}"/>
-	</target>
+    </target>
 
-	<target name="deploy" depends="jar">
-		<copy todir="${deploy.lib.dir}" overwrite="true">
-			<fileset dir=".">
-				<include name="${jar.name}"/>
-			</fileset>
-			<fileset dir="${ext.lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
-			<fileset dir="${lib.dir}">
-				<include name="*.jar"/>
-			</fileset>
-		</copy>
+    <target name="jar" depends="compile">
+        <jar basedir="${build.dir}" destfile="${jar.name}"/>
+    </target>
 
-		<copy todir="${deploy.etc.ext.dir}" overwrite="true">
-			<fileset dir="etc">
-				<include name="*"/>
-			</fileset>
-		</copy>
-	</target>
+    <target name="deploy" depends="jar">
+        <copy todir="${deploy.lib.dir}" overwrite="true">
+            <fileset dir=".">
+                <include name="${jar.name}"/>
+            </fileset>
+            <fileset dir="${ext.lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${deploy.etc.ext.dir}" overwrite="true">
+            <fileset dir="etc">
+                <include name="*"/>
+            </fileset>
+        </copy>
+    </target>
 
 
-	<target name="test" depends="compileTests">
-		<mkdir dir="${test.report.dir}"/>
+    <target name="test" depends="compileTests">
+        <mkdir dir="${test.report.dir}"/>
 
-		<!-- antcall target="insertTestData"/ -->
+        <!-- antcall target="insertTestData"/ -->
 
-		<junit printsummary="yes" showoutput="true">
+        <junit printsummary="yes" showoutput="true">
 
-			<jvmarg value="-Dgov.nih.nci.security.configFile=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/ApplicationSecurityConfig.xml"/>
-			<jvmarg value="-Djava.security.auth.login.config=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/csm_jaas.config"/>
+            <jvmarg value="-Dgov.nih.nci.security.configFile=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/ApplicationSecurityConfig.xml"/>
+            <jvmarg value="-Djava.security.auth.login.config=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/csm_jaas.config"/>
 
-			<classpath refid="test.run.cp"/>
-			<formatter type="xml"/>
-			<batchtest fork="yes" todir="${test.report.dir}">
-				<fileset dir="${test.src.dir}">
-					<include name="**/Test*.java"/>
-					<include name="**/*TestCase.java"/>
-					<include name="**/*Test.java"/>
-				</fileset>
-			</batchtest>
-		</junit>
+            <classpath refid="test.run.cp"/>
+            <formatter type="xml"/>
+            <batchtest fork="yes" todir="${test.report.dir}">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/Test*.java"/>
+                    <include name="**/*TestCase.java"/>
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
 
-		<junitreport todir="${test.report.dir}">
-			<fileset dir="${test.report.dir}">
-				<include name="TEST-*.xml"/>
-			</fileset>
-			<report format="frames" todir="${test.report.dir}"/>
-		</junitreport>
+        <junitreport todir="${test.report.dir}">
+            <fileset dir="${test.report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.report.dir}"/>
+        </junitreport>
 
-		<!-- antcall target="deleteTestData"/ -->
+        <!-- antcall target="deleteTestData"/ -->
 
-	</target>
+    </target>
 
-	<target name="insertTestData">
-		<dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
-			password="postgres">
+    <target name="insertTestData">
+        <dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
+                password="postgres">
 
-			<classpath>
-				<fileset dir="../../db/lib">
-					<include name="*.jar"/>
-				</fileset>
-			</classpath>
+            <classpath>
+                <fileset dir="../../db/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
 
-			<operation type="CLEAN_INSERT" transaction="true"
-				src="test/resources/test_data.xml"
-			/>
+            <operation type="CLEAN_INSERT" transaction="true"
+                       src="test/resources/test_data.xml"
+                    />
 
-		</dbunit>
-	</target>
+        </dbunit>
+    </target>
 
-	<target name="deleteTestData">
-		<dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
-			password="postgres">
+    <target name="deleteTestData">
+        <dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
+                password="postgres">
 
-			<classpath>
-				<fileset dir="../../db/lib">
-					<include name="*.jar"/>
-				</fileset>
-			</classpath>
+            <classpath>
+                <fileset dir="../../db/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
 
-			<operation type="DELETE" transaction="true"
-				src="test/resources/test_data.xml"
-			/>
+            <operation type="DELETE" transaction="true"
+                       src="test/resources/test_data.xml"
+                    />
 
-		</dbunit>
-	</target>
+        </dbunit>
+    </target>
 
-	<target name="clean">
+    <target name="clean">
 
-		<delete dir="build"/>
-		<delete file="${jar.name}"/>
-		<delete dir="test/build"/>
+        <delete dir="build"/>
+        <delete file="${jar.name}"/>
+        <delete dir="test/build"/>
 
-	</target>
+    </target>
 </project>

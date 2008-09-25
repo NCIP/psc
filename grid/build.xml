@@ -1,15 +1,15 @@
-<project name="psc-wsrf">
+<project name="wsrf-psc">
 
     <property environment="env"/>
 
-    <property name="war.dir" value="psc-wsrf"/>
+    <property name="war.dir" value="wsrf-psc"/>
 
     <property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
 
-    <property name="psc-wsrf" value="psc-wsrf"/>
+    <property name="wsrf-psc" value="wsrf-psc"/>
 
 
-    <target name="get-grid-war" 
+    <target name="get-grid-war" depends="get-ae,get-registration-consumer,get-study-consumer"
             description="creates a deployable WAR file of all PSC grid services">
         <mkdir dir="${war.dir}"/>
 
@@ -18,14 +18,14 @@
             <fileset dir="${env.CATALINA_HOME}/webapps/wsrf/">
             </fileset>
         </copy>
-
         <!--
-        make sure to delete cog-jglobus jar if it get copied
-        <!-->
+               make sure to delete cog-jglobus jar if it get copied
+               <!-->
 
         <delete file="${war.dir}/WEB-INF/lib/cog-jglobus.jar"/>
 
-        <property name="war-name" value="${psc-wsrf}.war"/>
+
+        <property name="war-name" value="${wsrf-psc}.war"/>
         <mkdir dir="dist"/>
 
         <war basedir="${war.dir}" destfile="dist/${war-name}" webxml="${war.dir}/WEB-INF/web.xml">
@@ -33,7 +33,6 @@
             <metainf dir="dist">
                 <include name="context.xml"/>
             </metainf>
-
         </war>
 
     </target>
@@ -105,6 +104,5 @@
 
         </subant>
     </target>
-
 
 </project>
