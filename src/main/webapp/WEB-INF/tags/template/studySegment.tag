@@ -13,20 +13,22 @@
 <laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
     <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
-    <form:form method="post" id="cycle-form" action="${cycleUrl}">
-        <div id="cycle">
-            <c:choose>
-                <c:when test="${editable}">
-                    <h5 id="cycleError"></h5>
-                    Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
-                    <input type="submit" value="Update" id="cycleButton"/>
-                </c:when>
-                <c:when test="${not empty studySegment.base.cycleLength}">
-                    The cycle length of this segment is ${studySegment.base.cycleLength} days.
-                </c:when>
-            </c:choose>
-        </div>
-    </form:form>
+    <c:if test="${editable}">
+        <form:form method="post" id="cycle-form" action="${cycleUrl}">
+            <div id="cycle">
+                <c:choose>
+                    <c:when test="${editable}">
+                        <h5 id="cycleError"></h5>
+                        Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
+                        <input type="submit" value="Update" id="cycleButton"/>
+                    </c:when>
+                    <c:when test="${not empty studySegment.base.cycleLength}">
+                        The cycle length of this segment is ${studySegment.base.cycleLength} days.
+                    </c:when>
+                </c:choose>
+            </div>
+        </form:form>
+    </c:if>
     <p class="controls">
         <c:if test="${editable}">
             <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">Add period</a>
