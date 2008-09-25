@@ -40,7 +40,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
             }
 
             @Override
-            protected DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
+            protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
                 return epoch;
             }
         };

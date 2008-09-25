@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +31,7 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
 
         DomainObject child = getChild(add, childClass);
         if (child instanceof PlanTreeNode) {
-            PlanTreeNode<?> added = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
+            PlanTreeNode<?> added = (PlanTreeNode<?>) child;
             AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(added);
             Element ePlanTreeNode = serializer.createElement(added);
             element.add(ePlanTreeNode);
