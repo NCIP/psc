@@ -260,8 +260,7 @@
 				 allDaysArePresent = false;
 				 allDaysAreHidden = true;
 				 init = true;
-                 
-             }
+            }
 			function check()
 			{
 
@@ -578,8 +577,7 @@
 					arrowSetup()
 					showMonthSetup()
 					hideMonthSetup()
-
-                }
+				}
 
 			}
 
@@ -631,7 +629,8 @@
                 document.getElementById("cycleError").innerHTML = "";
                 }
             }
-
+            
+            <c:if test="${not empty developmentRevision}">
             Element.observe(window, "load", function() {
                 $$("#cycleLength").each(function(fn) {
                 new Form.Element.Observer(fn, 1, updateCycleError);
@@ -646,6 +645,7 @@
                 }
                 })
             })
+            </c:if>
 
             function generalSetup() {
                 epochsAreaSetup();
@@ -681,7 +681,6 @@
             <c:if test="${empty developmentRevision && not empty studySegment.months}">
                 Event.observe(window, "load", loadFunctionsForStudySegment)
             </c:if>
-
 
         </script>
     </head>
@@ -859,9 +858,7 @@
         <div id="selected-studySegment" class="section">
             <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true"/>
         </div>
-        <script type="text/javascript">
 
-        </script>
         <c:if test="${showChanges}"></div></c:if>
 
     </body>
