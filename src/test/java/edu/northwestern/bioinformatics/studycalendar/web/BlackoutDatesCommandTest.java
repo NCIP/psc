@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static org.easymock.classextension.EasyMock.*;
 
@@ -15,13 +16,15 @@ import java.util.Calendar;
 public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
     private BlackoutDatesCommand command;
     private SiteDao siteDao;
+    private BlackoutDateDao blackoutDateDao;
     private Site site;
 
 
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
-        command = new BlackoutDatesCommand(siteDao);
+        blackoutDateDao = registerDaoMockFor(BlackoutDateDao.class);
+        command = new BlackoutDatesCommand(siteDao, blackoutDateDao);
 
         site = new Site();
         site.getBlackoutDates().add(Fixtures.setId(1, new SpecificDateBlackout()));
@@ -66,6 +69,13 @@ public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
         String expectedDescription = "sdsdfs sfs fjsd";
         command.setHolidayDescription(expectedDescription);
 
+        SpecificDateBlackout blackoutDate = new SpecificDateBlackout();
+        blackoutDate.setDescription(expectedDescription);
+        blackoutDate.setDay(1);
+        blackoutDate.setMonth(Calendar.DECEMBER);
+        blackoutDate.setYear(2009);
+        blackoutDateDao.save(blackoutDate);
+
         siteDao.save(same(site));
 
         replayMocks();
@@ -87,6 +97,11 @@ public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
         command.setDayOfTheWeek(dayOfTheWeek);
         command.setHolidayDescription("off");
 
+        WeekdayBlackout holiday = new WeekdayBlackout();
+        holiday.setDescription("off");
+        holiday.setDayOfTheWeek(dayOfTheWeek);
+        blackoutDateDao.save(holiday);
+
         siteDao.save(same(site));
         replayMocks();
         command.execute();
@@ -105,6 +120,13 @@ public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
         command.setMonth(Calendar.SEPTEMBER);
         String expectedDescription = "Memorial Day";
         command.setHolidayDescription(expectedDescription);
+
+        RelativeRecurringBlackout holiday = new RelativeRecurringBlackout();
+        holiday.setDescription(expectedDescription);
+        holiday.setDayOfTheWeek("Monday");
+        holiday.setMonth(Calendar.SEPTEMBER);
+        holiday.setWeekNumber(1);
+        blackoutDateDao.save(holiday);
 
         siteDao.save(same(site));
 

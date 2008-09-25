@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class BlackoutDatesController extends PscSimpleFormController {
     private SiteDao siteDao;
+    private BlackoutDateDao blackoutDateDao;
     private static final Logger log = LoggerFactory.getLogger(BlackoutDatesController.class.getName());
 
     public BlackoutDatesController() {
@@ -29,7 +31,7 @@ public class BlackoutDatesController extends PscSimpleFormController {
     }
 
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
-        return new BlackoutDatesCommand(siteDao);
+        return new BlackoutDatesCommand(siteDao, blackoutDateDao);
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request,
@@ -51,6 +53,11 @@ public class BlackoutDatesController extends PscSimpleFormController {
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setBlackoutDateDao(BlackoutDateDao blackoutDateDao) {
+        this.blackoutDateDao = blackoutDateDao;
     }
 }
 

@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class SiteDaoTest extends DaoTestCase {
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
+    private BlackoutDateDao blackoutDateDao = (BlackoutDateDao) getApplicationContext().getBean("blackoutDateDao");
 
     public void testGetById() throws Exception {
         Site actual = siteDao.getById(-4);
@@ -62,13 +63,14 @@ public class SiteDaoTest extends DaoTestCase {
         holidayToAdd.setMonth(Calendar.SEPTEMBER);
         holidayToAdd.setId(-3);
         holidayToAdd.setDescription("Closed");
-
+        holidayToAdd.setSite(actual);
         List<BlackoutDate> list = actual.getBlackoutDates();
         int size = list.size();
         list.add(holidayToAdd);
         actual.setBlackoutDates(list);
-        siteDao.save(actual);
 
+        blackoutDateDao.save(holidayToAdd);
+        siteDao.save(actual);
 
         interruptSession();
 
