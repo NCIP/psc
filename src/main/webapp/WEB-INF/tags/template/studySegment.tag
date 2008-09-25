@@ -13,7 +13,7 @@
 <laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
     <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
-    <c:if test="${editable}">
+    <c:if test="${editable || not empty studySegment.base.cycleLength}">
         <form:form method="post" id="cycle-form" action="${cycleUrl}">
             <div id="cycle">
                 <c:choose>
