@@ -726,7 +726,7 @@
                 <div class="label">Other formats</div>
                 <div class="value">
                     <ul>
-                        <li><a href="<c:url value="/pages/cal/template/display/${empty developmentRevision ? study.assignedIdentifier : study.gridId}.xml"/>">PSC XML</a></li>
+                        <li><a href="<c:url value="/api/v1/studies/${empty developmentRevision ? study.assignedIdentifier : study.gridId}/template?download"/>">PSC XML</a></li>
                     </ul>
                 </div>
             </div>

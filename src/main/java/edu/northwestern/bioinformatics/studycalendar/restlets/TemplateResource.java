@@ -24,6 +24,7 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class TemplateResource extends AbstractDomainObjectResource<Study> {
+    private boolean useDownloadMode;
     private StudyDao studyDao;
 
     private ImportTemplateService importTemplateService;
@@ -31,6 +32,10 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Representation representation = super.represent(variant);
+        if (useDownloadMode) {
+            representation.setDownloadable(true);
+            representation.setDownloadName(getRequestedObject().getAssignedIdentifier() + ".xml");
+        }
         representation.setModificationDate(getRequestedObject().getLastModifiedDate());
         return representation;
     }
@@ -40,18 +45,22 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
+
+        useDownloadMode = request.getResourceRef().getQueryAsForm().getNames().contains("download");
     }
 
     @Override
     protected Study loadRequestedObject(Request request) {
         String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
-        return studyDao.getByAssignedIdentifier(studyIdent);
+        Study byAssigned = studyDao.getByAssignedIdentifier(studyIdent);
+        if (byAssigned != null) {
+            return byAssigned;
+        } else {
+            return studyDao.getByGridId(studyIdent);
+        }
     }
 
-    @Override
-    public boolean allowPut() {
-        return true;
-    }
+    @Override public boolean allowPut() { return true; }
 
     @Override
     public void storeRepresentation(Representation entity) throws ResourceException {

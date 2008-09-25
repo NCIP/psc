@@ -47,6 +47,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         study.getDevelopmentAmendment().addDelta(delta);
         delta.getChanges().get(0).setUpdatedDate(lastModifiedDate);
         Fixtures.assignIds(study);
+
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andStubReturn(study);
     }
 
     @Override
@@ -59,12 +61,25 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testGetAndPutAllowed() throws Exception {
+        replayMocks();
         assertAllowedMethods("GET", "PUT");
     }
 
     public void testGetReturnsXml() throws Exception {
-
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expectObjectXmlized(study);
+
+        doGet();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseIsCreatedXml();
+
+        assertEquals("modification date incorrect", lastModifiedDate, response.getEntity().getModificationDate());
+    }
+
+    public void testGetByGridIdReturnsXml() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(study);
         expectObjectXmlized(study);
 
         doGet();
@@ -77,6 +92,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testGet404sWhenStudyNotFound() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
         doGet();
 
@@ -99,6 +115,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutNewXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
         expectReadXmlFromRequestAs(study);
         expect(importTemplateService.readAndSaveTemplate(null, null)).andReturn(study);
@@ -109,6 +126,18 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
 
+    }
+
+    public void testEntityIsInDownloadModeWithDownloadParam() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expectObjectXmlized(study);
+
+        request.getResourceRef().setQuery("download");
+        doGet();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertTrue("Should be downloadable", response.getEntity().isDownloadable());
+        assertEquals("Suggested filename should match the assigned ident", STUDY_IDENT + ".xml", response.getEntity().getDownloadName());
     }
 
     protected void expectReadXmlFromRequestAs(Study expectedRead) throws Exception {
