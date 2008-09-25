@@ -10,6 +10,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Padmaja Vedula
@@ -70,7 +73,7 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         this.studySites = studySites;
     }
 
-    @OneToMany(mappedBy = "site", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "site")
     @OrderBy
     // order by ID for testing consistency
     @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
@@ -94,8 +97,7 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         this.assignedIdentifier = assignedIdentifier;
     }
 
-    @OneToMany
-    @JoinColumn(name = "site_id", nullable = false)
+    @OneToMany(mappedBy = "site")
     @OrderBy
     // order by ID for testing consistency
     @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})

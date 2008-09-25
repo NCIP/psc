@@ -1,11 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.*;
 import org.springframework.beans.BeanUtils;
+import org.apache.commons.logging.Log;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 
 /**
@@ -20,8 +26,9 @@ import javax.persistence.*;
                 }
 )
 @DiscriminatorColumn(name = "discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class BlackoutDate extends AbstractMutableDomainObject {
+public class BlackoutDate extends AbstractMutableDomainObject {
     private String description;
+    private Site site;
 
     public String getDescription() {
         return description;
@@ -29,6 +36,16 @@ public abstract class BlackoutDate extends AbstractMutableDomainObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "site_id")
+    public Site getSite() {
+        return site;
     }
 
     protected int mapDayNameToInteger(String dayName) {

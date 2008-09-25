@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ public class BlackoutDatesCommand {
     private Site site;
     private String action;
     private SiteDao siteDao;
+    private BlackoutDateDao blackoutDateDao;
 
     private Integer day;
     private Integer month;
@@ -31,8 +33,9 @@ public class BlackoutDatesCommand {
 
     private String dayOfTheWeek;
 
-    public BlackoutDatesCommand(SiteDao siteDao) {
+    public BlackoutDatesCommand(SiteDao siteDao, BlackoutDateDao blackoutDateDao) {
         this.siteDao = siteDao;
+        this.blackoutDateDao = blackoutDateDao;
     }
 
     public void execute() {
@@ -42,7 +45,6 @@ public class BlackoutDatesCommand {
                 BlackoutDate abstractHolidayState =  iterator.next();
                 if(abstractHolidayState.getId().equals(getSelectedHoliday())) {
                     iterator.remove();
-                    siteDao.save(getSite());
                 }
 
             }
@@ -71,12 +73,14 @@ public class BlackoutDatesCommand {
                 setHolidayDescription("Office is Closed");
             }
             toAdd.setDescription(getHolidayDescription());
+            toAdd.setSite(getSite());
             if(!isElementInTheList(list, toAdd)) {
-
+                blackoutDateDao.save(toAdd);
                 list.add(toAdd);
-                siteDao.save(getSite());
+                getSite().setBlackoutDates(list);
             }
         }
+        siteDao.save(getSite());
     }
 
     public void parse (String date){
@@ -181,6 +185,6 @@ public class BlackoutDatesCommand {
 
     public void setWeek(Integer week) {
         this.week = week;
-    }    
+    }
 }
 
