@@ -16,12 +16,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Collections;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -78,7 +80,23 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     @Transient
     public SortedMap<Date, List<ScheduledActivity>> getActivitiesByDate() {
         SortedMap<Date, List<ScheduledActivity>> byDate = new TreeMap<Date, List<ScheduledActivity>>();
-        for (ScheduledActivity event : getActivities()) {
+        List<ScheduledActivity> tempEvents = getActivities();
+        List<ScheduledActivity> events = new LinkedList<ScheduledActivity>();
+        List<ScheduledActivity> scheduledEvents = new LinkedList<ScheduledActivity>();
+        for(ScheduledActivity tempEvent : tempEvents) {
+            if((tempEvent.getPlannedActivity() == null) || (tempEvent.getRepetitionNumber() == null)) {
+            events.add(tempEvent);
+            }
+            else {
+            scheduledEvents.add(tempEvent);
+            }
+        }
+        Collections.sort(scheduledEvents);
+        for(ScheduledActivity scheduledEvent : scheduledEvents) {
+            events.add(scheduledEvent);
+        }
+
+        for (ScheduledActivity event : events) {
             Date key = event.getActualDate();
             if (!byDate.containsKey(key)) {
                 byDate.put(key, new LinkedList<ScheduledActivity>());

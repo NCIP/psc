@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -42,7 +43,7 @@ import java.util.TreeSet;
         @Parameter(name="sequence", value="seq_scheduled_activities_id")
     }
 )
-public class ScheduledActivity extends AbstractMutableDomainObject {
+public class ScheduledActivity extends AbstractMutableDomainObject implements Comparable<ScheduledActivity> {
     private ScheduledStudySegment scheduledStudySegment;
     private PlannedActivity plannedActivity;
     private Date idealDate;
@@ -65,6 +66,13 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
             }
             setCurrentState(newState);
         }
+    }
+    public int compareTo(ScheduledActivity o) {
+        // by type first
+        int typeDiff = getActivity().getType().compareTo(o.getActivity().getType());
+        if (typeDiff != 0) return typeDiff;
+        // then by name
+        return ComparisonUtils.nullSafeCompare(getActivity().getName(),o.getActivity().getName());
     }
 
     @Transient
