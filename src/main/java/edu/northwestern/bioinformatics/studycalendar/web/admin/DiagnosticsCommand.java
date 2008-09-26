@@ -10,28 +10,16 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DiagnosticsCommand extends ConfigurationCommand {
     private String smtpException;
+    private String smokeTestServiceException;
 
     public DiagnosticsCommand(Configuration configuration) {
         super(configuration);
     }
 
 
-
-
-//    public boolean checkIfGridServicesIsConnecting() {
-//        boolean testResult = false;
-//        try {
-//            SmokeTestServiceClient client = new SmokeTestServiceClient("");
-//            client.ping();
-//            testResult = true;
-//        } catch (Exception e) {
-//
-//            //this.setSmokeTestServiceException(e);
-//
-//        }
-//        return testResult;
-//
-//    }
+    public BindableConfiguration getConfiguration() {
+        return getConf();
+    }
 
     public void setSmtpException(String smtpException) {
         this.smtpException = smtpException;
@@ -39,5 +27,13 @@ public class DiagnosticsCommand extends ConfigurationCommand {
 
     public String getSmtpException() {
         return smtpException;
+    }
+
+    public String getSmokeTestServiceException() {
+        return smokeTestServiceException;
+    }
+
+    public void setSmokeTestServiceException(String smokeTestServiceException) {
+        this.smokeTestServiceException = smokeTestServiceException;
     }
 }

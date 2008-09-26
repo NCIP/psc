@@ -101,7 +101,7 @@
     <bean name="/cal/managePeriodActivities" id="managePeriodActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.period.ManagePeriodActivitiesController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
-    </bean>    
+    </bean>
 
     <bean name="/cal/template/edit.js" id="editJsController"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
@@ -138,7 +138,7 @@
 
     <bean name="/activities/importActivities" id="importActivitiesController" autowire="byName"
            class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
-    </bean>    
+    </bean>
 
 
     <bean name="/activities/display/*" id="exportActivitiesXmlController" autowire="byName"
@@ -351,7 +351,7 @@
 
     <bean name="/report/scheduledActivitiesReport" id="scheduledActivitiesReportController" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ScheduledActivitiesReportController"/>
-    
+
     <bean name="/cal/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
            <property name="crumb">
@@ -387,8 +387,8 @@
             </bean>
         </property>
     </bean>
-    <bean name="/admin/diagnostics" id="diagnosticsController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.admin.DiagnosticsController">
+    <bean name="/admin/diagnostics" id="diagnosticsController" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.DiagnosticsController" >
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name">
@@ -400,10 +400,10 @@
             </bean>
         </property>
         <property name="mailSender" ref="mailSender"/>
-        <property name="mailMessageFactory" ref="mailMessageFactory"/>
+        <property name="configuration" ref="configuration"/>
     </bean>
     <bean name="/admin/configureAuthentication" id="authConfigurationController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemConfigurationController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemConfigurationController" >
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Authentication configuration"/>

@@ -35,6 +35,8 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Template>
             CAAERS_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("caAERSBaseUrl"));
     public static final ConfigurationProperty<Template>
+            SMOKE_SERVICE_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("smokeServiceBaseUrl"));
+    public static final ConfigurationProperty<Template>
             LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
 
     public static final ConfigurationProperty<Template>
@@ -48,15 +50,15 @@ public class Configuration extends DatabaseBackedConfiguration {
 
     // use target?
     public static final ConfigurationProperty<Boolean>
-        APP_LINKS_IN_ANOTHER_WINDOW = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInAnotherWindow"));
+            APP_LINKS_IN_ANOTHER_WINDOW = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInAnotherWindow"));
     // use target=_blank vs. target=appname
     public static final ConfigurationProperty<Boolean>
-        APP_LINKS_IN_NEW_WINDOWS = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInNewWindows"));
+            APP_LINKS_IN_NEW_WINDOWS = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInNewWindows"));
 
     public static final ConfigurationProperty<Boolean>
             ENABLE_ASSIGNING_SUBJECT = PROPERTIES.add(new ConfigurationProperty.Bool("enableAssigningSubject"));
     public static final ConfigurationProperty<Boolean>
-            ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new ConfigurationProperty.Bool("enableCreatingTemplate"));    
+            ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new ConfigurationProperty.Bool("enableCreatingTemplate"));
 
     ////// PSC-SPECIFIC LOGIC
     public boolean getExternalAppsConfigured() {

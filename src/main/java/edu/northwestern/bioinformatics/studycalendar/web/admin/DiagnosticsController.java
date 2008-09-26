@@ -3,18 +3,25 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.beans.factory.annotation.Required;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.restlet.util.Template;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
 
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_EXCEPTIONS_TO;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_REPLY_TO;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
+import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
+
+import java.util.List;
 
 public class DiagnosticsController extends PscSimpleFormController {
 
@@ -22,7 +29,6 @@ public class DiagnosticsController extends PscSimpleFormController {
     protected final Log log = LogFactory.getLog(getClass());
 
     private MailSender mailSender;
-    private MailMessageFactory mailMessageFactory;
 
 
     public DiagnosticsController() {
@@ -34,18 +40,37 @@ public class DiagnosticsController extends PscSimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         DiagnosticsCommand diagnosticsCommand = new DiagnosticsCommand(configuration);
         testSmtp(diagnosticsCommand, request);
+        checkIfGridServicesIsConnecting(diagnosticsCommand);
         return diagnosticsCommand;
     }
 
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-    }
 
+    public void checkIfGridServicesIsConnecting(DiagnosticsCommand diagnosticsCommand) {
+        try {
+            Template template = configuration.get(Configuration.SMOKE_SERVICE_BASE_URL);
+            if (template != null) {
+                SmokeTestServiceClient client = new SmokeTestServiceClient(template.getPattern());
+                client.ping();
+            }
+        } catch (Exception e) {
+            log.error("Error connecting to SmoteTestService.", e);
+            diagnosticsCommand.setSmokeTestServiceException(e.getMessage());
+
+        }
+
+    }
 
     private void testSmtp(DiagnosticsCommand diagnosticsCommand, HttpServletRequest request) {
         try {
-            ExceptionMailMessage exceptionMailMessage = mailMessageFactory.createExceptionMailMessage(new Exception("Testing the grid service configuration.."), request);
-            mailSender.send(exceptionMailMessage);
+            String message = "Testing the grid service configuration..";
+            List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
+
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setSubject(message);
+            simpleMailMessage.setReplyTo(configuration.get(MAIL_REPLY_TO));
+            simpleMailMessage.setTo(to.toArray(new String[to.size()]));
+
+            mailSender.send(simpleMailMessage);
         } catch (Exception e) {
             log.error(" Error in sending email , please check the confiuration " + e);
             diagnosticsCommand.setSmtpException(e.getMessage());
@@ -58,7 +83,9 @@ public class DiagnosticsController extends PscSimpleFormController {
     }
 
     @Required
-    public void setMailMessageFactory(MailMessageFactory mailMessageFactory) {
-        this.mailMessageFactory = mailMessageFactory;
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
+
+
 }
