@@ -19,6 +19,8 @@ import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class DiagnosticsController extends PscSimpleFormController {
     private Configuration configuration;
     protected final Log log = LogFactory.getLog(getClass());
 
-    private MailSender mailSender;
+    private StudyCalendarJavaMailSender mailSender;
 
 
     public DiagnosticsController() {
@@ -63,22 +65,29 @@ public class DiagnosticsController extends PscSimpleFormController {
     private void testSmtp(DiagnosticsCommand diagnosticsCommand, HttpServletRequest request) {
         try {
             String message = "Testing the grid service configuration..";
-            List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
 
-            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            MimeMessage simpleMailMessage = mailSender.createMimeMessage();
             simpleMailMessage.setSubject(message);
-            simpleMailMessage.setReplyTo(configuration.get(MAIL_REPLY_TO));
-            simpleMailMessage.setTo(to.toArray(new String[to.size()]));
+
+            // use the true flag to indicate you need a multipart message
+            MimeMessageHelper helper = new MimeMessageHelper(simpleMailMessage, true);
+
+            helper.setReplyTo(configuration.get(MAIL_REPLY_TO));
+            List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
+            helper.setTo(to.toArray(new String[to.size()]));
+
 
             mailSender.send(simpleMailMessage);
         } catch (Exception e) {
             log.error(" Error in sending email , please check the confiuration " + e);
             diagnosticsCommand.setSmtpException(e.getMessage());
         }
+
+
     }
 
     @Required
-    public void setMailSender(MailSender mailSender) {
+    public void setMailSender(StudyCalendarJavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
