@@ -15,6 +15,8 @@
     <property name="build-dir.webapp"    value="${src-dir.web}"/>
     <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
 
+    <property name="dist.war-name" value="${application-short-name}.war"/>
+
     <property name="api-dir" value="target/psc-api-${version}"/>
     <property name="metrics-dir" value="target/metrics"/>
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
@@ -389,29 +391,27 @@
 
     <target name="war" description="creates a deployable WAR file. Please use war-ccts if you are deploying PSC in CCTS." >
         <mkdir dir="dist"/>
-        <property name="war-name" value="${application-short-name}.war"/>
         <property name="webapp.deploy-path" value="/${application-short-name}"/>
         <property name="webapp.context-file" value="dist/context.xml"/>
         <property name="webapp.context.docBase" value="${war-name}"/>
         <antcall target="webapp.create-context"/>
         <antcall target="webapp"/>
-        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
+        <war basedir="${build-dir.webapp}" destfile="dist/${dist.war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
             <exclude name="WEB-INF/web.xml"/>
             <metainf dir="dist">
                 <include name="context.xml"/>
             </metainf>
-            <lib dir="grid/lib"     includes="*.jar"/>
         </war>
     </target>
+    
     <target name="war-ccts" description="creates a deployable WAR file for CCTS ." >
         <mkdir dir="dist"/>
-        <property name="war-name" value="${application-short-name}.war"/>
         <property name="webapp.deploy-path" value="/${application-short-name}"/>
         <property name="webapp.context-file" value="dist/context.xml"/>
         <property name="webapp.context.docBase" value="${war-name}"/>
         <antcall target="webapp.create-context"/>
         <antcall target="webapp"/>
-        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
+        <war basedir="${build-dir.webapp}" destfile="dist/${dist.war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
             <exclude name="WEB-INF/web.xml"/>
             <metainf dir="dist">
                 <include name="context.xml"/>
@@ -420,12 +420,15 @@
         </war>
     </target>
 
-    <target name="dist" description="creates the distribution package" depends="war, jar.security-plugin-api">
+    <target name="dist" description="creates the distribution package" depends="jar.security-plugin-api">
+        <property name="dist.war.target" value="war"/>
+        <antcall target="${dist.war.target}"/>
+        
         <property name="install.name" value="psc-${version}"/>
         <property name="install.dir" value="dist/${install.name}"/>
         <property name="install-samples.dir" value="${install.dir}/conf-samples"/>
         <mkdir dir="${install-samples.dir}"/>
-        <copy file="dist/${war-name}" tofile="${install.dir}/psc.war" failonerror="true"/>
+        <copy file="dist/${dist.war-name}" tofile="${install.dir}/psc.war" failonerror="true"/>
         <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
         <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config" filtering="true">
             <filterset>
@@ -447,6 +450,13 @@
         <delete dir="${install.dir}"/>
     </target>
 
+    <target name="dist-ccts" description="creates the distribution package for CCTS">
+        <property name="install.variant" value="ccts"/>
+        <property name="install.name" value="psc-${version}-ccts"/>
+        <property name="dist.war.target" value="war-ccts"/>
+        <antcall target="dist"/>
+    </target>
+    
     <!-- AUTOMATED BUILDS -->
 
     <target name="oracle">
