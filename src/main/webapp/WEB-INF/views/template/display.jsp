@@ -619,7 +619,8 @@
             function isCorrectCycleLength() {
                 var cycleLength = document.getElementById("cycleLength").value;
                 var isCorrectInput = true;
-                if (cycleLength != "" && cycleLength <=0) {
+                if ((cycleLength != "" && cycleLength <=0) || (isNaN(cycleLength))
+                     ||(cycleLength.indexOf(".")>0) || (cycleLength.indexOf(",") > 0)) {
                 isCorrectInput = false;
                 document.getElementById("cycleError").innerHTML = "Cycle Length must be a positive number.";
              }
