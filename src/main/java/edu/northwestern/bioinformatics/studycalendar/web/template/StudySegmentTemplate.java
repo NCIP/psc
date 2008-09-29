@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -158,6 +159,7 @@ public class StudySegmentTemplate {
             for (DayOfPeriod period : getPeriods()) {
                 events.addAll(period.getEvents());
             }
+            Collections.sort(events);
             return events;
         }
 
