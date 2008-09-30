@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.editors;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyEditorSupport;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-
 public class RoleEditor extends PropertyEditorSupport {
-
+    @Override
     public void setAsText(String text) throws IllegalArgumentException {
         Role newValue;
 
@@ -19,7 +18,8 @@ public class RoleEditor extends PropertyEditorSupport {
         setValue(newValue);
     }
 
+    @Override
     public String getAsText() {
-        return getValue() == null ? null : ((Role) getValue()).toString();
+        return getValue() == null ? null : getValue().toString();
     }
 }
