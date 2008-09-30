@@ -40,4 +40,9 @@
         population_id="-45"
         />
 
+    <PLANNED_ACTIVITY_LABELS
+        id="-1200"
+        planned_activity_id="-12"
+        label="thirty-seven"
+        />
 </dataset>

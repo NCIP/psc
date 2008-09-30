@@ -41,6 +41,7 @@ public class TemplateDevelopmentService {
 
         Period copy = source.clone();
         copy.clearIds();
+        copy.setParent(null);
 
         // convert Populations to comments
         if (!intraStudy) {
@@ -49,7 +50,7 @@ public class TemplateDevelopmentService {
             }
         }
 
-        amendmentService.updateDevelopmentAmendment(target, Add.create(copy));
+        amendmentService.updateDevelopmentAmendmentAndSave(target, Add.create(copy));
         return copy;
     }
 

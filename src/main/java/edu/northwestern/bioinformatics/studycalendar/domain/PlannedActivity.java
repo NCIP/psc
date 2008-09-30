@@ -151,6 +151,15 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         setPlannedActivityLabels(children);
     }
 
+    @Override
+    public void clearIds() {
+        super.clearIds();
+        for (PlannedActivityLabel label : getChildren()) {
+            label.setId(null);
+            label.setGridId(null);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -222,12 +231,10 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     @Override
     public PlannedActivity clone() {
         PlannedActivity clone = (PlannedActivity) super.clone();
-        SortedSet<PlannedActivityLabel> clonedPlannedActivityLabels
-            = new TreeSet<PlannedActivityLabel>();
+        clone.setPlannedActivityLabels(new TreeSet<PlannedActivityLabel>());
         for (PlannedActivityLabel label: getPlannedActivityLabels()){
-            clonedPlannedActivityLabels.add(label.clone());
+            clone.addPlannedActivityLabel(label.clone());
         }
-        clone.setPlannedActivityLabels(clonedPlannedActivityLabels);
         return clone;
     }
 

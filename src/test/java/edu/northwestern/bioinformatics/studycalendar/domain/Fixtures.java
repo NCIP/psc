@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMut
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
@@ -63,19 +64,19 @@ public class Fixtures {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    public static <T extends PlanTreeNode> T assignIds(T node, int start) {
+    public static <T extends MutableDomainObject> T assignIds(T node, int start) {
         int i = start;
         setIds(i, node);
-        if (node instanceof PlanTreeInnerNode) {
-            for (PlanTreeNode child : ((PlanTreeInnerNode<?, ? extends PlanTreeNode, ?>) node).getChildren()) {
+        if (node instanceof Parent) {
+            for (Object child : ((Parent) node).getChildren()) {
                 i++;
-                assignIds(child, i * 50);
+                assignIds((MutableDomainObject) child, i * 50);
             }
         }
         return node;
     }
 
-    public static <T extends GridIdentifiable & DomainObject> T setIds(int base, T target) {
+    public static <T extends MutableDomainObject> T setIds(int base, T target) {
         target.setId(base);
         target.setGridId("GRID-" + base);
         return target;
