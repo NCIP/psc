@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -53,11 +52,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         // by day
         int dayDiff = getDay() - other.getDay();
         if (dayDiff != 0) return dayDiff;
-        // then by activity type first
-        int typeDiff = getActivity().getType().compareTo(other.getActivity().getType());
-        if (typeDiff != 0) return typeDiff;
-        // then activity by name
-        return ComparisonUtils.nullSafeCompare(getActivity().getName(), other.getActivity().getName());
+        // then by activity
+        return getActivity().compareTo(other.getActivity());
     }
 
     public void addPlannedActivityLabel(PlannedActivityLabel paLabel) {
