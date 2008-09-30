@@ -22,6 +22,10 @@ public abstract class AbstractTestCase extends CoreTestCase {
         return registered(EasyMock.createMock(forClass));
     }
 
+    protected <T> T registerNiceMockFor(Class<T> forClass) {
+        return registered(EasyMock.createNiceMock(forClass));
+    }
+
     protected <T> T registerMockFor(Class<T> forClass, Method... methodsToMock) {
         return registered(EasyMock.createMock(forClass, methodsToMock));
     }

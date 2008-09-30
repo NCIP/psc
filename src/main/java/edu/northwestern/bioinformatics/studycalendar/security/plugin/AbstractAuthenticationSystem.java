@@ -1,17 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
-import org.springframework.context.ApplicationContext;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
 import java.util.Collection;
@@ -40,11 +38,11 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     }
 
     public final void initialize(
-        ApplicationContext parent, Configuration configuration
+        ApplicationContext parent, Configuration config
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         try {
             this.applicationContext = parent;
-            this.configuration = configuration;
+            this.configuration = config;
             validateRequiredConfigurationProperties();
             initBeforeCreate();
             this.authenticationManager = createAuthenticationManager();

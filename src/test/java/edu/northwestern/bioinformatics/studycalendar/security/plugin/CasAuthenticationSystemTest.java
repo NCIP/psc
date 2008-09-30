@@ -1,11 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.security.WebSSOAuthoritiesPopulator;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
-import gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator;
 import org.acegisecurity.providers.ProviderManager;
 import org.acegisecurity.providers.cas.CasAuthenticationProvider;
 import org.acegisecurity.providers.cas.populator.DaoCasAuthoritiesPopulator;
@@ -15,26 +10,17 @@ import org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint;
 import org.acegisecurity.ui.cas.ServiceProperties;
 import org.acegisecurity.ui.logout.LogoutFilter;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.context.ApplicationContext;
 
 /**
  * @author Rhett Sutphin
  */
-public class CasAuthenticationSystemTest extends StudyCalendarTestCase {
-    private static final String EXPECTED_SERVICE_URL = "http://etc:5443/cas";
-    private static final String EXPECTED_APP_URL = "http://psc.etc/";
-
+public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTestCase {
     private CasAuthenticationSystem system;
-    protected Configuration configuration;
-    protected ApplicationContext applicationContext;
-
 
     @Override
-    public void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
         system = new CasAuthenticationSystem();
-        configuration = new MockConfiguration();
-        applicationContext = getDeployedApplicationContext();
     }
 
     public void testServiceUrlRequired() throws Exception {
@@ -84,26 +70,15 @@ public class CasAuthenticationSystemTest extends StudyCalendarTestCase {
         CasAuthenticationProvider provider = (CasAuthenticationProvider) manager.getProviders().get(0);
         CasProxyTicketValidator validator = ((CasProxyTicketValidator) provider.getTicketValidator());
 
-        if (getSystem() instanceof WebSSOAuthenticationSystem) {
-            assertTrue("Wrong kind of authorities populator",
-                    provider.getCasAuthoritiesPopulator() instanceof WebSSOAuthoritiesPopulator);
+        assertTrue("Wrong kind of authorities populator",
+                provider.getCasAuthoritiesPopulator() instanceof DaoCasAuthoritiesPopulator);
 
-            assertTrue(validator instanceof CaaersCasProxyTicketValidator);
-
-
-        } else {
-            assertTrue("Wrong kind of authorities populator",
-                    provider.getCasAuthoritiesPopulator() instanceof DaoCasAuthoritiesPopulator);
-            assertTrue(validator instanceof CasProxyTicketValidator);
-
-        }
         assertEquals("Wrong ticket validation URL", "http://etc:5443/cas/proxyValidate",
                 validator.getCasValidate());
         assertTrue("Trust store should not be set", StringUtils.isBlank(validator.getTrustStore()));
         assertCorrectServiceProperties(validator.getServiceProperties());
         assertTrue("Proxy tickets should be allowed",
                 provider.getCasProxyDecider() instanceof AcceptAnyCasProxy);
-
     }
 
     public void testInitializeLogoutFilter() throws Exception {
@@ -112,12 +87,7 @@ public class CasAuthenticationSystemTest extends StudyCalendarTestCase {
         // can't really test anything else because no properties are exposed.
     }
 
-    protected void doValidInitialize() {
-        configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
-        configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
-        getSystem().initialize(applicationContext, configuration);
-    }
-
+    @Override
     public CasAuthenticationSystem getSystem() {
         return system;
     }
