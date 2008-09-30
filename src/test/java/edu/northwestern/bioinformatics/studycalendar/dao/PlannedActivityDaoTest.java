@@ -24,6 +24,8 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertEquals("Wrong activity", -200, (int) loaded.getActivity().getId());
         assertEquals("Wrong condition", "At least 37", loaded.getCondition());
         assertEquals("Wrong population", -45, (int) loaded.getPopulation().getId());
+        assertEquals("Wrong number of labels", 1, loaded.getPlannedActivityLabels().size());
+        assertEquals("Wrong label", -1200, (int) loaded.getPlannedActivityLabels().first().getId());
     }
 
     public void testGetPlannedActivitiesForAcivity() throws Exception {
@@ -78,5 +80,24 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         PlannedActivity loaded = getDao().getById(id);
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong number of labels", 2, loaded.getPlannedActivityLabels().size());
+    }
+
+    public void testSavedCloneIsReloadable() throws Exception {
+        int id;
+        {
+            PlannedActivity loaded = getDao().getById(-12);
+            PlannedActivity clone = loaded.clone();
+            clone.clearIds();
+            log.debug("Marking clone for save");
+            getDao().save(clone);
+            assertEquals("Test setup failure", 1, clone.getPlannedActivityLabels().size());
+            id = clone.getId();
+        }
+
+        interruptSession();
+
+        PlannedActivity reloaded = getDao().getById(id);
+        assertNotNull("Could not reload", reloaded);
+        assertEquals("Wrong number of labels", 1, reloaded.getPlannedActivityLabels().size());
     }
 }

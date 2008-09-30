@@ -56,7 +56,9 @@ public class TemplateDevelopmentServiceTest extends StudyCalendarTestCase {
     }
 
     private Period doCopyPeriod(Period expectedSource, Period expectedCopy, StudySegment expectedTarget) {
-        amendmentService.updateDevelopmentAmendment(same(expectedTarget), addFor(expectedCopy));
+        EasyMock.expect(
+            amendmentService.updateDevelopmentAmendmentAndSave(same(expectedTarget), addFor(expectedCopy))).
+            andReturn(null /* DC */);
 
         replayMocks();
         Period result = service.copyPeriod(expectedSource, expectedTarget);
@@ -144,6 +146,18 @@ public class TemplateDevelopmentServiceTest extends StudyCalendarTestCase {
         Period revisedPeriod = (Period) source.transientClone();
         EasyMock.expect(deltaService.revise(source)).andReturn(revisedPeriod);
         doCopyPeriod(revisedPeriod, expectedCopy, target);
+    }
+
+    public void testCopyPeriodDetachesCopyFromSourceStudy() throws Exception {
+        source.addPlannedActivity(setIds(7, createPlannedActivity(a1, 4)));
+        StudySegment target = studyB.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
+
+        Period expectedCopy = expectedPeriodCopy();
+        expectedCopy.addPlannedActivity(createPlannedActivity(a1, 4));
+        expectedCopy.setStudySegment(new StudySegment());
+
+        Period copy = doCopyPeriod(expectedCopy, target);
+        assertNull(copy.getStudySegment());
     }
 
     public static Add addFor(Period expected) {

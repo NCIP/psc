@@ -87,6 +87,29 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         assertSame("Activity is not same object", pa0.getActivity(), clone.getActivity());
     }
 
+    public void testCloneDeepClonesLabels() throws Exception {
+        labelPlannedActivity(pa0, "foo", "boom");
+        PlannedActivity clone = pa0.clone();
+        assertEquals("clone has different number of labels",
+            pa0.getPlannedActivityLabels().size(), clone.getPlannedActivityLabels().size());
+        assertNotSame("clone has same labels collection",
+            pa0.getPlannedActivityLabels(), clone.getPlannedActivityLabels());
+        assertNotSame("first label not cloned",
+            pa0.getPlannedActivityLabels().first(), clone.getPlannedActivityLabels().first());
+        assertEquals("first label not cloned",
+            pa0.getPlannedActivityLabels().first().getLabel(), clone.getPlannedActivityLabels().first().getLabel());
+        assertNotSame("last label not cloned",
+            pa0.getPlannedActivityLabels().last(), clone.getPlannedActivityLabels().last());
+        assertEquals("last label not cloned",
+            pa0.getPlannedActivityLabels().last().getLabel(), clone.getPlannedActivityLabels().last().getLabel());
+    }
+    
+    public void testClonedLabelParentIsClone() throws Exception {
+        labelPlannedActivity(pa0, "foo", "boom");
+        PlannedActivity clone = pa0.clone();
+        assertSame(clone, clone.getPlannedActivityLabels().first().getParent());
+    }
+
     public void testScheduledModeWhenConditional() throws Exception {
         pa0.setCondition("Only if you roll 2, 4, or 5");
         assertEquals(ScheduledActivityMode.CONDITIONAL, pa0.getInitialScheduledMode());
@@ -145,6 +168,18 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
             pa0.getLabelsByRepetition();
         } catch (StudyCalendarSystemException scse) {
             assertEquals("This method does not work unless the planned activity is part of a period", scse.getMessage());
+        }
+    }
+
+    public void testClearIdsClearsLabelIds() throws Exception {
+        labelPlannedActivity(pa0, "zem", "quux");
+        assignIds(pa0, 5);
+
+        pa0.clearIds();
+
+        for (PlannedActivityLabel label : pa0.getPlannedActivityLabels()) {
+            assertNull("Should not have an id, but does: " + label, label.getId());
+            assertNull("Should not have a grid id, but does: " + label, label.getGridId());
         }
     }
 }
