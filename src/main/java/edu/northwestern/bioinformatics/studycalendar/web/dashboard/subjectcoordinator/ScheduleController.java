@@ -67,9 +67,40 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studySubjectAssignments, 7));
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studySubjectAssignments));
         model.put("activityTypes", ActivityType.values());
+
+        Map<Subject, List<Notification>> subjectNotificationSubject = getMapOfSubjectsAndNotifications(studySubjectAssignments);
+        model.put("notificationsSubjectMap", subjectNotificationSubject);
         model.put("notifications",notifications);
        
         return model;
+    }
+
+
+    public Map<Subject, List<Notification>> getMapOfSubjectsAndNotifications(List<StudySubjectAssignment> studySubjectAssignments) throws Exception {
+
+        Map<Subject, List<Notification>> subjectNotificationSubject = new HashMap<Subject, List<Notification>>();
+
+        for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
+            Subject s = studySubjectAssignment.getSubject();
+            List<Notification> notifications = studySubjectAssignment.getNotifications();
+            if (! notifications.isEmpty()) {
+                if (! areAllNotificationsDismissed(notifications)){
+                    subjectNotificationSubject.put(s, notifications);
+                }
+            }
+        }
+        return subjectNotificationSubject;
+    }
+
+
+    public boolean areAllNotificationsDismissed(List<Notification> notifications) throws Exception {
+        boolean dismissed = true;
+        for (Notification notification : notifications) {
+            if (! notification.isDismissed()) {
+                dismissed = notification.isDismissed();
+            }
+        }
+        return dismissed;
     }
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
