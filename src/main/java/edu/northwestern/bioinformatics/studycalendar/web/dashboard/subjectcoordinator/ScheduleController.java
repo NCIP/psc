@@ -68,8 +68,8 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studySubjectAssignments));
         model.put("activityTypes", ActivityType.values());
 
-        Map<Subject, List<Notification>> subjectNotificationSubject = getMapOfSubjectsAndNotifications(studySubjectAssignments);
-        model.put("notificationsSubjectMap", subjectNotificationSubject);
+        Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(studySubjectAssignments);
+        model.put("notificationsSubjectMap", subjectNotificationsMap);
         model.put("notifications",notifications);
        
         return model;
@@ -153,6 +153,8 @@ public class ScheduleController extends PscSimpleFormController {
                 notifications.addAll(studySubjectAssignment.getNotifications());
             }
             model.put("notifications",notifications);
+            Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(studySubjectAssignments);
+            model.put("notificationsSubjectMap", subjectNotificationsMap);
             return new ModelAndView("template/ajax/notificationList", model);
         } else {
             scheduleCommand.setUser(user);

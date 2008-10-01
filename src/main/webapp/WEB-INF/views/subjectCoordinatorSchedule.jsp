@@ -44,6 +44,23 @@
             list-style-type: none;
             margin: 0em;
         }
+
+        ul.menu li.noMarginAtAllNotifications {
+            list-style-type: none;
+            margin: 0em;
+            padding: 0.3em;
+        }
+
+        ul.menu li.noMarginForNotifications {
+            list-style-type: none;
+            /*margin: 0em;*/
+            margin-left:1em;
+            margin-right:0em;
+            margin-bottom:0em;
+            margin-top:0em;
+            padding: 0.3em;
+        }
+
         ul.menu li.subject {
             padding-left: 4em;
             list-style-type: none;
