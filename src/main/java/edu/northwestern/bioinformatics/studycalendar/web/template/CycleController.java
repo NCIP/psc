@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +22,16 @@ import java.util.HashMap;
  * Date: Aug 26, 2008
  */
 public class CycleController extends PscAbstractCommandController<CycleCommand> {
-    private static final Logger log = LoggerFactory.getLogger(CycleController.class.getName());
     private StudySegmentDao studySegmentDao;
     private TemplateService templateService;
+    private AmendmentService amendmentService;
 
     public CycleController() {
         setCommandClass(CycleCommand.class);
     }
 
     protected Object getCommand(HttpServletRequest httpServletRequest) throws Exception {
-        return new CycleCommand(studySegmentDao);
+        return new CycleCommand(templateService,amendmentService);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -64,5 +65,9 @@ public class CycleController extends PscAbstractCommandController<CycleCommand> 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
     }
-    
+
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
 }
