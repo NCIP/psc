@@ -102,6 +102,13 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
+    <bean name="/labels"
+          id="labelsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.LabelResource"
+            >
+        <property name="xmlSerializer" ref="labelXmlSerializer"/>
+    </bean>
+
     <bean name="/studies/{study-identifier}/sites/{site-identifier}"
           id="studySiteResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudySiteResource">

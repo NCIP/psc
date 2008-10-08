@@ -1,10 +1,56 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+
+import java.util.List;
+import java.util.Collections;
+import java.sql.SQLException;
+
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.hibernate.Session;
+import org.hibernate.HibernateException;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao<PlannedActivityLabel> {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     @Override
     public Class<PlannedActivityLabel> domainClass() {
         return PlannedActivityLabel.class;
+    }
+
+    /**
+    * Finds the paLabel doing a LIKE search with some search text for activity name or activity code.
+    *
+    * @param  searchText the text we are searching with
+    * @return      a list of activities found based on the search text
+    */
+    @SuppressWarnings({ "unchecked" })
+    public List<PlannedActivityLabel> getPALabelsSearchText(final String searchText) {
+        return (List<PlannedActivityLabel>) getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                Criteria criteria = session.createCriteria(PlannedActivityLabel.class);
+                if (searchText != null) {
+                    String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
+                    criteria.add(Restrictions.ilike("label", like));
+                }
+                return criteria.list();
+            }
+        });
+    }
+
+
+   /**
+    * Returns a list of all the activities currently available.
+    *
+    * @return      list of all the Activities currently available
+    */
+    @SuppressWarnings({ "unchecked" })
+    public List<PlannedActivityLabel> getAll() {
+        List<PlannedActivityLabel> sortedList = getHibernateTemplate().find("from PlannedActivityLabels");
+        Collections.sort(sortedList);
+        return sortedList;
     }
 }

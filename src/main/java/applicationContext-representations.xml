@@ -70,6 +70,9 @@
     <bean id="activityXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializer"/>
 
+    <bean id="labelXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.LabelXmlSerializer"/>
+
 
     <bean id="sourceSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer"/>

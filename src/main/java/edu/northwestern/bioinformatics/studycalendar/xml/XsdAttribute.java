@@ -23,6 +23,8 @@ public enum XsdAttribute {
     ACTIVITY_SOURCE("source"),
 
     ACTIVITY_SOURCE_NAME("name"),
+    PLANNED_ACTIVITY_LABEL_NAME("label"),
+    PLANNED_ACTIVITY_LABEL_ID("planned-activity-label-id"),
 
     STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER("assigned-identifier"),
     REGISTRATION_FIRST_STUDY_SEGMENT_ID("first-study-segment-id"),

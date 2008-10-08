@@ -10,6 +10,19 @@
 <title>Report</title>
 <head>
     <tags:stylesheetLink name="report"/>
+    <tags:javascriptLink name="labels/manage-label" />
+    <tags:javascriptLink name="labels/labelServer" />
+    <tags:javascriptLink name="resig-templates" />
+
+    <tags:resigTemplate id="new_label_autocompleter_row">
+        <li>
+            <span class="label-name">[#= label #]</span>
+        </li>
+    </tags:resigTemplate>
+
+    <tags:stylesheetLink name="main"/>
+    <tags:sassLink name="labels"/>
+
     <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
     <style type="text/css">
         table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
@@ -79,6 +92,16 @@
                             <form:options items="${types}" itemLabel="name" itemValue="id"/>
                         </form:select>
                     </span>
+
+                    <span class="filterInput">
+                        <label>Activity label: </label>
+                        <input id="labels-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
+                               hint="With this name"/>
+                        <div style="position: relative">
+                            <div id="labels-autocompleter-div" class="autocomplete"></div>
+                        </div>
+                    </span>
+                    
                 </div>
 
                 <div class="filterGroup">
