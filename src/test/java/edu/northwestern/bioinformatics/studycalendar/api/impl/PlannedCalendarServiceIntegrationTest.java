@@ -29,7 +29,7 @@ import java.io.File;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 /**
- * @author Rhett Sutphin
+ * @author Saurabh Agrawal
  */
 public class PlannedCalendarServiceIntegrationTest extends DaoTestCase {
     private PlannedCalendarService plannedCalendarService = (DefaultPlannedCalendarService) getApplicationContext().getBean("plannedCalendarService");

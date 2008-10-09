@@ -27,7 +27,6 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     private PlannedCalendarDao plannedCalendarDao;
     private TemplateSkeletonCreator defaultTemplateCreator;
     private SiteDao siteDao;
-    private StudyService studyService;
     private TemplateService templateService;
 
     public DefaultPlannedCalendarService() {
@@ -54,7 +53,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
         registered.setName(study.getName());
         registered.setGridId(study.getGridId());
         mergeSiteAssignments(study, registered);
-        studyService.save(registered);
+        studyDao.save(registered);
 
         return registered.getPlannedCalendar();
     }
@@ -139,10 +138,6 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
         this.siteDao = siteDao;
     }
 
-    @Required
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
-    }
 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
