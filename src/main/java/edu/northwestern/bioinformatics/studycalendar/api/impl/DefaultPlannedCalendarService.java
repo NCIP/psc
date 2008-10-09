@@ -9,12 +9,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Rhett Sutphin
@@ -25,6 +27,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     private PlannedCalendarDao plannedCalendarDao;
     private TemplateSkeletonCreator defaultTemplateCreator;
     private SiteDao siteDao;
+    private StudyService studyService;
     private TemplateService templateService;
 
     public DefaultPlannedCalendarService() {
@@ -51,7 +54,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
         registered.setName(study.getName());
         registered.setGridId(study.getGridId());
         mergeSiteAssignments(study, registered);
-        studyDao.save(registered);
+        studyService.save(registered);
 
         return registered.getPlannedCalendar();
     }
@@ -104,7 +107,8 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     }
 
     public PlannedCalendar getPlannedCalendar(Study study) {
-        if (study.getGridId() == null) throw new IllegalArgumentException("Cannot locate planned calendar for a study without a gridId");
+        if (study.getGridId() == null)
+            throw new IllegalArgumentException("Cannot locate planned calendar for a study without a gridId");
         Study systemStudy = studyDao.getByGridId(study.getGridId());
         if (systemStudy == null) return null;
 
@@ -133,6 +137,11 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
 
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 
     public void setTemplateService(TemplateService templateService) {
