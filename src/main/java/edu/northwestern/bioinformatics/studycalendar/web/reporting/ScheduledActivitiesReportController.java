@@ -19,14 +19,10 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author John Dzak
@@ -73,7 +69,15 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     }
 
     protected List<ScheduledActivitiesReportRow> search(ScheduledActivitiesReportCommand command) {
-        return dao.search(command.getFilters());
+        if (command.getLabel()!= null ) {
+            command.setLabelFilter();                                 
+        }
+        List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = dao.search(command.getFilters());
+        //todo - mounting for label is not working... need to set it manually
+        for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
+            row.setLabel(command.getLabel());
+        }
+        return scheduledActivitiesReportRow;
     }
 
     @SuppressWarnings({"unchecked"})

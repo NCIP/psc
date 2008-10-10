@@ -70,6 +70,11 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertSearchWithResults(NEG_17, NEG_16);
     }
 
+    public void testSearchWithLabelFilter() {
+        filters.setLabel("LABELB");
+        assertSearchWithResults(NEG_17, NEG_16);
+    }
+
     public void testSearchWithSiteFilter_Neg() {
         filters.setSiteName("Bedrock");
         assertSearchWithResults();

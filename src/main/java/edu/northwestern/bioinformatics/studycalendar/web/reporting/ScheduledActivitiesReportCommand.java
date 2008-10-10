@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
  */
 public class ScheduledActivitiesReportCommand {
     ScheduledActivitiesReportFilters filters;
+    String label;
 
     public ScheduledActivitiesReportCommand(ScheduledActivitiesReportFilters filters) {
         this.filters = filters;
@@ -18,5 +19,18 @@ public class ScheduledActivitiesReportCommand {
 
     public void setFilters(ScheduledActivitiesReportFilters filters) {
         this.filters = filters;
+    }
+
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setLabelFilter() {
+        filters.setLabel(getLabel());
     }
 }

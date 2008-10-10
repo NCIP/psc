@@ -95,7 +95,7 @@
 
                     <span class="filterInput">
                         <label>Activity label: </label>
-                        <input id="labels-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
+                        <input id="labels-autocompleter-input" name="label" type="text" autocomplete="off" class="autocomplete"
                                hint="With this name"/>
                         <div style="position: relative">
                             <div id="labels-autocompleter-div" class="autocomplete"></div>
@@ -157,6 +157,8 @@
                 <display:column title="Ideal Date"  sortable="true">
                     <tags:formatDate value="${row.scheduledActivity.idealDate}"/>
                 </display:column>
+                <display:column property="label" title="Label" sortable="true"/>
+                                
                 <display:column property="subject.lastFirst" title="Subject Name"  sortable="true"/>
                 <display:column property="subject.personId" title="Subject Id"  sortable="true"/>
                 <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"  sortable="true"/>

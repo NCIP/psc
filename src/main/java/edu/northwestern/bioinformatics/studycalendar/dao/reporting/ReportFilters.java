@@ -6,6 +6,8 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.Filter;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -15,6 +17,7 @@ import java.util.List;
  * @author John Dzak
  */
 public abstract class ReportFilters {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     private List<FilterLimit<?>> filters = new LinkedList<FilterLimit<?>>();
     
     ////// BUSINESS LOGIC
@@ -132,6 +135,22 @@ public abstract class ReportFilters {
         protected String getValueForFilter() {
             return substringParameterize(getValue());
         }
+    }
+
+    protected class StringFilter extends SingleFilterFilterLimit<String, String> {
+        public StringFilter(String filterName) {
+            super(filterName);
+        }
+
+        protected String stringParametrize(String value) {
+            return new StringBuilder().append(value.toUpperCase()).toString();
+        }
+
+        @Override
+        protected String getValueForFilter() {
+            return stringParametrize(getValue());
+        }
+
     }
 
     protected class ControlledVocabularyObjectFilterLimit<V extends AbstractControlledVocabularyObject> extends SingleFilterFilterLimit<Integer, V> {

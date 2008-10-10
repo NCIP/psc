@@ -19,6 +19,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
             new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
+    private StringFilter label = new StringFilter("label");
 
     protected String getHibernateFilterPrefix() {
         return "filter_";
@@ -71,4 +72,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     public User getSubjectCoordinator() {
         return subjectCoordinator.getValue();
     }
+
+
+    public String getLabel() {
+        return label.getValue();
+    }
+
+    public void setLabel(String value) {
+        label.setValue(value);
+    }    
 }

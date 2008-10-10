@@ -64,6 +64,25 @@
         source_amendment_id="-17"
         />
 
+    <SCHEDULED_ACTIVITY_LABELS
+        scheduled_activity_id="-16"
+        label="labelA"
+    />
+
+    <SCHEDULED_ACTIVITY_LABELS
+        scheduled_activity_id="-16"
+        label="labelB"
+    />
+
+    <SCHEDULED_ACTIVITY_LABELS
+        scheduled_activity_id="-17"
+        label="labelB"
+    />
+
+    <SCHEDULED_ACTIVITY_LABELS
+        scheduled_activity_id="-17"
+        label="labelZ"
+    />
 
     <SCHEDULED_ACTIVITY_STATES
         id="-11"

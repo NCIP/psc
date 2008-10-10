@@ -44,6 +44,7 @@
         
         <synchronize table="scheduled_activities"/>
         <synchronize table="activities"/>
+        <synchronize table="scheduled_activity_labels"/>
 
         <id name="id" />
 
@@ -91,6 +92,7 @@
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
         <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
         <filter name="filter_subjectCoordinator" condition="subject_coordinator_id = :subjectCoordinator_id"/>
+        <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
@@ -112,5 +114,8 @@
     </filter-def>
     <filter-def name="filter_subjectCoordinator">
         <filter-param name="subjectCoordinator_id" type="integer"/>
+    </filter-def>
+    <filter-def name="filter_label">
+        <filter-param name="label" type="string"/>
     </filter-def>
 </hibernate-mapping>
