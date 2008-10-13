@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
+    private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
     public static final String POPULATION = "population";
@@ -62,6 +64,14 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         element.addAttribute(DETAILS, ((PlannedActivity) node).getDetails());
         element.addAttribute(DAY, ((PlannedActivity) node).getDay().toString());
         element.addAttribute(CONDITION, ((PlannedActivity) node).getCondition());
+
+        if(!(((PlannedActivity) node).getPlannedActivityLabels().isEmpty())) {
+            for(PlannedActivityLabel label:((PlannedActivity) node).getPlannedActivityLabels()) {
+                Element eLabel = plannedActivityLabelXmlSerializer.createElement(label);
+                element.add(eLabel);
+            }
+        }
+
         Population population = ((PlannedActivity) node).getPopulation();
         if (population != null) {
             element.addAttribute(POPULATION, ((PlannedActivity) node).getPopulation().getAbbreviation());
@@ -79,6 +89,10 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         this.activityXmlSerializer = activityXmlSerializer;
     }
 
+    public void setPlannedActivityLabelXmlSerializer(PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer) {
+        this.plannedActivityLabelXmlSerializer = plannedActivityLabelXmlSerializer;
+    }
+
     @Override
     public String validateElement(MutableDomainObject planTreeNode, Element element) {
 
@@ -88,6 +102,14 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
             errorMessageStringBuffer.append(String.format("activities  are different for " + planTreeNode.getClass().getSimpleName()
                     + ". expected:%s. \n", plannedActivity.getActivity()));
         }
+
+        for(PlannedActivityLabel label: plannedActivity.getPlannedActivityLabels()) {
+           if (!plannedActivityLabelXmlSerializer.validateElement(label, element.element(XsdElement.PLANNED_ACTIVITY_LABEL.xmlName()))) {
+            errorMessageStringBuffer.append(String.format("labels are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s. \n",label));
+            }
+        }
+
         if (!StringUtils.equals(plannedActivity.getDetails(), element.attributeValue(DETAILS))) {
             errorMessageStringBuffer.append(String.format("details  are different for " + planTreeNode.getClass().getSimpleName()
                     + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getDetails(),

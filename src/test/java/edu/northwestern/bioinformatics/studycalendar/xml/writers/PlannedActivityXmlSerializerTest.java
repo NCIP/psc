@@ -19,6 +19,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private PlannedActivity plannedActivity;
     private ActivityXmlSerializer activitySerializer;
+    private PlannedActivityLabelXmlSerializer plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
     private Element eActivity;
     private List<PlannedActivity> plannedActivities;
 
@@ -42,7 +43,9 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setPlannedActivityDao(plannedActivityDao);
         serializer.setStudy(study);
         serializer.setActivityXmlSerializer(activitySerializer);
+        serializer.setPlannedActivityLabelXmlSerializer(plannedActivityLabelXmlSerializer);
         plannedActivities = new ArrayList<PlannedActivity>();
+        plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("testlabel"));
     }
 
     public void testCreateElementPlannedActivity() {
@@ -51,7 +54,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element actual = serializer.createElement(plannedActivity);
         verifyMocks();
-
+        assertEquals("Wrong label name","testlabel",actual.element("label").attributeValue("name"));
         assertEquals("Wrong attribute size", 5, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
         assertEquals("Wrong day", "2", actual.attributeValue("day"));
