@@ -1,7 +1,7 @@
 if (!window.SC) { window.SC = { } }
-if (!SC.MP) { SC.MP = { } }
+if (!SC.RP) { SC.RP = { } }
 
-Object.extend(SC.MP, {
+Object.extend(SC.RP, {
 
   addLabel: function(label) {
       $('labels-autocompleter-input').value = label.name;
@@ -9,14 +9,14 @@ Object.extend(SC.MP, {
 
 
   createLabelsAutocompleter: function() {
-    SC.MP.labelsAutocompleter = new SC.FunctionalAutocompleter(
-      'labels-autocompleter-input', 'labels-autocompleter-div', SC.MP.labelAutocompleterChoices, {
+    SC.RP.labelsAutocompleter = new SC.FunctionalAutocompleter(
+      'labels-autocompleter-input', 'labels-autocompleter-div', SC.RP.labelAutocompleterChoices, {
         select: "label-name",
         afterUpdateElement: function(input, selected) {
           var label = {
             name:   selected.select(".label-name").first().innerHTML
           }
-          SC.MP.addLabel(label)
+          SC.RP.addLabel(label)
           input.focus()
         }
       }
@@ -25,7 +25,7 @@ Object.extend(SC.MP, {
 
 
   labelAutocompleterChoices: function(str, callback) {
-    SC.MP.findNextLabels(function(data) {
+    SC.RP.findNextLabels(function(data) {
       var lis = data.map(function(label) {
 
         return resigTemplate("new_label_autocompleter_row", label)
@@ -35,5 +35,5 @@ Object.extend(SC.MP, {
   }
 })
 $(document).observe('dom:loaded', function() {
-  SC.MP.createLabelsAutocompleter()
+  SC.RP.createLabelsAutocompleter()
 })

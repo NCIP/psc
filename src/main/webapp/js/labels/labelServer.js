@@ -1,7 +1,7 @@
 if (!window.SC) { window.SC = { } }
-if (!SC.MP) { SC.MP = { } }
+if (!SC.RP) { SC.RP = { } }
 
-Object.extend(SC.MP, {
+Object.extend(SC.RP, {
 
   // Finds the set of labels
   findNextLabels: function(receiver) {
