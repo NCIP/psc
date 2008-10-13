@@ -39,16 +39,23 @@
            document.getElementById("actual-date-stop").value = "";
            document.getElementById("filters.subjectCoordinator").value = "";
         }
+
+        //need this method to avoid form submission on the enter key press for labels autocompleter
+        function checkKey(event) {
+            if (event.keyCode == Event.KEY_RETURN) {
+                Event.stop(event)
+            }
+        }
     </script>
 </head>
 <body>
 <laf:box title="Scheduled Activities Report">
     <laf:division>
         <c:set var="action"><c:url value="/pages/report/scheduledActivitiesReport"/></c:set>
-        <form:form action="${action}"method="post">
+        <form:form action="${action}"method="post" onsubmit="return false">
             <tags:errors path="*"/>
              <div class="search_box">
-                 <input type="submit" value="Search" class="button"/>
+                 <input type="submit" value="Search" class="button" onclick="submit()"/>
                  ${fn:length(results)} results
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
@@ -95,8 +102,7 @@
 
                     <span class="filterInput">
                         <label>Activity label: </label>
-                        <input id="labels-autocompleter-input" name="label" type="text" autocomplete="off" class="autocomplete"
-                               />
+                        <input id="labels-autocompleter-input" name="label" type="text" autocomplete="off" class="autocomplete" onkeypress="checkKey(event)"/>
                         <div style="position: relative">
                             <div id="labels-autocompleter-div" class="autocomplete"></div>
                         </div>
