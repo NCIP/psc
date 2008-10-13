@@ -19,8 +19,6 @@ import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
  * Date: Aug 26, 2008
 */
 public class CycleCommand {
-    private static final Collection<String> PROPERTIES_TO_UPDATE
-           = Arrays.asList("cycleLength");
     private TemplateService templateService;
     private Integer cycleLength;
     private StudySegment studySegment;
@@ -32,26 +30,11 @@ public class CycleCommand {
     }
 
     public void apply() {
-        List<Change> changes = new ArrayList<Change>();
         oldStudySegment = (StudySegment) studySegment.transientClone();
-        studySegment.setCycleLength(cycleLength);
-        updateCycleLengthWithChanges(changes);
-        if (!changes.isEmpty()) {
-            amendmentService.updateDevelopmentAmendment(studySegment,
-                changes.toArray(new Change[changes.size()]));
-        }
+        amendmentService.updateDevelopmentAmendmentAndSave(studySegment,
+                PropertyChange.create("cycleLength", oldStudySegment.getCycleLength(), cycleLength));
     }
 
-    private void updateCycleLengthWithChanges(List<Change> target) {
-        BeanWrapper originalWrapped = new BeanWrapperImpl(oldStudySegment);
-        for (String prop : PROPERTIES_TO_UPDATE) {
-            Object oldV = originalWrapped.getPropertyValue(prop);
-            Object newV = studySegment.getCycleLength();
-            if (!ComparisonTools.nullSafeEquals(oldV, newV)) {
-                target.add(PropertyChange.create(prop, oldV, newV));
-            }
-        }
-    }
 
     ////// BOUND PROPERTIES
 
