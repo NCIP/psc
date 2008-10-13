@@ -96,7 +96,7 @@
                     <span class="filterInput">
                         <label>Activity label: </label>
                         <input id="labels-autocompleter-input" name="label" type="text" autocomplete="off" class="autocomplete"
-                               hint="With this name"/>
+                               />
                         <div style="position: relative">
                             <div id="labels-autocompleter-div" class="autocomplete"></div>
                         </div>

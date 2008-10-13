@@ -74,8 +74,10 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
         }
         List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = dao.search(command.getFilters());
         //todo - mounting for label is not working... need to set it manually
-        for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
-            row.setLabel(command.getLabel());
+        if (command.getLabel() != null) {
+            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
+                row.setLabel(command.getLabel());
+            }
         }
         return scheduledActivitiesReportRow;
     }
