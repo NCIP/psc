@@ -1,4 +1,22 @@
 <dataset>
+    <CSM_USER
+            user_id="-5"
+            login_name="joe"
+            first_name="Research"
+            last_name="Associate1"
+            password="XlF3h/jI/Eo="
+            update_date="2006-08-30"
+            />
+
+
+<USERS
+        id="-100"
+        name="joe"
+        csm_user_id="-5"
+        active_flag="0"
+        />
+
+
     <STUDIES id="-150" version="0" long_title="Study" assigned_identifier="Study"  grid_id="grid0"/>
     <PLANNED_CALENDARS
         id="-100"
