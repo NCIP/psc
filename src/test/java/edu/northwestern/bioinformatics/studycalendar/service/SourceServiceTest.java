@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Saurabh Agrawal
@@ -16,6 +17,8 @@ public class SourceServiceTest extends StudyCalendarTestCase {
     private static final String SOURCE = "source";
 
     private SourceService sourceService;
+    private ActivityService activityService;
+    private SourceDao sourceDao;
 
     private Source targetSource;
     private Source source;
@@ -25,13 +28,13 @@ public class SourceServiceTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        SourceDao sourceDao = registerDaoMockFor(SourceDao.class);
-        PlannedActivityDao plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
 
+        activityService = registerMockFor(ActivityService.class);
         sourceService = new SourceService();
+        sourceService.setActivityService(activityService);
 
         sourceService.setSourceDao(sourceDao);
-        sourceService.setPlannedActivityDao(plannedActivityDao);
         source = Fixtures.createSource(SOURCE);
         targetSource = Fixtures.createSource(TARGET_SOURCE);
 
@@ -43,17 +46,25 @@ public class SourceServiceTest extends StudyCalendarTestCase {
     }
 
     public void testUpdateSourceWhenSourceHasNoActivity() {
+        sourceDao.save(source);
+        replayMocks();
+
         sourceService.updateSource(source, targetSource);
 
         assertEquals(SOURCE, targetSource.getName());
+        verifyMocks();
     }
 
     public void testUpdateSourceForNewActivity() {
         source.addActivity(activity);
         source.addActivity(anotherActivity);
+        sourceDao.save(source);
+        replayMocks();
+
         sourceService.updateSource(source, targetSource);
 
         assertEquals(SOURCE, targetSource.getName());
+        verifyMocks();
         assertEquals(2, targetSource.getActivities().size());
         assertTrue(targetSource.getActivities().contains(activity));
         assertTrue(targetSource.getActivities().contains(anotherActivity));
@@ -66,8 +77,12 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         targetSource.addActivity(activityToUpdate);
         targetSource.addActivity(activityToDelete);
 
-        sourceService.updateSource(source, targetSource);
+        expect(activityService.deleteActivity(activityToDelete)).andReturn(true);
+        sourceDao.save(source);
+        replayMocks();
 
+        sourceService.updateSource(source, targetSource);
+        verifyMocks();
         assertEquals(SOURCE, targetSource.getName());
         assertEquals(2, targetSource.getActivities().size());
         assertTrue(targetSource.getActivities().contains(activity));
