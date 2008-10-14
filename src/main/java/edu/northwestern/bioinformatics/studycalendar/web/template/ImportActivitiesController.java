@@ -12,12 +12,14 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -37,18 +39,24 @@ public class ImportActivitiesController extends PscSimpleFormController {
         setCrumb(new Crumb());
     }
 
-    protected ModelAndView onSubmit(Object o, BindException errors) throws Exception {
-        ImportActivitiesCommand command = (ImportActivitiesCommand) o;
+    @Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+        ImportActivitiesCommand command = (ImportActivitiesCommand) oCommand;
         List<Source> sources = sourceDao.getAll();
-        command.apply();
+        try {
+            command.apply();
+        } catch (Exception e) {
+            errors.reject("error.problem.reading.csv.file", new String[]{e.getMessage()}, e.getMessage());
+
+        }
         Map<String, Object> model = errors.getModel();
         if (errors.hasErrors()) {
-            return new ModelAndView(getSuccessView(), model);
+            return showForm(request, response, errors);
         } else {
 //            model = processRequest(model, sources);
             List<Source> sourcesAfterAdding = sourceDao.getAll();
             //default sourse to display if there is an error
-            Source sourceToDisplay= sourcesAfterAdding.get(0);
+            Source sourceToDisplay = sourcesAfterAdding.get(0);
             for (Source source : sourcesAfterAdding) {
                 if (!sources.contains(source)) {
                     sourceToDisplay = source;
@@ -63,7 +71,7 @@ public class ImportActivitiesController extends PscSimpleFormController {
 
             Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
             for (Activity a : activities) {
-                if (plannedActivityDao.getPlannedActivitiesForActivity(a.getId()).size()>0) {
+                if (plannedActivityDao.getPlannedActivitiesForActivity(a.getId()).size() > 0) {
                     enableDelete.put(a.getId(), false);
                 } else {
                     enableDelete.put(a.getId(), true);

@@ -18,4 +18,9 @@ public class ActivityTypeTest extends StudyCalendarTestCase {
         assertNegative(t1.compareTo(t4));
         assertPositive(t4.compareTo(t1));
     }
+
+    public void testGetByName() {
+        assertEquals(ActivityType.DISEASE_MEASURE, ActivityType.getByName(ActivityType.DISEASE_MEASURE.getName()));
+        assertNull("must return null for non existing activity", ActivityType.getByName("not existing activity"));
+    }
 }

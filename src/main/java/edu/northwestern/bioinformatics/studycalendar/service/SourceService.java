@@ -19,9 +19,13 @@ import java.util.List;
  */
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class SourceService {
-    private PlannedActivityDao plannedActivityDao;
     private SourceDao sourceDao;
+    private ActivityService activityService;
 
+
+    public Source getByName(String name) {
+        return sourceDao.getByName(name);
+    }
 
     /**
      * <p>  Updates the source. Following is the logic to update a source
@@ -34,9 +38,8 @@ public class SourceService {
      * @param source       source
      * @param targetSource targetSource
      */
-    @Transient
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void updateSource( final Source source,final Source targetSource) {
+    public void updateSource(final Source source, final Source targetSource) {
         BeanUtils.copyProperties(source, targetSource, new String[]{"activities", "id"});
 
         //delete  or update the activity
@@ -51,44 +54,74 @@ public class SourceService {
     }
 
     /**
+     * Add, update or remove activities from source.
+     *
+     * @param existingSource
+     * @param activitiesToAddAndRemove
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void updateSource(final Source existingSource, final List<Activity> activitiesToAddAndRemove) {
+
+        //delete  or update the activity
+
+        removeAndUpdateActivities(existingSource.getActivities(), activitiesToAddAndRemove);
+
+
+        //add new activities
+        existingSource.addNewActivities(activitiesToAddAndRemove);
+
+        sourceDao.save(existingSource);
+
+
+    }
+
+    /**
      * <p>Updates and remove activities from source.
      * <li> Update any activities that already exist and still exist in the new representation.  Activities should be matched by their natural key -- i.e., the code. </li>
      * <li>Remove any activities that do not exist in the new representation, so long as they are not used any any existing templates.     </li>
      * </p>
      *
-     * @param targetActivities existing activities
-     * @param activities
+     * @param targetActivities         existing activities
+     * @param activitiesToAddAndRemove
      */
-    @Transient
-    private void removeAndUpdateActivities(List<Activity> targetActivities, final List<Activity> activities) {
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    private void removeAndUpdateActivities(List<Activity> targetActivities, final List<Activity> activitiesToAddAndRemove) {
         //delete  or update the activity
         List<Activity> activitiesToRemove = new ArrayList<Activity>();
 
         for (Activity existingActivity : targetActivities) {
 
-            Activity activity = existingActivity.findActivityInCollectionWhichHasSameCode(activities);
+            Activity activity = existingActivity.findActivityInCollectionWhichHasSameCode(activitiesToAddAndRemove);
 
             if (activity != null) {
                 existingActivity.updateActivity(activity);
             } else {
-                //remove this activity only if its not used any where
-                List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForActivity(existingActivity.getId());
-                if (plannedActivities == null || plannedActivities.size() == 0) {
-                    activitiesToRemove.add(existingActivity);
+                activitiesToRemove.add(existingActivity);
 
-                }
+
             }
         }
+
         targetActivities.removeAll(activitiesToRemove);
+
+        for (Activity activity : activitiesToRemove) {
+            boolean deleteActivity = activityService.deleteActivity(activity);
+            //remove this activity only if its not used any where
+            if (!deleteActivity) {
+
+                targetActivities.add(activity);
+            }
+        }
     }
 
-    @Required
-    public void setPlannedActivityDao(final PlannedActivityDao plannedActivityDao) {
-        this.plannedActivityDao = plannedActivityDao;
-    }
+
 
     @Required
     public void setSourceDao(final SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 }

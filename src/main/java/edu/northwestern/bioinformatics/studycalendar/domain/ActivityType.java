@@ -1,6 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+
 import java.util.Collection;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Jaron Sampson
@@ -9,10 +12,10 @@ import java.util.Collection;
 public class ActivityType extends AbstractControlledVocabularyObject {
 
     public static final ActivityType DISEASE_MEASURE = new ActivityType(1, "Disease Measure");
-    public static final ActivityType INTERVENTION    = new ActivityType(2, "Intervention");
-    public static final ActivityType LAB_TEST        = new ActivityType(3, "Lab Test");
-    public static final ActivityType PROCEDURE       = new ActivityType(4, "Procedure");
-    public static final ActivityType OTHER           = new ActivityType(5, "Other");
+    public static final ActivityType INTERVENTION = new ActivityType(2, "Intervention");
+    public static final ActivityType LAB_TEST = new ActivityType(3, "Lab Test");
+    public static final ActivityType PROCEDURE = new ActivityType(4, "Procedure");
+    public static final ActivityType OTHER = new ActivityType(5, "Other");
 
     private ActivityType(int id, String name) {
         super(id, name);
@@ -25,4 +28,16 @@ public class ActivityType extends AbstractControlledVocabularyObject {
     public static Collection<ActivityType> values() {
         return values(ActivityType.class);
     }
+
+    public static ActivityType getByName(String name) {
+        for (ActivityType activityType : values()) {
+            if (StringUtils.equals(activityType.getName(), name)) {
+                return activityType;
+            }
+        }
+        return null;
+
+
+    }
+
 }

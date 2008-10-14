@@ -32,7 +32,7 @@
 
             <div class="row">
                 <div class="label">
-                    <form:label path="activitiesFile">Activities File (xml):</form:label>
+                    <form:label path="activitiesFile">Activities File (xml/csv):</form:label>
                 </div>
                 <div class="value">
                     <input type="file" name="activitiesFile"/>

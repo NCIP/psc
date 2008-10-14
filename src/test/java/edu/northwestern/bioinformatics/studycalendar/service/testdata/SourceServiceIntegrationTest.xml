@@ -1,0 +1,60 @@
+<dataset>
+
+
+    <SOURCES
+            id="-200"
+            version="0"
+            name="ICD9"/>
+
+    <ACTIVITIES
+            id="-100"
+            version="0"
+            name="Screening Activity"
+            description="Description of screening activity"
+            activity_type_id="2"
+            code="SA"
+            source_id="-200"/>
+
+    <ACTIVITIES
+            id="-98"
+            version="0"
+            name="CT Screen"
+            description="Description of screening activity"
+            activity_type_id="2"
+            code="CS"
+            source_id="-200"/>
+
+    <ACTIVITIES
+            id="-97"
+            version="0"
+            name="Administer Drug A"
+            description="Description of treatment activity"
+            activity_type_id="3"
+            code="ADA"
+            source_id="-200"/>
+
+    <ACTIVITIES
+            id="-96"
+            version="0"
+            name="Administer Drug L"
+            description="Description of treatment activity"
+            activity_type_id="1"
+            code="ADL"
+            source_id="-200"/>
+
+    <SOURCES
+            id="-201"
+            version="0"
+            name="ICD11"/>
+
+    <ACTIVITIES
+            id="-99"
+            version="0"
+            name="Administer Drug Z"
+            description="Description of treatment activity"
+            activity_type_id="3"
+            code="ADZ"
+            source_id="-201"/>
+
+
+</dataset>

@@ -2,13 +2,13 @@
 <!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
 
 <beans
-    xmlns="http://www.springframework.org/schema/beans"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
-    >
+        >
 
     <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
 
@@ -18,7 +18,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
     <bean id="templateService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateService"/>
-    <bean id="templateDevelopmentService" autowire="byType" 
+    <bean id="templateDevelopmentService" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService"/>
     <bean id="scheduleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
@@ -42,15 +42,17 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService">
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
         <property name="sourceDao" ref="sourceDao"/>
+        <property name="sourceSerializer" ref="sourceSerializer"/>
     </bean>
 
     <bean id="populationService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.PopulationService"/>
     <bean id="importTemplateService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService"/>
+          class="edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService">
+    </bean>
     <bean id="sourceService" class="edu.northwestern.bioinformatics.studycalendar.service.SourceService">
-        <property name="plannedActivityDao" ref="plannedActivityDao"></property>
         <property name="sourceDao" ref="sourceDao"></property>
+        <property name="activityService" ref="activityService"/>
     </bean>
 
     <!--shceduling-->
@@ -61,7 +63,8 @@
         <property name="cronExpression" value="0 0 6 * * ?"/>
     </bean>
 
-    <bean id="scheduleNotificationJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <bean id="scheduleNotificationJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="notificationService"/>
         <property name="targetMethod" value="addNotificationIfNothingIsScheduledForPatient"/>
         <property name="concurrent" value="false"/>
@@ -77,8 +80,8 @@
         <property name="userService" ref="userService"/>
     </bean>
     <bean id="activityService" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
+          class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
 
     <bean id="plannedActivityLabelService" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.service.LabelService"/>
+          class="edu.northwestern.bioinformatics.studycalendar.service.LabelService"/>
 </beans>

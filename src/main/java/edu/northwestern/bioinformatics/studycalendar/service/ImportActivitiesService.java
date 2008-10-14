@@ -4,25 +4,35 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 public class ImportActivitiesService {
     private SourceDao sourceDao;
     private ActivitySourceXmlSerializer xmlSerializer;
+    private SourceSerializer sourceSerializer;
 
     public void loadAndSave(InputStream sourcesXml) throws Exception {
         Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
-        
+
         save(validSources);
     }
 
-    protected Collection<Source> readData(InputStream dataFile) throws Exception{
+    public void loadAndSaveCSVFile(InputStream inputStream) throws Exception {
+        sourceSerializer.readDocument(inputStream);
+
+    }
+
+    protected Collection<Source> readData(InputStream dataFile) throws Exception {
         return xmlSerializer.readCollectionOrSingleDocument(dataFile);
     }
 
@@ -30,7 +40,7 @@ public class ImportActivitiesService {
         List<Source> validSources = new ArrayList<Source>();
         List<Source> existingSources = sourceDao.getAll();
 
-        for (Source source : sources ) {
+        for (Source source : sources) {
 
             if (existingSources.contains(source)) {
 
@@ -45,7 +55,7 @@ public class ImportActivitiesService {
                         existingSource.getActivities().add(activity);
                     }
                 }
-                
+
                 source = existingSource;
             }
 
@@ -56,7 +66,7 @@ public class ImportActivitiesService {
     }
 
     protected void save(List<Source> sources) {
-        for (Source source : sources)  {
+        for (Source source : sources) {
             sourceDao.save(source);
         }
     }
@@ -71,5 +81,10 @@ public class ImportActivitiesService {
     @Required
     public void setXmlSerializer(ActivitySourceXmlSerializer serializer) {
         xmlSerializer = serializer;
+    }
+
+    @Required
+    public void setSourceSerializer(SourceSerializer sourceSerializer) {
+        this.sourceSerializer = sourceSerializer;
     }
 }

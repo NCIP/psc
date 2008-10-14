@@ -14,12 +14,11 @@ import java.util.List;
 @Table(name = "sources")
 @GenericGenerator(name = "id-generator", strategy = "native",
         parameters = {
-        @Parameter(name = "sequence", value = "seq_sources_id")
-                }
+                @Parameter(name = "sequence", value = "seq_sources_id")
+        }
 )
 public class Source extends AbstractMutableDomainObject
-    implements Named, NaturallyKeyed, TransientCloneable<Source>
-{
+        implements Named, NaturallyKeyed, TransientCloneable<Source> {
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
     private boolean memoryOnly;
@@ -90,6 +89,7 @@ public class Source extends AbstractMutableDomainObject
 
 
     /**
+     * DO NOT CALLL THIS METHOD DIRECTLY. instead use SourceService#updateSource
      * <p>  add new activities  to the source. It does  update/delete any activitiy.
      * <li>
      * Add any activities that do not already exist.   </li>
@@ -108,7 +108,7 @@ public class Source extends AbstractMutableDomainObject
 
 
             if (existingActivity == null) {
-                existingActivities.add(activity);
+                this.addActivity(activity);
 
             }
 

@@ -321,7 +321,7 @@
                 <label id="add-new-source">Create new source:</label>
                 <input id="addSource" type="text" class="addSource" value=""/>
                 <input type="button" id="addSourceButton" name="addSourceButton" value="Add"/>
-                <a id="importActivitiesLink" href="<c:url value="/pages/activities/importActivities"/>" >Import activities from xml</a>
+                <a id="importActivitiesLink" href="<c:url value="/pages/activities/importActivities"/>" >Import activities from xml or from csv</a>
 
                 <span id="exportOptions" style="display:none"> Export Options:</span>
                 <a id="exportActivitiesLinkXML" class="underlined">XML</a>

@@ -19,7 +19,15 @@ public class ImportActivitiesCommand implements Validatable {
     private MultipartFile activitiesFile;
 
     public void apply() throws Exception {
-        service.loadAndSave(activitiesFile.getInputStream());
+        if (activitiesFile.getContentType().contains("xml")) {
+
+            service.loadAndSave(activitiesFile.getInputStream());
+        } else if (activitiesFile.getContentType().contains("csv")) {
+
+            service.loadAndSaveCSVFile(activitiesFile.getInputStream());
+        }
+
+
     }
 
     public void validate(Errors errors) {
@@ -29,12 +37,14 @@ public class ImportActivitiesCommand implements Validatable {
         }
 
         try {
-            invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, activitiesFile.getInputStream() , errors);
+            if (activitiesFile.getContentType().contains("xml")) {
+                invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, activitiesFile.getInputStream(), errors);
+            }
         } catch (IOException ioe) {
             errors.reject("error.problem.reading.file", Schema.activities.title());
             log.debug("Error reading file {} because {}", Schema.activities.title(), ioe.getMessage());
         }
-        
+
     }
 
     // Field setters and getters
@@ -49,5 +59,6 @@ public class ImportActivitiesCommand implements Validatable {
     public void setImportActivitiesService(ImportActivitiesService service) {
         this.service = service;
     }
+
 
 }
