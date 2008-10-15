@@ -23,7 +23,7 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
     private static final String GRID_STUDY_CONSUMER_URL = "grid.studyconsumer.url";
     private static final String GRID_ROLLBACK_TIMEOUT = "grid.rollback.timeout";
 
-    private static final String GRID_ROLLBACK_TIMEOUT_VALUE = "1s";
+    private static final String GRID_ROLLBACK_TIMEOUT_VALUE = "1";
 
     private static final String GRID_STUDY_CONSUMER_VALUE = "/wsrf-psc/services/cagrid/StudyConsumer";
 
