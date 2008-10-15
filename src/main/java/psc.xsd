@@ -111,6 +111,7 @@
 
     <xsd:complexType name="PlannedActivity">
         <xsd:sequence>
+            <xsd:element name="label" type="psc:Label" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="activity" type="psc:Activity"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="optional"/>
@@ -231,6 +232,13 @@
         <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
         <xsd:attribute name="code" type="xsd:string" use="required"/>
         <xsd:attribute name="source" type="xsd:string"/>
+    </xsd:complexType>
+
+   <xsd:element name="label" type="psc:Label"/>
+
+    <xsd:complexType name="Label">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="repetition-number" type="xsd:integer"/>
     </xsd:complexType>
 
     <xsd:element name="population" type="psc:Population"/>

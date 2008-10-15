@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.List;
+import java.util.Iterator;
 
 public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     private ActivityXmlSerializer activityXmlSerializer;
@@ -52,6 +53,17 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
             for (Population population : study.getPopulations()) {
                 if (populationAbbreviation.equals(population.getAbbreviation())) {
                     ((PlannedActivity) node).setPopulation(population);
+                }
+            }
+        }
+
+        if(XsdElement.PLANNED_ACTIVITY_LABEL.xmlName()!=null) {
+        Iterator iterator = element.elementIterator(XsdElement.PLANNED_ACTIVITY_LABEL.xmlName());
+            if (iterator != null) {
+                while(iterator.hasNext())  {
+                    PlannedActivityLabel label = plannedActivityLabelXmlSerializer.readElement((Element) iterator.next());
+                    ((PlannedActivity) node).addPlannedActivityLabel(label);
+
                 }
             }
         }
