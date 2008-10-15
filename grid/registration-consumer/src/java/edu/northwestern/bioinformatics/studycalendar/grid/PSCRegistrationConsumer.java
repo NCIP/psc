@@ -58,6 +58,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
     private String registrationConsumerGridServiceUrl;
 
+    private String rollbackTimeOut;
 
     /**
      * Does nothing as we are already  commiting Registraiton message by default.
@@ -103,8 +104,14 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
 
             Calendar calendar = Calendar.getInstance();
+            Integer rollbackTime = 1;
+            try {
+                rollbackTime = Integer.parseInt(rollbackTimeOut);
+            } catch (NumberFormatException e) {
+                logger.error(String.format("error parsing value of rollback time out. Value of rollback time out %s must be integer.", rollbackTimeOut));
+            }
             boolean checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
-                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, 1);
+                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, rollbackTime);
             if (!checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.debug("Subject was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this subject:" + subject.getId());
                 return;
@@ -359,6 +366,10 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         this.registrationConsumerGridServiceUrl = registrationConsumerGridServiceUrl;
     }
 
+    @Required
+    public void setRollbackTimeOut(String rollbackTimeOut) {
+        this.rollbackTimeOut = rollbackTimeOut;
+    }
 
     public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(final GetMultipleResourceProperties_Element getMultipleResourceProperties_element) throws RemoteException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

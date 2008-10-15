@@ -602,6 +602,11 @@
                                 <property name="linkName" value="authConfigurationController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Grid services configuration"/>
+                                <property name="linkName" value="diagnosticsController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>

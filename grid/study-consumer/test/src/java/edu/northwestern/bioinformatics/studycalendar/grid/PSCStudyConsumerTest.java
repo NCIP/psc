@@ -5,9 +5,9 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import gov.nih.nci.cabig.ccts.domain.Study;
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import gov.nih.nci.ccts.grid.client.StudyConsumerClient;
-import gov.nih.nci.ccts.grid.stubs.types.InvalidStudyException;
-import gov.nih.nci.ccts.grid.stubs.types.StudyCreationException;
+import gov.nih.nci.ccts.grid.studyconsumer.client.StudyConsumerClient;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
@@ -29,8 +29,6 @@ import java.util.Date;
 public class PSCStudyConsumerTest extends DBTestCase {
 
 
-
-
     private String clientConfigFile;
 
     private String regFile;
@@ -46,10 +44,10 @@ public class PSCStudyConsumerTest extends DBTestCase {
 
     private void init() {
 
-        applicationContext=new ClassPathXmlApplicationContext(new String[]{
+        applicationContext = new ClassPathXmlApplicationContext(new String[]{
                 // "classpath:applicationContext.xml",
                 "classpath:applicationContext-studyConsumer-grid.xml"});
-        pscStudyConsumer= (PSCStudyConsumer) applicationContext.getBean("studyConsumer");
+        pscStudyConsumer = (PSCStudyConsumer) applicationContext.getBean("studyConsumer");
 
         clientConfigFile = System.getProperty("psc.test.clientConfigFile",
                 "gov/nih/nci/ccts/grid/client/client-config.wsdd");

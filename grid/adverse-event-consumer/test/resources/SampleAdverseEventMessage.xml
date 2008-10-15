@@ -1,5 +1,8 @@
 <aeNotification xmlns="gme://ccts.cabig/1.0/gov.nih.nci.cabig.ccts.ae.domain"
                 registrationGridId="48a14190-04d8-4c50-b594-588bb4fe8a7d">
-    <detectionDate>2008-08-01</detectionDate>
-    <description>Grade 3 adverse event with term Serum sickness</description>
+    <detectionDate>2008-01-07</detectionDate>
+    <description>Grade 2 adverse event with term Hearing: patients with/without baseline audiogram and enrolled in a
+        monitoring program
+    </description>
 </aeNotification>
+        
