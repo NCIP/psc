@@ -5,9 +5,9 @@
     <property environment="env"/>
     <property file="${env.CATALINA_HOME}/conf/psc/datasource.properties"/>
 
-    <property name="participant.grid_id" value="91dd4580-801b-4874-adeb-a174361bacea"/>
+    <property name="participant.grid_id" value="91dd4580-801b-4874-adeb-a174361baceab"/>
     <!--<property name="study.grid_id" value="51bd374c-d8b5-4759-84b3-ac6259d58648"/>-->
-    <property name="assignment.grid_id" value="6115c43c-851e-425c-8312-fd78367aaef3"/>
+    <property name="assignment.grid_id" value="6115c43c-851e-425c-8312-fd78367aaef3a"/>
     <property name="study.assigned_identifier" value="SMOKE_TEST"></property>
 
     <path id="cp.jdbc">
@@ -52,6 +52,12 @@
             delete from study_sites where study_id in (select id from studies where
             assigned_identifier='${study.assigned_identifier}');
 
+            delete from scheduled_activities where planned_activity_id in (select id from planned_activities where period_id in (select id from periods where study_segment_id in (select
+            id from study_segments where epoch_id in (select id
+            from epochs where planned_calendar_id in ( select id
+            from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}'))))));
+
             delete from planned_activities where period_id in (select id from periods where study_segment_id in (select
             id from study_segments where epoch_id in (select id
             from epochs where planned_calendar_id in ( select id
@@ -62,6 +68,11 @@
             from epochs where planned_calendar_id in ( select id
             from planned_calendars where study_id in (select id from studies where
             assigned_identifier='${study.assigned_identifier}')))) ;
+
+            delete from scheduled_study_segments where study_segment_id in (select id from study_segments where epoch_id in (select id from epochs where planned_calendar_id in ( select id
+            from planned_calendars where study_id in (select id from studies where
+            assigned_identifier='${study.assigned_identifier}'))));
+
 
             delete from study_segments where epoch_id in (select id from epochs where planned_calendar_id in ( select id
             from planned_calendars where study_id in (select id from studies where
@@ -127,6 +138,7 @@
             sa.grid_id='${assignment.grid_id}');
 
             delete from subject_assignments where grid_id='${assignment.grid_id}';
+            delete from subjects where grid_id='${participant.grid_id}'
         </sql>
         <echo message="Deleted assigment with grid id ${assignment.grid_id}"/>
     </target>
