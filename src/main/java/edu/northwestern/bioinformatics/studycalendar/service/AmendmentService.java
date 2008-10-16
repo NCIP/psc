@@ -1,15 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -31,11 +35,13 @@ public class AmendmentService {
     private StudyService studyService;
     private DeltaService deltaService;
     private TemplateService templateService;
+    private PopulationService populationService;
+    private NotificationService notificationService;
+
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
-    private PopulationService populationService;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
-    private NotificationService notificationService;
+    private PlannedActivityDao plannedActivityDao;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -155,6 +161,27 @@ public class AmendmentService {
     }
 
     /**
+     * Special case service method which records a planned activity for addition to a period.
+     * Differs from the general {@link #updateDevelopmentAmendmentAndSave} in that it makes
+     * a special effort to prevent optimistic locking failures by <strong>not updating
+     * the version of the container to which the planned activity is added</strong>.  This means
+     * it is only safe to use in certain circumstances.  Beware.
+     */
+    public Study addPlannedActivityToDevelopmentAmendmentAndSave(Period node, PlannedActivity plannedActivity) {
+        node = templateService.findCurrentNode(node);
+        if (node.isDetached()) {
+            log.debug("Detached period; save planned activity only");
+            // deliberately not setting the Period => PA reference
+            plannedActivity.setPeriod(node);
+            plannedActivityDao.save(plannedActivity);
+            return templateService.findStudy(node);
+        } else {
+            log.debug("Attached period; create new Add");
+            return updateDevelopmentAmendmentAndSave(node, Add.create(plannedActivity));
+        }
+    }
+
+    /**
      * Deletes the development amendment for the designated study.  If the
      * study has no released amendment, it deletes the study and the study's
      * planned calendar.
@@ -233,5 +260,10 @@ public class AmendmentService {
     @Required
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @Required
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
     }
 }

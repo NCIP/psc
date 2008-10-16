@@ -239,7 +239,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectFindActivity();
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
-        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod, Add.create(expectedPlannedActivity)))
+        expect(amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(revisedPeriod, expectedPlannedActivity))
             .andThrow(new StudyCalendarValidationException("I have some bad news"));
 
         doPost();
@@ -269,8 +269,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     ////// EXPECTATIONS
 
     private void expectPlannedActivityAdd(PlannedActivity expectedPlannedActivity) {
-        expect(amendmentService.updateDevelopmentAmendmentAndSave(revisedPeriod,
-            Add.create(expectedPlannedActivity))).andReturn(study);
+        expect(amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(revisedPeriod,
+            expectedPlannedActivity)).andReturn(study);
     }
 
     private void expectSuccessfulDrillDown() {
