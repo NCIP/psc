@@ -73,7 +73,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
 
         if (studyDao.getStudyIdByAssignedIdentifier(ccIdentifier) != null) {
-            logger.debug("Already a study with the same Coordinating Center Identifier (" + ccIdentifier
+            logger.info("Already a study with the same Coordinating Center Identifier (" + ccIdentifier
                     + ") exists.Returning without processing the request.");
             return;
         }
@@ -139,7 +139,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(study.getClass(), study.getId(), studyConsumerGridServiceUrl);
 
         if (!checkIfEntityWasCreatedByGridService) {
-            logger.debug("Study was not created by the grid service url:" + studyConsumerGridServiceUrl + " so can not rollback this study:" + study.getId());
+            logger.info("Study was not created by the grid service url:" + studyConsumerGridServiceUrl + " so can not rollback this study:" + study.getId());
             return;
         }
         logger.info("Study (id:" + study.getId() + ") was created by the grid service url:" + studyConsumerGridServiceUrl);
@@ -161,7 +161,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
                 amendmentService.deleteDevelopmentAmendment(study);
             } else {
-                logger.debug("Study was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this study:" + study.getId());
+                logger.info(String.format("Study was not created %s minute before the current time:%s  so can not rollback this study:%s",
+                        rollbackTime, calendar.getTime().toString(), study.getId()));
             }
         }
         catch (Exception expception) {
