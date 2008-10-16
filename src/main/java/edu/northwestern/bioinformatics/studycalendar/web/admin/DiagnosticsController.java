@@ -64,22 +64,24 @@ public class DiagnosticsController extends PscSimpleFormController {
 
     private void testSmtp(DiagnosticsCommand diagnosticsCommand, HttpServletRequest request) {
         try {
-            String message = "Testing the grid service configuration..";
+            String message = "Testing the email configuration..";
 
             MimeMessage simpleMailMessage = mailSender.createMimeMessage();
             simpleMailMessage.setSubject(message);
+            simpleMailMessage.setText("Email Configuration is correct.");
 
             // use the true flag to indicate you need a multipart message
             MimeMessageHelper helper = new MimeMessageHelper(simpleMailMessage, true);
 
             helper.setReplyTo(configuration.get(MAIL_REPLY_TO));
+            helper.setFrom(configuration.get(MAIL_REPLY_TO));
             List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
             helper.setTo(to.toArray(new String[to.size()]));
 
 
             mailSender.send(simpleMailMessage);
         } catch (Exception e) {
-            log.error(" Error in sending email , please check the confiuration " + e);
+            log.error(" Error in sending email , please check the configuration " + e);
             diagnosticsCommand.setSmtpException(e.getMessage());
         }
 

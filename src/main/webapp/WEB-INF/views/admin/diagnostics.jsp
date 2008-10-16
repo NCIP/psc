@@ -97,7 +97,7 @@
 
 
 </laf:box>
-<laf:box title="Email Configurations">
+<laf:box title="Email Configuration">
 <c:choose>
 <c:when test="${command.smtpException ne null}">
 <div class="row even">
