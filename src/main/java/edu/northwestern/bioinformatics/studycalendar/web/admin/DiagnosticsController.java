@@ -58,6 +58,7 @@ public class DiagnosticsController extends PscSimpleFormController {
             log.error("Error connecting to SmoteTestService.", e);
             diagnosticsCommand.setSmokeTestServiceException(e.getMessage());
 
+
         }
 
     }
@@ -66,17 +67,14 @@ public class DiagnosticsController extends PscSimpleFormController {
         try {
             String message = "Testing the email configuration..";
 
-            MimeMessage simpleMailMessage = mailSender.createMimeMessage();
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setSubject(message);
             simpleMailMessage.setText("Email Configuration is correct.");
 
-            // use the true flag to indicate you need a multipart message
-            MimeMessageHelper helper = new MimeMessageHelper(simpleMailMessage, true);
-
-            helper.setReplyTo(configuration.get(MAIL_REPLY_TO));
-            helper.setFrom(configuration.get(MAIL_REPLY_TO));
+            simpleMailMessage.setReplyTo(configuration.get(MAIL_REPLY_TO));
+            simpleMailMessage.setFrom(configuration.get(MAIL_REPLY_TO));
             List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
-            helper.setTo(to.toArray(new String[to.size()]));
+            simpleMailMessage.setTo(to.toArray(new String[to.size()]));
 
 
             mailSender.send(simpleMailMessage);
