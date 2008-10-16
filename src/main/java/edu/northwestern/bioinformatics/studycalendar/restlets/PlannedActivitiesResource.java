@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -78,8 +77,8 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
 
         try {
             log.debug("Attempting to merge {} into the current dev amendment for {}", newPlannedActivity, getRequestedObject());
-            amendmentService.updateDevelopmentAmendmentAndSave(
-                getRequestedObject(), Add.create(newPlannedActivity));
+            amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(
+                getRequestedObject(), newPlannedActivity);
         } catch (StudyCalendarUserException e) {
             throw new ResourceException(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, e.getMessage(), e);
         }
