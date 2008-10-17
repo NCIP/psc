@@ -787,7 +787,7 @@
                                         </c:if>
                                         <c:if test="${isSubjectCoordinatorAssigned}">
                                             <c:if test="${configuration.map.enableAssigningSubject}">
-                                                <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control">
+                                                <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
                                                     Assign Subject
                                                 </tags:restrictedListItem>
                                             </c:if>

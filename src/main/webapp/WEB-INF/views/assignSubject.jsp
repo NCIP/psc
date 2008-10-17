@@ -47,9 +47,25 @@
                     <div class="value">
                         <c:if test="${fn:length(sites) gt 1}">
                             <form:select path="site">
-                                <c:forEach items="${sites}" var="pair">
-                                    <form:option value="${pair.key.id}" label="${pair.value}"/>
-                                </c:forEach>
+                               <c:choose>
+                                <c:when test="${defaultSite != null}">
+                                    <c:forEach items="${sites}" var="pair">
+                                       <c:if test="${defaultSite eq pair.key.id}">
+                                          <form:option value="${pair.key.id}" label="${pair.value}"/>
+                                       </c:if>
+                                    </c:forEach>
+                                    <c:forEach items="${sites}" var="pair">
+                                       <c:if test="${defaultSite != pair.key.id}">
+                                          <form:option value="${pair.key.id}" label="${pair.value}"/>
+                                       </c:if>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:forEach items="${sites}" var="pair">
+                                        <form:option value="${pair.key.id}" label="${pair.value}"/>
+                                    </c:forEach>
+                                </c:otherwise>
+                                </c:choose>
                             </form:select>
                         </c:if>
                         <c:if test="${fn:length(sites) eq 1}">

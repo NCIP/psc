@@ -23,6 +23,7 @@ import java.util.*;
 
 /**
  * @author Padmaja Vedula
+ * @author Jalpa Patel
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class AssignSubjectController extends PscSimpleFormController {
@@ -81,6 +82,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         Map<String, String> genders = Gender.getGenderMap();
         refdata.put("genders", genders);
         refdata.put("action", "New");
+        refdata.put("defaultSite",httpServletRequest.getParameter("site"));
         return refdata;
     }
 
