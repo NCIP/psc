@@ -50,8 +50,10 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         StudySite studySite = setId(14, createStudySite(study, site));
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         Set<Population> populations = Collections.singleton(new Population());
+        String studySubjectId = "SSId1";
 
         command.setStartDate(new Date());
+        command.setStudySubjectId(studySubjectId);
         command.setStudy(study);
         command.setSite(site);
         command.setStudySegment(setId(17, Fixtures.createNamedInstance("Worcestershire", StudySegment.class)));
@@ -60,7 +62,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         subjectDao.save(subjectEq(subject));
 
 
-        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.getStartDate()), EasyMock.eq((User)null))).andReturn(assignment);
+        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.getStartDate()), EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null))).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 

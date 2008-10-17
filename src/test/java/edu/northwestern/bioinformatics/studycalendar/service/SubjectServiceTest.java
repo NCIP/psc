@@ -81,6 +81,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         studySite.approveAmendment(expectedAmendment, DateTools.createDate(2004, OCTOBER, 18));
         Subject subjectIn = createSubject("Alice", "Childress");
         Date startDate = DateUtils.createDate(2006, OCTOBER, 31);
+        String studySubjectId = "SSId1";
         StudySegment expectedStudySegment = Epoch.create("Treatment", "A", "B", "C").getStudySegments().get(1);
         expectedStudySegment.addPeriod(createPeriod("DC", 1, 7, 1));
         expectedStudySegment.getPeriods().iterator().next().addPlannedActivity(createPlannedActivity("Any", 4));
@@ -92,6 +93,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setStartDateEpoch(startDate);
         expectedAssignment.setSubject(subjectExpectedSave);
         expectedAssignment.setStudySite(studySite);
+        expectedAssignment.setStudySubjectId(studySubjectId);
         expectedAssignment.setCurrentAmendment(expectedAmendment);
 
         subjectExpectedSave.addAssignment(expectedAssignment);
@@ -100,7 +102,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
         replayMocks();
 
-        StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedStudySegment, startDate, user);
+        StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedStudySegment, startDate, studySubjectId, user);
         verifyMocks();
 
         assertNotNull("Assignment not returned", actualAssignment);
@@ -136,7 +138,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         User user=null;
 
         replayMocks();
-        StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null);
+        StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11),null, null);
         verifyMocks();
 
         assertSame("Wrong amendment for new assignment", currentApproved, actual.getCurrentAmendment());
@@ -161,7 +163,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null);
+            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null, null);
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
             assertEquals("The template for ECOG 2502 has not been approved by Mayo", scse.getMessage());

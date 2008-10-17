@@ -33,6 +33,7 @@ public class AssignSubjectCommand implements Validatable {
     private Date dateOfBirth;
     private String gender;
     private String personId;
+    private String studySubjectId;
 
     public AssignSubjectCommand() {
         populations = new HashSet<Population>();
@@ -62,7 +63,7 @@ public class AssignSubjectCommand implements Validatable {
     public StudySubjectAssignment assignSubject() {
 		Subject subject = createAndSaveSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
-            subject, getStudySite(), getEffectiveStudySegment(), getStartDate(), getSubjectCoordinator());
+            subject, getStudySite(), getEffectiveStudySegment(), getStartDate(), getStudySubjectId(), getSubjectCoordinator());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
@@ -155,6 +156,13 @@ public class AssignSubjectCommand implements Validatable {
         this.populations = populations;
     }
 
+    public String getStudySubjectId() {
+        return studySubjectId;
+    }
+
+    public void setStudySubjectId(String studySubjectId) {
+        this.studySubjectId = studySubjectId;
+    }
 
    //////////////////////////////////////////
     public Date getDateOfBirth() {

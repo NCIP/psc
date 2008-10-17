@@ -105,6 +105,15 @@
                         <form:input path="personId"/>
                     </div>
                 </div>
+                <br />
+                <div class="row">
+                    <div class="label">
+                        <form:label path="studySubjectId">StudySubject Id</form:label>
+                    </div>
+                    <div class="value">
+                        <form:input path="studySubjectId"/>
+                    </div> 
+                </div>
 
                 <c:if test="${not empty studySegments}">
                     <div class="row">

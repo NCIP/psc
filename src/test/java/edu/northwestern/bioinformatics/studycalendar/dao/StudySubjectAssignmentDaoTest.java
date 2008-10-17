@@ -41,7 +41,7 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
                 assignment.getEndDateEpoch());
         assertEquals("Wrong subject", -20, (int) assignment.getSubject().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
-        assertEquals("Wrong study id", "-100", assignment.getStudyId());
+        assertEquals("Wrong study id", "-100", assignment.getStudySubjectId());
         assertEquals("Wrong current amendment", -18, (int) assignment.getCurrentAmendment().getId());
         assertEquals("Wrong number of populations", 1, assignment.getPopulations().size());
         assertEquals("Wrong population", -21, (int) assignment.getPopulations().iterator().next().getId());

@@ -36,11 +36,11 @@ public class SubjectService {
     private SiteService siteService;
     private AmendmentService amendmentService;
   
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, User subjectCoordinator) {
-        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, subjectCoordinator);
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator) {
+        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator);
     }
 
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User subjectCoordinator) {
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, User subjectCoordinator) {
         Amendment currentAmendment = studySite.getCurrentApprovedAmendment();
         if (currentAmendment == null) {
             throw new StudyCalendarSystemException("The template for %s has not been approved by %s",
@@ -54,6 +54,7 @@ public class SubjectService {
         spa.setGridId(assignmentGridIdentifier);
         spa.setSubjectCoordinator(subjectCoordinator);
         spa.setCurrentAmendment(currentAmendment);
+        spa.setStudySubjectId(studySubjectId);
         subject.addAssignment(spa);
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);

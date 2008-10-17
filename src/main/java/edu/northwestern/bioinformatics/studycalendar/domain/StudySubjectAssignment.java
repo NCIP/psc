@@ -28,7 +28,7 @@ import java.util.*;
 public class StudySubjectAssignment extends AbstractMutableDomainObject {
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    private String studyId;
+    private String studySubjectId;
     private StudySite studySite;
     private Subject subject;
 
@@ -166,12 +166,12 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         this.currentAmendment = currentAmendment;
     }
 
-    public String getStudyId() {
-        return studyId;
+    public String getStudySubjectId() {
+        return studySubjectId;
     }
 
-    public void setStudyId(String studyId) {
-        this.studyId = studyId;
+    public void setStudySubjectId(String studySubjectId) {
+        this.studySubjectId = studySubjectId;
     }
 
     @Transient
