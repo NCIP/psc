@@ -2,52 +2,52 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Saurabh Agrawal
+ * @author Rhett Sutphin
  */
 public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledActivitiesResource> {
+    private static final Date REQUESTED_DATE = DateTools.createDate(2008, Calendar.AUGUST, 12);
 
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    StudySubjectAssignment studySubjectAssignment;
-    private String DAY = "2";
-    private String YEAR = "2008";
-    private String MONTH = "5";
 
+    private StudySubjectAssignment studySubjectAssignment;
+    private Study study;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
-
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
-        studySubjectAssignment = new StudySubjectAssignment();
-        studySubjectAssignment.setGridId("grid_id");
-        studySubjectAssignment.setStudyId("study_id");
-        final ScheduledCalendar calendar = new ScheduledCalendar();
-        studySubjectAssignment.setScheduledCalendar(calendar);
 
-        request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName(), studySubjectAssignment.getGridId());
+        study = Fixtures.createSingleEpochStudy("AG 0701", "QoL");
+        studySubjectAssignment = Fixtures.createAssignment(
+            study,
+            Fixtures.createNamedInstance("AG", Site.class),
+            Fixtures.createSubject("Jo", "Jo")
+        );
+        studySubjectAssignment.setGridId("SSA-GRID");
 
-        request.getAttributes().put(UriTemplateParameters.YEAR.attributeName(), YEAR);
-
-        request.getAttributes().put(UriTemplateParameters.MONTH.attributeName(), MONTH);
-
-        request.getAttributes().put(UriTemplateParameters.DAY.attributeName(), DAY);
-
-        request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "study_id");
-
+        UriTemplateParameters.ASSIGNMENT_IDENTIFIER.putIn(request, studySubjectAssignment.getGridId());
+        UriTemplateParameters.YEAR.putIn(request, "2008");
+        UriTemplateParameters.MONTH.putIn(request, "8");
+        UriTemplateParameters.DAY.putIn(request, "12");
+        UriTemplateParameters.STUDY_IDENTIFIER.putIn(request, study.getAssignedIdentifier());
     }
 
     @Override
@@ -63,15 +63,14 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
         assertAllowedMethods("GET");
     }
 
-
     public void testGetXmlForAllScheduledActivitiesForASelectedDate() throws Exception {
+        List<ScheduledActivity> scheduledActivityList
+            = Arrays.asList(Fixtures.createScheduledActivity("A", 2008, Calendar.AUGUST, 12));
 
-        List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
-        Date date = DateUtils.createDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH), Integer.parseInt(DAY));
-
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), date, date)).andReturn(scheduledActivityList);
+        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId()))
+            .andReturn(studySubjectAssignment);
+        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), REQUESTED_DATE, REQUESTED_DATE))
+            .andReturn(scheduledActivityList);
 
         expect(xmlSerializer.createDocumentString(scheduledActivityList)).andReturn(MOCK_XML);
 
@@ -83,21 +82,20 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
     public void testGetXmlForAllScheduledActivitiesWhenYearIsNull() throws Exception {
         request.getAttributes().remove(UriTemplateParameters.YEAR.attributeName());
 
-
         expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        assertContains(response.getStatus().getDescription(), "Could not parse date from URI");
     }
 
     public void testGetXmlForAllScheduledActivitiesWhenStudyDoesNotMatch() throws Exception {
-        request.getAttributes().remove(UriTemplateParameters.STUDY_IDENTIFIER.attributeName());
-
-
+        study.setAssignedIdentifier("AG 1701");
         expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        assertContains(response.getStatus().getDescription(),
+            "The designated schedule (SSA-GRID) is not related to the designated study (AG 0701)");
     }
-
 }

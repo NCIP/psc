@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -21,6 +21,7 @@ import java.util.Date;
 
 /**
  * @author Saurabh Agrawal
+ * @author Rhett Sutphin
  */
 public class ScheduledActivitiesResource extends AbstractCollectionResource<ScheduledActivity> {
 
@@ -33,6 +34,7 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
     private String studyIdentifier;
 
     private StudyCalendarXmlCollectionSerializer scheduledActivityXmlSerializer;
+    private StudySubjectAssignment assignment;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -42,50 +44,36 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
         String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
 
-        StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
+        assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
 
         if (assignment != null) {
             scheduledCalendar = assignment.getScheduledCalendar();
-
-
         }
 
         String year = UriTemplateParameters.YEAR.extractFrom(request);
-
         String month = UriTemplateParameters.MONTH.extractFrom(request);
-
         String day = UriTemplateParameters.DAY.extractFrom(request);
 
-        //  month starts with 0
         try {
-            date = DateUtils.createDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
-        } catch (Exception e) {
-            log.error("Could not parse the date.");
+            date = DateTools.createDate(
+                Integer.parseInt(year),
+                Integer.parseInt(month) - 1, // The Calendar month constants start with 0 
+                Integer.parseInt(day));
+        } catch (NumberFormatException e) {
+            log.error("Could not parse the date due to an invalid number in the URL", e);
         }
-
-
     }
 
     @Override
     public Collection<ScheduledActivity> getAllObjects() throws ResourceException {
-        if (scheduledCalendar == null || date == null) {
-            String message = "either scheduled calendar is null or date is null.scheduled calendar:" + scheduledCalendar + "; date:" + date;
-            log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-                    message);
-
-        } else if (scheduledCalendar.getAssignment().getStudyId() == null
-                || !scheduledCalendar.getAssignment().getStudyId().equals(studyIdentifier)) {
-            String message = "The assignment is associated to different study (id =" + scheduledCalendar.getAssignment().getStudyId() + "). " +
-                    "Assignment must be associated with the same study which is provided in url parameter:" + studyIdentifier;
-            log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-                    message);
-
-
+        if (date == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date from URI");
+        } else if (!assignment.getStudySite().getStudy().getAssignedIdentifier().equals(studyIdentifier)) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, String.format(
+                "The designated schedule (%s) is not related to the designated study (%s)",
+                assignment.getGridId(), studyIdentifier));
         }
-        Collection<ScheduledActivity> scheduledActivityCollection = scheduledActivityDao.getEventsByDate(scheduledCalendar, date, date);
-        return scheduledActivityCollection;
+        return scheduledActivityDao.getEventsByDate(assignment.getScheduledCalendar(), date, date);
     }
 
     @Override
