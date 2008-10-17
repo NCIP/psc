@@ -480,6 +480,11 @@
                         <request>
                             <representation href="#scheduled-activity-state-xml"/>
                         </request>
+                        <response>
+                            <param name="Location" style="header">
+                                <doc>If successful, this action will return 201 Created with a location header pointing back to the original scheduled activity.</doc>
+                            </param>
+                        </response>
                     </method>
                 </resource>
             </resource>

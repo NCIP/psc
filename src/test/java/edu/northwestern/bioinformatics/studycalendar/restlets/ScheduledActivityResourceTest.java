@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
@@ -20,42 +20,49 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Saurabh Agrawal
+ * @author Rhett Sutphin
  */
 public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledActivityResource> {
-
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    StudySubjectAssignment studySubjectAssignment;
+
+    private StudySubjectAssignment assignment;
     private ScheduledActivity scheduledActivity;
+    private Study study;
 
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
-
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
-        scheduledActivity = new ScheduledActivity();
-        scheduledActivity.setId(1);
-        scheduledActivity.setGridId("grid_id");
+        scheduledActivity = Fixtures.setId(12, Fixtures.createScheduledActivity("A", 2007, Calendar.MARCH, 4));
+        scheduledActivity.setGridId("SA-GRID");
 
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
-        studySubjectAssignment = new StudySubjectAssignment();
-        studySubjectAssignment.setGridId("grid_id");
-        studySubjectAssignment.setStudyId("study_id");
-        studySubjectAssignment.setScheduledCalendar(new ScheduledCalendar());
+        study = Fixtures.createSingleEpochStudy("AG 0701", "QoL");
+        assignment = Fixtures.createAssignment(
+            study,
+            Fixtures.createNamedInstance("AG", Site.class),
+            Fixtures.createSubject("Jo", "Jo")
+        );
+        assignment.setGridId("SSA-GRID");
+        assignment.getScheduledCalendar().addStudySegment(
+            Fixtures.createScheduledStudySegment(study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0)));
+        assignment.getScheduledCalendar().getScheduledStudySegments().get(0)
+            .addEvent(scheduledActivity);
 
-        request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName(), studySubjectAssignment.getGridId());
-
-        request.getAttributes().put(UriTemplateParameters.SCHEDULED_ACTIVITY_IDENTIFIER.attributeName(), scheduledActivity.getId().intValue() + "");
-        request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "study_id");
+        UriTemplateParameters.ASSIGNMENT_IDENTIFIER.putIn(request, assignment.getGridId());
+        UriTemplateParameters.SCHEDULED_ACTIVITY_IDENTIFIER.putIn(request, scheduledActivity.getGridId());
+        UriTemplateParameters.STUDY_IDENTIFIER.putIn(request, study.getAssignedIdentifier());
 
         currentScheduledActivityStateXmlSerializer = new CurrentScheduledActivityStateXmlSerializer();
-
     }
 
     @Override
@@ -72,205 +79,87 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
         assertAllowedMethods("GET", "POST");
     }
 
+    ////// GET
+
     public void testGetXmlForNonExistingScheduledActivity() throws Exception {
-        List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
+        UriTemplateParameters.SCHEDULED_ACTIVITY_IDENTIFIER.putIn(request, "Unknown-One");
 
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), null, null)).andReturn(scheduledActivityList);
+        expect(scheduledActivityDao.getByGridId("Unknown-One")).andReturn(null);
 
         doGet();
-        assertFalse("no scheduled activity exists for given scheduled calendar", getResource().isAvailable());
-        assertEquals("Result  success", 404, response.getStatus().getCode());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGetXmlForInValidStudy() throws Exception {
-        studySubjectAssignment.setStudyId("new_study_id");
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
+    public void testGetXmlForUnmatchedStudy() throws Exception {
+        expectGetScheduledActivity();
+        study.setAssignedIdentifier("AG 1701");
 
         doGet();
-        assertFalse("no scheduled activity exists for given scheduled calendar", getResource().isAvailable());
-        assertEquals("Result  success", 404, response.getStatus().getCode());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGetXmlForIfUrlHasInCorrectScheduledActivityParamter() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.SCHEDULED_ACTIVITY_IDENTIFIER.attributeName(), "2");
-
-        List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
-
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), null, null)).andReturn(scheduledActivityList);
+    public void testGetForUnmatchedScheduledActivity() throws Exception {
+        assignment.setGridId("A-different-one");
+        expectGetScheduledActivity();
 
         doGet();
-        assertFalse("no scheduled activity exists for given scheduled calendar", getResource().isAvailable());
-        assertEquals("Result  success", 404, response.getStatus().getCode());
-    }
-
-    public void testGetXmlForIfUrlHasNoScheduledActivityParamtere() throws Exception {
-        request.getAttributes().remove(UriTemplateParameters.SCHEDULED_ACTIVITY_IDENTIFIER.attributeName());
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-
-        doGet();
-        assertFalse("no scheduled activity exists for given scheduled calendar", getResource().isAvailable());
-        assertEquals("Result  success", 404, response.getStatus().getCode());
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     public void testGetXmlForExistingScheduledActivity() throws Exception {
-        List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
-        scheduledActivityList.add(scheduledActivity);
-
-
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), null, null)).andReturn(scheduledActivityList);
+        expectGetScheduledActivity();
         expectObjectXmlized(scheduledActivity);
 
         doGet();
 
-        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
     }
 
-
+    ////// POST
 
     public void testPostValidXml() throws Exception {
+        StringBuilder xml = new StringBuilder();
 
-        StringBuffer expected = new StringBuffer();
+        ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel",null);
-
-        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        PlannedActivity plannedActivity = scheduledActivity.getPlannedActivity();
-        String plannedActivityGridId = plannedActivity != null ? plannedActivity.getGridId() : null;
-        expected.append(format("<scheduled-activity-state  state=\"{0}\" date=\"2008-01-15\" reason=\"{1}\" >",
+        xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        xml.append(format("<scheduled-activity-state  state=\"{0}\" date=\"2008-01-15\" reason=\"{1}\" >",
                 AbstractScheduledActivityStateXmlSerializer.CANCELED, scheduledActivityState.getReason()));
+        xml.append("</scheduled-activity-state>");
 
-        expected.append("</scheduled-activity-state>");
-
-        final InputStream in = new ByteArrayInputStream(expected.toString().getBytes());
+        final InputStream in = new ByteArrayInputStream(xml.toString().getBytes());
         List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
         scheduledActivityList.add(scheduledActivity);
 
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), null, null)).andReturn(scheduledActivityList);
+        expectGetScheduledActivity();
         scheduledActivityDao.save(scheduledActivity);
         doPost();
 
-        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
-        assertEquals(ROOT_URI + "/studies/study_id/schedules/grid_id/activities/null",
-                response.getLocationRef().getTargetRef().toString());
+        assertResponseStatus(Status.SUCCESS_CREATED);
     }
 
     public void testPostInvalidXml() throws Exception {
         StringBuffer expected = new StringBuffer();
 
-        ScheduledActivityState scheduledActivityState = new Canceled("cancel",null);
+        ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
 
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-//        expected.append("<scheduled-activities");
-//        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-//        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-//        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
-
-        PlannedActivity plannedActivity = scheduledActivity.getPlannedActivity();
-        String plannedActivityGridId = plannedActivity != null ? plannedActivity.getGridId() : null;
         expected.append(format("<scheduled-activity-state  state=\"invalud-state\" date=\"2008-01-15\" reason=\"{1}\" >",
                 scheduledActivityState.getReason()));
-
         expected.append("</scheduled-activity-state>");
 
         final InputStream in = new ByteArrayInputStream(expected.toString().getBytes());
-        List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
-        scheduledActivityList.add(scheduledActivity);
 
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);
-        expect(scheduledActivityDao.getEventsByDate(studySubjectAssignment.getScheduledCalendar(), null, null)).andReturn(scheduledActivityList);
+        expectGetScheduledActivity();
 
-
-        try {
-            doPost();
-
-        } catch (StudyCalendarValidationException e) {
-
-            fail("No Holday existis with id:" + 4 + " at the site:");
-            assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-
-        }
-
+        doPost();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
-//
-//        public void testGetXmlForNonExistentActivityIs404() throws Exception {
-//            expectFoundActivity(null);
-//
-//            doGet();
-//
-//            assertEquals("Result not 'not found'", 404, response.getStatus().getCode());
-//        }
-
-//
-//        public void testPutExistingActivity() throws Exception {
-//            Activity newActivity = new Activity();
-//            expectFoundActivity(activity);
-//            expectReadXmlFromRequestAs(newActivity);
-//            expectObjectXmlized(newActivity);
-//
-//            activityDao.save(activity);
-//            doPut();
-//
-//            assertEquals("Result not success", 200, response.getStatus().getCode());
-//            assertResponseIsCreatedXml();
-//        }
-////
-//        public void testDeleteExistingActivityWhichIsNotusedAnyWhere() throws Exception {
-//            expectFoundActivity(activity);
-//            expectActivityUsedByPlannedCalendar(activity, false);
-//            activityDao.delete(activity);
-//            doDelete();
-//
-//            assertEquals("Result not success", 200, response.getStatus().getCode());
-////        assertResponseIsCreatedXml();
-//        }
-
-//        public void testDeleteExistingActivityWhichIsused() throws Exception {
-//            expectFoundActivity(activity);
-//            expectActivityUsedByPlannedCalendar(activity, true);
-//            doDelete();
-//
-//            assertEquals("Result is success", 400, response.getStatus().getCode());
-////        assertResponseIsCreatedXml();
-//        }
-//
-//        public void testPutNewXml() throws Exception {
-//            expectFoundActivity(null);
-//            expectObjectXmlized(activity);
-//            expectReadXmlFromRequestAs(activity);
-//
-//            activityDao.save(activity);
-//            doPut();
-//
-//            assertResponseStatus(Status.SUCCESS_CREATED);
-//            assertResponseIsCreatedXml();
-//        }
-
-//        private void expectFoundActivity(Activity expectedActivity) {
-//            expect(activityDao.getByCodeAndSourceName(ACTIVITY_NAME, SOURCE_NAME)).andReturn(expectedActivity);
-//        }
-//
-//        private void expectActivityUsedByPlannedCalendar(Activity expectedActivity, boolean isExcepted) {
-//            if (isExcepted) {
-//                List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();
-//                plannedActivities.add(new PlannedActivity());
-//                expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(plannedActivities);
-//            } else {
-//                expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(null);
-//
-//            }
-//        }
-
-
+    private void expectGetScheduledActivity() {
+        expect(scheduledActivityDao.getByGridId(scheduledActivity.getGridId())).andReturn(scheduledActivity);
+    }
 }
