@@ -69,9 +69,15 @@ public class AssignSubjectController extends PscSimpleFormController {
         addAvailableSitesRefdata(refdata, study);
         refdata.put("study", study);
         refdata.put("subjects", subjects);
-        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
-        getControllerTools().addHierarchyToModel(epoch, refdata);
-        List<StudySegment> studySegments = epoch.getStudySegments();
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        List<StudySegment> studySegments = new ArrayList<StudySegment>();
+        for(Epoch epoch:epochs) {
+            getControllerTools().addHierarchyToModel(epoch, refdata);
+            List<StudySegment> tempStudySegments = epoch.getStudySegments();
+            for(StudySegment studySegment:tempStudySegments) {
+                studySegments.add(studySegment);
+            }
+        }
         if (studySegments.size() > 1) {
             refdata.put("studySegments", studySegments);
         } else {

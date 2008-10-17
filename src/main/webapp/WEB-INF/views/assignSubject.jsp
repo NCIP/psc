@@ -138,7 +138,9 @@
                         </div>
                         <div class="value">
                             <form:select path="studySegment">
-                                <form:options items="${studySegments}" itemLabel="name" itemValue="id"/>
+                                <c:forEach items="${studySegments}" var="sSegment">
+                                        <form:option value="${sSegment.id}" label="${sSegment.qualifiedName}"/>
+                                </c:forEach>
                             </form:select>
                         </div>
                     </div>
