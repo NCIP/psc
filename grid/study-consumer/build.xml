@@ -224,8 +224,6 @@
 
         <!--</subant>-->
 
-        <ant dir="${env.CCTS_HOME}/StudyConsumerGridService" antfile="ivy-build.xml"
-             target="publish-local" inheritAll="false"/>
 
         <ant dir="${env.CCTS_HOME}/StudyConsumerGridService" antfile="build.xml"
                     target="deployTomcat" inheritAll="false"/>

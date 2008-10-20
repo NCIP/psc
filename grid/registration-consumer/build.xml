@@ -223,8 +223,6 @@
         <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
 
         <!--</subant>-->
-        <ant dir="${env.CCTS_HOME}/RegistrationConsumerGridService" antfile="ivy-build.xml"
-             target="publish-local" inheritAll="false"/>
 
         <ant dir="${env.CCTS_HOME}/RegistrationConsumerGridService" antfile="build.xml"
              target="deployTomcat" inheritAll="false"/>

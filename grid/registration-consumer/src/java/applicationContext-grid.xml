@@ -8,7 +8,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
         default-lazy-init="true">
     <tx:annotation-driven proxy-target-class="true"/>
-    
+
     <import resource="classpath:applicationContext-api.xml"/>
     <import resource="classpath:applicationContext-command.xml"></import>
     <import resource="classpath:applicationContext-dao.xml"></import>
@@ -27,7 +27,13 @@
         <property name="subjectDao" ref="subjectDao"/>
         <property name="subjectService" ref="subjectService"/>
         <property name="userDao" ref="userDao"/>
+        <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
     </bean>
+
+    <bean id="rollbackTimeOut" class="java.lang.String">
+        <constructor-arg value="${grid.rollback.timeout}"/>
+    </bean>
+
 
     <bean id="registrationConsumerGridServiceUrl" class="java.lang.String">
         <constructor-arg value="${grid.registrationconsumer.url}"/>

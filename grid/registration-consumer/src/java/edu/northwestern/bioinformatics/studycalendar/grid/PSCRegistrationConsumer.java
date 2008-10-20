@@ -58,6 +58,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
     private String registrationConsumerGridServiceUrl;
 
+    private String rollbackTimeOut;
 
     /**
      * Does nothing as we are already  commiting Registraiton message by default.
@@ -94,7 +95,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
             boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(subject.getClass(), subject.getId(), registrationConsumerGridServiceUrl);
 
             if (!checkIfEntityWasCreatedByGridService) {
-                logger.debug("Subject was not created by the grid service url:" + registrationConsumerGridServiceUrl + " so can not rollback this study:" + subject.getId());
+                logger.info("Subject was not created by the grid service url:" + registrationConsumerGridServiceUrl + " so can not rollback this study:" + subject.getId());
                 return;
             }
             logger.info("Subject (id:" + subject.getId() + ") was created by the grid service url:" + registrationConsumerGridServiceUrl);
@@ -103,14 +104,21 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
 
             Calendar calendar = Calendar.getInstance();
+            Integer rollbackTime = 1;
+            try {
+                rollbackTime = Integer.parseInt(rollbackTimeOut);
+            } catch (NumberFormatException e) {
+                logger.error(String.format("error parsing value of rollback time out. Value of rollback time out %s must be integer.", rollbackTimeOut));
+            }
             boolean checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
-                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, 1);
+                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, rollbackTime);
             if (!checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime) {
-                logger.debug("Subject was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this subject:" + subject.getId());
+                logger.info(String.format("Subject was not created %s minute before the current time:%s so can not rollback this subject:%s",
+                        rollbackTime, calendar.getTime().toString(), subject.getId()));
                 return;
 
             }
-            logger.info("Subject was created one minute before the current time:" + calendar.getTime().toString());
+            logger.info(String.format("Subject was created %s minute before the current time:%s", rollbackTime, calendar.getTime().toString()));
             List<StudySubjectAssignment> assignmentList = subject.getAssignments();
             if (assignmentList.size() > 1) {
                 logger.info("Subject has more than one assignments so deleting the assignments only for the subject: " + subject.getId());
@@ -217,7 +225,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         }
 
         ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
-        logger.debug("Created assignment " + scheduledCalendar.getId());
+        logger.info("Created assignment " + scheduledCalendar.getId());
         return registration;
     }
 
@@ -359,6 +367,10 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         this.registrationConsumerGridServiceUrl = registrationConsumerGridServiceUrl;
     }
 
+    @Required
+    public void setRollbackTimeOut(String rollbackTimeOut) {
+        this.rollbackTimeOut = rollbackTimeOut;
+    }
 
     public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(final GetMultipleResourceProperties_Element getMultipleResourceProperties_element) throws RemoteException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
