@@ -6,6 +6,7 @@
     <SITES
             id="-5"
             name="anotherSite"
+            grid_id="grid2"
             />
 
     <SITES

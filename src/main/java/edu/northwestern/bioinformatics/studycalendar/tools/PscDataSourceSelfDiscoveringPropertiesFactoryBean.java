@@ -21,10 +21,12 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
     private static final String GRID_REGISTRATION_CONSUMER_VALUE = "/wsrf-psc/services/cagrid/RegistrationConsumer";
 
     private static final String GRID_STUDY_CONSUMER_URL = "grid.studyconsumer.url";
+    private static final String GRID_ROLLBACK_TIMEOUT = "grid.rollback.timeout";
+
+    private static final String GRID_ROLLBACK_TIMEOUT_VALUE = "1";
 
     private static final String GRID_STUDY_CONSUMER_VALUE = "/wsrf-psc/services/cagrid/StudyConsumer";
 
-    //grid.registrationconsumer.url=/wsrf/services/cagrid/RegistrationConsumer
     private static final String[] WEBSSO_PROPERTIES = {
             WEBSSO_CAS_URL_PROPERTY, WEBSSO_SERVER_URL_PROPERTY, WEBSSO_SERVER_CERT_PROPERTY
     };
@@ -39,6 +41,7 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
 
         setPropertyDefault(GRID_STUDY_CONSUMER_URL, GRID_STUDY_CONSUMER_VALUE);
         setPropertyDefault(GRID_REGISTRATION_CONSUMER_URL, GRID_REGISTRATION_CONSUMER_VALUE);
+        setPropertyDefault(GRID_ROLLBACK_TIMEOUT, GRID_ROLLBACK_TIMEOUT_VALUE);
 
     }
 

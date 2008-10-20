@@ -31,6 +31,8 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBeanTest extends TestC
         assertNotNull("study consumer grid url can not be null", properties.getProperty("grid.studyconsumer.url"));
         assertEquals("study consumer grid url value can not be null", "/wsrf-psc/services/cagrid/StudyConsumer", properties.getProperty("grid.studyconsumer.url"));
 
+        assertNotNull("roll back time should not be null", properties.getProperty("grid.rollback.timeout"));
+        assertEquals("rollback timeout should not be null", "1", properties.getProperty("grid.rollback.timeout"));
 
     }
 }

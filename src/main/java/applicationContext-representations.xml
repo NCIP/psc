@@ -11,6 +11,9 @@
         >
 
     <!-- Xml Serializers -->
+    <bean id="notificationXmlSerializer" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.NotificationXmlSerializer"/>
+    
     <bean id="studyXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
     <bean id="studySnapshotXmlSerializer" autowire="byName"

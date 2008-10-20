@@ -3,10 +3,10 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import aenotification.AENotificationType;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.grid.ae.client.AdverseEventConsumerClient;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumerI;
+import gov.nih.nci.cabig.ccts.ae.domain.AENotificationType;
 import gov.nih.nci.cagrid.common.Utils;
 import junit.framework.Test;
 import junit.framework.TestSuite;

@@ -87,7 +87,13 @@ public enum XsdAttribute {
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE("start-date"),
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY("start-day"),
     NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID("study-segment-id"),
-    NEXT_STUDY_SEGMENT_SCHEDULE_MODE("mode");
+    NEXT_STUDY_SEGMENT_SCHEDULE_MODE("mode"),
+
+    NOTIFICATION_MESSAGE("message"),
+    NOTIFICATION_TITLE("title"),
+    NOTIFICATION_ACTION_REQUIRED("action-required"),
+    NOTIFICATION_DISMISSED("dismissed"),
+    NOTIFICATION_ID("id");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 

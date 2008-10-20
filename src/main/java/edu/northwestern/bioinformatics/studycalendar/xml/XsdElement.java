@@ -51,6 +51,7 @@ public enum XsdElement {
     PREVIOUS_SCHEDULED_ACTIVITY_STATE,
     SCHEDULED_ACTIVITIES,
     NEXT_SCHEDULED_STUDY_SEGMENT,
+    NOTIFICATION, NOTIFICATIONS,
 
 
     PLANNED_ACTIVITY_LABELS("labels"),
@@ -79,7 +80,7 @@ public enum XsdElement {
         return parent.element(xmlName());
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public List<Element> allFrom(Element parent) {
         return parent.elements(xmlName());
     }

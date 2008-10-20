@@ -35,6 +35,8 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Template>
             CAAERS_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("caAERSBaseUrl"));
     public static final ConfigurationProperty<Template>
+            SMOKE_SERVICE_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("smokeServiceBaseUrl"));
+    public static final ConfigurationProperty<Template>
             LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
 
     public static final ConfigurationProperty<Template>
@@ -56,7 +58,7 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Boolean>
             ENABLE_ASSIGNING_SUBJECT = PROPERTIES.add(new ConfigurationProperty.Bool("enableAssigningSubject"));
     public static final ConfigurationProperty<Boolean>
-            ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new ConfigurationProperty.Bool("enableCreatingTemplate"));    
+            ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new ConfigurationProperty.Bool("enableCreatingTemplate"));
 
     ////// PSC-SPECIFIC LOGIC
     public boolean getExternalAppsConfigured() {
