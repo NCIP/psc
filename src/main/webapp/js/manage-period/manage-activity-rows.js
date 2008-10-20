@@ -85,6 +85,7 @@ Object.extend(SC.MP, {
 
     // event handlers
     SC.MP.registerNotePreviewHandler($$("#notes .row-" + newRowIndex + " .notes-edit").first())
+    SC.MP.selectDisplayedNotes();
 
     SC.MP.scrollToRow(newRowIndex)
     SC.MP.clearReport()
