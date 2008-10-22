@@ -256,7 +256,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectRequestEntityFormAttribute("condition", "x &lt; 4 or y &gt; 5");
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
-        expectedPlannedActivity.setDetails("Four & five are outrŽ");
+        expectedPlannedActivity.setDetails("Four & five are outrÃ©");
         expectedPlannedActivity.setCondition("x < 4 or y > 5");
 
         expectPlannedActivityAdd(expectedPlannedActivity);
