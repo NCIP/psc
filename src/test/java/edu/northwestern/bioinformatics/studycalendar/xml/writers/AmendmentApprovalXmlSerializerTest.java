@@ -17,7 +17,7 @@ import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -103,11 +103,11 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<amendment-approvals ");
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(format("<amendment-approval date=\"{0}\" amendment=\"{1}\"/>", formatter.format(amendmentApproval.getDate()), amendmentApproval.getAmendment().getNaturalKey()));
+        expected.append(MessageFormat.format("<amendment-approval date=\"{0}\" amendment=\"{1}\"/>", formatter.format(amendmentApproval.getDate()), amendmentApproval.getAmendment().getNaturalKey()));
 
         expected.append("</amendment-approvals>");
 

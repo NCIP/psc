@@ -18,7 +18,7 @@ import org.restlet.resource.InputRepresentation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import static java.text.MessageFormat.format;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -124,7 +124,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
         ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
 
         xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        xml.append(format("<scheduled-activity-state  state=\"{0}\" date=\"2008-01-15\" reason=\"{1}\" >",
+        xml.append(MessageFormat.format("<scheduled-activity-state  state=\"{0}\" date=\"2008-01-15\" reason=\"{1}\" >",
                 AbstractScheduledActivityStateXmlSerializer.CANCELED, scheduledActivityState.getReason()));
         xml.append("</scheduled-activity-state>");
 
@@ -146,7 +146,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
         ScheduledActivityState scheduledActivityState = new Canceled("cancel", new Date());
 
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        expected.append(format("<scheduled-activity-state  state=\"invalud-state\" date=\"2008-01-15\" reason=\"{1}\" >",
+        expected.append(MessageFormat.format("<scheduled-activity-state  state=\"invalud-state\" date=\"2008-01-15\" reason=\"{1}\" >",
                 scheduledActivityState.getReason()));
         expected.append("</scheduled-activity-state>");
 

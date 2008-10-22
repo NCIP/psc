@@ -18,7 +18,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -179,17 +179,17 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<study ");
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2}\"", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
-        expected.append(format("       {0}=\"{1}\"", "assigned-identifier", "Study A"));
-        expected.append(format("       {0}=\"{1}\"", "last-modified-date", dateTimeFormat.format(study.getLastModifiedDate())));
-        expected.append(format("       {0}:{1}=\"{2} {3}\">", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\"", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", "assigned-identifier", "Study A"));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", "last-modified-date", dateTimeFormat.format(study.getLastModifiedDate())));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\">", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
 
-        expected.append(format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
-        expected.append(format("<population abbreviation=\"{0}\" name=\"{1}\" />", population.getAbbreviation(), population.getName()));
-        expected.append(format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" released-date=\"{3}\" />", firstAmendment.getName()
+        expected.append(MessageFormat.format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
+        expected.append(MessageFormat.format("<population abbreviation=\"{0}\" name=\"{1}\" />", population.getAbbreviation(), population.getName()));
+        expected.append(MessageFormat.format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" released-date=\"{3}\" />", firstAmendment.getName()
                 , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory()), dateTimeFormat.format(firstAmendment.getReleasedDate())));
-        expected.append(format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>",
+        expected.append(MessageFormat.format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>",
             developmentAmendment.getName(), formatter.format(developmentAmendment.getDate()), String.valueOf(developmentAmendment.isMandatory())));
 
         expected.append("</study>");

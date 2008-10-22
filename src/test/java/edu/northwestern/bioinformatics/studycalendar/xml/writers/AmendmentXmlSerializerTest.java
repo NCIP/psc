@@ -18,7 +18,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -143,14 +143,14 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testCreateDocumentString() throws Exception {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        expected.append(format("<amendment name=\"{0}\" date=\"2008-01-02\"", amendment1.getName()));
-        expected.append(format("           mandatory=\"true\" previous-amendment-key=\"{0}\"", amendment1.getPreviousAmendment().getNaturalKey()));
-        expected.append(format("            released-date=\"{0}\"", dateTimeFormat.format(amendment1.getReleasedDate())));
-        expected.append(format("            updated-date=\"{0}\"", dateTimeFormat.format(amendment1.getUpdatedDate())));
+        expected.append(MessageFormat.format("<amendment name=\"{0}\" date=\"2008-01-02\"", amendment1.getName()));
+        expected.append(MessageFormat.format("           mandatory=\"true\" previous-amendment-key=\"{0}\"", amendment1.getPreviousAmendment().getNaturalKey()));
+        expected.append(MessageFormat.format("            released-date=\"{0}\"", dateTimeFormat.format(amendment1.getReleasedDate())));
+        expected.append(MessageFormat.format("            updated-date=\"{0}\"", dateTimeFormat.format(amendment1.getUpdatedDate())));
 
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
         expected.append("<planned-calendar-delta id=\"grid1\" node-id=\"grid2\"/>");
         expected.append("</amendment>");
 

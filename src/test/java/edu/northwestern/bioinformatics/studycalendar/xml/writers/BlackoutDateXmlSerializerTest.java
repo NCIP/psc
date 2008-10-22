@@ -13,6 +13,7 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCal
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
+import java.text.MessageFormat;
 import static java.text.MessageFormat.format;
 import java.util.Collections;
 
@@ -168,11 +169,11 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<blackout-dates ");
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day=\"{3}\" month=\"{4}\" year=\"2008\"/>", monthDayHoliday.getId(),
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day=\"{3}\" month=\"{4}\" year=\"2008\"/>", monthDayHoliday.getId(),
                 monthDayHoliday.getDescription(), site.getId(), monthDayHoliday.getDay(), monthDayHoliday.getMonth()));
 
         expected.append("</blackout-dates>");
@@ -189,11 +190,11 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<blackout-dates ");
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" week-number=\"{4}\" month=\"{5}\" />",
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" week-number=\"{4}\" month=\"{5}\" />",
                 relativeRecurringHoliday.getId(), relativeRecurringHoliday.getDescription(), site.getId(),
                 relativeRecurringHoliday.getDayOfTheWeek(), relativeRecurringHoliday.getWeekNumber(), relativeRecurringHoliday.getMonth()));
 
@@ -211,11 +212,11 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<blackout-dates ");
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(MessageFormat.format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" />", dayOfTheWeek.getId(),
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" />", dayOfTheWeek.getId(),
                 dayOfTheWeek.getDescription(), site.getId(), dayOfTheWeek.getDayOfTheWeek()));
 
         expected.append("</blackout-dates>");
