@@ -186,11 +186,11 @@
 
     <target name="compile" description="Compile all java source" depends="resources">
         <javac destdir="${build-dir.main}" classpathref="cp.main"
-               debug="true" source="1.5">
+               debug="true" source="1.5" encoding="UTF-8">
             <src path="${src-dir.main}"/>
         </javac>
         <javac destdir="${build-dir.unit-test}" classpathref="cp.unit-test"
-               debug="true" source="1.5">
+               debug="true" source="1.5" encoding="UTF-8">
             <src path="${src-dir.unit-test}"/>
         </javac>
     </target>
@@ -333,6 +333,12 @@
         </emma>
 
         <fail if="test.unit.failed">One or more unit tests failed.  See above or set test.failfast=true.</fail>
+    </target>
+
+    <target name="test.restful-api">
+        <taskdef name="jtestr" classname="org.jtestr.ant.JtestRAntRunner" classpath="test/lib/jtestr-0.3.1.jar"/>
+
+        <jtestr tests="test/restful-api"/> 
     </target>
 
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the automated build will break. -->
