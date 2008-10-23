@@ -518,6 +518,7 @@
         depends="autobuild.properties, postgresql, migrate, autobuild.exec"/>
 
     <target name="autobuild-matrix.properties" depends="autobuild.properties">
+        <echo>Determining matrix build to run based on '${config.database}'</echo>
         <condition property="autobuild-matrix.db.hsqldb">
             <contains string="${config.database}" substring="hsqldb"/>
         </condition>
@@ -527,6 +528,9 @@
         <condition property="autobuild-matrix.db.oracle">
             <contains string="${config.database}" substring="oracle"/>
         </condition>
+        <echo>    hsqldb? ${autobuild-matrix.db.hsqldb}</echo>
+        <echo>postgresql? ${autobuild-matrix.db.postgresql}</echo>
+        <echo>    oracle? ${autobuild-matrix.db.oracle}</echo>
     </target>
 
     <target name="autobuild-matrix.database-hsqldb" if="autobuild-matrix.db.hsqldb">
