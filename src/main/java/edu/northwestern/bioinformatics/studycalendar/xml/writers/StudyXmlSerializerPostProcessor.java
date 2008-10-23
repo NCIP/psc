@@ -25,10 +25,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author John Dzak
@@ -148,6 +145,7 @@ public class StudyXmlSerializerPostProcessor {
     }
 
     private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {
+        Map<String, Child> referencedChildren = new HashMap<String, Child>();
         for (Delta delta : amendment.getDeltas()) {
             // resolve node
             Changeable deltaNode = findRealNode(delta.getNode());
@@ -169,8 +167,12 @@ public class StudyXmlSerializerPostProcessor {
                         Child node = findRealNode(nodeTemplate);
                         if (node != null) {
                             change.setChild(node);
+                        } else if (referencedChildren.containsKey(nodeTemplate.getGridId())) {
+                            change.setChild(referencedChildren.get(nodeTemplate.getGridId()));
                         }
                     }
+
+                    referencedChildren.put(change.getChild().getGridId(), change.getChild());
                 }
             }
         }

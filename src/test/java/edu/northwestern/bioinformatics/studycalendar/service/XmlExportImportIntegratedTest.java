@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -12,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
@@ -42,7 +44,8 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         = (StudyDao) getApplicationContext().getBean("studyDao");
     private ActivityDao activityDao
         = (ActivityDao) getApplicationContext().getBean("activityDao");
-
+    private EpochDao epochDao
+        = (EpochDao) getApplicationContext().getBean("epochDao");
     private StudyXmlSerializer serializer
         = (StudyXmlSerializer) getApplicationContext().getBean("studyXmlSerializer");
 
@@ -104,6 +107,18 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch actualEpoch = (Epoch) child;
         assertEquals("Wrong epoch", "Treatment", actualEpoch.getName());
         // assuming everything else
+    }
+
+    public void testExportImportWithReorder() throws Exception {
+        Study study = studyDao.getById(studyId);
+        Integer childToReorder = ((Add) study.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0)).getChildId();
+        Reorder reorder = Reorder.create(epochDao.getById(childToReorder), 0, 1);
+        reorder.setGridId("2c845525-46cb-4c05-a0d8-9de0e866b61c");
+        study.getDevelopmentAmendment().getDeltas().get(0).addChange(reorder);
+        Study actual = reimport();
+        Integer childToReorder1 = ((Add) actual.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0)).getChildId();
+        Reorder reorder1 = Reorder.create(epochDao.getById(childToReorder1),0,1);
+        assertNotNull("Reorder not found",reorder1);
     }
 
     public void testExportImportWithSingleReleasedAmendment() throws Exception {
