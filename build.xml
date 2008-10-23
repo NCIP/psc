@@ -593,6 +593,7 @@
             username="${tomcat.username}"
             password="${tomcat.password}"
             path="${webapp.deploy-path}"
+            failonerror="false" 
             />
     </target>
 
