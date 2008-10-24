@@ -9,11 +9,11 @@
     <bean id="mainPropertyConfigurer" class="gov.nih.nci.cabig.ctms.tools.spring.PropertyPlaceholderConfigurer">
         <property name="properties">
             <bean class="edu.northwestern.bioinformatics.studycalendar.tools.PscDataSourceSelfDiscoveringPropertiesFactoryBean">
-                <property name="databaseConfigurationName"><value>@config.database@</value></property>
-                <property name="applicationDirectoryName"><value>@application-short-name@</value></property>
+                <property name="databaseConfigurationName" value="@config.database@"/>
+                <property name="applicationDirectoryName" value="@application-short-name@"/>
             </bean>
         </property>
-        <property name="useNullForUnresolvablePlaceholders"><value>true</value></property>
+        <property name="useNullForUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
@@ -25,14 +25,10 @@
                     <bean class="org.springframework.beans.propertyeditors.CustomDateEditor">
                         <constructor-arg index="0">
                             <bean class="java.text.SimpleDateFormat">
-                                <constructor-arg index="0">
-                                    <value>yyyy-MM-dd HH:mm:ss.S</value>
-                                </constructor-arg>
+                                <constructor-arg index="0" value="yyyy-MM-dd HH:mm:ss.S"/>
                             </bean>
                         </constructor-arg>
-                        <constructor-arg index="1">
-                            <value>false</value>
-                        </constructor-arg>
+                        <constructor-arg index="1" value="false"/>
                     </bean>
                 </entry>
             </map>

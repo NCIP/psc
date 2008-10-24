@@ -3,60 +3,30 @@
 
 <beans>
     <bean id="dataSourceTemplate" abstract="true" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName">
-            <value>${datasource.driver}</value>
-        </property>
-        <property name="maxActive">
-            <value>5</value>
-        </property>
-        <property name="maxIdle">
-            <value>2</value>
-        </property>
-        <property name="maxWait">
-            <value>180000</value>
-        </property>
-        <property name="removeAbandoned">
-            <value>true</value>
-        </property>
-        <property name="removeAbandonedTimeout">
-            <value>300</value>
-        </property>
-        <property name="logAbandoned">
-            <value>true</value>
-        </property>
-        <property name="validationQuery">
-            <value>SELECT 1 FROM bering_version</value>
-        </property>
-        <property name="testWhileIdle">
-            <value>true</value>
-        </property>
-        <property name="testOnReturn">
-            <value>true</value>
-        </property>
-        <property name="timeBetweenEvictionRunsMillis">
-            <value>300000</value>
-        </property>
-        <property name="minEvictableIdleTimeMillis">
-            <value>600000</value>
-        </property>
+        <property name="driverClassName"               value="${datasource.driver}"/>
+        <property name="maxActive"                     value="5"/>
+        <property name="maxIdle"                       value="2"/>
+        <property name="maxWait"                       value="180000"/>
+        <property name="removeAbandoned"               value="true"/>
+        <property name="removeAbandonedTimeout"        value="300"/>
+        <property name="logAbandoned"                  value="true"/>
+        <property name="validationQuery"               value="SELECT 1 FROM bering_version"/>
+        <property name="testWhileIdle"                 value="true"/>
+        <property name="testOnReturn"                  value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+        <property name="minEvictableIdleTimeMillis"    value="600000"/>
     </bean>
 
     <bean id="dataSource" parent="dataSourceTemplate">
-        <property name="url">
-            <value>${datasource.url}</value>
-        </property>
-        <property name="username">
-            <value>${datasource.username}</value>
-        </property>
-        <property name="password">
-            <value>${datasource.password}</value>
-        </property>
+        <property name="url"      value="${datasource.url}"/>
+        <property name="username" value="${datasource.username}"/>
+        <property name="password" value="${datasource.password}"/>
     </bean>
 
     <!-- For manual testing and bering.  Not for the deployed application. -->
     <bean id="nonPooledDataSource" lazy-init="true" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${datasource.driver}"/>
-        <property name="url" value="${datasource.url}"/>
+        <property name="url"      value="${datasource.url}"/>
         <property name="username" value="${datasource.username}"/>
         <property name="password" value="${datasource.password}"/>
     </bean>
@@ -64,11 +34,11 @@
     <bean id="beringMigrator" class="edu.northwestern.bioinformatics.bering.servlet.DeployedMigrator">
         <!-- We can't use the local pool data source because its validation query
              is dependent on bering having run at least once. -->
-        <property name="dataSource"><ref bean="nonPooledDataSource"/></property>
+        <property name="dataSource" ref="nonPooledDataSource"/>
     </bean>
 
     <bean id="hibernateProperties" class="gov.nih.nci.cabig.ctms.tools.spring.HibernatePropertiesFactoryBean">
-        <property name="dialectName"><value>${hibernate.dialect}</value></property>
+        <property name="dialectName" value="${hibernate.dialect}"/>
         <property name="properties">
             <props>
                 <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
