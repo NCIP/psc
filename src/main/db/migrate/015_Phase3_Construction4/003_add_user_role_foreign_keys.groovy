@@ -19,7 +19,7 @@ class AddUserRoleForeignKeys extends edu.northwestern.bioinformatics.bering.Migr
             user_role_study_sites: ['fk_user_role_study_site_role', 'fk_user_role_study_site_study'],
         ].each { table, constraints ->
             constraints.each { cons ->
-                execute("ALTER TABLE " + table + " DROP CONSTRAINT " + constraint);
+                execute("ALTER TABLE " + table + " DROP CONSTRAINT " + cons);
             }
         }
     }
