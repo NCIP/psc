@@ -1,20 +1,4 @@
 <dataset>
-    <USER_ROLES
-        id="-1"
-        csm_group_name="STUDY_ADMIN"
-        user_id="-100"
-        />
-
-    <USER_ROLE_SITES
-        user_role_id="-1"
-        site_id="-200"
-        />
-
-    <USER_ROLE_SITES
-        user_role_id="-1"
-        site_id="-300"
-        />
-
     <USERS
         id="-100"
         name="Joey"
@@ -22,7 +6,11 @@
         active_flag="1"
         />
 
-
+    <USER_ROLES
+        id="-1"
+        csm_group_name="STUDY_ADMIN"
+        user_id="-100"
+        />
 
     <SITES
         id="-200"
@@ -37,6 +25,16 @@
     <SITES
         id="-400"
         name="CDC Clinic"
+        />
+
+    <USER_ROLE_SITES
+        user_role_id="-1"
+        site_id="-200"
+        />
+
+    <USER_ROLE_SITES
+        user_role_id="-1"
+        site_id="-300"
         />
 
     <STUDIES
