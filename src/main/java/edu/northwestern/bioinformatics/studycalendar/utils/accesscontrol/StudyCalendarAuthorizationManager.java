@@ -58,10 +58,14 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return userProvisioningManager.getUserById(id);
     }
 
-    public void createProtectionGroup(String newProtectionGroup) throws Exception {
-        ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
-        requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
-        userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
+    public void createProtectionGroup(String newProtectionGroup) {
+        try {
+            ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
+            requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
+            userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
+        } catch (CSTransactionException e) {
+            throw new StudyCalendarSystemException("Creating PG failed", e);
+        }
         if (log.isDebugEnabled()) {
             log.debug("new protection group created " + newProtectionGroup);
         }
@@ -95,7 +99,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
      * @return null or site Protection Group
      */
     @SuppressWarnings({ "unchecked" })
-    public ProtectionGroup getPGByName(String name) throws Exception {
+    public ProtectionGroup getPGByName(String name) {
         ProtectionGroup requiredProtectionGroup = null;
 
         ProtectionGroup protectionGroupSearch = new ProtectionGroup();

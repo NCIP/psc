@@ -3,7 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
@@ -11,8 +17,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
@@ -25,19 +37,16 @@ public class SiteService {
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 
-    public Site createOrUpdateSite(Site site) throws Exception {
-
+    public Site createOrUpdateSite(Site site) {
         siteDao.save(site);
-        if (site.getId() == null
-                || authorizationManager.getPGByName(createExternalObjectId(site)) == null) {
-            //no need to updat the protection group when you update the site because the protection group are created by class name+id which never changes.
+        if (site.getId() == null || authorizationManager.getPGByName(createExternalObjectId(site)) == null) {
+            // no need to update the protection group when you update the site because the protection group are created by class name+id which never changes.
             saveSiteProtectionGroup(site);
         }
         return site;
-
     }
 
-    protected void saveSiteProtectionGroup(final Site site) throws Exception {
+    protected void saveSiteProtectionGroup(final Site site) {
         authorizationManager.createProtectionGroup(createExternalObjectId(site));
     }
 
