@@ -62,4 +62,19 @@ public class UserTest extends StudyCalendarTestCase {
         assertEquals("In order to be used as a Principal, user.toString must match the username",
             user.getName(), user.toString());
     }
+
+    public void testEqualityConsidersRoles() throws Exception {
+        assertNotEquals(
+            Fixtures.createUser("joe", Role.STUDY_ADMIN),
+            Fixtures.createUser("joe", Role.SYSTEM_ADMINISTRATOR));
+    }
+    
+    public void testEqualityConsidersSitesForRoles() throws Exception {
+        User joeAtNu = Fixtures.createUser("joe", Role.SUBJECT_COORDINATOR);
+        joeAtNu.getUserRole(Role.SUBJECT_COORDINATOR).addSite(Fixtures.createSite("NU"));
+        User joeAtMayo = Fixtures.createUser("joe", Role.SUBJECT_COORDINATOR);
+        joeAtMayo.getUserRole(Role.SUBJECT_COORDINATOR).addSite(Fixtures.createSite("Mayo"));
+
+        assertNotEquals(joeAtNu, joeAtMayo);
+    }
 }

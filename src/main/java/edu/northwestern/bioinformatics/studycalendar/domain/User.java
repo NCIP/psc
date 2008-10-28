@@ -189,9 +189,18 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
+        User otherUser = (User) o;
 
-        return !(name != null ? !name.equals(user.name) : user.name != null);
+        boolean namesEq = !(name != null ? !name.equals(otherUser.name) : otherUser.name != null);
+        boolean rolesEq = true;
+        for (UserRole thisUserRole : getUserRoles()) {
+            UserRole otherUserRole = otherUser.getUserRole(thisUserRole.getRole());
+            rolesEq = rolesEq &&
+                otherUserRole != null &&
+                otherUserRole.getSites().equals(thisUserRole.getSites()); 
+        }
+
+        return namesEq && rolesEq;
 
     }
 
