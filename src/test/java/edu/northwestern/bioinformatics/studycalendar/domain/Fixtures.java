@@ -311,6 +311,16 @@ public class Fixtures {
         }
     }
 
+    public static Site createSite(String name) {
+        return createSite(name, null);
+    }
+
+    public static Site createSite(String name, String assignedIdentifier) {
+        Site site = createNamedInstance(name, Site.class);
+        site.setAssignedIdentifier(assignedIdentifier);
+        return site;
+    }
+
     public static void setUserRoles(User user, Role... roles) {
         user.clearUserRoles();
         for (Role role : roles) {
