@@ -26,8 +26,12 @@
         <property name="studyDao" ref="studyDao"/>
         <property name="studyService" ref="studyService"/>
         <property name="amendmentService" ref="amendmentService"></property>
+        <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
     </bean>
 
+    <bean id="rollbackTimeOut" class="java.lang.String">
+        <constructor-arg value="${grid.rollback.timeout}"/>
+    </bean>
     <bean id="studyConsumerGridServiceUrl" class="java.lang.String">
         <constructor-arg value="${grid.studyconsumer.url}"/>
     </bean>
