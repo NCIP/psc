@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -19,10 +20,7 @@ import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -37,8 +35,11 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     private TemplateService templateService;
     private Study parent;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
     private List<Source> sources;
     private StudySegment studySegment;
+    private ActivityType a1;
+    private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
 
     @Override
     protected void setUp() throws Exception {
@@ -59,6 +60,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         activityDao = registerDaoMockFor(ActivityDao.class);
         deltaService = registerMockFor(DeltaService.class);
         templateService = registerMockFor(TemplateService.class);
+        activityTypeDao = registerMockFor(ActivityTypeDao.class);
 
         controller.setPeriodDao(periodDao);
         controller.setSourceDao(sourceDao);
@@ -66,6 +68,10 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         controller.setDeltaService(deltaService);
         controller.setControllerTools(controllerTools);
         controller.setTemplateService(templateService);
+        controller.setActivityTypeDao(activityTypeDao);
+
+        a1 = Fixtures.createActivityType("LAB_TEST");
+        activityTypes.add(a1);
 
         request.addParameter("period", "15");
     }
@@ -76,6 +82,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         expect(deltaService.revise(period)).andReturn(revisedPeriod);
         expect(templateService.findStudy(revisedPeriod)).andReturn(parent);
         expect(templateService.findParent(revisedPeriod)).andReturn(studySegment);
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -142,7 +149,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     }
 
     public void testModelIncludesActivityTypes() throws Exception {
-        assertEquals(ActivityType.values(), doHandle().getModel().get("activityTypes"));
+        assertEquals(activityTypes, doHandle().getModel().get("activityTypes"));
     }
 
     public void testModelIncludesActivitySources() throws Exception {

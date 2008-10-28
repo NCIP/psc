@@ -106,6 +106,9 @@
         study_segment_id="-2"
         duration_quantity="14"
         />
+    <ACTIVITY_TYPES
+        id="1"
+        name="ActivityType1"/>
     <ACTIVITIES id="12" name="Twelve" activity_type_id="1"/>
     <PLANNED_ACTIVITIES
         id="-4"

@@ -145,20 +145,6 @@
               class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportActivitiesController"/>
 
 
-    <!--<bean name="/activity/reconcileActivity" id="reconcileActivitiesController" autowire="byName"-->
-            <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileActivitiesController">-->
-               <!--<property name="crumb">-->
-            <!--<bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">-->
-                <!--<property name="name"><value>Reconcile</value></property>-->
-                <!--<property name="parent"><ref local="activityController"/></property>-->
-            <!--</bean>-->
-        <!--</property>-->
-    <!--</bean>-->
-
-    <!--<bean name="/activity/reconcile" id="reconcileController" autowire="byName"-->
-            <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileController">-->
-    <!--</bean>-->
-
     <bean name="/activities/addNewActivity" id="addNewActivityController" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddActivityController">
     </bean>

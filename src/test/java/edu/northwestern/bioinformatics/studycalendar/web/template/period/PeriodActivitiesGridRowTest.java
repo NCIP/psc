@@ -29,9 +29,9 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         super.setUp();
         duration = new Duration(7, Duration.Unit.day);
 
-        a11 = setId(11, createActivity("Bingo", "11", null, ActivityType.DISEASE_MEASURE));
-        a12 = setId(12, createActivity("aleph", "12", null, ActivityType.DISEASE_MEASURE));
-        a20 = setId(20, createActivity("iota", "20", null, ActivityType.INTERVENTION));
+        a11 = setId(11, createActivity("Bingo", "11", null, Fixtures.createActivityType("DISEASE_MEASURE")));
+        a12 = setId(12, createActivity("aleph", "12", null, Fixtures.createActivityType("DISEASE_MEASURE")));
+        a20 = setId(20, createActivity("iota", "20", null, Fixtures.createActivityType("INTERVENTION")));
 
         p0 = createPopulation("P", "People");
         p1 = createPopulation("Pp", "Persons");
@@ -143,7 +143,6 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     public void testOrdersByActivityTypeFirst() throws Exception {
         rowA = new PeriodActivitiesGridRow(a11, keyA, duration);
         rowB = new PeriodActivitiesGridRow(a20, keyB, duration);
-
         assertOrder(rowA, rowB);
     }
 

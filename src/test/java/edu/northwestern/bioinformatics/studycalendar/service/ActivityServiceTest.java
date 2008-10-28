@@ -65,9 +65,11 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         Activity a = createActivity("A");
         Activity b = createActivity("B");
         Source other = createSource("Another");
-        Activity c = createActivity("C", "C", other, ActivityType.LAB_TEST);
+        ActivityType activityType1 = createActivityType("LAB_TEST");
+        ActivityType activityType2 = createActivityType("OTHER");
+        Activity c = createActivity("C", "C", other, activityType1);
         // an activity that's in one of the matched sources, but not in the search results
-        createActivity("Mismatch", "M", other, ActivityType.OTHER);
+        createActivity("Mismatch", "M", other, activityType2);
         assertEquals("Test setup failure", 2, other.getActivities().size());
         List<Activity> activities = Arrays.asList(b, c, a); // no particular order
         expect(activityDao.getActivitiesBySearchText("search", null, null)).andReturn(activities);
@@ -84,7 +86,7 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
     public void testGetFilteredSourcesObeysTypeAndSource() throws Exception {
         Activity a = createActivity("A");
 
-        ActivityType expectedType = ActivityType.DISEASE_MEASURE;
+        ActivityType expectedType = createActivityType("DISEASE_MEASURE");
         Source expectedSource = Fixtures.DEFAULT_ACTIVITY_SOURCE;
         expect(activityDao.getActivitiesBySearchText(
             "search", expectedType, expectedSource)).andReturn(Arrays.asList(a));

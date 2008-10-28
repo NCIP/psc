@@ -5,7 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
@@ -14,9 +16,11 @@ import java.util.List;
  */
 public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Source> {
     private ActivityXmlSerializer activitySerializer;
+    private ActivityTypeDao activityTypeDao;
 
     public ActivitySourceXmlSerializer() {
         activitySerializer = new ActivityXmlSerializer(true);
+        activitySerializer.setActivityTypeDao(activityTypeDao);
     }
 
     @Override
@@ -41,11 +45,17 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
 
     @Override
     public Source readElement(Element element) {
+        activitySerializer.setActivityTypeDao(activityTypeDao);
         Source source = new Source();
         source.setName(XsdAttribute.ACTIVITY_NAME.from(element));
         for (Element aElt : (List<Element>) element.elements("activity")) {
             source.addActivity(activitySerializer.readElement(aElt));
         }
         return source;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

@@ -4,16 +4,19 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializerTest.assertEmbeddedActivityElement;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -23,15 +26,18 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ActivitySourceXmlSerializer serializer;
     private Source source;
     private Activity actWalk, actRun, actSleep;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         serializer = new ActivitySourceXmlSerializer();
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
+        serializer.setActivityTypeDao(activityTypeDao);
         source = createNamedInstance(SOURCE_NAME, Source.class);
-        actWalk = createActivity("Walk", "W", source, ActivityType.OTHER);
-        actRun = createActivity("Run", "R", source, ActivityType.INTERVENTION);
-        actSleep = createActivity("Sleep", "S", source, ActivityType.OTHER);
+        actWalk = createActivity("Walk", "W", source, Fixtures.createActivityType("OTHER"));
+        actRun = createActivity("Run", "R", source, Fixtures.createActivityType("INTERVENTION"));
+        actSleep = createActivity("Sleep", "S", source, Fixtures.createActivityType("OTHER"));
     }
 
     public void testCreateSingleElement() throws Exception {
@@ -59,12 +65,20 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadSingleSource() throws Exception {
+        ActivityType activityType1 = createActivityType("type1");
+        activityType1.setId(1);
+        ActivityType activityType2 = createActivityType("type2");
+        activityType2.setId(2);
+        expect(activityTypeDao.getByName("type1")).andReturn(activityType1);
+        expect(activityTypeDao.getByName("type2")).andReturn(activityType2);
+        replayMocks();
         Source read = parseDocumentString(serializer, String.format(
             "<source xmlns='%s' name='test-o'>\n" +
-            "  <activity name='one' code='1' type-id='1'/>\n" +
-            "  <activity name='two' code='2' type-id='2' description='optional'/>\n" +
+            "  <activity name='one' code='1' type='type1' type-id='1'/>\n" +
+            "  <activity name='two' code='2' type='type2' type-id='2' description='optional'/>\n" +
             "</source>", AbstractStudyCalendarXmlSerializer.PSC_NS
         ));
+        verifyMocks();
         assertNotNull(read);
         assertEquals("Wrong name", "test-o", read.getName());
         assertEquals("Wrong number of activities", 2, read.getActivities().size());
@@ -73,28 +87,37 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertSame("Backref not present in first activity", read, activity1.getSource());
         assertEquals("Wrong name for first activity", "one", activity1.getName());
         assertEquals("Wrong code for first activity", "1", activity1.getCode());
-        assertEquals("Wrong code for first activity", ActivityType.getById(1), activity1.getType());
+        assertEquals("Wrong code for first activity", activityType1, activity1.getType());
         assertNull("Wrong desc for first activity", activity1.getDescription());
 
         Activity activity2 = read.getActivities().get(1);
         assertEquals("Backref not present in second activity", read, activity2.getSource());
         assertEquals("Wrong name for second activity", "two", activity2.getName());
         assertEquals("Wrong code for second activity", "2", activity2.getCode());
-        assertEquals("Wrong code for second activity", ActivityType.getById(2), activity2.getType());
+        assertEquals("Wrong code for second activity", activityType2, activity2.getType());
         assertEquals("Wrong desc for second activity", "optional", activity2.getDescription());
     }
 
     public void testReadSourceCollection() throws Exception {
+        ActivityType activityType1 = createActivityType("type1");
+        activityType1.setId(1);
+        ActivityType activityType2 = createActivityType("type2");
+        activityType2.setId(2);
+        expect(activityTypeDao.getByName("type1")).andReturn(activityType1);
+        expect(activityTypeDao.getByName("type2")).andReturn(activityType2);
+        replayMocks();
+
         Collection<Source> read = parseCollectionDocumentString(serializer, String.format(
             "<sources xmlns='%s'>\n" +
             "  <source name='test-o'>\n" +
-            "    <activity name='one' code='1' type-id='1'/>\n" +
-            "    <activity name='two' code='2' type-id='2' description='optional'/>\n" +
+            "    <activity name='one' code='1' type='type1' type-id='1'/>\n" +
+            "    <activity name='two' code='2' type='type2' type-id='2' description='optional'/>\n" +
             "  </source>\n" +
             "  <source name='rutabaga'/>" +
             "</sources>"
             , AbstractStudyCalendarXmlSerializer.PSC_NS
         ));
+        verifyMocks();
         assertEquals("Wrong number of sources", 2, read.size());
         Iterator<Source> it = read.iterator();
 

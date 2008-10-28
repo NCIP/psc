@@ -27,6 +27,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private StudyDao studyDao;
     private UserDao userDao;
     private NotificationDao notificationDao;
+    private ActivityTypeDao activityTypeDao;
 
     private User user;
 
@@ -41,6 +42,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private SubjectService service;
     private SubjectCoordinatorDashboardService paService;
     private List<User> users = new ArrayList<User>();
+    private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
     private Study study;
 
     @Override
@@ -50,6 +52,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
         user = Fixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
         subjectDao = registerDaoMockFor(SubjectDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
+
         service = new SubjectService();
         service.setSubjectDao(subjectDao);
 
@@ -77,6 +81,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setUserDao(userDao);
         controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setNotificationDao(notificationDao);
+        controller.setActivityTypeDao(activityTypeDao);
         controller.setTemplateService(templateService);
         controller.setSubjectCoordinatorDashboardService(paService);
 
@@ -95,6 +100,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 

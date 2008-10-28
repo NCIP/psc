@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -7,7 +8,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import org.dom4j.Element;
+import org.easymock.EasyMock;
 
 /**
  * @author Rhett Sutphin
@@ -17,16 +21,24 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     private Source source;
     private Activity activity;
+    private ActivityType activityType;
     private ActivityXmlSerializer standalone;
     private ActivityXmlSerializer embedded;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
         activity = createActivity();
         standalone = new ActivityXmlSerializer(false);
         embedded = new ActivityXmlSerializer(true);
+        standalone.setActivityTypeDao(activityTypeDao);
+        embedded.setActivityTypeDao(activityTypeDao);
+        activityType = Fixtures.createActivityType("ActivityType1");
+        activityType.setId(4);
+//        activi
     }
 
 
@@ -59,7 +71,8 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         anotherActivity = createActivity();
         assertTrue(embedded.validateElement(activity, actual));
-        anotherActivity.setType(ActivityType.DISEASE_MEASURE);
+        ActivityType activityType = Fixtures.createActivityType("DISEASE_MEASURE");
+        anotherActivity.setType(activityType);
         assertFalse(embedded.validateElement(anotherActivity, actual));
 
         anotherActivity = createActivity();
@@ -102,44 +115,59 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
                 ACTIVITY_NAME.from(actualElement));
         assertEquals("Wrong desc", expectedActivity.getDescription(),
                 ACTIVITY_DESC.from(actualElement));
-        assertEquals("Wrong type", expectedActivity.getType().getId() + "",
+        assertEquals("Wrong type", expectedActivity.getType().getName() + "",
                 ACTIVITY_TYPE.from(actualElement));
     }
 
     public void testReadEmbeddedElement() throws Exception {
         Element param = XsdElement.ACTIVITY.create();
+        ActivityType at = new ActivityType("4");
+        at.setId(4);
         ACTIVITY_NAME.addTo(param, "Aleph");
         ACTIVITY_CODE.addTo(param, "A");
         ACTIVITY_DESC.addTo(param, "Infinite");
         ACTIVITY_TYPE.addTo(param, "4");
 
+        expect(activityTypeDao.getByName("4")).andReturn(at).anyTimes();
+
+        replayMocks();
         Activity read = embedded.readElement(param);
+        verifyMocks();
+        
         assertNotNull(read);
         assertNull(read.getId());
         assertNull(read.getGridId());
         assertEquals("Aleph", read.getName());
         assertEquals("A", read.getCode());
         assertEquals("Infinite", read.getDescription());
-        assertEquals(ActivityType.getById(4), read.getType());
+        assertEquals(activityTypeDao.getByName("4"), read.getType());
         assertNull(read.getSource());
     }
 
     public void testReadStandaloneElement() throws Exception {
         Element param = XsdElement.ACTIVITY.create();
+        ActivityType at = new ActivityType("2");
+        at.setId(2);
         ACTIVITY_NAME.addTo(param, "Prime");
         ACTIVITY_CODE.addTo(param, "P");
         ACTIVITY_DESC.addTo(param, "Single");
         ACTIVITY_TYPE.addTo(param, "2");
         ACTIVITY_SOURCE.addTo(param, "Ether");
 
+
+        expect(activityTypeDao.getByName("2")).andReturn(at).anyTimes();
+
+        replayMocks();
         Activity read = standalone.readElement(param);
+        verifyMocks();
+
         assertNotNull(read);
         assertNull(read.getId());
         assertNull(read.getGridId());
         assertEquals("Prime", read.getName());
         assertEquals("P", read.getCode());
         assertEquals("Single", read.getDescription());
-        assertEquals(ActivityType.getById(2), read.getType());
+        assertEquals(at, read.getType());
 
         Source readSource = read.getSource();
         assertNotNull(readSource);
@@ -149,8 +177,9 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private Activity createActivity() {
+        activityType = Fixtures.createActivityType("PROCEDURE");
         activity = Fixtures.createActivity("Pogo", "PG", source,
-                ActivityType.OTHER, "15 minutes, at least");
+                Fixtures.createActivityType("OTHER"), "15 minutes, at least");
         return activity;
     }
 }

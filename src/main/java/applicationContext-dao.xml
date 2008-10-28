@@ -252,4 +252,5 @@
     <bean id="scheduledActivitiesReportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao"/>
     <bean id="plannedActivityLabelDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao"/>
     <bean id="blackoutDateDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao"/>
+    <bean id="activityTypeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao"/>
 </beans>

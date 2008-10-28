@@ -15,8 +15,8 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        Activity activity0 = createActivity("0", ActivityType.PROCEDURE);
-        Activity activity1 = createActivity("1", ActivityType.INTERVENTION);
+        Activity activity0 = createActivity("0", Fixtures.createActivityType("PROCEDURE"));
+        Activity activity1 = createActivity("1", Fixtures.createActivityType("INTERVENTION"));
 
         pa0 = createPlannedActivity(activity0, 1);
         pa1 = createPlannedActivity(activity1, 2);

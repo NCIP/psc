@@ -38,11 +38,11 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         source = Fixtures.createSource(SOURCE);
         targetSource = Fixtures.createSource(TARGET_SOURCE);
 
-        activity = Fixtures.createActivity("activity1", "code", null, ActivityType.LAB_TEST);
+        activity = Fixtures.createActivity("activity1", "code", null, Fixtures.createActivityType("LAB_TEST"));
 
-        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, ActivityType.LAB_TEST);
-        activityToUpdate = Fixtures.createActivity("activityToUpdate", "code2", null, ActivityType.LAB_TEST);
-        activityToDelete = Fixtures.createActivity("activityToDelete", "code3", null, ActivityType.LAB_TEST);
+        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, Fixtures.createActivityType("LAB_TEST"));
+        activityToUpdate = Fixtures.createActivity("activityToUpdate", "code2", null, Fixtures.createActivityType("LAB_TEST"));
+        activityToDelete = Fixtures.createActivity("activityToDelete", "code3", null, Fixtures.createActivityType("LAB_TEST"));
     }
 
     public void testUpdateSourceWhenSourceHasNoActivity() {

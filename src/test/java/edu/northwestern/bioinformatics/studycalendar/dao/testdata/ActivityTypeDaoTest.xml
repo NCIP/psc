@@ -1,0 +1,12 @@
+<dataset>
+    <ACTIVITY_TYPES
+        id="-10"
+        name="My Activity"/>
+    <ACTIVITIES
+        id="-1001"
+        version="0"
+        name="-1001"
+        description="Not blank"
+        activity_type_id="-10"
+        />
+</dataset>

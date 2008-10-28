@@ -1,5 +1,6 @@
 <dataset>
     <!-- This test is save-only - these are here for cleanup -->
+    <ACTIVITY_TYPES id="-1" name="DISEASE_MEASURE"/>
     <ACTIVITIES id="-1" name="DC" activity_type_id="-1"/>
     <AMENDMENTS id="-1" amendment_date="2007-01-01"/>
     <STUDIES id="-1" assigned_identifier="Don't care" long_title="Study"/>

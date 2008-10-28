@@ -1,4 +1,16 @@
 <dataset>
+    <ACTIVITY_TYPES
+        id="1"
+        name="INTERVENTION"/>
+
+    <ACTIVITY_TYPES
+        id="2"
+        name="LAB_TEST"/>
+
+    <ACTIVITY_TYPES
+        id="3"
+        name="PROCEDURE"/>
+
     <ACTIVITIES
         id="-100"
         version="0"

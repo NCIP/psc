@@ -32,7 +32,7 @@ public class Fixtures {
     private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     private static final DeltaService deltaService = new DeltaService();
     private static final AmendmentService amendmentService = new AmendmentService();
-    public static final ActivityType DEFAULT_ACTIVITY_TYPE = ActivityType.LAB_TEST;
+    public static final ActivityType DEFAULT_ACTIVITY_TYPE = createActivityType("LAB_TEST");
     public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
 
     static {
@@ -278,6 +278,10 @@ public class Fixtures {
 
     public static Activity createActivity(String name) {
         return createActivity(name, DEFAULT_ACTIVITY_TYPE);
+    }
+
+    public static ActivityType createActivityType(final String name) {
+        return createNamedInstance(name, ActivityType.class);
     }
 
     public static Activity createActivity(String name, ActivityType type) {

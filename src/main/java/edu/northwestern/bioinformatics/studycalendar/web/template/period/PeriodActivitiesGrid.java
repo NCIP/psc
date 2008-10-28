@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.springframework.beans.factory.annotation.Required;
+
 /**
  * @author Rhett Sutphin
  */
@@ -22,15 +25,17 @@ public class PeriodActivitiesGrid {
     private Period period;
     private Integer cycleLength;
     private Collection<Activity> allActivities;
+    private ActivityTypeDao activityTypeDao;
 
     private Map<ActivityType, Collection<PeriodActivitiesGridRow>> rowGroups;
     private int[] columnDayNumbers;
 
-    public PeriodActivitiesGrid(Period period, Integer cycleLength, Collection<Activity> activities) {
+    public PeriodActivitiesGrid(Period period, Integer cycleLength, Collection<Activity> activities, ActivityTypeDao activityTypeDao) {
         this.period = period;
         this.cycleLength = cycleLength;
         this.allActivities = activities;
-
+        this.activityTypeDao = activityTypeDao;
+        setActivityTypeDao(activityTypeDao);
         this.rowGroups = createRowGroups();
         this.columnDayNumbers = createColumnDayNumbers();
     }
@@ -102,7 +107,7 @@ public class PeriodActivitiesGrid {
         Map<ActivityType, Collection<Activity>> unusedActivities
             = new LinkedHashMap<ActivityType, Collection<Activity>>();
         // pre-fill the keys to determine their order
-        for (ActivityType type : ActivityType.values()) {
+        for (ActivityType type : activityTypeDao.getAll()) {
             partitioned.put(type, new LinkedList<PlannedActivity>());
             unusedActivities.put(type, new HashSet<Activity>());
         }
@@ -166,5 +171,10 @@ public class PeriodActivitiesGrid {
 
     public Integer getCycleLength() {
         return cycleLength;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

@@ -19,6 +19,7 @@ public class ActivityController extends PscAbstractController {
     private ActivityDao activityDao;
     private SourceDao sourceDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityTypeDao activityTypeDao;
 
     public ActivityController() {
     }
@@ -64,7 +65,7 @@ public class ActivityController extends PscAbstractController {
         }
         model.put("activitiesPerSource", activities);
         model.put("enableDeletes", enableDelete);
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
         if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
             model.put("displayCreateNewActivity", Boolean.TRUE);
             model.put("showtable", Boolean.TRUE);
@@ -91,5 +92,10 @@ public class ActivityController extends PscAbstractController {
     @Required
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

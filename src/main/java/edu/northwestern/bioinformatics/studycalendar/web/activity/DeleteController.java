@@ -3,11 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -29,6 +29,7 @@ public class DeleteController extends PscAbstractController {
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
     private ActivityService activityService;
+    private ActivityTypeDao activityTypeDao;
 
     public DeleteController() {
         setCrumb(new DefaultCrumb("Activities"));
@@ -58,7 +59,7 @@ public class DeleteController extends PscAbstractController {
         }
         model.put("enableDeletes", enableDelete);
         model.put("activitiesPerSource", activities);
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
         model.put("displayCreateNewActivity", Boolean.TRUE);
         model.put("showtable", Boolean.TRUE);
         return new ModelAndView("template/ajax/activityTableUpdate", model);
@@ -80,5 +81,9 @@ public class DeleteController extends PscAbstractController {
     public void setActivityService(final ActivityService activityService) {
         this.activityService = activityService;
     }
-    
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
+    }
 }

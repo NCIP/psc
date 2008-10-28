@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -34,6 +35,7 @@ public class NewActivityController extends PscSimpleFormController {
     private ActivityDao activityDao;
     private PeriodDao periodDao;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     public NewActivityController() {
         setCommandClass(NewActivityCommand.class);
@@ -47,7 +49,7 @@ public class NewActivityController extends PscSimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
-        refdata.put("activityTypes", ActivityType.values());
+        refdata.put("activityTypes", activityTypeDao.getAll());
         refdata.put("action", "New");
         refdata.put("sourceName", PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME);
 
@@ -61,8 +63,7 @@ public class NewActivityController extends PscSimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(ActivityType.class, "activityType",
-                new ControlledVocabularyEditor(ActivityType.class));
+        getControllerTools().registerDomainObjectEditor(binder, "activityType", activityTypeDao);
     }
 
     protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
@@ -111,5 +112,10 @@ public class NewActivityController extends PscSimpleFormController {
     @Required
     public void setPeriodDao(final PeriodDao periodDao) {
         this.periodDao = periodDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

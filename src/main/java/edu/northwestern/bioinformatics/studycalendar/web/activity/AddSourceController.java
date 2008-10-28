@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -22,6 +22,8 @@ import java.util.HashMap;
  */
 public class AddSourceController extends PscAbstractController {
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
+
 
     public AddSourceController() {
     }
@@ -37,7 +39,7 @@ public class AddSourceController extends PscAbstractController {
             sourceDao.save(source);
             model.put("source", source);
             model.put("displayCreateNewActivity", Boolean.TRUE);
-            model.put("activityTypes", ActivityType.values());
+            model.put("activityTypes", activityTypeDao.getAll());
             model.put("showtable", Boolean.TRUE);
         }
         return new ModelAndView("template/ajax/activityTableUpdate", model);
@@ -50,4 +52,8 @@ public class AddSourceController extends PscAbstractController {
          this.sourceDao = sourceDao;
      }
 
- }
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
+    }
+}

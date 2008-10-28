@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -15,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -30,8 +32,9 @@ import java.util.*;
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class ScheduledActivitiesReportController extends PscAbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
-    private ControllerTools controllerTools;
     private UserDao userDao;
+    private ActivityTypeDao activityTypeDao;
+
 
     public ScheduledActivitiesReportController() {
         setCommandClass(ScheduledActivitiesReportCommand.class);
@@ -46,11 +49,10 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
         super.initBinder(request, binder);
         binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
             new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
-        binder.registerCustomEditor(ActivityType.class, "filters.activityType",
-            new ControlledVocabularyEditor(ActivityType.class, true));
+        getControllerTools().registerDomainObjectEditor(binder, "filters.activityType", activityTypeDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(false));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(false));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", getControllerTools().getDateEditor(false));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", getControllerTools().getDateEditor(false));
         binder.registerCustomEditor(User.class, "filters.subjectCoordinator", new DaoBasedEditor(userDao));
     }
 
@@ -86,7 +88,7 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
-        model.put("types", ActivityType.values());
+        model.put("types", activityTypeDao.getAll());
         model.put("coordinators", userDao.getAllSubjectCoordinators());
         model.put("results", results);
         model.put("resultSize", results.size());
@@ -98,11 +100,12 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
         this.dao = dao;
     }
 
-    public void setControllerTools(ControllerTools controllerTools) {
-        this.controllerTools = controllerTools;
-    }
-
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

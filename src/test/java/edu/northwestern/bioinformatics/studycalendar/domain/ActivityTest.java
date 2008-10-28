@@ -12,8 +12,8 @@ public class ActivityTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        a0 = Fixtures.createActivity("Activity 0", ActivityType.DISEASE_MEASURE);
-        a1 = Fixtures.createActivity("Activity 1", ActivityType.OTHER);
+        a0 = Fixtures.createActivity("Activity 0", Fixtures.createNamedInstance("DISEASE_MEASURE", ActivityType.class));
+        a1 = Fixtures.createActivity("Activity 1", Fixtures.createNamedInstance("OTHER", ActivityType.class));
     }
 
     public void testNaturalOrderByTypeFirst() throws Exception {

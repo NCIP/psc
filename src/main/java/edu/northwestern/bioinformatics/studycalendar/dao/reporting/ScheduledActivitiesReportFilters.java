@@ -16,8 +16,10 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
             new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
-    private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
-            new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
+//    private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
+//            new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
+
+private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
     private StringFilter label = new StringFilter("label");
 

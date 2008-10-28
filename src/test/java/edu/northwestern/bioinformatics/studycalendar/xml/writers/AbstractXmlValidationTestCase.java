@@ -103,9 +103,9 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         source = new Source();
         source.setName("NU Sample Activities");
 
-        activity1 = Fixtures.createActivity("CBC", "CBC", source, ActivityType.DISEASE_MEASURE);
-        activity2 = Fixtures.createActivity("CBC", "CBC", null, ActivityType.LAB_TEST);
-        activity3 = Fixtures.createActivity("Azacitidine", "100001", source, ActivityType.INTERVENTION);
+        activity1 = Fixtures.createActivity("CBC", "CBC", source, Fixtures.createActivityType("DISEASE_MEASURE"));
+        activity2 = Fixtures.createActivity("CBC", "CBC", null, Fixtures.createActivityType("LAB_TEST"));
+        activity3 = Fixtures.createActivity("Azacitidine", "100001", source, Fixtures.createActivityType("INTERVENTION"));
         activity3.setDescription("");
 
         plannedActivity1 = new PlannedActivity();

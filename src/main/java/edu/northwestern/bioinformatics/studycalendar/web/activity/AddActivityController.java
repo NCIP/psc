@@ -5,9 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityCom
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -25,6 +24,7 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     public AddActivityController() {
         setCommandClass(NewActivityCommand.class);
@@ -38,7 +38,7 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(ActivityType.class, "activityType", new ControlledVocabularyEditor(ActivityType.class));
+        getControllerTools().registerDomainObjectEditor(binder, "activityType", activityTypeDao);
         getControllerTools().registerDomainObjectEditor(binder, "activitySource", sourceDao);
     }
 
@@ -64,7 +64,7 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
         }
         model.put("enableDeletes", enableDelete);
         model.put("activitiesPerSource", activities);
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
         model.put("displayCreateNewActivity", Boolean.TRUE);
         return new ModelAndView("template/ajax/activityTableUpdate", model);
 
@@ -84,6 +84,11 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
     @Required
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }
 

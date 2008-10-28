@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractCsvXlsSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 
 import java.io.FileInputStream;
@@ -34,6 +35,7 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
     private final String NEW_STRING = "\n";
     private String[] arrayOfHeaders = new String[]{ACTIVITY_NAME, ACTIVITY_TYPE, ACTIVITY_CODE, ACTIVITY_DESCRIPTION, ACTIVITY_SOURCE};
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     private SourceService sourceService;
 
@@ -100,11 +102,10 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
                     source = sourceDao.getByName(sourceName);
 
                 }
-
-                if (!StringUtils.isBlank(type) && ActivityType.getByName(type) != null) {
-                    activity.setType(ActivityType.getByName(type));
+                if (!StringUtils.isBlank(type) && activityTypeDao.getByName(type) != null) {
+                    activity.setType(activityTypeDao.getByName(type));
                 } else {
-                    String message = String.format("Activity type %s either does not exists or it is null. Please choose %s activity type only.", type, ActivityType.values());
+                    String message = String.format("Activity type %s either does not exists or it is null. Please choose %s activity type only.", type, activityTypeDao.getAll());
                     logger.error(message);
                     throw new Exception(message);
 
@@ -145,5 +146,10 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
     @Required
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

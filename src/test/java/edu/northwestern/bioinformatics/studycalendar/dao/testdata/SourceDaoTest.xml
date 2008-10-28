@@ -9,6 +9,14 @@
         version="0"
         name="Empty"/>
 
+    <ACTIVITY_TYPES
+        id="2"
+        name="ActivityType2"/>
+
+    <ACTIVITY_TYPES
+        id="3"
+        name="ActivityType3"/>
+    
     <ACTIVITIES
         id="-100"
         version="0"

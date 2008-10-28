@@ -10,6 +10,14 @@
         repetitions="1"
         />
 
+    <ACTIVITY_TYPES
+        id="3"
+        name="ActivityType3"/>
+
+    <ACTIVITY_TYPES
+        id="4"
+        name="ActivityType4"/>
+
     <ACTIVITIES
         id="-200"
         version="0"

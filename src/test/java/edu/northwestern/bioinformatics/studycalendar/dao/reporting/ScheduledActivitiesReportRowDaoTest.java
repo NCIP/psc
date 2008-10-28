@@ -8,6 +8,8 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+
 /**
  * @author John Dzak
  */
@@ -109,12 +111,16 @@ public class ScheduledActivitiesReportRowDaoTest extends
     }
 
     public void testSearchWithActivityTypeFilter_Pos() {
-        filters.setActivityType(ActivityType.INTERVENTION);
+        ActivityType activityType = createNamedInstance("INTERVENTION", ActivityType.class);
+        activityType.setId(2);
+        filters.setActivityType(activityType);
         assertSearchWithResults(NEG_17, NEG_16);
     }
 
     public void testSearchWithActivityTypeFilter_Neg() {
-        filters.setActivityType(ActivityType.DISEASE_MEASURE);
+        ActivityType activityType = createNamedInstance("DISEASE_MEASURE", ActivityType.class);
+        activityType.setId(3);
+        filters.setActivityType(activityType);
         assertSearchWithResults();
     }
 

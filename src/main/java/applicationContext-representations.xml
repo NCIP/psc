@@ -30,7 +30,7 @@
     <bean id="amendmentApprovalXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer">
     </bean>
-    <bean id="activitySourceXmlSerializer"
+    <bean id="activitySourceXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
     <bean id="studySiteXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySiteXmlSerializer"/>

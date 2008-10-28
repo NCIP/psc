@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
@@ -21,6 +22,7 @@ import java.util.Collection;
 public class ActivitySourcesResource extends AbstractCollectionResource<Source> {
     private ActivityService activityService;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     private StudyCalendarXmlCollectionSerializer<Source> xmlSerializer;
 
@@ -40,7 +42,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         ActivityType type = null;
         if (typeId != null) {
             try {
-                type = ActivityType.getById(Integer.parseInt(typeId));
+                type = activityTypeDao.getById(Integer.parseInt(typeId));
             } catch (NumberFormatException nfe) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "type-id must be an integer");
             }
@@ -67,5 +69,10 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     @Required
     public void setActivityService(ActivityService activityService) {
         this.activityService = activityService;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

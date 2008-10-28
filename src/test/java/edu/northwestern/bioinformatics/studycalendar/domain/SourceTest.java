@@ -17,8 +17,8 @@ public class SourceTest extends StudyCalendarTestCase {
     }
 
     public void testTransientCloneDoesNotIncludeActivities() throws Exception {
-        createActivity("W", "W", source, ActivityType.LAB_TEST);
-        createActivity("X", "X", source, ActivityType.LAB_TEST);
+        createActivity("W", "W", source, Fixtures.createActivityType("LAB_TEST"));
+        createActivity("X", "X", source, Fixtures.createActivityType("LAB_TEST"));
         assertEquals("Test setup failure", 2, source.getActivities().size());
 
         Source clone = source.transientClone();

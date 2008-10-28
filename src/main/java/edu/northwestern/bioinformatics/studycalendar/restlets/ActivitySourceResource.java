@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -23,6 +24,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     private SourceDao sourceDao;
     private SourceService sourceService;
     private ActivityService activityService;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -44,7 +46,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         ActivityType type = null;
         if (typeId != null) {
             try {
-                type = ActivityType.getById(Integer.parseInt(typeId));
+                type = activityTypeDao.getById(Integer.parseInt(typeId));
             } catch (NumberFormatException nfe) {
                 setClientErrorReason("type-id must be an integer");
                 return null;
@@ -86,5 +88,10 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     @Required
     public void setActivityService(ActivityService activityService) {
         this.activityService = activityService;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

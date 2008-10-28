@@ -6,10 +6,8 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -39,7 +37,7 @@ public class Activity extends AbstractMutableDomainObject
 
     private String name;
     private String description;
-    private ActivityType type;
+    private ActivityType activityType;
     private Source source;
     private String code;
     
@@ -138,14 +136,14 @@ public class Activity extends AbstractMutableDomainObject
         this.source = source;
     }
 
-    @Type(type = "activityType")
-    @Column(name = "activity_type_id")
+    @ManyToOne
+    @JoinColumn(name = "activity_type_id")
     public ActivityType getType() {
-        return type;
+        return activityType;
     }
 
-    public void setType(ActivityType type) {
-        this.type = type;
+    public void setType(ActivityType activityType) {
+        this.activityType = activityType;
     }
 
     ////// OBJECT METHODS

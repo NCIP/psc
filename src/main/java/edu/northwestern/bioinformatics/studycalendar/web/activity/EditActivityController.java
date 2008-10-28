@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class EditActivityController extends PscAbstractController {
     private ActivityDao activityDao;
+    private ActivityTypeDao activityTypeDao;
 
     public EditActivityController() {
     }
@@ -29,7 +30,7 @@ public class EditActivityController extends PscAbstractController {
 
         Activity activity = activityDao.getById(activityId);
         activity.setName(activityName);
-        activity.setType(ActivityType.getById(activityType));
+        activity.setType(activityTypeDao.getById(activityType));
         activity.setCode(activityCode);
         activity.setDescription(activityDescription);
         activityDao.save(activity);
@@ -42,5 +43,10 @@ public class EditActivityController extends PscAbstractController {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

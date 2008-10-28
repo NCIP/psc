@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
@@ -30,6 +31,7 @@ public class ImportActivitiesController extends PscSimpleFormController {
     private SourceDao sourceDao;
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityTypeDao activityTypeDao;
 
     public ImportActivitiesController() {
         setCommandClass(ImportActivitiesCommand.class);
@@ -79,7 +81,7 @@ public class ImportActivitiesController extends PscSimpleFormController {
             }
             model.put("activitiesPerSource", activities);
             model.put("enableDeletes", enableDelete);
-            model.put("activityTypes", ActivityType.values());
+            model.put("activityTypes", activityTypeDao.getAll());
 
             model.put("displayCreateNewActivity", Boolean.TRUE);
             return new ModelAndView(getSuccessView(), model);
@@ -127,5 +129,10 @@ public class ImportActivitiesController extends PscSimpleFormController {
             return "Import activities";
 
         }
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

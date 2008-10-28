@@ -15,15 +15,15 @@
     </display:column>
 
     <display:column title="Type" sortable="true">
-        <label id="Type${row.id}">${row.type}</label>
+        <label id="Type${row.id}">${row.type.name}</label>
         <div id="DivType${row.id}" style="display:none">
             <select id="SourceTypes${row.id}">
                 <c:out value="${activityTypes}"/>
                 <c:forEach items="${activityTypes}" var="activityType">
-                    <c:if test="${activityType.name == row.type}">
+                    <c:if test="${activityType.name == row.type.name}">
                         <option value="${activityType.id}" selected="selected">${activityType.name}</option>
                     </c:if>
-                    <c:if test="${activityType.name != row.type}">
+                    <c:if test="${activityType.name != row.type.name}">
                         <option value="${activityType.id}">${activityType.name}</option>
                     </c:if>
                 </c:forEach>

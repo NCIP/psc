@@ -8,9 +8,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.beans.PropertyEditor;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ColleagueSubjectCoordinatorController extends PscSimpleFormController {
@@ -36,6 +37,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     private UserDao userDao;
     private SiteService siteService;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
+    private ActivityTypeDao activityTypeDao;
 
     private static final Logger log = LoggerFactory.getLogger(ColleagueSubjectCoordinatorController.class.getName());
 
@@ -67,7 +69,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         model.put("ownedStudies", getColleaguesStudies(colleagueId));
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(getStudySubjectAssignments(colleagueId), 7));
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(getStudySubjectAssignments(colleagueId)));
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
 
         return model;
     }
@@ -147,8 +149,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-        servletRequestDataBinder.registerCustomEditor(ActivityType.class, new ControlledVocabularyEditor(ActivityType.class));
-
+        getControllerTools().registerDomainObjectEditor(servletRequestDataBinder, "activityType", activityTypeDao);
     }
 
     ////// CONFIGURATION
@@ -205,5 +206,10 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
             return params;
 
         }
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

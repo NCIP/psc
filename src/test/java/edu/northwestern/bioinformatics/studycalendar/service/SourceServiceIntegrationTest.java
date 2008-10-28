@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -26,10 +27,11 @@ public class SourceServiceIntegrationTest extends DaoTestCase {
     private Source targetSource;
     private Source source;
     private ActivityDao activityDao = (ActivityDao) getApplicationContext().getBean("activityDao");
+    private ActivityTypeDao activityTypeDao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
     List<Activity> activitiesToAddAndRemove;
 
     private Activity activity, anotherActivity, activityToUpdate, activityToDelete;
-
+    private ActivityType activityType;
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -37,11 +39,14 @@ public class SourceServiceIntegrationTest extends DaoTestCase {
         targetSource = Fixtures.createSource(TARGET_SOURCE);
 
         activitiesToAddAndRemove = new ArrayList<Activity>();
-        activity = Fixtures.createActivity("activity1", "code", null, ActivityType.LAB_TEST);
 
-        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, ActivityType.LAB_TEST);
-        activityToUpdate = Fixtures.createActivity("activityToUpdate", "CS", null, ActivityType.LAB_TEST);
-        activityToDelete = Fixtures.createActivity("activityToDelete", "CS", null, ActivityType.LAB_TEST);
+        activityType = Fixtures.createActivityType("LAB_TEST");
+        activityTypeDao.save(activityType);
+
+        activity = Fixtures.createActivity("activity1", "code", null, activityTypeDao.getByName("LAB_TEST"));
+        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, activityTypeDao.getByName("LAB_TEST"));
+        activityToUpdate = Fixtures.createActivity("activityToUpdate", "CS", null, activityTypeDao.getByName("LAB_TEST"));
+        activityToDelete = Fixtures.createActivity("activityToDelete", "CS", null, activityTypeDao.getByName("LAB_TEST"));
 
         activitiesToAddAndRemove.add(activity);
         activitiesToAddAndRemove.add(anotherActivity);

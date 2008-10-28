@@ -1,43 +1,89 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import org.hibernate.annotations.*;
 
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
-import org.apache.commons.lang.StringUtils;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+
 
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-public class ActivityType extends AbstractControlledVocabularyObject {
+@Entity
+@Table(name = "activity_types")
+@GenericGenerator(name = "id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name = "sequence", value = "seq_activity_types_id")
+    }
+)
+public class ActivityType extends AbstractMutableDomainObject
+        implements Named, NaturallyKeyed, Comparable<ActivityType> {
 
-    public static final ActivityType DISEASE_MEASURE = new ActivityType(1, "Disease Measure");
-    public static final ActivityType INTERVENTION = new ActivityType(2, "Intervention");
-    public static final ActivityType LAB_TEST = new ActivityType(3, "Lab Test");
-    public static final ActivityType PROCEDURE = new ActivityType(4, "Procedure");
-    public static final ActivityType OTHER = new ActivityType(5, "Other");
+    private String name;
 
-    private ActivityType(int id, String name) {
-        super(id, name);
+    public ActivityType(String name){
+        this.name = name;
     }
 
-    public static ActivityType getById(int id) {
-        return getById(ActivityType.class, id);
-    }
-
-    public static Collection<ActivityType> values() {
-        return values(ActivityType.class);
-    }
-
-    public static ActivityType getByName(String name) {
-        for (ActivityType activityType : values()) {
-            if (StringUtils.equals(activityType.getName(), name)) {
-                return activityType;
-            }
-        }
-        return null;
-
+    public ActivityType() {
 
     }
 
+    @Transient
+    public String getNaturalKey() {
+        return getName();
+    }
+
+
+    public int compareTo(ActivityType o) {
+        return ComparisonUtils.nullSafeCompare(toLower(getName()), toLower(o.getName()));
+    }
+
+    private String toLower(String name) {
+        return name == null ? null : name.toLowerCase();
+    }
+    ////// BEAN PROPERTIES
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ActivityType activityType = (ActivityType) o;
+
+        return !(name != null ? !name.equals(activityType.name) : activityType.name != null);
+
+    }
+
+    public int hashCode() {
+        return (name != null ? name.hashCode() : 0);
+    }
+
+
+    @Override
+    public String toString() {
+      return new StringBuilder(getClass().getSimpleName())
+                .append("[id=").append(getId())
+                .append("; name=").append(getName())
+                .append(']')
+                .toString();
+    }
 }
+

@@ -1,15 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -33,6 +29,7 @@ public class ScheduleController extends PscSimpleFormController {
     private UserDao userDao;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
     private NotificationDao notificationDao;
+    private ActivityTypeDao activityTypeDao;
 
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);
@@ -66,7 +63,7 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("colleguesStudies", getMapOfColleagueUsersAndStudySites(ownedStudies));
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studySubjectAssignments, 7));
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studySubjectAssignments));
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
 
         Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(studySubjectAssignments);
         model.put("notificationsSubjectMap", subjectNotificationsMap);
@@ -170,8 +167,7 @@ public class ScheduleController extends PscSimpleFormController {
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-        servletRequestDataBinder.registerCustomEditor(ActivityType.class, new ControlledVocabularyEditor(ActivityType.class));
-
+        getControllerTools().registerDomainObjectEditor(servletRequestDataBinder, "activityType", activityTypeDao);
     }
 
     ////// CONFIGURATION
@@ -219,5 +215,10 @@ public class ScheduleController extends PscSimpleFormController {
     @Required
     public void setNotificationDao(NotificationDao notificationDao) {
         this.notificationDao = notificationDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

@@ -153,9 +153,10 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	}
 
 	private Activity createActivity(final String name) {
-		Activity activity = new Activity();
+        ActivityType activityType = Fixtures.createActivityType("PROCEDURE");
+        Activity activity = new Activity();
 		activity.setName("activity name:" + name);
-		activity.setType(ActivityType.PROCEDURE);
+		activity.setType(activityType);
 		activity.setDescription("desc:" + name);
 		return activity;
 	}

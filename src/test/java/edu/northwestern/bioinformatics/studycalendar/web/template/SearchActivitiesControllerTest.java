@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -26,13 +27,17 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
     private ActivityDao activityDao;
     private Source source0, source1;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
     private List<Activity> activityResult;
+
+    ActivityType activityType1, activityType2;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         command = registerMockFor(SearchActivitiesCommand.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
 
         controller = new SearchActivitiesController() {
@@ -44,13 +49,15 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setActivityDao(activityDao);
         controller.setSourceDao(sourceDao);
+        controller.setActivityTypeDao(activityTypeDao);
 
         source0 = setId(0, createNamedInstance("PSC Manual Entry Source", Source.class));
         source1 = setId(1, createNamedInstance("LOINK", Source.class));
-        
+        activityType1 = createActivityType("INTERVENTION");
+        activityType2 = createActivityType("DISEASE_MEASURE");
         activities = asList(
-                createActivity("Activity A", "AA", source0, ActivityType.INTERVENTION),
-                createActivity("Activity B", "BB", source1, ActivityType.DISEASE_MEASURE)
+                createActivity("Activity A", "AA", source0, activityType1),
+                createActivity("Activity B", "BB", source1, activityType2)
         );
 
         activityResult = new ArrayList<Activity>();
@@ -135,7 +142,7 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
 
     public void testHandleFilterByActivityType() throws Exception {
         String searchText = "Activity";
-        expectSearch(searchText, null, ActivityType.DISEASE_MEASURE);
+        expectSearch(searchText, null, activityType2);
 
         List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 

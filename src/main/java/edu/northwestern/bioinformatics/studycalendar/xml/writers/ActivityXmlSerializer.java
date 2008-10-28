@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -9,12 +10,14 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Rhett Sutphin
  */
 public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     private boolean embeddedInSource;
+    private ActivityTypeDao activityTypeDao;
 
     public ActivityXmlSerializer() {
         this(false);
@@ -30,7 +33,7 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         XsdAttribute.ACTIVITY_NAME.addTo(aElt, a.getName());
         XsdAttribute.ACTIVITY_CODE.addTo(aElt, a.getCode());
         XsdAttribute.ACTIVITY_DESC.addTo(aElt, a.getDescription());
-        XsdAttribute.ACTIVITY_TYPE.addTo(aElt, a.getType().getId());
+        XsdAttribute.ACTIVITY_TYPE.addTo(aElt, a.getType().getName());
         if (!embeddedInSource && a.getSource() != null) {
             XsdAttribute.ACTIVITY_SOURCE.addTo(aElt, a.getSource().getNaturalKey());
         }
@@ -45,18 +48,34 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         activity.setDescription(XsdAttribute.ACTIVITY_DESC.from(element));
         try {
             String typeAttr = XsdAttribute.ACTIVITY_TYPE.from(element);
+            ActivityType type;
+            String typeIdAttr = null;
+
             if (typeAttr == null) {
-                throw new StudyCalendarValidationException("Type is required for activities");
-            }
-            int typeId = Integer.parseInt(typeAttr);
-            ActivityType type = ActivityType.getById(typeId);
-            if (typeAttr == null) {
-                throw new StudyCalendarValidationException("Type id %d is not valid", typeId);
+                typeIdAttr = XsdAttribute.ACTIVITY_TYPE_ID.from(element);
+                if (typeIdAttr == null) {
+                    throw new StudyCalendarValidationException("Type or typeId are required for activities");
+                }
+                int typeId = Integer.parseInt(typeIdAttr);
+                type = activityTypeDao.getById(typeId);
+                if (type == null) {
+                    throw new StudyCalendarValidationException("Type Name is required for activities with unknown id");
+                }
+            } else {
+                type = activityTypeDao.getByName(typeAttr);
+                if (type == null) {
+                    //means it's a new activity type
+                    type = new ActivityType();
+                    type.setName(typeAttr);
+                    activityTypeDao.save(type);
+                }
+
             }
             activity.setType(type);
         } catch (NumberFormatException nfe) {
             throw new StudyCalendarValidationException("Type attribute must be an integer", nfe);
         }
+
         if (!embeddedInSource) {
             Source sourceTemplate = new Source();
             sourceTemplate.setName(XsdAttribute.ACTIVITY_SOURCE.from(element));
@@ -65,7 +84,6 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
 
         return activity;
     }
-
     public boolean validateElement(Activity activity, Element element) {
         boolean valid = true;
         if (element == null && activity == null) {
@@ -78,7 +96,7 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
             valid = false;
         } else if (!StringUtils.equals(activity.getDescription(), XsdAttribute.ACTIVITY_DESC.from(element))) {
             valid = false;
-        } else if (!StringUtils.equals(String.valueOf(activity.getType().getId()), XsdAttribute.ACTIVITY_TYPE.from(element))) {
+        } else if (!StringUtils.equals(String.valueOf(activity.getType().getName()), XsdAttribute.ACTIVITY_TYPE.from(element))) {
             valid = false;
         }
 
@@ -93,5 +111,11 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         }
 
         return valid;
+    }
+
+    ////// Bean setters
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

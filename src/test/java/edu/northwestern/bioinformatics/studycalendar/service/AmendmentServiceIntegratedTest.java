@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -28,8 +29,10 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
     private DeltaService deltaService;
     private StudyDao studyDao;
     private PeriodDao periodDao;
+    private ActivityTypeDao activityTypeDao;
 
     private Study study;
+    private ActivityType activityType;
     private Activity activity;
     private Epoch treatmentEpoch;
 
@@ -41,11 +44,13 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
         periodDao = (PeriodDao) getApplicationContext().getBean("periodDao");
+        activityTypeDao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
 
         study = TemplateSkeletonCreator.BASIC.create(null);
         saveStudyAndReplace();
 
-        activity = Fixtures.createActivity("Foo", "Foo", null, ActivityType.DISEASE_MEASURE);
+        activityType = activityTypeDao.getByName("DISEASE_MEASURE");
+        activity = Fixtures.createActivity("Foo", "Foo", null, activityType);
         ((ActivityDao) getApplicationContext().getBean("activityDao")).save(activity);
     }
 

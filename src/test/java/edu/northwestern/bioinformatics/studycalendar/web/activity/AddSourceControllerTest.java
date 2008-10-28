@@ -2,16 +2,23 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
 import static org.easymock.EasyMock.expect;
 
 public class AddSourceControllerTest extends ControllerTestCase {
 
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
     private AddSourceController controller;
+    private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
 
     private Source source1, source2;
 
@@ -20,7 +27,9 @@ public class AddSourceControllerTest extends ControllerTestCase {
         super.setUp();
         controller = new AddSourceController();
         sourceDao = registerDaoMockFor(SourceDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         controller.setSourceDao(sourceDao);
+        controller.setActivityTypeDao(activityTypeDao);
 
         source1 = setId(111, createNamedInstance("Test Source 1", Source.class));
         source2 = setId(222, createNamedInstance("Test Source 2", Source.class));
@@ -47,6 +56,7 @@ public class AddSourceControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel;
 
         expect(sourceDao.getByName(source2.getName())).andReturn(null).anyTimes();
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         sourceDao.save(source2);
         replayMocks();
         actualModel = controller.handleRequestInternal(request, response).getModel();

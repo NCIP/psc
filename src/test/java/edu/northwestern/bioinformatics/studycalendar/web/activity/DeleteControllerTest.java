@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.activity;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
@@ -18,11 +19,13 @@ public class DeleteControllerTest extends ControllerTestCase {
 
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityTypeDao activityTypeDao;
     private ActivityService activityService;
     private DeleteController controller;
 
     private Activity a0, a1, a2;
     private Source source;
+    List<ActivityType> activityTypes = new ArrayList<ActivityType>();
 
 
     @Override
@@ -31,21 +34,24 @@ public class DeleteControllerTest extends ControllerTestCase {
         controller = new DeleteController();
         activityDao = registerDaoMockFor(ActivityDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         activityService = registerMockFor(ActivityService.class);
 
         controller.setActivityDao(activityDao);
         controller.setPlannedActivityDao(plannedActivityDao);
         controller.setActivityService(activityService);
+        controller.setActivityTypeDao(activityTypeDao);
+
 
         source = setId(11, createNamedInstance("Test Source", Source.class));
 
-        a0 = Fixtures.createActivity("Activity 0", "code0", source, ActivityType.INTERVENTION);
+        a0 = Fixtures.createActivity("Activity 0", "code0", source, Fixtures.createActivityType("INTERVENTION"));
         a0.setId(10);
 
-        a1 = Fixtures.createActivity("Activity 1", "code1", source, ActivityType.LAB_TEST);
+        a1 = Fixtures.createActivity("Activity 1", "code1", source, Fixtures.createActivityType("LAB_TEST"));
         a1.setId(20);
 
-        a2 = Fixtures.createActivity("Activity 2", "code2", source, ActivityType.DISEASE_MEASURE);
+        a2 = Fixtures.createActivity("Activity 2", "code2", source, Fixtures.createActivityType("DISEASE_MEASURE"));
         a2.setId(30);
 
         PlannedActivity pa = Fixtures.createPlannedActivity(a2.getName(), 2);
@@ -57,6 +63,7 @@ public class DeleteControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel;
         expect(activityDao.getById(a0.getId())).andReturn(a0).anyTimes();
         expect(activityService.deleteActivity(a0)).andReturn(true).anyTimes();
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         List<Activity> activityList = new ArrayList<Activity>();
         activityList.add(a1);
         expect(activityDao.getBySourceId(source.getId())).andReturn(activityList).anyTimes();
@@ -80,6 +87,7 @@ public class DeleteControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel;
         expect(activityDao.getById(a2.getId())).andReturn(a2).anyTimes();
         expect(activityService.deleteActivity(a2)).andReturn(false).anyTimes();
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         List<Activity> activityList = new ArrayList<Activity>();
         activityList.add(a1);
         expect(activityDao.getBySourceId(source.getId())).andReturn(activityList).anyTimes();

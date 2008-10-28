@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -44,6 +41,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
     private DeltaService deltaService;
     private DaoFinder daoFinder;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     public ManagePeriodActivitiesController() {
         setCrumb(new Crumb());
@@ -65,8 +63,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         PeriodActivitiesGrid grid
             = new PeriodActivitiesGrid(period,
                 studySegment.getCycleLength(), 
-                collectActivities(study));
-
+                collectActivities(study), activityTypeDao);
         ModelMap model = new ModelMap();
         model.put("grid", grid);
         model.put("period", period);
@@ -77,7 +74,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         }
 
         model.put("activitySources", sourceDao.getAll());
-        model.put("activityTypes", ActivityType.values());
+        model.put("activityTypes", activityTypeDao.getAll());
         Amendment amendment = study.getDevelopmentAmendment();
         model.put("amendment", amendment);
         model.put("developmentRevision", amendment);
@@ -148,5 +145,10 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         public Map<String, String> getParameters(BreadcrumbContext context) {
             return Collections.singletonMap("period", context.getPeriod().getId().toString());
         }
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

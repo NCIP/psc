@@ -6,6 +6,7 @@
 
     <USERS id="-200" name="subject coordinor" csm_user_id="-200" active_flag="1" />
 
+    <ACTIVITY_TYPES id="2" name="ActivityType2"/>
     <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>
 
     <AMENDMENTS id="-17" amendment_date="2007-06-14"/>

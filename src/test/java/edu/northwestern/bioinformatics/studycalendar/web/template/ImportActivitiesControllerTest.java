@@ -2,12 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +25,12 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
     private ImportActivitiesCommand command;
     List<Activity> activities;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
     private static final String TEST_XML = "<sources><source=\"ts\"/></sources>";
     private MockMultipartHttpServletRequest multipartRequest;
     private Source source;
     private List<Source> sources;
+    private List<ActivityType> activityTypes;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,14 +47,17 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         // Stop controller from calling validation
         controller.setValidators(null);
         sourceDao = registerDaoMockFor(SourceDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         PlannedActivityDao plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         ActivityDao activityDao = registerDaoMockFor(ActivityDao.class);
         source = setId(11, createNamedInstance("Test Source", Source.class));
         controller.setSourceDao(sourceDao);
         controller.setActivityDao(activityDao);
         controller.setPlannedActivityDao(plannedActivityDao);
+        controller.setActivityTypeDao(activityTypeDao);
 
         sources = new ArrayList<Source>();
+        activityTypes = new ArrayList<ActivityType>();
         sources.add(source);
 //        command.setSourceId(source.getId());
         multipartRequest = new MockMultipartHttpServletRequest();
@@ -68,6 +75,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
     public void testSubmit() throws Exception {
 //        List<Source> sources = new ArrayList<Source>();
 //        sources.add(source);
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
         assertEquals("Wrong view", "activity", getOnSubmitData().getViewName());
     }
@@ -75,7 +83,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
     public void testSubmitWithReturnToActivity() throws Exception {
 //        List<Source> sources = new ArrayList<Source>();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
-
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         ModelAndView mv = getOnSubmitData();
 
         assertEquals("Wrong view", "activity", mv.getViewName());
@@ -92,6 +100,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
     public void testBindActivitiesXml() throws Exception {
 //        List<Source> sources = new ArrayList<Source>();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         MultipartFile mockFile = new MockMultipartFile("activitiesFile", TEST_XML.getBytes());
         multipartRequest.addFile(mockFile);
 

@@ -1,22 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import static java.util.Collections.EMPTY_LIST;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import java.util.Map;
 public class SearchActivitiesController extends PscAbstractCommandController<SearchActivitiesCommand> {
     private ActivityDao activityDao;
     private SourceDao sourceDao;
+    private ActivityTypeDao activityTypeDao;
 
     public SearchActivitiesController() {
         setCommandClass(SearchActivitiesCommand.class);
@@ -35,7 +35,7 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         getControllerTools().registerDomainObjectEditor(binder, "source", sourceDao);
-        binder.registerCustomEditor(ActivityType.class, new ControlledVocabularyEditor(ActivityType.class));
+        getControllerTools().registerDomainObjectEditor(binder, "activityType", activityTypeDao);
     }
 
     protected ModelAndView handle(SearchActivitiesCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -87,5 +87,10 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
 
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

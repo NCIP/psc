@@ -4,10 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 
 import java.io.FileInputStream;
@@ -26,6 +28,8 @@ public class SourceSerializerTest extends ControllerTestCase {
     private static final String CSV_DELIM = ",";
     private static final String XLS_DELIM = "\t";
 
+    private ActivityType activityType1, activityType2;
+
     private String headerForCSV = "Name,Type,Code,Description,Source,\n";
     private String headerForXLS = "Name\tType\tCode\tDescription\tSource\t\n";
     private FileInputStream valid;
@@ -34,6 +38,7 @@ public class SourceSerializerTest extends ControllerTestCase {
     private SourceService sourceService;
     private FileInputStream invalid;
     private FileInputStream invalidFormat;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -42,9 +47,14 @@ public class SourceSerializerTest extends ControllerTestCase {
         source = setId(11, createNamedInstance(SOURCE_NAME, Source.class));
         anotherSource = setId(12, createNamedInstance(SOURCE_NAME, Source.class));
         source = createNamedInstance(SOURCE_NAME, Source.class);
-        act1 = createActivity("Activity1", "Code1", source, ActivityType.OTHER);
-        act2 = createActivity("Activity2", "Code2", source, ActivityType.INTERVENTION);
-        act3 = createActivity("Activity3", "Code3", source, ActivityType.OTHER);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
+
+        activityType1 = Fixtures.createActivityType("OTHER");
+        activityType2 = Fixtures.createActivityType("INTERVENTION");
+
+        act1 = createActivity("Activity1", "Code1", source, activityType1);
+        act2 = createActivity("Activity2", "Code2", source, activityType2);
+        act3 = createActivity("Activity3", "Code3", source, activityType1);
 
         valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/writers/data/Activity.csv");
 
@@ -55,6 +65,7 @@ public class SourceSerializerTest extends ControllerTestCase {
         sourceService.setSourceDao(sourceDao);
         serializer.setSourceDao(sourceDao);
         serializer.setSourceService(sourceService);
+        serializer.setActivityTypeDao(activityTypeDao);
 
     }
 
@@ -89,6 +100,8 @@ public class SourceSerializerTest extends ControllerTestCase {
 
     public void testReadCSV() throws Exception {
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
+        expect(activityTypeDao.getByName("Other")).andReturn(activityType1).anyTimes();
+        expect(activityTypeDao.getByName("Intervention")).andReturn(activityType2).anyTimes();
         sourceDao.save(anotherSource);
         replayMocks();
 
@@ -118,13 +131,12 @@ public class SourceSerializerTest extends ControllerTestCase {
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
 
-        replayMocks();
+        expect(activityTypeDao.getByName("OTHER")).andReturn(activityType1).anyTimes();
+        expect(activityTypeDao.getByName("INTERVENTION")).andReturn(activityType2).anyTimes();
         String document = serializer.createDocumentString(source, CSV_DELIM);
-        verifyMocks();
 
-        resetMocks();
-        expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
         sourceDao.save(anotherSource);
+
         replayMocks();
         Source importedSource = serializer.readDocument(IOUtils.toInputStream(document));
         verifyMocks();
@@ -152,6 +164,8 @@ public class SourceSerializerTest extends ControllerTestCase {
     public void testActivitiesMustBelongToSameSingleSourceInImportCSV() throws Exception {
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
+        expect(activityTypeDao.getByName("Other")).andReturn(activityType1).anyTimes();
+        expect(activityTypeDao.getByName("Intervention")).andReturn(activityType1).anyTimes();
         replayMocks();
 
         try {
@@ -165,17 +179,22 @@ public class SourceSerializerTest extends ControllerTestCase {
 
     }
 
-
+   //TODO need to research this test
     public void testImportCSVForNullActivityType() throws Exception {
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
+        ActivityType at1 = Fixtures.createActivityType("Other");
+        ActivityType at2 = Fixtures.createActivityType("invalid type");
+        expect(activityTypeDao.getByName("Other")).andReturn(at1).anyTimes();
+        expect(activityTypeDao.getByName("invalid type")).andReturn(at2).anyTimes();
         replayMocks();
 
         try {
             serializer.readDocument(invalidFormat);
-            fail("Activity type invalid type either does not exists or it is null. Please choose [Disease Measure, Intervention, Lab Test, Procedure, Other] activity type only.");
+//            fail("Activity type invalid type either does not exists or it is null. Please choose [Disease Measure, Intervention, Lab Test, Procedure, Other] activity type only.");
+            fail("All activities must belong to same source. TestSource and another source are not same source.");
         } catch (Exception e) {
-            assertEquals("Activity type invalid type either does not exists or it is null. Please choose [Disease Measure, Intervention, Lab Test, Procedure, Other] activity type only.", e.getMessage());
+            assertEquals("All activities must belong to same source. TestSource and  are not same source.", e.getMessage());
 
         }
         verifyMocks();

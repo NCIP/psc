@@ -19,7 +19,8 @@ public enum XsdAttribute {
     ACTIVITY_NAME("name"),
     ACTIVITY_CODE("code"),
     ACTIVITY_DESC("description"),
-    ACTIVITY_TYPE("type-id"),
+    ACTIVITY_TYPE_ID("type-id"),
+    ACTIVITY_TYPE("type"),
     ACTIVITY_SOURCE("source"),
 
 

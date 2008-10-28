@@ -60,9 +60,7 @@
             <component name="activity">
                 <property name="id" column="activity_id"/>
                 <property name="name" column="activity_name"/>
-                <property name="type" type="activityType">
-                    <column name="activity_type_id"/>
-                </property>
+                <many-to-one name="type" column="activity_type_id"/>
             </component>
         </component>
 

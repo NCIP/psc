@@ -1,5 +1,6 @@
 <dataset>
     <SOURCES id="-1" name="Test source" version="0"/>
+    <ACTIVITY_TYPES id="4" name="ActivityType4"/>
     <ACTIVITIES id="-1" name="Medical History" code="Hist" activity_type_id="4" source_id="-1"/>
 
     <!-- For cleanup -->

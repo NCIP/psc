@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -24,11 +25,13 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
 
     private SourceService sourceService;
     private ActivityService activityService;
+    private ActivityTypeDao activityTypeDao;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         sourceDao = registerDaoMockFor(SourceDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         sourceService = registerMockFor(SourceService.class);
         activityService = registerMockFor(ActivityService.class);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
@@ -43,6 +46,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         resource.setXmlSerializer(xmlSerializer);
         resource.setSourceService(sourceService);
         resource.setActivityService(activityService);
+        resource.setActivityTypeDao(activityTypeDao);
         return resource;
     }
 
@@ -84,9 +88,9 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     public void testGetFiltersByTypeIdIfProvided() throws Exception {
         QueryParameters.TYPE_ID.putIn(request, "3");
         Source expectedSource = source.transientClone();
-
+        expect(activityTypeDao.getById(3)).andReturn(new ActivityType("LAB_TEST")).anyTimes();
         expectFoundSource(source);
-        expect(activityService.getFilteredSources(null, ActivityType.LAB_TEST, source)).
+        expect(activityService.getFilteredSources(null, Fixtures.createActivityType("LAB_TEST"), source)).
             andReturn(Collections.singletonList(expectedSource));
         expectObjectXmlized(expectedSource);
 
@@ -97,9 +101,9 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     public void testGetRendersEmptySourceIfFilteringComesUpWithNothing() throws Exception {
         QueryParameters.TYPE_ID.putIn(request, "3");
         Source expectedSource = Fixtures.createSource(source.getName());
-
+        expect(activityTypeDao.getById(3)).andReturn(new ActivityType("LAB_TEST")).anyTimes();
         expectFoundSource(source);
-        expect(activityService.getFilteredSources(null, ActivityType.LAB_TEST, source)).
+        expect(activityService.getFilteredSources(null, Fixtures.createActivityType("LAB_TEST"), source)).
             andReturn(Collections.<Source>emptyList());
         expectObjectXmlized(expectedSource);
 
