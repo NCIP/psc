@@ -39,6 +39,7 @@ public class RowPreservingInitializer extends EmptySchemaInitializer {
         this.primaryKeyNames = primaryKeyNames;
     }
 
+    @Override
     @SuppressWarnings({ "unchecked" })
     public void beforeAll(ConnectionSource connectionSource) {
         String sql = String.format(
@@ -46,9 +47,10 @@ public class RowPreservingInitializer extends EmptySchemaInitializer {
         log.debug("Identifying rows to preserve using SQL: {}", sql);
         idsToPreserve = connectionSource.currentJdbcTemplate().queryForList(sql);
         log.debug("Found {} rows to preserve", idsToPreserve.size());
-        log.trace("  - {}", idsToPreserve);
+        if (!idsToPreserve.isEmpty()) log.trace("  - {}", idsToPreserve);
     }
 
+    @Override
     public void afterEach(ConnectionSource connectionSource) {
         String sql;
         Object[] params;
@@ -100,10 +102,11 @@ public class RowPreservingInitializer extends EmptySchemaInitializer {
 
     ////// OBJECT METHODS
 
+    @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).
             append("[tableName=").append(getTableName()).
             append("; PKs=").append(getPrimaryKeyNames()).
-            append("]").toString();
+            append(']').toString();
     }
 }
