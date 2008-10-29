@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAddChange;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAddChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -151,12 +150,12 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         studySegment2.getPeriods().add(period2);
 
 
-        epoch1 = edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance("Treatment", Epoch.class);
+        epoch1 = Fixtures.createNamedInstance("Treatment", Epoch.class);
         epoch1.addStudySegment(studySegment1);
         epoch1.addStudySegment(studySegment2);
         epoch1.setGridId("690361c1-433e-4a25-bfe2-09db0ce2edab");
 
-        add1 = edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAddChange(1, 0);
+        add1 = Fixtures.createAddChange(1, 0);
         add1.setChild(epoch1);
         add1.setGridId("cb6e3130-9d2e-44e8-80ac-170d1875db5c");
 

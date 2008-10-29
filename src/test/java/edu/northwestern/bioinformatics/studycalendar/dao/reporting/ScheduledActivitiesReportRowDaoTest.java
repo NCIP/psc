@@ -8,7 +8,8 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 /**
  * @author John Dzak

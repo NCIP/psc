@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoord
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;

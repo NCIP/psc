@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;

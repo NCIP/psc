@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.apache.commons.lang.StringUtils;

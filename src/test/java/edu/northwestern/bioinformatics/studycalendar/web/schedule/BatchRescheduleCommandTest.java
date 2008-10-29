@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegmen
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 
 import java.util.*;
 

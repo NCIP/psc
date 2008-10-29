@@ -5,10 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import javax.servlet.http.HttpServletRequest;

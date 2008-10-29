@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;

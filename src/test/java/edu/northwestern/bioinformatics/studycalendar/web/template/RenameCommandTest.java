@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;

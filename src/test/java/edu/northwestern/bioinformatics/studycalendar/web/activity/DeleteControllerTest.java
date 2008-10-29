@@ -6,8 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 import java.util.Map;
 import java.util.List;

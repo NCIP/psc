@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
@@ -14,7 +14,6 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 import java.text.MessageFormat;
-import static java.text.MessageFormat.format;
 import java.util.Collections;
 
 /**

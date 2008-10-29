@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendment;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 

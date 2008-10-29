@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 import java.util.Calendar;
 import java.util.Date;

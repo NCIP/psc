@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 import java.util.Iterator;
 import java.util.Collections;
-import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     private SiteDao siteDao;

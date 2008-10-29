@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;

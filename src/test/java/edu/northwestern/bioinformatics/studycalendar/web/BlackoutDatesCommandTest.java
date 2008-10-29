@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.List;

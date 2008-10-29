@@ -1,32 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import static org.easymock.EasyMock.expect;
-import org.easymock.classextension.EasyMock;
-import org.easymock.IArgumentMatcher;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarDbTestCase;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.api.PlannedCalendarService;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.File;
-
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 /**
  * @author Saurabh Agrawal

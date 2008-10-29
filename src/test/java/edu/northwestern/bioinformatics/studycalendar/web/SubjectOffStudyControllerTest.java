@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;

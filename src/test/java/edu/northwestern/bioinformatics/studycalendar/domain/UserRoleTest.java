@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 public class UserRoleTest extends StudyCalendarTestCase {

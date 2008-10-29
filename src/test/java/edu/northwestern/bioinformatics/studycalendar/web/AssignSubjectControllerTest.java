@@ -3,24 +3,20 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import static java.util.Arrays.asList;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.Errors;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.BindException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
  * @author Rhett Sutphin

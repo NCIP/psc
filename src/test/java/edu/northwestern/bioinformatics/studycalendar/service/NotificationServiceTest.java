@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import org.easymock.classextension.EasyMock;
 import org.springframework.mail.MailSender;
 

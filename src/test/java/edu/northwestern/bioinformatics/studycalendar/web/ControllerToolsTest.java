@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;

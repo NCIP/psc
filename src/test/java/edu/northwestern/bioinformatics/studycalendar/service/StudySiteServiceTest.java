@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createUserRole;
 
 import static java.util.Arrays.asList;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 

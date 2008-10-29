@@ -3,22 +3,19 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import static java.util.Arrays.asList;
 
 import static org.easymock.EasyMock.expect;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createStudySite;
 
 import static java.util.Collections.singleton;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 
 import java.util.Collections;
-import java.util.Arrays;
-
-import org.easymock.EasyMock;
 
 public class UserRoleServiceTest extends StudyCalendarTestCase {
     private SiteService siteService;

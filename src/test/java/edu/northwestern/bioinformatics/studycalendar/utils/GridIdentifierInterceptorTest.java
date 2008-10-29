@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils;
 
 import org.hibernate.type.Type;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;

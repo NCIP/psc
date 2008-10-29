@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 /**
  * @author Rhett Sutphin

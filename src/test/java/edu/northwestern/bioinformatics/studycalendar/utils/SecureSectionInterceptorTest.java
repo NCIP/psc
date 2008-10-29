@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;

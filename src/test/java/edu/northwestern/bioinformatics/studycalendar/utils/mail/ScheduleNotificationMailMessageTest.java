@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import org.springframework.mail.SimpleMailMessage;
 
 import java.util.Arrays;

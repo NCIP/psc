@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;

@@ -3,15 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import org.dom4j.Element;
-import org.easymock.EasyMock;
 
 /**
  * @author Rhett Sutphin

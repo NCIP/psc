@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 
 import java.util.Map;
@@ -15,7 +13,6 @@ import java.util.List;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 
 /**

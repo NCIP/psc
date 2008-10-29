@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
@@ -15,7 +15,6 @@ import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
-import static java.text.MessageFormat.format;
 import java.util.Calendar;
 import java.util.Collections;
 

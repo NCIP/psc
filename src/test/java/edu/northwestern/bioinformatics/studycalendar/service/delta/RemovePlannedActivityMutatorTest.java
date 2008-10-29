@@ -5,8 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;

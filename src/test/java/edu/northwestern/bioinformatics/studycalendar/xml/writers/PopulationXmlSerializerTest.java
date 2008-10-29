@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.NAME;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.ABBREVIATION;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;

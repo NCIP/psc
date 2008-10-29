@@ -2,15 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import static org.easymock.EasyMock.expect;
-
-import java.util.Map;
 
 /**
  * @author Jalpa Patel

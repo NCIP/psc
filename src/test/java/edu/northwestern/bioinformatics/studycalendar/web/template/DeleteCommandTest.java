@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
