@@ -66,12 +66,29 @@ public class TableOrdererTest extends StudyCalendarTestCase {
         assertPresent(actualOrder, "loner");
     }
 
+    public void testOrderingIncludesOnlyTheTablesFromTheSchemaIncludingBeringVersionIfThereAreMultipleSchemas() throws Exception {
+        metadata.solo("a", "b", "BERING_VERSION");
+        metadata.schema("FOO", "a", "BERING_VERSION");
+        metadata.schema("BAR", "b");
+
+        String[] actualOrder = doReorder();
+
+        assertPresent(actualOrder, "a");
+        assertPresent(actualOrder, "BERING_VERSION");
+        assertNotPresent(actualOrder, "b");
+    }
+
     private String[] doReorder(String... tables) throws SQLException {
         return new TableOrderer(metadata, tables.length == 0 ? null : tables).insertionOrder();
     }
 
     private static void assertPresent(String[] actualOrder, String expected) {
         assertNonnegative("Missing " + expected + " from " + Arrays.asList(actualOrder),
+            search(expected, actualOrder));
+    }
+
+    private static void assertNotPresent(String[] actualOrder, String expected) {
+        assertNegative("Expected " + expected + " to be absent from " + Arrays.asList(actualOrder),
             search(expected, actualOrder));
     }
 

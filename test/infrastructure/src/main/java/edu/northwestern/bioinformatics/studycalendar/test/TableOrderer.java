@@ -14,9 +14,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -113,11 +115,47 @@ public class TableOrderer {
     private static String[] getAllTableNames(DatabaseMetaData metadata) throws SQLException {
         ResultSet tableResult = metadata.getTables(null, null, null, new String[] { "TABLE" });
         try {
-            List<String> children = new ArrayList<String>();
-            while (tableResult.next()) children.add(tableResult.getString("TABLE_NAME"));
-            return children.toArray(new String[children.size()]);
+            // attempt to guess which schema to use
+            // this is pretty much only necessary for oracle, since it has a bunch
+            // of tables visible unqualified from other schemas by default
+            Map<String, Set<String>> schemaToTables = new HashMap<String, Set<String>>();
+            while (tableResult.next()) {
+                String schemaName = tableResult.getString("TABLE_SCHEM");
+                String tableName = tableResult.getString("TABLE_NAME");
+                if (!schemaToTables.containsKey(schemaName)) {
+                    schemaToTables.put(schemaName, new HashSet<String>());
+                }
+                schemaToTables.get(schemaName).add(tableName);
+            }
+            Set<String> allTables = pickTableSet(schemaToTables);
+            return allTables.toArray(new String[allTables.size()]);
         } finally {
             tableResult.close();
         }
+    }
+
+    private static Set<String> pickTableSet(Map<String, Set<String>> schemaToTables) {
+        Set<String> allTables = null;
+        if (schemaToTables.size() == 1) {
+            allTables = schemaToTables.values().iterator().next();
+        } else {
+            // Heuristic: find the schema that includes bering_version
+            // TODO: this heuristic makes this class more PSC-specific than I'd like
+            // One possible fix: make table discovery a separate command obj.
+            for (Set<String> tables : schemaToTables.values()) {
+                if (tables.contains(sampleTable())) {
+                    allTables = tables; break;
+                }
+            }
+            if (allTables == null) {
+                throw new IllegalStateException(
+                    String.format("Could not find sample table %s in any schema", sampleTable()));
+            }
+        }
+        return allTables;
+    }
+
+    private static String sampleTable() {
+        return "BERING_VERSION";
     }
 }

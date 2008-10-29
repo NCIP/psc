@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,9 +23,11 @@ import java.util.Set;
  */
 public class MockDbMetadata implements DatabaseMetaData {
     private Map<String, Set<String>> tree;
+    private Map<String, String> tableSchemas;
 
     public MockDbMetadata() {
         tree = new LinkedHashMap<String, Set<String>>();
+        tableSchemas = new HashMap<String, String>();
     }
 
     public void solo(String... tables) {
@@ -32,6 +37,12 @@ public class MockDbMetadata implements DatabaseMetaData {
     public void link(String parent, String... children) {
         if (!tree.containsKey(parent)) tree.put(parent, new HashSet<String>());
         tree.get(parent).addAll(Arrays.asList(children));
+    }
+
+    public void schema(String schema, String... tables) {
+        for (String table : tables) {
+            tableSchemas.put(table, schema);
+        }
     }
 
     public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException {
@@ -703,7 +714,7 @@ public class MockDbMetadata implements DatabaseMetaData {
         throw new UnsupportedOperationException("supportsStatementPooling not implemented");
     }
 
-    private static class MockFkResultSet extends NoOperationsResultSet {
+    private class MockFkResultSet extends NoOperationsResultSet {
         private Iterator<String> children;
 
         public MockFkResultSet(Collection<String> children) {
@@ -729,29 +740,65 @@ public class MockDbMetadata implements DatabaseMetaData {
         }
     }
 
-    private static class MockTablesResultSet extends NoOperationsResultSet {
-        private Iterator<String> tables;
+    private class MockTablesResultSet extends NoOperationsResultSet {
+        private MockTableMetadata current;
+        private Iterator<MockTableMetadata> tables;
 
         private MockTablesResultSet(Set<String> tables) {
-            this.tables = tables == null
-                ? Collections.<String>emptySet().iterator()
-                : tables.iterator();
+            if (tables == null) {
+                this.tables = Collections.<MockTableMetadata>emptySet().iterator();
+            } else {
+                List<MockTableMetadata> tableRows = new ArrayList<MockTableMetadata>(tables.size());
+                for (String table : tables) {
+                    tableRows.add(new MockTableMetadata(table));
+                }
+                this.tables = tableRows.iterator();
+            }
         }
 
         @Override
         public String getString(String columnName) throws SQLException {
-            if (columnName.equals("TABLE_NAME")) return tables.next();
+            if (columnName.equals("TABLE_NAME")) return current.getTableName();
+            if (columnName.equals("TABLE_SCHEM")) return current.getSchemaName();
             else throw new IllegalArgumentException("Unexpected column requested: " + columnName);
         }
 
         @Override
         public boolean next() throws SQLException {
-            return tables.hasNext();
+            if (tables.hasNext()) {
+                current = tables.next();
+                return true;
+            } else {
+                current = null;
+                return false;
+            }
         }
 
         @Override
         public void close() throws SQLException {
             tables = null;
+        }
+
+        private class MockTableMetadata {
+            private String schema;
+            private String tableName;
+
+            private MockTableMetadata(String tableName) {
+                this.tableName = tableName;
+                if (tableSchemas.containsKey(tableName)) {
+                    this.schema = tableSchemas.get(tableName);
+                } else {
+                    this.schema = "public";
+                }
+            }
+
+            public String getSchemaName() {
+                return schema;
+            }
+
+            public String getTableName() {
+                return tableName;
+            }
         }
     }
 }
