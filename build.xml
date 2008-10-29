@@ -271,14 +271,12 @@
         <antcall target="test.unit.exec"/>
     </target>
 
-
     <target name="api-report" description="Generate reports for  our silver-level review.
     These reports show the inputs and outputs of PlannedCalendarService and ScheduledCalendarService APIs. ">
             <property name="pattern" value="**/*CalendarServiceIntegrationTest.java"/>
             <echo>Running tests matching pattern=${pattern}</echo>
             <antcall target="test.unit.exec"/>
         </target>
-
 
     <target name="test.unit.database-only">
         <property name="test.unit.database-only" value="indeed"/>
@@ -312,10 +310,12 @@
             <batchtest todir="${build-dir.test}/junit">
                 <fileset dir="${src-dir.unit-test}">
                     <patternset>
-                        <include name="${pattern}" unless="test.unit.database-only"/>
-                        <include name="**/dao/**/*Test.java"      if="test.unit.database-only"/>
-                        <include name="**/*Integrat*Test.java"    if="test.unit.database-only"/>
-                        <include name="**/ConfigurationTest.java" if="test.unit.database-only"/>
+                        <include name="${pattern}"/>
+                    </patternset>
+                </fileset>
+                <fileset dir="${src-dir.test-infrastructure-test}">
+                    <patternset>
+                        <include name="${pattern}"/>
                     </patternset>
                 </fileset>
             </batchtest>
