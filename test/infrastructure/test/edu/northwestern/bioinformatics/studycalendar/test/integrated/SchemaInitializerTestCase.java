@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.jvyaml.YAML;

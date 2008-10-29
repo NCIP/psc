@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.SchemaInitializerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializerTestCase;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.Arrays;

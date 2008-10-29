@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;

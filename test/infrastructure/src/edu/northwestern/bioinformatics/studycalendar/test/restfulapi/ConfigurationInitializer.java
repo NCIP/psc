@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.ConnectionSource;
-import edu.northwestern.bioinformatics.studycalendar.test.EmptySchemaInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.ConnectionSource;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.EmptySchemaInitializer;
 import org.apache.commons.lang.StringUtils;
 import org.jvyaml.YAML;
 import org.slf4j.Logger;

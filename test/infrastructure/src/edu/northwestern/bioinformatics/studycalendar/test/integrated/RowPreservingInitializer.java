@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

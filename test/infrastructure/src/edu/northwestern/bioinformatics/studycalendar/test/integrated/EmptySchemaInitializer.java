@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
 /**
  * An empty implementation of {@link SchemaInitializer}.

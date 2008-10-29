@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
 import edu.northwestern.bioinformatics.studycalendar.test.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.SchemaInitializer;
-import edu.northwestern.bioinformatics.studycalendar.test.SchemaInitializerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializerTestCase;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;

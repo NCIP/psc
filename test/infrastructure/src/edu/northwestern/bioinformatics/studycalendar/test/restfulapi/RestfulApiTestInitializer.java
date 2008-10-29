@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.IntegratedTestDatabaseInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.MapBuilder;
-import edu.northwestern.bioinformatics.studycalendar.test.RowPreservingInitializer;
-import edu.northwestern.bioinformatics.studycalendar.test.SchemaInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Arrays;
@@ -31,11 +31,11 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
 
     public SchemaInitializer getTableInitializer(String tableName) {
         tableName = tableName.toLowerCase();
-        if (tableName.equalsIgnoreCase("configuration")) {
+        if (tableName.equals("configuration")) {
             return configurationInitializer;
-        } else if (tableName.equals("sites")) {
+        } else if (tableName.equals(sitesInitializer.getTableName())) {
             return sitesInitializer;
-        } else if (tableName.equals("user_role_sites")) {
+        } else if (tableName.equals(usersInitializer.getTableName())) {
             return usersInitializer;
         } else if (NO_INITIALIZER_TABLES.contains(tableName)) {
             return null;

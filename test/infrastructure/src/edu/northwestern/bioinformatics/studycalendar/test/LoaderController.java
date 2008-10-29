@@ -42,8 +42,8 @@ import java.util.Map;
  *
  * This turned out to be a nightmare to maintain, so we don't use it any more.
  * It's being replaced with an approach centering on one-time setup
- * via {@link IntegratedTestDatabaseInitializer} which will hopefully be more
- * flexible.
+ * via {@link edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer}
+ * which will hopefully be more flexible.
  *
  * @author Rhett Sutphin
  */
