@@ -9,11 +9,13 @@
     <property name="src-dir.bering"    value="src/main/db/migrate"/>
     <property name="src-dir.unit-test" value="src/test/java"/>
     <property name="src-dir.web"       value="src/main/webapp"/>
+    <property name="src-dir.test-infrastructure"      value="test/infrastructure/src/main/java"/>
+    <property name="src-dir.test-infrastructure-test" value="test/infrastructure/src/test/java"/>
 
     <property name="build-dir.main"      value="${src-dir.web}/WEB-INF/classes"/>
-    <property name="build-dir.unit-test" value="target/test-classes"/>
+    <property name="build-dir.test"      value="target/test-classes"/>
     <property name="build-dir.webapp"    value="${src-dir.web}"/>
-    <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
+    <property name="build-dir.csm"       value="${basedir}/${build-dir.test}"/>
 
     <property name="dist.war-name" value="${application-short-name}.war"/>
 
@@ -57,21 +59,12 @@
         </fileset>
     </path>
 
-    <path id="cp.unit-test">
+    <path id="cp.test">
         <path refid="cp.main"/>
         <path refid="cp.jdbc"/>
         <path refid="cp.tomcat.common"/>
-        <pathelement location="${build-dir.unit-test}"/>
+        <pathelement location="${build-dir.test}"/>
         <fileset dir="test/lib">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="cp.integrated-test">
-        <path refid="cp.main"/>
-        <path refid="cp.jdbc"/>
-        <path refid="cp.tomcat.common"/>
-        <fileset dir="test/infrastructure/lib">
             <include name="**/*.jar"/>
         </fileset>
     </path>
@@ -92,8 +85,7 @@
 
     <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
-    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.unit-test"/>
-    <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="cp.integrated-test"/>
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.test"/>
     <taskdef name="datasource-properties"
              classname="gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask" classpathref="cp.main"/>
 
@@ -101,7 +93,7 @@
 
     <target name="init" depends="default-properties">
         <mkdir dir="${build-dir.main}"/>
-        <mkdir dir="${build-dir.unit-test}"/>
+        <mkdir dir="${build-dir.test}"/>
         <mkdir dir="${metrics-dir}"/>
 
         <datasource-properties applicationDirectoryName="${application-short-name}"
@@ -162,7 +154,7 @@
                 <include name="**/*"/>
             </fileset>
         </copy>
-        <copy todir="${build-dir.unit-test}">
+        <copy todir="${build-dir.test}">
             <fileset dir="${src-dir.unit-test}">
                 <include name="**/*.xml"/>
                 <include name="**/*.properties"/>
@@ -189,9 +181,12 @@
                debug="true" source="1.5" encoding="UTF-8">
             <src path="${src-dir.main}"/>
         </javac>
-        <javac destdir="${build-dir.unit-test}" classpathref="cp.unit-test"
+        <javac destdir="${build-dir.test}" classpathref="cp.test"
                debug="true" source="1.5" encoding="UTF-8">
             <src path="${src-dir.unit-test}"/>
+            <!-- TODO: when we switch to buildr, test-infrastructure should be a separate module -->
+            <src path="${src-dir.test-infrastructure}"/>
+            <src path="${src-dir.test-infrastructure-test}"/>
         </javac>
     </target>
 
@@ -261,7 +256,7 @@
             userid="${datasource.username}"
             password="${datasource.password}"
             >
-            <classpath refid="cp.unit-test"/>
+            <classpath refid="cp.test"/>
             <export
                 dest="${dbunit-dtd-filename}"
                 format="dtd"/>
@@ -299,12 +294,12 @@
                     metadatafile="${coverage-dir}/metadata.emma" merge="true" mode="fullcopy"/>
         </emma>
 
-        <mkdir dir="${build-dir.unit-test}/junit"/>
+        <mkdir dir="${build-dir.test}/junit"/>
         <junit printsummary="yes" haltonfailure="${test.failfast}" failureproperty="test.unit.failed" fork="true" forkmode="once" dir="${basedir}">
             <classpath>
                 <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
                 <pathelement location="${out.instrumented.dir}/classes"/>
-                <path refid="cp.unit-test"/>
+                <path refid="cp.test"/>
                 <path refid="cp.emma"/>
             </classpath>
             <jvmarg value="-XX:MaxPermSize=256m"/>
@@ -314,7 +309,7 @@
             <jvmarg value="-Djava.awt.headless=true"/>
             <formatter type="plain" usefile="false"/>
             <formatter type="xml" usefile="true"/>
-            <batchtest todir="${build-dir.unit-test}/junit">
+            <batchtest todir="${build-dir.test}/junit">
                 <fileset dir="${src-dir.unit-test}">
                     <patternset>
                         <include name="${pattern}" unless="test.unit.database-only"/>
@@ -374,7 +369,7 @@
         </ant>
 
         <sql driver="org.hsqldb.jdbcDriver" url="${create-hsqldb.url}"
-            userid="sa" password="" classpathref="test.cfjava.libs" autocommit="true">
+            userid="sa" password="" classpathref="cp.test" autocommit="true">
             <!-- database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
                 released and the tests can reopen it -->
             SHUTDOWN SCRIPT;
@@ -671,12 +666,12 @@ done so already, please perform the following manual actions.
 
     <target name="test.unit.report">
         <!-- junitreport -->
-        <junitreport todir="${build-dir.unit-test}/junit">
-            <fileset dir="${build-dir.unit-test}/junit">
+        <junitreport todir="${build-dir.test}/junit">
+            <fileset dir="${build-dir.test}/junit">
                 <include name="TEST-*.xml"/>
             </fileset>
-            <report format="frames" todir="${build-dir.unit-test}/junit/summary"/>
-            <report format="noframes" todir="${build-dir.unit-test}/junit/summary"/>
+            <report format="frames" todir="${build-dir.test}/junit/summary"/>
+            <report format="noframes" todir="${build-dir.test}/junit/summary"/>
         </junitreport>
 
         <!-- junitdocreport -->
@@ -684,16 +679,16 @@ done so already, please perform the following manual actions.
              <classpath>
                 <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
                 <pathelement location="${out.instrumented.dir}/classes"/>
-                <path refid="cp.unit-test"/>
+                <path refid="cp.test"/>
                 <path refid="cp.emma"/>
             </classpath>
         </taskdef>
 
         <echo>Load junit results from ${build-dir.unit-test}/junit</echo>
         <echo>Load junit tests from ${src-dir.unit-test}</echo>
-        <junitDocReport format="html" useTestType="true" destfile="${build-dir.unit-test}/junit/summary/junitDocReport.html">
+        <junitDocReport format="html" useTestType="true" destfile="${build-dir.test}/junit/summary/junitDocReport.html">
             <junitResults>
-                <fileset dir="${build-dir.unit-test}/junit">
+                <fileset dir="${build-dir.test}/junit">
                     <include name="*.xml"/>
                 </fileset>
             </junitResults>
