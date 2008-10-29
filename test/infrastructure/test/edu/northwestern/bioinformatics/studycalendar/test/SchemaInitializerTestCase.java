@@ -1,0 +1,33 @@
+package edu.northwestern.bioinformatics.studycalendar.test;
+
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import org.jvyaml.YAML;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.Map;
+
+/**
+ * @author Rhett Sutphin
+ */
+public abstract class SchemaInitializerTestCase extends StudyCalendarTestCase {
+    protected JdbcTemplate jdbc;
+    protected ConnectionSource connectionSource;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        jdbc = registerMockFor(JdbcTemplate.class);
+        connectionSource = new MockConnectionSource(jdbc);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public static Map<String, Object> yamlMap(String yaml) {
+        return (Map<String, Object>) YAML.load(yaml);
+    }
+
+    public static Resource literalYamlResource(String yaml) {
+        return new ByteArrayResource(yaml.getBytes());
+    }
+}

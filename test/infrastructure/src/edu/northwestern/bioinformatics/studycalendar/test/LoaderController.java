@@ -1,10 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.test;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -21,6 +16,8 @@ import org.dbunit.dataset.ITableMetaData;
 import org.dbunit.dataset.filter.SequenceTableFilter;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -40,11 +37,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This controller provides a web front-end to DBUnit for invocation when
+ * doing data setup for Selenium tests.
+ *
+ * This turned out to be a nightmare to maintain, so we don't use it any more.
+ * It's being replaced with an approach centering on one-time setup
+ * via {@link IntegratedTestDatabaseInitializer} which will hopefully be more
+ * flexible.
+ *
  * @author Rhett Sutphin
  */
+@Deprecated // We don't use this any more.  It should probably be removed soonish.
 public class LoaderController implements Controller {
-//    private static Log log = LogFactory.getLog(LoaderController.class);
-    private static Logger log = LoggerFactory.getLogger(LoaderController.class);    
+    private Logger log = LoggerFactory.getLogger(getClass());
     private String resourcePrefix;
     private DataSource dataSource;
 

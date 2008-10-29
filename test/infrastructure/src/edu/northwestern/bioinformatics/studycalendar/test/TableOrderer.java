@@ -1,23 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.test;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Orders a set of table names according to their FK relationships.  The ordering
@@ -41,10 +41,14 @@ public class TableOrderer {
     private DirectedGraph<String, DefaultEdge> graph;
 
     public TableOrderer(DatabaseMetaData metadata, String[] tableNames) throws SQLException {
-        if (log.isDebugEnabled()) log.debug("Table names received: " + Arrays.asList(tableNames));
-        this.originalTableNames = tableNames;
         this.metadata = metadata;
+        this.originalTableNames = tableNames == null ? getAllTableNames(metadata) : tableNames;
+        if (log.isDebugEnabled()) log.debug("Using table names list: " + Arrays.asList(originalTableNames));
         initGraph();
+    }
+
+    public TableOrderer(DatabaseMetaData metadata) throws SQLException {
+        this(metadata, null);
     }
 
     public String[] insertionOrder() {
@@ -103,6 +107,17 @@ public class TableOrderer {
             return children;
         } finally {
             rs.close();
+        }
+    }
+
+    private static String[] getAllTableNames(DatabaseMetaData metadata) throws SQLException {
+        ResultSet tableResult = metadata.getTables(null, null, null, new String[] { "TABLE" });
+        try {
+            List<String> children = new ArrayList<String>();
+            while (tableResult.next()) children.add(tableResult.getString("TABLE_NAME"));
+            return children.toArray(new String[children.size()]);
+        } finally {
+            tableResult.close();
         }
     }
 }

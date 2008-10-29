@@ -56,8 +56,18 @@ public class TableOrdererTest extends StudyCalendarTestCase {
         assertPartialOrder(actualOrder, "studies", "planned_calendars");
     }
 
+    public void testOrderingIncludesAllTablesIfNoneAreSpecified() throws Exception {
+        metadata.solo("loner");
+        metadata.link("alpha", "beta", "gamma");
+
+        String[] actualOrder = doReorder();
+
+        assertPartialOrder(actualOrder, "alpha", "beta", "gamma");
+        assertPresent(actualOrder, "loner");
+    }
+
     private String[] doReorder(String... tables) throws SQLException {
-        return new TableOrderer(metadata, tables).insertionOrder();
+        return new TableOrderer(metadata, tables.length == 0 ? null : tables).insertionOrder();
     }
 
     private static void assertPresent(String[] actualOrder, String expected) {
