@@ -39,10 +39,10 @@ public class SourceServiceIntegrationTest extends DaoTestCase {
         activityType = Fixtures.createActivityType("LAB_TEST");
         activityTypeDao.save(activityType);
 
-        activity = Fixtures.createActivity("activity1", "code", null, activityTypeDao.getByName("LAB_TEST"));
-        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, activityTypeDao.getByName("LAB_TEST"));
-        activityToUpdate = Fixtures.createActivity("activityToUpdate", "CS", null, activityTypeDao.getByName("LAB_TEST"));
-        activityToDelete = Fixtures.createActivity("activityToDelete", "CS", null, activityTypeDao.getByName("LAB_TEST"));
+        activity = Fixtures.createActivity("activity1", "code", null, activityType);
+        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, activityType);
+        activityToUpdate = Fixtures.createActivity("activityToUpdate", "CS", null, activityType);
+        activityToDelete = Fixtures.createActivity("activityToDelete", "CS", null, activityType);
 
         activitiesToAddAndRemove.add(activity);
         activitiesToAddAndRemove.add(anotherActivity);
