@@ -45,7 +45,7 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
         expect(userService.saveUser(expected, "ben", "ben@psctest.example.net")).andReturn(expected);
 
         replayMocks();
-        createInitializer("ben:\n  STUDY_COORDINATOR:\n").oneTimeSetup(connectionSource);
+        createInitializer("ben:\n  roles:\n    STUDY_COORDINATOR:\n").oneTimeSetup(connectionSource);
         verifyMocks();
     }
 
@@ -58,7 +58,7 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
         expect(userService.saveUser(expected, "alex", "alex@psctest.example.net")).andReturn(expected);
 
         replayMocks();
-        createInitializer("alex:\n  SITE_COORDINATOR: ['IL036']\n").oneTimeSetup(connectionSource);
+        createInitializer("alex:\n  roles:\n    SITE_COORDINATOR: ['IL036']\n").oneTimeSetup(connectionSource);
         verifyMocks();
     }
 
@@ -73,7 +73,7 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
         expect(userService.saveUser(updatedUser, "charlie", "charlie@psctest.example.net")).andReturn(updatedUser);
 
         replayMocks();
-        createInitializer("charlie:\n  SYSTEM_ADMINISTRATOR:\n  SITE_COORDINATOR: ['IL036']\n").oneTimeSetup(connectionSource);
+        createInitializer("charlie:\n  roles:\n    SYSTEM_ADMINISTRATOR:\n    SITE_COORDINATOR: ['IL036']\n").oneTimeSetup(connectionSource);
         verifyMocks();
     }
 

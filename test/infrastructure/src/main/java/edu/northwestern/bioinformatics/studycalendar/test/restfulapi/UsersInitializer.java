@@ -31,7 +31,7 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
     private UserService userService;
 
     private Resource yaml;
-    private Map<String, Map<String, List<String>>> userData; // parsed version of the YAML provided in yaml
+    private Map<String, Map<String, Map<String, List<String>>>> userData; // parsed version of the YAML provided in yaml
     private SiteDao siteDao;
 
 
@@ -39,11 +39,12 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
         super("user_role_sites", Arrays.asList("user_role_id", "site_id"));
     }
 
+    @Override
     @Transactional
     public void oneTimeSetup(ConnectionSource connectionSource) {
         super.oneTimeSetup(connectionSource);
         for (String username : userData.keySet()) {
-            createOrUpdateUser(username, userData.get(username));
+            createOrUpdateUser(username, userData.get(username).get("roles"));
         }
     }
 
@@ -92,6 +93,7 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
 
     @SuppressWarnings({ "unchecked" })
     public void afterPropertiesSet() throws Exception {
-        userData = (Map<String, Map<String, List<String>>>) YAML.load(new InputStreamReader(yaml.getInputStream()));
+        userData = (Map<String, Map<String, Map<String, List<String>>>>)
+            YAML.load(new InputStreamReader(yaml.getInputStream()));
     }
 }
