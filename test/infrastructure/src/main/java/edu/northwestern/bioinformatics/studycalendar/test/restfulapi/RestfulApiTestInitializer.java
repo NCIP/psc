@@ -1,15 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -29,9 +31,20 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
     private ConfigurationInitializer configurationInitializer;
     private UsersInitializer usersInitializer;
 
+    @Override
+    public void oneTimeSetup() {
+        initAuditInfo();
+        super.oneTimeSetup();
+    }
+
+    private void initAuditInfo() {
+        DataAuditInfo.setLocal(new DataAuditInfo("restful-api-test", "none", new Date(), "[console]"));
+    }
+
+    @Override
     public SchemaInitializer getTableInitializer(String tableName) {
         tableName = tableName.toLowerCase();
-        if (tableName.equals("configuration")) {
+        if ("configuration".equals(tableName)) {
             return configurationInitializer;
         } else if (tableName.equals(sitesInitializer.getTableName())) {
             return sitesInitializer;
