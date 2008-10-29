@@ -1,0 +1,39 @@
+alice:
+  roles:
+    STUDY_COORDINATOR:
+barbara:
+  roles:
+    STUDY_ADMIN:
+carla:
+  roles:
+    SITE_COORDINATOR: ['IL036']
+darlene:
+  roles:
+    SUBJECT_COORDINATOR: ['IL036']
+erin:
+  roles:
+    SUBJECT_COORDINATOR: ['IL036', 'PA015']
+frieda:
+  roles:
+    SITE_COORDINATOR: ['IL036']
+gertrude:
+  roles:
+    SUBJECT_COORDINATOR: ['MN026']
+    SITE_COORDINATOR: ['IL036']
+hannah:
+  roles:
+    SUBJECT_COORDINATOR: ['MN026']
+    STUDY_COORDINATOR:
+
+# Juno is a superuser -- all permissions at all sites
+juno:
+  roles:
+    STUDY_COORDINATOR:
+    STUDY_ADMIN:
+    SITE_COORDINATOR: ['IL036', 'PA015', 'MN026']
+    SUBJECT_COORDINATOR:  ['IL036', 'PA015', 'MN026']
+    SYSTEM_ADMINISTRATOR:
+
+zelda:
+  roles:
+    SYSTEM_ADMINISTRATOR:

@@ -346,6 +346,14 @@
         <jtestr tests="test/restful-api"/> 
     </target>
 
+    <target name="test.restful-api.setup" depends="migrate, compile">
+        <java fork="true" failonerror="true"
+              classname="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup">
+            <classpath refid="cp.test"/>
+            <arg value="${basedir}"/>
+        </java>
+    </target>
+
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the automated build will break. -->
     <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
         <property name="config.database" value="${create-hsqldb.dbname}"/>

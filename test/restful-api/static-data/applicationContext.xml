@@ -1,0 +1,32 @@
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    >
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <tx:annotation-driven proxy-target-class="true"/>
+    
+    <bean id="databaseInitializer" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.RestfulApiTestInitializer">
+        <property name="dataSource" ref="nonPooledDataSource"/>
+    </bean>
+
+    <bean id="configurationInitializer" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.ConfigurationInitializer">
+        <property name="yamlResource" value="file:test/restful-api/static-data/configuration.yml"/>
+    </bean>
+
+    <bean id="sitesInitializer" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SitesInitializer">
+        <property name="yamlResource" value="file:test/restful-api/static-data/sites.yml"/>
+    </bean>
+
+    <bean id="usersInitializer" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.UsersInitializer">
+        <property name="yamlResource" value="file:test/restful-api/static-data/users.yml"/>
+    </bean>
+</beans>

@@ -1,0 +1,9 @@
+northwestern:
+  name: Northwestern University Robert H. Lurie Comprehensive Cancer Center
+  assignedIdentifier: IL036
+mayo:
+  name: Mayo Clinic Cancer Center
+  assignedIdentifier: MN026
+pittsburgh:
+  name: University of Pittsburgh Cancer Institute
+  assignedIdentifier: PA015
