@@ -1,17 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Oct 15, 2008
- * Time: 2:19:32 PM
- * To change this template use File | Settings | File Templates.
+ * @author Nataliya Shurupova
  */
 public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<ActivityType> implements DeletableDomainObjectDao<ActivityType> {
     @Override
@@ -40,14 +34,14 @@ public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<Activit
 //        return CollectionUtils.firstElement(
 //            (List<ActivityType>) getHibernateTemplate().find("from ActivityType where name = ?", name));
 //    }
-        log.info("===== getByName " + name);
+        log.debug("===== getByName {}", name);
         List<ActivityType> activityTypes = getHibernateTemplate().find("from ActivityType where name = ?", name);
-        log.info("===== activitiyTypes " + activityTypes);
+        log.debug("===== activitiyTypes " + activityTypes);
         if (!activityTypes.isEmpty()) {
-            log.info("===== activityTypes is not empty");
+            log.debug("===== activityTypes is not empty");
             return activityTypes.get(0);
         }
-        log.info("===== before returning null ");
+        log.debug("===== before returning null ");
         return null;
     }
 
