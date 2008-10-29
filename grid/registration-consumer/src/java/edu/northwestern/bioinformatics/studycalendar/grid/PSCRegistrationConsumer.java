@@ -218,7 +218,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         StudySubjectAssignment newAssignment = null;
         try {
             newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-                    startDate, registrationGridId, null);
+                    startDate, registrationGridId,registrationGridId, null);
         } catch (StudyCalendarSystemException exp) {
             throw getRegistrationConsumerException(exp.getMessage());
 
