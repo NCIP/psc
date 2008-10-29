@@ -17,6 +17,9 @@ import java.util.List;
 public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
     private RestfulApiTestInitializer initializer;
     private MockDbMetadata metadata;
+    private SitesInitializer sitesInitializer;
+    private ConfigurationInitializer configurationInitializer;
+    private UsersInitializer usersInitializer;
 
     @Override
     public void setUp() throws Exception {
@@ -29,43 +32,41 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
         expect(connection.getMetaData()).andStubReturn(metadata);
         replayMocks();
 
+        sitesInitializer = new SitesInitializer();
+        configurationInitializer = new ConfigurationInitializer();
+        usersInitializer = new UsersInitializer();
+
         initializer = new RestfulApiTestInitializer();
         initializer.setDataSource(dataSource);
+        initializer.setSitesInitializer(sitesInitializer);
+        initializer.setConfigurationInitializer(configurationInitializer);
+        initializer.setUsersInitializer(usersInitializer);
     }
 
     public void testSitesTableHandledByInjectedSiteInitializer() throws Exception {
         metadata.solo("sites");
 
-        SitesInitializer expected = new SitesInitializer();
-        initializer.setSitesInitializer(expected);
-
         assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
-        assertSame("Initializer is not the injected one", expected, initializer.getInitializerSeries().get(0));
+        assertSame("Initializer is not the injected one", sitesInitializer, initializer.getInitializerSeries().get(0));
     }
 
     public void testConfigurationsHandledByInjectedConfigurationInitializer() throws Exception {
         metadata.solo("configuration");
         metadata.solo("authentication_system_conf");
 
-        ConfigurationInitializer expected = new ConfigurationInitializer();
-        initializer.setConfigurationInitializer(expected);
-
         assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
-        assertSame("Initializer is not the injected one", expected, initializer.getInitializerSeries().get(0));
+        assertSame("Initializer is not the injected one", configurationInitializer, initializer.getInitializerSeries().get(0));
     }
 
     public void testUsersAndRolesHandledByUserInitializer() throws Exception {
         metadata.link("users", "user_roles");
         metadata.link("user_roles", "user_role_sites", "user_role_study_sites");
 
-        UsersInitializer expected = new UsersInitializer();
-        initializer.setUsersInitializer(expected);
-
         assertEquals("Wrong number of initializers", 4, initializer.getInitializerSeries().size());
         assertRowPreservingInitializer("users", "id", initializer.getInitializerSeries().get(0));
         assertRowPreservingInitializer("user_roles", "id", initializer.getInitializerSeries().get(1));
         assertRowPreservingInitializer("user_role_sites", Arrays.asList("user_role_id", "site_id"), initializer.getInitializerSeries().get(2));
-        assertSame("user_role_sites should be handled by injected UsersInitializer", expected, initializer.getInitializerSeries().get(2));
+        assertSame("user_role_sites should be handled by injected UsersInitializer", usersInitializer, initializer.getInitializerSeries().get(2));
         assertRowPreservingInitializer("user_role_study_sites",
             Arrays.asList("user_role_id", "study_site_id"), initializer.getInitializerSeries().get(3));
     }

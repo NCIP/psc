@@ -27,6 +27,9 @@ public class RestfulApiInitializerIntegratedTest extends SchemaInitializerTestCa
         datasource = (DataSource) getDeployedApplicationContext().getBean("nonPooledDataSource");
         initializer = new RestfulApiTestInitializer();
         initializer.setDataSource(datasource);
+        initializer.setConfigurationInitializer(new ConfigurationInitializer());
+        initializer.setSitesInitializer(new SitesInitializer());
+        initializer.setUsersInitializer(new UsersInitializer());
         assertFalse("Test setup failure: no initializers created",
             initializer.getInitializerSeries().isEmpty());
     }
