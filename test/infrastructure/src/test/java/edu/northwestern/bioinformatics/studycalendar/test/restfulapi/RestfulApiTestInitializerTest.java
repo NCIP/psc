@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
 import edu.northwestern.bioinformatics.studycalendar.test.MockDbMetadata;
-import edu.northwestern.bioinformatics.studycalendar.test.RowPreservingInitializer;
-import edu.northwestern.bioinformatics.studycalendar.test.SchemaInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
+import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 
