@@ -56,6 +56,9 @@ public class RestfulApiInitializerIntegratedTest extends SchemaInitializerTestCa
                 DatabaseMetaData metadata, String tableName
             ) throws SQLException {
                 ResultSet cols = metadata.getColumns(null, null, tableName, null);
+                if (!cols.isBeforeFirst()) {
+                    cols = metadata.getColumns(null, null, tableName.toUpperCase(), null);
+                }
                 Set<String> set = new LinkedHashSet<String>();
                 while (cols.next()) {
                     set.add(cols.getString("COLUMN_NAME").toLowerCase());
