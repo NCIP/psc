@@ -24,7 +24,7 @@ public class ConfigurationInitializer extends EmptySchemaInitializer implements 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Map<String, Object> configurations;
-    private Resource data;
+    private Resource yamlResource;
 
     @Override
     public void oneTimeSetup(ConnectionSource connectionSource) {
@@ -36,8 +36,11 @@ public class ConfigurationInitializer extends EmptySchemaInitializer implements 
     @SuppressWarnings({ "unchecked" })
     private void oneTimeSetup(ConnectionSource connectionSource, String table) {
         Map<String, String> desiredConfigProps = (Map<String, String>) configurations.get(table);
-        List<String> existingProps = new ArrayList<String>(
-            connectionSource.currentJdbcTemplate().queryForList("SELECT prop FROM " + table));
+
+        List<Map<String, String>> currentPropRows = connectionSource.currentJdbcTemplate().queryForList("SELECT prop FROM " + table);
+        List<String> existingProps = new ArrayList<String>(currentPropRows.size());
+        for (Map<String, String> row : currentPropRows) existingProps.add(row.values().iterator().next());
+
         for (String prop : desiredConfigProps.keySet()) {
             String desiredValue = desiredConfigProps.get(prop);
             if (existingProps.contains(prop)) {
@@ -74,12 +77,12 @@ public class ConfigurationInitializer extends EmptySchemaInitializer implements 
 
     ////// CONFIGURATION
 
-    public void setData(Resource data) {
-        this.data = data;
+    public void setYamlResource(Resource yamlResource) {
+        this.yamlResource = yamlResource;
     }
 
     @SuppressWarnings({ "unchecked" })
     public void afterPropertiesSet() throws Exception {
-        configurations = (Map<String, Object>) YAML.load(new InputStreamReader(data.getInputStream()));
+        configurations = (Map<String, Object>) YAML.load(new InputStreamReader(yamlResource.getInputStream()));
     }
 }

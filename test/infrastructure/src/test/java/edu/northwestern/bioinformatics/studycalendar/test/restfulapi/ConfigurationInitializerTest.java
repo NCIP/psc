@@ -3,16 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializerTestCase;
 import static org.easymock.classextension.EasyMock.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 public class ConfigurationInitializerTest extends SchemaInitializerTestCase {
     public void testDoesUpdateInSetupIfRecordAlreadyExists() throws Exception {
-        expect(jdbc.queryForList("SELECT prop FROM configuration"))
-            .andReturn(Arrays.asList("deploymentName"));
+        expectPropQuery("configuration", "deploymentName");
         expect(jdbc.update(eq("UPDATE configuration SET value=? WHERE prop=?"),
             aryEq(new Object[] { "hot-cha", "deploymentName" }))).andReturn(1);
 
@@ -24,7 +25,7 @@ public class ConfigurationInitializerTest extends SchemaInitializerTestCase {
     }
 
     public void testDoesInsertInSetupIfRecordDoesNotExist() throws Exception {
-        expect(jdbc.queryForList("SELECT prop FROM configuration")).andReturn(Collections.emptyList());
+        expectPropQuery("configuration");
         expect(jdbc.update(eq("INSERT INTO configuration (prop, value) VALUES (?, ?)"),
             aryEq(new Object[] { "deploymentName", "hot-cha" }))).andReturn(1);
 
@@ -35,8 +36,7 @@ public class ConfigurationInitializerTest extends SchemaInitializerTestCase {
     }
 
     public void testDeletesUnreferencedPropsInSetup() throws Exception {
-        expect(jdbc.queryForList("SELECT prop FROM configuration")).
-            andReturn(Arrays.asList("deploymentName", "other", "polite"));
+        expectPropQuery("configuration", "deploymentName", "other", "polite");
         expect(jdbc.update(eq("UPDATE configuration SET value=? WHERE prop=?"),
             aryEq(new Object[] { "hot-cha", "deploymentName" }))).andReturn(1);
         expect(jdbc.update(eq("DELETE FROM configuration WHERE prop=? OR prop=?"),
@@ -50,10 +50,8 @@ public class ConfigurationInitializerTest extends SchemaInitializerTestCase {
     }
 
     public void testHandlesConfigurationForMultipleTables() throws Exception {
-        expect(jdbc.queryForList("SELECT prop FROM configuration")).
-            andReturn(Arrays.asList("deploymentName"));
-        expect(jdbc.queryForList("SELECT prop FROM alt_conf")).
-            andReturn(Collections.emptyList());
+        expectPropQuery("configuration", "deploymentName");
+        expectPropQuery("alt_conf");
         expect(jdbc.update(eq("UPDATE configuration SET value=? WHERE prop=?"),
             aryEq(new Object[] { "hot-cha", "deploymentName" }))).andReturn(1);
         expect(jdbc.update(eq("INSERT INTO alt_conf (prop, value) VALUES (?, ?)"),
@@ -68,8 +66,16 @@ public class ConfigurationInitializerTest extends SchemaInitializerTestCase {
 
     private ConfigurationInitializer createInitializer(String yaml) throws Exception {
         ConfigurationInitializer initializer = new ConfigurationInitializer();
-        initializer.setData(literalYamlResource(yaml));
+        initializer.setYamlResource(literalYamlResource(yaml));
         initializer.afterPropertiesSet();
         return initializer;
+    }
+
+    private void expectPropQuery(String tableName, String... expectedProps) {
+        List<Map<String, String>> expectedResult = new ArrayList<Map<String, String>>(expectedProps.length);
+        for (String expectedProp : expectedProps) {
+            expectedResult.add(Collections.singletonMap("prop", expectedProp));
+        }
+        expect(jdbc.queryForList("SELECT prop FROM " + tableName)).andReturn(expectedResult);
     }
 }
