@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.test.StudyCalendarTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
@@ -27,8 +27,6 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 public abstract class StudyCalendarTestCase extends CoreTestCase {
-    private static ApplicationContext applicationContext = null;
-    private static Throwable acLoadingFailure = null;
     protected Set<Object> mocks = new HashSet<Object>();
 
     static {
@@ -36,19 +34,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     }
 
     public static ApplicationContext getDeployedApplicationContext() {
-        synchronized (StudyCalendarTestCase.class) {
-            if (applicationContext == null && acLoadingFailure == null) {
-                try {
-                    applicationContext = ContextTools.createDeployedApplicationContext();
-                } catch (RuntimeException e) {
-                    acLoadingFailure = e;
-                    throw e;
-                }
-            } else if (acLoadingFailure != null) {
-                throw new StudyCalendarSystemException("Application context loading already failed; will not retry.", acLoadingFailure);
-            }
-            return applicationContext;
-        }
+        return StudyCalendarTestHelper.getDeployedApplicationContext();
     }
 
     @Override
