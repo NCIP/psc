@@ -340,13 +340,24 @@
     </target>
 
     <!-- Work in progress -->
-    <target name="test.restful-api">
-        <taskdef name="jtestr" classname="org.jtestr.ant.JtestRAntRunner" classpath="test/lib/jtestr-0.3.1.jar"/>
-
-        <jtestr tests="test/restful-api"/> 
+    <target name="test.restful-api.properties">
+        <!-- defaults for test.restful-api invocations -->
+        <property name="config.database" value="rest-test"/> 
     </target>
 
-    <target name="test.restful-api.setup" depends="migrate, compile">
+    <target name="test.restful-api.resources">
+        <copy file="test/restful-api/logback-test.xml" todir="${build-dir.test}"/>
+    </target>
+
+    <target name="test.restful-api.redeploy" depends="test.restful-api.properties, tomcat.redeploy"/>
+    
+    <target name="test.restful-api" depends="test.restful-api.properties, compile, test.restful-api.resources">
+        <taskdef name="jtestr" classname="org.jtestr.ant.JtestRAntRunner" classpath="test/lib/jtestr-0.3.1.jar"/>
+
+        <jtestr tests="test/restful-api"/>
+    </target>
+
+    <target name="test.restful-api.setup" depends="test.restful-api.properties, migrate, compile">
         <java fork="true" failonerror="true"
               classname="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup">
             <classpath refid="cp.test"/>

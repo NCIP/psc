@@ -200,6 +200,10 @@ public class Fixtures {
         return createApprovedTemplate(TemplateSkeletonCreator.BASIC);
     }
 
+    public static Study createInDevelopmentBasicTemplate(String name) {
+        return TemplateSkeletonCreator.BASIC.create(name);
+    }
+
     private static Study createApprovedTemplate(TemplateSkeletonCreator skeletonCreator) {
         log.debug("Creating concrete template from skeleton");
         Study dev = skeletonCreator.create(null);
