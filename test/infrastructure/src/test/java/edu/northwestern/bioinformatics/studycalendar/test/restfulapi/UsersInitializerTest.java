@@ -22,6 +22,7 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
     private SiteDao siteDao;
     private Site site;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         userDao = registerDaoMockFor(UserDao.class);
