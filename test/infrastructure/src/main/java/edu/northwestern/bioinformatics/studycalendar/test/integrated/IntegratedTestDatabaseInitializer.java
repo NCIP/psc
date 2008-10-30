@@ -31,40 +31,57 @@ public abstract class IntegratedTestDatabaseInitializer {
     }
 
     private String createTestRunIdentifier() {
-        return getClass().getSimpleName() + "|" + UUID.randomUUID();
+        return getClass().getSimpleName() + '|' + UUID.randomUUID();
     }
 
     public void oneTimeSetup() {
-        log.info("[{}] One time setup", getClass().getSimpleName());
+        logInvocation("oneTimeSetup", getInitializerSeries());
         for (SchemaInitializer initializer : getInitializerSeries()) {
+            traceInvocation("oneTimeSetup", initializer);
             initializer.oneTimeSetup(connectionSource);
         }
     }
 
+    private void logInvocation(String method, List<SchemaInitializer> initializers) {
+        if (log.isDebugEnabled()) {
+            log.debug("[{}] Invoking {} on {} initializers", new Object[] { getClass().getSimpleName(), method, initializers.size() });
+        }
+    }
+
+    private void traceInvocation(String method, SchemaInitializer initializer) {
+        log.trace(" - Invoking {} on {}", method, initializer);
+    }
+
     public void beforeAll() {
-        log.info("[{}] Before all", getClass().getSimpleName());
+        logInvocation("beforeAll", getInitializerSeries());
         for (SchemaInitializer initializer : getInitializerSeries()) {
+            traceInvocation("beforeAll", initializer);
             initializer.beforeAll(connectionSource);
         }
     }
 
     public void beforeEach() {
-        log.info("[{}] Before each", getClass().getSimpleName());
+        logInvocation("beforeEach", getInitializerSeries());
         for (SchemaInitializer initializer : getInitializerSeries()) {
+            traceInvocation("beforeEach", initializer);
             initializer.beforeEach(connectionSource);
         }
     }
 
     public void afterEach() {
-        log.info("[{}] After each", getClass().getSimpleName());
-        for (SchemaInitializer initializer : getInitializerSeriesInReverse()) {
+        List<SchemaInitializer> reverse = getInitializerSeriesInReverse();
+        logInvocation("afterEach", reverse);
+        for (SchemaInitializer initializer : reverse) {
+            traceInvocation("afterEach", initializer);
             initializer.afterEach(connectionSource);
         }
     }
 
     public void afterAll() {
-        log.info("[{}] After all", getClass().getSimpleName());
-        for (SchemaInitializer initializer : getInitializerSeriesInReverse()) {
+        List<SchemaInitializer> reverse = getInitializerSeriesInReverse();
+        logInvocation("afterAll", reverse);
+        for (SchemaInitializer initializer : reverse) {
+            traceInvocation("afterAll", initializer);
             initializer.afterAll(connectionSource);
         }
     }
