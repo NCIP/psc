@@ -59,9 +59,13 @@ public class RowPreservingInitializer extends EmptySchemaInitializer {
             params = null;
         } else {
             List<String> expressions = primaryKeyExpressions(idsToPreserve.size());
-            sql = String.format("DELETE FROM %s WHERE NOT (%s)",
-                getTableName(), StringUtils.join(expressions.iterator(), ") AND NOT ("));
+            sql = String.format("DELETE FROM %s WHERE NOT ((%s))",
+                getTableName(), StringUtils.join(expressions.iterator(), ") OR ("));
             params = primaryKeyExpressionParams();
+        }
+        log.debug("Clearing added rows using SQL: {}", sql);
+        if (params != null && log.isTraceEnabled()) {
+            log.trace(" - with params {}", Arrays.asList(params));
         }
         connectionSource.currentJdbcTemplate().update(sql, params);
     }

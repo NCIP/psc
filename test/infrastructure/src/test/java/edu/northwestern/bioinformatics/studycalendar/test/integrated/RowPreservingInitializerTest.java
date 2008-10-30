@@ -45,7 +45,7 @@ public class RowPreservingInitializerTest extends SchemaInitializerTestCase {
     public void testAfterEachWipesAllExceptInitiallyPresentRows() throws Exception {
         expectInitialRowQuery(Arrays.asList(1, 5, 7, 3));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT (id=?) AND NOT (id=?) AND NOT (id=?) AND NOT (id=?)"),
+            eq("DELETE FROM diners WHERE NOT ((id=?) OR (id=?) OR (id=?) OR (id=?))"),
             aryEq(new Object[] { 1, 5, 7, 3 })
         )).andReturn(4);
         replayMocks();
@@ -64,7 +64,7 @@ public class RowPreservingInitializerTest extends SchemaInitializerTestCase {
                 Collections.singletonMap("some_id", 88)
             ));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT (some_id=?) AND NOT (some_id=?) AND NOT (some_id=?) AND NOT (some_id=?)"),
+            eq("DELETE FROM diners WHERE NOT ((some_id=?) OR (some_id=?) OR (some_id=?) OR (some_id=?))"),
             aryEq(new Object[] { 3, 7, 12, 88 })
         )).andReturn(4);
         replayMocks();
@@ -81,7 +81,7 @@ public class RowPreservingInitializerTest extends SchemaInitializerTestCase {
                 new MapBuilder<String, Integer>().put("b_id", 7).put("a_id", 4).toMap()
             ));
         expect(jdbc.update(
-            eq("DELETE FROM diners WHERE NOT (a_id=? AND b_id=?) AND NOT (a_id=? AND b_id=?)"),
+            eq("DELETE FROM diners WHERE NOT ((a_id=? AND b_id=?) OR (a_id=? AND b_id=?))"),
             aryEq(new Object[] { 3, 4, 4, 7 })
         )).andReturn(2);
         replayMocks();
