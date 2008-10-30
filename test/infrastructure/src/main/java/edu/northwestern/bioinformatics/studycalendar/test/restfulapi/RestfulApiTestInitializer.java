@@ -37,6 +37,12 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
         super.oneTimeSetup();
     }
 
+    @Override
+    public void beforeAll() {
+        initAuditInfo();
+        super.beforeAll();
+    }
+
     private void initAuditInfo() {
         DataAuditInfo.setLocal(new DataAuditInfo("restful-api-test", "none", new Date(), "[console]"));
     }
