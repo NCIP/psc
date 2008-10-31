@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<project name="psc-grid-service-post-installation" basedir=".">
+
+    <!-- Give user the chance to override properties -->
+    <property environment="env"/>
+
+    <path id="xml-task-dir">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="xml-task-dir"/>
+    <target name="postDeployment" description="1. Corrects the cert and key location in CATALINA_HOME/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/global_security_descriptor.xml.
+    These values are copied from CATALINA_HOME/conf/server.xml. 2. Corrects the tomcat location in CATALINA_HOME/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/server-config.wsdd file. MAKE SURE to TAKE BACKUP of sever.xml,global_security_descriptor.xml and server-config.wsdd file"
+            depends="correctCertKeyLocation,correctTomcatLocation">
+
+    </target>
+
+    <target name="correctCertKeyLocation" description="corrects the cert and key location in CATALINA_HOME/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/global_security_descriptor.xml.
+    These values are copied from CATALINA_HOME/conf/server.xml">
+
+        <xmltask source="${env.CATALINA_HOME}/conf/server.xml">
+            <copy path="/Server/Service/Connector/@key" attrValue="true" buffer="key"/>
+            <print buffer="key"/>
+        </xmltask>
+
+
+        <xmltask source="${env.CATALINA_HOME}/conf/server.xml">
+            <copy path="/Server/Service/Connector/@cert" attrValue="true" buffer="cert"/>
+            <print buffer="cert"/>
+        </xmltask>
+
+        <xmltask source="${env.CATALINA_HOME}/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/global_security_descriptor.xml"
+                 dest="${env.CATALINA_HOME}/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/global_security_descriptor.xml">
+            <paste path="/:securityConfig/:credential/:key-file/@value" buffer="key"/>
+            <paste path="/:securityConfig/:credential/:cert-file/@value" buffer="cert"/>
+
+        </xmltask>
+    </target>
+
+    <target name="correctTomcatLocation"
+            description="corrects the tomcat location in CATALINA_HOME/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
+
+
+        <xmltask source="${env.CATALINA_HOME}/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/server-config.wsdd"
+                 dest="${env.CATALINA_HOME}/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/server-config.wsdd">
+            <attr path="/:deployment/:globalConfiguration/:parameter[@name='containerSecDesc']" attr="value"
+                  value="${env.CATALINA_HOME}/webapps/wsrf-psc/WEB-INF/etc/globus_wsrf_core/global_security_descriptor.xml"/>
+
+        </xmltask>
+    </target>
+
+</project>
