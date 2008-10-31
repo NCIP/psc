@@ -82,6 +82,9 @@
     <bean id="activityService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
 
+    <bean id="activityTypeService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.ActivityTypeService"/>
+
     <bean id="plannedActivityLabelService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.LabelService"/>
 </beans>

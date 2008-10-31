@@ -31,17 +31,10 @@ public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<Activit
     */
     @SuppressWarnings({ "unchecked" })
     public ActivityType getByName(String name) {
-//        return CollectionUtils.firstElement(
-//            (List<ActivityType>) getHibernateTemplate().find("from ActivityType where name = ?", name));
-//    }
-        log.debug("===== getByName {}", name);
         List<ActivityType> activityTypes = getHibernateTemplate().find("from ActivityType where name = ?", name);
-        log.debug("===== activitiyTypes " + activityTypes);
         if (!activityTypes.isEmpty()) {
-            log.debug("===== activityTypes is not empty");
             return activityTypes.get(0);
         }
-        log.debug("===== before returning null ");
         return null;
     }
 

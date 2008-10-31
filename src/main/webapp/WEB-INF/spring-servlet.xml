@@ -149,6 +149,24 @@
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddActivityController">
     </bean>
 
+    <bean name="/activities/addEditActivityType" id="addEditActivityTypeController" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
+    </bean>
+
+    <bean name="/activities/saveActivityType" id="activityTypeControllerSave" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
+    </bean>
+
+
+    <bean name="/activities/addNewActivityType" id="activityTypeControllerAdd" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
+    </bean>
+
+
+    <bean name="/activities/deleteActivityType" id="activityTypeControllerDelete" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
+    </bean>
+
     <bean name="/dashboard" id="dashboardController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController">
         <property name="crumb">
@@ -557,6 +575,11 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Activities"/>
                                 <property name="linkName" value="activityController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Activity Types"/>
+                                <property name="linkName" value="addEditActivityTypeController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                         </list>

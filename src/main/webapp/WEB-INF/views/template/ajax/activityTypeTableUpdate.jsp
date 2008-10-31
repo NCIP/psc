@@ -14,20 +14,9 @@
     </c:otherwise>
 </c:choose>
 
-<c:if test="${not empty source}">
-    <jsgen:insertHtml targetElement="sources" position="top">
-         <option value="${source.id}" selected="true">${source.name}</option>
-    </jsgen:insertHtml>
-</c:if>
-
-
 <jsgen:replaceHtml targetElement="myTable">
-<tags:activitiesTable/>
+<tags:activityTypesTable/>
 
 </jsgen:replaceHtml>
-<tags:addNewActivityRow/>
+<tags:addNewActivityTypeRow/>
 
-
-<c:if test="${! displayCreateNewActivity}">
-    <jsgen:replaceHtml targetElement="errors"><h4>Please select one of the sources to be able to create a new activity</h4></jsgen:replaceHtml>
-</c:if>
