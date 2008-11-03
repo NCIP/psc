@@ -55,16 +55,7 @@ public class ActivityController extends PscAbstractController {
         } else {
             activities = activityDao.getBySourceId(new Integer(sourceId));
         }
-        Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
-        for (Activity a : activities) {
-            if (plannedActivityDao.getPlannedActivitiesForActivity(a.getId()).size()>0) {
-                enableDelete.put(a.getId(), false);
-            } else {
-                enableDelete.put(a.getId(), true);
-            }
-        }
         model.put("activitiesPerSource", activities);
-        model.put("enableDeletes", enableDelete);
         model.put("activityTypes", activityTypeDao.getAll());
         if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
             model.put("displayCreateNewActivity", Boolean.TRUE);

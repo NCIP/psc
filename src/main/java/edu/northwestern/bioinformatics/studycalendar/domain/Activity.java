@@ -4,18 +4,13 @@ import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.*;
 import org.springframework.beans.BeanUtils;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -40,8 +35,9 @@ public class Activity extends AbstractMutableDomainObject
     private ActivityType activityType;
     private Source source;
     private String code;
-    
+
     private boolean memoryOnly;
+    private SortedSet<PlannedActivity> plannedActivities =new TreeSet<PlannedActivity>();
 
     ///// LOGIC
 
@@ -99,6 +95,27 @@ public class Activity extends AbstractMutableDomainObject
         clone.setMemoryOnly(true);
         return clone;
     }
+
+    @Transient
+    public boolean isDeletable() {
+        if (getPlannedActivities().size()>0){
+            return false;
+        }
+        return true;
+    }
+
+
+    @OneToMany(mappedBy = "activity")
+    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL })
+    @Sort(type = SortType.NATURAL)
+    public SortedSet<PlannedActivity> getPlannedActivities() {
+        return plannedActivities;
+    }
+
+    public void setPlannedActivities(SortedSet<PlannedActivity> plannedActivities){
+        this.plannedActivities = plannedActivities;
+    }
+
 
     ///// BEAN PROPERTIES
 
