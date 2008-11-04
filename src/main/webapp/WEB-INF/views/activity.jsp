@@ -72,6 +72,8 @@
         var activitiesAutocompleter;
 
         function initMethods() {
+            var indicator = $('myIndicator')
+            indicator.conceal()
             $('sources').selectedIndex = 0
             registerEventHandlers()
         }
@@ -113,6 +115,8 @@
         }
 
         function loadActivities(){
+            var indicator = $('myIndicator')
+            indicator.reveal()
             var input = $('sources').options[$('sources').selectedIndex].value
             var data = ''
             data = data+"sourceId"+"="+input+"&";
@@ -120,8 +124,7 @@
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
-                method: 'post',
-                onSuccess: enableExportOptions()
+                method: 'post'
             });
         }
 
@@ -171,6 +174,8 @@
         }
 
         function saveActivity(activityId) {
+            var indicator = $('myIndicator')
+            indicator.reveal()
             var inputName = 'InputName'+activityId
             var labelName = 'Name'+activityId
             var inputCode = 'InputCode'+activityId
@@ -218,6 +223,7 @@
                     $(saveButton).style.display="none"
                 }
             });
+            indicator.conceal()
         }
 
 
@@ -244,6 +250,8 @@
 
 
         function addNewActivity() {
+            var indicator = $('myIndicator')
+            indicator.reveal()
             var activityName = $('addActivityName').value
             var activityType = $('types').options[$('types').selectedIndex].value
             var activityCode = $('addActivityCode').value
@@ -268,6 +276,8 @@
         }
 
         function deleteTheActivity(activityId) {
+            var indicator = $('myIndicator')
+            indicator.reveal()            
             var inputName = 'InputName'+activityId
             var inputCode = 'InputCode'+activityId
             var selectType = 'SourceTypes'+activityId
@@ -304,6 +314,7 @@
     <laf:box title="Activities">
         <laf:division>
              <div id="activities-input">
+                <img id="myIndicator" src="<c:url value="/images/indicator.white.gif"/>"/>
                 <label for="source">Source:</label>
                 <select id="sources" name="sources" onchange="loadActivities()">
                     <option value="select">Select... </option>

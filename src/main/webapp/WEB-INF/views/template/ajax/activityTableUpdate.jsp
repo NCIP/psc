@@ -31,3 +31,4 @@
 <c:if test="${! displayCreateNewActivity}">
     <jsgen:replaceHtml targetElement="errors"><h4>Please select one of the sources to be able to create a new activity</h4></jsgen:replaceHtml>
 </c:if>
+$('myIndicator').conceal()
