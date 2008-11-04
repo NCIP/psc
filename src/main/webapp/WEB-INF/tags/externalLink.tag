@@ -13,7 +13,7 @@
         </c:otherwise>
     </c:choose>
 </c:set>
-<a href="${href}"
+<a href="<c:url value="${href}"/>"
     <c:if test="${not empty cssClass}">class="${cssClass}"</c:if>
     <c:if test="${configuration.map.applicationLinksInAnotherWindow}">target="${configuration.map.applicationLinksInNewWindows ? '_blank' : appShortName}"</c:if>
     ><jsp:doBody/></a>
