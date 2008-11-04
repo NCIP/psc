@@ -346,7 +346,7 @@
     </target>
 
     <target name="test.restful-api.resources">
-        <copy file="test/restful-api/logback-test.xml" todir="${build-dir.test}"/>
+        <copy file="test/restful-api/logback-test.xml" todir="${build-dir.test}" overwrite="true"/>
     </target>
 
     <target name="test.restful-api.redeploy" depends="test.restful-api.properties, tomcat.redeploy"/>
