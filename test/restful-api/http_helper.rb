@@ -21,7 +21,7 @@ helper_for Spec::Example::ExampleGroup do
 
   def get(relative_uri, options={})
     user = options.delete(:as)
-    options[:http_basic_authentication] = [user, user] if user
+    options['Authorization'] = "psc_token #{user}" if user
     options[:method] = :get
     begin
       OpenURI.open_uri full_uri(relative_uri), options do |f|
