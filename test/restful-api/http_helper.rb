@@ -33,7 +33,7 @@ helper_for Spec::Example::ExampleGroup do
   end
 
   def full_uri(relative)
-    "http://#{tomcat_properties['tomcat.server']}:8080#{tomcat_properties['tomcat.deploy-path']}/api/v1#{relative}"
+    "http://#{tomcat_properties['tomcat.server']}:8080#{tomcat_properties['webapp.deploy-path']}/api/v1#{relative}"
   end
 
   class Response
