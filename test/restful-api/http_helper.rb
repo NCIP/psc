@@ -1,5 +1,3 @@
-puts "Loading #{__FILE__}"
-
 require File.expand_path("lib/rest-open-uri", File.dirname(__FILE__))
 require 'rexml/document'
 
