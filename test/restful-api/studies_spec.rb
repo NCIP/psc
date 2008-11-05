@@ -17,15 +17,61 @@ describe "/studies" do
     response.status_code.should == 401
   end
 
-  it "shows all studies to a study admin" do
-    get "/studies", :as => :barbara
+  def study_names
+    response.xml_elements('//study').collect { |s| s.attributes["assigned-identifier"] }
+  end
+
+  it "shows all studies to a study coordinator" do
+    get "/studies", :as => :alice
     response.status_code.should == 200
     response.status_message.should == "OK"
-    response.content_type.should == 'text/xml'
     response.xml_elements('//study').should have(3).elements
-    study_names = response.xml_elements('//study').collect { |s| s.attributes["assigned-identifier"] }
     study_names.should include("NU 480")
     study_names.should include("ECOG 170")
     study_names.should include("NU 120")
   end
+
+  it "shows all studies to a study admin" do
+    get "/studies", :as => :barbara
+    response.status_code.should == 200
+    response.status_message.should == "OK"
+    response.xml_elements('//study').should have(3).elements
+    study_names.should include("NU 480")
+    study_names.should include("ECOG 170")
+    study_names.should include("NU 120")
+  end
+
+  it "shows nothing to a site coordinator when nothing is released for her site" do
+    pending
+    get "/studies", :as => :carla
+    response.should be_success
+    response.xml_elements('//study').should have(0).elements
+  end
+
+  describe "with assigned sites" do
+    before do
+      application_context['templateService'].assignTemplateToSites(@nu480, [northwestern])
+      application_context['templateService'].assignTemplateToSites(@ecog170, [northwestern, mayo])
+    end
+
+    it "shows appropriate released studies released to an NU site coord" do
+      pending
+      get "/studies", :as => :carla
+      response.should be_success
+      response.xml_elements('//study').should have(2).elements
+      study_names.should include("NU 480")
+      study_names.should include("ECOG 170")
+    end
+
+    it "shows appropriate released studies released to a mayo site coord" do
+      pending
+      get "/studies", :as => :frieda
+      response.should be_success
+      response.xml_elements('//study').should have(1).elements
+      study_names.should include("ECOG 170")
+    end
+  end
+
+  it "shows only assigned studies to a subject coordinator"
+  it "shows nothing to to a sys admin"
 end
