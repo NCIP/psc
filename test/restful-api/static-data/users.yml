@@ -15,7 +15,7 @@ erin:
     SUBJECT_COORDINATOR: ['IL036', 'PA015']
 frieda:
   roles:
-    SITE_COORDINATOR: ['IL036']
+    SITE_COORDINATOR: ['MN026']
 gertrude:
   roles:
     SUBJECT_COORDINATOR: ['MN026']
