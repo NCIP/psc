@@ -1,6 +1,7 @@
 puts "Loading #{__FILE__}"
 
 require File.expand_path("lib/rest-open-uri", File.dirname(__FILE__))
+require 'rexml/document'
 
 def tomcat_properties
   $tomcat_properties ||= Class.new do
@@ -74,6 +75,15 @@ helper_for Spec::Example::ExampleGroup do
 
     def server_error?
       499 < status_code && status_code < 600
+    end
+
+    def xml_elements(xpath)
+      xml_doc.root.elements.to_a(xpath)
+    end
+
+    def xml_doc
+      content_type.should == 'text/xml'
+      @rexml_doc ||= REXML::Document.new(entity)
     end
   end
 end

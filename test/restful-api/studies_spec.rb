@@ -19,11 +19,13 @@ describe "/studies" do
 
   it "shows all studies to a study admin" do
     get "/studies", :as => :barbara
-    puts response.entity
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.content_type.should == 'text/xml'
-    # TODO
-    # response.xml['//studies'].should have(3).elements
+    response.xml_elements('//study').should have(3).elements
+    study_names = response.xml_elements('//study').collect { |s| s.attributes["assigned-identifier"] }
+    study_names.should include("NU 480")
+    study_names.should include("ECOG 170")
+    study_names.should include("NU 120")
   end
 end
