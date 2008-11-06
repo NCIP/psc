@@ -74,4 +74,58 @@ describe "/studies" do
 
   it "shows only assigned studies to a subject coordinator"
   it "shows nothing to to a sys admin"
+
+  describe "POST" do
+    before do
+      @nu328_xml = psc_xml("study-snapshot", 'assigned-identifier' => "NU 328") { |ss|
+        ss.tag!('planned-calendar') { |pc|
+          pc.epoch('name' => 'Treatment')
+          pc.epoch('name' => 'LTFU')
+        }
+        ss.population('abbreviation' => 'W', 'name' => 'Women of childbearing potential')
+      }
+    end
+
+    it "does not accept a study snapshot from a study admin" do
+      post '/studies', @nu328_xml, :as => :barbara
+      response.status_code.should == 403
+    end
+
+    it "does not accept a study snapshot from a site coordinator" do
+      post '/studies', @nu328_xml, :as => :carla
+      response.status_code.should == 403
+    end
+
+    it "does not accept a study snapshot from a subject coordinator" do
+      post '/studies', @nu328_xml, :as => :erin
+      response.status_code.should == 403
+    end
+
+    it "does not accept a study snapshot from a sysadmin" do
+      post '/studies', @nu328_xml, :as => :zelda
+      response.status_code.should == 403
+    end
+
+    it "accepts a study snapshot from a study coordinator" do
+      post '/studies', @nu328_xml, :as => :alice
+      response.should be_success
+      get '/studies', :as => :alice
+      response.xml_elements('//study').should have(4).elements
+      study_names.should include("NU 328")
+    end
+
+    it "accepts a study snapshot and provides a link to the permanent URI for it" do
+      pending
+      post '/studies', @nu328_xml, :as => :alice
+      response.status_code.should == 201
+      response.meta['Location'].should =~ %r{/api/v1/studies/NU 328/template$}
+      response.meta['Location'].should =~ %r{^http}
+    end
+
+    it "does not accept a study snapshot with the same name as an existing study" do
+      post '/studies', psc_xml("study-snapshot", 'assigned-identifier' => "NU 120"), :as => :alice
+      response.should be_client_error
+      response.status_code.should == 400
+    end
+  end
 end

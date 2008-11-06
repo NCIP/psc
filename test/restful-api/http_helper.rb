@@ -1,4 +1,5 @@
-require File.expand_path("lib/rest-open-uri", File.dirname(__FILE__))
+require 'rest-open-uri'
+require 'builder'
 require 'rexml/document'
 
 def tomcat_properties
@@ -19,9 +20,38 @@ helper_for Spec::Example::ExampleGroup do
   attr_reader :response
 
   def get(relative_uri, options={})
+    process_options!(options)
+    options[:method] = :get
+    execute_request!(relative_uri, options)
+  end
+
+  def post(relative_uri, entity, options={})
+    process_options!(options, entity)
+    options[:method] = :post
+    execute_request!(relative_uri, options)
+  end
+
+  def full_uri(relative)
+    "http://#{tomcat_properties['tomcat.server']}:8080#{tomcat_properties['webapp.deploy-path']}/api/v1#{relative}"
+  end
+
+  def psc_xml(root_name, root_attributes={}, &block)
+    root_attributes['xmlns'] = 'http://bioinformatics.northwestern.edu/ns/psc'
+    Builder::XmlMarkup.new(:indent => 2).tag!(root_name, root_attributes, &block)
+  end
+
+  private
+
+  def process_options!(options, entity=nil)
     user = options.delete(:as)
     options['Authorization'] = "psc_token #{user}" if user
-    options[:method] = :get
+    if entity
+      options[:body] = entity
+      options['Content-Type'] = 'text/xml' unless options['Content-Type']
+    end
+  end
+
+  def execute_request!(relative_uri, options)
     begin
       OpenURI.open_uri full_uri(relative_uri), options do |f|
         @response = Response.new(f)
@@ -29,10 +59,6 @@ helper_for Spec::Example::ExampleGroup do
     rescue OpenURI::HTTPError => e
       @response = Response.new(e.io)
     end
-  end
-
-  def full_uri(relative)
-    "http://#{tomcat_properties['tomcat.server']}:8080#{tomcat_properties['webapp.deploy-path']}/api/v1#{relative}"
   end
 
   class Response
