@@ -101,6 +101,14 @@
             })
         }
 
+        function displayErrorOnFailure(response, indicator){
+            indicator.conceal()
+            var divError = $('errors')
+            var myDIV = document.createElement('div');
+            myDIV.innerHTML=response.responseText;
+            var errorFromResponse = Builder.node('h4', {id:'error'}, "Error occurs during the request process. Status is "+ response.getStatus() + ". Caused by " + myDIV.getElementsByClassName('message')[0].innerHTML);
+            divError.appendChild(errorFromResponse)
+        }
 
         function executeAddSource(input) {
             var data = ''
@@ -109,7 +117,10 @@
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
-                method: 'post'
+                method: 'post',
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, $('myIndicator'))
+                }
             });
             $('addSource').value =""
         }
@@ -124,7 +135,10 @@
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
-                method: 'post'
+                method: 'post',
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, indicator)
+                }
             });
         }
 
@@ -221,6 +235,9 @@
                     
                     var saveButton = 'Save'+activityId
                     $(saveButton).style.display="none"
+                } ,
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, indicator)
                 }
             });
             indicator.conceal()
@@ -269,7 +286,10 @@
             href=href+"?"+data
             var newActivityReques = new Ajax.Request(href,
             {
-                method: 'post'
+                method: 'post',
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, indicator)
+                }
             })
 
             return true;
@@ -290,7 +310,10 @@
             href= href+"?"+data
             var deleteRequest = new Ajax.Request(href,
             {
-                method: 'post'
+                method: 'post',
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, indicator)
+                }
             });
 
             return true;
