@@ -25,9 +25,21 @@ helper_for Spec::Example::ExampleGroup do
     execute_request!(relative_uri, options)
   end
 
+  def delete(relative_uri, options={})
+    process_options!(options)
+    options[:method] = :delete
+    execute_request!(relative_uri, options)
+  end
+
   def post(relative_uri, entity, options={})
     process_options!(options, entity)
     options[:method] = :post
+    execute_request!(relative_uri, options)
+  end
+
+  def put(relative_uri, entity, options={})
+    process_options!(options, entity)
+    options[:method] = :put
     execute_request!(relative_uri, options)
   end
 
