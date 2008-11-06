@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
@@ -167,7 +170,7 @@ public class ScheduleController extends PscSimpleFormController {
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-        getControllerTools().registerDomainObjectEditor(servletRequestDataBinder, "activityType", activityTypeDao);
+        servletRequestDataBinder.registerCustomEditor(ActivityType.class, new DaoBasedEditor(activityTypeDao));
     }
 
     ////// CONFIGURATION

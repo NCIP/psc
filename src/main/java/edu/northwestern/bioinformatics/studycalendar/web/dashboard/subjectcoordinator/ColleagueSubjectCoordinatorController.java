@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.beans.PropertyEditor;
 
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ColleagueSubjectCoordinatorController extends PscSimpleFormController {
 	private TemplateService templateService;
@@ -149,7 +151,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-        getControllerTools().registerDomainObjectEditor(servletRequestDataBinder, "activityType", activityTypeDao);
+        servletRequestDataBinder.registerCustomEditor(ActivityType.class, new DaoBasedEditor(activityTypeDao));
     }
 
     ////// CONFIGURATION
