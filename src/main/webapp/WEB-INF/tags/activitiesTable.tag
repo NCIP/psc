@@ -4,7 +4,7 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
 
-<display:table name="activitiesPerSource" class="query-results" id="row" requestURI="activities" >
+<display:table name="activitiesPerSource" class="query-results" id="row" requestURI="activities">
     <c:if test="${showtable}">
         <display:setProperty name="basic.empty.showtable" value="true"/>
     </c:if>
@@ -48,13 +48,9 @@
     <display:column title="Controls" media="html">
         <input id="Edit${row.id}" type="button" name="EditButton" value="Edit" onclick="editActivity(${row.id})"/>
         <input id="Save${row.id}" type="button" name="SaveButton" value="Save" style="display:none" onclick="saveActivity(${row.id})"/>
-        <c:forEach items="${enableDeletes}" var="enableDelete">
-           <c:if test="${row.id == enableDelete.key}">
-                    <c:if test="${enableDelete.value==true}">
-                        <input id="Delete${row.id}" type="button" id="DeleteButton" name="DeleteButton" value="Delete" onclick="deleteActivity(${row.id})"/>
-                    </c:if>
-           </c:if>
-        </c:forEach>
+            <c:if test="${row.deletable}">
+                <input id="Delete${row.id}" type="button" id="DeleteButton" name="DeleteButton" value="Delete" onclick="deleteActivity(${row.id})"/>
+            </c:if>
     </display:column>
 </display:table>
 
