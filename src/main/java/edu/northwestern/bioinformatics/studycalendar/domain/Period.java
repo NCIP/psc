@@ -92,20 +92,6 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         return getDisplayName()+ " ("+getChildren().size()+" activities)";
     }
 
-    @Deprecated // this is only used by the old manage periods page
-    @Transient
-    public List<DayRange> getDayRanges() {
-        List<DayRange> ranges = new ArrayList<DayRange>(getRepetitions());
-        while (ranges.size() < getRepetitions()) {
-            int rep = ranges.size();
-            Integer dayCount = getDuration().getDays();
-            int repStartDay = getStartDay() + rep * dayCount;
-            int durationUnit = getDuration().getUnit().inDays();
-            ranges.add(new DefaultDayRange(repStartDay, repStartDay + dayCount - durationUnit));
-        }
-        return ranges;
-    }
-
     @Transient
     public DayRange getTotalDayRange() {
         int dayCount = getDuration().getDays() * getRepetitions();
