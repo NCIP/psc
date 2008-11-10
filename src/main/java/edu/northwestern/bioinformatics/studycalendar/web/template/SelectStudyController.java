@@ -15,9 +15,9 @@ import org.springframework.web.servlet.mvc.Controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedList;
 
 /**
  * @author Saurabh Agrawal
@@ -50,9 +50,10 @@ public class SelectStudyController implements Controller {
         List<Epoch> displayEpochs = new LinkedList<Epoch>();
         for (Epoch epoch : epochs) {
             List<StudySegment> studySegments = epoch.getStudySegments();
-            for (StudySegment studySegment:studySegments) {
-                if (!studySegment.getPeriods().isEmpty()){
-                       displayEpochs.add(epoch);
+            for (StudySegment studySegment : studySegments) {
+                if (!studySegment.getPeriods().isEmpty()) {
+                    displayEpochs.add(epoch);
+                    break;
                 }
             }
         }
