@@ -1,0 +1,3 @@
+#!/bin/bash -xe
+
+svn switch https://svn.bioinformatics.northwestern.edu/studycalendar/branches/releases/2.3-stable
