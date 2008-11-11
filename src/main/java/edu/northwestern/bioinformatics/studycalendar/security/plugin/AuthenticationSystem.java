@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
-import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.acegisecurity.AuthenticationManager;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
@@ -120,4 +119,10 @@ public interface AuthenticationSystem {
      * should return null.
      */
     Authentication createTokenAuthenticationRequest(String token);
+
+    /**
+     * Does this authentication system use the passwords that are stored in PSC?  If not,
+     * the system administrators will not be prompted to set them.
+     */
+    boolean usesLocalPasswords();
 }

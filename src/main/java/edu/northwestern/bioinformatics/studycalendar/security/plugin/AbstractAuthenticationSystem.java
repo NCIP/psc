@@ -127,6 +127,10 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     public Filter filter() { return filter; }
     public Filter logoutFilter() { return logoutFilter; }
 
+    public boolean usesLocalPasswords() {
+        return false;
+    }
+
     private void validateRequiredConfigurationProperties() {
         if (requiredConfigurationProperties() != null) {
             for (ConfigurationProperty<?> prop : requiredConfigurationProperties()) {

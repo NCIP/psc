@@ -93,7 +93,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                 }
             }
 
-            if (updatePassword() && authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
+            if (updatePassword() && authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords()) {
                 if (password == null || StringUtils.isBlank(password)) {
                     errors.rejectValue("password", "error.user.password.not.specified");
                 } else {
@@ -128,7 +128,6 @@ public class CreateUserCommand implements Validatable, Serializable {
                 }
             }
         }
-
     }
 
     private String gridFieldName(Site site, Role role) {
@@ -153,12 +152,9 @@ public class CreateUserCommand implements Validatable, Serializable {
         return passwordModified || user.getId() == null;
     }
 
-
-
-
     // generate a random password when creating a new user in a regime that doesn't use the internal passwords
     private String getOrCreatePassword() {
-        if (authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
+        if (authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords()) {
             return getPassword();
         } else {
             int length = 16 + (int) Math.round(16 * Math.random());

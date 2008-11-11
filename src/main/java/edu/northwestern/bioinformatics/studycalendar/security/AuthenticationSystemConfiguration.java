@@ -49,11 +49,6 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         return currentSystem;
     }
 
-    public boolean isLocalAuthenticationSystem() {
-        String systemName = get(AUTHENTICATION_SYSTEM);
-        return (KnownAuthenticationSystem.safeValueOf(systemName) == KnownAuthenticationSystem.LOCAL);
-    }
-
     public boolean isCustomAuthenticationSystem() {
         String systemName = get(AUTHENTICATION_SYSTEM);
         return (KnownAuthenticationSystem.safeValueOf(systemName) == null);

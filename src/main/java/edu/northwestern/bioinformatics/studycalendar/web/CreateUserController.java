@@ -59,7 +59,7 @@ public class CreateUserController extends PscCancellableFormController {
         refdata.put("actionText", actionText);
 
         refdata.put("user", command.getUser());
-        refdata.put("usingLocalAuthenticationSystem", authenticationSystemConfiguration.isLocalAuthenticationSystem());
+        refdata.put("usingLocalAuthenticationSystem", authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords());
 
         return refdata;
     }

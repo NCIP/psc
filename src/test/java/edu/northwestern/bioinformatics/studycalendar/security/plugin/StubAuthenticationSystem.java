@@ -1,17 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import org.acegisecurity.AuthenticationManager;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.ui.AuthenticationEntryPoint;
 
 import javax.servlet.Filter;
-
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 /**
  * @author Rhett Sutphin
@@ -71,5 +70,9 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
 
     public Authentication createTokenAuthenticationRequest(String token) {
         throw new UnsupportedOperationException("createTokenAuthenticationRequest not implemented");
+    }
+
+    public boolean usesLocalPasswords() {
+        throw new UnsupportedOperationException("usesLocalPasswords not implemented");
     }
 }

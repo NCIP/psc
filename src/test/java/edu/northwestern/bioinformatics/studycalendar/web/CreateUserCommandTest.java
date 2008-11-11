@@ -2,12 +2,19 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.easymock.IArgumentMatcher;
 import static org.easymock.classextension.EasyMock.*;
@@ -18,7 +25,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class CreateUserCommandTest extends StudyCalendarTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -33,6 +45,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     private UserDao userDao;
     private Errors errors;
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private AuthenticationSystem authenticationSystem;
 
     @Override
     protected void setUp() throws Exception {
@@ -49,7 +62,9 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userService = registerMockFor(UserService.class);
         userRoleService = registerMockFor(UserRoleService.class);
         authenticationSystemConfiguration = registerMockFor(AuthenticationSystemConfiguration.class);
-        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(true).anyTimes();
+        authenticationSystem = registerMockFor(AuthenticationSystem.class);
+        expect(authenticationSystemConfiguration.getAuthenticationSystem()).andReturn(authenticationSystem).anyTimes();
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(true).anyTimes();
 
         errors = new MapBindingResult(new HashMap(), "?");
     }
@@ -206,8 +221,8 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public void testValidateDoesNotRequirePasswordForNonLocalAuthenticationSystem() throws Exception {
-        reset(authenticationSystemConfiguration);
-        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
+        reset(authenticationSystem);
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
         User newUser = new User();
         newUser.setName("anything");
 
@@ -283,8 +298,8 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userRoleService.removeUserRoleAssignment((User) notNull(), (Role) notNull());
         expectLastCall().anyTimes();
 
-        reset(authenticationSystemConfiguration);
-        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
+        reset(authenticationSystem);
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
         User newUser = new User();
         expect(userService.saveUser(eq(newUser), randomPassword(), (String) eq(null))).andReturn(newUser);
 
