@@ -53,6 +53,7 @@ public class AssignSubjectCoordinatorByStudyController extends AbstractAssignSub
 
             return createSiteCoordinatorDashboardCommand(selectedStudy, assignableStudies, assignableSites, assignableUsers);
         }
+
         return createSiteCoordinatorDashboardCommand(null, assignableStudies, new ArrayList<Site>(), assignableUsers);
 
     }
@@ -75,7 +76,10 @@ public class AssignSubjectCoordinatorByStudyController extends AbstractAssignSub
         } else {
             RedirectView rv = new RedirectView("assignSubjectCoordinatorByStudy");
             rv.addStaticAttribute("selected", command.getSelected().getId());
-            return new ModelAndView(rv);
+            String successMessage = String.format("Information saved successfully.");
+            ModelAndView modelAndView = new ModelAndView(rv);
+            modelAndView.getModel().put("flashMessage", successMessage);
+            return modelAndView;
         }
     }
 

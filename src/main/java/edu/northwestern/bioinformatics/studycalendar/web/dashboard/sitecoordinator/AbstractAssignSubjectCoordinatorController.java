@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -40,7 +41,9 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
         refdata.put("studies", command.getAssignableStudies());
         refdata.put("sites", command.getAssignableSites());
         refdata.put("users", command.getAssignableUsers());
-
+        if(!StringUtils.isBlank(request.getParameter("flashMessage"))){
+            refdata.put("flashMessage",request.getParameter("flashMessage"));
+        }
         return refdata;
     }
 

@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import org.springframework.validation.Errors;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -38,11 +38,11 @@ public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubj
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         User siteCoordinator = getSiteCoordinator();
 
-        List<User> assignableUsers    = getAssignableUsers(siteCoordinator);
+        List<User> assignableUsers = getAssignableUsers(siteCoordinator);
         List<Study> assignableStudies = getAssignableStudies(siteCoordinator);
 
-        Integer userId      = ServletRequestUtils.getIntParameter(request, "selected");
-        User selectedUser   = getCurrentUser(userId, assignableUsers);
+        Integer userId = ServletRequestUtils.getIntParameter(request, "selected");
+        User selectedUser = getCurrentUser(userId, assignableUsers);
 
         List<Site> assignableSites = getAssignableSites(siteCoordinator);
 
@@ -58,6 +58,7 @@ public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubj
         AssignSubjectCoordinatorByUserCommand command = (AssignSubjectCoordinatorByUserCommand) oCommand;
         try {
             command.apply();
+
         } catch (StudyCalendarValidationException scve) {
             scve.rejectInto(errors);
         }
@@ -67,16 +68,21 @@ public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubj
         } else {
             RedirectView rv = new RedirectView("assignSubjectCoordinatorByUser");
             rv.addStaticAttribute("selected", command.getSelected().getId());
-            return new ModelAndView(rv);
+
+            String successMessage = String.format("Information saved successfully.");
+            ModelAndView modelAndView = new ModelAndView(rv);
+            modelAndView.getModel().put("flashMessage", successMessage);
+            return modelAndView;
+
         }
     }
 
     protected User getCurrentUser(Integer userId, List<User> assignableUsers) throws Exception {
         User user = null;
-        if (userId != null ) {
+        if (userId != null) {
             user = getUserDao().getById(userId);
         } else {
-            if(assignableUsers.size() > 0) {
+            if (assignableUsers.size() > 0) {
                 user = assignableUsers.get(0);
             }
         }
