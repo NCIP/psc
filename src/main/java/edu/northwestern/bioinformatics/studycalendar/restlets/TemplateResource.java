@@ -70,7 +70,7 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
             log.warn("PUT failed with IOException", e);
             throw new ResourceException(e);
         } catch (StudyCalendarUserException e) {
-            log.error("Error PUTting study", e.getMessage());
+            log.error("Error PUTting study", e);
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
         getResponse().setEntity(createXmlRepresentation(study));
