@@ -32,3 +32,12 @@
     <jsgen:replaceHtml targetElement="errors"><h4>Please select one of the sources to be able to create a new activity</h4></jsgen:replaceHtml>
 </c:if>
 $('myIndicator').conceal()
+
+<jsgen:replaceHtml targetElement="nextPage">
+    <c:if test="${showPrev}">
+        <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="Previous 100 actvities" onclick="displayNext(${-index})"/>
+    </c:if>
+    <c:if test="${showNext}">
+        <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next 100 actvities" onclick="displayNext(${index})"/>
+    </c:if>
+</jsgen:replaceHtml>

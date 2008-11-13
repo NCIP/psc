@@ -74,7 +74,10 @@
         function initMethods() {
             var indicator = $('myIndicator')
             indicator.conceal()
-            $('sources').selectedIndex = 0
+            var input = $('sources').options[$('sources').selectedIndex].value
+            if (input == null) {
+                $('sources').selectedIndex = 0
+            }
             registerEventHandlers()
         }
 
@@ -131,6 +134,7 @@
             var input = $('sources').options[$('sources').selectedIndex].value
             var data = ''
             data = data+"sourceId"+"="+input+"&";
+            data = data+"index=0&";
             var href = '<c:url value="/pages/activities/getActivityBySource"/>'
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
@@ -319,6 +323,35 @@
             return true;
         }
 
+
+        function displayNext(index) {
+            var indicator = $('myIndicator')
+            indicator.reveal()
+            var input = $('sources').options[$('sources').selectedIndex].value
+            var data = ''
+            data = data+"sourceId"+"="+input+"&";
+
+            data = data+"index="+ index+"&";
+
+            //need to parse location.href to get sorting parameters...
+            var arrayOfHrefParams = location.href.split('&');
+            for (var i = 0; i< arrayOfHrefParams.length; i++){
+                var pair = arrayOfHrefParams[i];
+                if (pair.startsWith('d')){
+                    data = data+ pair+"&"
+                }
+            }
+            var href = '<c:url value="/pages/activities/getActivityBySource"/>'
+            href= href+"?"+data
+            var lastRequest = new Ajax.Request(href,
+            {
+                method: 'post',
+                onFailure: function(response) {
+                    displayErrorOnFailure(response, indicator)
+                }
+            });
+        }
+
         function exportActivitiesToXML(extension) {
             var activitySource= $('sources').options[$('sources').selectedIndex].value
 
@@ -343,10 +376,10 @@
                     <option value="select">Select... </option>
                     <c:forEach items="${sources}" var="source">
                         <c:if test="${sourceId == source.id}">
-                            <option class="source" selected="true" id="source" value="${source.id}">${source.name}</option>
+                            <option value="${source.id}" selected="true">${source.name}</option>
                         </c:if>
                         <c:if test="${sourceId != source.id}">
-                            <option class="source" id="source" value="${source.id}">${source.name}</option>
+                            <option value="${source.id}">${source.name}</option>
                         </c:if>
                     </c:forEach>
                     <option value="selectAll">All sources</option>
@@ -354,7 +387,7 @@
 
                 <label id="add-new-source">Create new source:</label>
                 <input id="addSource" type="text" class="addSource" value=""/>
-                <input type="button" id="addSourceButton" name="addSourceButton" value="Add"/>
+                <input type="button" id="addSourceButton" name="addSourceButton" value="Add" />
                 <a id="importActivitiesLink" href="<c:url value="/pages/activities/importActivities"/>" >Import activities from xml or from csv</a>
 
                 <span id="exportOptions" style="display:none"> Export Options:</span>
@@ -374,6 +407,16 @@
                 <script><tags:addNewActivityRow/></script>
             </div>
 
+            <div id="nextPage">
+                <c:if test="${showPrev}">
+                    <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="Previous 100 actvities" onclick="displayNext(${-index})"/>
+                </c:if>
+
+                <c:if test="${showNext}">
+                    <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next 100 actvities" onclick="displayNext(${index})"/>
+                </c:if>
+
+            </div>
 
 
     </laf:division>

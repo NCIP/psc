@@ -98,10 +98,7 @@ public class Activity extends AbstractMutableDomainObject
 
     @Transient
     public boolean isDeletable() {
-        if (getPlannedActivities().size()>0){
-            return false;
-        }
-        return true;
+        return getPlannedActivities().size() <= 0;
     }
 
 

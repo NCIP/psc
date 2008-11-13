@@ -4,17 +4,17 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
 
-<display:table name="activitiesPerSource" class="query-results" id="row" requestURI="activities">
+<display:table name="activitiesPerSource" class="query-results" id="row" sort="external" defaultsort="1" requestURI="activities">
     <c:if test="${showtable}">
         <display:setProperty name="basic.empty.showtable" value="true"/>
     </c:if>
 
-    <display:column title="Name" sortable="true">
+    <display:column title="Name" sortable="true" sortName="name">
         <label id="Name${row.id}">${row.name}</label>
         <input id="InputName${row.id}" type="hidden" value="${row.name}"/>
     </display:column>
 
-    <display:column title="Type" sortable="true">
+    <display:column title="Type" sortable="true" sortName="type">
         <label id="Type${row.id}">${row.type.name}</label>
         <div id="DivType${row.id}" style="display:none">
             <select id="SourceTypes${row.id}">
