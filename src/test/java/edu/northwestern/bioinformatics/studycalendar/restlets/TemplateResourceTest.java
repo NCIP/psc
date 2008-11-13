@@ -2,13 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.expect;
@@ -101,11 +101,9 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutExistingXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-
-        expectReadXmlFromRequestAs(study);
+        InputStream in = expectPutEntity();
+        expect(importTemplateService.readAndSaveTemplate(study, in)).andReturn(study);
         expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
-
-        expect(importTemplateService.readAndSaveTemplate(study, null)).andReturn(study);
 
         doPut();
 
@@ -117,15 +115,14 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
-        expectReadXmlFromRequestAs(study);
-        expect(importTemplateService.readAndSaveTemplate(null, null)).andReturn(study);
+        InputStream in = expectPutEntity();
+        expect(importTemplateService.readAndSaveTemplate(null, in)).andReturn(study);
         expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
 
         doPut();
 
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
-
     }
 
     public void testEntityIsInDownloadModeWithDownloadParam() throws Exception {
@@ -140,11 +137,10 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertEquals("Suggested filename should match the assigned ident", STUDY_IDENT + ".xml", response.getEntity().getDownloadName());
     }
 
-    protected void expectReadXmlFromRequestAs(Study expectedRead) throws Exception {
+    protected InputStream expectPutEntity() throws Exception {
         final InputStream in = registerMockFor(InputStream.class);
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        expect(studyXmlSerializer.readDocument(in)).andReturn(expectedRead);
+        return in;
     }
 
 
