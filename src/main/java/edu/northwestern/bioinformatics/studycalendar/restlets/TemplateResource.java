@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -65,22 +64,14 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Override
     public void storeRepresentation(Representation entity) throws ResourceException {
         Study study;
-        // XXX: what is going on here? It looks like the entity is consumed twice.
         try {
-            try {
-                xmlSerializer.readDocument(entity.getStream());
-            } catch (StudyCalendarValidationException e) {
-                log.debug("PUT failed due to the element type is other than <study> or study doesn't have amendments");
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            }
-
             study = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
             throw new ResourceException(e);
-        } catch (StudyImportException e) {
-            log.error("error importing xml.", e.getMessage());
-            throw new ResourceException(e);
+        } catch (StudyCalendarUserException e) {
+            log.error("Error PUTting study", e.getMessage());
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
         getResponse().setEntity(createXmlRepresentation(study));
         if (getRequestedObject() == null) {
