@@ -1,48 +1,91 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.validation.BindException;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class DeleteDevelopmentAmendmentController
-    extends PscAbstractCommandController<DeleteDevelopmentAmendmentCommand>
-{
+public class DeleteDevelopmentAmendmentController extends PscSimpleFormController {
+
     private StudyDao studyDao;
     private AmendmentService amendmentService;
 
     public DeleteDevelopmentAmendmentController() {
         setCommandClass(DeleteDevelopmentAmendmentCommand.class);
+        setFormView("template/deleteDevelopmentAmendment");
+        setCrumb(new Crumb());
+
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
     }
 
-    protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new DeleteDevelopmentAmendmentCommand(amendmentService);
+    @Override
+    protected Map referenceData(final HttpServletRequest request, final Object oCommand, final Errors errors) throws Exception {
+        Map<String, Object> refdata = new HashMap();
+        // include study in refdata for breadcrumbs
+        DeleteDevelopmentAmendmentCommand command = ((DeleteDevelopmentAmendmentCommand) oCommand);
+        getControllerTools().addHierarchyToModel(command.getStudy(), refdata);
+        return refdata;
+
     }
 
     @Override
-    protected ModelAndView handle(DeleteDevelopmentAmendmentCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        command.apply();
-        return new ModelAndView("redirectToStudyList");
+    protected Object formBackingObject(final HttpServletRequest request) throws Exception {
+        DeleteDevelopmentAmendmentCommand command = new DeleteDevelopmentAmendmentCommand(amendmentService);
+        return command;
     }
 
-    ////// CONFIGURATION
+    @Override
+    protected ModelAndView onSubmit(final HttpServletRequest request, final HttpServletResponse httpServletResponse, final Object o, final BindException e) throws Exception {
+        DeleteDevelopmentAmendmentCommand command = (DeleteDevelopmentAmendmentCommand) o;
+        if (!command.getStudy().isInDevelopment()) {
+            e.reject("A released template can not be deleted.");
+            return showForm(request, httpServletResponse, e);
+        } else {
+            command.apply();
+            return new ModelAndView("redirectToStudyList");
+        }
+
+
+    }
+
+
+    private static class Crumb extends DefaultCrumb {
+        @Override
+        public String getName(BreadcrumbContext context) {
+            StringBuilder sb = new StringBuilder("Delete " + context.getStudy().getName());
+            return sb.toString();
+        }
+
+        @Override
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("study", context.getStudy().getId().toString());
+            return params;
+        }
+    }
+
 
     @Required
     public void setStudyDao(StudyDao studyDao) {
