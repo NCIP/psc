@@ -25,9 +25,7 @@ public class ActivityController extends PscAbstractController {
     private SourceDao sourceDao;
     private PlannedActivityDao plannedActivityDao;
     private ActivityTypeDao activityTypeDao;
-
-    public ActivityController() {
-    }
+    private final static Integer pageIncrementor =100;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -71,19 +69,19 @@ public class ActivityController extends PscAbstractController {
         Integer numberOfPages = getNumberOfPagesFromList(activities);
         activities = sortListBasedOnRequest(activities, sortOrderEnum, sortItem);
 
-        Integer pageIncrementor = 100;
         Integer indexSecondBorder = index + pageIncrementor;
 
+        //the condition below is for the "previous" event
         if (index < 0) {
             indexSecondBorder = (-1)*indexSecondBorder;
             index= indexSecondBorder - pageIncrementor;
         }
 
-
+        //happens only if we have a large amount of activities (> 100 in our case)
         if (activities.size() > pageIncrementor) {
-            //the line below should be changed based upon request, but so far it's being set to 1
             model.put("index", indexSecondBorder);
             if (indexSecondBorder > activities.size()){
+                //we reached the last page
                 model.put("showNext", false);
                 model.put("activitiesPerSource", activities.subList(index, activities.size()));
             } else {
@@ -96,9 +94,7 @@ public class ActivityController extends PscAbstractController {
             } else {
                 model.put("showPrev", false);
             }
-        } 
-
-        else {
+        } else {
             model.put("index", 0);
             model.put("showNext", false);
             model.put("activitiesPerSource", activities);
@@ -122,25 +118,23 @@ public class ActivityController extends PscAbstractController {
             } else if (sortItem.toLowerCase().equals("type")){
                 Collections.sort(activities, new ActivityTypeComparator());
             }
+            if (sortOrderEnum.equals(SortOrderEnum.DESCENDING)){
+                Collections.reverse(activities);
+            }
         } else {
             Collections.sort(activities);
-        }
-
-        if (sortOrderEnum.equals(SortOrderEnum.DESCENDING)){
-            Collections.reverse(activities);
         }
 
         return activities;
     }
 
     private Integer getNumberOfPagesFromList(List<Activity> activities) {
-        Integer pageCount = 0;
-        for (int i =0; i < activities.size(); i=i+100){
-            if (i < activities.size()) {
-                pageCount++;
-            }
+        Integer size = activities.size();
+        Integer amountOfPages = size/pageIncrementor;
+        if (amountOfPages * pageIncrementor < size) {
+            amountOfPages++;
         }
-        return pageCount;
+        return amountOfPages;
     }
 
 
