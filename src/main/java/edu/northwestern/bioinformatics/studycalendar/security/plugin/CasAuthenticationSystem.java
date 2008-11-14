@@ -1,29 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
-import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.providers.AuthenticationProvider;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.ui.cas.CasProcessingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.Filter;
-
-import edu.northwestern.bioinformatics.studycalendar.tools.spring.StringXmlApplicationContext;
-import edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools;
-
-import java.util.Properties;
-import java.util.Map;
-import java.util.Collection;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
  * @author Rhett Sutphin
@@ -71,7 +66,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
             urlJoin(getConfiguration().get(SERVICE_URL), "proxyValidate"));
         nullSafeSetProperty(template, "cas.server.url.logout",
             urlJoin(getConfiguration().get(SERVICE_URL), "logout"));
-        nullSafeSetProperty(template, "cas.local.filterPath",    urlJoin("", CAS_FILTER_PATH));
+        nullSafeSetProperty(template, "cas.local.filterPath", urlJoin("", CAS_FILTER_PATH));
         nullSafeSetProperty(template, "cas.local.url",
             urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
         nullSafeSetProperty(template, "psc.defaultTarget",       DEFAULT_TARGET_PATH);
@@ -128,8 +123,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     }
 
     public Authentication createTokenAuthenticationRequest(String token) {
-        // TODO: CAS should be able to support this in theory
-        return null;
+        return new UsernamePasswordAuthenticationToken(CasProcessingFilter.CAS_STATELESS_IDENTIFIER, token);
     }
 
     protected String getPopulatorBeanName() {

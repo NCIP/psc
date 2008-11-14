@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.ProviderManager;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.cas.CasAuthenticationProvider;
 import org.acegisecurity.providers.cas.populator.DaoCasAuthoritiesPopulator;
 import org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy;
 import org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator;
+import org.acegisecurity.ui.cas.CasProcessingFilter;
 import org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint;
 import org.acegisecurity.ui.cas.ServiceProperties;
 import org.acegisecurity.ui.logout.LogoutFilter;
@@ -85,6 +88,13 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
         doValidInitialize();
         assertTrue("Wrong filter type", getSystem().logoutFilter() instanceof LogoutFilter);
         // can't really test anything else because no properties are exposed.
+    }
+
+    public void testTokenAuthRequestReturnsTheWeirdThingThatCasProcessingFilterExpects() throws Exception {
+        Authentication actual = getSystem().createTokenAuthenticationRequest("PT-foo");
+        assertTrue("Wrong type of Authentication", actual instanceof UsernamePasswordAuthenticationToken);
+        assertEquals("Wrong principal", CasProcessingFilter.CAS_STATELESS_IDENTIFIER, actual.getPrincipal());
+        assertEquals("Wrong credentials", "PT-foo", actual.getCredentials());
     }
 
     @Override
