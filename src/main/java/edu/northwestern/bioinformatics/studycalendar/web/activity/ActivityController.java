@@ -68,6 +68,7 @@ public class ActivityController extends PscAbstractController {
             activities = activityDao.getBySourceId(new Integer(sourceId));
         }
 
+        Integer numberOfPages = getNumberOfPagesFromList(activities);
         activities = sortListBasedOnRequest(activities, sortOrderEnum, sortItem);
 
         Integer pageIncrementor = 100;
@@ -110,6 +111,7 @@ public class ActivityController extends PscAbstractController {
         } else {
             model.put("displayCreateNewActivity", Boolean.FALSE);
         }
+        model.put("numberOfPages", numberOfPages);
         return model;
     }
 
@@ -120,6 +122,8 @@ public class ActivityController extends PscAbstractController {
             } else if (sortItem.toLowerCase().equals("type")){
                 Collections.sort(activities, new ActivityTypeComparator());
             }
+        } else {
+            Collections.sort(activities);
         }
 
         if (sortOrderEnum.equals(SortOrderEnum.DESCENDING)){
@@ -127,6 +131,16 @@ public class ActivityController extends PscAbstractController {
         }
 
         return activities;
+    }
+
+    private Integer getNumberOfPagesFromList(List<Activity> activities) {
+        Integer pageCount = 0;
+        for (int i =0; i < activities.size(); i=i+100){
+            if (i < activities.size()) {
+                pageCount++;
+            }
+        }
+        return pageCount;
     }
 
 

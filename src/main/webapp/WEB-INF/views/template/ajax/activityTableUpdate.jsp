@@ -33,11 +33,31 @@
 </c:if>
 $('myIndicator').conceal()
 
-<jsgen:replaceHtml targetElement="nextPage">
+<jsgen:replaceHtml targetElement="bottomsBottom">
     <c:if test="${showPrev}">
-        <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="Previous 100 actvities" onclick="displayNext(${-index})"/>
+        <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="< Previous" onclick="displayNext(${-index})"/>
+    </c:if>
+    <c:if test="${numberOfPages != null}">
+         <c:forEach begin="1" end="${numberOfPages}" var="pageNumber" varStatus="pageNumberStatus">
+            <input type="button" id="pageNumber" name="pageNumber" value="${pageNumber}" onclick="displayNext(${pageNumber *100 -100})"/>
+        </c:forEach>
     </c:if>
     <c:if test="${showNext}">
-        <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next 100 actvities" onclick="displayNext(${index})"/>
+        <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next >" onclick="displayNext(${index})"/>
+    </c:if>
+</jsgen:replaceHtml>
+
+
+<jsgen:replaceHtml targetElement="bottomsTop">
+    <c:if test="${showPrev}">
+        <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="< Previous" onclick="displayNext(${-index})"/>
+    </c:if>
+    <c:if test="${numberOfPages != null}">
+         <c:forEach begin="1" end="${numberOfPages}" var="pageNumber" varStatus="pageNumberStatus">
+            <input type="button" id="pageNumber" name="pageNumber" value="${pageNumber}" onclick="displayNext(${pageNumber *100 -100})"/>
+        </c:forEach>
+    </c:if>
+    <c:if test="${showNext}">
+        <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next >" onclick="displayNext(${index})"/>
     </c:if>
 </jsgen:replaceHtml>
