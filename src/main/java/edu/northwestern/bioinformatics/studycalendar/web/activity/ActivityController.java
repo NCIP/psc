@@ -111,7 +111,7 @@ public class ActivityController extends PscAbstractController {
         return model;
     }
 
-    private List<Activity> sortListBasedOnRequest(List<Activity> activities, SortOrderEnum sortOrderEnum, String sortItem) {
+    List<Activity> sortListBasedOnRequest(List<Activity> activities, SortOrderEnum sortOrderEnum, String sortItem) {
         if (sortItem!= null) {
             if (sortItem.toLowerCase().equals("name")){
                 Collections.sort(activities, new NamedComparatorByLetterCase());
