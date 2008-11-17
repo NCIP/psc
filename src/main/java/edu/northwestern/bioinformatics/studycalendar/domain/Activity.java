@@ -9,6 +9,8 @@ import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -35,6 +37,7 @@ public class Activity extends AbstractMutableDomainObject
     private ActivityType activityType;
     private Source source;
     private String code;
+    private List<ActivityProperty> properties = new ArrayList<ActivityProperty>();
 
     private boolean memoryOnly;
     private SortedSet<PlannedActivity> plannedActivities =new TreeSet<PlannedActivity>();
@@ -51,6 +54,11 @@ public class Activity extends AbstractMutableDomainObject
 
     private String toLower(String name) {
         return name == null ? null : name.toLowerCase();
+    }
+
+    public void addProperty(ActivityProperty activityProperty) {
+        getProperties().add(activityProperty);
+        activityProperty.setActivity(this);
     }
 
     @Transient
@@ -158,6 +166,16 @@ public class Activity extends AbstractMutableDomainObject
 
     public void setType(ActivityType activityType) {
         this.activityType = activityType;
+    }
+
+    @OneToMany(mappedBy = "activity")
+    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL })
+    public List<ActivityProperty> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<ActivityProperty> properties) {
+        this.properties = properties;
     }
 
     ////// OBJECT METHODS

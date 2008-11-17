@@ -47,6 +47,7 @@
 
     <display:column title="Controls" media="html">
         <input id="Edit${row.id}" type="button" name="EditButton" value="Edit" onclick="editActivity(${row.id})"/>
+        <input id="AdvancedEdit${row.id}" type="button" name="AdvancedEditButton" value="AdvancedEdit" onclick="location.href='<c:url value="/pages/advancedEditActivity?activityId=${row.id}"/>'"/>
         <input id="Save${row.id}" type="button" name="SaveButton" value="Save" style="display:none" onclick="saveActivity(${row.id})"/>
             <c:if test="${row.deletable}">
                 <input id="Delete${row.id}" type="button" id="DeleteButton" name="DeleteButton" value="Delete" onclick="deleteActivity(${row.id})"/>

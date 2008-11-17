@@ -169,6 +169,15 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
     </bean>
 
+    <bean name="/advancedEditActivity" id="advancedEditActivityController" autowire="byName"
+                class="edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityController">
+      <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Activities/Advanced Edit Activity"/>
+            </bean>
+      </property>
+    </bean>
+
     <bean name="/dashboard" id="dashboardController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController">
         <property name="crumb">
@@ -271,7 +280,11 @@
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
-        <property name="crumb.parent"><ref local="managePeriodActivitiesController"/></property>
+       <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Activities/New Activity"/>
+            </bean>
+      </property>
     </bean>
 
     <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
@@ -584,11 +597,6 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Activities"/>
                                 <property name="linkName" value="activityController"/>
-                                <property name="urlResolver" ref="urlResolver"/>
-                            </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="Activity Types"/>
-                                <property name="linkName" value="addEditActivityTypeController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                         </list>

@@ -6,31 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -49,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -326,6 +304,43 @@ public class Fixtures {
             source.addActivity(activity);
         }
         return activity;
+    }
+
+    public static List<ActivityProperty> createActivityProperty(Activity activity,String namespace,String templateName, String templateValue, String textName, String textValue) {
+        List<ActivityProperty> properties = new ArrayList<ActivityProperty>();
+        ActivityProperty activityProperty = new ActivityProperty();
+        ActivityProperty activityProperty1 = new ActivityProperty();
+        activityProperty.setNamespace(namespace);
+        activityProperty.setName(templateName);
+        activityProperty.setValue(templateValue);
+        activityProperty1.setNamespace(namespace);
+        activityProperty1.setName(textName);
+        activityProperty1.setValue(textValue);
+        activityProperty.setActivity(activity);
+        activityProperty1.setActivity(activity);
+        properties.add(activityProperty);
+        properties.add(activityProperty1);
+        return properties;
+    }
+
+    public static List<ActivityProperty> createActivityProperty(Activity activity,String namespace,String templateName, String templateValue){
+        List<ActivityProperty> properties = new ArrayList<ActivityProperty>();
+        ActivityProperty activityProperty = new ActivityProperty();
+        activityProperty.setNamespace(namespace);
+        activityProperty.setName(templateName);
+        activityProperty.setValue(templateValue);
+        activityProperty.setActivity(activity);
+        properties.add(activityProperty);
+        return properties;
+    }
+
+    public static ActivityProperty createSingleActivityProperty(Activity activity,String namespace,String templateName, String templateValue){
+        ActivityProperty activityProperty = new ActivityProperty();
+        activityProperty.setNamespace(namespace);
+        activityProperty.setName(templateName);
+        activityProperty.setValue(templateValue);
+        activityProperty.setActivity(activity);
+        return activityProperty;
     }
 
     public static Activity createActivity(String name, String code, Source source, ActivityType type, String description) {

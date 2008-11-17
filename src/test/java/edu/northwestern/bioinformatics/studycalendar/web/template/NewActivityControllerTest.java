@@ -9,6 +9,7 @@ import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.create
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityCommand;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -51,9 +52,8 @@ public class NewActivityControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
                 
-        assertEquals("editActivity", mv.getViewName());
-        assertEquals(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME, ((String)mv.getModel().get("sourceName")));
-    }
+        assertEquals("advancedEditActivity", mv.getViewName());
+    }    
 
     public void testSuccessResponseBare() throws Exception {
 
@@ -69,7 +69,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
         ActivityType expected = Fixtures.createActivityType("LAB_TEST");
         expect(activityTypeDao.getById(4)).andReturn(expected).anyTimes();
         request.setMethod("POST");
-        request.addParameter("activityType", "4");
+        request.addParameter("activity.type", "4");
         expect(sourceDao.getByName(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME)).andReturn(source);
         activityDao.save((Activity) notNull());
     }
@@ -81,7 +81,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         assertEquals("redirectToManagePeriod", mv.getViewName());
         assertEquals(2, mv.getModel().size());
-        assertEquals(14, mv.getModel().get("period"));
+        assertEquals(14,mv.getModel().get("period"));
         assertTrue(mv.getModel().containsKey("selectedActivity"));
     }
 
@@ -92,11 +92,11 @@ public class NewActivityControllerTest extends ControllerTestCase {
         activityDao.save((Activity) notNull());
 
         replayMocks();
-        request.addParameter("activityType", "1");
+        request.addParameter("activity.type", "1");
         ModelAndView mv = controller.handleRequest(request, response);
-        NewActivityCommand command = (NewActivityCommand) mv.getModel().get("command");
+        AdvancedEditActivityCommand command = (AdvancedEditActivityCommand) mv.getModel().get("command");
 
         verifyMocks();
-        assertSame(expected, command.getActivityType());
+        assertSame(expected, command.getActivity().getType());
     }
 }

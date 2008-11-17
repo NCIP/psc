@@ -1,0 +1,60 @@
+<dataset>
+    <ACTIVITY_TYPES
+        id="3"
+        name="ActivityType3"/>
+
+    <ACTIVITY_TYPES
+        id="4"
+        name="ActivityType4"/>
+
+    <ACTIVITIES
+        id="-200"
+        version="0"
+        name="CT"
+        description="Not blank"
+        activity_type_id="3"
+        />
+
+    <ACTIVITIES
+        id="-201"
+        version="0"
+        name="BoneScan"
+        description="Descriptiton"
+        activity_type_id="4"
+        />
+
+    <ACTIVITY_PROPERTIES
+        id="-29"
+        version="0"
+        activity_id="-201"
+        namespace="uri"
+        name="-1.template"
+        value="templateValue1"
+        />
+
+     <ACTIVITY_PROPERTIES
+        id="-30"
+        version="0"
+        activity_id="-201"
+        namespace="uri"
+        name="-1.text"
+        value="textValue1"
+        />
+    <ACTIVITY_PROPERTIES
+        id="-31"
+        version="0"
+        activity_id="-200"
+        namespace="uri"
+        name="-2.template"
+        value="templateValue2"
+        />
+
+     <ACTIVITY_PROPERTIES
+        id="-32"
+        version="0"
+        activity_id="-200"
+        namespace="uri"
+        name="-2.text"
+        value="textValue2"
+        />
+</dataset>
