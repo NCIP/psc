@@ -29,6 +29,7 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     private AdvancedEditActivityCommand command;
     private HibernateTemplate hibernateTemplate = new HibernateTemplate();
     private final String namespace = "uri";
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -131,7 +132,7 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetIndexForExistingUri() throws Exception {
+    public void testGetKeyForExistingUri() throws Exception {
         activityProperties = createActivityProperty(activity0,namespace,"template","http://templateValue.com","text","textValue");
         ActivityProperty activityProperty = createSingleActivityProperty(activity0,namespace,"12.template","http://newTemplateValue.com");
         activityProperties.add(activityProperty);
@@ -145,7 +146,24 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
 
     }
 
-    public void testGetIndexFoNewUri() throws Exception {
+    public void testGetKeyWithStringValueForExistingUri() throws Exception {
+        activityProperties = createActivityProperty(activity0,namespace,"template","http://templateValue.com","text","textValue");
+        ActivityProperty activityProperty = createSingleActivityProperty(activity0,namespace,"id.template","http://newTemplateValue.com");
+        ActivityProperty activityProperty1 = createSingleActivityProperty(activity0,namespace,"id.text","textValue");
+        activityProperties.add(activityProperty);
+        activityProperties.add(activityProperty1);
+        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
+
+        replayMocks();
+        Map<String, AdvancedEditActivityCommand.UriPropertyList> actual = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao).getExistingUri();
+        verifyMocks();
+
+        assertEquals("Index doesn't work",actual.get("id").getTemplateValue(), "http://newTemplateValue.com");
+        assertEquals("Index doesn't work",actual.get("id").getTextValue(), "textValue");
+
+    }
+
+    public void testGetKeyIndexFoNewUri() throws Exception {
         activityProperties = createActivityProperty(activity0,namespace,"0.template","http://templateValue.com","0.text","textValue");
         ActivityProperty activityProperty1 = createSingleActivityProperty(activity0,namespace,"1.template","TemplateValue");
         ActivityProperty activityProperty2 = createSingleActivityProperty(activity0,namespace,"template","TemplateValue");
@@ -168,7 +186,7 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
      private static ActivityProperty ActivityPropertyEq(ActivityProperty expectedActivityProperty) {
         EasyMock.reportMatcher(new ActivityPropertyMatcher(expectedActivityProperty));
         return null;
-    }
+     }
 
     private static class ActivityPropertyMatcher implements IArgumentMatcher {
         private ActivityProperty expectedActivityProperty;

@@ -138,23 +138,22 @@ public class AdvancedEditActivityCommand implements Validatable {
                 while(iterator.hasNext())   {
                     ActivityProperty activityPropertyFirst = (ActivityProperty)iterator.next();
                     String[] indexValueFirst = activityPropertyFirst.getName().split("\\.");
-                    if(indexValueFirst!=null && indexValueFirst[0].matches("\\d+")) {
-                        int indexFirst = Integer.parseInt(indexValueFirst[0]);
+                    if(indexValueFirst!=null) {
                         Iterator iteratorAll = activityProperties.iterator();
 
                         //Compare with all other properties For Activity and Put together similar Index Activity Property
                         while(iteratorAll .hasNext()) {
                             ActivityProperty activityPropertyAll = (ActivityProperty)iteratorAll.next();
                             String[] indexValueAll = activityPropertyAll.getName().split("\\.");
-                            if(indexValueAll!=null && indexValueAll[0].matches("\\d+") && indexValueAll.length==2) {
-                                if(indexFirst==Integer.parseInt(indexValueAll[0])) {
+                            if(indexValueAll!=null && indexValueAll.length==2) {
+                                if(indexValueFirst[0].equals(indexValueAll[0])) {
                                     if(indexValueAll[1].equalsIgnoreCase("template")) {
                                         data[i][0] = activityPropertyAll.getValue();
                                     }
                                     if(indexValueAll[1].equalsIgnoreCase("text")) {
                                         data[i][1] = activityPropertyAll.getValue();
                                     }
-                                    indexSize[i] = Integer.toString(indexFirst);
+                                    indexSize[i] = indexValueFirst[0];
                                 }
                             }
                         }
