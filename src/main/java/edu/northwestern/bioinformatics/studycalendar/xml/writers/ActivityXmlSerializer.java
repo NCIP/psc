@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -12,13 +14,15 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
 public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     private boolean embeddedInSource;
     private ActivityTypeDao activityTypeDao;
-
+    private ActivityPropertyXmlSerializer activityPropertyXmlSerializer = new ActivityPropertyXmlSerializer();
     public ActivityXmlSerializer() {
         this(false);
     }
@@ -36,6 +40,11 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         XsdAttribute.ACTIVITY_TYPE.addTo(aElt, a.getType().getName());
         if (!embeddedInSource && a.getSource() != null) {
             XsdAttribute.ACTIVITY_SOURCE.addTo(aElt, a.getSource().getNaturalKey());
+        }
+        if (embeddedInSource) {
+            for(ActivityProperty ap : a.getProperties()) {
+                aElt.add(activityPropertyXmlSerializer.createElement(ap));
+            }
         }
         return aElt;
     }
@@ -81,7 +90,11 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
             sourceTemplate.setName(XsdAttribute.ACTIVITY_SOURCE.from(element));
             activity.setSource(sourceTemplate);
         }
-
+        if (embeddedInSource) {
+            for(Element apElt:(List<Element>) element.elements("property")) {
+                activity.addProperty(activityPropertyXmlSerializer.readElement(apElt));
+            }
+        }
         return activity;
     }
     public boolean validateElement(Activity activity, Element element) {
@@ -117,5 +130,10 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
     @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
+    }
+    
+    @Required
+    public void setActivityPropertyXmlSerializer(ActivityPropertyXmlSerializer activityPropertyXmlSerializer) {
+        this.activityPropertyXmlSerializer = activityPropertyXmlSerializer;
     }
 }

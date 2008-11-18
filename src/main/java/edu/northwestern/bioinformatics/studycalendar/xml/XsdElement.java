@@ -15,7 +15,8 @@ public enum XsdElement {
     ACTIVITY,
     ACTIVITY_SOURCES("sources"),
     ACTIVITY_SOURCE("source"),
-
+    ACTIVITY_PROPERTY("property"),
+    
     REGISTRATIONS,
     REGISTRATION,
     SUBJECT_ASSIGNMENTS,

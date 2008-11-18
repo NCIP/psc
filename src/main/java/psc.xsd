@@ -226,6 +226,9 @@
     <xsd:element name="activity" type="psc:Activity"/>
 
     <xsd:complexType name="Activity">
+        <xsd:sequence>
+           <xsd:element name="property" type="psc:Property" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string"/>
@@ -235,7 +238,15 @@
         <xsd:attribute name="source" type="xsd:string"/>
     </xsd:complexType>
 
-   <xsd:element name="label" type="psc:Label"/>
+    <xsd:element name="property" type="psc:Property"/>
+
+    <xsd:complexType name="Property">
+        <xsd:attribute name="namespace" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="label" type="psc:Label"/>
 
     <xsd:complexType name="Label">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
