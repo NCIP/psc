@@ -140,6 +140,7 @@
             var lastRequest = new Ajax.Request(href,
             {
                 method: 'post',
+                onSuccess: enableExportOptions(),
                 onFailure: function(response) {
                     displayErrorOnFailure(response, indicator)
                 }
