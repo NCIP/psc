@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
+@AccessControl(roles =Role.SYSTEM_ADMINISTRATOR)
 public class AdministrationController extends ParameterizableViewController implements CrumbSource {
     private DefaultCrumb crumb;
 

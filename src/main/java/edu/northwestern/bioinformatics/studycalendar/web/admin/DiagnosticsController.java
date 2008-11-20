@@ -21,10 +21,12 @@ import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFacto
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarMailMessage;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
 
 import java.util.List;
-
+@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class DiagnosticsController extends PscSimpleFormController {
 
     private Configuration configuration;
