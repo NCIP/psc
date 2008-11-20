@@ -138,6 +138,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
 
     public void testCopyPeriods() {
         Study loaded = studyDao.getById(-1);
+        loaded = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
+
         assertNotNull(loaded);
         SortedSet<Period> periods = loaded.getPlannedCalendar().getEpochs().get(0).getChildren().get(0).getPeriods();
         assertEquals("must have 1 periods", 1, periods.size());
@@ -158,6 +160,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     public void testCopyPlannedActivities() {
         Study loaded = studyDao.getById(-1);
         assertNotNull(loaded);
+        loaded = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
+
         List<PlannedActivity> plannedActivities = loaded.getPlannedCalendar().getEpochs().get(0).getChildren().get(0).getPeriods().iterator().next().getPlannedActivities();
         assertEquals("must have 1 planned activities", 1, plannedActivities.size());
 
@@ -177,6 +181,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     public void testCopyPlannedActivitiesWithPopulations() {
         Study loaded = studyDao.getById(-1);
         assertNotNull(loaded);
+        loaded = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
+
         List<PlannedActivity> plannedActivities = loaded.getPlannedCalendar().getEpochs().get(0).getChildren().get(0).getPeriods().iterator().next().getPlannedActivities();
         assertEquals("must have 1 planned activities", 1, plannedActivities.size());
         Population population = plannedActivities.get(0).getPopulation();
@@ -201,6 +207,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     public void testCopyPlannedActivitiesWithLabels() {
         Study loaded = studyDao.getById(-1);
         assertNotNull(loaded);
+        loaded = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
+        
         List<PlannedActivity> plannedActivities = loaded.getPlannedCalendar().getEpochs().get(0).getChildren().get(0).getPeriods().iterator().next().getPlannedActivities();
         assertEquals("must have 1 planned activities", 1, plannedActivities.size());
         assertFalse("planned activity must have labels", plannedActivities.get(0).getPlannedActivityLabels().isEmpty());
