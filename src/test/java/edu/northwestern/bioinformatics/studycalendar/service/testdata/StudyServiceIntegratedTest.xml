@@ -24,8 +24,7 @@
     <PLANNED_CALENDARS id="-1" study_id="-1"/>
 
     <EPOCHS id="-11" planned_calendar_id="-1" name="Epoch"/>
-    <STUDY_SEGMENTS id="-31" epoch_id="-11" name="Don't care"/>
-
+  
     <STUDY_SEGMENTS id="-32" version="0" name="Treatment" cycle_length="14" epoch_id="-11"/>
 
     <PERIODS id="-2" study_segment_id="-32" version="0" start_day="8" name="Treatment" duration_quantity="6"
