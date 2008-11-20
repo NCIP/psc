@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Arrays;
@@ -140,6 +140,21 @@ public class StudyTest extends StudyCalendarTestCase {
         assertNotSame("Clone is same", study, clone);
         assertNotSame("Planned calendar not deep-cloned", study.getPlannedCalendar(), clone.getPlannedCalendar());
         assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
+    }
+
+
+    public void testCloneShouldCopyBasicProperty() throws Exception {
+        study.setPlannedCalendar(new PlannedCalendar());
+        study.setAssignedIdentifier("ECOG 0123");
+        study.setName("ECOG Study");
+        Study clone = study.clone();
+
+        assertNotSame("Clone is same", study, clone);
+        assertNotSame("Planned calendar not deep-cloned", study.getPlannedCalendar(), clone.getPlannedCalendar());
+
+        assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
+        assertEquals("Cloned should coy the basic properties", clone.getName(), study.getName());
+        assertEquals("Cloned should coy the basic properties", clone.getAssignedIdentifier(), study.getAssignedIdentifier());
     }
 
     public void testTransientCloneIncludesTransientPlannedCalendar() throws Exception {

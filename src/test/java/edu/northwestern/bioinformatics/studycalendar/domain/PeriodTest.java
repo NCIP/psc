@@ -93,8 +93,8 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day 29 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 28.  The offending planned activity is " + pa + '.',
-                scve.getMessage());
+                    "Cannot add a planned activity for day 29 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 28.  The offending planned activity is " + pa + '.',
+                    scve.getMessage());
         }
     }
 
@@ -106,8 +106,8 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day -4 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 51.  The offending planned activity is " + pa + '.',
-                scve.getMessage());
+                    "Cannot add a planned activity for day -4 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 51.  The offending planned activity is " + pa + '.',
+                    scve.getMessage());
         }
     }
 
@@ -119,11 +119,11 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals(
-                "Cannot add a planned activity for day 0 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 196.  The offending planned activity is " + pa + '.',
-                scve.getMessage());
+                    "Cannot add a planned activity for day 0 to " + period + ".  Planned activity days always start with 1.  The maximum for this period is 196.  The offending planned activity is " + pa + '.',
+                    scve.getMessage());
         }
     }
-    
+
     public void testAddPlannedActivityWithNoDurationFails() throws Exception {
         period.getDuration().setQuantity(null);
         PlannedActivity pa = createPlannedActivity("F", 8);
@@ -132,7 +132,7 @@ public class PeriodTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (IllegalStateException ise) {
             assertEquals("Cannot add a planned activity unless the period has a duration",
-                ise.getMessage());
+                    ise.getMessage());
         }
     }
 
@@ -234,6 +234,18 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertEquals("Update wrote through from clone to original", 17, (int) p1.getDuration().getQuantity());
         assertEquals("Update of clone didn't take", 42, (int) p1c.getDuration().getQuantity());
         assertNotSame(p1.getDuration(), p1c.getDuration());
+    }
+
+    public void testClonePlannedActivity() throws Exception {
+        Period p1 = new Period();
+        PlannedActivity pa1 = new PlannedActivity();
+        pa1.setDay(1);
+        p1.addPlannedActivity(pa1);
+        p1.getDuration().setQuantity(17);
+        Period p1c = p1.clone();
+        p1c.getDuration().setQuantity(42);
+        assertEquals("must clone planned activities also", 1, p1c.getPlannedActivities().size());
+        assertSame(p1c.getPlannedActivities().get(0).getParent(), p1c);
     }
 
     public void testCompareTo() {

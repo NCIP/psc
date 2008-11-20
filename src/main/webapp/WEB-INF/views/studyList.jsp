@@ -140,7 +140,7 @@
             $('selected-study').style.display = 'inline';
             $('selected-study-itself').innerHTML= li.innerHTML;
             $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + li.id;
-   
+
         }
 
 
@@ -193,7 +193,7 @@
                     }
                 }
             } else {
-                $(L1).style.display = "none";
+               $(L1).style.display = "none";
                 var arrayOfLeftSiblings = $('L1').siblings();
                 if (arrayOfLeftSiblings[0] != null) {
                     $(arrayOfLeftSiblings[0]).style.display = "inline";
@@ -258,6 +258,11 @@
                                     Delete
                                 </tags:restrictedListItem>
                             </ul>
+                            <ul class="controls">
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy" queryString="study=${template.id}&amendment=${template.developmentAmendmentId}" >
+                                    Copy
+                                </tags:restrictedListItem>
+                            </ul>
                         </li>
                     </c:forEach>
                 </ul>
@@ -284,12 +289,17 @@
                                         assign
                                     </c:if>
                                         the template to a site. A <b>Study Administrator</b> can do this.
+                                    <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
+                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
                                 </div>
                              </c:if>
                              <c:if test="${not empty template.study.studySites}">
                                  <c:forEach items="${template.study.studySites}" var="studySite" varStatus="studySiteStatus">
                                      <c:if test="${not empty studySite.unapprovedAmendments}">
-                                  <div style="width:80%;float:right;">      Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.</div>
+                                  <div style="width:80%;float:right;">      Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.
+                                  <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
+                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
+                                  </div>
                                      </c:if>
                                      <c:if test="${empty studySite.unapprovedAmendments}">
                                          <c:set var="isSubjectCoordinatorAssigned" value="false"/>
@@ -300,10 +310,14 @@
                                          </c:forEach>
                                          <c:if test="${isSubjectCoordinatorAssigned == false}">
                                              <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.</div>
+                                             <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
+                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
                                          </c:if>
                                      </c:if>
                                  </c:forEach>
+
                              </c:if>
+
                          </li>
                     </c:forEach>
                 </ul>
@@ -341,6 +355,10 @@
                                     <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
                                         ${template.displayName}
                                     </a>
+                              <ul class="controls">
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy"
+                                                                 queryString="study=${template.id}"> Copy </tags:restrictedListItem>
+                            </ul>
                                 </li>
                                 <c:if test="${status.last}">
                                     </div>
@@ -368,6 +386,10 @@
                                     <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
                                         ${template.displayName}
                                     </a>
+                                    <ul class="controls">
+                                        <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy"
+                                                                 queryString="study=${template.id}"> Copy </tags:restrictedListItem>
+                                    </ul>
                                 </li>
                                 <c:if test="${status.last}">
                                     </div>

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @Transactional(readOnly = true)
 public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> implements DeletableDomainObjectDao<Study> {
+    private static final String COPY = "copy";
 
     @Override
     public Class<Study> domainClass() {
@@ -40,6 +42,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
      * Finds the assignments for a particular study
      *
      * @param studyId the study to get the assignments for
+     *
      * @return a list of the assignments for the study id given
      */
     @SuppressWarnings({"unchecked"})
@@ -59,6 +62,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
      * Finds a study based on the assignment identifer given
      *
      * @param assignedIdentifier the assignment identifier for the study to search for
+     *
      * @return the study that has the given assignment identifier
      */
     @SuppressWarnings({"unchecked"})
@@ -71,6 +75,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
      * Gets the study id that corresponds to the given assignment identifier
      *
      * @param assignedIdentifier the assignment identifier to search for the study to search for
+     *
      * @return the study id that corresponds to the study assignment identifier given
      */
     public String getStudyIdByAssignedIdentifier(final String assignedIdentifier) {
@@ -109,6 +114,35 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         return templateName;
     }
 
+    @SuppressWarnings({"unchecked"})
+    public String getNewStudyNameForCopyingStudy(String studyName) {
+        String templateName = studyName;
+        templateName = templateName + " copy";
+
+        final String searchString = templateName + "%";
+        List<Study> studies = getHibernateTemplate().find("from Study a where assigned_identifier LIKE ? ORDER BY assigned_identifier DESC", new String[]{searchString});
+        if (studies.size() == 0) {
+            return templateName;
+        }
+
+        Collections.sort(studies, new CopiedStudyTemporaryNameComparator());
+        Study study = studies.get(0);
+        String name = study.getName();
+        String numericPartSupposedly = name.substring(name.indexOf(COPY) + 4, name.length());
+        int newNumber = 0;
+        if (!StringUtils.isBlank(numericPartSupposedly)) {
+            try {
+                newNumber = Integer.valueOf(numericPartSupposedly.trim()) + 1;
+            } catch (NumberFormatException e) {
+                log.debug("Can't convert study's numeric string " + newNumber + " into int");
+            }
+        } else {
+            newNumber = 2;
+        }
+        templateName = templateName + " " + newNumber;
+        return templateName;
+    }
+
 
     /**
      * Deletes a study
@@ -125,6 +159,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
      * Returns all studies if no study found matching with given search text
      *
      * @param studySearchText
+     *
      * @return
      */
     public List<Study> searchStudiesByStudyName(final String studySearchText) {
@@ -146,6 +181,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
          *
          * @param study
          * @param anotherStudy
+         *
          * @return
          */
         public int compare(final Study study, final Study anotherStudy) {
@@ -174,5 +210,47 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
 
             return 1;
         }
+    }
+
+    private class CopiedStudyTemporaryNameComparator implements Comparator<Study> {
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        /**
+         * Compares the study name. Compares only  studies having name matches with copy * .
+         *
+         * @param study
+         * @param anotherStudy
+         *
+         * @return
+         */
+        public int compare(final Study study, final Study anotherStudy) {
+            // String numericPartSupposedly = "";
+            String name = study.getName();
+            String anotherStudyName = anotherStudy.getName();
+            if (name.indexOf(COPY) <= 0 || anotherStudyName.indexOf(COPY) <= 0) {
+                return 0;
+            }
+
+            String numericPartSupposedly = name.substring(name.indexOf(COPY) + 4, name.length());
+            String anotherNumericPartSupposedly = anotherStudyName.substring(anotherStudyName.indexOf(COPY) + 4, anotherStudyName.length());
+            Integer number = 0;
+            Integer anotherNumber = 0;
+            try {
+
+                number = !StringUtils.isBlank(numericPartSupposedly) ? Integer.valueOf(numericPartSupposedly.trim()) : 0;
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName() + ". error message:" + e.getMessage());
+            }
+            try {
+
+                anotherNumber = !StringUtils.isBlank(anotherNumericPartSupposedly) ? Integer.valueOf(anotherNumericPartSupposedly.trim()) : 0;
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName() + ". error message:" + e.getMessage());
+            }
+            return anotherNumber.compareTo(number);
+
+
+        }
+
     }
 }

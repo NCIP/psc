@@ -95,6 +95,19 @@ public class StudyService {
         }
     }
 
+    public Study copy(final Study study) {
+
+
+        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study.getName());
+        Study copiedStudy = study.copy(newStudyName);
+        studyDao.save(copiedStudy);
+
+        if (copiedStudy.getDevelopmentAmendment() != null) {
+            deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
+        }
+        return copiedStudy;
+    }
+
     public Study saveStudyFor(PlanTreeNode<?> node) {
         node = templateService.findCurrentNode(node);
         Study study = templateService.findStudy(node);

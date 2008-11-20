@@ -112,6 +112,9 @@
 
     <bean name="/cal/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
+    <bean name="/cal/copyStudy" id="copyStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.CopyStudyController"/>
+
 
     <bean name="/activities" id="activityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
