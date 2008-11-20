@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author Jalpa Patel
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class AdvancedEditActivityController extends PscSimpleFormController {
     private ActivityDao activityDao;
     Activity activity;
