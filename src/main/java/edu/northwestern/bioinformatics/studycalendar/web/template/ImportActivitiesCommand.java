@@ -22,7 +22,7 @@ public class ImportActivitiesCommand implements Validatable {
         if (activitiesFile.getContentType().contains("xml")) {
 
             service.loadAndSave(activitiesFile.getInputStream());
-        } else if (activitiesFile.getContentType().contains("csv")) {
+        } else if (activitiesFile.getContentType().contains("plain")) {
 
             service.loadAndSaveCSVFile(activitiesFile.getInputStream());
         }
