@@ -20,15 +20,16 @@ public class ImportActivitiesService {
     private ActivitySourceXmlSerializer xmlSerializer;
     private SourceSerializer sourceSerializer;
 
-    public void loadAndSave(InputStream sourcesXml) throws Exception {
+    public Source loadAndSave(InputStream sourcesXml) throws Exception {
         Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
 
         save(validSources);
+        return validSources.iterator().next();
     }
 
-    public void loadAndSaveCSVFile(InputStream inputStream) throws Exception {
-        sourceSerializer.readDocument(inputStream);
+    public Source loadAndSaveCSVFile(InputStream inputStream) throws Exception {
+        return sourceSerializer.readDocument(inputStream);
 
     }
 

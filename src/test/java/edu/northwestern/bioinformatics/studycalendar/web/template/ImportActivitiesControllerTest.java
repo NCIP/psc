@@ -52,9 +52,6 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         ActivityDao activityDao = registerDaoMockFor(ActivityDao.class);
         source = setId(11, createNamedInstance("Test Source", Source.class));
         controller.setSourceDao(sourceDao);
-        controller.setActivityDao(activityDao);
-        controller.setPlannedActivityDao(plannedActivityDao);
-        controller.setActivityTypeDao(activityTypeDao);
 
         sources = new ArrayList<Source>();
         activityTypes = new ArrayList<ActivityType>();
@@ -77,7 +74,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
 //        sources.add(source);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
-        assertEquals("Wrong view", "activity", getOnSubmitData().getViewName());
+        assertEquals("Wrong view", "redirectToActivities", getOnSubmitData().getViewName());
     }
 
     public void testSubmitWithReturnToActivity() throws Exception {
@@ -86,7 +83,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         ModelAndView mv = getOnSubmitData();
 
-        assertEquals("Wrong view", "activity", mv.getViewName());
+        assertEquals("Wrong view", "redirectToActivities", mv.getViewName());
     }
 
     public void testGet() throws Exception {
@@ -104,7 +101,7 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         MultipartFile mockFile = new MockMultipartFile("activitiesFile", TEST_XML.getBytes());
         multipartRequest.addFile(mockFile);
 
-        command.apply();
+        expect(command.apply()).andReturn(source).anyTimes();
         replayMocks();
 
         ModelAndView mv = controller.handleRequest(multipartRequest, response);
@@ -125,6 +122,6 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
     }
 
     protected void onSubmitDataCalls() throws Exception{
-        command.apply();
+       expect(command.apply()).andReturn(source).anyTimes();
     }
 }

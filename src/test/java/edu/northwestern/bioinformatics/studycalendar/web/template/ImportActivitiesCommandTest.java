@@ -27,7 +27,7 @@ public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
     public void testApply() throws Exception {
         expect(file.getInputStream()).andReturn(null);
         expect(file.getContentType()).andReturn("text/xml");
-        service.loadAndSave(null);
+        expect(service.loadAndSave(null)).andReturn(null).anyTimes();
         replayMocks();
 
         command.apply();

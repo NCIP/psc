@@ -4,6 +4,7 @@ import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +19,16 @@ public class ImportActivitiesCommand implements Validatable {
     private ImportActivitiesService service;
     private MultipartFile activitiesFile;
 
-    public void apply() throws Exception {
+    public Source apply() throws Exception {
         if (activitiesFile.getContentType().contains("xml")) {
 
-            service.loadAndSave(activitiesFile.getInputStream());
+            return service.loadAndSave(activitiesFile.getInputStream());
         } else if (activitiesFile.getContentType().contains("plain")) {
 
-            service.loadAndSaveCSVFile(activitiesFile.getInputStream());
+          return service.loadAndSaveCSVFile(activitiesFile.getInputStream());
         }
-
-
+   
+        return null;
     }
 
     public void validate(Errors errors) {
