@@ -602,6 +602,11 @@
                                 <property name="linkName" value="activityController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Activity Types"/>
+                                <property name="linkName" value="addEditActivityTypeController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>
