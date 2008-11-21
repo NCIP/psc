@@ -143,6 +143,12 @@
 
     <bean name="/activities/importActivities" id="importActivitiesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
+        <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name" value="Import activities"/>
+                 <property name="parent"><ref local="activityController"/></property>
+             </bean>
+         </property>
     </bean>
 
 
