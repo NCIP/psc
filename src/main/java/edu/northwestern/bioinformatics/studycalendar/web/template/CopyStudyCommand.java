@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 
 /**
@@ -14,9 +13,9 @@ public class CopyStudyCommand {
         this.studyService = studyService;
     }
 
-    public Study create(Study study) {
+    public Study create(Study study, final Integer selectedAmendmentId) {
 
-        Study copiedStudy = studyService.copy(study);
+        Study copiedStudy = studyService.copy(study,selectedAmendmentId);
 
         return copiedStudy;
 

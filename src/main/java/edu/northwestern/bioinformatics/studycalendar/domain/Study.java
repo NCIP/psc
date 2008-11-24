@@ -329,6 +329,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             Population copiedPopulation = population.clone();
             copiedPopulation.setId(null);
             copiedPopulation.setGridId(null);
+            copiedPopulation.setVersion(null);
             copiedStudy.addPopulation(copiedPopulation);
         }
 
@@ -336,46 +337,20 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             List<Epoch> epoches = this.getPlannedCalendar().getChildren();
             for (int i = 0; i < epoches.size(); i++) {
                 Epoch epoch = epoches.get(i);
-                Epoch copiedEpoch = (Epoch) epoch.clone();
-                copiedEpoch.setId(null);
-                copiedEpoch.setGridId(null);
-                copiedEpoch.setChildren(copiedEpoch.createChildrenCollection());
-
-                List<StudySegment> studySegments = epoch.getChildren();
+                Epoch copiedEpoch = (Epoch) epoch.copy();
+                copiedEpoch.setPlannedCalendar(null);
+                List<StudySegment> studySegments = copiedEpoch.getChildren();
 
                 for (StudySegment studySegment : studySegments) {
-                    StudySegment copiedStudySegment = (StudySegment) studySegment.clone();
-                    copiedStudySegment.setId(null);
-                    copiedStudySegment.setGridId(null);
-                    copiedStudySegment.setChildren(copiedStudySegment.createChildrenCollection());
-
                     SortedSet<Period> periods = studySegment.getPeriods();
                     for (Period period : periods) {
-                        Period copiedPeriod = period.clone();
-                        copiedPeriod.setId(null);
-                        copiedPeriod.setGridId(null);
-                        copiedPeriod.setPlannedActivities(copiedPeriod.createChildrenCollection());
-
-
                         List<PlannedActivity> plannedActivities = period.getChildren();
-
                         for (PlannedActivity plannedActivity : plannedActivities) {
-                            PlannedActivity copiedPlannedActivity = plannedActivity.clone();
-                            copiedPlannedActivity.setId(null);
-                            copiedPlannedActivity.setGridId(null);
-                            copiedPlannedActivity.setPopulation(Population.findMatchingPopulationByAbbreviation(copiedStudy.getPopulations(), plannedActivity.getPopulation()));
-                            SortedSet<PlannedActivityLabel> plannedActivityLabels = copiedPlannedActivity.getChildren();
-                            for (PlannedActivityLabel plannedActivityLabel : plannedActivityLabels) {
-                                plannedActivityLabel.setId(null);
-                                plannedActivityLabel.setGridId(null);
-                            }
-                            copiedPeriod.addPlannedActivity(copiedPlannedActivity);
-
+                            plannedActivity.setPopulation(Population.findMatchingPopulationByAbbreviation(copiedStudy.getPopulations(), plannedActivity.getPopulation()));
                         }
-                        copiedStudySegment.addPeriod(copiedPeriod);
                     }
-                    copiedEpoch.addStudySegment(copiedStudySegment);
                 }
+
                 TemplateSkeletonCreatorImpl.addEpoch(copiedStudy, i, copiedEpoch);
 
             }

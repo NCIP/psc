@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertContains;
 
@@ -103,6 +104,39 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong name", "New study", loaded.getName());
             assertNotNull("Grid ID not automatically added", loaded.getGridId());
+        }
+    }
+
+    public void testSaveNewStudyWithPopulation() throws Exception {
+        Integer savedId;
+        {
+            Study study = new Study();
+            study.setName("New study");
+            study.setLongTitle("New study");
+            Population population = new Population();
+            population.setName("pop1");
+            population.setAbbreviation("p1");
+            study.addPopulation(population);
+            getDao().save(study);
+            savedId = study.getId();
+            assertNotNull("The saved study didn't get an id", savedId);
+            assertFalse("must load populations", study.getPopulations().isEmpty());
+
+        }
+
+        interruptSession();
+
+        {
+            Study loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload study with id " + savedId, loaded);
+            assertEquals("Wrong name", "New study", loaded.getName());
+            assertNotNull("Grid ID not automatically added", loaded.getGridId());
+            Population population = loaded.getPopulations().iterator().next();
+            assertNotNull("Could not reload study with id " + population);
+            assertNotNull("Grid ID not automatically added", population.getGridId());
+            assertEquals("Wrong name", "pop1", population.getName());
+
+
         }
     }
 

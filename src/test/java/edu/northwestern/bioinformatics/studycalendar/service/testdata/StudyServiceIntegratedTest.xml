@@ -17,10 +17,8 @@
 
     <STUDY_SITES id="-300" site_id="-201" study_id="-1"/>
         
-    <populations id="-77" name="Hepatitis positive" abbreviation="H+" study_id="-1"/>
-    <populations id="-76" name="Mesothelioma" abbreviation="M" study_id="-1"/>
-    <populations id="-88" name="hepatoma" abbreviation="h" study_id="-1"/>
-
+    <populations id="-77" name="Hepatitis positive" abbreviation="H+" study_id="-1" grid_id="grid 0"/>
+    
     <PLANNED_CALENDARS id="-1" study_id="-1"/>
 
     <EPOCHS id="-11" planned_calendar_id="-1" name="Epoch"/>

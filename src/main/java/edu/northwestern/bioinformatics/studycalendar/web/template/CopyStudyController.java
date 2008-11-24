@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 public class CopyStudyController extends PscAbstractCommandController<CopyStudyCommand> {
     private StudyService studyService;
     private StudyDao studyDao;
-    private DeltaService deltaService;
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
@@ -35,37 +33,26 @@ public class CopyStudyController extends PscAbstractCommandController<CopyStudyC
         int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
         Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
         Study study = studyDao.getById(studyId);
-        Study revisedStudy = study;
 
         if (study != null) {
-            Amendment amendment = null;
-            if (selectedAmendmentId == null) {
-                amendment = study.getAmendment();
-            } else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
-                amendment = study.getDevelopmentAmendment();
-                revisedStudy = deltaService.revise(study, amendment);
-
+            try {
+                Study copiedStudy = command.create(study, selectedAmendmentId);
+                return getControllerTools().redirectToCalendarTemplate(copiedStudy.getId(), null, copiedStudy.getDevelopmentAmendment().getId());
+            } catch (StudyCalendarValidationException scve) {
+                log.error(scve.getMessage());
+                errors.reject(scve.getMessage());
             }
-
-
-            if (amendment == null) {
-                errors.reject("Can not find amendment for given amendment id:" + amendment);
-                return null;
-            }
-            Study copiedStudy = command.create(revisedStudy);
-            return getControllerTools().redirectToCalendarTemplate(copiedStudy.getId(), null, copiedStudy.getDevelopmentAmendment().getId());
 
 
         } else {
-            errors.reject("Can not find study for given id:" + studyId);
+            String errorMessage = "Can not find study for given id:" + studyId;
+            log.error(errorMessage);
+
+            errors.reject(errorMessage);
         }
         return null;
     }
 
-    @Required
-    public void setDeltaService(final DeltaService deltaService) {
-        this.deltaService = deltaService;
-    }
 
     @Required
     public void setStudyDao(final StudyDao studyDao) {

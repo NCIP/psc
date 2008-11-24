@@ -14,8 +14,7 @@ import java.util.SortedSet;
  * @param <G> type of the collection of children (will be either List or SortedSet)
  */
 public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTreeNode, G extends Collection<C>>
-    extends PlanTreeNode<P> implements Parent<C, G>
-{
+        extends PlanTreeNode<P> implements Parent<C, G> {
     private G children;
 
     protected PlanTreeInnerNode() {
@@ -24,13 +23,13 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
 
     protected abstract G createChildrenCollection();
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public void addChild(C child) {
         children.add(child);
         child.setParent(this);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public C removeChild(C child) {
         if (children.remove(child)) {
             child.setParent(null);
@@ -46,6 +45,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
      * node's child type.
      *
      * @param key
+     *
      * @return
      */
     public abstract C findNaturallyMatchingChild(String key);
@@ -71,7 +71,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         return found;
     }
 
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    @SuppressWarnings({"RawUseOfParameterizedType"})
     public boolean isAncestorOf(PlanTreeNode descendant) {
         Collection<C> all = getChildren();
         if (all instanceof SortedSet) {
@@ -115,7 +115,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
     }
 
     @Override
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     protected PlanTreeInnerNode<P, C, G> clone() {
         PlanTreeInnerNode<P, C, G> clone = (PlanTreeInnerNode<P, C, G>) super.clone();
         // deep clone the children
@@ -124,5 +124,18 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
             clone.addChild((C) child.clone());
         }
         return clone;
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked"})
+    protected PlanTreeInnerNode<P, C, G> copy() {
+        PlanTreeInnerNode<P, C, G> copiedParent = (PlanTreeInnerNode<P, C, G>) super.copy();
+        copiedParent.setChildren(copiedParent.createChildrenCollection());
+
+        for (C child : getChildren()) {
+            C copiedChild = (C) child.copy();
+            copiedParent.addChild(copiedChild);
+        }
+        return copiedParent;
     }
 }

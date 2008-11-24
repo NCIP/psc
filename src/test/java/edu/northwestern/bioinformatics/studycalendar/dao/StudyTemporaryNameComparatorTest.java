@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +19,14 @@ public class StudyTemporaryNameComparatorTest extends StudyCalendarTestCase {
 
     private List<Study> studyList = new ArrayList<Study>();
 
-    private HibernateTemplate hibernateTemplate;
+    private StudyService studyService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = new StudyDao();
-        hibernateTemplate = registerMockFor(HibernateTemplate.class);
-
-        studyDao.setHibernateTemplate(hibernateTemplate);
+        studyDao = registerDaoMockFor(StudyDao.class);
+        studyService = new StudyService();
+        studyService.setStudyDao(studyDao);
 
         study1 = new Study();
         study1.setName("[ABC 999]");
@@ -59,9 +57,9 @@ public class StudyTemporaryNameComparatorTest extends StudyCalendarTestCase {
 
         studyList.add(study3);
 
-        expect(hibernateTemplate.find(isA(String.class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("[ABC %]")).andReturn(studyList);
         replayMocks();
-        String newStudyName = studyDao.getNewStudyName();
+        String newStudyName = studyService.getNewStudyName();
         assertEquals("[ABC 1002]", newStudyName);
         verifyMocks();
 
@@ -76,9 +74,9 @@ public class StudyTemporaryNameComparatorTest extends StudyCalendarTestCase {
 
         studyList.add(study3);
 
-        expect(hibernateTemplate.find(isA(String.class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("[ABC %]")).andReturn(studyList);
         replayMocks();
-        String newStudyName = studyDao.getNewStudyName();
+        String newStudyName = studyService.getNewStudyName();
         assertEquals("[ABC 1002]", newStudyName);
         verifyMocks();
 

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
@@ -7,14 +8,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 public class StudyService {
@@ -27,6 +28,8 @@ public class StudyService {
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
     protected DaoFinder daoFinder;
+    private static final String COPY = "copy";
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -60,9 +63,6 @@ public class StudyService {
         studyDao.save(study);
     }
 
-    public String getNewStudyName() {
-        return studyDao.getNewStudyName();
-    }
 
     private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
         for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
@@ -95,17 +95,92 @@ public class StudyService {
         }
     }
 
-    public Study copy(final Study study) {
+
+    public Study copy(final Study study, final Integer selectedAmendmentId) {
+
+        if (study != null) {
+            Amendment amendment = null;
+            Study revisedStudy = study;
+            if (selectedAmendmentId == null) {
+                amendment = study.getAmendment();
+            } else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
+                amendment = study.getDevelopmentAmendment();
+                revisedStudy = deltaService.revise(study, amendment);
+
+            }
 
 
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study.getName());
-        Study copiedStudy = study.copy(newStudyName);
-        studyDao.save(copiedStudy);
+            if (amendment == null) {
+                throw new StudyCalendarValidationException("Can not find amendment for given amendment id:" + selectedAmendmentId);
 
-        if (copiedStudy.getDevelopmentAmendment() != null) {
-            deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
+            }
+            String newStudyName = this.getNewStudyNameForCopyingStudy(revisedStudy.getName());
+            Study copiedStudy = revisedStudy.copy(newStudyName);
+            studyDao.save(copiedStudy);
+
+            if (copiedStudy.getDevelopmentAmendment() != null) {
+                deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
+            }
+            return copiedStudy;
+        } else {
+            throw new StudyCalendarValidationException("Can not find study");
         }
-        return copiedStudy;
+
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public String getNewStudyNameForCopyingStudy(String studyName) {
+        String templateName = studyName;
+        templateName = templateName + " copy";
+
+        final String searchString = templateName + "%";
+        List<Study> studies = getStudyDao().searchStudiesByAssignedIdentifier(searchString);
+        if (studies.size() == 0) {
+            return templateName;
+        }
+
+        Collections.sort(studies, new CopiedStudyTemporaryNameComparator());
+        Study study = studies.get(0);
+        String name = study.getName();
+        String numericPartSupposedly = name.substring(name.indexOf(COPY) + 4, name.length());
+        int newNumber = 0;
+        if (!StringUtils.isBlank(numericPartSupposedly)) {
+            try {
+                newNumber = Integer.valueOf(numericPartSupposedly.trim()) + 1;
+            } catch (NumberFormatException e) {
+                log.debug("Can't convert study's numeric string " + newNumber + " into int");
+            }
+        } else {
+            newNumber = 2;
+        }
+        templateName = templateName + " " + newNumber;
+
+        if (studyDao.getByAssignedIdentifier(templateName) != null) {
+            return getNewStudyNameForCopyingStudy(templateName);
+        }
+        return templateName;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public String getNewStudyName() {
+        String templateName = "[ABC 1000]";
+
+        List<Study> studies = getStudyDao().searchStudiesByAssignedIdentifier("[ABC %]");
+        Collections.sort(studies, new StudyTemporaryNameComparator());
+        if (studies.size() == 0) {
+            return templateName;
+        }
+        Study study = studies.get(0);
+        String studyName = study.getName();
+        String numericPartSupposedly = studyName.substring(studyName.indexOf(" ") + 1, studyName.lastIndexOf("]"));
+        int newNumber = 1000;
+        try {
+            newNumber = new Integer(numericPartSupposedly) + 1;
+        } catch (NumberFormatException e) {
+            log.debug("Can't convert study's numeric string " + newNumber + " into int");
+        }
+        templateName = "[ABC " + newNumber + "]";
+        return templateName;
     }
 
     public Study saveStudyFor(PlanTreeNode<?> node) {
@@ -262,4 +337,87 @@ public class StudyService {
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
     }
+
+    private class CopiedStudyTemporaryNameComparator implements Comparator<Study> {
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        /**
+         * Compares the study name. Compares only  studies having name matches with copy * .
+         *
+         * @param study
+         * @param anotherStudy
+         *
+         * @return
+         */
+        public int compare(final Study study, final Study anotherStudy) {
+            // String numericPartSupposedly = "";
+            String name = study.getName();
+            String anotherStudyName = anotherStudy.getName();
+            if (name.indexOf(COPY) <= 0 || anotherStudyName.indexOf(COPY) <= 0) {
+                return 0;
+            }
+
+            String numericPartSupposedly = name.substring(name.indexOf(COPY) + 4, name.length());
+            String anotherNumericPartSupposedly = anotherStudyName.substring(anotherStudyName.indexOf(COPY) + 4, anotherStudyName.length());
+            Integer number = 0;
+            Integer anotherNumber = 0;
+            try {
+
+                number = !StringUtils.isBlank(numericPartSupposedly) ? Integer.valueOf(numericPartSupposedly.trim()) : 0;
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName() + ". error message:" + e.getMessage());
+            }
+            try {
+
+                anotherNumber = !StringUtils.isBlank(anotherNumericPartSupposedly) ? Integer.valueOf(anotherNumericPartSupposedly.trim()) : 0;
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName() + ". error message:" + e.getMessage());
+            }
+            return anotherNumber.compareTo(number);
+
+
+        }
+
+    }
+
+    private static class StudyTemporaryNameComparator implements Comparator<Study> {
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        /**
+         * Compares the study name. Compares only  studies having name matches with [ABC *] .
+         *
+         * @param study
+         * @param anotherStudy
+         *
+         * @return
+         */
+        public int compare(final Study study, final Study anotherStudy) {
+            // String numericPartSupposedly = "";
+            String name = study.getName();
+            String anotherStudyName = anotherStudy.getName();
+            if (name.indexOf("ABC") <= 0 || anotherStudyName.indexOf("ABC") <= 0) {
+                return 1;
+            } else if (name.indexOf("]") <= 0 || anotherStudyName.indexOf("]") <= 0) {
+                return 1;
+            }
+            if (name.indexOf("[") < 0 || anotherStudyName.indexOf("[") < 0) {
+                return 1;
+            }
+
+            try {
+                String numericPartSupposedly = name.substring(name.indexOf(" ") + 1, name.lastIndexOf("]"));
+                String anotherNumericPartSupposedly = anotherStudyName.substring(anotherStudyName.indexOf(" ") + 1, anotherStudyName.lastIndexOf("]"));
+                Integer number = new Integer(numericPartSupposedly);
+                Integer anotherNumber = new Integer(anotherNumericPartSupposedly);
+                return anotherNumber.compareTo(number);
+
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName());
+            }
+
+            return 1;
+        }
+    }
+
+
 }

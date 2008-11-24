@@ -1,15 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 public class PlannedActivityTest extends StudyCalendarTestCase {
     private PlannedActivity pa0, pa1;
@@ -88,23 +84,41 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         assertSame("Activity is not same object", pa0.getActivity(), clone.getActivity());
     }
 
+    public void testCopy() throws Exception {
+        pa0.setId(1);
+        pa0.setGridId("grid 0");
+        PlannedActivity copiedPlannedActivity = pa0.copy();
+
+        assertNotNull(copiedPlannedActivity);
+
+        assertNotSame("copied node and source node must be different", copiedPlannedActivity, pa0);
+        assertNull(copiedPlannedActivity.getId());
+        assertNull(copiedPlannedActivity.getGridId());
+
+        assertEquals("must copy activity", copiedPlannedActivity.getActivity(), pa0.getActivity());
+        assertSame("activity must be same", copiedPlannedActivity.getActivity(), pa0.getActivity());
+        assertEquals("must copy condition", copiedPlannedActivity.getCondition(), pa0.getCondition());
+        assertEquals("must copy day", copiedPlannedActivity.getDay(), pa0.getDay());
+        assertEquals("must copy details", copiedPlannedActivity.getDetails(), pa0.getDetails());
+    }
+
     public void testCloneDeepClonesLabels() throws Exception {
         labelPlannedActivity(pa0, "foo", "boom");
         PlannedActivity clone = pa0.clone();
         assertEquals("clone has different number of labels",
-            pa0.getPlannedActivityLabels().size(), clone.getPlannedActivityLabels().size());
+                pa0.getPlannedActivityLabels().size(), clone.getPlannedActivityLabels().size());
         assertNotSame("clone has same labels collection",
-            pa0.getPlannedActivityLabels(), clone.getPlannedActivityLabels());
+                pa0.getPlannedActivityLabels(), clone.getPlannedActivityLabels());
         assertNotSame("first label not cloned",
-            pa0.getPlannedActivityLabels().first(), clone.getPlannedActivityLabels().first());
+                pa0.getPlannedActivityLabels().first(), clone.getPlannedActivityLabels().first());
         assertEquals("first label not cloned",
-            pa0.getPlannedActivityLabels().first().getLabel(), clone.getPlannedActivityLabels().first().getLabel());
+                pa0.getPlannedActivityLabels().first().getLabel(), clone.getPlannedActivityLabels().first().getLabel());
         assertNotSame("last label not cloned",
-            pa0.getPlannedActivityLabels().last(), clone.getPlannedActivityLabels().last());
+                pa0.getPlannedActivityLabels().last(), clone.getPlannedActivityLabels().last());
         assertEquals("last label not cloned",
-            pa0.getPlannedActivityLabels().last().getLabel(), clone.getPlannedActivityLabels().last().getLabel());
+                pa0.getPlannedActivityLabels().last().getLabel(), clone.getPlannedActivityLabels().last().getLabel());
     }
-    
+
     public void testClonedLabelParentIsClone() throws Exception {
         labelPlannedActivity(pa0, "foo", "boom");
         PlannedActivity clone = pa0.clone();

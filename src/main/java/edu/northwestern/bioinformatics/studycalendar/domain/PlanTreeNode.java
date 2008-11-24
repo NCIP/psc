@@ -9,8 +9,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @param <P> parent class
  */
 public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
-    implements Child<P>, Cloneable
-{
+        implements Child<P>, Cloneable {
     private P parent;
     private boolean memoryOnly;
 
@@ -19,6 +18,7 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
     /**
      * Returns true if the segment of the plan tree to which this node belongs
      * is not directly associated with a study.  (That is, it is part of an unapplied revision.)
+     *
      * @return
      */
     public boolean isDetached() {
@@ -65,7 +65,7 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
     ////// OBJECT METHODS
 
     @Override
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     protected PlanTreeNode<P> clone() {
         try {
             return (PlanTreeNode<P>) super.clone();
@@ -74,12 +74,24 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
         }
     }
 
+    //    @Override
+    @SuppressWarnings({"unchecked"})
+    protected PlanTreeNode<P> copy() {
+        PlanTreeNode<P> copy = clone();
+        copy.setId(null);
+        copy.setGridId(null);
+        copy.setVersion(null);
+        return copy;
+
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getSimpleName())
-            .append("[id=").append(getId());
+                .append("[id=").append(getId());
         if (isMemoryOnly()) sb.append("; transient copy");
         sb.append(']');
         return sb.toString();
     }
+
 }

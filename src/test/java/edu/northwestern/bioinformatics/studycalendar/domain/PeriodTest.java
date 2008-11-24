@@ -236,6 +236,32 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertNotSame(p1.getDuration(), p1c.getDuration());
     }
 
+    public void testCopyPeriod() throws Exception {
+        period = new Period();
+        period.setParent(new StudySegment());
+        period.setGridId("grid 0");
+        period.setId(1);
+        period.getDuration().setQuantity(17);
+        period.getDuration().setUnit(Duration.Unit.month);
+        period.setStartDay(2);
+        period.setRepetitions(3);
+        Period copiedPeriod = (Period) period.copy();
+
+        assertNotNull(copiedPeriod);
+        assertNull(copiedPeriod.getId());
+        assertNull(copiedPeriod.getGridId());
+
+        assertNotSame("copied node and source node must be different", copiedPeriod, period);
+
+        assertEquals("must copy name", copiedPeriod.getName(), period.getName());
+        assertEquals("must copy repetitions", copiedPeriod.getRepetitions(), period.getRepetitions());
+        assertEquals("must copy startDay", copiedPeriod.getStartDay(), period.getStartDay());
+        assertEquals("must copy duration", copiedPeriod.getDuration(), period.getDuration());
+        assertNotSame("duration must not be same reference", copiedPeriod.getDuration(), period.getDuration());
+
+
+    }
+
     public void testClonePlannedActivity() throws Exception {
         Period p1 = new Period();
         PlannedActivity pa1 = new PlannedActivity();

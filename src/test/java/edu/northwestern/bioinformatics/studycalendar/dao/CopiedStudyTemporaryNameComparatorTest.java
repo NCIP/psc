@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +15,19 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
 
     private StudyDao studyDao;
 
+    private StudyService studyService;
+
     private Study study1, study2, study3, study4, study5, study6;
 
     private List<Study> studyList = new ArrayList<Study>();
 
-    private HibernateTemplate hibernateTemplate;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = new StudyDao();
-        hibernateTemplate = registerMockFor(HibernateTemplate.class);
-
-        studyDao.setHibernateTemplate(hibernateTemplate);
+        studyDao = registerDaoMockFor(StudyDao.class);
+        studyService = new StudyService();
+        studyService.setStudyDao(studyDao);
 
         study1 = new Study();
         study1.setName("ECOG 0123 copy");
@@ -56,9 +55,10 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
     public void testStudyNameForCopyingFirstTime() {
 
         studyList.clear();
-        expect(hibernateTemplate.find(isA(String.class), isA(String[].class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy%")).andReturn(studyList);
+
         replayMocks();
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study2.getName());
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study2.getName());
         verifyMocks();
         assertEquals("ECOG 0123 copy", newStudyName);
 
@@ -67,9 +67,24 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
 
     public void testStudyNameForCopyingSecondTimeWithoutChangingNameOfFirstCopiedStudy() {
         studyList.add(study1);
-        expect(hibernateTemplate.find(isA(String.class), isA(String[].class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy%")).andReturn(studyList);
+        expect(studyDao.getByAssignedIdentifier("ECOG 0123 copy 2")).andReturn(null);
+
         replayMocks();
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study2.getName());
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study2.getName());
+        verifyMocks();
+        assertEquals("ECOG 0123 copy 2", newStudyName);
+
+
+    }
+
+    public void testStudyNameForCopyingSecondTime() {
+        studyList.add(study1);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy%")).andReturn(studyList);
+        expect(studyDao.getByAssignedIdentifier("ECOG 0123 copy 2")).andReturn(null);
+
+        replayMocks();
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study2.getName());
         verifyMocks();
         assertEquals("ECOG 0123 copy 2", newStudyName);
 
@@ -77,9 +92,10 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
     }
 
     public void testStudyNameForCopyingCopiedStudy() {
-        expect(hibernateTemplate.find(isA(String.class), isA(String[].class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy copy%")).andReturn(studyList);
+
         replayMocks();
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study1.getName());
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study1.getName());
         verifyMocks();
         assertEquals("ECOG 0123 copy copy", newStudyName);
 
@@ -89,9 +105,11 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
     public void testStudyNameForCopyingFourthTimeWithoutChangingNameOfCopiedStudy() {
         studyList.add(study4);
         studyList.add(study3);
-        expect(hibernateTemplate.find(isA(String.class), isA(String[].class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy%")).andReturn(studyList);
+        expect(studyDao.getByAssignedIdentifier("ECOG 0123 copy 4")).andReturn(null);
+
         replayMocks();
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study2.getName());
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study2.getName());
         verifyMocks();
         assertEquals("ECOG 0123 copy 4", newStudyName);
 
@@ -106,9 +124,11 @@ public class CopiedStudyTemporaryNameComparatorTest extends StudyCalendarTestCas
 
         studyList.add(study3);
 
-        expect(hibernateTemplate.find(isA(String.class), isA(String[].class))).andReturn(studyList);
+        expect(studyDao.searchStudiesByAssignedIdentifier("ECOG 0123 copy%")).andReturn(studyList);
+        expect(studyDao.getByAssignedIdentifier("ECOG 0123 copy 4")).andReturn(null);
+
         replayMocks();
-        String newStudyName = studyDao.getNewStudyNameForCopyingStudy(study2.getName());
+        String newStudyName = studyService.getNewStudyNameForCopyingStudy(study2.getName());
         assertEquals("ECOG 0123 copy 4", newStudyName);
         verifyMocks();
 

@@ -2,20 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -46,7 +38,9 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     ////// LOGIC
 
-    public Class<Period> parentClass() { return Period.class; }
+    public Class<Period> parentClass() {
+        return Period.class;
+    }
 
     public int compareTo(PlannedActivity other) {
         // by day
@@ -69,7 +63,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
             return null;
         }
     }
-    
+
     @Transient
     public List<Integer> getDaysInStudySegment() {
         int dayInStudySegment = getPeriod().getStartDay() + getDay() - 1;
@@ -92,6 +86,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     /**
      * Returns all the labels that are used for any repetition in the planned activity
+     *
      * @return
      */
     @Transient
@@ -166,7 +161,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     public void setActivity(Activity activity) {
         this.activity = activity;
-    }                                                                                            
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "period_id")
@@ -184,13 +179,13 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     }
 
     @OneToMany(mappedBy = "plannedActivity")
-    @Cascade(value = { CascadeType.ALL })
+    @Cascade(value = {CascadeType.ALL})
     @Sort(type = SortType.NATURAL)
     public SortedSet<PlannedActivityLabel> getPlannedActivityLabels() {
         return plannedActivityLabels;
     }
 
-    public void setPlannedActivityLabels(SortedSet<PlannedActivityLabel> plannedActivityLabels){
+    public void setPlannedActivityLabels(SortedSet<PlannedActivityLabel> plannedActivityLabels) {
         this.plannedActivityLabels = plannedActivityLabels;
     }
 
@@ -205,11 +200,11 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     public void setDay(Integer day) {
         this.day = day;
     }
-    
+
     public String getDetails() {
         return details;
     }
-    
+
     public void setDetails(String details) {
         this.details = details;
     }
@@ -228,10 +223,25 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     public PlannedActivity clone() {
         PlannedActivity clone = (PlannedActivity) super.clone();
         clone.setPlannedActivityLabels(new TreeSet<PlannedActivityLabel>());
-        for (PlannedActivityLabel label: getPlannedActivityLabels()){
+        for (PlannedActivityLabel label : getPlannedActivityLabels()) {
             clone.addPlannedActivityLabel(label.clone());
         }
         return clone;
+    }
+
+
+    @Override
+    protected PlannedActivity copy() {
+        PlannedActivity copiedPlannedActivity = (PlannedActivity) super.copy();
+        SortedSet<PlannedActivityLabel> plannedActivityLabels = copiedPlannedActivity.getChildren();
+        for (PlannedActivityLabel plannedActivityLabel : plannedActivityLabels) {
+            plannedActivityLabel.setId(null);
+            plannedActivityLabel.setGridId(null);
+            plannedActivityLabel.setVersion(null);
+        }
+        return copiedPlannedActivity;
+
+
     }
 
     @Override
@@ -269,11 +279,11 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).
-            append("[id=").append(getId()).
-            append("; activity=").append(getActivity()).
-            append("; day=").append(getDay()).
-            append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
-            append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
-            append(']').toString();
+                append("[id=").append(getId()).
+                append("; activity=").append(getActivity()).
+                append("; day=").append(getDay()).
+                append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
+                append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
+                append(']').toString();
     }
 }

@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong event loaded", 5, (int) loaded.getDay());
     }
-    
+
     public void testSaveCascadesToLabels() throws Exception {
         int id;
         {
@@ -80,6 +81,12 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         PlannedActivity loaded = getDao().getById(id);
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong number of labels", 2, loaded.getPlannedActivityLabels().size());
+
+        for (PlannedActivityLabel label : loaded.getPlannedActivityLabels()) {
+            assertNotNull("Could not reload label with id " + label);
+            assertNotNull("Grid ID not automatically added", label.getGridId());
+
+        }
     }
 
     public void testSavedCloneIsReloadable() throws Exception {

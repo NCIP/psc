@@ -80,6 +80,7 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 
 
     @Override
+    @SuppressWarnings({"unchecked"})
     public Population clone() {
         try {
             Population clone = (Population) super.clone();
