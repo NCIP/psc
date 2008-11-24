@@ -7,18 +7,18 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
  * @author Saurabh Agrawal
  */
 public class CopyStudyCommand {
-    private StudyService studyService;
+	private StudyService studyService;
 
-    public CopyStudyCommand(StudyService studyService) {
-        this.studyService = studyService;
-    }
+	public CopyStudyCommand(StudyService studyService) {
+		this.studyService = studyService;
+	}
 
-    public Study create(Study study, final Integer selectedAmendmentId) {
+	public Study create(Study study, final Integer selectedAmendmentId) {
 
-        Study copiedStudy = studyService.copy(study,selectedAmendmentId);
+		Study copiedStudy = studyService.copy(study, selectedAmendmentId);
 
-        return copiedStudy;
+		return copiedStudy;
 
-    }
+	}
 
 }

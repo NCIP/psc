@@ -20,47 +20,47 @@ import javax.servlet.http.HttpServletResponse;
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class CopyStudyController extends PscAbstractCommandController<CopyStudyCommand> {
-    private StudyService studyService;
-    private StudyDao studyDao;
+	private StudyService studyService;
+	private StudyDao studyDao;
 
-    @Override
-    protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new CopyStudyCommand(studyService);
-    }
+	@Override
+	protected Object getCommand(HttpServletRequest request) throws Exception {
+		return new CopyStudyCommand(studyService);
+	}
 
-    @Override
-    protected ModelAndView handle(CopyStudyCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
-        Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
-        Study study = studyDao.getById(studyId);
+	@Override
+	protected ModelAndView handle(CopyStudyCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
+		Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
+		Study study = studyDao.getById(studyId);
 
-        if (study != null) {
-            try {
-                Study copiedStudy = command.create(study, selectedAmendmentId);
-                return getControllerTools().redirectToCalendarTemplate(copiedStudy.getId(), null, copiedStudy.getDevelopmentAmendment().getId());
-            } catch (StudyCalendarValidationException scve) {
-                log.error(scve.getMessage());
-                errors.reject(scve.getMessage());
-            }
-
-
-        } else {
-            String errorMessage = "Can not find study for given id:" + studyId;
-            log.error(errorMessage);
-
-            errors.reject(errorMessage);
-        }
-        return null;
-    }
+		if (study != null) {
+			try {
+				Study copiedStudy = command.create(study, selectedAmendmentId);
+				return getControllerTools().redirectToCalendarTemplate(copiedStudy.getId(), null, copiedStudy.getDevelopmentAmendment().getId());
+			} catch (StudyCalendarValidationException scve) {
+				log.error(scve.getMessage());
+				errors.reject(scve.getMessage());
+			}
 
 
-    @Required
-    public void setStudyDao(final StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
+		} else {
+			String errorMessage = "Can not find study for given id:" + studyId;
+			log.error(errorMessage);
 
-    @Required
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
-    }
+			errors.reject(errorMessage);
+		}
+		return null;
+	}
+
+
+	@Required
+	public void setStudyDao(final StudyDao studyDao) {
+		this.studyDao = studyDao;
+	}
+
+	@Required
+	public void setStudyService(StudyService studyService) {
+		this.studyService = studyService;
+	}
 }
