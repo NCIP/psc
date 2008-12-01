@@ -35,8 +35,11 @@ public abstract class DaoTestCase extends StudyCalendarDbTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        endSession();
-        super.tearDown();
+        try {
+            endSession();
+        } finally {
+            super.tearDown();
+        }
     }
 
     @Override
