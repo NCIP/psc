@@ -7,6 +7,8 @@ import org.dom4j.Element;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DeltaXmlSerializerFactory implements BeanFactoryAware {
     private final String PLANNED_CALENDAR_DELTA_SERIALIZER = "plannedCalendarDeltaXmlSerializer";
@@ -30,10 +32,9 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
             return getXmlSerialzier(PERIOD_DELTA_SERIALIZER);
         } else if (delta instanceof PlannedActivityDelta) {
             return getXmlSerialzier(PLANNED_ACTIVITY_DELTA_SERIALIZER);
-        } else if (delta instanceof PopulationDelta) {
+        } else if (delta instanceof PopulationDelta || delta instanceof StudyDelta) {
             return getXmlSerialzier(POPULATION_DELTA_SERIALIZER);
-        }
-        else {
+        } else {
             throw new StudyCalendarError("Problem importing template. Could not find delta type");
         }
     }
