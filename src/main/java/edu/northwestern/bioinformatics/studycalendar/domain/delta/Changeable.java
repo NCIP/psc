@@ -9,4 +9,5 @@ import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
  * @author Rhett Sutphin
  */
 public interface Changeable extends MutableDomainObject, TransientCloneable<Changeable> {
+    boolean isDetached();
 }

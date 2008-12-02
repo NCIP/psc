@@ -9,17 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -366,6 +358,16 @@ public class TemplateService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public <C extends Changeable> C findEquivalentChild(Study study, C node) {
+        if (isEquivalent(node, study)) {
+            return (C)study;
+        }
+        if (node instanceof Population) {
+            for (Population pop : study.getPopulations()) {
+                if (isEquivalent(pop, node)) {
+                    return (C) pop;
+                }
+            }
+        }
         return findEquivalentChild(study.getPlannedCalendar(), node);
     }
 
@@ -594,8 +596,8 @@ public class TemplateService {
             );
         }
         DeletableDomainObjectDao<T> deleter = (DeletableDomainObjectDao) dao;
-        if (object instanceof PlanTreeInnerNode) {
-            PlanTreeInnerNode innerNode = (PlanTreeInnerNode) object;
+        if (object instanceof Parent) {
+            Parent innerNode = (Parent) object;
             delete(innerNode.getChildren());
             innerNode.getChildren().clear();
         }

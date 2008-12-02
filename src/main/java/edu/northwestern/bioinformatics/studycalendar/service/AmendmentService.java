@@ -5,19 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -122,6 +111,34 @@ public class AmendmentService {
         return (T) templateService.findEquivalentChild(amended, source);
     }
 
+
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public Study updateDevelopmentAmendmentForStudyAndSave(Study study, Change... changes) {
+        log.debug("Updating dev amendment for study {} with {} change(s)", study, changes.length);
+        if (!study.isInDevelopment()) {
+            throw new StudyCalendarSystemException("The study %s is not open for editing or amending", study);
+        }
+        for (Change change : changes) {
+            deltaService.updateRevisionForStudy(study.getDevelopmentAmendment(), study, change);
+        }
+        studyService.save(study);
+        return study;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public Population updateDevelopmentAmendmentForStudyAndSave(Population population, Study study, Change... changes) {
+        log.debug("Updating dev amendment for study {} with {} change(s)", population, changes.length);
+        if (!study.isInDevelopment()) {
+            throw new StudyCalendarSystemException("The study %s is not open for editing or amending", population.getStudy());
+        }
+        for (Change change : changes) {
+            deltaService.updateRevision(study.getDevelopmentAmendment(), population, change);
+        }
+        studyService.save(study);
+        return population;
+    }
+
     /**
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.
@@ -189,7 +206,6 @@ public class AmendmentService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void deleteDevelopmentAmendment(Study study) {
         deleteDevelopmentAmendment(study.getDevelopmentAmendment());
-        populationService.delete(study.getPopulations());
         if (study.getAmendment() == null) {
             templateService.delete(study.getPlannedCalendar());
             studyDao.delete(study);

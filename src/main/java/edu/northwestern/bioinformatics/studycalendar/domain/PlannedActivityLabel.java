@@ -161,4 +161,9 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
         sb.append(']');
         return sb.toString();
     }
+    
+    @Transient
+    public boolean isDetached() {
+        return getPlannedActivity() == null;
+    }
 }

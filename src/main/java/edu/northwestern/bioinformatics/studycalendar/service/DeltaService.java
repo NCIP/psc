@@ -4,13 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -24,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactor
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +141,7 @@ public class DeltaService {
      * @param change
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void updateRevision(Revision target, PlanTreeNode<?> node, Change change) {
+    public void updateRevision(Revision target, Changeable node, Change change) {
         log.debug("Updating {}", target);
         if (node.isDetached()) {
             log.debug("{} is detached; apply {} directly", node, change);
@@ -170,8 +165,33 @@ public class DeltaService {
         }
     }
 
+    /**
+     * Merge the change for the node into the target revision
+     * @param target
+     * @param node
+     * @param change
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void updateRevisionForStudy(Revision target, Study node, Change change) {
+        log.debug("Updating {}", target);
+        Delta<?> existing = null;
+        for (Delta<?> delta : target.getDeltas()) {
+            if (templateService.isEquivalent(delta.getNode(), node)) {
+                existing = delta;
+                break;
+            }
+        }
+        if (existing == null) {
+            log.debug("  - this is the first change; create new delta", change, node);
+            target.getDeltas().add(Delta.createDeltaFor(node, change));
+        } else {
+            log.debug("  - it has been changed before; merge into existing delta {}", existing);
+            change.mergeInto(existing, nowFactory.getNow());
+        }
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void mutateNode(PlanTreeNode<?> node, Change change) {
+    public void mutateNode(Changeable node, Change change) {
         mutatorFactory.createMutator(node, change).apply(node);
     }
 
@@ -240,14 +260,14 @@ public class DeltaService {
     public Child findChangeChild(ChildrenChange change) {
         Child child = change.getChild();
         if (child == null) {
-            PlanTreeInnerNode parent = (PlanTreeInnerNode) change.getDelta().getNode();
-            child = findDaoAndLoad(change.getChildId(), parent.childClass());
+            Parent parent = (Parent) change.getDelta().getNode();
+            child = (Child) findDaoAndLoad(change.getChildId(), parent.childClass());
         }
         return child;
     }
 
     @SuppressWarnings({ "unchecked" })
-    private <T extends PlanTreeNode> T findDaoAndLoad(int id, Class<T> klass) {
+    private <T extends DomainObject> T findDaoAndLoad(int id, Class<T> klass) {
         DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(klass);
         return dao.getById(id);
     }

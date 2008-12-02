@@ -85,14 +85,14 @@ public class StudyService {
 	// TODO: need replace all business uses of StudyDao#save with this method
 	public void save(final Study study) {
 		studyDao.save(study);
-		if (study.getAmendment() != null) {
-			for (Amendment amendment : study.getAmendmentsList()) {
-				deltaService.saveRevision(amendment);
-			}
+        if (study.getAmendment() != null) {
+            for (Amendment amendment : study.getAmendmentsList()) {
+                deltaService.saveRevision(amendment);
+            }
 		}
 		if (study.getDevelopmentAmendment() != null) {
 			deltaService.saveRevision(study.getDevelopmentAmendment());
-		}
+        }
 	}
 
 

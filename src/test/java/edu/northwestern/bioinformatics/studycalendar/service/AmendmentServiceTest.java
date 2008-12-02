@@ -313,7 +313,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         mockDeltaService.delete(delta);
         amendmentDao.delete(dev);
         studyService.save(study);
-        populationService.delete(study.getPopulations());
+//        populationService.delete(study.getPopulations());
 
         replayMocks();
         service.deleteDevelopmentAmendment(study);
@@ -334,7 +334,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         study.setAmendment(null);
         study.setDevelopmentAmendment(dev);
 
-        populationService.delete(study.getPopulations());
+//        populationService.delete(study.getPopulations());
         mockDeltaService.delete(d1);
         mockDeltaService.delete(d2);
         mockTemplateService.delete(study.getPlannedCalendar());

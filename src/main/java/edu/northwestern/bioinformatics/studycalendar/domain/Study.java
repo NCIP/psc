@@ -24,11 +24,12 @@ import java.util.*;
 	}
 )
 @Where(clause = "load_status > 0")
-public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable, NaturallyKeyed {
-	private String assignedIdentifier;
-	private String longTitle;
-	private PlannedCalendar plannedCalendar;
-	private LoadStatus loadStatus = LoadStatus.COMPLETE;
+public class Study extends AbstractMutableDomainObject implements Named,  Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
+
+    private String assignedIdentifier;
+    private String longTitle;
+    private PlannedCalendar plannedCalendar;
+    private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
 	private Amendment amendment;			// the current effective/released amendment
 	private Amendment developmentAmendment; // the next amendment, currently in development and not released
@@ -251,29 +252,34 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
 	////// OBJECT METHODS
 
-	@Override
-	public Study clone() {
-		try {
-			// deep-clone the template portions only, for the moment
-			Study clone = (Study) super.clone();
-			if (getPlannedCalendar() != null) {
-				clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
-			}
-			return clone;
-		}
-		catch (CloneNotSupportedException e) {
-			throw new StudyCalendarError("Clone is supported", e);
-		}
-	}
+    @Override
+    public Study clone() {
+        try {
+            // deep-clone the template portions only, for the moment
+            Study clone = (Study) super.clone();
+            if (getPlannedCalendar() != null) {
+                clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
+            }
+            clone.setPopulations(new TreeSet<Population>());
+            for (Population pouPopulation: getPopulations()){
+                clone.addPopulation(pouPopulation.clone());
+            }
+            return clone;
+        }
+        catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer(getClass().getSimpleName())
-			.append("[id=").append(getId())
-			.append("; assignedIdentifier=").append(getName());
-		if (isMemoryOnly()) sb.append("; transient copy");
-		return sb.append(']').toString();
-	}
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName())
+                .append("[id=").append(getId())
+                .append("; assignedIdentifier=").append(getName());
+        if (isMemoryOnly()) sb.append("; transient copy");
+        return sb.append(']').toString();
+    }
 
 	@Transient
 	public Date getLastModifiedDate() {
@@ -302,7 +308,38 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 		return lastModifiedDate;
 	}
 
-	@Transient
+
+   public Population removePopulation(Population population) {
+        if (getPopulations().remove(population)) {
+            population.setParent(null);
+            return population;
+        } else {
+            return null;
+        }
+    }
+
+    public Class<Population> childClass() {
+        return Population.class;
+    }
+
+    public void addChild(Population child) {
+        addPopulation(child);
+    }
+
+    public Population removeChild(Population child) {
+        return removePopulation(child);
+    }
+
+    @Transient
+    public Set<Population> getChildren() {
+        return getPopulations();
+    }
+
+    public void setChildren(Set<Population> children) {
+        setPopulations(children);
+    }
+
+    @Transient
 	public List<Amendment> getAmendmentsListInReverseOrder() {
 		List<Amendment> amendments = new LinkedList<Amendment>();
 		Amendment current = getAmendment();
@@ -314,8 +351,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 		return Collections.unmodifiableList(amendments);
 	}
 
-
-	public Study copy(String newStudyName) {
+    public Study copy(String newStudyName) {
 
 		Study copiedStudy = TemplateSkeletonCreatorImpl.createBase(newStudyName);
 		copiedStudy.setLongTitle(this.getLongTitle());
@@ -361,4 +397,8 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
 	}
 
+    @Transient
+    public boolean isDetached() {
+        return false;
+    }
 }

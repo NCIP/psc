@@ -34,6 +34,9 @@ public enum XsdAttribute {
     LABEL_NAME("name"),
     LABEL_REP_NUM("repetition-number"),
 
+    POPULATION_NAME("name"),
+    POPULATION_ABBREVIATION("abbreviation"),
+
     STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER("assigned-identifier"),
     REGISTRATION_FIRST_STUDY_SEGMENT_ID("first-study-segment-id"),
     REGISTRATION_DATE("date"),

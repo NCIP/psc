@@ -2,9 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
@@ -19,6 +22,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -29,7 +34,9 @@ import java.util.HashMap;
 public class EditPopulationController extends PscSimpleFormController {
     private PopulationDao populationDao;
     private PopulationService populationService;
+    private AmendmentService amendmentService;
     private StudyDao studyDao;
+    private DeltaService deltaService;
 
     protected EditPopulationController() {
         setFormView("template/population");
@@ -46,8 +53,8 @@ public class EditPopulationController extends PscSimpleFormController {
         } else {
             pop = populationDao.getById(popId);
         }
-        pop.setStudy(studyDao.getById(studyId));
-        return new EditPopulationCommand(pop, populationService);
+        Study study = studyDao.getById(studyId);
+        return new EditPopulationCommand(pop, populationService, amendmentService, populationDao, study);
     }
 
     @Override
@@ -56,7 +63,8 @@ public class EditPopulationController extends PscSimpleFormController {
         EditPopulationCommand command = (EditPopulationCommand) oCommand;
         Map<String, Object> refdata = new HashMap<String, Object>();
         getControllerTools().addToModel(command.getPopulation(), refdata);
-        refdata.put("amendment", command.getPopulation().getStudy().getDevelopmentAmendment());
+        refdata.put("amendment", command.getStudy().getDevelopmentAmendment());
+        refdata.put("study", command.getStudy());
         return refdata;
     }
 
@@ -79,9 +87,9 @@ public class EditPopulationController extends PscSimpleFormController {
 
         if (errors.hasErrors()) return showForm(request, response, errors);
         else return getControllerTools().redirectToCalendarTemplate(
-            command.getPopulation().getStudy().getId(),
+            command.getStudy().getId(),
             null,
-            command.getPopulation().getStudy().getDevelopmentAmendment().getId());
+            command.getStudy().getDevelopmentAmendment().getId());
     }
 
     /////// CONFIGURATION
@@ -101,7 +109,18 @@ public class EditPopulationController extends PscSimpleFormController {
         this.studyDao = studyDao;
     }
 
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setDeltaService(final DeltaService deltaService) {
+        this.deltaService = deltaService;
+    }
+
     private static class Crumb extends DefaultCrumb {
+        Logger log = LoggerFactory.getLogger(getClass());
         @Override
         public String getName(BreadcrumbContext context) {
             Population pop = context.getPopulation();

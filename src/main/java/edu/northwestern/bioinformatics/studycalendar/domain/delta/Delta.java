@@ -1,17 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -48,6 +45,7 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
     private T node;
     private Revision revision;
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     protected Delta() {
         changes = new ArrayList<Change>();
     }
@@ -74,6 +72,10 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
             delta = new PlannedActivityDelta((PlannedActivity) node);
         } else if (node instanceof PlannedActivityLabel) {
             delta = new PlannedActivityLabelDelta((PlannedActivityLabel) node);
+        } else if (node instanceof Population) {
+            delta = new PopulationDelta((Population) node);
+        } else if (node instanceof Study) {
+            delta = new StudyDelta((Study)node);
         } else {
             throw new StudyCalendarError("Unimplemented changeable type: %s", node.getClass().getName());
         }
@@ -84,15 +86,18 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
     ////// LOGIC
 
     public Delta<T> addChange(Change change) {
+        log.info("======= inside addChange " + change);
         changes.add(change);
         change.setDelta(this);
         return this;
     }
 
     public Delta<T> addChanges(Change... newChanges) {
+        log.info("======== inside addChanges " + newChanges);
         for (Change c : newChanges) {
             addChange(c);
         }
+        log.info("======= this " + this);
         return this;
     }
 

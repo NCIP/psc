@@ -53,4 +53,15 @@ public class PopulationTest extends StudyCalendarTestCase {
         assertNotNull("must  find population", Population.findMatchingPopulationByAbbreviation(populations, anotherPopulation));
 
     }
+    
+    public void testIsDetachedWhenStudyNotPresent() throws Exception {
+        Population population = new Population();
+        assertTrue("Population is attached to study ", population.isDetached());
+    }
+
+    public void testIsDetachedWhenStudyIsPresent() throws Exception {
+        Population population = new Population();
+        population.setStudy(study);
+        assertFalse("Population is detached from study ", population.isDetached());
+    }
 }

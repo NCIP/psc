@@ -102,6 +102,9 @@
     <bean id="plannedActivityDeltaXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityDeltaXmlSerializer"/>
 
+    <bean id="populationDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationDeltaXmlSerializer"/>
+
     <!-- Change Serializers -->
     <bean id="addXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AddXmlSerializer"/>

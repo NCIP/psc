@@ -2,11 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -16,6 +18,16 @@ public class PopulationDao extends StudyCalendarMutableDomainObjectDao<Populatio
     @Override
     public Class<Population> domainClass() {
         return Population.class;
+    }
+
+    /**
+     * Finds all the populations available
+     *
+     * @return      a list of all the available populations
+     */
+    @SuppressWarnings({ "unchecked" })
+    public List<Population> getAll() {
+        return getHibernateTemplate().find("from Population order by name asc ");
     }
 
     /**

@@ -14,6 +14,7 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
     private final String STUDY_SEGMENT_DELTA_SERIALIZER = "studySegmentDeltaXmlSerializer";
     private final String PERIOD_DELTA_SERIALIZER = "periodDeltaXmlSerializer";
     private final String PLANNED_ACTIVITY_DELTA_SERIALIZER = "plannedActivityDeltaXmlSerializer";
+    private final String POPULATION_DELTA_SERIALIZER = "populationDeltaXmlSerializer";
 
     private BeanFactory beanFactory;
     private Study study;
@@ -29,7 +30,10 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
             return getXmlSerialzier(PERIOD_DELTA_SERIALIZER);
         } else if (delta instanceof PlannedActivityDelta) {
             return getXmlSerialzier(PLANNED_ACTIVITY_DELTA_SERIALIZER);
-        } else {
+        } else if (delta instanceof PopulationDelta) {
+            return getXmlSerialzier(POPULATION_DELTA_SERIALIZER);
+        }
+        else {
             throw new StudyCalendarError("Problem importing template. Could not find delta type");
         }
     }
@@ -45,6 +49,8 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
             return getXmlSerialzier(PERIOD_DELTA_SERIALIZER);
         } else if(PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
             return getXmlSerialzier(PLANNED_ACTIVITY_DELTA_SERIALIZER);
+        } else if (PopulationDeltaXmlSerializer.POPULATION_DELTA.equals(delta.getName())) {
+            return getXmlSerialzier(POPULATION_DELTA_SERIALIZER);
         } else {
             throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
         }

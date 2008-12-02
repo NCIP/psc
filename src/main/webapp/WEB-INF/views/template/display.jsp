@@ -716,7 +716,7 @@
                             </li>
                         </c:forEach>
                         <li class="controls">
-                            <c:if test="${study.inInitialDevelopment}">
+                            <c:if test="${study.inInitialDevelopment || study.inAmendmentDevelopment}">
                                 <a class="control" href="<c:url value="/pages/cal/template/population?study=${study.id}"/>">Add</a>
                             </c:if>
                         </li>

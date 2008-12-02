@@ -13,6 +13,9 @@ import javax.persistence.Transient;
 import java.util.Comparator;
 import java.util.Set;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+
 /**
  * @author Rhett Sutphin
  */
@@ -22,10 +25,11 @@ import java.util.Set;
 		@Parameter(name = "sequence", value = "seq_populations_id")
 	}
 )
-public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed, Comparable<Population>, Cloneable {
-	private Study study;
-	private String name;
-	private String abbreviation;
+public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed, Child<Study>, Comparable<Population>, Cloneable {
+    private Study study;
+    private String name;
+    private String abbreviation;
+    private boolean memoryOnly;
 
 	@SuppressWarnings({"unchecked"})
 	private static Comparator<String> NAME_COMPARATOR =
@@ -78,23 +82,50 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 			.append(']').toString();
 	}
 
+    ////// IMPLEMENTATION OF Child
 
-	@Override
-	@SuppressWarnings({"unchecked"})
-	public Population clone() {
-		try {
-			Population clone = (Population) super.clone();
-			clone.setStudy(null);
-			return clone;
-		}
-		catch (CloneNotSupportedException e) {
-			throw new StudyCalendarError("Clone is supported", e);
-		}
-	}
+    public Class<Study> parentClass() {
+        return Study.class;
+    }
+
+    public void setParent(Study parent) {
+        setStudy(parent);
+    }
+
+    @Transient
+    public Study getParent() {
+        return getStudy();
+    }
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+    }
+
+    public Population transientClone() {
+        Population clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    protected Population clone() {
+        try {
+            Population clone = (Population) super.clone();
+            clone.setStudy(null);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
 
 	public static Population findMatchingPopulationByAbbreviation(final Set<Population> populations, final Population population) {
-		if (population != null) {
-
+        if (population != null) {
 			for (Population matchingPopulation : populations) {
 
 				if (StringUtils.equals(matchingPopulation.getAbbreviation(), population.getAbbreviation())) {
@@ -103,7 +134,10 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 			}
 		}
 		return null;
-
-
 	}
+
+    @Transient
+    public boolean isDetached() {
+        return getStudy() == null;
+    }
 }
