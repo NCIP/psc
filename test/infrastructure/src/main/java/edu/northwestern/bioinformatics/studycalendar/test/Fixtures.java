@@ -227,10 +227,13 @@ public class Fixtures {
     }
 
     public static StudySubjectAssignment createAssignment(Study study, Site site, Subject subject) {
+        return createAssignment(createStudySite(study, site), subject);
+    }
+
+    public static StudySubjectAssignment createAssignment(StudySite ss, Subject subject) {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setScheduledCalendar(new ScheduledCalendar());
         if (subject != null) subject.addAssignment(assignment);
-        StudySite ss = createStudySite(study, site);
         ss.addStudySubjectAssignment(assignment);
         return assignment;
     }

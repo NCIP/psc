@@ -63,6 +63,8 @@ public class TemplateService {
     private StudySiteDao studySiteDao;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
+    private AuthorizationService authorizationService;
+    private DaoFinder daoFinder;
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
@@ -73,7 +75,6 @@ public class TemplateService {
     public static final String STRING_IS_NULL = "String parameter is null";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private DaoFinder daoFinder;
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -245,7 +246,8 @@ public class TemplateService {
      * @return
      * @throws Exception
      */
-    public List<Study> filterForVisibility(List<Study> studies, UserRole role) throws Exception {
+    // TODO: move to AuthorizationService
+    public List<Study> filterForVisibility(List<Study> studies, UserRole role) {
         if (studies == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
@@ -256,7 +258,7 @@ public class TemplateService {
         List<Study> filtered = new ArrayList<Study>(studies);
         for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
             Study study = it.next();
-            if (!authorizationManager.isTemplateVisible(role, study)) it.remove();
+            if (!authorizationService.isTemplateVisible(role, study)) it.remove();
         }
         return filtered;
     }
@@ -621,6 +623,7 @@ public class TemplateService {
         this.studySiteDao = studySiteDao;
     }
 
+    @Required
     public void setDeltaDao(DeltaDao deltaDao) {
         this.deltaDao = deltaDao;
     }
@@ -640,5 +643,8 @@ public class TemplateService {
         this.daoFinder = daoFinder;
     }
 
-
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
 }

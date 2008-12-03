@@ -2,9 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import gov.nih.nci.security.UserProvisioningManager;
@@ -33,8 +31,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Facade which provides PSC-specific access to CSM.  No business logic should be included
+ * here.
+ *
  * @author Padmaja Vedula
  * @author Rhett Sutphin
+ * @see edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService
  */
 
 // TODO: None of these methods should throw checked exceptions
@@ -292,34 +294,6 @@ public class StudyCalendarAuthorizationManager implements Serializable {
            }
         }
         return studySitePGs;
-    }
-
-    public boolean isTemplateVisible(UserRole userRole, Study study) {
-        if (userRole.getRole() == SYSTEM_ADMINISTRATOR) {
-            return false;
-        } else if (!userRole.getRole().isSiteSpecific()) {
-            return true;
-        } else if (userRole.getRole() == SITE_COORDINATOR) {
-            return isTemplateVisibleToSiteCoordinator(userRole, study);
-        } else if (userRole.getRole() == SUBJECT_COORDINATOR ) {
-            return isTemplateVisibleToStudySpecificRole(userRole, study);
-        } else {
-            throw new UnsupportedOperationException("Unexpected role in userRole: " + userRole.getRole());
-        }
-    }
-
-    private boolean isTemplateVisibleToStudySpecificRole(UserRole studySpecificRole, Study study) {
-        for (StudySite studySite : study.getStudySites()) {
-            if (studySpecificRole.getStudySites().contains(studySite)) return true;
-        }
-        return false;
-    }
-
-    private boolean isTemplateVisibleToSiteCoordinator(UserRole siteCoordinator, Study study) {
-        for (Site siteOnStudy : study.getSites()) {
-            if (siteCoordinator.getSites().contains(siteOnStudy)) return true;
-        }
-        return false;
     }
 
     @SuppressWarnings({ "unchecked" })

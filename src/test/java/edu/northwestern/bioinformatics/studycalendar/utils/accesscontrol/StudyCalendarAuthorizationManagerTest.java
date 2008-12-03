@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -132,42 +131,6 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
 
         manager.assignProtectionGroupsToUsers(asList(userId), protectionGroup, new String[] {role0.getName(), role1.getName()});
         verifyMocks();
-    }
-
-    public void testStudyVisibilityForSubjectCoordinator() throws Exception {
-        UserRole coord = Fixtures.createUserRole(user, Role.SUBJECT_COORDINATOR, siteB);
-        coord.addStudySite(studyAB.getStudySite(siteB));
-        assertFalse(manager.isTemplateVisible(coord, studyA));
-        assertFalse(manager.isTemplateVisible(coord, studyB));
-        assertTrue(manager.isTemplateVisible(coord, studyAB));
-    }
-
-    public void testStudyVisibilityForSiteCoordinator() throws Exception {
-        UserRole coord = Fixtures.createUserRole(user, Role.SITE_COORDINATOR, siteA);
-        assertTrue(manager.isTemplateVisible(coord, studyA));
-        assertFalse(manager.isTemplateVisible(coord, studyB));
-        assertTrue(manager.isTemplateVisible(coord, studyAB));
-    }
-
-    public void testStudyVisibilityForSystemAdministrator() throws Exception {
-        UserRole admin = Fixtures.createUserRole(user, Role.SYSTEM_ADMINISTRATOR, siteA);
-        assertFalse(manager.isTemplateVisible(admin, studyA));
-        assertFalse(manager.isTemplateVisible(admin, studyB));
-        assertFalse(manager.isTemplateVisible(admin, studyAB));
-    }
-
-    public void testStudyVisibilityForStudyAdministrator() throws Exception {
-        UserRole admin = Fixtures.createUserRole(user, Role.STUDY_ADMIN);
-        assertTrue(manager.isTemplateVisible(admin, studyA));
-        assertTrue(manager.isTemplateVisible(admin, studyB));
-        assertTrue(manager.isTemplateVisible(admin, studyAB));
-    }
-
-    public void testStudyVisibilityForStudyCoordinator() throws Exception {
-        UserRole coord = Fixtures.createUserRole(user, Role.STUDY_COORDINATOR);
-        assertTrue(manager.isTemplateVisible(coord, studyA));
-        assertTrue(manager.isTemplateVisible(coord, studyB));
-        assertTrue(manager.isTemplateVisible(coord, studyAB));
     }
 
     public void testIsGroupEqualToRole() {

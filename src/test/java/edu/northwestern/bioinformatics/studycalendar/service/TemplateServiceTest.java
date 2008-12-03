@@ -51,6 +51,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
+    private AuthorizationService authorizationService;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
 
@@ -68,6 +69,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
+        authorizationService = registerMockFor(AuthorizationService.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
@@ -76,6 +78,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setUserRoleDao(userRoleDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
+        service.setAuthorizationService(authorizationService);
 
         user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
@@ -510,8 +513,8 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testTemplateVisibility() throws Exception {
         Study studyA = createNamedInstance("A", Study.class);
         Study studyB = createNamedInstance("B", Study.class);
-        expect(authorizationManager.isTemplateVisible(siteCoordinatorRole, studyA)).andReturn(false);
-        expect(authorizationManager.isTemplateVisible(siteCoordinatorRole, studyB)).andReturn(true);
+        expect(authorizationService.isTemplateVisible(siteCoordinatorRole, studyA)).andReturn(false);
+        expect(authorizationService.isTemplateVisible(siteCoordinatorRole, studyB)).andReturn(true);
 
         replayMocks();
         List<Study> actualStudyTemplates = service.filterForVisibility(asList(studyA, studyB), siteCoordinatorRole);
