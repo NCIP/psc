@@ -243,6 +243,16 @@ public class Fixtures {
         return scheduledStudySegment;
     }
 
+    public static ScheduledStudySegment createScheduledStudySegment(Date startDate, int length) {
+        Period period = createPeriod(1, length, 1);
+        StudySegment segment = createNamedInstance("Fixture", StudySegment.class);
+        segment.addPeriod(period);
+        ScheduledStudySegment scheduled = createScheduledStudySegment(segment);
+        scheduled.setStartDate(startDate);
+        new ScheduledCalendar().addStudySegment(scheduled);
+        return scheduled;
+    }
+
     public static ScheduledActivity createScheduledActivity(
             String activityName, int year, int month, int day, ScheduledActivityState state
     ) {

@@ -39,11 +39,16 @@ public class Range<T extends Comparable<T>> implements Comparable<Range<T>>, Ser
     public boolean intersects(Range<T> other) {
         boolean otherIncludesStart = other.includes(start);
         boolean otherIncludesStop = stop == null ? other.getStop() == null : other.includes(stop);
-        boolean thisSurroundsOther = beforeOrEqual(start, other.getStart());
-        if (stop != null) {
-            thisSurroundsOther &= other.getStop() == null ? false : after(stop, other.getStop());
-        }
+        boolean thisSurroundsOther = this.includes(other);
         return otherIncludesStart || otherIncludesStop || thisSurroundsOther;
+    }
+
+    public boolean includes(Range<T> other) {
+        boolean thisSurroundsOther = beforeOrEqual(getStart(), other.getStart());
+        if (getStop() != null) {
+            thisSurroundsOther &= other.getStop() != null && afterOrEqual(getStop(), other.getStop());
+        }
+        return thisSurroundsOther;
     }
 
     ////// QUERIES
@@ -57,16 +62,20 @@ public class Range<T extends Comparable<T>> implements Comparable<Range<T>>, Ser
                 && (stop == null || beforeOrEqual(v, stop));
     }
 
-    private boolean before(T a, T b) {
+    protected boolean before(T a, T b) {
         return a.compareTo(b) < 0;
     }
 
-    private boolean beforeOrEqual(T a, T b) {
+    protected boolean beforeOrEqual(T a, T b) {
         return !after(a, b);
     }
 
-    private boolean after(T a, T b) {
+    protected boolean after(T a, T b) {
         return a.compareTo(b) > 0;
+    }
+
+    protected boolean afterOrEqual(T a, T b) {
+        return !before(a, b);
     }
 
     ////// PROPERTIES

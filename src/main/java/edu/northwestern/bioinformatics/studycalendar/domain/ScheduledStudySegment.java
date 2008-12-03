@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.utils.Range;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -16,17 +16,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Collections;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 /**
  * @author Rhett Sutphin
@@ -75,6 +71,13 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         }
 
         return name.toString();
+    }
+
+    public Range<Date> getDateRange() {
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTime(getStartDate());
+        endDate.add(Calendar.DATE, getStudySegment().getLengthInDays() - 1);
+        return new Range<Date>(getStartDate(), endDate.getTime());
     }
 
     @Transient

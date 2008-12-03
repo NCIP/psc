@@ -107,6 +107,24 @@ public class RangeTest extends CoreTestCase {
         assertTrue("Indefinite intersects self", indefinite.intersects(indefinite));
     }
 
+    public void testIncludesRange() throws Exception {
+        Range<Date> one = createRange(3, 15);
+        Range<Date> two = createRange(6, 12);
+
+        assertTrue(one.includes(two));
+        assertFalse(two.includes(one));
+    }
+
+    public void testConcreteRangeIncludesSelf() throws Exception {
+        Range<Date> concrete = createRange(5, 12);
+        assertTrue(concrete.includes(concrete));
+    }
+
+    public void testIndefiniteRangeIncludesSelf() throws Exception {
+        Range<Date> indefinite = createRangeWithNullStopDate(5);
+        assertTrue(indefinite.includes(indefinite));
+    }
+
     public void testHasBound() {
         Range<Integer> finite        = new Range<Integer>(3, 8);
         Range<Integer> infinite      = new Range<Integer>(null, null);

@@ -1,21 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.utils.Range;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.Iterator;
-
-import gov.nih.nci.cabig.ctms.lang.DateTools;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -188,5 +188,12 @@ public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
         assertEquals("Occurred event changed", 2, scheduledStudySegment.getActivities().get(1).getAllStates().size());
         assertEquals("Canceled event changed", 2, scheduledStudySegment.getActivities().get(2).getAllStates().size());
         assertEquals("NA event changed", 2, scheduledStudySegment.getActivities().get(4).getAllStates().size());
+    }
+
+    public void testDateRange() throws Exception {
+        ScheduledStudySegment segment = Fixtures.createScheduledStudySegment(DateTools.createDate(2007, Calendar.NOVEMBER, 3), 17);
+        Range<Date> actual = segment.getDateRange();
+        assertDayOfDate("Wrong start of range", 2007, Calendar.NOVEMBER,  3, actual.getStart());
+        assertDayOfDate("Wrong end of range",   2007, Calendar.NOVEMBER, 19, actual.getStop());
     }
 }
