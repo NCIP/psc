@@ -10,6 +10,7 @@ import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -21,6 +22,7 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
     private StudySubjectAssignment nu1400assignment;
     private StudySubjectAssignment nu2332assignment;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         subject = createSubject("Jo", "Miller");
@@ -39,13 +41,17 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
     }
 
     private SubjectCentricSchedule createTwoStudySchedule() {
-        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment, nu2332assignment));
+        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment, nu2332assignment), Collections.<StudySubjectAssignment>emptyList());
+    }
+
+    private SubjectCentricSchedule createOneVisibleOneHiddenSchedule() {
+        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Arrays.asList(nu2332assignment));
     }
 
     public void testCreateRowsWithOneAssignment() throws Exception {
         nu1400assignment.getScheduledCalendar().addStudySegment(
             createScheduledStudySegment(createDate(2006, Calendar.JULY, 1), 14));
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(Arrays.asList(nu1400assignment));
+        SubjectCentricSchedule schedule = new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Collections.<StudySubjectAssignment>emptyList());
         assertEquals("Wrong number of rows created", 2, schedule.getSegmentRows().size());
     }
 
@@ -56,6 +62,12 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
 
     public void testDateRange() throws Exception {
         SubjectCentricSchedule schedule = createTwoStudySchedule();
+        assertDayOfDate("Wrong start date", 2004, Calendar.JULY, 1, schedule.getDateRange().getStart());
+        assertDayOfDate("Wrong end date", 2007, Calendar.MARCH, 31, schedule.getDateRange().getStop());
+    }
+
+    public void testDateRangeIncludesHiddenSchedules() throws Exception {
+        SubjectCentricSchedule schedule = createOneVisibleOneHiddenSchedule();
         assertDayOfDate("Wrong start date", 2004, Calendar.JULY, 1, schedule.getDateRange().getStart());
         assertDayOfDate("Wrong end date", 2007, Calendar.MARCH, 31, schedule.getDateRange().getStop());
     }
@@ -79,5 +91,14 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
         assertEquals("Missing A from 2006-04-01", "A", afd2006.getActivities().get(0).getActivity().getName());
         assertEquals("Missing B from 2006-04-01", "B", afd2006.getActivities().get(1).getActivity().getName());
         assertEquals("Wrong number of activities accumulated on 2004-07-01", 1, schedule.getDays().get(0).getActivities().size());
+    }
+
+    public void testDaysIncludesHiddenElementsMarker() throws Exception {
+        nu1400assignment.getScheduledCalendar().getScheduledStudySegments().get(0).addEvent(createScheduledActivity("A", 2006, Calendar.APRIL, 1));
+        nu1400assignment.getScheduledCalendar().getScheduledStudySegments().get(1).addEvent(createScheduledActivity("B", 2006, Calendar.APRIL, 1));
+        nu2332assignment.getScheduledCalendar().getScheduledStudySegments().get(0).addEvent(createScheduledActivity("C", 2004, Calendar.JULY, 1));
+
+        SubjectCentricSchedule schedule = createOneVisibleOneHiddenSchedule();
+        assertTrue("Should have hidden activities on 2004-07-01", schedule.getDays().get(0).getHasHiddenActivities());
     }
 }

@@ -11,13 +11,19 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class ScheduleDayTest extends StudyCalendarTestCase {
-    public void testEmptyWhenNoActivities() throws Exception {
-        assertTrue(new ScheduleDay(new Date()).isEmpty());
+    private ScheduleDay day = new ScheduleDay(new Date());
+
+    public void testEmptyWhenNoActivitiesAtAll() throws Exception {
+        assertTrue(day.isEmpty());
     }
 
     public void testNotEmptyWhenHasAnActivity() throws Exception {
-        ScheduleDay day = new ScheduleDay(new Date());
         day.getActivities().add(Fixtures.createScheduledActivity("A", 2008, Calendar.JANUARY, 4));
+        assertFalse(day.isEmpty());
+    }
+
+    public void testNotEmptyWhenHasHiddenActivities() throws Exception {
+        day.setHasHiddenActivities(true);
         assertFalse(day.isEmpty());
     }
     

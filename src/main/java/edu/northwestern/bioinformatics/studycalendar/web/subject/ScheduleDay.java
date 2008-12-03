@@ -12,6 +12,7 @@ import java.util.LinkedList;
 public class ScheduleDay implements Comparable<ScheduleDay> {
     private Date date;
     private List<ScheduledActivity> activities;
+    private boolean hasHiddenActivities;
 
     public ScheduleDay(Date date) {
         this.date = date;
@@ -25,7 +26,7 @@ public class ScheduleDay implements Comparable<ScheduleDay> {
     }
 
     public boolean isEmpty() {
-        return getActivities().isEmpty();
+        return getActivities().isEmpty() && !getHasHiddenActivities();
     }
 
     ////// BEAN PROPERTIES
@@ -36,5 +37,13 @@ public class ScheduleDay implements Comparable<ScheduleDay> {
 
     public List<ScheduledActivity> getActivities() {
         return activities;
+    }
+
+    public boolean getHasHiddenActivities() {
+        return hasHiddenActivities;
+    }
+
+    public void setHasHiddenActivities(boolean hasHiddenActivities) {
+        this.hasHiddenActivities = hasHiddenActivities;
     }
 }
