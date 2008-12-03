@@ -62,7 +62,7 @@ public class AuthorizationService {
     ////// CONFIGURATION
 
     @Required
-    public void setAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
+    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 }
