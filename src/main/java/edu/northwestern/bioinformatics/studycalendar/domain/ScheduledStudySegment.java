@@ -73,6 +73,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         return name.toString();
     }
 
+    @Transient
     public Range<Date> getDateRange() {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(getStartDate());
