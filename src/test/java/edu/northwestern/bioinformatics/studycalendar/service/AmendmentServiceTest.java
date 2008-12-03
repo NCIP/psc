@@ -7,27 +7,18 @@ import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.*;
 
 import static java.util.Calendar.*;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -265,6 +256,57 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         assertEquals("Amended calendar reflects incorrect level", "A1",
                 amended.getAmendment().getName());
     }
+
+    public void testUpdateDevAmendmentForStudyOnly() throws Exception {
+        service.setDeltaService(mockDeltaService);
+        Population population = new Population();
+        population.setName("Adding a population");
+        population.setAbbreviation("Abbreviation");
+                
+        Amendment expectedDevAmendment = new Amendment();
+        study.setDevelopmentAmendment(expectedDevAmendment);
+        Add expectedChange = Add.create(population);
+
+        mockDeltaService.updateRevisionForStudy(expectedDevAmendment, study, expectedChange);
+        studyService.save(study);
+        replayMocks();
+        service.updateDevelopmentAmendmentForStudyAndSave(study, expectedChange);
+        verifyMocks();
+    }
+
+    public void testUpdateDevAmendmentForStudyWithPopulationsModifications() throws Exception {
+        service.setDeltaService(mockDeltaService);
+        Population population = new Population();
+        population.setName("Adding a population");
+        population.setAbbreviation("Abbreviation");
+
+        Set<Population> setOfPopulations = new HashSet<Population>();
+        setOfPopulations.add(population);
+        study.setPopulations(setOfPopulations);        
+
+        Population updatedPopulation = population;
+        updatedPopulation.setName("New population name");
+        Amendment expectedDevAmendment = new Amendment();
+        study.setDevelopmentAmendment(expectedDevAmendment);
+
+        List<Change> changes = new ArrayList<Change>();;
+        Change expectedChangeName = PropertyChange.create("name", population.getName(), updatedPopulation.getName());
+        Change expectedChangeAbbreviation = PropertyChange.create("abbreviation", population.getAbbreviation(), updatedPopulation.getAbbreviation());
+        changes.add(expectedChangeName);
+        changes.add(expectedChangeAbbreviation);
+
+        for (Change change: changes) {
+            mockDeltaService.updateRevision(expectedDevAmendment, population, change);
+        }
+
+        studyService.save(study);
+        replayMocks();
+        Population populationAfterUpdate = service.updateDevelopmentAmendmentForStudyAndSave(population, study, changes.toArray(new Change[changes.size()]));
+        verifyMocks();
+        assertEquals("Update population name is valid ", "New population name", populationAfterUpdate.getName());
+        assertEquals("Update population abbreviation is valid ", "Abbreviation", populationAfterUpdate.getAbbreviation());
+    }
+
 
     public void testUpdateDevAmendment() throws Exception {
         service.setDeltaService(mockDeltaService);
