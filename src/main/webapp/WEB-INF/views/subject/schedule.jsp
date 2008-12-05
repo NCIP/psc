@@ -6,7 +6,7 @@
 <%@ taglib prefix="sched" tagdir="/WEB-INF/tags/schedule" %>
 <html>
 <head>
-    <title>Comprehensive schedule</title>
+    <title>Comprehensive Subject Schedule</title>
     <tags:includeScriptaculous/>
     <tags:sassLink name="schedule"/>
     <tags:sassLink name="single-schedule"/>

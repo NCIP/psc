@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +31,10 @@ public class SubjectCentricScheduleController extends PscAbstractController {
     private SubjectDao subjectDao;
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
+
+    public SubjectCentricScheduleController() {
+        setCrumb(new Crumb());
+    }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -67,5 +74,21 @@ public class SubjectCentricScheduleController extends PscAbstractController {
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        @Override
+        public String getName(BreadcrumbContext context) {
+            return new StringBuilder()
+                .append("Comprehensive schedule for ").append(context.getSubject().getFullName())
+                .toString();
+        }
+
+        @Override
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            return createParameters(
+                "subject", context.getSubject().getId().toString()
+            );
+        }
     }
 }
