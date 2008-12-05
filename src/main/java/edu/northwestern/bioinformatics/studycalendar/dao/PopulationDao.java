@@ -21,16 +21,6 @@ public class PopulationDao extends StudyCalendarMutableDomainObjectDao<Populatio
     }
 
     /**
-     * Finds all the populations available
-     *
-     * @return      a list of all the available populations
-     */
-    @SuppressWarnings({ "unchecked" })
-    public List<Population> getAll() {
-        return getHibernateTemplate().find("from Population order by name asc ");
-    }
-
-    /**
      * Finds the population based on study and the population abbreviation
      *
      * @param study        the study which you want to search for the population

@@ -61,15 +61,4 @@ public class PopulationDaoTest extends ContextDaoTestCase<PopulationDao> {
         assertEquals("N", reloaded.getAbbreviation());
         assertEquals(-7, (int) reloaded.getStudy().getId());
     }
-
-    public void testGetAllPopulations() throws Exception {
-        Population p1 = getDao().getById(-77);
-        Population p2 = getDao().getById(-88);
-        Population p3 = getDao().getById(-76);
-        List<Population> populations = getDao().getAll();
-        assertEquals("Wrong number of populations ", 3, populations.size());
-        assertEquals("First population in the list is not the one that expected ", populations.get(0).getName(), p1.getName() );
-        assertEquals("Second population in the list is not the one that expected ", populations.get(1).getName(), p3.getName() );
-        assertEquals("First population in the list is not the one that expected ", populations.get(2).getName(), p2.getName() );
-    }
 }
