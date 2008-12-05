@@ -137,8 +137,8 @@ public class Study extends AbstractMutableDomainObject implements Named, Cloneab
     }
 
     public boolean hasAmendment(Amendment a) {
-        return a.equals(getDevelopmentAmendment())
-            || a.equals(getAmendment())
+        return a == getDevelopmentAmendment()
+            || a == getAmendment()
             || (getAmendment() != null && getAmendment().hasPreviousAmendment(a));
     }
 

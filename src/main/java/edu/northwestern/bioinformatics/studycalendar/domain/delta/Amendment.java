@@ -122,7 +122,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
      */
     public boolean hasPreviousAmendment(Amendment candidate) {
         return this.getPreviousAmendment() != null
-                && (this.getPreviousAmendment().equals(candidate)
+                && (this.getPreviousAmendment() == candidate
                 || this.getPreviousAmendment().hasPreviousAmendment(candidate));
     }
 
