@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 
 import javax.persistence.MappedSuperclass;
@@ -40,6 +41,23 @@ public abstract class ChildrenChange extends Change {
         } else {
             setChild(null);
             setChildId(other.getChildId());
+        }
+    }
+
+    @Transient
+    public String getChildIdText() {
+        return getChildId() == null ? null : getChildId().toString();
+    }
+
+    public void setChildIdText(String childIdText) {
+        if (childIdText == null) {
+            setChildId(null);
+        } else {
+            try {
+                setChildId(new Integer(childIdText));
+            } catch (NumberFormatException nfe) {
+                throw new StudyCalendarSystemException("Child ID text must be a string representation of an integer, not %s", childIdText);
+            }
         }
     }
     

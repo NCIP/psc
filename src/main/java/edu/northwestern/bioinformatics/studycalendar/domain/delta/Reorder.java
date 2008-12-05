@@ -81,8 +81,8 @@ public class Reorder extends ChildrenChange {
 
     @Override
     @Column(name="attribute", nullable = false)
-    public Integer getChildId() {
-        return super.getChildId();
+    public String getChildIdText() {
+        return super.getChildIdText();
     }
 
     ////// BEAN PROPERTIES

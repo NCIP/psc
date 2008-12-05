@@ -3,8 +3,8 @@ class CreateActivityProperties extends edu.northwestern.bioinformatics.bering.Mi
         createTable("activity_properties") { t ->
             t.addVersionColumn()
             t.addColumn("activity_id", "integer", nullable: false)
-            t.addColumn("namespace", "string", nullable:false)
-            t.addColumn("name", "string", nullable: false)
+            t.addColumn("namespace", "string", nullable:false, limit:1024)
+            t.addColumn("name", "string", nullable: false, limit:512)
             t.addColumn("value", "string", nullable:true)
             t.addColumn("grid_id", "string", limit: 255)
         }

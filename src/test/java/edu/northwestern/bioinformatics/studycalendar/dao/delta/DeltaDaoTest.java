@@ -35,7 +35,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertTrue("Wrong change subtype", changes.get(0) instanceof Add);
         Add addOne = (Add) changes.get(0);
         assertEquals("Wrong change index ", 1, (int) addOne.getIndex());
-        assertEquals("Wrong change newChildId ", -3, (int) addOne.getChildId());
+        assertEquals("Wrong change newChildId ", "-3",  addOne.getChildIdText());
         assertSame("Reverse relationship not loaded", actual, addOne.getDelta());
 
         Change changeTwo = changes.get(1);
@@ -43,7 +43,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertTrue("Wrong change subtype", changeTwo instanceof Add);
         Add addTwo = (Add)changeTwo;
         assertEquals("Wrong change index ", 0, (int) addTwo.getIndex());
-        assertEquals("Wrong change newChildId ", -2, (int) addTwo.getChildId());
+        assertEquals("Wrong change newChildId ", "-2",  addTwo.getChildIdText());
         assertSame("Reverse relationship not loaded", actual, addTwo.getDelta());
     }
 
@@ -55,7 +55,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong change action", ChangeAction.REORDER, actual.getAction());
         assertTrue("Wrong change subtype", actual instanceof Reorder);
         Reorder reorder = (Reorder) actual;
-        assertEquals("Wrong child to move", -2, (int) reorder.getChildId());
+        assertEquals("Wrong child to move","-2", reorder.getChildIdText());
         assertEquals("Wrong new index", 0, (int) reorder.getNewIndex());
         assertSame("Reverse relationship not loaded", actualDelta, reorder.getDelta());
     }
@@ -68,7 +68,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong change action", ChangeAction.REMOVE, actual.getAction());
         assertTrue("Wrong change subtype", actual instanceof Remove);
         Remove remove = (Remove) actual;
-        assertEquals("Wrong child id", -3, (int) remove.getChildId());
+        assertEquals("Wrong child id", "-3", remove.getChildIdText());
         assertSame("Reverse relationship not loaded", actualDelta, remove.getDelta());
     }
 

@@ -44,10 +44,11 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
-                //need to have both "like" or "eq" criterias to work on Oracle and Postgres dbs.
+                //need to have both "lt & ge" or "eq" criterias to work on Oracle and Postgres dbs for date with timestamp.
                 Criteria crit = session.createCriteria(Amendment.class)
                         .add(Restrictions.disjunction()
-                            .add(Restrictions.like("date", keyParts.getDate()))
+                             .add(Restrictions.and(Restrictions.lt("date", keyParts.getDateNext())
+                                ,Restrictions.ge("date",keyParts.getDate())))
                             .add(Restrictions.eq("date", keyParts.getDate()))
                         );
                 if (keyParts.getName() != null) crit.add( Restrictions.eq("name", keyParts.getName()) );

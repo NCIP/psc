@@ -58,8 +58,8 @@ public class Add extends ChildrenChange {
 
     @Override // in order to map
     @Column(name = "new_value", nullable = false)
-    public Integer getChildId() {
-        return super.getChildId();
+    public String getChildIdText() {
+        return super.getChildIdText();
     }
 
     ////// BEAN PROPERTIES

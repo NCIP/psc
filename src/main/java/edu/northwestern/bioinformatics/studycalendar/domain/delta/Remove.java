@@ -42,8 +42,8 @@ public class Remove extends ChildrenChange {
 
     @Override
     @Column(name = "old_value", nullable = false)
-    public Integer getChildId() {
-        return super.getChildId();
+    public String getChildIdText() {
+        return super.getChildIdText();
     }
 
     ////// OBJECT METHODS

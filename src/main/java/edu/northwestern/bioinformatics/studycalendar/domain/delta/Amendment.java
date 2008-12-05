@@ -271,7 +271,13 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     public static final class Key {
         private Date date;
+        private Date dateNext;
         private String name;
+        public Key(Date date, String name, Date dateNext) {
+            this.date = date;
+            this.name = name;
+            this.dateNext = dateNext;
+        }
 
         public Key(Date date, String name) {
             this.date = date;
@@ -288,14 +294,18 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
             } else {
                 dateStr = keyStr;
             }
+            String[] dateValue = dateStr.split("\\-");
+            String dateNextStr = dateValue[0].concat("-").concat(dateValue[1]).concat("-").concat(String.valueOf(Integer.parseInt(dateValue[2])+1));
             Date date;
+            Date dateNext;
             try {
                 date = createNaturalKeyDateFormat().parse(dateStr);
+                dateNext = createNaturalKeyDateFormat().parse(dateNextStr);                 
             } catch (ParseException e) {
                 throw new StudyCalendarValidationException(
                         "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
             }
-            return new Key(date, name);
+            return new Key(date, name, dateNext);
         }
 
         public Date getDate() {
@@ -312,6 +322,14 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public Date getDateNext() {
+            return dateNext;
+        }
+
+        public void setDateNext(Date dateNext) {
+            this.dateNext = dateNext;
         }
 
         @Override

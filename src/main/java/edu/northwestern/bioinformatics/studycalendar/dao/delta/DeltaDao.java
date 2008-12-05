@@ -32,10 +32,10 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> impleme
     private <P extends PlanTreeNode<?>> Delta<P> findDeltaForChildChangeOfNode(Class<? extends ChildrenChange> changeClass, PlanTreeNode<P> node) {
         List<Delta<P>> deltas = getHibernateTemplate().find(
             String.format(
-                "select d from Delta d, %s a where a in elements(d.changesInternal) and d.class = %sDelta and a.childId = ? order by d.id desc",
+                "select d from Delta d, %s a where a in elements(d.changesInternal) and d.class = %sDelta and a.childIdText = ? order by d.id desc",
                 changeClass.getSimpleName(), node.parentClass().getSimpleName()
             ),
-            node.getId()
+            node.getId().toString()
         );
 
         log.debug("Found {}", deltas);
