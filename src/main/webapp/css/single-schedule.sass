@@ -1,14 +1,11 @@
 !timeline_width = 900px
-!detail_timeline_width = 840px
+!detail_timeline_width = 820px
 !total_timeline_height = 24px
 !refcolor = #def
 !refcolor_border = #09b
 !refcolor_overlay_highlight = #bea
 !today_fg = #fff
 !today_bg = #00f
-
-body
-  :font-family "Helvetica Neue", Arial, Helvetica, sans-serif
 
 #total-timeline
   :width= !timeline_width
@@ -44,7 +41,7 @@ body
       :z-index 4
   .date
     :position absolute
-    :font-size 0.7em
+    :font-size 0.9em
     :top -3px
     :z-index 2
   .end-date
@@ -72,7 +69,7 @@ body
 .detail-timeline-date
   :position absolute
   :padding 1px
-  :font-size 0.7em
+  :font-size 0.9em
 #detail-timeline-date-today
   :background= !today_bg
   :color= !today_fg
@@ -82,7 +79,7 @@ body
 #detail-timeline-block
   :position relative
   :width= !timeline_width
-  :font-size 0.7em
+  :font-size 0.9em
   table
     :table-layout fixed
     :border-collapse collapse
@@ -166,19 +163,16 @@ body
 
 #scheduled-activities
   :overflow auto
-  :margin-top 2em
-  :width= !timeline_width
-  :height 20em
-  :border 3px solid #fff
-  :border-width 0 3px
+  / :width= !timeline_width
+  :height 30em
   :position relative
   div.hover
     :border-color= !refcolor_overlay_highlight
     :background-color= !refcolor_overlay_highlight + #222
   .day
-    :border 2px solid #fff
+    :border 2px solid transparent
     :border-width 2px 0
-    :margin 0.3em 0
+    :margin 0.5em 0
     :padding 0 1em
     :overflow auto
     h3.date
@@ -193,10 +187,17 @@ body
     .day-activities
       :float left
       :width= !timeline_width - 200px
+      ul
+        :margin 0
+        :padding 0 0 0 0.5em
+        li
+          :list-style-type none
     .hidden-activities
       :color #900
       :font-size 80%
       :margin 0.5em 2em
+    img
+      :vertical-align middle
   #schedule-today-marker
     :background-color= !today_bg
     :height 0.3em

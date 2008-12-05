@@ -102,10 +102,12 @@
                         <c:if test="${not empty day.activities}">
                             <ul>
                                 <c:forEach items="${day.activities}" var="sa">
+                                    <c:set var="study" value="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study}"/>
                                     <li>
-                                        ${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study.assignedIdentifier}
-                                        / ${sa.scheduledStudySegment.name}
-                                        / ${sa.activity.name}
+                                        <img src="<c:url value="/images/${sa.currentState.mode.name}.png"/>" alt="Status: ${sa.currentState.mode.name}"/>
+                                        <span title="Study" class="study <tags:studyClass study="${study}"/>">${study.assignedIdentifier}</span>
+                                        / <span title="Segment" class="segment">${sa.scheduledStudySegment.name}</span>
+                                        / <a title="Scheduled activity" href="<c:url value="/pages/cal/scheduleActivity?event=${sa.id}"/>">${sa.activity.name}</a>
                                     </li>
                                 </c:forEach>
                             </ul>
