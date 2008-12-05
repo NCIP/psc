@@ -1,6 +1,7 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@attribute name="studySegment" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment" %>
@@ -51,20 +52,11 @@
 
 
             <div class="content" id="selected-studySegment-content"<c:if test="${not visible}"> style="display: none"</c:if>>
-                <a id="show_days_button" href="#?" class = "control">Show days from study plan</a>
-                <a id="hide_days_button" href="#?" class = "control" style="display:none;">Hide days from study plan</a>
+                <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
+                <a id="hide_days_button" href="#?" class="control" style="display:none;">Hide days
+                    from study plan</a>
 
-                <div class="legend">
-                    <h3>Legend</h3>
-                    <ul>
-                        <li class="even"><img src="<c:url value="/images/scheduled.png"/>" alt="scheduled icon"/> Scheduled</li>
-                        <li class="odd"> <img src="<c:url value="/images/occurred.png"/>" alt="occurred icon"/> Occurred</li>
-                        <li class="even"><img src="<c:url value="/images/canceled.png"/>" alt="canceled icon"/> Canceled</li>
-                        <li class="odd"> <img src="<c:url value="/images/missed.png"/>" alt="error icon"/> Missed</li>
-                        <li class="even"><img src="<c:url value="/images/conditional.png"/>" alt="conditional icon"/> Conditional</li>
-                        <li class="odd"><img src="<c:url value="/images/NA.png"/>" alt="not applicable icon"/> NA</li>
-                    </ul>
-                </div>
+                <sched:legend/>
                 <c:forEach items="${studySegment.activitiesByDate}" var="entry" varStatus="status">
                     <div class="day autoclear ${commons:parity(status.index)}">
                         <h3><tags:formatDate value="${entry.key}"/></h3>

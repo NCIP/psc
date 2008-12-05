@@ -161,9 +161,15 @@
     :background #900
     :border-color #900
 
+#scheduled-activities-box .interior
+  :position relative
+
+#schedule-legend
+  :z-index 5
+
 #scheduled-activities
   :overflow auto
-  / :width= !timeline_width
+  :width 78%
   :height 30em
   :position relative
   div.hover
@@ -177,7 +183,7 @@
     :overflow auto
     h3.date
       :float left
-      :width 100px
+      :width 12%
       :left 0
       :top 0
       :font-size 1.0em
@@ -186,7 +192,7 @@
       :border none
     .day-activities
       :float left
-      :width= !timeline_width - 200px
+      :width= 85%
       ul
         :margin 0
         :padding 0 0 0 0.5em

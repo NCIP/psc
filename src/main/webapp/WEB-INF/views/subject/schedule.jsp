@@ -3,10 +3,12 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sched" tagdir="/WEB-INF/tags/schedule" %>
 <html>
 <head>
     <title>Comprehensive schedule</title>
     <tags:includeScriptaculous/>
+    <tags:sassLink name="schedule"/>
     <tags:sassLink name="single-schedule"/>
     <tags:javascriptLink name="subject/timeline"/>
 </head>
@@ -89,7 +91,8 @@
         </div>
     </div>
 </laf:box>
-<laf:box autopad="true" title="Scheduled activities">
+<laf:box autopad="true" title="Scheduled activities" id="scheduled-activities-box">
+    <sched:legend/>
     <div id="scheduled-activities">
         <c:forEach items="${schedule.days}" var="day">
             <c:if test="${day.today}">
