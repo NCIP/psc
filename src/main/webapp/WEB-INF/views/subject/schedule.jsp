@@ -44,7 +44,9 @@
                     <tr class="segment-group row-${rowStatus.index} <tags:studyClass study="${study}"/>">
                         <td class="study" title="${study.assignedIdentifier}">
                             <c:choose>
-                                <c:when test="${lastStudy != study}">${study.assignedIdentifier}</c:when>
+                                <c:when test="${lastStudy != study}">
+                                    <a href="<c:url value="/pages/cal/schedule?assignment=${row.assignment.id}"/>">${study.assignedIdentifier}</a>
+                                </c:when>
                                 <c:otherwise>&nbsp;</c:otherwise>
                             </c:choose>
                         </td>
@@ -83,7 +85,7 @@
                     <c:set var="dates"><tags:formatDate value="${segment.dateRange.start}"/> to <tags:formatDate value="${segment.dateRange.stop}"/></c:set>
                     <c:set var="classes">row-${row.rowNumber} <tags:dateClass date="${segment.dateRange.start}" prefix="start_date"/> <tags:dateClass date="${segment.dateRange.stop}" prefix="end_date"/></c:set>
                     <div class="segment-box ${classes}" title="${segment.name} ${dates}" style="display: none">
-                        ${segment.name}
+                        <a href="<c:url value="/pages/cal/schedule?assignment=${row.assignment.id}"/>&studySegment=${segment.id}">${segment.name}</a>
                         <span class="dates">${dates}</span>
                     </div>
                 </c:forEach>
