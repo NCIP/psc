@@ -85,11 +85,12 @@ public class EditPopulationController extends PscSimpleFormController {
             scve.rejectInto(errors);
         }
 
-        if (errors.hasErrors()) return showForm(request, response, errors);
-        else return getControllerTools().redirectToCalendarTemplate(
-            command.getStudy().getId(),
-            null,
-            command.getStudy().getDevelopmentAmendment().getId());
+        if (errors != null && errors.hasErrors()) {
+            return showForm(request, response, errors);
+        }
+        else {
+            return getControllerTools().redirectToCalendarTemplate(command.getStudy().getId(), null, command.getStudy().getDevelopmentAmendment().getId());
+        }
     }
 
     /////// CONFIGURATION

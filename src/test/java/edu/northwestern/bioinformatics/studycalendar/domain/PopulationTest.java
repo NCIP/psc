@@ -64,4 +64,13 @@ public class PopulationTest extends StudyCalendarTestCase {
         population.setStudy(study);
         assertFalse("Population is detached from study ", population.isDetached());
     }
+
+    public void testTransientClone() throws Exception {
+        Population p = Fixtures.createPopulation("abbr", "name");
+
+        Population clone = p.transientClone();
+        assertNotNull(clone.getName());
+        assertNotNull(clone.getAbbreviation());
+        assertTrue(clone.isMemoryOnly());
+    }
 }

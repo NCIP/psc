@@ -7,19 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
@@ -34,12 +23,8 @@ import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
-import java.util.ArrayList;
 import static java.util.Arrays.asList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -701,6 +686,25 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         assertSame(study, service.findStudy(epoch));
         assertSame(study, service.findStudy(epoch.getStudySegments().get(0)));
+    }
+
+    public void testFindEquivalentChildForStudyNode() throws Exception {
+        Study study = createBasicTemplate();
+        assignIds(study);
+        Study studyAsNode = study;
+        assertSame(study, service.findEquivalentChild(study, studyAsNode));
+    }
+
+    public void testFindEquivalentChildForPopulationNode() throws Exception {
+        Study study = createBasicTemplate();
+        assignIds(study);
+        Population population = new Population();
+        population.setName("population name");
+        population.setAbbreviation("population abbreviation");
+        Set<Population> populations = new HashSet<Population>();
+        populations.add(population);
+        study.setPopulations(populations);
+        assertSame(population, service.findEquivalentChild(study, population));
     }
 
     public void testFindEquivalentChildWhenActualChild() throws Exception {

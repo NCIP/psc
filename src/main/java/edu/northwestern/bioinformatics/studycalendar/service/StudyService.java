@@ -106,13 +106,9 @@ public class StudyService {
 			} else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
 				amendment = study.getDevelopmentAmendment();
 				revisedStudy = deltaService.revise(study, amendment);
-
 			}
-
-
 			if (amendment == null) {
 				throw new StudyCalendarValidationException("Can not find amendment for given amendment id:" + selectedAmendmentId);
-
 			}
 			String newStudyName = this.getNewStudyNameForCopyingStudy(revisedStudy.getName());
 			Study copiedStudy = revisedStudy.copy(newStudyName);
@@ -418,6 +414,4 @@ public class StudyService {
 			return 1;
 		}
 	}
-
-
 }

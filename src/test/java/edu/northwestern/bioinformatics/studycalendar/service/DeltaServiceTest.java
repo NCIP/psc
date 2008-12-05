@@ -5,16 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -176,6 +170,37 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         assertSame("Added delta is not for correct node", expectedTarget, added.getNode());
         assertEquals("Wrong number of changes in new delta", 1, added.getChanges().size());
         assertEquals("Wrong change in new delta", expectedChange, added.getChanges().get(0));
+    }
+
+    public void testUpdateRevisionForStudy() throws Exception {
+        Amendment rev = new Amendment();
+        Population population = Fixtures.createPopulation("new abbr ", "new name");
+        Change change = Add.create(population, 3);
+        Delta<?> studyDelta = Delta.createDeltaFor(study, change);
+        rev.addDelta(studyDelta);
+        assertEquals("Wrong number of changes in delta initially", 1, studyDelta.getChanges().size());
+
+        service.updateRevision(rev, study, change);
+
+        assertEquals("New change not merged into delta", 1, studyDelta.getChanges().size());
+    }
+
+    public void testUpdateRevisionForStudyWithExistingDelta() throws Exception {
+        Amendment rev = new Amendment();
+        Population population = Fixtures.createPopulation("new abbr ", "new name");
+        Change change = Add.create(population, 3);
+        Delta<?> studyDelta = Delta.createDeltaFor(study, change);
+        rev.addDelta(studyDelta);
+
+        Change propertyChange = PropertyChange.create("name", population.getName(), population.getName()+ " new");
+        Delta<?> studyDeltaForPropChange = Delta.createDeltaFor(population, propertyChange);
+        rev.addDelta(studyDeltaForPropChange);
+
+        assertEquals("Wrong number of changes in delta initially", 1, studyDelta.getChanges().size());
+
+        service.updateRevision(rev, study, change);
+
+        assertEquals("New change not merged into delta", 1, studyDelta.getChanges().size());
     }
 
     public void testDeleteDeltaWithRealizedChildInAdd() throws Exception {

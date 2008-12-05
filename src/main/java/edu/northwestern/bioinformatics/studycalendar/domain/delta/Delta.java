@@ -86,18 +86,15 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
     ////// LOGIC
 
     public Delta<T> addChange(Change change) {
-        log.info("======= inside addChange " + change);
         changes.add(change);
         change.setDelta(this);
         return this;
     }
 
     public Delta<T> addChanges(Change... newChanges) {
-        log.info("======== inside addChanges " + newChanges);
         for (Change c : newChanges) {
             addChange(c);
         }
-        log.info("======= this " + this);
         return this;
     }
 

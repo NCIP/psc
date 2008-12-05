@@ -3,11 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -168,6 +167,31 @@ public class StudyTest extends StudyCalendarTestCase {
         assertTrue("Cloned calendar not transient", clone.getPlannedCalendar().isMemoryOnly());
     }
 
+    public void testCloneWithPopulations() throws Exception {
+        Population p1 = Fixtures.createPopulation("abbreviation1", "name1");
+        Population p2 = Fixtures.createPopulation("abbreviation2", "name2");
+        Set<Population> populations = new HashSet<Population>();
+        populations.add(p1);
+        populations.add(p2);
+        study.setPopulations(populations);
+        Study clone = study.clone();
+
+        assertFalse("Original study marked mem-only", study.isMemoryOnly());
+        assertFalse("Clone is transient", clone.isMemoryOnly());
+        Set<Population> clonedPopulations = clone.getPopulations();
+        Population[] populationsArray = new Population[2];
+        populationsArray = clonedPopulations.toArray(populationsArray);
+
+        assertNotSame("Clone is same", study, clone);
+        assertNotSame("Populations not deep-cloned", study.getPopulations(), clone.getPopulations());
+
+
+        assertNotNull("First population not in clone", populationsArray[0]);
+        assertNotNull("Second population not in clone", populationsArray[1]);
+        assertEquals("Cloned first population does not refer to study clone", clone, populationsArray[0].getStudy());
+        assertEquals("Cloned second population does not refer to study clone", clone, populationsArray[1].getStudy());
+    }
+
     public void testLastModifiedDate() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
@@ -206,5 +230,9 @@ public class StudyTest extends StudyCalendarTestCase {
         assertSame(a, study.getDevelopmentAmendment());
 
         assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
+    }
+
+   public void testIsDetached() throws Exception {
+        assertFalse("Study is detached from any element ", study.isDetached());
     }
 }

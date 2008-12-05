@@ -71,4 +71,15 @@ public class PlannedActivityLabelTest extends StudyCalendarTestCase {
         assertEquals(pal0.getLabel(), clone.getLabel());
         assertTrue(clone.isMemoryOnly());
     }
+    
+   public void testIsDetachedWhenPlannedActivityNotPresent() throws Exception {
+        PlannedActivityLabel pal = new PlannedActivityLabel();
+        assertTrue("Planned activity label is attached to planned activity ", pal.isDetached());
+    }
+
+    public void testIsDetachedWhenPlannedActivityIsPresent() throws Exception {
+        PlannedActivityLabel pal = new PlannedActivityLabel();
+        pal.setPlannedActivity(pa);
+        assertFalse("Planned activity label is detached from planned activity ", pal.isDetached());
+    }
 }

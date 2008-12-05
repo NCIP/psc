@@ -13,16 +13,16 @@
         abbreviation="H+"
         study_id="-7"
         />
+   <populations
+        id="-88"
+        name="hepatoma"
+        abbreviation="h"
+        study_id="-8"
+        />
     <populations
         id="-76"
         name="Mesothelioma"
         abbreviation="M"
         study_id="-7"
-        />
-    <populations
-        id="-88"
-        name="hepatoma"
-        abbreviation="h"
-        study_id="-8"
         />
 </dataset>

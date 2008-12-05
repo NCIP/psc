@@ -1,11 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
@@ -43,6 +38,14 @@ public class DeltaTest extends StudyCalendarTestCase {
         assertDeltaFor(new PlannedActivityLabel(), PlannedActivityLabelDelta.class);
     }
 
+    public void testDeltaForPopulation() throws Exception {
+        assertDeltaFor(new Population(), PopulationDelta.class);
+    }    
+
+    public void testDeltaForStudy() throws Exception {
+        assertDeltaFor(new Study(), StudyDelta.class);
+    }
+    
     public void testAddChange() throws Exception {
         Delta<?> delta = new EpochDelta();
         assertEquals("Test setup failure", 0, delta.getChanges().size());
