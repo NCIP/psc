@@ -71,7 +71,6 @@
     <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudySegmentController"/>
 
-
     <bean name="/cal/setCycleLength" id="cycleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.CycleController"/>
 
@@ -115,6 +114,8 @@
     <bean name="/cal/copyStudy" id="copyStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.CopyStudyController"/>
 
+    <bean name="/subject" id="subjectCentricScheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricScheduleController"/>
 
     <bean name="/activities" id="activityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
@@ -575,7 +576,6 @@
                         </list>
                     </property>
                 </bean>
-
 
                 <bean parent="sectionTemplate">
                     <property name="displayName" value="Calendars"/>

@@ -1,25 +1,37 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.context.SecurityContext;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.acegisecurity.Authentication;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import org.acegisecurity.context.SecurityContextHolder;
 
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
 public class ApplicationSecurityManager {
-    
+
+    @Deprecated
     public static String getUser() {
+        return getUserName();
+    }
+
+    public static String getUserName() {
         String user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             user = authentication.getName();
         }
         return user;
+    }
+
+    // TODO: remove the other getUser and rename this to getUser
+    public static User getUserObj() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        } else {
+            return (User) authentication.getPrincipal();
+        }
     }
 
     public static void removeUserSession() {

@@ -67,6 +67,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             setCurrentState(newState);
         }
     }
+    
     public int compareTo(ScheduledActivity o) {
         // by type first
         int typeDiff = getActivity().getType().compareTo(o.getActivity().getType());
@@ -124,6 +125,12 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             return dayNumber;
        }
     }
+
+    @Transient
+    public boolean isOutstanding() {
+        return getCurrentState().getMode().isOutstanding();
+    }
+
     @Transient
     public boolean isConditionalState() {
         return ScheduledActivityMode.CONDITIONAL == getCurrentState().getMode();

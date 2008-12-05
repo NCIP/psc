@@ -6,7 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -21,6 +23,8 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
     private Study nu1400, nu2332;
     private StudySubjectAssignment nu1400assignment;
     private StudySubjectAssignment nu2332assignment;
+
+    private StaticNowFactory nowFactory;
 
     @Override
     public void setUp() throws Exception {
@@ -38,20 +42,26 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
             createScheduledStudySegment(createDate(2006, Calendar.APRIL, 1), 14));
         nu2332assignment.getScheduledCalendar().addStudySegment(
             createScheduledStudySegment(createDate(2004, Calendar.JULY, 1), 14));
+
+        nowFactory = new StaticNowFactory();
+    }
+
+    private SubjectCentricSchedule createOneStudySchedule() {
+        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Collections.<StudySubjectAssignment>emptyList(), nowFactory);
     }
 
     private SubjectCentricSchedule createTwoStudySchedule() {
-        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment, nu2332assignment), Collections.<StudySubjectAssignment>emptyList());
+        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment, nu2332assignment), Collections.<StudySubjectAssignment>emptyList(), nowFactory);
     }
 
     private SubjectCentricSchedule createOneVisibleOneHiddenSchedule() {
-        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Arrays.asList(nu2332assignment));
+        return new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Arrays.asList(nu2332assignment), nowFactory);
     }
 
     public void testCreateRowsWithOneAssignment() throws Exception {
         nu1400assignment.getScheduledCalendar().addStudySegment(
             createScheduledStudySegment(createDate(2006, Calendar.JULY, 1), 14));
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(Arrays.asList(nu1400assignment), Collections.<StudySubjectAssignment>emptyList());
+        SubjectCentricSchedule schedule = createOneStudySchedule();
         assertEquals("Wrong number of rows created", 2, schedule.getSegmentRows().size());
     }
 
@@ -100,5 +110,19 @@ public class SubjectCentricScheduleTest extends StudyCalendarTestCase {
 
         SubjectCentricSchedule schedule = createOneVisibleOneHiddenSchedule();
         assertTrue("Should have hidden activities on 2004-07-01", schedule.getDays().get(0).getHasHiddenActivities());
+    }
+
+    public void testIncludesTodayWhenItDoes() throws Exception {
+        nu1400assignment.getScheduledCalendar().getScheduledStudySegments().get(0).addEvent(createScheduledActivity("A", 2006, Calendar.APRIL, 1));
+        SubjectCentricSchedule schedule = createOneVisibleOneHiddenSchedule();
+        nowFactory.setNowTimestamp(DateTools.createTimestamp(2006, Calendar.JULY, 4));
+        assertTrue(schedule.getIncludesToday());
+    }
+
+    public void testIncludesTodayWhenItDoesNot() throws Exception {
+        nu1400assignment.getScheduledCalendar().getScheduledStudySegments().get(0).addEvent(createScheduledActivity("A", 2006, Calendar.APRIL, 1));
+        SubjectCentricSchedule schedule = createOneVisibleOneHiddenSchedule();
+        nowFactory.setNowTimestamp(DateTools.createTimestamp(2008, Calendar.JULY, 4));
+        assertFalse(schedule.getIncludesToday());
     }
 }

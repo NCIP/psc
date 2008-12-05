@@ -223,6 +223,14 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[subject=").append(getSubject())
+            .append("; study site=").append(getStudySite())
+            .append(']').toString();
+    }
+
     public void addNotification(final Notification notification) {
         getNotifications().add(notification);
         notification.setAssignment(this);

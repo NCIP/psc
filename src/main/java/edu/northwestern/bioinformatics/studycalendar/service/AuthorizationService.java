@@ -10,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,16 +20,26 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class AuthorizationService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private StudyCalendarAuthorizationManager authorizationManager;
 
     public List<StudySubjectAssignment> filterForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
-        UserRole subjCoord = visibleTo.getUserRole(Role.SUBJECT_COORDINATOR);
+        log.debug("Filtering {} assignments for visibility to {}", source.size(), visibleTo);
         List<StudySubjectAssignment> visible = new LinkedList<StudySubjectAssignment>();
-        for (StudySubjectAssignment assignment : source) {
-            if (subjCoord.getStudySites().contains(assignment.getStudySite())) {
-                visible.add(assignment);
+
+        UserRole subjCoord = visibleTo.getUserRole(Role.SUBJECT_COORDINATOR);
+        if (subjCoord != null) {
+            log.debug(" - is a subject coordinator for {}", subjCoord.getStudySites());
+            for (StudySubjectAssignment assignment : source) {
+                if (subjCoord.getStudySites().contains(assignment.getStudySite())) {
+                    log.debug(" - {} is visible", assignment);
+                    visible.add(assignment);
+                } else {
+                    log.debug(" - {} is not visible", assignment);
+                }
             }
         }
+
         return visible;
     }
 

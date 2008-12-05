@@ -1,0 +1,203 @@
+!timeline_width = 900px
+!detail_timeline_width = 840px
+!total_timeline_height = 24px
+!refcolor = #def
+!refcolor_border = #09b
+!refcolor_overlay_highlight = #bea
+!today_fg = #fff
+!today_bg = #00f
+
+body
+  :font-family "Helvetica Neue", Arial, Helvetica, sans-serif
+
+#total-timeline
+  :width= !timeline_width
+  :height= !total_timeline_height
+  :border 1px solid #000
+  :border-width 0 1px
+  :position relative
+  #total-timeline-midline
+    :position absolute
+    :height 1px
+    :width 100%
+    :border-top 1px solid #000
+    :top= !total_timeline_height / 2
+    :left 0
+  #total-timeline-refbox
+    :position relative
+    :top= !total_timeline_height / 6
+    :height= !total_timeline_height * 2 / 3
+    :left 0%
+    :width 50px
+    :border-color= !refcolor_border
+    :border-style none solid
+    :border-width 1px
+    :background-color= !refcolor
+    :z-index 1
+    #total-timeline-refbox-midline
+      :position absolute
+      :width 100%
+      :height 1px
+      :border-top= 1px solid !refcolor_border
+      :top= !total_timeline_height / 3
+      :left 0
+      :z-index 4
+  .date
+    :position absolute
+    :font-size 0.7em
+    :top -3px
+    :z-index 2
+  .end-date
+    :right 2px
+  .start-date
+    :left 2px
+  .tick
+    :position absolute
+    :width 1px
+    :background #999
+    :z-index 3
+  .month-tick
+    :bottom= !total_timeline_height / 2
+    :height= !total_timeline_height / 4
+  .year-tick
+    :bottom= !total_timeline_height / 4
+    :height= !total_timeline_height / 2
+  .today-tick
+    :bottom= 0
+    :height= !total_timeline_height
+    :background-color= !today_bg
+
+#detail-timeline-dates
+  :height 2em
+.detail-timeline-date
+  :position absolute
+  :padding 1px
+  :font-size 0.7em
+#detail-timeline-date-today
+  :background= !today_bg
+  :color= !today_fg
+#detail-timeline-date-hover
+  :background= !refcolor_overlay_highlight
+
+#detail-timeline-block
+  :position relative
+  :width= !timeline_width
+  :font-size 0.7em
+  table
+    :table-layout fixed
+    :border-collapse collapse
+    :padding 0
+    :margin 0
+  tr.segment-group
+    td
+      :overflow hidden
+      :padding 3px 1px
+      :height 1em
+
+#detail-timeline-studies
+  :position absolute
+  :width= !timeline_width - !detail_timeline_width
+  table
+    :width 100%
+  td
+    :overflow hidden
+    :text-align right
+    :white-space nowrap
+  tr.segment-group td
+    :padding-right 0.5em
+
+#detail-timeline
+  :width= !detail_timeline_width
+  :overflow-x auto
+  :overflow-y hidden
+  :border= 1px solid !refcolor_border
+  :border-width 0 3px
+  :background-color= !refcolor
+  :position relative
+  :left= !timeline_width - !detail_timeline_width
+  tr
+    td.day
+      :width 7px
+    td.year-start
+      :background-image url(../images/999999_double.png)
+      :background-position left
+      :background-repeat repeat-y
+    td.today
+      :background-color= !today_bg
+    td.hover
+      :background-color= !refcolor_overlay_highlight !important
+    td.has-activities
+      :cursor pointer
+
+  tr.activity-boxes
+    td.day
+      :vertical-align bottom
+      :border-bottom= 1px solid !refcolor_border
+    td.month-start
+      :background-image url(../images/999999.png)
+      :background-position left
+      :background-repeat repeat-y
+    td.year-start
+      :background-image url(../images/999999_double.png)
+
+  .segment-box
+    :background-color #444
+    :color #fff
+    :padding 1px 2px
+    :position absolute
+    :top 0
+    :left 0
+    .dates
+      :display none
+  .activity-marker
+    :width 5px
+    :height 2px
+    :margin 1px 0
+    :font-size 0
+  .outstanding, .completed, .hidden
+    :border 1px solid #000
+  .outstanding
+    :background-color #fff
+  .completed
+    :background-color #000
+  .hidden
+    :background #900
+    :border-color #900
+
+#scheduled-activities
+  :overflow auto
+  :margin-top 2em
+  :width= !timeline_width
+  :height 20em
+  :border 3px solid #fff
+  :border-width 0 3px
+  :position relative
+  div.hover
+    :border-color= !refcolor_overlay_highlight
+    :background-color= !refcolor_overlay_highlight + #222
+  .day
+    :border 2px solid #fff
+    :border-width 2px 0
+    :margin 0.3em 0
+    :padding 0 1em
+    :overflow auto
+    h3.date
+      :float left
+      :width 100px
+      :left 0
+      :top 0
+      :font-size 1.0em
+      :text-align right
+      :background none
+      :border none
+    .day-activities
+      :float left
+      :width= !timeline_width - 200px
+    .hidden-activities
+      :color #900
+      :font-size 80%
+      :margin 0.5em 2em
+  #schedule-today-marker
+    :background-color= !today_bg
+    :height 0.3em
+    :margin 0.5em 0

@@ -57,9 +57,6 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
     }
 
     public void testChangeStateWithNoEvents() throws Exception {
-
-
-        
         scheduledActivity.changeState(new Canceled("A",DateUtils.createDate(2006, Calendar.AUGUST, 3)));
         assertEquals("Wrong number of states in history", 1, scheduledActivity.getAllStates().size());
         assertTrue("Wrong curent state", scheduledActivity.getCurrentState() instanceof Canceled);
@@ -212,5 +209,15 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         assertEquals("State changed", 1, scheduledActivity.getAllStates().size());
         assertEquals("State changed", ScheduledActivityMode.NOT_APPLICABLE,
             scheduledActivity.getCurrentState().getMode());
+    }
+
+    public void testIsOutstandingWhenOutstanding() throws Exception {
+        scheduledActivity.changeState(new Conditional());
+        assertTrue(scheduledActivity.isOutstanding());
+    }
+
+    public void testIsOutstandingWhenCompleted() throws Exception {
+        scheduledActivity.changeState(new Canceled());
+        assertFalse(scheduledActivity.isOutstanding());
     }
 }

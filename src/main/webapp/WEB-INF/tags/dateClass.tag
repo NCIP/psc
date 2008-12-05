@@ -1,0 +1,1 @@
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%@attribute name="date" required="true" type="java.util.Date"%><%@attribute name="prefix"%>${empty prefix ? 'date' : prefix}-<fmt:formatDate value="${date}" pattern="yyyy-MM-dd"/> 

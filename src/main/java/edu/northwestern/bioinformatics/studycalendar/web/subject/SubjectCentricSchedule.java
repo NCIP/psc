@@ -1,11 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.Range;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,14 +25,18 @@ import java.util.Map;
  */
 public class SubjectCentricSchedule {
     private List<SegmentRow> segmentRows;
-    private List<StudySubjectAssignment> visibleAssignments, hiddenAssignments;
+    private List<StudySubjectAssignment> visibleAssignments;
+    private List<StudySubjectAssignment> hiddenAssignments;
     private List<ScheduleDay> days;
     private MutableRange<Date> dateRange;
+
+    private NowFactory nowFactory;
     private final SimpleDateFormat dayMapKeyFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    public SubjectCentricSchedule(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments) {
+    public SubjectCentricSchedule(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments, NowFactory nowFactory) {
         this.visibleAssignments = visibleAssignments;
         this.hiddenAssignments = hiddenAssignments;
+        this.nowFactory = nowFactory;
         List<StudySubjectAssignment> allAssignments = new ArrayList<StudySubjectAssignment>(visibleAssignments.size() + hiddenAssignments.size());
         allAssignments.addAll(visibleAssignments); allAssignments.addAll(hiddenAssignments);
         this.dateRange = new MutableRange<Date>();
@@ -47,6 +52,8 @@ public class SubjectCentricSchedule {
         buildSegmentRows();
         collectActivitiesByDay();
     }
+
+    ////// INITIALIZATION
 
     private void buildSegmentRows() {
         segmentRows = new LinkedList<SegmentRow>();
@@ -123,7 +130,13 @@ public class SubjectCentricSchedule {
         }
     }
 
-    /////// BEAN PROPERTIES
+    ////// LOGIC
+
+    public boolean getIncludesToday() {
+        return getDateRange().includes(nowFactory.getNow());
+    }
+
+    ////// BEAN PROPERTIES
 
     public List<SegmentRow> getSegmentRows() {
         return segmentRows;

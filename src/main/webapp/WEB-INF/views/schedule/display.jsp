@@ -389,6 +389,7 @@
 <div class="controls-card card">
     <div class="header">Manipulate and view schedule</div>
     <ul id="schedule-controls">
+        <li><a class="control" href="<c:url value="/pages/subject?subject=${assignment.subject.id}"/>">View entire schedule</a></li>
         <c:if test="${assignment.endDateEpoch == null}">
             <li><a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take subject off study</a></li>
         </c:if>

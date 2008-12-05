@@ -4,14 +4,33 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import java.util.*;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -24,7 +43,7 @@ import java.util.*;
     }
 )
 @Where(clause = "load_status > 0")
-public class Study extends AbstractMutableDomainObject implements Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
+public class Study extends AbstractMutableDomainObject implements Serializable, Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
     private String assignedIdentifier;
     private String longTitle;
     private PlannedCalendar plannedCalendar;

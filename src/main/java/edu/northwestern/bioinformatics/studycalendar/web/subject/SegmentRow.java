@@ -53,11 +53,19 @@ public class SegmentRow {
 
     ////// PROPERTIES
 
+    public Range<Date> getDateRange() {
+        return dateRange;
+    }
+
     public int getRowNumber() {
         return rowNumber;
     }
 
     public List<ScheduledStudySegment> getSegments() {
         return Collections.unmodifiableList(segments);
+    }
+
+    public StudySubjectAssignment getAssignment() {
+        return assignment;
     }
 }

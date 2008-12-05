@@ -8,8 +8,8 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -35,7 +36,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_study_sites_id")
     }
 )
-public class StudySite extends AbstractMutableDomainObject implements Named {
+public class StudySite extends AbstractMutableDomainObject implements Serializable, Named {
     private Site site;
     private Study study;
     private List<StudySubjectAssignment> studySubjectAssignments;
@@ -202,6 +203,7 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
 
     ////// OBJECT METHODS
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof StudySite)) return false;
@@ -213,11 +215,20 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (site != null ? site.hashCode() : 0);
         result = 29 * result + (study != null ? study.hashCode() : 0);
         //result = 29 * result + (studySubjectAssignments != null ? studySubjectAssignments.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[study=").append(getStudy())
+            .append("; site=").append(getSite())
+            .append(']').toString();
     }
 }

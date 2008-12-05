@@ -1,0 +1,1 @@
+<%@ attribute name="study" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.Study" %>study-<%= study.getAssignedIdentifier().replaceAll("\\s", "_") %>
