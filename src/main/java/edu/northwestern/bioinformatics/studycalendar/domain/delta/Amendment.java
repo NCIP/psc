@@ -236,6 +236,27 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
                 .append(']').toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Amendment)) return false;
+
+        Amendment amendment = (Amendment) o;
+
+        if (date != null ? !date.equals(amendment.date) : amendment.date != null) return false;
+        if (name != null ? !name.equals(amendment.name) : amendment.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = previousAmendment != null ? previousAmendment.hashCode() : 0;
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
     @Transient
     public Delta getMatchingDelta(String gridId, String nodeId) {
         for (Delta delta : this.getDeltas()) {
