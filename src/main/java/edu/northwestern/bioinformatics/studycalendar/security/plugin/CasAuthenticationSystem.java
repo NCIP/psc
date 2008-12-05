@@ -64,6 +64,8 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         nullSafeSetProperty(template, "cas.server.url.base",     getConfiguration().get(SERVICE_URL));
         nullSafeSetProperty(template, "cas.server.url.validate",
             urlJoin(getConfiguration().get(SERVICE_URL), "proxyValidate"));
+        nullSafeSetProperty(template, "cas.server.url.login",
+            urlJoin(getConfiguration().get(SERVICE_URL), "login"));
         nullSafeSetProperty(template, "cas.server.url.logout",
             urlJoin(getConfiguration().get(SERVICE_URL), "logout"));
         nullSafeSetProperty(template, "cas.local.filterPath", urlJoin("", CAS_FILTER_PATH));

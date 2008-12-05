@@ -53,7 +53,7 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
 
         assertTrue("Wrong entry point type", getSystem().entryPoint() instanceof CasProcessingFilterEntryPoint);
         CasProcessingFilterEntryPoint entryPoint = (CasProcessingFilterEntryPoint) getSystem().entryPoint();
-        assertEquals("Wrong CAS URL", EXPECTED_SERVICE_URL, entryPoint.getLoginUrl());
+        assertEquals("Wrong CAS URL", EXPECTED_SERVICE_URL + "/login", entryPoint.getLoginUrl());
         assertCorrectServiceProperties(entryPoint.getServiceProperties());
     }
 

@@ -14,7 +14,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </bean>
 
     <bean id="casEntryPoint" class="org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint">
-        <property name="loginUrl" value="${cas.server.url.base}"/>
+        <property name="loginUrl" value="${cas.server.url.login}"/>
         <property name="serviceProperties">
             <ref bean="serviceProperties"/>
         </property>
