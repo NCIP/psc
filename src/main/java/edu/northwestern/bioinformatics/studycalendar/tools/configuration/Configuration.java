@@ -45,6 +45,10 @@ public class Configuration extends DatabaseBackedConfiguration {
             CTMS_NAME = PROPERTIES.add(new ConfigurationProperty.Text("ctmsName"));
     public static final ConfigurationProperty<String>
             BASE_CTMS_URL = PROPERTIES.add(new ConfigurationProperty.Text("ctmsUrl"));
+    public static final ConfigurationProperty<String>
+            LOGO_IMAGE_URL = PROPERTIES.add(new ConfigurationProperty.Text("logoImageUrl"));
+    public static final ConfigurationProperty<String>
+            LOGO_ALT_TEXT = PROPERTIES.add(new ConfigurationProperty.Text("logoAltText"));
     public static final ConfigurationProperty<Template>
             STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
 

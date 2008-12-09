@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <laf:header>
-    <jsp:attribute name="logoText">Patient Study Calendar</jsp:attribute>
-    <jsp:attribute name="logoImageUrl"><c:url value="/images/logo.png"/></jsp:attribute>
+    <jsp:attribute name="logoText">${configuration.map.logoAltText}</jsp:attribute>
+    <jsp:attribute name="logoImageUrl"><c:url value="${configuration.map.logoImageUrl}"/></jsp:attribute>
     <jsp:attribute name="tagline">Patient Study Calendar</jsp:attribute>
     <jsp:attribute name="taglineImageUrl"><c:url value="/images/tagline.png"/></jsp:attribute>
     <jsp:attribute name="logoutUrl"><c:url value="/j_acegi_logout"/></jsp:attribute>
