@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.Range;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
@@ -78,7 +79,11 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         Calendar endDate = Calendar.getInstance();
         endDate.setTime(getStartDate());
         endDate.add(Calendar.DATE, getStudySegment().getLengthInDays() - 1);
-        return new Range<Date>(getStartDate(), endDate.getTime());
+        MutableRange<Date> range = new MutableRange<Date>(getStartDate(), endDate.getTime());
+        for (ScheduledActivity scheduledActivity : getActivities()) {
+            range.add(scheduledActivity.getActualDate());
+        }
+        return range.immutable();
     }
 
     @Transient

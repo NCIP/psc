@@ -12,6 +12,7 @@ public class MutableRange<T extends Comparable<T>> extends Range<T> {
         this(null, null);
     }
 
+    @Override
     public boolean isMutable() {
         return true;
     }
@@ -22,8 +23,17 @@ public class MutableRange<T extends Comparable<T>> extends Range<T> {
      * @param other
      */
     public void add(Range<T> other) {
-        setStart(min(getStart(), other.getStart()));
-        setStop(max(getStop(), other.getStop()));
+        add(other.getStart());
+        add(other.getStop());
+    }
+
+    /**
+     * Expands this range to include the given point if it doesn't already.
+     * @param point
+     */
+    public void add(T point) {
+        setStart(min(getStart(), point));
+        setStop(max(getStop(), point));
     }
 
     protected T min(T a, T b) {
@@ -37,6 +47,10 @@ public class MutableRange<T extends Comparable<T>> extends Range<T> {
     public void setFrom(Range<T> src) {
         setStart(src.getStart());
         setStop(src.getStop());
+    }
+
+    public Range<T> immutable() {
+        return new Range<T>(getStart(), getStop());
     }
 
     ////// BEAN PROPERTIES

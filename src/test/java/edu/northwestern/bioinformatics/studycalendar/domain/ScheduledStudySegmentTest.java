@@ -192,8 +192,30 @@ public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
 
     public void testDateRange() throws Exception {
         ScheduledStudySegment segment = Fixtures.createScheduledStudySegment(DateTools.createDate(2007, Calendar.NOVEMBER, 3), 17);
-        Range<Date> actual = segment.getDateRange();
-        assertDayOfDate("Wrong start of range", 2007, Calendar.NOVEMBER,  3, actual.getStart());
-        assertDayOfDate("Wrong end of range",   2007, Calendar.NOVEMBER, 19, actual.getStop());
+        assertDateRange(2007, Calendar.NOVEMBER,  3,
+                        2007, Calendar.NOVEMBER, 19, segment.getDateRange());
+    }
+
+    public void testDateRangeCoversAllCurrentActualDatesEvenIfTheyAreOutsideTheIdealRange() throws Exception {
+        ScheduledStudySegment segment = Fixtures.createScheduledStudySegment(DateTools.createDate(2007, Calendar.MARCH, 3), 15);
+        assertDateRange(2007, Calendar.MARCH,  3,
+                        2007, Calendar.MARCH, 17, segment.getDateRange());
+
+        segment.addEvent(createScheduledActivity("H", 2006, Calendar.APRIL, 6));
+        assertDateRange(2006, Calendar.APRIL,  6, 
+                        2007, Calendar.MARCH, 17, segment.getDateRange());
+
+        segment.addEvent(createScheduledActivity("L", 2008, Calendar.APRIL, 19));
+        assertDateRange(2006, Calendar.APRIL,  6,
+                        2008, Calendar.APRIL, 19, segment.getDateRange());
+    }
+
+    private static void assertDateRange(
+        int expectedStartYear, int expectedStartMonth, int expectedStartDay,
+        int expectedStopYear, int expectedStopMonth, int expectedStopDay,
+        Range<Date> actual
+    ) {
+        assertDayOfDate("Wrong start of range", expectedStartYear, expectedStartMonth, expectedStartDay, actual.getStart());
+        assertDayOfDate("Wrong end of range", expectedStopYear, expectedStopMonth, expectedStopDay, actual.getStop());
     }
 }
