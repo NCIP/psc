@@ -84,6 +84,9 @@ public class DisplayTemplateController extends PscAbstractController {
 
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
         model.put("epochs", epochs);
+        if(study.getAmendment()!=null && study.getDevelopmentAmendment()!=null) {
+            model.put("disableAddAmendment", study.getAmendment().getReleasedDate());
+        }
         return new ModelAndView("template/display", model);
     }
 

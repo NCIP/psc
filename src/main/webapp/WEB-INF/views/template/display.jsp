@@ -759,10 +759,11 @@
                                     </tags:restrictedListItem>
 
                                 <%--</c:if>--%>
+                                <c:if test="${empty disableAddAmendment}">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
                                     Add amendment
                                 </tags:restrictedListItem>
-
+                               </c:if>
                             </div>
                         </div>
 
