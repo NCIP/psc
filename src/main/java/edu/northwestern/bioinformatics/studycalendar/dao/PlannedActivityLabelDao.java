@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.sql.SQLException;
 
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.Session;
 import org.hibernate.HibernateException;
 import org.hibernate.Criteria;
@@ -14,7 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao<PlannedActivityLabel> {
+public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao<PlannedActivityLabel> implements DeletableDomainObjectDao<PlannedActivityLabel>{
     private final Logger log = LoggerFactory.getLogger(getClass());
     @Override
     public Class<PlannedActivityLabel> domainClass() {
@@ -52,5 +53,10 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
         List<PlannedActivityLabel> sortedList = getHibernateTemplate().find("from PlannedActivityLabels");
         Collections.sort(sortedList);
         return sortedList;
+    }
+
+    @Transactional(readOnly=false)
+    public void delete(PlannedActivityLabel plannedActivityLabel) {
+        getHibernateTemplate().delete(plannedActivityLabel);
     }
 }

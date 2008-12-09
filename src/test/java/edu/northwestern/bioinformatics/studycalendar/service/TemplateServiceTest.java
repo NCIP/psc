@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -18,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.*;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -35,6 +33,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
+    private DaoFinder daoFinder;
     private StudyCalendarAuthorizationManager authorizationManager;
     private AuthorizationService authorizationService;
     private DeltaDao deltaDao;
@@ -43,6 +42,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private User user;
     private UserRole siteCoordinatorRole;
     private UserRole subjectCoordinatorRole;
+    private DeletableDomainObjectDao domainObjectDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -55,12 +55,15 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
         authorizationService = registerMockFor(AuthorizationService.class);
+        daoFinder = registerMockFor(DaoFinder.class);
+        domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
+        service.setDaoFinder(daoFinder);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setAuthorizationService(authorizationService);
@@ -643,6 +646,21 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         assertSame(p, service.findParent(p0e0));
+        verifyMocks();
+    }
+
+    public void testDelete() throws Exception {
+        PlannedActivity pa = createPlannedActivity("P0E0", 4);
+        PlannedActivityLabel pal = createPlannedActivityLabel("label");
+        pa.addPlannedActivityLabel(pal);
+
+        expect(daoFinder.findDao(PlannedActivity.class)).andReturn(domainObjectDao);
+        expect(daoFinder.findDao(PlannedActivityLabel.class)).andReturn(domainObjectDao);
+        domainObjectDao.delete(pal);
+        domainObjectDao.delete(pa);
+
+        replayMocks();
+        service.delete(pa);
         verifyMocks();
     }
 

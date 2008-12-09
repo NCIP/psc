@@ -583,8 +583,10 @@ public class TemplateService {
         return false;
     }
 
-    protected <T extends PlanTreeNode<?>> void delete(Collection<T> collection) {
-        for (T t : collection) delete(t);
+    protected <T extends Changeable> void delete(Collection<T> collection) {
+        for (T t : collection) {
+            delete(t);
+        }
     }
 
     // TODO: this should be in a more generic service, perhaps
