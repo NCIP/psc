@@ -13,7 +13,6 @@
 
 <html>
   <head>
-      <title>Simple jsp page</title>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:stylesheetLink name="report"/>
