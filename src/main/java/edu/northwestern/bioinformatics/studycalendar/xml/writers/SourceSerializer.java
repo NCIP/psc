@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractCsvXlsSerialize
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -90,12 +91,16 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
                 Activity activity = new Activity();
                 if (!StringUtils.isBlank(name)) {
                     activity.setName(name);
+                } else {
+                    throw new StudyCalendarValidationException("Activity name can not be null for activities");
                 }
                 if (!StringUtils.isBlank(desc)) {
                     activity.setDescription(desc);
                 }
                 if (!StringUtils.isBlank(code)) {
                     activity.setCode(code);
+                } else {
+                    throw new StudyCalendarValidationException("Activity code can not be null for activities");
                 }
 
                 if (source == null) {
@@ -120,6 +125,13 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
                     String s = String.format("source %s does not exists.", sourceName);
                     logger.error(s);
                     throw new Exception(s);
+                }
+                if(!activitiesToAddAndRemove.isEmpty()){
+                    for(Activity a:activitiesToAddAndRemove) {
+                      if(activity.getName().equals(a.getName()) || activity.getCode().equals(a.getCode())) {
+                              throw new StudyCalendarValidationException("Name and Code must be unique for activities within same source");
+                        }
+                    }
                 }
                 activitiesToAddAndRemove.add(activity);
 

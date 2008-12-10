@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -49,7 +50,15 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
         Source source = new Source();
         source.setName(XsdAttribute.ACTIVITY_NAME.from(element));
         for (Element aElt : (List<Element>) element.elements("activity")) {
-            source.addActivity(activitySerializer.readElement(aElt));
+            Activity activity = activitySerializer.readElement(aElt);
+            if (source.getActivities()!=null){
+                 for (Activity a : source.getActivities()) {
+                    if (activity.getName().equals(a.getName()) || activity.getCode().equals(a.getCode())) {
+                       throw new StudyCalendarValidationException("Name and Code must be unique for activities within same source");
+                    }
+                 }
+            }
+            source.addActivity(activity);
         }
         return source;
     }

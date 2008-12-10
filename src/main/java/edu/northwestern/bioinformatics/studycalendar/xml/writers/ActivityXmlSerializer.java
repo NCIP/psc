@@ -52,8 +52,16 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
     @Override
     public Activity readElement(Element element) {
         Activity activity = new Activity();
-        activity.setName(XsdAttribute.ACTIVITY_NAME.from(element));
-        activity.setCode(XsdAttribute.ACTIVITY_CODE.from(element));
+        String nameAttr = XsdAttribute.ACTIVITY_NAME.from(element);
+        if (nameAttr.length()==0)
+            throw new StudyCalendarValidationException("Activity name can not be null for activities");
+        else
+            activity.setName(nameAttr);
+        String codeAttr = XsdAttribute.ACTIVITY_CODE.from(element);
+        if (codeAttr.length()==0)
+            throw new StudyCalendarValidationException("Activity code can not be null for activities");
+        else
+            activity.setCode(codeAttr);
         activity.setDescription(XsdAttribute.ACTIVITY_DESC.from(element));
         try {
             String typeAttr = XsdAttribute.ACTIVITY_TYPE.from(element);
