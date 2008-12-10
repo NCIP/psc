@@ -142,7 +142,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
-            expectedAssignmentId, posted.getSubjectCoordinator())).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
+            expectedAssignmentId, null, posted.getSubjectCoordinator())).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();
 
@@ -164,7 +164,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
-            expectedAssignmentId, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
+            expectedAssignmentId, null, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();
 

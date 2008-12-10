@@ -45,7 +45,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
         }      
         StudySubjectAssignment assigned = subjectService.assignSubject(
             value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-            value.getDesiredStudySubjectAssignmentId(), value.getSubjectCoordinator());
+            value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
         return String.format("studies/%s/schedules/%s",
             Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
             Reference.encode(assigned.getGridId()));
