@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -42,5 +44,13 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
                 new Object[]{date});
         return list;
 
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public StudySubjectAssignment getByStudySubjectIdentifier(Study inStudy, String identifier) {
+        return CollectionUtils.firstElement((List<StudySubjectAssignment>) getHibernateTemplate().find(
+            "select ssa from StudySubjectAssignment ssa where ssa.studySite.study = ? and ssa.studySubjectId = ?",
+            new Object[] { inStudy, identifier }
+        ));
     }
 }

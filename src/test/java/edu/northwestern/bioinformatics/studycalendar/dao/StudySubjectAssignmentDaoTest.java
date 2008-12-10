@@ -14,11 +14,12 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubjectAssignmentDao> {
+    private StudyDao studyDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
     }
 
     public void testGetAllAssignmenetsWhichHasNoActivityBeyondADate() throws Exception {
@@ -28,7 +29,6 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertTrue("Wrong assignment id", Integer.valueOf(-11).equals(assignments.get(0).getId()) || Integer.valueOf(-12).equals(assignments.get(0).getId()));
         assertTrue("Wrong assignment id", Integer.valueOf(-11).equals(assignments.get(1).getId()) || Integer.valueOf(-12).equals(assignments.get(1).getId()));
-
     }
 
     public void testGetById() throws Exception {
@@ -41,7 +41,7 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
                 assignment.getEndDateEpoch());
         assertEquals("Wrong subject", -20, (int) assignment.getSubject().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
-        assertEquals("Wrong study id", "-100", assignment.getStudySubjectId());
+        assertEquals("Wrong study id", "A", assignment.getStudySubjectId());
         assertEquals("Wrong current amendment", -18, (int) assignment.getCurrentAmendment().getId());
         assertEquals("Wrong number of populations", 1, assignment.getPopulations().size());
         assertEquals("Wrong population", -21, (int) assignment.getPopulations().iterator().next().getId());
@@ -74,5 +74,11 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         assertFalse(notification.isDismissed());
         assertEquals("Big bad", notification.getMessage());
         //CoreTestCase.assertDayOfDate(2006, Calendar.APRIL, 5, notification.getAdverseEvent().getDetectionDate());
+    }
+
+    public void testGetByStudySubjectIdentifier() throws Exception {
+        StudySubjectAssignment ssa = getDao().getByStudySubjectIdentifier(studyDao.getById(-101), "B");
+        assertNotNull(ssa);
+        assertEquals("Wrong SSA found", -13, (int) ssa.getId());
     }
 }
