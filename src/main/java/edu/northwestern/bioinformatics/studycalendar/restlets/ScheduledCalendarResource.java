@@ -2,16 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -24,6 +30,7 @@ import java.io.IOException;
  */
 public class ScheduledCalendarResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private StudyDao studyDao;
     private ScheduledStudySegmentXmlSerializer scheduledStudySegmentSerializer;
     private NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer;
     private SubjectService subjectService;
@@ -40,8 +47,15 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
 
     @Override
     protected ScheduledCalendar loadRequestedObject(Request request) {
+        String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        Study study = studyDao.getByAssignedIdentifier(studyIdent);
+        if (study == null) return null;
+
         String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
+        if (assignment == null) {
+            assignment = studySubjectAssignmentDao.getByStudySubjectIdentifier(study, assignmentId);
+        }
         if (assignment != null) {
             return assignment.getScheduledCalendar();
         }
@@ -85,6 +99,11 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Required
     public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
         this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 
     @Required

@@ -1,10 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
@@ -29,17 +35,20 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     private ScheduledCalendar calendar;
     private StudySubjectAssignment assigment;
     private ScheduledCalendarXmlSerializer serializer;
+    private StudyDao studyDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
     private NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer;
     private SubjectService subjectService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         serializer = registerMockFor(ScheduledCalendarXmlSerializer.class);
         subjectService = registerMockFor(SubjectService.class);
         scheduledSegmentSerializer = registerMockFor(ScheduledStudySegmentXmlSerializer.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         nextScheduledStudySegmentSerializer = registerMockFor(NextScheduledStudySegmentXmlSerializer.class);
 
@@ -50,17 +59,20 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName(), ASSIGNMENT_IDENTIFIER);
     }
 
+    @Override
     protected ScheduledCalendarResource createResource() {
         ScheduledCalendarResource resource = new ScheduledCalendarResource();
         resource.setXmlSerializer(serializer);
         resource.setSubjectService(subjectService);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
+        resource.setStudyDao(studyDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
         resource.setNextScheduledStudySegmentXmlSerializer(nextScheduledStudySegmentSerializer);
         return resource;
     }
 
     ////// GET tests
+
     public void testGetXmlForScheduledStudies() throws IOException {
         expectResolvedSubjectAssignment();
         expectSerializeScheduledCalendar();
@@ -75,6 +87,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     ////// POST tests
+
     public void testPostAllowedOnlyForSubjectCoordinator() {
         assertRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
     }
@@ -97,7 +110,9 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     ////// Expect methods
+
     private void expectResolvedSubjectAssignment() {
+        expect(studyDao.getByAssignedIdentifier("EC golf")).andReturn(new Study());
         expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(assigment);
     }
 
@@ -106,6 +121,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     ////// Helper methods
+
     public StudySubjectAssignment createAssignment(ScheduledCalendar calendar) {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setScheduledCalendar(calendar);
