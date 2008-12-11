@@ -50,6 +50,20 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     }
 
     /**
+    * Finds the activity by activity name and source name.
+    *
+    * @param  name the name of the activity we want to find
+    * @param  sourceName the source name for the activity we want to find
+    * @return      the activity found that corresponds to the activity name and source name parameters
+    */
+    @SuppressWarnings({ "unchecked" })
+    public Activity getByNameAndSourceName(String name, String sourceName) {
+        return CollectionUtils.firstElement(
+            (List<Activity>) getHibernateTemplate().find(
+                "from Activity a where name = ? and a.source.name = ?", new String[] { name, sourceName }));
+    }
+
+    /**
     * Finds the activity by activity code and source name.
     *
     * @param  code the code of the activity we want to find

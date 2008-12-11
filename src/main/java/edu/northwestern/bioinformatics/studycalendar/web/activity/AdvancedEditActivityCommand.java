@@ -239,12 +239,20 @@ public class AdvancedEditActivityCommand implements Validatable {
 
     public void validate(Errors errors) {
         if (activity.getName() != null && activity.getName().length()>0) {
-            if (getActivityDao().getByName(activity.getName()) != null){
+            if (getActivityDao().getByNameAndSourceName(activity.getName(),"PSC - Manual Activity Creation") != null){
                 errors.rejectValue("activity.name", "error.activity.name.already.exists");
             }
         }
         else {
             errors.rejectValue("activity.name", "error.activity.name.is.empty");
+        }
+        if(activity.getCode() !=null && activity.getCode().length()>0) {
+            if(getActivityDao().getByCodeAndSourceName(activity.getCode(),"PSC - Manual Activity Creation") != null) {
+                errors.rejectValue("activity.code", "error.activity.code.already.exists");
+            }
+        }
+        else {
+            errors.rejectValue("activity.code", "error.activity.code.is.empty");
         }
     }
 

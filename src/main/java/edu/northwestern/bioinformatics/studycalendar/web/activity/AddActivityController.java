@@ -51,7 +51,13 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
             Activity activity = command.createActivity();
             activityDao.save(activity);
         } else {
-            model.put("error", errors.getModel());
+            //customize message
+            if(errors.getFieldError("activityName")!=null && errors.getFieldError("activityCode")!=null)
+                model.put("error",errors.getFieldError("activityName").getCode().concat(errors.getFieldError("activityCode").getCode()));
+            else if(errors.getFieldError("activityName")!=null)
+                model.put("error",errors.getFieldError("activityName").getCode());
+            else
+                model.put("error",errors.getFieldError("activityCode").getCode());              
         }
         List<Activity> activities = activityDao.getBySourceId(command.getActivitySource().getId());
         Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();

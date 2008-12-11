@@ -97,12 +97,20 @@ public class NewActivityCommand implements Validatable {
 
     public void validate(Errors errors) {
         if (getActivityName() != null && getActivityName().length()>0) {
-            if (getActivityDao().getByName(getActivityName()) != null){
-                errors.rejectValue("activityName", "error.activity.name.already.exists");
+            if (getActivityDao().getByNameAndSourceName(getActivityName(),getActivitySource().getName()) != null) {
+                errors.rejectValue("activityName","The activity name already exists. Please enter a different activity name.");
             }
         }
         else {
-            errors.rejectValue("activityName", "error.activity.name.is.empty");
+            errors.rejectValue("activityName", "The activity name is empty.");
+        }
+        if(getActivityCode() !=null && getActivityCode().length()>0) {
+            if(getActivityDao().getByCodeAndSourceName(getActivityCode(),getActivitySource().getName()) != null) {
+                errors.rejectValue("activityCode", "The activity code already exists. Please enter a different activity code.");
+            }
+        }
+        else {
+            errors.rejectValue("activityCode", "The activity code is empty");
         }
     }
 
