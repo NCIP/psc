@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.dom4j.Document;
@@ -13,7 +12,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> implements StatefulTemplateXmlSerializer<PlanTreeNode<?>>{
+public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>>
+    implements StatefulTemplateXmlSerializer<PlanTreeNode<?>>
+{
     protected Study study;
 
     protected abstract PlanTreeNode<?> nodeInstance();
@@ -24,40 +25,22 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
     protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
-//    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {
-//    }
-
-    protected void addAdditionalElementAttributes(final Changeable node, Element element) {
+    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
     }
 
-//    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
-//    }
-
-    protected void addChildrenElements(Changeable node, Element eStudySegment) {
+    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
     }
 
-//    public Element createElement(PlanTreeNode<?> node) {
-//        Element element = element(elementName());
-//        element.addAttribute(ID, node.getGridId());
-//        addAdditionalElementAttributes(node, element);
-//
-//        if (getChildSerializer() != null) {
-//            addChildrenElements((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) node, element);
-//        }
-//
-//        return element;
-//    }
-
-    public Element createElement(Changeable node) {
+    public Element createElement(PlanTreeNode<?> node) {
         Element element = element(elementName());
         element.addAttribute(ID, node.getGridId());
         addAdditionalElementAttributes(node, element);
 
         if (getChildSerializer() != null) {
-            addChildrenElements((Changeable) node, element);
+            addChildrenElements((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) node, element);
         }
 
         return element;
