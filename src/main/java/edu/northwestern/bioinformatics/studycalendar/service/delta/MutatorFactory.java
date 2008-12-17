@@ -1,11 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -61,6 +56,8 @@ public class MutatorFactory implements ApplicationContextAware {
         } else if (target instanceof Period) {
             return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
                 getSubjectService(), getTemplateService());
+        } else if (target instanceof PlannedActivity)  {
+            return new AddPlannedActivityLabelMutator(add, dao, scheduledActivityDao);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
         } else {
@@ -74,6 +71,8 @@ public class MutatorFactory implements ApplicationContextAware {
             return new RemovePeriodMutator(remove, (PeriodDao) dao, getTemplateService());
         } else if (target instanceof Period) {
             return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);
+        } else if (target instanceof PlannedActivity)  {
+            return new RemovePlannedActivityLabelMutator(remove, dao, scheduledActivityDao);
         } else {
             return new RemoveMutator(remove,  dao);
         }

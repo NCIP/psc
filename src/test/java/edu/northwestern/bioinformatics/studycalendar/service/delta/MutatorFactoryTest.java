@@ -161,7 +161,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         Mutator actual = factory.createMutator(new PlannedActivity(), Add.create(Fixtures.createPlannedActivityLabel("elab")));
         assertNotNull(actual);
         // This will work until the schedule is involved
-        assertEquals(CollectionAddMutator.class, actual.getClass());
+        assertEquals(AddPlannedActivityLabelMutator.class, actual.getClass());
     }
 
     public void testCreateReorderMutator() throws Exception {
@@ -191,5 +191,12 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         Mutator actual = factory.createMutator(new Period(), remove);
         assertNotNull(actual);
         assertEquals(RemovePlannedActivityMutator.class,  actual.getClass());
+    }
+    public void testCreateRemovePlannedActivityLabelMutator() throws Exception {
+        Remove remove = new Remove();
+        remove.setChildId(5);
+        Mutator actual = factory.createMutator(new PlannedActivity(),remove);
+        assertNotNull(actual);
+        assertEquals(RemovePlannedActivityLabelMutator.class, actual.getClass());
     }
 }

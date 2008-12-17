@@ -286,6 +286,17 @@ public class Fixtures {
         return event;
     }
 
+    public static ScheduledActivity createScheduledActivityWithLabels(PlannedActivity planned, int year, int month, int day){
+        ScheduledActivity event = new ScheduledActivity();
+        event.setPlannedActivity(planned);
+        event.setActivity(planned.getActivity());
+        event.setRepetitionNumber(0);
+        event.setLabels(planned.getLabels());
+        event.setIdealDate(DateUtils.createDate(year, month, day - 2));
+        event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
+        return event;
+    }
+
     public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");

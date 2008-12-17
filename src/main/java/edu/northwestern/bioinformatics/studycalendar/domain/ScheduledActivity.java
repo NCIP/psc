@@ -66,6 +66,14 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             setCurrentState(newState);
         }
     }
+
+    public void addLabel(String label) {
+        getLabels().add(label);
+    }
+
+    public void removeLabel(String label) {
+        getLabels().remove(label);
+    }
     
     public int compareTo(ScheduledActivity o) {
         // by type first
