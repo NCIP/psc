@@ -114,7 +114,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 	public SortedSet<String> getLabelsForRepetition(int rep) {
 		SortedSet<String> labels = new TreeSet<String>(LabelComparator.INSTANCE);
 		for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
-			if (paLabel.getRepetitionNumber() == null || paLabel.getRepetitionNumber() == rep) {
+			if (paLabel.appliesToRepetition(rep)) {
 				labels.add(paLabel.getLabel());
 			}
 		}

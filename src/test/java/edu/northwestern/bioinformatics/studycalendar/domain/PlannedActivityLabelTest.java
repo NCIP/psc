@@ -82,4 +82,19 @@ public class PlannedActivityLabelTest extends StudyCalendarTestCase {
         pal.setPlannedActivity(pa);
         assertFalse("Planned activity label is detached from planned activity ", pal.isDetached());
     }
+    
+    public void testAppliesToAnyRepetitionWhenRepNumIsNull() {
+        pal0.setRepetitionNumber(null);
+        assertTrue(pal0.appliesToRepetition(4));
+        assertTrue(pal0.appliesToRepetition(2));
+        assertTrue(pal0.appliesToRepetition(13));
+        assertTrue(pal0.appliesToRepetition(30));
+    }
+
+    public void testAppliesOnlyToSpecificRepWhenRepNumIsConcrete() {
+        pal0.setRepetitionNumber(3);
+        assertFalse(pal0.appliesToRepetition(0));
+        assertFalse(pal0.appliesToRepetition(4));
+        assertTrue(pal0.appliesToRepetition(3));
+    }
 }

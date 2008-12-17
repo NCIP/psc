@@ -42,6 +42,10 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
         return getRepetitionNumber() == null;
     }
 
+    public boolean appliesToRepetition(int rep) {
+        return isAllRepetitions() || getRepetitionNumber() == rep;
+    }
+
     private static String normalizeLabel(String input) {
         if (input == null) return null;
         return input.replaceAll("\\s+", "-").toLowerCase();
