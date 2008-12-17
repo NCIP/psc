@@ -25,15 +25,13 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
     protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
-    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {
-    }
+    protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) { }
 
-    protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
-    }
+    protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) { }
 
-    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
-    }
+    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) { }
 
+    @Override
     public Element createElement(PlanTreeNode<?> node) {
         Element element = element(elementName());
         element.addAttribute(ID, node.getGridId());
@@ -46,6 +44,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         return element;
     }
 
+    @Override
     public PlanTreeNode<?> readElement(Element element) {
         if (!element.getName().equals(elementName())) {
             return null;
@@ -76,24 +75,29 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         return nodeList;
     }
 
+    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     private void addChildren(List<PlanTreeNode<?>> children, PlanTreeNode<?> parent) {
         for (PlanTreeNode<?> child : children) {
             ((PlanTreeInnerNode) parent).addChild(child);
         }
     }
 
+    @Override
     public Document createDocument(PlanTreeNode<?> root) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
+    @Override
     public String createDocumentString(PlanTreeNode<?> root) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
+    @Override
     public PlanTreeNode<?> readDocument(Document document) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
+    @Override
     public PlanTreeNode<?> readDocument(InputStream in) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
@@ -119,5 +123,4 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
         return errorMessageStringBuffer.toString();
     }
-
 }
