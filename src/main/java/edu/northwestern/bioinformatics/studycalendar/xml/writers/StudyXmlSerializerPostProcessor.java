@@ -5,12 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -46,7 +41,8 @@ public class StudyXmlSerializerPostProcessor {
     }
 
     protected void resolveExistingActivitiesAndSources(Study study) {
-        List<PlannedActivity> all = new LinkedList<PlannedActivity>();
+//        List<PlannedActivity> all = new LinkedList<PlannedActivity>();
+        List<Changeable> all = new LinkedList<Changeable>();
 
 
         List<Amendment> reverse = new LinkedList<Amendment>(study.getAmendmentsList());
@@ -67,8 +63,10 @@ public class StudyXmlSerializerPostProcessor {
                         // TODO: this will need to be modified to take into account PALabels
                         if (child instanceof PlannedActivity) {
                             all.add((PlannedActivity) child);
+                        } else if (child instanceof Population){
+                            all.add((Population) child);
                         } else {
-                            all.addAll(templateService.findChildren((PlanTreeInnerNode) child, PlannedActivity.class));
+                            all.addAll(templateService.findChildren((Parent) child, PlannedActivity.class));
                         }
                     }
                 }
@@ -78,21 +76,24 @@ public class StudyXmlSerializerPostProcessor {
         Amendment cur = study.getAmendment();
         study.setAmendment(null);
         study.setDevelopmentAmendment(null);
-        for (PlannedActivity plannedActivity : all) {
-            Activity activity = plannedActivity.getActivity();
+        for (Changeable pa : all) {
+            if (pa instanceof PlannedActivity){
+                PlannedActivity plannedActivity = (PlannedActivity)pa;
+                Activity activity = plannedActivity.getActivity();
 
-            Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
-            if (existingActivity != null) {
-                plannedActivity.setActivity(existingActivity);
-            } else {
-                Source existingSource = sourceDao.getByName(activity.getSource().getName());
-                if (existingSource != null) {
-                    activity.setSource(existingSource);
+                Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
+                if (existingActivity != null) {
+                    plannedActivity.setActivity(existingActivity);
+                } else {
+                    Source existingSource = sourceDao.getByName(activity.getSource().getName());
+                    if (existingSource != null) {
+                        activity.setSource(existingSource);
+                    }
                 }
-            }
 
-            sourceDao.save(plannedActivity.getActivity().getSource());
-            activityDao.save(plannedActivity.getActivity());
+                sourceDao.save(plannedActivity.getActivity().getSource());
+                activityDao.save(plannedActivity.getActivity());
+            }
         }
         study.setAmendment(cur);
         study.setDevelopmentAmendment(dev);

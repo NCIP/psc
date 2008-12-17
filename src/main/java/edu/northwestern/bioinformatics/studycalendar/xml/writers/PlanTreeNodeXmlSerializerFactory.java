@@ -1,11 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.BeansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
     private BeanFactory beanFactory;
@@ -15,9 +19,13 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
     private static final String STUDY_SEGMENT_SERIALIZER = "studySegmentXmlSerializer";
     private static final String PERIOD_SERIALIZER = "periodXmlSerializer";
     private static final String PLANNED_ACTIVITY_SERIALIZER = "plannedActivityXmlSerializer";
+    private static final String POPULATION_SERIALIZER = "populationXmlSerializer";
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     // TODO: add to application context and get serializers from application context
-    public AbstractPlanTreeNodeXmlSerializer createXmlSerializer(final Element node) {
+
+    public StatefulTemplateXmlSerializer createXmlSerializer(final Element node) {
         if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
             return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
         } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
@@ -28,12 +36,14 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
             return getXmlSerialzier(PERIOD_SERIALIZER);
         } else if(PlannedActivityXmlSerializer.PLANNED_ACTIVITY.equals(node.getName())) {
             return getXmlSerialzier(PLANNED_ACTIVITY_SERIALIZER);
+        } else if(PopulationXmlSerializer.POPULATION.equals(node.getName())) {
+            return getXmlSerialzier(POPULATION_SERIALIZER);
         } else {
             throw new StudyCalendarError("Problem importing template. Could not find node type %s", node.getName());
         }
     }
 
-    public AbstractPlanTreeNodeXmlSerializer createXmlSerializer(final PlanTreeNode<?> node) {
+    public StudyCalendarXmlSerializer createXmlSerializer(final Changeable node) {
         if (node instanceof PlannedCalendar) {
             return getXmlSerialzier(PLANNED_CALENDAR_SERIALIZER);
         } else if (node instanceof Epoch) {
@@ -44,13 +54,15 @@ public class PlanTreeNodeXmlSerializerFactory implements BeanFactoryAware {
             return getXmlSerialzier(PERIOD_SERIALIZER);
         } else if (node instanceof PlannedActivity) {
             return getXmlSerialzier(PLANNED_ACTIVITY_SERIALIZER);
+        } else if (node instanceof Population) {
+            return getXmlSerialzier(POPULATION_SERIALIZER);
         } else {
             throw new StudyCalendarError("Problem importing template. Cannot find Child Node for Change");
         }
     }
 
-    private AbstractPlanTreeNodeXmlSerializer getXmlSerialzier(String beanName) {
-        AbstractPlanTreeNodeXmlSerializer serializer = (AbstractPlanTreeNodeXmlSerializer) beanFactory.getBean(beanName);
+    private StatefulTemplateXmlSerializer getXmlSerialzier(String beanName) {
+        StatefulTemplateXmlSerializer serializer = (StatefulTemplateXmlSerializer) beanFactory.getBean(beanName);
         serializer.setStudy(study);
         return serializer;
     }

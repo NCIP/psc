@@ -291,7 +291,7 @@ public class TemplateService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
+    public <P extends Parent> P findParent(Child<P> node) {
         if (node.getParent() != null) {
             return node.getParent();
         } else {
@@ -311,37 +311,40 @@ public class TemplateService {
 
     @SuppressWarnings({"unchecked"})
     @Transactional(propagation = Propagation.SUPPORTS)
-    public <T extends PlanTreeNode<?>> T findAncestor(PlanTreeNode<?> node, Class<T> klass) {
+    public <T extends Child> T findAncestor(Child node, Class<T> klass) {
         boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
         boolean parentable = PlanTreeNode.class.isAssignableFrom(node.parentClass());
         if (moreSpecific && parentable) {
-            PlanTreeNode<?> parent = findParent((PlanTreeNode<? extends PlanTreeNode<?>>) node);
+            Parent parent = findParent((Child) node);
             if (klass.isAssignableFrom(parent.getClass())) {
                 return (T) parent;
             } else {
-                return findAncestor(parent, klass);
+                if (parent instanceof Child){
+                    return findAncestor((Child) parent, klass);
+                }
             }
         } else {
             throw new StudyCalendarSystemException("%s is not a descendant of %s",
                     node.getClass().getSimpleName(), klass.getSimpleName());
         }
+        return null;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public <T extends PlanTreeNode<?>> Collection<T> findChildren(PlanTreeInnerNode node, Class<T> childClass) {
+    public <T extends Child> Collection<T> findChildren(Parent node, Class<T> childClass) {
         List<T> children = new LinkedList<T>();
         findChildren(node, childClass, children);
         return children;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-    private <T extends PlanTreeNode<?>> void findChildren(PlanTreeInnerNode node, Class<T> childClass, Collection<T> target) {
+    private <T extends Child> void findChildren(Parent node, Class<T> childClass, Collection<T> target) {
         if (childClass.isAssignableFrom(node.childClass())) {
             target.addAll(node.getChildren());
         } else {
             for (Object o : node.getChildren()) {
-                if (o instanceof PlanTreeInnerNode) {
-                    findChildren((PlanTreeInnerNode) o, childClass, target);
+                if (o instanceof Parent) {
+                    findChildren((Parent) o, childClass, target);
                 }
             }
         }

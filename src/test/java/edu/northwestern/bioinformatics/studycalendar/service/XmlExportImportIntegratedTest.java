@@ -169,15 +169,15 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
 
         Study study = reload().transientClone();
         study.setDevelopmentAmendment(createAmendment("A0", new Date()));
-        Population population = Fixtures.createPopulation("P0", "New Population");
-        study.addPopulation(population);
+//        Population population = Fixtures.createPopulation("P0", "New Population");
+//        study.addPopulation(population);
 
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         StudySegment studySegment = epoch.getStudySegments().get(1);
 
         Period period = setGridId("PG", createPeriod(3, 4, 18));
         PlannedActivity pa = setGridId("PA", createPlannedActivity(activityDao.getById(-1), 1));
-        pa.setPopulation(population);
+//        pa.setPopulation(population);
         period.addPlannedActivity(pa);
 
         Add add = setGridId("A", Add.create(period));
@@ -193,9 +193,9 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Period actualPeriod = actualE0S1.getPeriods().first();
         assertEquals("Added planned activity not present", 1, actualPeriod.getPlannedActivities().size());
         Population actualPop = actualPeriod.getPlannedActivities().get(0).getPopulation();
-        assertNotNull("Added planned activity does not have population", actualPop);
-        assertEquals("Added planned activity does not have correct population", population.getAbbreviation(), actualPop.getAbbreviation());
-        assertEquals("Added planned activity does not have correct population", population.getName(), actualPop.getName());
-        assertEquals("Population is null", 1, importedStudy.getPopulations().size());
+//        assertNotNull("Added planned activity does not have population", actualPop);
+//        assertEquals("Added planned activity does not have correct population", population.getAbbreviation(), actualPop.getAbbreviation());
+//        assertEquals("Added planned activity does not have correct population", population.getName(), actualPop.getName());
+//        assertEquals("Population is null", 1, importedStudy.getPopulations().size());
     }
 }

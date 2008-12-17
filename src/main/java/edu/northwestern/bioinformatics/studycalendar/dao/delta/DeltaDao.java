@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -20,16 +22,16 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> impleme
         return Delta.class;
     }
 
-    public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereAdded(PlanTreeNode<P> node) {
+    public <P extends Parent> Delta<P> findDeltaWhereAdded(Child<P> node) {
         return findDeltaForChildChangeOfNode(Add.class, node);
     }
 
-    public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereRemoved(PlanTreeNode<P> node) {
+    public <P extends Parent> Delta<P> findDeltaWhereRemoved(Child<P> node) {
         return findDeltaForChildChangeOfNode(Remove.class, node);
     }
 
     @SuppressWarnings({ "unchecked" })
-    private <P extends PlanTreeNode<?>> Delta<P> findDeltaForChildChangeOfNode(Class<? extends ChildrenChange> changeClass, PlanTreeNode<P> node) {
+    private <P extends Parent> Delta<P> findDeltaForChildChangeOfNode(Class<? extends ChildrenChange> changeClass, Child<P> node) {
         List<Delta<P>> deltas = getHibernateTemplate().find(
             String.format(
                 "select d from Delta d, %s a where a in elements(d.changesInternal) and d.class = %sDelta and a.childIdText = ? order by d.id desc",

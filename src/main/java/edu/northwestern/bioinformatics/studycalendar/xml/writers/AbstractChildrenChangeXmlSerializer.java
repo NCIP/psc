@@ -2,8 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
@@ -25,8 +28,8 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     protected void setAdditionalProperties(final Element element, Change change) {
         String childId = element.attributeValue(CHILD_ID);
         Element child = getElementById(element, childId);
-        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
-        PlanTreeNode<?> node = serializer.readElement(child);
+        StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
+        Child node = (Child)serializer.readElement(child);
         ((ChildrenChange) change).setChild(node);
     }
 

@@ -33,7 +33,7 @@
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
+            <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
         <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
@@ -55,7 +55,7 @@
         </xsd:annotation>
         <xsd:sequence>
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
-            <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
+            <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
         <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
@@ -133,6 +133,8 @@
             <xsd:element name="study-segment-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="period-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="planned-activity-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="population-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="study-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
@@ -181,6 +183,7 @@
             <xsd:element ref="psc:study-segment"/>
             <xsd:element ref="psc:period"/>
             <xsd:element ref="psc:planned-activity"/>
+            <xsd:element ref="psc:population"/>
         </xsd:choice>
         <xsd:attribute name="index" type="xsd:integer" use="optional"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>

@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -30,9 +32,9 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
         }
 
         DomainObject child = getChild(add, childClass);
-        if (child instanceof PlanTreeNode) {
-            PlanTreeNode<?> added = (PlanTreeNode<?>) child;
-            AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(added);
+        if (child instanceof Changeable) {
+            Changeable added = (Changeable) child;
+            StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(added);
             Element ePlanTreeNode = serializer.createElement(added);
             element.add(ePlanTreeNode);
         } else {
@@ -49,8 +51,8 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
 
         List<Element> ePlanTreeNodes = element.elements();
         Element ePlanTreeNode = ePlanTreeNodes.get(0);
-        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(ePlanTreeNode);
-        PlanTreeNode<?> planTreeNode = serializer.readElement(ePlanTreeNode);
+        StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(ePlanTreeNode);
+        Child planTreeNode = (Child)serializer.readElement(ePlanTreeNode);
         ((Add) add).setChild(planTreeNode);
     }
 
@@ -79,9 +81,10 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
         //fixme:Saurabh initialze the child also
         Child planTreeNode = add.getChild();
 
-        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(ePlanTreeNode);
-
-        errorMessageStringBuffer.append(serializer.validateElement(planTreeNode, ePlanTreeNode));
+        StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(ePlanTreeNode);
+        if (serializer instanceof AbstractPlanTreeNodeXmlSerializer ) {
+            errorMessageStringBuffer.append(((AbstractPlanTreeNodeXmlSerializer)serializer).validateElement(planTreeNode, ePlanTreeNode));
+        }
 
         return errorMessageStringBuffer;
     }

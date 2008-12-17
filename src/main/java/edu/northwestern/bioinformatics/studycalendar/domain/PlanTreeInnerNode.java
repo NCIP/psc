@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
+
 /**
  * @author Rhett Sutphin
  * @param <P> type of the parent
@@ -14,7 +16,7 @@ import java.util.SortedSet;
  * @param <G> type of the collection of children (will be either List or SortedSet)
  */
 public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTreeNode, G extends Collection<C>>
-	extends PlanTreeNode<P> implements Parent<C, G> {
+	extends PlanTreeNode<P> implements Parent<C, G>, Changeable {
 	private G children;
 
 	protected PlanTreeInnerNode() {

@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -25,6 +26,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ChangeDao changeDao;
     private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
+    private StudyCalendarXmlSerializer studyCalendarXmlSerializer;
     private Epoch epoch;
     private Element eEpoch;
     private DaoFinder daoFinder;
@@ -38,6 +40,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         domainObjectDao = registerMockFor(DomainObjectDao.class);
         daoFinder = registerMockFor(DaoFinder.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
+        studyCalendarXmlSerializer = registerMockFor(StudyCalendarXmlSerializer.class);
         planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
 
         serializer = new AddXmlSerializer() {
@@ -58,8 +61,8 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testCreateElement() {
         add.setChild(null);
         add.setChildId(1);
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(planTreeNodeSerializer);
-        expect(planTreeNodeSerializer.createElement(epoch)).andReturn(eEpoch);
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
+        expect(studyCalendarXmlSerializer.createElement(epoch)).andReturn(eEpoch);
         expect(daoFinder.findDao(PlannedCalendar.class)).andReturn(domainObjectDao);
         expect(domainObjectDao.getById(1)).andReturn(epoch);
         replayMocks();
@@ -101,10 +104,10 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testValidateElementIfEpochIsChild() throws Exception {
         Add add = createAdd();
-        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(epoch)).andReturn(studyCalendarXmlSerializer);
 
 
-        expect(planTreeNodeSerializer.createElement(epoch)).andReturn(eEpoch);
+        expect(studyCalendarXmlSerializer.createElement(epoch)).andReturn(eEpoch);
 
         replayMocks();
         Element actual = serializer.createElement(add);

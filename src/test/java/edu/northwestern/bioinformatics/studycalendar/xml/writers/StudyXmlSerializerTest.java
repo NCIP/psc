@@ -166,9 +166,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong assigned identifier", "Study A", actual.attribute("assigned-identifier").getValue());
         assertEquals("Wrong last modified date", dateTimeFormat.format(study.getLastModifiedDate()), actual.attribute("last-modified-date").getValue());
 
-        assertEquals("Should have planned calendar child and population child nodes and development-amendment", 4, actual.nodeCount());
+        assertEquals("Should have planned calendar child and development-amendment", 3, actual.nodeCount());
         assertNotNull("Planned calendar should exist", actual.element("planned-calendar"));
-        assertNotNull("Population should exist", actual.element("population"));
         assertNotNull("Amendment should exist", actual.element("amendment"));
         assertNotNull("Development Amendment should exist", actual.element("development-amendment"));
 
@@ -186,7 +185,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\">", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
 
         expected.append(MessageFormat.format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
-        expected.append(MessageFormat.format("<population abbreviation=\"{0}\" name=\"{1}\" />", population.getAbbreviation(), population.getName()));
         expected.append(MessageFormat.format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" released-date=\"{3}\" />", firstAmendment.getName()
                 , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory()), dateTimeFormat.format(firstAmendment.getReleasedDate())));
         expected.append(MessageFormat.format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>",
@@ -209,7 +207,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     ////// Expect helper methods
     
     private void expectChildrenSerializers() {
-        expect(populationSerializer.createElement(population)).andReturn(ePopulation);
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         expect(amendmentSerializer.createElement(firstAmendment)).andReturn(eFirstAmendment);
         expect(developmentAmendmentSerializer.createElement(developmentAmendment)).andReturn(eDevelopmentAmendment);

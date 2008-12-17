@@ -30,6 +30,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDe
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.dom4j.Element;
+import org.springframework.beans.factory.BeanFactory;
+import static org.easymock.EasyMock.expect;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -96,9 +98,12 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
     protected StudyService studyService;
     protected StudyXmlSerializer studyXmlserializer;
+    private BeanFactory beanFactory;
 
     protected void setUp() throws Exception {
         super.setUp();
+        beanFactory = registerMockFor(BeanFactory.class);
+
         source = new Source();
         source.setName("NU Sample Activities");
 
@@ -234,7 +239,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         planTreeNodeXmlSerializerFactory = new PlanTreeNodeXmlSerializerFactory() {
 
             @Override
-            public AbstractPlanTreeNodeXmlSerializer createXmlSerializer(Element node) {
+            public StatefulTemplateXmlSerializer createXmlSerializer(Element node) {
                 if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
                     return null;
                 } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
@@ -250,7 +255,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
                 }
             }
 
-            public AbstractPlanTreeNodeXmlSerializer createXmlSerializer(final PlanTreeNode<?> node) {
+            public StatefulTemplateXmlSerializer createXmlSerializer(final Changeable node) {
                 if (node instanceof Epoch) {
                     return epochXmlSerializer;
                 } else if (node instanceof StudySegment) {
@@ -414,7 +419,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         developmentAmendmentSerializer = new AmendmentXmlSerializer();
         developmentAmendmentSerializer.setStudy(study);
 
-
+       planTreeNodeXmlSerializerFactory.setBeanFactory(beanFactory);
     }
 
 

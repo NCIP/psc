@@ -227,15 +227,10 @@ public class StudyService {
 				Hibernate.initialize(delta.getChanges());
 				List<Change> changes = delta.getChanges();
 				for (Change change : changes) {
-
 					Hibernate.initialize(change);
-
 					if (change instanceof ChildrenChange) {
-
 						ChildrenChange childrenChange = (ChildrenChange) change;
-						childrenChange.setChild((PlanTreeNode<?>) getChild(childrenChange, ((PlanTreeInnerNode) delta.getNode()).childClass()));
-
-
+						childrenChange.setChild((Child) getChild(childrenChange, ((Parent) delta.getNode()).childClass()));
 					}
 				}
 			}
@@ -243,8 +238,8 @@ public class StudyService {
 	}
 
 	// Methods to get child from child id
-	private DomainObject getChild(ChildrenChange change, Class<? extends PlanTreeNode> childClass) {
-		if (change.getChild() != null) {
+	private DomainObject getChild(ChildrenChange change, Class<? extends Changeable> childClass) {
+        if (change.getChild() != null) {
 			return change.getChild();
 		} else {
 			DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
