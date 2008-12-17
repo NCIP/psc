@@ -55,7 +55,6 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     private Activity activity;
     private Amendment sourceAmendment;
     private Integer repetitionNumber;
-    private DayNumber dayNumber;
 
     ////// LOGIC
 
@@ -116,13 +115,18 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     @Transient
     public DayNumber getDayNumber() {
         int number = 0;
+        DayNumber dayNumber;
         if(repetitionNumber == null||plannedActivity == null) {
             return null;
         }
         else {
-            number = ((plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*repetitionNumber));
-            dayNumber = DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
-            return dayNumber;
+            if(plannedActivity.getPeriod()!=null) {
+                number = ((plannedActivity.getDay() + plannedActivity.getPeriod().getStartDay()-1) + ((plannedActivity.getPeriod().getDuration().getDays())*repetitionNumber));
+                dayNumber = DayNumber.createCycleDayNumber(number, scheduledStudySegment.getStudySegment().getCycleLength());
+                return dayNumber;
+            } else {
+                return null;
+            }
        }
     }
 

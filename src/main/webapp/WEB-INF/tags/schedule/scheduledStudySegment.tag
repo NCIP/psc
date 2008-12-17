@@ -88,16 +88,18 @@
                                          <c:if test="${not empty repetition or not empty period}">
                                              <c:set var="day" value="${event.dayNumber}"/>
                                              <c:set var="cycle" value="${day.hasCycle ? day.cycleNumber : null}"/>
-                                             <c:choose>
-                                                <c:when test="${not empty cycle}">
-                                                  C${cycle}D${day.dayNumber}
-                                                </c:when>
-                                                <c:otherwise>
-                                                  Day ${day.dayNumber}
-                                                </c:otherwise>
-                                            </c:choose>
-                                         </c:if>
-                                        </span>
+                                             <c:if test="${not empty day.dayNumber}">
+                                                <c:choose>
+                                                    <c:when test="${not empty cycle}">
+                                                        C${cycle}D${day.dayNumber}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Day ${day.dayNumber}
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
+                                        </c:if>
+                                   </span>
                                 </li>
                             </c:forEach>
                         </ul>
