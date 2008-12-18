@@ -18,8 +18,6 @@ module PscTest
   
 end
 
-Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
-
 def application_context
   $application_context ||= Class.new do
     def initialize
