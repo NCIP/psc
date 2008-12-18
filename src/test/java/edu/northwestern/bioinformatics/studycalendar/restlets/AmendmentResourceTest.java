@@ -220,7 +220,7 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
 
     public void testDeleteAmendmentWhichIsDoesNotApplyToStudy() throws Exception {
         expectFoundStudy();
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(new Amendment());
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(null);
         doDelete();
 
         assertEquals("Result should be 404", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());

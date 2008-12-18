@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -39,6 +40,7 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
+        setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
     }
 
     @Override
@@ -77,14 +79,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
             amendment = study.getAmendment();
         } else {
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
-            if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getDevelopmentAmendment().hasPreviousAmendment(amendment)
-                    && !amendment.equals(study.getDevelopmentAmendment())) {
-                log.debug("Amendment {} doesn't apply to study {}",
-                        amendmentIdentifier, study.getAssignedIdentifier());
-                return null;
-            }
-
-
         }
         if (amendment == null) {
             log.debug("No released  or development amendment matching {}", amendmentIdentifier);
@@ -112,7 +106,7 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
                     message);
 
 
-        } else if (amendment.equals(study.getAmendment())) {
+        } else if (amendment.equals(study.getAmendment()) || amendment.getReleasedDate()!=null) {
             String message = String.format("Amendment {} can be deleted if and only if it isn't released for the study {}",
                     amendment.getNaturalKey(), study.getAssignedIdentifier());
             log.error(message);
