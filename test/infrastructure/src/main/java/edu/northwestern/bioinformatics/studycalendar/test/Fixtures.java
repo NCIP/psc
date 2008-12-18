@@ -505,6 +505,74 @@ public class Fixtures {
         return add;
     }
 
+	//helper methods
+	
+	public static BlackoutDate createBlackoutDate(int year, int month, int day, String description, Site site)
+	{
+		SpecificDateBlackout blackoutDate = new SpecificDateBlackout();
+		blackoutDate.setYear(year);
+		blackoutDate.setMonth(month);
+		blackoutDate.setDay(day);
+		blackoutDate.setDescription(description);
+		blackoutDate.setSite(site);
+		return blackoutDate;
+	}
+	
+	public static Date createDateObject(int year, int month, int day)
+	{
+		return DateUtils.createDate(year, month-1, day); //Calendar month constant starts at 0
+	}
+	
+	public static Study setAmendmentForStudy(Study study, Amendment amendment)
+	{
+		study.setAmendment(amendment);
+		return study;
+	}
+	
+	public static Study setDevelopmentAmendmentForStudy(Study study, Amendment developmentAmendment)
+	{
+		study.setDevelopmentAmendment(developmentAmendment);
+		return study;
+	}
+	
+	public static StudySite approveAmendment(StudySite studySite, Amendment amendment, Date approvalDate)
+	{
+		studySite.approveAmendment(amendment, approvalDate);
+		return studySite;
+	}
+		
+	public static Subject createSampleMaleSubject(String subjectID, String firstname, String lastname, Date birthDate)
+	{
+		return createSubject(subjectID, firstname, lastname, birthDate, Gender.MALE);
+	}
+	
+	public static Subject createSampleFemaleSubject(String subjectID, String firstname, String lastname, Date birthDate)
+	{
+		return createSubject(subjectID, firstname, lastname, birthDate, Gender.FEMALE);
+	}
+	
+	public static StudySegment getStudySegmentFromStudy(Study study, int epoch, int segment)
+	{
+		return study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment);  
+	}
+	
+	public static User createSubjectCoordinatorUser(String name, int id, int csmUserId)
+	{
+		return createUser(id, name, (long) csmUserId, true, Role.SUBJECT_COORDINATOR);
+	}
+	
+	public static Study addPeriodToStudySegmentOfStudy(Study study, int epoch, int segment, Period period)
+	{
+		study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment).addPeriod(period);
+		return study;  
+	}
+	
+	public static Study addPlannedActivityToStudySegmentOfStudy(Study study, int epoch, int segment, String periodKey, PlannedActivity activity)
+	{
+		study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment).findNaturallyMatchingChild(periodKey).addPlannedActivity(activity);
+		return study;  
+	}
+
     // static class
     private Fixtures() {
     }
