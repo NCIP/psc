@@ -16,8 +16,8 @@ describe "/amendment_approval" do
       @amend_date2 = PscTest.createDate(2006, 1, 23)
       @amend_date3 = PscTest.createDate(2007, 4, 19)            
       @amendment = PscTest::Fixtures.createAmendments([@amend_date1, @amend_date2, @amend_date3].to_java(Java::JavaUtil::Date))
-      @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
-      application_context['studyService'].save( @amended_study)
+      @study1.amendment = @amendment
+      application_context['studyService'].save(@study1)
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
       application_context['siteDao'].save( @site1)
       @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)
@@ -54,8 +54,8 @@ describe "/amendment_approval" do
       @amend_date2 = PscTest.createDate(2006, 1, 23)
       @amend_date3 = PscTest.createDate(2007, 4, 19)            
       @amendment = PscTest::Fixtures.createAmendments([@amend_date1, @amend_date2, @amend_date3].to_java(Java::JavaUtil::Date))
-      @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
-      application_context['studyService'].save( @amended_study)
+      @study1.amendment = @amendment
+      application_context['studyService'].save(@study1)
       @approve_date = PscTest.createDate(2008, 12, 25)
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
       application_context['siteDao'].save( @site1)

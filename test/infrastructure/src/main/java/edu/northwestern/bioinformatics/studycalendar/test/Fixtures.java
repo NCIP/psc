@@ -542,16 +542,6 @@ public class Fixtures {
         return blackoutDate;
     }
 
-    public static Study setAmendmentForStudy(Study study, Amendment amendment) {
-        study.setAmendment(amendment);
-        return study;
-    }
-
-    public static Study setDevelopmentAmendmentForStudy(Study study, Amendment developmentAmendment) {
-        study.setDevelopmentAmendment(developmentAmendment);
-        return study;
-    }
-
     public static StudySite approveAmendment(StudySite studySite, Amendment amendment, Date approvalDate) {
         studySite.approveAmendment(amendment, approvalDate);
         return studySite;

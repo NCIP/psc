@@ -18,14 +18,14 @@ describe "/planned-activity" do
     #create amendment and link to study
     @amend_date1 = PscTest.createDate(2008, 12, 10)      
     @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
-    @amended_study = PscTest::Fixtures.setDevelopmentAmendmentForStudy(@study1, @amendment)
-    application_context['studyService'].save(@amended_study)
+    @study1.amendment = @amendment
+    application_context['studyService'].save(@study1)
     
     #create period and link to study
     @period1 = PscTest::Fixtures.createPeriod("Period1", 2, 4, 5)
     @period1 = PscTest::Fixtures.setGridId("10001", @period1) #replace auto-generated period id
     application_context['periodDao'].save(@period1) 
-    @study = PscTest::Fixtures.addPeriodToStudySegmentOfStudy(@amended_study, 0, 0, @period1)     
+    @study = PscTest::Fixtures.addPeriodToStudySegmentOfStudy(@study1, 0, 0, @period1)     
     application_context['studyService'].save(@study)
     
     #create planned activity and link to study
@@ -38,7 +38,7 @@ describe "/planned-activity" do
     @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity1, 4)
     @planned_activity1 = PscTest::Fixtures.setGridId("301", @planned_activity1) #replace auto-generated planned-activity id
     application_context['plannedActivityDao'].save(@planned_activity1) 
-    @study = PscTest::Fixtures.addPlannedActivityToStudySegmentOfStudy(@amended_study, 0, 0, "10001", @planned_activity1)
+    @study = PscTest::Fixtures.addPlannedActivityToStudySegmentOfStudy(@study1, 0, 0, "10001", @planned_activity1)
     application_context['studyService'].save(@study)
     
   end

@@ -21,11 +21,11 @@ describe "/subject_assignments" do
     @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1)
     @study1.planned_calendar.epochs.first.study_segments[0].grid_id = "segment1" #replace auto-generated study-segment id
     @study1.planned_calendar.epochs.first.study_segments[1].grid_id = "segment2"
-    @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
-    application_context['studyService'].save(@amended_study)
+    @study1.amendment = @amendment
+    application_context['studyService'].save(@study1)
 
     #create a studysite       
-    @studySite1 = PscTest::Fixtures.createStudySite(@amended_study, @site1)
+    @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)
     application_context['studySiteDao'].save(@studySite1)
                   
   end
@@ -46,7 +46,7 @@ describe "/subject_assignments" do
        #create subject              
        @birthDate = PscTest.createDate(1983, 3, 23)           
        @subject1 = PscTest::Fixtures.createSampleMaleSubject("ID001", "Alan", "Boyarski", @birthDate)         
-       @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@amended_study, 0, 0)      
+       @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@study1, 0, 0)      
        @date = PscTest.createDate(2008, 12, 26)   
 
        #create a study subject assignment

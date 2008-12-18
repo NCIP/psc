@@ -44,8 +44,8 @@ describe "/amendment" do
         @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
         @amend_date1 = PscTest.createDate(2008, 12, 10)      
         @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
-        @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
-        application_context['studyService'].save( @amended_study) 
+        @study1.amendment = @amendment
+        application_context['studyService'].save(@study1) 
       end
 
       it "allows access to a specific amendment for an authorized user by specifying date" do
@@ -68,8 +68,8 @@ describe "/amendment" do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
       @amend_date1 = PscTest.createDate(2008, 12, 10)      
       @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
-      @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
-      application_context['studyService'].save( @amended_study) 
+      @study1.amendment = @amendment
+      application_context['studyService'].save(@study1) 
     end
 
     it "allows deletion of a specific amendment for an authorized user by specifying date" do
