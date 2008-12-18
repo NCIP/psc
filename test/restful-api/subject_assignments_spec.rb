@@ -34,9 +34,7 @@ describe "/subject_assignments" do
      
      before do
        
-       # create user
-       @user = PscTest::Fixtures.createSubjectCoordinatorUser("mary", 1, 2000)
-       application_context['userDao'].save(@user)
+       @user = application_context['userService'].getUserByName("erin")
 
        #approve an existing amendment
        @approve_date = PscTest.createDate(2008, 12, 31)
@@ -55,7 +53,7 @@ describe "/subject_assignments" do
        
        #create another subject under the same study
        @birthDate2 = PscTest.createDate(1985, 5, 1)           
-       @subject2 = PscTest::Fixtures.createSampleFemaleSubject("ID002", "Amanda", "Boyarski", @birthDate2)         
+       @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)         
        @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", @user)
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)       
      end
@@ -67,12 +65,12 @@ describe "/subject_assignments" do
     end
     
     it "allows access to an existing subject assignment to an authorized user" do
-      get "/studies/NU480/sites/site1/subject-assignments", :as => :mary
+      get "/studies/NU480/sites/site1/subject-assignments", :as => :erin
       # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("subject", "first-name").should include("Amanda")
+      xml_attribute("subject", "first-name").should include("Bob")
       xml_attribute("subject", "first-name").should include("Alan")
       xml_attribute("subject", "person-id").should include("ID001")
       xml_attribute("subject", "person-id").should include("ID002")

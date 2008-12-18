@@ -32,8 +32,7 @@ describe "/schedule" do
     @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", @birthDate)         
     @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@study1, 0, 0)      
     @date = PscTest.createDate(2008, 12, 26)   
-    @user = PscTest::Fixtures.createSubjectCoordinatorUser("mary", 1, 2000)
-    application_context['userDao'].save(@user)
+    @user = application_context['userService'].getUserByName('erin')
 
     #create a study subject assignment
     @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", @user)
@@ -48,7 +47,7 @@ describe "/schedule" do
        
        #create another subject under the same study
        @birthDate2 = PscTest.createDate(1985, 5, 1)           
-       @subject2 = PscTest::Fixtures.createSampleFemaleSubject("ID002", "Amanda", "Boyarski", @birthDate2)         
+       @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)         
        @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", @user)
        @studySubjectAssignment2.grid_id = "assignment2" #replace auto-generated assignment-id
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)

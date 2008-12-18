@@ -550,10 +550,6 @@ public class Fixtures {
         return study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment);
     }
 
-    public static User createSubjectCoordinatorUser(String name, int id, int csmUserId) {
-        return createUser(id, name, (long) csmUserId, true, Role.SUBJECT_COORDINATOR);
-    }
-
     public static Study addPeriodToStudySegmentOfStudy(Study study, int epoch, int segment, Period period) {
         study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment).addPeriod(period);
         return study;

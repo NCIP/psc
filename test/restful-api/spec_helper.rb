@@ -15,7 +15,10 @@ module PscTest
     # DateTools expects month as java.util.Calendar constant, which starts with 0
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
   end
+  
 end
+
+Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
 
 def application_context
   $application_context ||= Class.new do
