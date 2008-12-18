@@ -40,8 +40,8 @@ describe "/subject_assignments" do
 
        #approve an existing amendment
        @approve_date = PscTest.createDate(2008, 12, 31)
-       @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
-       application_context['studySiteDao'].save(@studySiteApproved)
+       @studySite1.approveAmendment(@amendment, @approve_date)
+       application_context['studySiteDao'].save(@studySite1)
               
        #create subject              
        @birthDate = PscTest.createDate(1983, 3, 23)           
@@ -95,8 +95,8 @@ describe "/subject_assignments" do
         
         #approve an existing amendment
         @approve_date = PscTest.createDate(2008, 12, 31)
-        @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
-        application_context['studySiteDao'].save(@studySiteApproved)
+        @studySite1.approveAmendment(@amendment, @approve_date)
+        application_context['studySiteDao'].save(@studySite1)
                 
         @subject_registration1_xml = psc_xml("registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27", 
         'subject-coordinator-name' => "juno"){|subject| subject.tag!('subject', 'first-name' => "Andre", 'last-name' => "Suzuki", 

@@ -24,8 +24,8 @@ describe "/schedule" do
     
     #approve an existing amendment
     @approve_date = PscTest.createDate(2008, 12, 31)
-    @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
-    application_context['studySiteDao'].save(@studySiteApproved)    
+    @studySite1.approveAmendment(@amendment, @approve_date)
+    application_context['studySiteDao'].save(@studySite1)    
     
     #create subject and subject coordinator user                
     @birthDate = PscTest.createDate(1983, 3, 23)           

@@ -60,8 +60,8 @@ describe "/amendment_approval" do
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
       application_context['siteDao'].save( @site1)
       @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)
-      @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
-      application_context['studySiteDao'].save(@studySiteApproved)
+      @studySite1.approveAmendment(@amendment, @approve_date)
+      application_context['studySiteDao'].save(@studySite1)
     end
      
     it "forbids access to amendment approvals to an unauthorized user" do

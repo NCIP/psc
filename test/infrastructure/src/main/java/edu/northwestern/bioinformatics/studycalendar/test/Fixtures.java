@@ -542,11 +542,6 @@ public class Fixtures {
         return blackoutDate;
     }
 
-    public static StudySite approveAmendment(StudySite studySite, Amendment amendment, Date approvalDate) {
-        studySite.approveAmendment(amendment, approvalDate);
-        return studySite;
-    }
-
     public static Subject createSampleMaleSubject(String subjectID, String firstname, String lastname, Date birthDate) {
         return createSubject(subjectID, firstname, lastname, birthDate, Gender.MALE);
     }
