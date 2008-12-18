@@ -77,14 +77,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
             amendment = study.getAmendment();
         } else {
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
-            if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getDevelopmentAmendment().hasPreviousAmendment(amendment)
-                    && !amendment.equals(study.getDevelopmentAmendment())) {
-                log.debug("Amendment {} doesn't apply to study {}",
-                        amendmentIdentifier, study.getAssignedIdentifier());
-                return null;
-            }
-
-
         }
         if (amendment == null) {
             log.debug("No released  or development amendment matching {}", amendmentIdentifier);
