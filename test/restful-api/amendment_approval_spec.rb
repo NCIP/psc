@@ -12,9 +12,9 @@ describe "/amendment_approval" do
     
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
-      @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)
-      @amend_date2 = PscTest::Fixtures.createDateObject(2006, 1, 23)
-      @amend_date3 = PscTest::Fixtures.createDateObject(2007, 4, 19)            
+      @amend_date1 = PscTest.createDate(2008, 12, 10)
+      @amend_date2 = PscTest.createDate(2006, 1, 23)
+      @amend_date3 = PscTest.createDate(2007, 4, 19)            
       @amendment = PscTest::Fixtures.createAmendments([@amend_date1, @amend_date2, @amend_date3].to_java(Java::JavaUtil::Date))
       @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
       application_context['studyService'].save( @amended_study)
@@ -50,13 +50,13 @@ describe "/amendment_approval" do
     
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
-      @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)
-      @amend_date2 = PscTest::Fixtures.createDateObject(2006, 1, 23)
-      @amend_date3 = PscTest::Fixtures.createDateObject(2007, 4, 19)            
+      @amend_date1 = PscTest.createDate(2008, 12, 10)
+      @amend_date2 = PscTest.createDate(2006, 1, 23)
+      @amend_date3 = PscTest.createDate(2007, 4, 19)            
       @amendment = PscTest::Fixtures.createAmendments([@amend_date1, @amend_date2, @amend_date3].to_java(Java::JavaUtil::Date))
       @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
       application_context['studyService'].save( @amended_study)
-      @approve_date = PscTest::Fixtures.createDateObject(2008, 12, 25)
+      @approve_date = PscTest.createDate(2008, 12, 25)
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
       application_context['siteDao'].save( @site1)
       @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)

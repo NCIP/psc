@@ -16,7 +16,7 @@ describe "/planned-activity" do
     @study1.planned_calendar.epochs.first.study_segments[1].grid_id = "segment2"
       
     #create amendment and link to study
-    @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)      
+    @amend_date1 = PscTest.createDate(2008, 12, 10)      
     @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
     @amended_study = PscTest::Fixtures.setDevelopmentAmendmentForStudy(@study1, @amendment)
     application_context['studyService'].save(@amended_study)

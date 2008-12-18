@@ -17,7 +17,7 @@ describe "/subject_assignments" do
     
     #create a study with an amendment
     @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String)) 
-    @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)          
+    @amend_date1 = PscTest.createDate(2008, 12, 10)          
     @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1)
     @study1.planned_calendar.epochs.first.study_segments[0].grid_id = "segment1" #replace auto-generated study-segment id
     @study1.planned_calendar.epochs.first.study_segments[1].grid_id = "segment2"
@@ -39,22 +39,22 @@ describe "/subject_assignments" do
        application_context['userDao'].save(@user)
 
        #approve an existing amendment
-       @approve_date = PscTest::Fixtures.createDateObject(2008, 12, 31)
+       @approve_date = PscTest.createDate(2008, 12, 31)
        @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
        application_context['studySiteDao'].save(@studySiteApproved)
               
        #create subject              
-       @birthDate = PscTest::Fixtures.createDateObject(1983, 3, 23)           
+       @birthDate = PscTest.createDate(1983, 3, 23)           
        @subject1 = PscTest::Fixtures.createSampleMaleSubject("ID001", "Alan", "Boyarski", @birthDate)         
        @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@amended_study, 0, 0)      
-       @date = PscTest::Fixtures.createDateObject(2008, 12, 26)   
+       @date = PscTest.createDate(2008, 12, 26)   
 
        #create a study subject assignment
        @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", @user)
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
        
        #create another subject under the same study
-       @birthDate2 = PscTest::Fixtures.createDateObject(1985, 5, 1)           
+       @birthDate2 = PscTest.createDate(1985, 5, 1)           
        @subject2 = PscTest::Fixtures.createSampleFemaleSubject("ID002", "Amanda", "Boyarski", @birthDate2)         
        @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", @user)
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)       
@@ -94,7 +94,7 @@ describe "/subject_assignments" do
         # application_context['userDao'].save(@user)
         
         #approve an existing amendment
-        @approve_date = PscTest::Fixtures.createDateObject(2008, 12, 31)
+        @approve_date = PscTest.createDate(2008, 12, 31)
         @studySiteApproved = PscTest::Fixtures.approveAmendment(@studySite1, @amendment, @approve_date)
         application_context['studySiteDao'].save(@studySiteApproved)
                 

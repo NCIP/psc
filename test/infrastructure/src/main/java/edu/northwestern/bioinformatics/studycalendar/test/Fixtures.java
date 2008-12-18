@@ -542,10 +542,6 @@ public class Fixtures {
         return blackoutDate;
     }
 
-    public static Date createDateObject(int year, int month, int day) {
-        return DateUtils.createDate(year, month - 1, day); //Calendar month constant starts at 0
-    }
-
     public static Study setAmendmentForStudy(Study study, Amendment amendment) {
         study.setAmendment(amendment);
         return study;

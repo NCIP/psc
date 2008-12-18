@@ -42,7 +42,7 @@ describe "/amendment" do
   describe "GET" do
       before do
         @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
-        @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)      
+        @amend_date1 = PscTest.createDate(2008, 12, 10)      
         @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
         @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
         application_context['studyService'].save( @amended_study) 
@@ -66,7 +66,7 @@ describe "/amendment" do
     
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
-      @amend_date1 = PscTest::Fixtures.createDateObject(2008, 12, 10)      
+      @amend_date1 = PscTest.createDate(2008, 12, 10)      
       @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
       @amended_study = PscTest::Fixtures.setAmendmentForStudy(@study1, @amendment)
       application_context['studyService'].save( @amended_study) 
