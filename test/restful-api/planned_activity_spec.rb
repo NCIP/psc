@@ -18,7 +18,7 @@ describe "/planned-activity" do
     #create amendment and link to study
     @amend_date1 = PscTest.createDate(2008, 12, 10)      
     @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
-    @study1.amendment = @amendment
+    @study1.developmentAmendment = @amendment
     application_context['studyService'].save(@study1)
     
     #create period and link to study
