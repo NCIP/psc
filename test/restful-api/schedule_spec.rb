@@ -29,7 +29,7 @@ describe "/schedule" do
     
     #create subject and subject coordinator user                
     @birthDate = PscTest.createDate(1983, 3, 23)           
-    @subject1 = PscTest::Fixtures.createSampleMaleSubject("ID001", "Alan", "Boyarski", @birthDate)         
+    @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", @birthDate)         
     @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@study1, 0, 0)      
     @date = PscTest.createDate(2008, 12, 26)   
     @user = PscTest::Fixtures.createSubjectCoordinatorUser("mary", 1, 2000)

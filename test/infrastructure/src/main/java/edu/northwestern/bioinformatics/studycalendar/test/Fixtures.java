@@ -245,6 +245,10 @@ public class Fixtures {
         return p;
     }
 
+    public static Subject createSubject(String personId, String firstName, String lastName, Date birthDate) {
+        return createSubject(personId, firstName, lastName, birthDate, Gender.MALE);
+    }
+
     public static Subject createSubject(String personId, String firstName, String lastName, Date birthDate, Gender gender) {
         Subject subject = createSubject(firstName, lastName);
         subject.setPersonId(personId);
@@ -540,14 +544,6 @@ public class Fixtures {
         blackoutDate.setDescription(description);
         blackoutDate.setSite(site);
         return blackoutDate;
-    }
-
-    public static Subject createSampleMaleSubject(String subjectID, String firstname, String lastname, Date birthDate) {
-        return createSubject(subjectID, firstname, lastname, birthDate, Gender.MALE);
-    }
-
-    public static Subject createSampleFemaleSubject(String subjectID, String firstname, String lastname, Date birthDate) {
-        return createSubject(subjectID, firstname, lastname, birthDate, Gender.FEMALE);
     }
 
     public static StudySegment getStudySegmentFromStudy(Study study, int epoch, int segment) {
