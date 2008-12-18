@@ -25,8 +25,8 @@ describe "/planned-activity" do
     @period1 = PscTest::Fixtures.createPeriod("Period1", 2, 4, 5)
     @period1 = PscTest::Fixtures.setGridId("10001", @period1) #replace auto-generated period id
     application_context['periodDao'].save(@period1) 
-    @study = PscTest::Fixtures.addPeriodToStudySegmentOfStudy(@study1, 0, 0, @period1)     
-    application_context['studyService'].save(@study)
+    @study1.plannedCalendar.epochs.first.studySegments.first.addPeriod(@period1)     
+    application_context['studyService'].save(@study1)
     
     #create planned activity and link to study
     @source1 = PscTest::Fixtures.createSource("Malaria")
@@ -38,8 +38,8 @@ describe "/planned-activity" do
     @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity1, 4)
     @planned_activity1 = PscTest::Fixtures.setGridId("301", @planned_activity1) #replace auto-generated planned-activity id
     application_context['plannedActivityDao'].save(@planned_activity1) 
-    @study = PscTest::Fixtures.addPlannedActivityToStudySegmentOfStudy(@study1, 0, 0, "10001", @planned_activity1)
-    application_context['studyService'].save(@study)
+    @period1.addPlannedActivity(@planned_activity1)
+    application_context['studyService'].save(@study1)
     
   end
   

@@ -546,20 +546,6 @@ public class Fixtures {
         return blackoutDate;
     }
 
-    public static StudySegment getStudySegmentFromStudy(Study study, int epoch, int segment) {
-        return study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment);
-    }
-
-    public static Study addPeriodToStudySegmentOfStudy(Study study, int epoch, int segment, Period period) {
-        study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment).addPeriod(period);
-        return study;
-    }
-
-    public static Study addPlannedActivityToStudySegmentOfStudy(Study study, int epoch, int segment, String periodKey, PlannedActivity activity) {
-        study.getPlannedCalendar().getEpochs().get(epoch).getStudySegments().get(segment).findNaturallyMatchingChild(periodKey).addPlannedActivity(activity);
-        return study;
-    }
-
     // static class
     private Fixtures() {
     }

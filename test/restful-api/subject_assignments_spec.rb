@@ -44,7 +44,7 @@ describe "/subject_assignments" do
        #create subject              
        @birthDate = PscTest.createDate(1983, 3, 23)           
        @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", @birthDate)         
-       @studySegment1 = PscTest::Fixtures.getStudySegmentFromStudy(@study1, 0, 0)      
+       @studySegment1 = @study1.plannedCalendar.epochs.first.studySegments.first
        @date = PscTest.createDate(2008, 12, 26)   
 
        #create a study subject assignment
