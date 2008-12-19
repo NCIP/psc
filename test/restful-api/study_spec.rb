@@ -12,10 +12,6 @@ describe "/study" do
   end
 
   #get methods test
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-
   describe "GET" do
 
     it "forbids study templates access for unauthenticated users" do
@@ -63,7 +59,7 @@ describe "/study" do
       get '/studies/', :as => :alice
       # puts response.entity
       response.status_code.should == 200 #OK
-      xml_attribute("study", "assigned-identifier").should include("NU482")
+      response.xml_attributes("study", "assigned-identifier").should include("NU482")
     end
     
   end

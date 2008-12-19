@@ -6,10 +6,6 @@ describe "/site" do
   #2. delete /sites/{site-identifier} generates the folloing error:
   # Authenticated account is not authorized for this resource and method 
 
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   describe "GET" do
     before do
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
@@ -25,7 +21,7 @@ describe "/site" do
       get "/sites/site1", :as => :juno
       response.status_code.should == 200
       response.status_message.should == "OK"
-      xml_attribute("site", "assigned-identifier").should include("site1")
+      response.xml_attributes("site", "assigned-identifier").should include("site1")
       response.xml_elements('//site').should have(1).elements
     end
   

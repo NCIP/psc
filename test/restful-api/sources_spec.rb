@@ -1,10 +1,5 @@
 describe "/sources" do
     
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end  
-  
-  
   describe "GET" do
     
     before do
@@ -29,7 +24,7 @@ describe "/sources" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("source", "name").should include("Diabetes")
+      response.xml_attributes("source", "name").should include("Diabetes")
     end
     
     it "allows access to a specific group of activity(s) by specifying a query parameter" do
@@ -38,7 +33,7 @@ describe "/sources" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("activity", "name").should include("DiabetesTreatment1")
+      response.xml_attributes("activity", "name").should include("DiabetesTreatment1")
       response.xml_elements('//activity').should have(1).elements
     end
     

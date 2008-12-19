@@ -4,10 +4,6 @@ describe "/amendment_approval" do
   #1) post /studies/{study-identifier}/sites/{site-identifier}/approvals returns error:
   #   Authenticated account is not authorized for this resource and method
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   describe "POST" do
     
     before do
@@ -38,8 +34,8 @@ describe "/amendment_approval" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      xml_attribute("amendment-approval", "date").should include("2008-12-25")
-      xml_attribute("amendment-approval", "amendment").should include("2007-04-19")
+      response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
+      response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
       response.xml_elements('//amendment-approval').should have(1).elements      
     end
     
@@ -75,8 +71,8 @@ describe "/amendment_approval" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("amendment-approval", "date").should include("2008-12-25")
-      xml_attribute("amendment-approval", "amendment").should include("2007-04-19")
+      response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
+      response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
       response.xml_elements('//amendment-approval').should have(1).elements      
     end
         

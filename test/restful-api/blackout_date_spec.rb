@@ -6,10 +6,6 @@ describe "/blackout-date" do
   #2. DELETE /sites/{site-identifier}/blackout-dates/{blackout-date identifier} request returns "Authenticated account is not authorized for this resource and method"
   #   Cannot setId for blackOutDate
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   describe "GET" do
     before do
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
@@ -34,8 +30,8 @@ describe "/blackout-date" do
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
       response.xml_elements('//blackout-date').should have(2).elements
-      xml_attribute("blackout-date", "description").should include("My birthday")
-      xml_attribute("blackout-date", "description").should include("Christmas party")
+      response.xml_attributes("blackout-date", "description").should include("My birthday")
+      response.xml_attributes("blackout-date", "description").should include("Christmas party")
     end   
   end
   

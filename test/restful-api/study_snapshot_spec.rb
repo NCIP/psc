@@ -11,10 +11,6 @@ describe "/study_snapshot" do
     end
   end
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   it "forbids study templates access for unauthenticated users" do
     get "/studies/NU152/template/development", :as => nil
     response.status_code.should == 401
@@ -26,9 +22,9 @@ describe "/study_snapshot" do
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.content_type.should == 'text/xml'
-    xml_attribute("epoch", "name").should include("Treatment1")
-    xml_attribute("study-segment", "name").should include("A")
-    xml_attribute("study-segment", "name").should include("B")
+    response.xml_attributes("epoch", "name").should include("Treatment1")
+    response.xml_attributes("study-segment", "name").should include("A")
+    response.xml_attributes("study-segment", "name").should include("B")
   end
     
   it "shows a study template to a study coordinator" do
@@ -37,9 +33,9 @@ describe "/study_snapshot" do
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.content_type.should == 'text/xml'
-    xml_attribute("epoch", "name").should include("Treatment2")
-    xml_attribute("study-segment", "name").should include("C")
-    xml_attribute("study-segment", "name").should include("D")
+    response.xml_attributes("epoch", "name").should include("Treatment2")
+    response.xml_attributes("study-segment", "name").should include("C")
+    response.xml_attributes("study-segment", "name").should include("D")
   end 
   
 end
