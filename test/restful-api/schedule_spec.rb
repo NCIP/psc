@@ -28,10 +28,9 @@ describe "/schedule" do
     @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", @birthDate)         
     @studySegment1 = @study1.plannedCalendar.epochs.first.studySegments.first      
     @date = PscTest.createDate(2008, 12, 26)   
-    @user = application_context['userService'].getUserByName('erin')
 
     #create a study subject assignment
-    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", @user)
+    @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", erin)
     @studySubjectAssignment1.grid_id = "assignment1" #replace auto-generated assignment-id
     application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
     
@@ -44,7 +43,7 @@ describe "/schedule" do
        #create another subject under the same study
        @birthDate2 = PscTest.createDate(1985, 5, 1)           
        @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)         
-       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", @user)
+       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", erin)
        @studySubjectAssignment2.grid_id = "assignment2" #replace auto-generated assignment-id
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)
             
