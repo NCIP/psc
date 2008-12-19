@@ -29,9 +29,6 @@ describe "/subject_assignments" do
   describe "GET" do
      
      before do
-       
-       @user = application_context['userService'].getUserByName("erin")
-
        #approve an existing amendment
        @approve_date = PscTest.createDate(2008, 12, 31)
        @studySite1.approveAmendment(@amendment, @approve_date)
@@ -44,13 +41,13 @@ describe "/subject_assignments" do
        @date = PscTest.createDate(2008, 12, 26)   
 
        #create a study subject assignment
-       @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", @user)
+       @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", erin)
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
        
        #create another subject under the same study
        @birthDate2 = PscTest.createDate(1985, 5, 1)           
        @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)         
-       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", @user)
+       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", erin)
        application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)       
      end
      
@@ -79,14 +76,6 @@ describe "/subject_assignments" do
   describe "POST" do
       
       before do
-        
-        # load existing user
-        @user = application_context['userService'].getUserByName("juno")
-        application_context['userDao'].save(@user)
-        
-        # @user = application_context['templateService'].assignTemplateToSubjectCoordinator(@amended_study, @site1, @user)
-        # application_context['userDao'].save(@user)
-        
         #approve an existing amendment
         @approve_date = PscTest.createDate(2008, 12, 31)
         @studySite1.approveAmendment(@amendment, @approve_date)
