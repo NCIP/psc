@@ -4,10 +4,6 @@ describe "/activity" do
   #1. put /activities/{activity-source-name}/{activity-code} succeeds even when source does not exist yet
   #2. delete /activities/{activity-source-name}/{activity-code} fails with error: Authenticated account is not authorized for this resource & method
     
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
- 
  describe "PUT" do
     before do
       @source_xml = psc_xml("source", 'name' => "Diabetes")
@@ -38,9 +34,9 @@ describe "/activity" do
         response.status_code.should == 201
         response.status_message.should == "Created"
         response.content_type.should == 'text/xml'
-        xml_attribute("activity", "name").should include("DiabetesTreatment1")
-        xml_attribute("activity", "type").should include("DiabetesTreatment")
-        xml_attribute("activity", "source").should include("Diabetes")
+        response.xml_attributes("activity", "name").should include("DiabetesTreatment1")
+        response.xml_attributes("activity", "type").should include("DiabetesTreatment")
+        response.xml_attributes("activity", "source").should include("Diabetes")
         response.xml_elements('//activity').should have(1).elements
     end
     
@@ -69,9 +65,9 @@ describe "/activity" do
         response.status_code.should == 200
         response.status_message.should == "OK"
         response.content_type.should == 'text/xml'
-        xml_attribute("activity", "name").should include("Initial Diagnosis")
-        xml_attribute("activity", "type").should include("Malaria Treatment")
-        xml_attribute("activity", "source").should include("Malaria")
+        response.xml_attributes("activity", "name").should include("Initial Diagnosis")
+        response.xml_attributes("activity", "type").should include("Malaria Treatment")
+        response.xml_attributes("activity", "source").should include("Malaria")
         response.xml_elements('//activity').should have(1).elements
       end
     end

@@ -5,10 +5,6 @@
 
 describe "/planned-activity" do
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   before do 
     #create study
     @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
@@ -66,7 +62,7 @@ describe "/planned-activity" do
       #VERIFY BEFORE DELETE: 
       get "/studies/NU480/template/development", :as => :juno
       # puts response.entity #code displaying a study-snapshot before delete
-      xml_attribute("planned-activity", "id").should include("301")
+      response.xml_attributes("planned-activity", "id").should include("301")
       response.xml_elements('//planned-activity').should have(1).elements      
       
       #DELETE               
@@ -98,7 +94,7 @@ describe "/planned-activity" do
         get "/studies/NU480/template/development", :as => :juno
         # puts response.entity #code displaying a study-snapshot before put
         response.xml_elements('//activity').should have(1).elements
-        xml_attribute("activity", "name").should include("Initial Diagnosis")
+        response.xml_attributes("activity", "name").should include("Initial Diagnosis")
                
         #PUT
         put "/studies/NU480/template/development/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", @data, 
@@ -109,7 +105,7 @@ describe "/planned-activity" do
         get "/studies/NU480/template/development", :as => :juno
         # puts response.entity #code displaying a study-snapshot after put
         response.xml_elements('//activity').should have(1).elements  
-        xml_attribute("activity", "name").should include("Immunization")
+        response.xml_attributes("activity", "name").should include("Immunization")
         
       end
     

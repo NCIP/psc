@@ -4,11 +4,6 @@ describe "/amendment" do
   # 1. put /studies/{study-identifier}/template/amendments/{amendment-identifier} is not authorized for authenticated account
   # 2. delete /studies/{study-identifier}/template/amendments/{amendment-identifier} is not authorized for authenticated account
   
-  
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end  
-  
   describe "PUT" do
     before do
       @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
@@ -32,9 +27,9 @@ describe "/amendment" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      xml_attribute("amendment", "name").should include("am1")
-      xml_attribute("amendment", "date").should include("2008-11-13")
-      xml_attribute("amendment", "mandatory").should include("true")
+      response.xml_attributes("amendment", "name").should include("am1")
+      response.xml_attributes("amendment", "date").should include("2008-11-13")
+      response.xml_attributes("amendment", "mandatory").should include("true")
       response.xml_elements('//amendment').should have(1).elements
     end
   end
@@ -54,9 +49,9 @@ describe "/amendment" do
         response.status_code.should == 200
         response.status_message.should == "OK"
         response.content_type.should == 'text/xml'
-        xml_attribute("amendment", "name").should include("am1")
-        xml_attribute("amendment", "date").should include("2008-12-10")
-        xml_attribute("amendment", "mandatory").should include("true")
+        response.xml_attributes("amendment", "name").should include("am1")
+        response.xml_attributes("amendment", "date").should include("2008-12-10")
+        response.xml_attributes("amendment", "mandatory").should include("true")
         response.xml_elements('//amendment').should have(1).elements
       end
     

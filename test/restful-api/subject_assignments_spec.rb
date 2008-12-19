@@ -6,10 +6,6 @@ describe "/subject_assignments" do
   #   Need to call application_context['templateService'].assignTemplateToSubjectCoordinator in order for POST to succeed
   #   but encounter Hibernate lazy initialization issue
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-
   before do
     #create site
     @site1 = PscTest::Fixtures.createSite("My Site", "site1")
@@ -70,10 +66,10 @@ describe "/subject_assignments" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("subject", "first-name").should include("Bob")
-      xml_attribute("subject", "first-name").should include("Alan")
-      xml_attribute("subject", "person-id").should include("ID001")
-      xml_attribute("subject", "person-id").should include("ID002")
+      response.xml_attributes("subject", "first-name").should include("Bob")
+      response.xml_attributes("subject", "first-name").should include("Alan")
+      response.xml_attributes("subject", "person-id").should include("ID001")
+      response.xml_attributes("subject", "person-id").should include("ID002")
       response.xml_elements('//subject').should have(2).elements          
     end
 

@@ -1,9 +1,5 @@
 describe "/source" do
     
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end  
-  
   describe "GET" do
     
     before do
@@ -35,8 +31,8 @@ describe "/source" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("activity", "name").should include("CancerTreatment1")
-      xml_attribute("activity", "name").should include("CancerEmergencyTreatment1")
+      response.xml_attributes("activity", "name").should include("CancerTreatment1")
+      response.xml_attributes("activity", "name").should include("CancerEmergencyTreatment1")
       response.xml_elements('//activity').should have(2).elements
     end
     
@@ -46,7 +42,7 @@ describe "/source" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("activity", "name").should include("CancerEmergencyTreatment1")
+      response.xml_attributes("activity", "name").should include("CancerEmergencyTreatment1")
       response.xml_elements('//activity').should have(1).elements
     end
     
@@ -70,7 +66,7 @@ describe "/source" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      xml_attribute("source", "name").should include("Dental")
+      response.xml_attributes("source", "name").should include("Dental")
       response.xml_elements('//activity').should have(0).elements
     end      
     

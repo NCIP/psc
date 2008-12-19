@@ -116,6 +116,12 @@ helper_for Spec::Example::ExampleGroup do
     def xml_elements(xpath)
       xml_doc.root.elements.to_a(xpath)
     end
+    
+    # Finds the value for the named attribute on every instance of the named 
+    # element in the response document
+    def xml_attributes(element_name, attribute_name)
+      xml_elements("//#{element_name}").collect { |s| s.attributes[attribute_name] }
+    end
 
     def xml_doc
       content_type.should == 'text/xml'

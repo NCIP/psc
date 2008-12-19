@@ -1,9 +1,5 @@
 describe "/schedule" do
   
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-
   before do
     #create site
     @site1 = PscTest::Fixtures.createSite("My Site", "site1")
@@ -66,8 +62,8 @@ describe "/schedule" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
-      xml_attribute("scheduled-calendar", "assignment-id").should include("assignment1")
-      xml_attribute("scheduled-study-segment", "study-segment-id").should include("segment1")
+      response.xml_attributes("scheduled-calendar", "assignment-id").should include("assignment1")
+      response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment1")
       response.xml_elements('//scheduled-study-segment').should have(1).elements          
     end
 
@@ -89,13 +85,13 @@ describe "/schedule" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      xml_attribute("scheduled-study-segment", "study-segment-id").should include("segment2")      
+      response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment2")      
       
       #there should be 2 scheduled-study-segments
       get "/studies/NU480/schedules/assignment1", :as => :juno
       response.xml_elements('//scheduled-study-segment').should have(2).elements    
-      xml_attribute("scheduled-study-segment", "study-segment-id").should include("segment2")
-      xml_attribute("scheduled-study-segment", "study-segment-id").should include("segment1")      
+      response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment2")
+      response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment1")      
     end
         
   end

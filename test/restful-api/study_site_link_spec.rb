@@ -16,10 +16,6 @@ describe "/study-site-link" do
     end
   end
 
-  def xml_attribute(element, attribute_name)
-    response.xml_elements('//' + element).collect { |s| s.attributes[attribute_name] }
-  end
-  
   describe "PUT" do
      
     it "forbids creating a study-site-link for an unauthorized user" do
@@ -33,8 +29,8 @@ describe "/study-site-link" do
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
-      xml_attribute("study-site-link", "study-name").should include("NU480")
-      xml_attribute("study-site-link", "site-name").should include("Northwestern University Robert H. Lurie Comprehensive Cancer Center")
+      response.xml_attributes("study-site-link", "study-name").should include("NU480")
+      response.xml_attributes("study-site-link", "site-name").should include("Northwestern University Robert H. Lurie Comprehensive Cancer Center")
       response.xml_elements('//study-site-link').should have(1).elements
     end
     
