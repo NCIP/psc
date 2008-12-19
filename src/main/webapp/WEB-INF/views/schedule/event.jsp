@@ -89,6 +89,11 @@
             <c:set var="count" value="${count + 1}"/>
             <div class="row ${commons:parity(count)}">
                 <div class="label">Details</div>
+                <div class="value">${scheduledActivity.details}</div>
+            </div>
+            <c:set var="count" value="${count + 1}"/>
+            <div class="row ${commons:parity(count)}">
+                <div class="label">Description</div>
                 <div class="value">${scheduledActivity.activity.description}</div>
             </div>
             <c:set var="count" value="${count + 1}"/>
