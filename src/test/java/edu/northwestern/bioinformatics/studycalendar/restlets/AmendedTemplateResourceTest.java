@@ -35,7 +35,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     @Override
-    protected AmendedTemplateResource createResource() {
+    protected AmendedTemplateResource createAuthorizedResource() {
         AmendedTemplateResource resource = new AmendedTemplateResource();
         resource.setXmlSerializer(studySnapshotXmlSerializer);
         resource.setAmendedTemplateHelper(helper);

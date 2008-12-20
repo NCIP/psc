@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -83,14 +85,14 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelAndViewForStudyAndSubjectCoordinator() throws Exception {
         setUserRoles(user, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
 
-        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
-        inDevelopment.add(0, (new StudyListController.DevelopmentTemplate(incomplete)));
-        inDevelopment.add(1, (new StudyListController.DevelopmentTemplate(both)));
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, true));
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, true));
-        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
+        inDevelopment.add(0, (new DevelopmentTemplate(incomplete)));
+        inDevelopment.add(1, (new DevelopmentTemplate(both)));
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
+        releasedTemplates.add(new ReleasedTemplate(complete, true));
+        releasedTemplates.add(new ReleasedTemplate(both, true));
+        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
+        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
 
         expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
         expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
@@ -109,12 +111,12 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelForSubjectCoordinatorAndResearchAssociate() throws Exception {
         setUserRoles(user, Role.SUBJECT_COORDINATOR);
 
-        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, true));
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, false));
-        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
+        releasedTemplates.add(new ReleasedTemplate(complete, true));
+        releasedTemplates.add(new ReleasedTemplate(both, false));
+        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
+        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
 
         expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
         expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
@@ -133,12 +135,12 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelForSiteCoordinator() throws Exception {
         setUserRoles(user, Role.SITE_COORDINATOR);
 
-        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, false));
-        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, false));
-        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
-        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
+        releasedTemplates.add(new ReleasedTemplate(complete, false));
+        releasedTemplates.add(new ReleasedTemplate(both, false));
+        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
+        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
 
         expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
         expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
@@ -156,10 +158,10 @@ public class StudyListControllerTest extends ControllerTestCase {
     @SuppressWarnings({ "unchecked" })
     private void assertDevelopmentTemplateList(List<Study> expected, ModelAndView mv) {
         assertDevelopmentTemplateList(expected,
-            (List<StudyListController.DevelopmentTemplate>) mv.getModel().get("inDevelopmentTemplates"));
+            (List<DevelopmentTemplate>) mv.getModel().get("inDevelopmentTemplates"));
     }
 
-    private void assertDevelopmentTemplateList(List<Study> expected, List<StudyListController.DevelopmentTemplate> actual) {
+    private void assertDevelopmentTemplateList(List<Study> expected, List<DevelopmentTemplate> actual) {
         assertEquals("Wrong number of development templates", expected.size(), actual.size());
         for (int i = 0; i < expected.size(); i++) {
             assertEquals("Dev template mismatch at index " + i, (int) expected.get(i).getId(), actual.get(i).getId());
@@ -168,10 +170,10 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     private void assertReleasedTemplateList(List<Study> expected, boolean[] expectedAssignable, ModelAndView mv) {
-        assertReleasedTemplateList(expected, expectedAssignable, (List<StudyListController.ReleasedTemplate>) mv.getModel().get("releasedTemplates"));
+        assertReleasedTemplateList(expected, expectedAssignable, (List<ReleasedTemplate>) mv.getModel().get("releasedTemplates"));
     }
 
-    private void assertReleasedTemplateList(List<Study> expected, boolean[] expectedAssignable, List<StudyListController.ReleasedTemplate> actual) {
+    private void assertReleasedTemplateList(List<Study> expected, boolean[] expectedAssignable, List<ReleasedTemplate> actual) {
         assertEquals("Wrong number of released templates", expected.size(), actual.size());
         assertEquals("Test setup failure", expected.size(), expectedAssignable.length);
         for (int i = 0; i < expected.size(); i++) {

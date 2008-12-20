@@ -5,9 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -46,11 +47,11 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
             String userName = ApplicationSecurityManager.getUser();
             User user = userDao.getByName(userName);
 
-            List<StudyListController.DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
+            List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
 
             log.debug("{} in development studies found ", studies.size());
 
-            List<StudyListController.ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies,user);
+            List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies,user);
             log.debug("{} in released studies found ", studies.size());
 
             model.put("inDevelopmentTemplates", results);

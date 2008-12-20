@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,9 +42,9 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
             String userName = ApplicationSecurityManager.getUser();
             User user = userDao.getByName(userName);
 
-            List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
+            List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
 
-            List<StudyListController.ReleasedTemplate> results = searchStudies(releasedAndAssignedTemplates, searchText);
+            List<ReleasedTemplate> results = searchStudies(releasedAndAssignedTemplates, searchText);
             model.put("releasedTemplates", results);
 
             return new ModelAndView("template/ajax/releasedTemplates", model);
@@ -55,13 +55,13 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
     }
 
     // TODO: remove null check for code if find out code is required (Reconsent doesn't have code)
-    private List<StudyListController.ReleasedTemplate> searchStudies(List<StudyListController.ReleasedTemplate> availableStudies, String searchText) {
+    private List<ReleasedTemplate> searchStudies(List<ReleasedTemplate> availableStudies, String searchText) {
         if (searchText.equals(EMPTY)) return EMPTY_LIST;
 
         String searchTextLower = searchText.toLowerCase();
 
-        List<StudyListController.ReleasedTemplate> results = new ArrayList<StudyListController.ReleasedTemplate>();
-        for (StudyListController.ReleasedTemplate study : availableStudies) {
+        List<ReleasedTemplate> results = new ArrayList<ReleasedTemplate>();
+        for (ReleasedTemplate study : availableStudies) {
             String studyName = study.getStudy().getName().toLowerCase();
             if (studyName.contains(searchTextLower)) {
                 results.add(study);

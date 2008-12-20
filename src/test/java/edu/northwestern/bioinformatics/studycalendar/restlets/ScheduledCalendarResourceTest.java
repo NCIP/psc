@@ -60,7 +60,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     @Override
-    protected ScheduledCalendarResource createResource() {
+    protected ScheduledCalendarResource createAuthorizedResource() {
         ScheduledCalendarResource resource = new ScheduledCalendarResource();
         resource.setXmlSerializer(serializer);
         resource.setSubjectService(subjectService);

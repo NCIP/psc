@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static org.restlet.data.Method.*;
 
 import java.util.Collection;
@@ -11,9 +12,9 @@ import java.util.Collection;
  *
  * @author Rhett Sutphin
  */
-public class PscResourceTest extends ResourceTestCase<PscResourceTest.TestResource> {
+public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.TestResource> {
     @Override
-    protected TestResource createResource() {
+    protected TestResource createAuthorizedResource() {
         return new TestResource();
     }
 
@@ -36,6 +37,37 @@ public class PscResourceTest extends ResourceTestCase<PscResourceTest.TestResour
         Collection<Role> lockRoles = getResource().authorizedRoles(LOCK);
         assertNotNull(lockRoles);
         assertEquals(0, lockRoles.size());
+    }
+
+    public void testCurrentUserCanBeLoadedWhenThereIsAnAuthentication() throws Exception {
+        assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
+        expectGetCurrentUser();
+
+        replayMocks();
+        assertSame(getCurrentUser(), getResource().getCurrentUser());
+        verifyMocks();
+    }
+
+    public void testCurrentUserIsNullWhenThereIsNoAuthentication() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, null);
+
+        replayMocks();
+        assertNull(getResource().getCurrentUser());
+        verifyMocks();
+    }
+
+    public void testCurrentUserIsOnlyLoadedOnce() throws Exception {
+        User expected = getCurrentUser();
+        assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
+        expectGetCurrentUser().once();
+
+        replayMocks();
+        assertSame(expected, getResource().getCurrentUser());
+        assertSame(expected, getResource().getCurrentUser());
+        assertSame(expected, getResource().getCurrentUser());
+        assertSame(expected, getResource().getCurrentUser());
+        // expect no failures on verify
+        verifyMocks();
     }
 
     public static class TestResource extends AbstractPscResource {

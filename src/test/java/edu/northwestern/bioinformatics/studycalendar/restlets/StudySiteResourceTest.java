@@ -42,7 +42,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected StudySiteResource createResource() {
+    protected StudySiteResource createAuthorizedResource() {
         StudySiteResource res = new StudySiteResource();
         res.setXmlSerializer(xmlSerializer);
         res.setStudyDao(studyDao);

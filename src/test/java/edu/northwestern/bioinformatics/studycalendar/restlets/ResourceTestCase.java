@@ -42,7 +42,11 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     protected abstract R createResource();
 
     protected R getResource() {
-        if (resource == null) resource = createResource();
+        if (resource == null) {
+            resource = createResource();
+            resource.setRequest(request);
+            resource.setResponse(response);
+        }
         return resource;
     }
 

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
@@ -12,10 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.*;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -182,10 +181,10 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         allStudies.add(m);
         allStudies.add(asdf);
 
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
         for (Study visibleStudy : allStudies) {
             if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, true));
+                releasedTemplates.add(new ReleasedTemplate(visibleStudy, true));
             }
         }
 

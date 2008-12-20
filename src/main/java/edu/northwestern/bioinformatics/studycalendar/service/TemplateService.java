@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
@@ -16,7 +18,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
@@ -423,8 +424,7 @@ public class TemplateService {
         return (idMatch || gridIdMatch);
     }
 
-    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -436,16 +436,16 @@ public class TemplateService {
                 subjectAssignableStudies
         );
 
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
         for (Study visibleStudy : visibleStudies) {
             if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
             }
         }
 
-        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
 
-        for (StudyListController.ReleasedTemplate releasedTemplate : releasedTemplates) {
+        for (ReleasedTemplate releasedTemplate : releasedTemplates) {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
             if (sites.size() == 0) {
@@ -467,15 +467,14 @@ public class TemplateService {
         return pendingTemplates;
     }
 
-    public static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
-        public static final Comparator<? super StudyListController.ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
-        public int compare(StudyListController.ReleasedTemplate rt1, StudyListController.ReleasedTemplate rt2) {
+    public static class AlphabeticallyOrderedComparator implements Comparator<ReleasedTemplate> {
+        public static final Comparator<? super ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
+        public int compare(ReleasedTemplate rt1, ReleasedTemplate rt2) {
             return rt1.getDisplayName().toLowerCase().compareTo(rt2.getDisplayName().toLowerCase());
         }
     }
 
-    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -488,16 +487,16 @@ public class TemplateService {
                 subjectAssignableStudies
         );
 
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
         for (Study visibleStudy : visibleStudies) {
             if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
             }
         }
 
-        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
 
-        for (StudyListController.ReleasedTemplate releasedTemplate : releasedTemplates) {
+        for (ReleasedTemplate releasedTemplate : releasedTemplates) {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
             for (Site site : sites) {
@@ -515,8 +514,7 @@ public class TemplateService {
         return releasedAndAssignedTemplates;
     }
 
-    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -530,26 +528,25 @@ public class TemplateService {
         );
 
 
-        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
         for (Study visibleStudy : visibleStudies) {
             if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
             }
         }
         log.info("releasedTemplates " + releasedTemplates);
         return releasedTemplates;
     }
 
-    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
 
-        List<StudyListController.DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<StudyListController.DevelopmentTemplate>();
+        List<DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<DevelopmentTemplate>();
         for (Study devableStudy : devableStudies) {
             if (devableStudy.isInDevelopment()) {
-                inDevelopmentTemplates.add(new StudyListController.DevelopmentTemplate(devableStudy));
+                inDevelopmentTemplates.add(new DevelopmentTemplate(devableStudy));
             }
         }
         log.info("inDevelopmentTemplates " + inDevelopmentTemplates);
@@ -572,7 +569,6 @@ public class TemplateService {
     private boolean isStudyApprovedBySite(Site site, Study study) {
         return site.getStudySite(study).getUnapprovedAmendments().isEmpty();
     }
-
 
     private boolean isSubjectCoordinatorAssignedToStudy(Study study) {
         for (StudySite studySite : study.getStudySites()) {

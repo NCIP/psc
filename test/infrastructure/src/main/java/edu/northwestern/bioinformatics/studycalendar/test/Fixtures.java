@@ -202,7 +202,13 @@ public class Fixtures {
     }
 
     public static Study createBasicTemplate() {
-        return createApprovedTemplate(TemplateSkeletonCreator.BASIC);
+        return createBasicTemplate(null);
+    }
+
+    public static Study createBasicTemplate(String name) {
+        Study study = createApprovedTemplate(TemplateSkeletonCreator.BASIC);
+        study.setAssignedIdentifier(name);
+        return study;
     }
 
     public static Study createInDevelopmentBasicTemplate(String name) {

@@ -86,7 +86,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     }
 
     @Override
-    protected PlannedActivitiesResource createResource() {
+    protected PlannedActivitiesResource createAuthorizedResource() {
         PlannedActivitiesResource res = new PlannedActivitiesResource();
         res.setAmendedTemplateHelper(helper);
         res.setTemplateService(new TestingTemplateService());

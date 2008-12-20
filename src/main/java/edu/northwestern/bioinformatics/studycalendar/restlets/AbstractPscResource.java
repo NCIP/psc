@@ -1,22 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.acegisecurity.Authentication;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +32,9 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
 
     private Map<Method, Collection<Role>> roleAuthorizations;
     private String clientErrorReason;
+
+    private User currentUser;
+    private UserService userService;
 
     public AbstractPscResource() { }
     public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
@@ -53,6 +60,18 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
             roleAuthorizations = new HashMap<Method, Collection<Role>>();
         }
         return roleAuthorizations;
+    }
+
+    protected User getCurrentUser() {
+        Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
+        if (token == null) {
+            return null;
+        } else {
+            if (currentUser == null) {
+                currentUser = userService.getUserByName(token.getPrincipal().toString());
+            }
+            return currentUser;
+        }
     }
 
     @Override
@@ -113,5 +132,12 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         } else {
             clientErrorReason = null;
         }
+    }
+
+    ////// CONFIGURATION
+
+    @Required
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

@@ -57,7 +57,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
 
     @Override
     @SuppressWarnings({"unchecked"})
-    protected AmendmentApprovalsResource createResource() {
+    protected AmendmentApprovalsResource createAuthorizedResource() {
         AmendmentApprovalsResource resource = new AmendmentApprovalsResource();
         resource.setStudyDao(studyDao);
         resource.setSiteDao(siteDao);

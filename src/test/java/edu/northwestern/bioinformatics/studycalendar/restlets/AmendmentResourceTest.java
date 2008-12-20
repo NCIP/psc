@@ -80,7 +80,7 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
 
 
     @Override
-    protected AmendmentResource createResource() {
+    protected AmendmentResource createAuthorizedResource() {
         AmendmentResource resource = new AmendmentResource();
 
         resource.setStudyDao(studyDao);
