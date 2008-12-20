@@ -50,7 +50,6 @@ describe "/studies" do
   it "shows only assigned studies to a subject coordinator"
 
   it "shows nothing to to a sys admin" do
-    pending
     get "/studies", :as => :zelda
     response.status_code.should == 403
   end

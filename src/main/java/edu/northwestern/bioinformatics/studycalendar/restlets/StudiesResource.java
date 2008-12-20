@@ -39,7 +39,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
+        setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
     }
 
