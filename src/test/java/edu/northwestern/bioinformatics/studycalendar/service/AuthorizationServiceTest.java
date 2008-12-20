@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -20,6 +21,7 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
     private User user;
     private Study studyA, studyB, studyAB;
     private Site siteA, siteB;
+    private List<Study> allStudies;
 
     @Override
     protected void setUp() throws Exception {
@@ -37,6 +39,7 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         studyB.addSite(siteB);
         studyAB.addSite(siteA);
         studyAB.addSite(siteB);
+        allStudies = Arrays.asList(studyA, studyB, studyAB);
     }
 
     public void testStudyVisibilityForSubjectCoordinator() throws Exception {
@@ -75,14 +78,60 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         assertTrue(service.isTemplateVisible(coord, studyAB));
     }
     
+    public void testFilterForVisibilityOnAnEmptyListReturnsAnEmptyList() throws Exception {
+        assertTrue(service.filterAssignmentsForVisibility(Collections.<StudySubjectAssignment>emptyList(), user).isEmpty());
+    }
+
     public void testFilterAssignmentsForVisibility() throws Exception {
         StudySubjectAssignment ssa1 = Fixtures.createAssignment(studyAB.getStudySite(siteA), null);
         StudySubjectAssignment ssa2 = Fixtures.createAssignment(studyAB.getStudySite(siteB), null);
-        user.addUserRole(new UserRole(user, Role.SUBJECT_COORDINATOR));
-        user.getUserRole(Role.SUBJECT_COORDINATOR).addStudySite(studyAB.getStudySite(siteB));
+        addRole(Role.SUBJECT_COORDINATOR).addStudySite(studyAB.getStudySite(siteB));
 
-        List<StudySubjectAssignment> filtered = service.filterForVisibility(Arrays.asList(ssa1, ssa2), user);
+        List<StudySubjectAssignment> filtered = service.filterAssignmentsForVisibility(Arrays.asList(ssa1, ssa2), user);
         assertEquals("Wrong number of assignments in result", 1, filtered.size());
         assertEquals("Wrong assignment in result", ssa2, filtered.get(0));
+    }
+
+    public void testStudyVisibilityWhenSubjectCoord() throws Exception {
+        UserRole subjC = addRole(Role.SUBJECT_COORDINATOR);
+        subjC.addStudySite(studyA.getStudySite(siteA));
+        subjC.addStudySite(studyAB.getStudySite(siteB));
+        List<Study> filtered = service.filterStudiesForVisibility(allStudies, user);
+
+        assertEquals("Only A and AB should be present", Arrays.asList(studyA, studyAB), filtered);
+    }
+
+    public void testStudyVisibilityWhenSiteCoord() throws Exception {
+        addRole(Role.SITE_COORDINATOR).addSite(siteB);
+        List<Study> filtered = service.filterStudiesForVisibility(allStudies, user);
+
+        assertEquals("Only B and AB should be present", Arrays.asList(studyB, studyAB), filtered);
+    }
+
+    public void testAllStudiesVisibleWhenStudyAdmin() throws Exception {
+        addRole(Role.STUDY_ADMIN);
+        List<Study> filtered = service.filterStudiesForVisibility(allStudies, user);
+
+        assertEquals("All studies should be present", allStudies, filtered);
+    }
+
+    public void testAllStudiesVisibleWhenStudyCoord() throws Exception {
+        addRole(Role.STUDY_COORDINATOR);
+        List<Study> filtered = service.filterStudiesForVisibility(allStudies, user);
+
+        assertEquals("All studies should be present", allStudies, filtered);
+    }
+
+    public void testStudyVisibilityWhenBothStudyCoordAndSubjectCoord() throws Exception {
+        addRole(Role.STUDY_COORDINATOR);
+        addRole(Role.SUBJECT_COORDINATOR).addStudySite(studyAB.getStudySite(siteB));
+        List<Study> filtered = service.filterStudiesForVisibility(allStudies, user);
+
+        assertEquals("All studies should be present exactly once", allStudies, filtered);
+    }
+
+    private UserRole addRole(Role role) {
+        user.addUserRole(new UserRole(user, role));
+        return user.getUserRole(role);
     }
 }

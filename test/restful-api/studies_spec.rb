@@ -18,7 +18,7 @@ describe "/studies" do
   end
 
   def study_names
-    response.xml_elements('//study').collect { |s| s.attributes["assigned-identifier"] }
+    response.xml_attributes('study', "assigned-identifier")
   end
 
   it "shows all studies to a study coordinator" do
@@ -42,10 +42,17 @@ describe "/studies" do
   end
 
   it "shows nothing to a site coordinator when nothing is released for her site" do
-    pending
     get "/studies", :as => :carla
     response.should be_success
     response.xml_elements('//study').should have(0).elements
+  end
+
+  it "shows only assigned studies to a subject coordinator"
+
+  it "shows nothing to to a sys admin" do
+    pending
+    get "/studies", :as => :zelda
+    response.status_code.should == 403
   end
 
   describe "with assigned sites" do
@@ -55,7 +62,6 @@ describe "/studies" do
     end
 
     it "shows appropriate released studies released to an NU site coord" do
-      pending
       get "/studies", :as => :carla
       response.should be_success
       response.xml_elements('//study').should have(2).elements
@@ -64,16 +70,12 @@ describe "/studies" do
     end
 
     it "shows appropriate released studies released to a mayo site coord" do
-      pending
       get "/studies", :as => :frieda
       response.should be_success
       response.xml_elements('//study').should have(1).elements
       study_names.should include("ECOG 170")
     end
   end
-
-  it "shows only assigned studies to a subject coordinator"
-  it "shows nothing to to a sys admin"
 
   describe "POST" do
     before do
@@ -85,7 +87,6 @@ describe "/studies" do
         ss.population('abbreviation' => 'W', 'name' => 'Women of childbearing potential')
       }
     end
-
 
     it "does not accept a study snapshot from a study admin" do
       post '/studies', @nu328_xml, :as => :barbara

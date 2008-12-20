@@ -72,6 +72,7 @@ public class AuthorizingFinderTest extends RestletTestCase {
     }
 
     private static class TestAuthorizingResource extends AbstractPscResource {
+        @Override
         public void init(Context context, Request request, Response response) {
             super.init(context, request, response);
             setAuthorizedFor(Method.POST, Role.SYSTEM_ADMINISTRATOR);
@@ -80,10 +81,12 @@ public class AuthorizingFinderTest extends RestletTestCase {
             setModifiable(true);
         }
 
+        @Override
         public void acceptRepresentation(Representation entity) throws ResourceException {
             // dummy
         }
 
+        @Override
         public void removeRepresentations() throws ResourceException {
             // dummy
         }

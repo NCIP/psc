@@ -57,7 +57,7 @@ public class PscGuard extends Guard {
         }
         Authentication sessionAuth = SecurityContextHolder.getContext().getAuthentication();
         if (sessionAuth != null && sessionAuth.isAuthenticated()) {
-            preserveAuthentationForAuthorizationDecisions(request, sessionAuth);
+            setCurrentAuthenticationToken(request, sessionAuth);
             accept(request, response);
             return CONTINUE;
         } else {
@@ -139,7 +139,7 @@ public class PscGuard extends Guard {
             if (auth == null) {
                 return false;
             } else {
-                preserveAuthentationForAuthorizationDecisions(request, auth);
+                setCurrentAuthenticationToken(request, auth);
                 return auth.isAuthenticated();
             }
         } catch (AuthenticationException ae) {
@@ -148,8 +148,12 @@ public class PscGuard extends Guard {
         }
     }
 
-    private void preserveAuthentationForAuthorizationDecisions(Request request, Authentication auth) {
+    public static void setCurrentAuthenticationToken(Request request, Authentication auth) {
         request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+    }
+
+    public static Authentication getCurrentAuthenticationToken(Request request) {
+        return (Authentication) request.getAttributes().get(AUTH_TOKEN_ATTRIBUTE_KEY);
     }
 
     ////// CONFIGURATION

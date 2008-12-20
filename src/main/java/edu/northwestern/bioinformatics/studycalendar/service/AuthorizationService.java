@@ -1,20 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import org.springframework.beans.factory.annotation.Required;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -23,7 +26,7 @@ public class AuthorizationService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private StudyCalendarAuthorizationManager authorizationManager;
 
-    public List<StudySubjectAssignment> filterForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
+    public List<StudySubjectAssignment> filterAssignmentsForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
         log.debug("Filtering {} assignments for visibility to {}", source.size(), visibleTo);
         List<StudySubjectAssignment> visible = new LinkedList<StudySubjectAssignment>();
 
@@ -41,6 +44,16 @@ public class AuthorizationService {
         }
 
         return visible;
+    }
+
+    public List<Study> filterStudiesForVisibility(List<Study> studies, User visibleTo) {
+        Set<Study> all = new LinkedHashSet<Study>();
+        for (Study study : studies) {
+            for (UserRole role : visibleTo.getUserRoles()) {
+                if (isTemplateVisible(role, study)) all.add(study);
+            }
+        }
+        return new ArrayList<Study>(all);
     }
 
     public boolean isTemplateVisible(UserRole userRole, Study study) {

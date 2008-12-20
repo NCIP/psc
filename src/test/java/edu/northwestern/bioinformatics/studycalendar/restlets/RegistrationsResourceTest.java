@@ -54,7 +54,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected RegistrationsResource createResource() {
+    protected RegistrationsResource createAuthorizedResource() {
         RegistrationsResource res = new RegistrationsResource();
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);

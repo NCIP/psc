@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import org.restlet.Context;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
@@ -33,6 +34,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
 
     private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
+    private AuthorizationService authorizationService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -45,7 +47,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
 
     @Override
     public Collection<Study> getAllObjects() {
-        return studyDao.getAll();
+        return authorizationService.filterStudiesForVisibility(studyDao.getAll(), getCurrentUser());
     }
 
     @Override
@@ -99,5 +101,10 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 }
