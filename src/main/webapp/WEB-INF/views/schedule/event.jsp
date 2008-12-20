@@ -81,6 +81,13 @@
                 <div class="label">Activity</div>
                 <div class="value">${scheduledActivity.activity.name}</div>
             </div>
+            <c:if test="${not empty scheduledActivity.activity.description}">
+                <c:set var="count" value="${count + 1}"/>
+                <div class="row ${commons:parity(count)}">
+                    <div class="label">Description</div>
+                    <div class="value">${scheduledActivity.activity.description}</div>
+                </div>
+            </c:if>
             <c:set var="count" value="${count + 1}"/>
             <div class="row ${commons:parity(count)}">
                 <div class="label">Code</div>
@@ -90,11 +97,6 @@
             <div class="row ${commons:parity(count)}">
                 <div class="label">Details</div>
                 <div class="value">${scheduledActivity.details}</div>
-            </div>
-            <c:set var="count" value="${count + 1}"/>
-            <div class="row ${commons:parity(count)}">
-                <div class="label">Description</div>
-                <div class="value">${scheduledActivity.activity.description}</div>
             </div>
             <c:set var="count" value="${count + 1}"/>
             <c:if test="${not empty scheduledActivity.plannedActivity.condition}">
