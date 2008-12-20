@@ -8,6 +8,7 @@ import org.restlet.data.Method;
 import org.restlet.resource.Resource;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import static org.easymock.EasyMock.expect;
+import org.easymock.IExpectationSetters;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,8 +43,8 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
 
     protected abstract R createAuthorizedResource();
 
-    protected void expectGetCurrentUser() {
-        expect(userService.getUserByName(user.getName())).andReturn(user);
+    protected IExpectationSetters<User> expectGetCurrentUser() {
+        return expect(userService.getUserByName(user.getName())).andReturn(user);
     }
 
     protected void assertRolesAllowedForMethod(Method method, Role... roles) {

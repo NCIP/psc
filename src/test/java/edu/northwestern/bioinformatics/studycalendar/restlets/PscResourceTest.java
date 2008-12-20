@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import static org.easymock.EasyMock.expect;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static org.restlet.data.Method.*;
 
 import java.util.Collection;
@@ -15,19 +13,9 @@ import java.util.Collection;
  * @author Rhett Sutphin
  */
 public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.TestResource> {
-    private UserService userService;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        userService = registerMockFor(UserService.class);
-    }
-
     @Override
     protected TestResource createAuthorizedResource() {
-        TestResource testResource = new TestResource();
-        testResource.setUserService(userService);
-        return testResource;
+        return new TestResource();
     }
 
     public void testAllAuthorizedRoleReturnsNull() throws Exception {
@@ -52,19 +40,26 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     }
 
     public void testCurrentUserCanBeLoadedWhenThereIsAnAuthentication() throws Exception {
-        User expected = new User();
         assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
-        expect(userService.getUserByName(getCurrentUser().getName())).andReturn(expected);
+        expectGetCurrentUser();
 
         replayMocks();
-        assertSame(expected, getResource().getCurrentUser());
+        assertSame(getCurrentUser(), getResource().getCurrentUser());
+        verifyMocks();
+    }
+
+    public void testCurrentUserIsNullWhenThereIsNoAuthentication() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, null);
+
+        replayMocks();
+        assertNull(getResource().getCurrentUser());
         verifyMocks();
     }
 
     public void testCurrentUserIsOnlyLoadedOnce() throws Exception {
-        User expected = new User();
+        User expected = getCurrentUser();
         assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
-        expect(userService.getUserByName(getCurrentUser().getName())).andReturn(expected).once();
+        expectGetCurrentUser().once();
 
         replayMocks();
         assertSame(expected, getResource().getCurrentUser());
