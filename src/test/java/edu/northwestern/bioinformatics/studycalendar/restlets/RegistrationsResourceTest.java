@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -31,6 +32,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     private StudySite studySite;
 
     private StudyDao studyDao;
+    private SubjectDao subjectDao;
     private SiteDao siteDao;
     private SubjectService subjectService;
     private CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment> assignmentSerializerStub;
@@ -44,6 +46,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         studySite = createStudySite(study, site);
 
         studyDao = registerDaoMockFor(StudyDao.class);
+        subjectDao = registerDaoMockFor(SubjectDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         subjectService = registerMockFor(SubjectService.class);
         assignmentSerializerStub = new CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment>();
@@ -59,6 +62,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setSubjectService(subjectService);
+        res.setSubjectDao(subjectDao);
         res.setXmlSerializer(xmlSerializer);
         return res;
     }
@@ -141,6 +145,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
+        expect(subjectDao.getAssignment(expectedSubject,study,site)).andReturn(null);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, null, posted.getSubjectCoordinator())).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
@@ -163,6 +168,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
+        expect(subjectDao.getAssignment(expectedSubject,study,site)).andReturn(null);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, null, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
