@@ -49,7 +49,9 @@ public class SubjectCoordinatorDashboardService {
                 String subjectName = subject.getFullName();
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledActivity event : collectionOfEvents) {
-                        events.add(event);
+                        if (event.getCurrentState().getMode().getId() == 1 || event.getCurrentState().getMode().getId() == 4 ) {
+                            events.add(event);
+                        }
                     }
                 }
                 if (events != null && events.size() > 0) {
@@ -99,7 +101,9 @@ public class SubjectCoordinatorDashboardService {
                             value = activities.get(eventActivityType);
                         }
                         if (value) {
-                            events.add(event);
+                            if (event.getCurrentState().getMode().getId() == 1 || event.getCurrentState().getMode().getId() == 4 ) {
+                                events.add(event);
+                            }
                         }
                     }
                 }

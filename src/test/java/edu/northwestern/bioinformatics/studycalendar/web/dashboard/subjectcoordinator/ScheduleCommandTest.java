@@ -275,7 +275,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
 
         e5 = createScheduledActivity("C", year, month, day +1, new Canceled());
-        e6 = createScheduledActivity("O", year, month, day +2, new Occurred());
+        e6 = createScheduledActivity("O", year, month, day +2);
         e7 = createScheduledActivity("S", year, month, day +3);
 
         addEvents(calendarTwo.getScheduledStudySegments().get(0), e5, e6, e7);
@@ -353,8 +353,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map <String, Object> valueThree = (Map<String, Object>) values.get(todayPlusTwoKey);
 
         assertEquals("ValueOne doesn't contain the right number of events", 1, valueOne.values().size());
-        assertEquals("ValueTwo doesn't contain the right number of events", 2, valueTwo.values().size());
-        assertEquals("ValueThree doesn't contain the right number of events", 2, valueTwo.values().size());
+        assertEquals("ValueTwo doesn't contain the right number of events", 1, valueTwo.values().size());
+        assertEquals("ValueThree doesn't contain the right number of events", 2, valueThree.values().size());
 
 
         Set<String> valueOneKey = valueOne.keySet();
@@ -365,8 +365,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
         Set<String> valueTwoKey = valueTwo.keySet();
-        assertEquals("Wrong number of subjects ", 2, valueTwoKey.size());
-        assertEquals("Date " + todayPlusOne + "has more than one event", 2, valueTwo.values().size());
+        assertEquals("Wrong number of subjects ", 1, valueTwoKey.size());
+        assertEquals("Date " + todayPlusOne + "has more than one event", 1, valueTwo.values().size());
 
         Set<String> valueThreeKey = valueThree.keySet();
         assertEquals("Wrong number of subjects ", 2, valueThreeKey.size());
