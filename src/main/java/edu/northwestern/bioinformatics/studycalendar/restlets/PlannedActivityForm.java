@@ -13,9 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -24,6 +28,7 @@ public class PlannedActivityForm extends ValidatingForm {
     private Study study;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public PlannedActivityForm(Representation entity, Study study, ActivityDao activityDao, PopulationDao populationDao) {
         super(entity);
@@ -72,7 +77,17 @@ public class PlannedActivityForm extends ValidatingForm {
         Population population = null;
         String populationAbbrev = FormParameters.POPULATION.extractFirstFrom(this);
         if (populationAbbrev != null) {
-            population = populationDao.getByAbbreviation(study, populationAbbrev);
+            if (study.isInAmendmentDevelopment() || study.isInDevelopment()){
+                Set<Population> populations = study.getChildren();
+                for (Iterator<Population> popIterator = populations.iterator(); popIterator.hasNext();) {
+                    population = popIterator.next();
+                    if (population.getAbbreviation().equals(populationAbbrev)) {
+                        return population;
+                    }
+                }
+            } else {
+                population = populationDao.getByAbbreviation(study, populationAbbrev);
+            }
             if (population == null) {
                 throw new ResourceException(
                     Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Population not found");
