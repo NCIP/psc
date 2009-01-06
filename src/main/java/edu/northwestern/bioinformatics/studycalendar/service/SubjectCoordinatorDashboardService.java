@@ -32,7 +32,7 @@ public class SubjectCoordinatorDashboardService {
     public Map<String, Object> getMapOfCurrentEvents(List<StudySubjectAssignment> studySubjectAssignments, int initialShiftDate) {
         Date startDate = new Date();
         Collection<ScheduledActivity> collectionOfEvents;
-        SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
+        Map<String, Object> mapOfUserAndCalendar = new LinkedHashMap<String, Object>();
 
         Map <String, Object> subjectAndEvents;
 
@@ -69,7 +69,7 @@ public class SubjectCoordinatorDashboardService {
         List<StudySubjectAssignment> studySubjectAssignments, int initialShiftDate, Map<ActivityType, Boolean> activities) {
         Date startDate = new Date();
         Collection<ScheduledActivity> collectionOfEvents;
-        SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
+        Map<String, Object> mapOfUserAndCalendar = new LinkedHashMap<String, Object>();
 
         Map <String, Object> subjectAndEvents;
 
