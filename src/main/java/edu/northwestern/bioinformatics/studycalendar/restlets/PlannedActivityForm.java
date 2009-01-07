@@ -72,7 +72,21 @@ public class PlannedActivityForm extends ValidatingForm {
         Population population = null;
         String populationAbbrev = FormParameters.POPULATION.extractFirstFrom(this);
         if (populationAbbrev != null) {
-            population = populationDao.getByAbbreviation(study, populationAbbrev);
+            if (study.isInAmendmentDevelopment() || study.isInDevelopment()){
+                Set<Population> populations = study.getChildren();
+                if (populations != null && !populations.isEmpty()) {
+                    for (Population p: study.getChildren()){
+                        if (p.getAbbreviation().equals(populationAbbrev)) {
+                            population = p;
+                            return population;
+                        }
+                    }
+                } else {
+                    population = null;
+                }
+            } else {
+                population = populationDao.getByAbbreviation(study, populationAbbrev);
+            }
             if (population == null) {
                 throw new ResourceException(
                     Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY, "Population not found");
@@ -80,7 +94,6 @@ public class PlannedActivityForm extends ValidatingForm {
         }
         return population;
     }
-
     private void addDescribedLabels(PlannedActivity target) {
         for (String serializedPaLabel : this.getValuesArray(FormParameters.LABEL.attributeName())) {
             if (!StringUtils.isBlank(serializedPaLabel)) {

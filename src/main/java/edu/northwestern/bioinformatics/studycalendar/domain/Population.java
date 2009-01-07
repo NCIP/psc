@@ -97,6 +97,21 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
         return getStudy();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Population)) return false;
+
+        Population that = (Population) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null)
+            return false;
+        if (abbreviation != null ? !abbreviation.equals(that.abbreviation) : that.abbreviation != null)
+            return false;
+        return true;
+    }
+
+
     @Transient
     public boolean isMemoryOnly() {
         return memoryOnly;
