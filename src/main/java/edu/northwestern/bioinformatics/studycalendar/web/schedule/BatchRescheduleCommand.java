@@ -35,7 +35,7 @@ public class BatchRescheduleCommand {
         for (ScheduledActivity event : events) {
             if (getNewMode() == null || (event.isValidNewState(newMode.getClazz()))
                     || ((newMode.getClazz().getName().equals(Canceled.class.getName())) && event.isValidNewState(NotApplicable.class))) {
-                  //cancel also changes status to NA for 
+                  //cancel also changes status to NA for
                 changeState(event);
             }
 
@@ -55,7 +55,10 @@ public class BatchRescheduleCommand {
         newState.setDate(createDate(event.getActualDate()));
 
         if (event.getCurrentState() instanceof Conditional && newState instanceof Canceled) {
-            event.changeState(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance());
+            ScheduledActivityState naState = ScheduledActivityMode.NOT_APPLICABLE.createStateInstance();
+            naState.setReason(createReason());
+            naState.setDate(createDate(event.getActualDate()));
+            event.changeState(naState);
         } else {
             event.changeState(newState);
         }
