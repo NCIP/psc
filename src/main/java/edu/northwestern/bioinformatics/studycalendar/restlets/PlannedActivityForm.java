@@ -79,11 +79,15 @@ public class PlannedActivityForm extends ValidatingForm {
         if (populationAbbrev != null) {
             if (study.isInAmendmentDevelopment() || study.isInDevelopment()){
                 Set<Population> populations = study.getChildren();
-                for (Iterator<Population> popIterator = populations.iterator(); popIterator.hasNext();) {
-                    population = popIterator.next();
-                    if (population.getAbbreviation().equals(populationAbbrev)) {
-                        return population;
+                if (populations != null && !populations.isEmpty()) {
+                    for (Population p: study.getChildren()){
+                        if (p.getAbbreviation().equals(populationAbbrev)) {
+                            population = p;
+                            return population;
+                        }
                     }
+                } else {
+                    population = null;
                 }
             } else {
                 population = populationDao.getByAbbreviation(study, populationAbbrev);

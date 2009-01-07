@@ -22,6 +22,9 @@ import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -41,6 +44,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         = Fixtures.DEFAULT_ACTIVITY_SOURCE.getName();
     private static final Integer DAY = 7;
     private static final Population POPULATION = Fixtures.createPopulation("T", "Tea");
+    private Set<Population> populations = new HashSet<Population>();
 
     private AmendedTemplateHelper helper;
     private AmendmentService amendmentService;
@@ -71,6 +75,9 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         StudySegment segment = epoch.getStudySegments().get(1);
         segment.setName(SEGMENT_NAME);
         assignIds(study);
+        populations.add(POPULATION);
+        study.setPopulations(populations);
+
 
         period = setId(PERIOD_ID, createPeriod("Z", 4, 8, 12));
         period.setGridId(PERIOD_GRID_ID);
@@ -164,7 +171,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectMinimumPostAttributes();
         expectFindActivity();
         expectRequestEntityFormAttribute("population", "T");
-        expect(populationDao.getByAbbreviation(revisedStudy, "T")).andReturn(POPULATION);
 
         PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
         expectedPlannedActivity.setPopulation(POPULATION);
@@ -178,9 +184,8 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     public void testAddPlannedActivityWithPopulationWhenPopulationDoesNotExist() throws Exception {
         expectPostMayProceed();
         expectMinimumPostAttributes();
-        expectRequestEntityFormAttribute("population", "T");
+        expectRequestEntityFormAttribute("population", "C");
         expectFindActivity();
-        expect(populationDao.getByAbbreviation(revisedStudy, "T")).andReturn(null);
 
         doPost();
 
