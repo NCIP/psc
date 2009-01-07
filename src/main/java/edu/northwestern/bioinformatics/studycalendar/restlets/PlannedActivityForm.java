@@ -13,9 +13,13 @@ import org.apache.commons.lang.StringUtils;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
