@@ -52,7 +52,7 @@
         <div class="row">
             <div class="label"><form:label path="population.abbreviation">Abbreviation</form:label></div>
             <div class="value">
-                <form:input path="population.abbreviation" size="6"/>&nbsp;<a id="suggest-control" class="control" href="<c:url value="/pages/cal/template/population/suggest?study=${command.population.study.id}"/>">Suggest</a>&nbsp;<tags:activityIndicator id="suggest-indicator"/>
+                <form:input path="population.abbreviation" size="6"/>&nbsp;<a id="suggest-control" class="control" href="<c:url value="/pages/cal/template/population/suggest?study=${command.study.id}"/>">Suggest</a>&nbsp;<tags:activityIndicator id="suggest-indicator"/>
                 <p class="tip">
                     The abbreviation can be up to 5 characters long, but 1 or 2 is best.
                     It can't be one that's already used for another population in this study.
