@@ -215,6 +215,7 @@
             data = data+"sourceId"+"="+sourceId+"&";
             var href = '<c:url value="/pages/activities/saveActivity"/>'
             href= href+"?"+data
+            if($(inputName).value !="" && $(inputCode).value !="") {
             var saveRequest = new Ajax.Request(href,
             {
                 method: 'post',
@@ -237,7 +238,7 @@
 
                     var editButton = 'Edit'+activityId
                     $(editButton).style.display="inline"
-                    
+                    $('errors').innerHTML = "";
                     var saveButton = 'Save'+activityId
                     $(saveButton).style.display="none"
                 } ,
@@ -245,6 +246,10 @@
                     displayErrorOnFailure(response, indicator)
                 }
             });
+            }
+            else {
+            $('errors').innerHTML = "Activity name or code can not be empty";
+            }
             indicator.conceal()
         }
 

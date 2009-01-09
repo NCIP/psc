@@ -28,13 +28,40 @@
             float:right;
         }
     </style>
+    <script type="text/javascript">
+        function updateActivityError() {
+            if (isCorrectInput()){
+               $('activityError').innerHTML = "";
+            }
+        }
+        function isCorrectInput() {
+            var activityName = $('activity.name').value;
+            var activityCode = $('activity.code').value;
+            var isCorrectData = true;
+            if (activityCode == "" || activityName =="") {
+               isCorrectData  = false;
+               $('activityError').innerHTML = "Activity name or code can not be empty.";
+            }
+            return isCorrectData;
+        }
+        <c:if test="${not empty activity}">
+            $(document).observe("dom:loaded", function() {
+                $('activity-form').observe("submit", function(fn) {
+                    if (!isCorrectInput()) {
+                        Event.stop(fn);
+                    }
+                })
+            })
+        </c:if>
+    </script>
   </head>
 <body>
 <laf:box title="${action} Activity">
     <laf:division>
-           <form:form>
+           <form:form id="activity-form">
             <div style="height:10px;padding-bottom:20px; width:40em; color:red;">
                 <form:errors path="*"/>
+                <h5 id="activityError"></h5>
             </div>
             <div class="row">
                 <div class="label"><form:label path="activity.name">Activity Name</form:label></div>
