@@ -50,9 +50,16 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(requestedObject);
+        } else if (variant.getMediaType() == MediaType.TEXT_CALENDAR) {
+            return createCalendarRepresentation(requestedObject);
         } else {
             return null;
         }
+    }
+
+    protected Representation createCalendarRepresentation(D object) {
+        return null;
+
     }
 
     protected Representation createXmlRepresentation(D object) {

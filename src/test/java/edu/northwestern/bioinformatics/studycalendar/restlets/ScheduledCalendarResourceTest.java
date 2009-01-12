@@ -2,15 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
@@ -82,6 +77,17 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertResponseIsCreatedXml();
     }
 
+    public void testGetICSCalendarForScheduledStudies() throws IOException {
+        expectResolvedSubjectAssignment();
+        request.setResourceRef(String.format("%s/studies/%s/schedules/%s.ics", ROOT_URI, STUDY_IDENTIFIER_ENCODED, ASSIGNMENT_IDENTIFIER));
+        request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName() + ".ics", ASSIGNMENT_IDENTIFIER);
+
+        doGet();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertEquals("Result is not right content type", MediaType.TEXT_CALENDAR, response.getEntity().getMediaType());
+    }
+
     public void testGetAllowedOnlyForSubjectCoordinator() {
         assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
     }
@@ -102,7 +108,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
 
         expectResolvedSubjectAssignment();
         expectReadXmlFromRequestAs(nextSgmtSchdScheduled);
-        expect(subjectService.scheduleStudySegment(assigment, nextSgmtSchdScheduled.getStudySegment(), nextSgmtSchdScheduled.getStartDate(), nextSgmtSchdScheduled.getMode() ))
+        expect(subjectService.scheduleStudySegment(assigment, nextSgmtSchdScheduled.getStudySegment(), nextSgmtSchdScheduled.getStartDate(), nextSgmtSchdScheduled.getMode()))
                 .andReturn(schSegment);
         expectObjectXmlized(schSegment);
         doPost();
@@ -135,7 +141,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         expect(nextScheduledStudySegmentSerializer.readDocument(in)).andReturn(expectedRead);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     protected void expectObjectXmlized(ScheduledStudySegment schdSegment) {
         expect(scheduledSegmentSerializer.createDocumentString(schdSegment)).andReturn(MOCK_XML);
     }

@@ -1,26 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
+import org.apache.commons.lang.StringUtils;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
@@ -40,10 +34,18 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
+        if (isICSRequest(request)) {
+            getVariants().clear();
+            getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
+        }
+
     }
 
+
     @Override
-    public boolean allowPost() { return true; }
+    public boolean allowPost() {
+        return true;
+    }
 
     @Override
     protected ScheduledCalendar loadRequestedObject(Request request) {
@@ -51,7 +53,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         Study study = studyDao.getByAssignedIdentifier(studyIdent);
         if (study == null) return null;
 
-        String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
+        String assignmentId = findAssignmentId(request);
         StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
         if (assignment == null) {
             assignment = studySubjectAssignmentDao.getByStudySubjectIdentifier(study, assignmentId);
@@ -62,6 +64,35 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         return null;
     }
 
+    private boolean isICSRequest(Request request) {
+        return StringUtils.contains(request.getResourceRef().getPath(), ".ics");
+    }
+
+    /**
+     * Finds grid id in request.
+     *
+     * @param request the request
+     */
+    private String findAssignmentId(final Request request) {
+        // the grid Id should be in following form "/%s/studies/%s/schedules/[assignment-grid-id].ics"
+
+        String pathInfo = request.getResourceRef().getPath();
+        if (!isICSRequest(request)) {
+            return UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
+        }
+        int beginIndex = pathInfo.indexOf("schedules/");
+
+        int endIndex = pathInfo.indexOf(".ics");
+
+        return pathInfo.substring(beginIndex + 10, endIndex);
+    }
+
+    @Override
+    protected Representation createCalendarRepresentation(ScheduledCalendar scheduledCalendar) {
+        StudySubjectAssignment studySubjectAssignment = scheduledCalendar.getAssignment();
+        Representation representation = ICSRepresentation.create(studySubjectAssignment);
+        return representation;
+    }
 
     public void acceptRepresentation(final Representation entity) throws ResourceException {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
@@ -95,7 +126,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     ////// Bean setters
-    
+
     @Required
     public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
         this.studySubjectAssignmentDao = studySubjectAssignmentDao;
