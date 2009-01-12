@@ -6,16 +6,22 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.ACTIVITY_VALIDATOR_INSTANCE;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
+import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.Errors;
+import static org.springframework.validation.ValidationUtils.invokeValidator;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  */
-public class EditPopulationCommand {
+public class EditPopulationCommand implements Validatable {
     private Population population;
     private Population originalPopulation;
 
@@ -85,5 +91,12 @@ public class EditPopulationCommand {
 
     public void setStudy(Study study) {
         this.study = study;
+    }
+
+    public void validate(Errors errors) {
+        if (population != null && population.getAbbreviation().contains(" ")) {
+            errors.reject("error.population.contains.spaces");
+            return;
+        }
     }
 }

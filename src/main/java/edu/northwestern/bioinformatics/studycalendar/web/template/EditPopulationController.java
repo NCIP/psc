@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,7 @@ public class EditPopulationController extends PscSimpleFormController {
     private DeltaService deltaService;
 
     protected EditPopulationController() {
+        setValidator(new ValidatableValidator());
         setFormView("template/population");
         setCrumb(new Crumb());
     }

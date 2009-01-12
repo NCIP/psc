@@ -55,6 +55,7 @@
                 <form:input path="population.abbreviation" maxlength="5" size="6"/>&nbsp;<a id="suggest-control" class="control" href="<c:url value="/pages/cal/template/population/suggest?study=${command.study.id}"/>">Suggest</a>&nbsp;<tags:activityIndicator id="suggest-indicator"/>
                 <p class="tip">
                     The abbreviation can be up to 5 characters long, but 1 or 2 is best.
+                    Space is illegal character for abbreviation.
                     It can't be one that's already used for another population in this study.
                     If you don't specify an abbreviation, PSC will assign one for you.
                     (The one it assigns will be the same as the one you get by pressing
