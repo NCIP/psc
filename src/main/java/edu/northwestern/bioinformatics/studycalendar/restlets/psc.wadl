@@ -367,8 +367,8 @@
                         <response>
                             <param style="header" name="Location">
                                 <doc>
-                                    If successful, the response will be a 303 redirect to the
-                                    newly generated schedule for the subject.
+                                    If successful, the response will be HTTP 201, plus a Location
+                                    header pointing to the newly generated schedule for the subject.
                                 </doc>
                             </param>
                         </response>
