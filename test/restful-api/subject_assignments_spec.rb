@@ -36,12 +36,12 @@ describe "/subject_assignments" do
     end
 
     it "forbids access to a subject assignment to an unauthorized user" do
-      get "/studies/NU480/sites/site1/subject-assignments", :as => :carla
+      get "/studies/NU480/sites/PA015/subject-assignments", :as => :carla
       response.status_code.should == 403
     end
     
     it "allows access to an existing subject assignment to an authorized user" do
-      get "/studies/NU480/sites/site1/subject-assignments", :as => :erin
+      get "/studies/NU480/sites/PA015/subject-assignments", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -66,6 +66,7 @@ describe "/subject_assignments" do
     end
     
     it "does not allow the study coordinator to assign patients when the template has not been made available" do
+      pending
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       puts response.entity
       response.status_code.should == 403
@@ -76,6 +77,7 @@ describe "/subject_assignments" do
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       response.status_code.should == 201
       response.status_message.should == "Created"
+      response.meta['location'].should =~ %r(studies/NU480/schedules/[^/]+)
     end
   end
           

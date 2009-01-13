@@ -59,7 +59,8 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request");
             } else {
                 final String target = store(read);
-                getResponse().redirectSeeOther(
+                getResponse().setStatus(Status.SUCCESS_CREATED);
+                getResponse().setLocationRef(
                         new Reference(
                                 new Reference(getRequest().getRootRef().toString() + '/'), target));
             }

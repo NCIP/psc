@@ -76,6 +76,7 @@ describe "/schedule" do
       #xml request to add the study-segment next schedule
       @next_assignment1_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27", 
       'study-segment-id' => "segment2", 'mode' => "immediate")     
+      @hibernate.interrupt_session
     end
         
     it "allows scheduling a new study segment for an authorized user" do
