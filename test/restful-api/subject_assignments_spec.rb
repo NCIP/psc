@@ -7,59 +7,41 @@ describe "/subject_assignments" do
   #   but encounter Hibernate lazy initialization issue
   
   before do
-    #create site
-    @site1 = PscTest::Fixtures.createSite("My Site", "site1")
-    application_context['siteDao'].save( @site1)
-    
     #create a study with an amendment
-    @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String)) 
-    @amend_date1 = PscTest.createDate(2008, 12, 10)          
-    @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1)
-    @study1.planned_calendar.epochs.first.study_segments[0].grid_id = "segment1" #replace auto-generated study-segment id
-    @study1.planned_calendar.epochs.first.study_segments[1].grid_id = "segment2"
-    @study1.amendment = @amendment
-    application_context['studyService'].save(@study1)
+    @nu480 = PscTest::Fixtures.createBasicTemplate("NU480")
+    (@treatmentA, @treatmentB) = [*@nu480.planned_calendar.epochs.first.study_segments]
+    @treatmentA.grid_id = "segment1" # replace auto-generated study-segment id
+    @treatmentB.grid_id = "segment2"
+    application_context['studyService'].save(@nu480)
 
-    #create a studysite       
-    @studySite1 = PscTest::Fixtures.createStudySite(@study1, @site1)
-    application_context['studySiteDao'].save(@studySite1)
-                  
+    # Make template available to Pittsburgh
+    @nu480_at_pitt = PscTest::Fixtures.createStudySite(@nu480, pittsburgh)
+    @nu480_at_pitt.approveAmendment(@nu480.amendment, PscTest.createDate(2008, 12, 31))
+    application_context['studySiteDao'].save(@nu480_at_pitt)
   end
   
   describe "GET" do
-     
-     before do
-       #approve an existing amendment
-       @approve_date = PscTest.createDate(2008, 12, 31)
-       @studySite1.approveAmendment(@amendment, @approve_date)
-       application_context['studySiteDao'].save(@studySite1)
-              
-       #create subject              
-       @birthDate = PscTest.createDate(1983, 3, 23)           
-       @subject1 = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", @birthDate)         
-       @studySegment1 = @study1.plannedCalendar.epochs.first.studySegments.first
-       @date = PscTest.createDate(2008, 12, 26)   
+    before do
+      # create subject              
+      @alan = PscTest::Fixtures.createSubject("ID001", "Alan", "Boyarski", PscTest.createDate(1983, 3, 23))
+      @bob = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", PscTest.createDate(1985, 5, 1))         
 
-       #create a study subject assignment
-       @studySubjectAssignment1 = application_context['subjectService'].assignSubject(@subject1, @studySite1, @studySegment1, @date, "ID001", erin)
-       application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment1)
+      # register alan
+      application_context['subjectService'].assignSubject(
+        @alan, @nu480_at_pitt, @treatmentA, PscTest.createDate(2008, 12, 26), "ID001", erin)
        
-       #create another subject under the same study
-       @birthDate2 = PscTest.createDate(1985, 5, 1)           
-       @subject2 = PscTest::Fixtures.createSubject("ID002", "Bob", "Boyarski", @birthDate2)         
-       @studySubjectAssignment2 = application_context['subjectService'].assignSubject(@subject2, @studySite1, @studySegment1, @date, "ID002", erin)
-       application_context['studySubjectAssignmentDao'].save( @studySubjectAssignment2)       
-     end
-     
-     
+      # register bob
+      application_context['subjectService'].assignSubject(
+        @bob, @nu480_at_pitt, @treatmentB, PscTest.createDate(2008, 1, 13), "ID002", erin)
+    end
+
     it "forbids access to a subject assignment to an unauthorized user" do
-      get "/studies/NU480/sites/site1/subject-assignments", :as => nil
-      response.status_code.should == 401
+      get "/studies/NU480/sites/site1/subject-assignments", :as => :carla
+      response.status_code.should == 403
     end
     
     it "allows access to an existing subject assignment to an authorized user" do
       get "/studies/NU480/sites/site1/subject-assignments", :as => :erin
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -69,35 +51,32 @@ describe "/subject_assignments" do
       response.xml_attributes("subject", "person-id").should include("ID002")
       response.xml_elements('//subject').should have(2).elements          
     end
-
   end
   
-  
   describe "POST" do
-      
-      before do
-        #approve an existing amendment
-        @approve_date = PscTest.createDate(2008, 12, 31)
-        @studySite1.approveAmendment(@amendment, @approve_date)
-        application_context['studySiteDao'].save(@studySite1)
-                
-        @subject_registration1_xml = psc_xml("registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27", 
-        'subject-coordinator-name' => "juno"){|subject| subject.tag!('subject', 'first-name' => "Andre", 'last-name' => "Suzuki", 
-          'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")}   
-      end
-      
-      it "allows creation of a new subject-assignment for an authorized user" do
-        pending
-        post "/studies/NU480/sites/site1/subject-assignments", @subject_registration1_xml, :as => :juno
-        puts response.entity
-        response.status_code.should == 201
-        response.status_message.should == "Created"
-        response.content_type.should == 'text/xml'
-        
-      end
-      
-      
-       
+    before do
+      @subject_registration_xml = psc_xml(
+        "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
+        'subject-coordinator-name' => "juno"
+      ) { |subject|
+        subject.tag!('subject',
+            'first-name' => "Andre", 'last-name' => "Suzuki",
+            'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")
+      }
+    end
+    
+    it "does not allow the study coordinator to assign patients when the template has not been made available" do
+      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      puts response.entity
+      response.status_code.should == 403
+    end
+    
+    it "allows creation of a new subject-assignment for an authorized user" do
+      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
+      post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
+      response.status_code.should == 201
+      response.status_message.should == "Created"
+    end
   end
           
 end
