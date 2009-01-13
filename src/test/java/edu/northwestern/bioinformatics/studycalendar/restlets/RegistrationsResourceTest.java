@@ -151,7 +151,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         doPost();
 
-        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
     }
@@ -174,7 +174,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         doPost();
 
-        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
     }

@@ -68,7 +68,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
                 log.debug("POST failed due to validation problem", scue);
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scue.getMessage(), scue);
             }
-            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
+            getResponse().setStatus(Status.SUCCESS_CREATED);
             getResponse().setLocationRef(String.format(
                 "studies/%s/template", Reference.encode(read.getAssignedIdentifier())));
         } else {

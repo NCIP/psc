@@ -71,7 +71,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         expectCreateOrUpdateSite(site);
         doPost();
 
-        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/3",
                 response.getLocationRef().getTargetRef().toString());
     }
@@ -89,7 +89,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         expectCreateOrUpdateSite(site);
         doPost();
 
-        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/null",
                 response.getLocationRef().getTargetRef().toString());
     }

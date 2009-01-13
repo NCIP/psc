@@ -5,16 +5,17 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.SITE_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
@@ -109,9 +110,14 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
             } else {
                 String target = acceptValue(value);
                 // TODO: the URL construction here seems bogus -- see if there's another way
+                /*
                 getResponse().redirectSeeOther(
                         new Reference(
                                 new Reference(getRequest().getRootRef().toString() + '/'), target));
+                 */
+                getResponse().setStatus(Status.SUCCESS_CREATED);
+                getResponse().setLocationRef(new Reference(
+                    new Reference(getRequest().getRootRef().toString() + '/'), target));
             }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
