@@ -16,6 +16,37 @@ module PscTest
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
   end
   
+  class HibernateOpenSession
+    def initialize
+      mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new
+      @web_request = Java::OrgSpringframeworkWebContextRequest::ServletWebRequest.new(mock_request)
+      @flush = true
+    end
+    
+    def begin_session
+      open_session_interceptors.each { |interceptor| interceptor.preHandle(@web_request) }
+    end
+    
+    def interrupt_session
+      end_session
+      begin_session
+    end
+    
+    def end_session
+      open_session_interceptors.reverse.each { |interceptor|
+        if @flush
+          interceptor.postHandle(@web_request, nil)
+        end
+        interceptor.afterCompletion(@web_request, nil)
+      }
+    end
+  
+    def open_session_interceptors
+      %w(auditOpenSessionInViewInterceptor openSessionInViewInterceptor).collect do |bean_name|
+        application_context[bean_name]
+      end
+    end
+  end
 end
 
 def application_context
@@ -46,9 +77,12 @@ end
 Spec::Runner.configure do |config|
   config.before(:each) do
     application_context['databaseInitializer'].beforeEach
+    @hibernate = PscTest::HibernateOpenSession.new
+    @hibernate.begin_session
   end
 
   config.after(:each) do
+    @hibernate.end_session
     application_context['databaseInitializer'].afterEach
   end
 end

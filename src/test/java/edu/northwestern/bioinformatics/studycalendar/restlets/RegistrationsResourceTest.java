@@ -138,7 +138,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     public void testPostAddsAssignment() throws Exception {
         Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
-        Subject expectedSubject = new Subject();
+        Subject expectedSubject = setId(4, new Subject());
         String expectedAssignmentId = "DC";
         Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
         posted.setSubjectCoordinator(new User());
@@ -159,7 +159,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     public void testPostAddsAssignmentWithoutSubjectCoordinator() throws Exception {
         Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
-        Subject expectedSubject = new Subject();
+        Subject expectedSubject = setId(7, new Subject());
         String expectedAssignmentId = "DC";
         Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
         User subjCoord = createNamedInstance("Subject Coord", User.class);

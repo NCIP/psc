@@ -25,7 +25,6 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     private SubjectDao subjectDao;
     private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer;
 
-
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
@@ -45,16 +44,14 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
             Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
             value.setSubjectCoordinator((User) auth.getPrincipal());
         }
-        if(subjectDao.getAssignment(value.getSubject(),getStudy(),getSite())== null) {
-
-        StudySubjectAssignment assigned = subjectService.assignSubject(
-            value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-            value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
-        return String.format("studies/%s/schedules/%s",
-            Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
-            Reference.encode(assigned.getGridId()));
-        }
-        else {
+        if (value.getSubject().getId() == null || subjectDao.getAssignment(value.getSubject(), getStudy(), getSite()) == null) {
+            StudySubjectAssignment assigned = subjectService.assignSubject(
+                value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
+                value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
+            return String.format("studies/%s/schedules/%s",
+                Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
+                Reference.encode(assigned.getGridId()));
+        } else {
             String message = String.format("Subject %s already assigned to the study %s",
                     value.getSubject().getPersonId(), getStudy().getAssignedIdentifier());
             log.error(message);
