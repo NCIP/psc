@@ -172,9 +172,4 @@ $(document).observe("dom:loaded", function() {
   $$(".notes-edit").each(function(button) { button.observe("click", SC.MP.clickEditButton) })
   $('notes-preview').observe("click", SC.MP.clickNotesPreview)
   $('edit-notes-done').observe('click', SC.MP.finishEditingNotes)
-  $$('#edit-notes-lightbox input').each(function(elt) {
-    elt.observe('keyup', function(evt) {
-      if (evt.keyCode == Event.KEY_RETURN) { SC.MP.finishEditingNotes(evt) }
-    })
-  })
 })

@@ -11,6 +11,7 @@
     <tags:javascriptLink name="manage-period/activity-notes" />
     <tags:javascriptLink name="manage-period/reindex" />
     <tags:javascriptLink name="manage-period/server" />
+    <tags:javascriptLink name="manage-period/pa-labels" />
     <tags:javascriptLink name="resig-templates" />
 
     <tags:resigTemplate id="new_activity_row_template">
@@ -79,6 +80,11 @@
                 (<span class="activity-code">[#= code #]</span>)
                 <span class="activity-source">[#= source #]</span>
             </span>
+        </li>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_palabel_autocompleter">
+        <li>
+            <span class="label-name">[#= label #]</span>
         </li>
     </tags:resigTemplate>
 
@@ -421,8 +427,10 @@
             </div>
             <div class="value">
                 <!--<input type="text" class="text" id="edit-notes-labels" hint="No labels" />-->
-                <input id="edit-notes-labels" class="text" type="text" hint="No labels" autocomplete="off" />
-                <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"/>
+                <input id="edit-notes-labels" class="autocomplete" type="text" hint="No labels" autocomplete="off" />
+                <div style="position: relative">
+                    <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"/>
+                </div>
             </div>
         </div>
         <div class="row">
