@@ -8,7 +8,10 @@
 
     <bean name="apiApplication" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscApplication">
         <property name="root" ref="guard"/>
+        <property name="metadataService" ref="metadataService"/>
     </bean>
+
+    <bean id="metadataService" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService"/>
 
     <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
         <property name="except" value="docs.*"/>
@@ -60,7 +63,7 @@
 
     <bean id="amendedTemplateHelper" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendedTemplateHelper"/>
-    
+
     <bean name="/studies/{study-identifier}/template/{amendment-identifier}"
           id="amendedTemplateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendedTemplateResource">

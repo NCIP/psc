@@ -32,6 +32,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         setReadable(true);
         setModifiable(false);
         getVariants().add(new Variant(MediaType.TEXT_XML));
+        getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
 
         requestedObject = loadRequestedObject(request);
         setAvailable(requestedObject != null);

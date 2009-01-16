@@ -33,9 +33,9 @@ public class ICSRepresentationTest extends TestCase {
 
     }
 
-    public void testCreate() {
-        representation = ICSRepresentation.create(studySubjectAssignment);
-        assertNotNull("representation not be null", representation);
+    public void testConstructor() {
+        representation = new ICSRepresentation(studySubjectAssignment);
+        assertNotNull("representation must not be null", representation);
         assertEquals("Result is not right content type", MediaType.TEXT_CALENDAR, representation.getMediaType());
         assertEquals("file name is not correct", "lastName-firstName-test-study.ics", representation.getDownloadName());
         assertTrue("content must be Downloadable", representation.isDownloadable());

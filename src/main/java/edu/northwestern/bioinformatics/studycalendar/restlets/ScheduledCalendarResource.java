@@ -14,7 +14,6 @@ import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
@@ -34,10 +33,6 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
-        if (isICSRequest(request)) {
-            getVariants().clear();
-            getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
-        }
 
     }
 
@@ -90,7 +85,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Override
     protected Representation createCalendarRepresentation(ScheduledCalendar scheduledCalendar) {
         StudySubjectAssignment studySubjectAssignment = scheduledCalendar.getAssignment();
-        Representation representation = ICSRepresentation.create(studySubjectAssignment);
+        Representation representation = new ICSRepresentation(studySubjectAssignment);
         return representation;
     }
 

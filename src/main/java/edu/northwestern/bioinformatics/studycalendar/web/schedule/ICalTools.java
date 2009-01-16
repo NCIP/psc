@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.*;
@@ -11,6 +13,8 @@ import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.net.SocketException;
 import java.util.Date;
 import java.util.List;
@@ -65,6 +69,33 @@ public class ICalTools {
         return icsCalendar;
     }
 
+
+    public static String create(final StudySubjectAssignment studySubjectAssignment) {
+
+        Calendar icsCalendar = generateICSCalendar(studySubjectAssignment);
+
+        try {
+            final CalendarOutputter output = new CalendarOutputter();
+            output.setValidating(false);
+            StringWriter icsCalendarWritter = new StringWriter();
+            output.output(icsCalendar, icsCalendarWritter);
+            icsCalendarWritter.close();
+
+            return icsCalendarWritter.toString();
+
+
+        } catch (IOException e) {
+            logger.error("error while creating ics calendar for assignment:" + studySubjectAssignment.getGridId() + ". Error is:" + e.toString());
+            throw new StudyCalendarSystemException(e);
+
+        } catch (ValidationException e) {
+            logger.error("error while creating ics calendar for assignment:" + studySubjectAssignment.getGridId() + ". Error is:" + e.toString());
+            throw new StudyCalendarSystemException(e);
+
+        }
+
+
+    }
 
     /**
      * Generate ICS file name as lastname_firstname_studyprotocolauthorityid

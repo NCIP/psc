@@ -25,7 +25,9 @@
     <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerSecureUrlCreator"
           lazy-init="true">
         <property name="filterInvocationInterceptor" ref="filterInvocationInterceptor"/>
-        <property name="urlResolver"><ref local="urlResolver"/></property>
+        <property name="urlResolver">
+            <ref local="urlResolver"/>
+        </property>
     </bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -65,7 +67,9 @@
 
     <bean name="/cal/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
-        <property name="crumb.parent"><ref local="studyListController"/></property>
+        <property name="crumb.parent">
+            <ref local="studyListController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
@@ -101,7 +105,9 @@
 
     <bean name="/cal/managePeriodActivities" id="managePeriodActivitiesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.period.ManagePeriodActivitiesController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/edit.js" id="editJsController"
@@ -145,11 +151,13 @@
     <bean name="/activities/importActivities" id="importActivitiesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
         <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name" value="Import activities"/>
-                 <property name="parent"><ref local="activityController"/></property>
-             </bean>
-         </property>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Import activities"/>
+                <property name="parent">
+                    <ref local="activityController"/>
+                </property>
+            </bean>
+        </property>
     </bean>
 
 
@@ -180,12 +188,12 @@
     </bean>
 
     <bean name="/advancedEditActivity" id="advancedEditActivityController" autowire="byName"
-                class="edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityController">
-      <property name="crumb">
+          class="edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityController">
+        <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Activities/Advanced Edit Activity"/>
             </bean>
-      </property>
+        </property>
     </bean>
 
     <bean name="/dashboard" id="dashboardController" autowire="byName"
@@ -202,7 +210,9 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Subject coordinator"/>
-                <property name="parent"><ref local="dashboardController"/></property>
+                <property name="parent">
+                    <ref local="dashboardController"/>
+                </property>
             </bean>
         </property>
     </bean>
@@ -214,7 +224,9 @@
 
     <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
-        <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
+        <property name="crumb.parent">
+            <ref local="dashboardSubjectCoordinatorController"/>
+        </property>
     </bean>
 
     <bean name="/dashboard/studyCoordinator" id="dashboardStudyCoordinatorController" autowire="byName"
@@ -271,12 +283,16 @@
 
     <bean name="/cal/newPeriod" id="newPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/editPeriod" id="editPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPeriodController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/deletePeriod" id="deletePeriodController" autowire="byName"
@@ -285,16 +301,18 @@
 
     <bean name="/cal/template/deleteDevelopmentAmendment" id="deleteStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteDevelopmentAmendmentController">
-        <property name="crumb.parent"><ref local="studyListController"/></property>
+        <property name="crumb.parent">
+            <ref local="studyListController"/>
+        </property>
     </bean>
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
-       <property name="crumb">
+        <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Activities/New Activity"/>
             </bean>
-      </property>
+        </property>
     </bean>
 
     <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
@@ -302,41 +320,55 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="New Subject"/>
-                <property name="parent"><ref local="studyListController"/></property>
+                <property name="parent">
+                    <ref local="studyListController"/>
+                </property>
             </bean>
         </property>
     </bean>
 
     <bean name="/cal/assignSubject" id="assignSubjectController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignSubjectController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/release" id="releaseAmendmentController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ReleaseAmendmentController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/approve" id="approveAmendmentController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.delta.ApproveAmendmentsController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/amendments" id="viewAmendmentsController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.delta.ViewAmendmentsController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/cal/template/population" id="editPopulationController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPopulationController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
     <bean name="/cal/template/population/suggest" id="suggestPopulationAbbreviationController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SuggestPopulationAbbreviationController"/>
 
     <bean name="/cal/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
-        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
     <bean name="/cal/schedule/select" id="selectScheduledStudySegmentController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
@@ -353,24 +385,28 @@
 
     <bean name="/cal/schedule/amend" id="changeAmendmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangeAmendmentController">
-        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayScheduleController"/>
+        </property>
     </bean>
 
     <bean name="/cal/schedule/populations" id="changePopulationsController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangePopulationsController">
-        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayScheduleController"/>
+        </property>
     </bean>
 
     <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">
     </bean>
 
-    <bean name="/cal/schedule/display/*.ics" id="displayICSCalendarController" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayICSCalendarController"/>
 
     <bean name="/cal/scheduleActivity" id="scheduleActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleActivityController">
-        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayScheduleController"/>
+        </property>
     </bean>
 
     <bean name="/cal/assignSite" id="assignSiteController" autowire="byName"
@@ -378,7 +414,9 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Assign Site"/>
-                <property name="parent"><ref local="displayTemplateController"/></property>
+                <property name="parent">
+                    <ref local="displayTemplateController"/>
+                </property>
             </bean>
         </property>
     </bean>
@@ -388,23 +426,27 @@
 
     <bean name="/cal/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
-           <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name" value="Schedule Reconsent"/>
-                 <property name="parent"><ref local="studyListController"/></property>
-             </bean>
-         </property>
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Schedule Reconsent"/>
+                <property name="parent">
+                    <ref local="studyListController"/>
+                </property>
+            </bean>
+        </property>
     </bean>
 
 
     <bean name="/cal/amendment" id="amendmentLoginController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.delta.CreateAmendmentController">
-           <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name" value="Amendment"/>
-                 <property name="parent"><ref local="studyListController"/></property>
-             </bean>
-         </property>
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Amendment"/>
+                <property name="parent">
+                    <ref local="studyListController"/>
+                </property>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/admin" id="administrationController" autowire="byType"
@@ -417,7 +459,9 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Configuration"/>
-                <property name="parent"><ref local="administrationController"/></property>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
             </bean>
         </property>
     </bean>
@@ -441,29 +485,36 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Authentication configuration"/>
-                <property name="parent"><ref local="administrationController"/></property>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
             </bean>
         </property>
     </bean>
 
     <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-        <property name="crumb.parent"><ref local="listUsersController"/></property>
+        <property name="crumb.parent">
+            <ref local="listUsersController"/>
+        </property>
     </bean>
     <bean name="/admin/manage/editUser" id="editUserController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-        <property name="crumb.parent"><ref local="listUsersController"/>
+        <property name="crumb.parent">
+            <ref local="listUsersController"/>
         </property>
     </bean>
 
     <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
-           <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name" value="List Users"/>
-                 <property name="parent"><ref local="administrationController"/></property>
-             </bean>
-         </property>
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="List Users"/>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/admin/manage/sites" id="manageSitesController" autowire="byName"
@@ -471,7 +522,9 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Manage sites"/>
-                <property name="parent"><ref local="administrationController"/></property>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
             </bean>
         </property>
     </bean>
@@ -481,7 +534,9 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Edit site"/>
-                <property name="parent"><ref local="manageSitesController"/></property>
+                <property name="parent">
+                    <ref local="manageSitesController"/>
+                </property>
             </bean>
         </property>
     </bean>
@@ -495,10 +550,12 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Manage Holidays"/>
-                <property name="parent"><ref local="manageSitesController"/></property>
+                <property name="parent">
+                    <ref local="manageSitesController"/>
+                </property>
             </bean>
         </property>
-     </bean>
+    </bean>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages"/>
@@ -506,7 +563,9 @@
 
     <bean name="/cal/takeSubjectOffStudy" id="subjectOffStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.SubjectOffStudyController">
-         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+        <property name="crumb.parent">
+            <ref local="displayScheduleController"/>
+        </property>
     </bean>
 
     <!--<bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"-->
@@ -668,5 +727,5 @@
             </list>
 
         </property>
-</bean>
+    </bean>
 </beans>

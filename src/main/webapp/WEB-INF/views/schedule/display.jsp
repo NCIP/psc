@@ -1,328 +1,335 @@
-
 <%@page pageEncoding="utf8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html>
 <head>
-    <title>Subject Schedule</title>
-    <tags:includeScriptaculous/>
-    <tags:stylesheetLink name="main"/>
-    <tags:sassLink name="schedule"/>
-    <tags:javascriptLink name="main"/>
-    <tags:javascriptLink name="scheduled-activity"/>
-    <tags:javascriptLink name="scheduled-activity-batch"/>
-    <style type="text/css">
-        .epochs-and-studySegments, #next-studySegment-form {
-            margin: 1em;
-        }
+<title>Subject Schedule</title>
+<tags:includeScriptaculous/>
+<tags:stylesheetLink name="main"/>
+<tags:sassLink name="schedule"/>
+<tags:javascriptLink name="main"/>
+<tags:javascriptLink name="scheduled-activity"/>
+<tags:javascriptLink name="scheduled-activity-batch"/>
+<style type="text/css">
+    .epochs-and-studySegments, #next-studySegment-form {
+        margin: 1em;
+    }
 
-        .epochs-and-studySegments {
-            margin-top: 0;
-            width: 75%;
-        }
+    .epochs-and-studySegments {
+        margin-top: 0;
+        width: 75%;
+    }
 
-        #epochs-indicator {
-            display: none;
-        }
+    #epochs-indicator {
+        display: none;
+    }
 
-        .collapsible h2 {
-            cursor: pointer;
-        }
+    .collapsible h2 {
+        cursor: pointer;
+    }
 
-        .collapsible h2 .collapse-icon {
-            font-size:.8em;
-        }
+    .collapsible h2 .collapse-icon {
+        font-size: .8em;
+    }
 
+    #next-studySegment-form {
+        margin-top: 0;
+        float: right;
+        width: 20%;
+        padding: 4px;
+        border: 1px solid #666;
+    }
 
-        #next-studySegment-form {
-            margin-top: 0;
-            float: right;
-            width: 20%;
-            padding: 4px;
-            border: 1px solid #666;
-        }
+    #next-studySegment-form .row .label {
+        width: 35%;
+        color: #666;
+    }
 
-        #next-studySegment-form .row .label {
-            width: 35%;
-            color: #666;
-        }
+    #next-studySegment-form .row .value {
+        margin-left: 40%;
+    }
 
-        #next-studySegment-form .row .value {
-            margin-left: 40%;
-        }
+    #mode-row label {
+        display: block;
+    }
 
-        #mode-row label {
-            display: block;
-        }
+    #batch-reschedule form {
+        font-size: 0.8em;
+        margin: 1em;
+    }
 
-        #batch-reschedule form {
-            font-size: 0.8em;
-            margin: 1em;
-        }
+    #scheduled-studySegments ul {
+        white-space: nowrap;
+        padding: 0;
+        margin: 0.5em 0;
+    }
 
-        #scheduled-studySegments ul {
-            white-space: nowrap;
-            padding: 0;
-            margin: 0.5em 0;
-        }
+    #scheduled-studySegments ul li {
+        display: inline;
+        padding: 0.2em 0.5em;
+        margin: 0 0.3em;
+        border: 1px solid #aaa;
+        white-space: nowrap;
+    }
 
-        #scheduled-studySegments ul li {
-            display: inline;
-            padding: 0.2em 0.5em;
-            margin: 0 0.3em;
-            border: 1px solid #aaa;
-            white-space: nowrap;
-        }
+    #scheduled-studySegments #scheduled-studySegments-indicator-item {
+        border-color: white;
+    }
 
-        #scheduled-studySegments #scheduled-studySegments-indicator-item {
-            border-color: white;
-        }
+    #scheduled-studySegments a {
+        text-decoration: none;
+        color: black;
+    }
 
-        #scheduled-studySegments a {
-            text-decoration: none;
-            color: black;
-        }
+    #scheduled-studySegments ul li.selected {
+        background-color: #999 !important;
+    }
 
-        #scheduled-studySegments ul li.selected {
-            background-color: #999 !important;
-        }
+    #scheduled-studySegments ul li.selected a {
+        color: white;
+    }
 
-        #scheduled-studySegments ul li.selected a {
-            color: white;
-        }
+    #scheduled-studySegments ul li:hover {
+        background-color: #ccc;
+    }
 
-        #scheduled-studySegments ul li:hover {
-            background-color: #ccc;
-        }
+    #selected-studySegment .content {
+        position: relative;
+    }
 
-        #selected-studySegment .content {
-            position: relative;
-        }
+    /* For IE */
+    * html #selected-studySegment .content {
+        height: 0;
+    }
 
-        /* For IE */
-        * html #selected-studySegment .content {
-            height: 0;
-        }
+    li.scheduled a {
+        font-weight: bold;
+        color: #00C;
+    }
 
-        li.scheduled a {
-            font-weight: bold;
-            color: #00C;
-        }
-        li.canceled a {
-            font-style: italic;
-            color: #444;
-        }
-        li.occurred a {
-            font-weight: normal;
-            color: #006;
-        }
-        li.conditional a {
-            font-weight: bold;
-            color: darkslategray;
-        }
-        li.NA a {
-            font-weight: normal;
-            color: steelblue;
-        }
+    li.canceled a {
+        font-style: italic;
+        color: #444;
+    }
 
-        li img {
-            vertical-align: middle;
-        }
+    li.occurred a {
+        font-weight: normal;
+        color: #006;
+    }
 
-        ul.day-activities {
-            font-weight: normal
-        }
+    li.conditional a {
+        font-weight: bold;
+        color: darkslategray;
+    }
 
-        ul.day-activities span.label {
-            border: 1px dotted #444;
-            padding: 2px; 
-        }
+    li.NA a {
+        font-weight: normal;
+        color: steelblue;
+    }
 
-        .ae a.dismiss-control {
-            display: block;
-            float: right;
-            padding: 6px;
-            color: #ccc;
-            background-color: #444;
-        }
-        .ae.section {
-            border-color: #600;
-        }
-        .ae h2 {
-            /*background-color: #911;*/
-        }
+    li img {
+        vertical-align: middle;
+    }
 
-        .float-right {
-            float:right;
-        }
-        .ae h3 {
-            background-color: #c99;
-            padding: 5px 1em;
-        }
+    ul.day-activities {
+        font-weight: normal
+    }
 
-        .topBordered {
-            border-top:1px solid #000000;
-            padding-top:30px;
-        }
+    ul.day-activities span.label {
+        border: 1px dotted #444;
+        padding: 2px;
+    }
 
-        #external-apps {
-            color: #666;
-            padding: 8px;
-        }
+    .ae a.dismiss-control {
+        display: block;
+        float: right;
+        padding: 6px;
+        color: #ccc;
+        background-color: #444;
+    }
 
-        #schedule-switch, #outside-links {
-            margin: 1em;
-            text-align: right
-        }
+    .ae.section {
+        border-color: #600;
+    }
 
-        #schedule-controls{
-            margin-right: 1em;
-            text-align: right;
-        }
+    .ae h2 {
+    /*background-color: #911;*/
+    }
 
-        #schedule-controls li {
-            display: inline
-        }
+    .float-right {
+        float: right;
+    }
 
-        .batch-schedule-link {
-            color:#0000cc;
-            cursor:pointer;
-            white-space:nowrap;
-        }
+    .ae h3 {
+        background-color: #c99;
+        padding: 5px 1em;
+    }
 
-        .box {
-            clear: both;
-        }
+    .topBordered {
+        border-top: 1px solid #000000;
+        padding-top: 30px;
+    }
 
-        .card .value ul {
-            margin: 0;
-            padding: 0;
-        }
+    #external-apps {
+        color: #666;
+        padding: 8px;
+    }
 
-        .card .value ul li {
-            list-style-type: none;
-            padding-bottom: 0.25em;
-        }
-        .alignStudySegmentButtonInTheMiddle {
-            text-align:center;
-        }
+    #schedule-switch, #outside-links {
+        margin: 1em;
+        text-align: right
+    }
 
-    </style>
-    <script type="text/javascript">
-        var DEFAULT_DATES = {
-            IMMEDIATE: '<tags:formatDate value="${dates['IMMEDIATE']}"/>',
-            PER_PROTOCOL: '<tags:formatDate value="${dates['PER_PROTOCOL']}"/>'
-        }
+    #schedule-controls {
+        margin-right: 1em;
+        text-align: right;
+    }
 
-        function registerSelectStudySegmentHandlers() {
-            $$('#scheduled-studySegments a').each(registerSelectStudySegmentHandler)
-        }
+    #schedule-controls li {
+        display: inline
+    }
 
-        function registerSelectStudySegmentHandler(a) {
-            var aElement = $(a)
-            Event.observe(aElement, "click", function(e) {
-                Event.stop(e)
-                selectStudySegment(aElement.href)
-            })
-        }
+    .batch-schedule-link {
+        color: #0000cc;
+        cursor: pointer;
+        white-space: nowrap;
+    }
 
-        function selectStudySegment(href) {
-            $("scheduled-studySegments-indicator").reveal();
-            SC.slideAndHide('selected-studySegment-content', { afterFinish: function() {
-                // deselect current
-                var sel = $$("#scheduled-studySegments li.selected")
-                if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+    .box {
+        clear: both;
+    }
 
-                new Ajax.Request(href, { asynchronous: true,
-                    onComplete: function() {
-                        $("scheduled-studySegments-indicator").conceal()
-                    },
-                    onFailure: function() {
-                        Element.update('selected-studySegment-content', "Loading failed")
-                        Element.update('selected-studySegment-header', "Error")
-                        SC.slideAndShow('selected-studySegment-content')
-                    }
-                });
-            } });
-        }
+    .card .value ul {
+        margin: 0;
+        padding: 0;
+    }
 
-        function registerSelectNextStudySegmentHandlers() {
-            $$(".epochs-and-studySegments a.studySegment").each(function(a) {
-                Event.observe(a, "click", function(e) {
-                    Event.stop(e)
-                    $('next-studySegment-id').value = a.id.substring('studySegment'.length +1)
-                    Element.update('next-studySegment-name', a.title)
-                    SC.highlight('next-studySegment-name', { restorecolor: "#ffffff" })
-                    $('next-studySegment-button').disabled = false
-                })
-            })
+    .card .value ul li {
+        list-style-type: none;
+        padding-bottom: 0.25em;
+    }
 
-            Event.observe('next-studySegment-form', "submit", function(e) {
-                $('next-studySegment-indicator').reveal()
-                Event.stop(e)
-                SC.asyncSubmit('next-studySegment-form', {
-                    onComplete: function() {
-                        $('next-studySegment-indicator').conceal()
-                    }
-                })
-            })
-        }
+    .alignStudySegmentButtonInTheMiddle {
+        text-align: center;
+    }
 
-        function registerDefaultDateSetterHandlers() {
-            $$('.mode-radio').each(function(radio) {
-                Event.observe(radio, "click", function() {
-                    $('start-date-input').value = DEFAULT_DATES[radio.value];
-                })
-            })
-        }
+</style>
+<script type="text/javascript">
+    var DEFAULT_DATES = {
+        IMMEDIATE: '<tags:formatDate value="${dates['IMMEDIATE']}"/>',
+        PER_PROTOCOL: '<tags:formatDate value="${dates['PER_PROTOCOL']}"/>'
+    }
 
-        function registerDismissControl() {
-            $$(".ae .dismiss-control").each(function(control) {
-                Event.observe(control, "click", function(event) {
-                    Event.stop(event)
-                    var confirmMessage = "This will permanently clear this notification from this screen.  It will not affect any other record of the adverse event."
-                    if (window.confirm(confirmMessage)) {
-                        SC.doAsyncLink(control)
-                    }
-                })
-            })
-        }
+    function registerSelectStudySegmentHandlers() {
+        $$('#scheduled-studySegments a').each(registerSelectStudySegmentHandler)
+    }
 
-        function ajaxform() {
-            var href = '<c:url value="/pages/cal/schedule/rescheduleArms"/>'
-            // Set up data variable
-            var formdata = "";
-            formdata = formdata + 'toDate' + "=" + $('toDate').value+"&";
-            formdata = formdata + 'reason' + "=" + $(document.getElementById('reason')).value + "&";
-            formdata = formdata + 'scheduledCalendar' + "=" + ${studySegment.scheduledCalendar.id} + "&";
-            formdata = formdata + 'currentDate' + "=" + $(document.getElementById('currentDate')).value + "&";
-            var lastRequest = new Ajax.Request(href,
-            {
-                postBody: formdata
+    function registerSelectStudySegmentHandler(a) {
+        var aElement = $(a)
+        Event.observe(aElement, "click", function(e) {
+            Event.stop(e)
+            selectStudySegment(aElement.href)
+        })
+    }
+
+    function selectStudySegment(href) {
+        $("scheduled-studySegments-indicator").reveal();
+        SC.slideAndHide('selected-studySegment-content', { afterFinish: function() {
+            // deselect current
+            var sel = $$("#scheduled-studySegments li.selected")
+            if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+
+            new Ajax.Request(href, { asynchronous: true,
+                onComplete: function() {
+                    $("scheduled-studySegments-indicator").conceal()
+                },
+                onFailure: function() {
+                    Element.update('selected-studySegment-content', "Loading failed")
+                    Element.update('selected-studySegment-header', "Error")
+                    SC.slideAndShow('selected-studySegment-content')
+                }
             });
-            return true;
-        }
+        } });
+    }
 
-        function registerFunctions() {
-            registerSelectStudySegmentHandlers();
-            registerSelectNextStudySegmentHandlers();
-            registerDefaultDateSetterHandlers();
-            registerHeaderCollapse();
-            registerDismissControl();
-        }
+    function registerSelectNextStudySegmentHandlers() {
+        $$(".epochs-and-studySegments a.studySegment").each(function(a) {
+            Event.observe(a, "click", function(e) {
+                Event.stop(e)
+                $('next-studySegment-id').value = a.id.substring('studySegment'.length + 1)
+                Element.update('next-studySegment-name', a.title)
+                SC.highlight('next-studySegment-name', { restorecolor: "#ffffff" })
+                $('next-studySegment-button').disabled = false
+            })
+        })
 
-        Event.observe(window, "load", registerFunctions);
-    
-    </script>
+        Event.observe('next-studySegment-form', "submit", function(e) {
+            $('next-studySegment-indicator').reveal()
+            Event.stop(e)
+            SC.asyncSubmit('next-studySegment-form', {
+                onComplete: function() {
+                    $('next-studySegment-indicator').conceal()
+                }
+            })
+        })
+    }
+
+    function registerDefaultDateSetterHandlers() {
+        $$('.mode-radio').each(function(radio) {
+            Event.observe(radio, "click", function() {
+                $('start-date-input').value = DEFAULT_DATES[radio.value];
+            })
+        })
+    }
+
+    function registerDismissControl() {
+        $$(".ae .dismiss-control").each(function(control) {
+            Event.observe(control, "click", function(event) {
+                Event.stop(event)
+                var confirmMessage = "This will permanently clear this notification from this screen.  It will not affect any other record of the adverse event."
+                if (window.confirm(confirmMessage)) {
+                    SC.doAsyncLink(control)
+                }
+            })
+        })
+    }
+
+    function ajaxform() {
+        var href = '<c:url value="/pages/cal/schedule/rescheduleArms"/>'
+        // Set up data variable
+        var formdata = "";
+        formdata = formdata + 'toDate' + "=" + $('toDate').value + "&";
+        formdata = formdata + 'reason' + "=" + $(document.getElementById('reason')).value + "&";
+        formdata = formdata + 'scheduledCalendar' + "=" + ${studySegment.scheduledCalendar.id} + "&";
+        formdata = formdata + 'currentDate' + "=" + $(document.getElementById('currentDate')).value + "&";
+        var lastRequest = new Ajax.Request(href,
+        {
+            postBody: formdata
+        });
+        return true;
+    }
+
+    function registerFunctions() {
+        registerSelectStudySegmentHandlers();
+        registerSelectNextStudySegmentHandlers();
+        registerDefaultDateSetterHandlers();
+        registerHeaderCollapse();
+        registerDismissControl();
+    }
+
+    Event.observe(window, "load", registerFunctions);
+
+</script>
 </head>
 <body>
 <div class="card title-card">
     <div class="header">Schedule</div>
     <h1>${subject.fullName}</h1>
+
     <div class="row odd">
         <div class="label">Study</div>
         <div class="value">${plannedCalendar.name}</div>
@@ -336,7 +343,8 @@
         <div class="value">
             ${assignment.currentAmendment.displayName}
             <c:if test="${not onLatestAmendment}">
-                <a class="control" href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Change</a>
+                <a class="control"
+                   href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Change</a>
             </c:if>
         </div>
     </div>
@@ -349,7 +357,9 @@
                     <c:forEach items="${assignment.populations}" var="pop">
                         <li>${pop.name}</li>
                     </c:forEach>
-                    <li><a class="control" href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a></li>
+                    <li><a class="control"
+                           href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -359,11 +369,17 @@
 <div class="controls-card card">
     <div class="header">Manipulate and view schedule</div>
     <ul id="schedule-controls">
-        <li><a class="control" href="<c:url value="/pages/subject?subject=${assignment.subject.id}"/>">View entire schedule</a></li>
+        <li><a class="control" href="<c:url value="/pages/subject?subject=${assignment.subject.id}"/>">View entire
+            schedule</a></li>
         <c:if test="${assignment.endDateEpoch == null}">
-            <li><a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take subject off study</a></li>
+            <li><a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take
+                subject off study</a></li>
         </c:if>
-        <li><a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a></li>
+        <li><a class="control"
+               href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
+               id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export
+            ICS</a>
+        </li>
     </ul>
     <div id="schedule-switch">
         <span class="schedule-switch-control">
@@ -371,7 +387,8 @@
                 View schedule for current subject
                 <select id="assigned-subject-selector">
                     <c:forEach items="${onStudyAssignments}" var="a">
-                        <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
+                        <option value="${a.scheduledCalendar.id}"
+                                <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
                     </c:forEach>
                 </select>
                 <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
@@ -382,10 +399,12 @@
                 View schedule for historical subject
                 <select id="offstudy-assigned-subject-selector">
                     <c:forEach items="${offStudyAssignments}" var="a">
-                        <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
+                        <option value="${a.scheduledCalendar.id}"
+                                <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
                     </c:forEach>
                 </select>
-                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+                <a class="control" href="<c:url value="/pages/cal/schedule"/>"
+                   id="offstudy-go-to-schedule-control">Go</a>
             </c:if>
         </span>
     </div>
@@ -399,13 +418,16 @@
                 View this subject's
             </c:if>
             <c:if test="${ctmsAvail}">
-                <tags:externalLink appShortName="ctms" urlTemplateProperty="patientPageUrl" cssClass="control">${configuration.map.ctmsName} record</tags:externalLink>
+                <tags:externalLink appShortName="ctms" urlTemplateProperty="patientPageUrl"
+                                   cssClass="control">${configuration.map.ctmsName} record</tags:externalLink>
             </c:if>
             <c:if test="${caaersAvail}">
-                <tags:externalLink appShortName="caaers" urlTemplateProperty="caAERSBaseUrl" cssClass="control">adverse events</tags:externalLink>
+                <tags:externalLink appShortName="caaers" urlTemplateProperty="caAERSBaseUrl"
+                                   cssClass="control">adverse events</tags:externalLink>
             </c:if>
             <c:if test="${labViewerAvail}">
-                <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerBaseUrl" cssClass="control">lab results</tags:externalLink>
+                <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerBaseUrl"
+                                   cssClass="control">lab results</tags:externalLink>
             </c:if>
 
         </c:if>
@@ -424,7 +446,8 @@
             </c:if>
             <div id="sae-${aeNote.id}" class="section ae collapsible autoclear ${evenOddRow}">
                 <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
-                <div id="contentDiv" class="content" style="display: none;" >
+
+                <div id="contentDiv" class="content" style="display: none;">
                     <c:set var="message" value="${aeNote.message}"/>
                     <p>
                         <c:choose>
@@ -435,10 +458,11 @@
                                 ${aeNote.message}
                             </c:otherwise>
                         </c:choose>
-                        <a class="control float-right" style="margin-left:5em;" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                        <%--<c:if test="${not empty configuration.map.caAERSBaseUrl}">--%>
+                        <a class="control float-right" style="margin-left:5em;"
+                           href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                            <%--<c:if test="${not empty configuration.map.caAERSBaseUrl}">--%>
                             <%--View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>--%>
-                        <%--</c:if>--%>
+                            <%--</c:if>--%>
                     </p>
                 </div>
                 <c:set var="rowCount" value="${rowCount +1}"/>
@@ -451,69 +475,82 @@
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box title="Modify entire schedule">
         <laf:division>
-        <div id="schedule-next-studySegment" class="section autoclear collapsible">
+            <div id="schedule-next-studySegment" class="section autoclear collapsible">
 
-        <h2 id="schedule-next-studySegment-header">Schedule next study segment</h2>
-        <div class="content" style="display: none">
-            <p class="tip">Select an study segment from the calendar to run next.  Then select a start date.</p>
-            <form id="next-studySegment-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextStudySegment"/>">
-                <div class="row">
-                    <div class="label">Next study segment</div>
-                    <div class="value"><span id="next-studySegment-name"><em>Select at left</em></span></div>
+                <h2 id="schedule-next-studySegment-header">Schedule next study segment</h2>
+
+                <div class="content" style="display: none">
+                    <p class="tip">Select an study segment from the calendar to run next. Then select a start date.</p>
+
+                    <form id="next-studySegment-form" class="autoclear"
+                          action="<c:url value="/pages/cal/schedule/nextStudySegment"/>">
+                        <div class="row">
+                            <div class="label">Next study segment</div>
+                            <div class="value"><span id="next-studySegment-name"><em>Select at left</em></span></div>
+                        </div>
+                        <input type="hidden" name="studySegment" value="-1" id="next-studySegment-id"/>
+                        <input type="hidden" name="calendar" value="${calendar.id}"/>
+
+                        <div class="row" id="mode-row">
+                            <div class="label">When?</div>
+                            <div class="value">
+                                <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
+                                              name="mode" value="IMMEDIATE"/> Immediately</label>
+                                <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                                              name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+                            </div>
+
+                            <div class="row">
+                                <div class="label"><label for="start-date-input">Start date</label></div>
+                                <div class="value"><input type="text" name="startDate" id="start-date-input"
+                                                          value="<tags:formatDate value="${dates['PER_PROTOCOL']}" />"
+                                                          class="date" size="10"/>
+                                    <a href="#" id="start-date-input-calbutton">
+                                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar"
+                                             width="17"
+                                             height="16" border="0" align="absmiddle"/>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="alignStudySegmentButtonInTheMiddle">
+                                <tags:activityIndicator id="next-studySegment-indicator"/><input type="submit"
+                                                                                                 style="margin:auto;"
+                                                                                                 value="Schedule next study segment"
+                                                                                                 disabled="disabled"
+                                                                                                 id="next-studySegment-button"/>
+                            </div>
+                        </div>
+                    </form>
+                    <tags:epochsAndStudySegments plannedCalendar="${plannedCalendar}"/>
                 </div>
-                <input type="hidden" name="studySegment" value="-1" id="next-studySegment-id"/>
-                <input type="hidden" name="calendar" value="${calendar.id}"/>
-                <div class="row" id="mode-row">
-                    <div class="label">When?</div>
-                    <div class="value">
-                        <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
-                                      name="mode" value="IMMEDIATE"/> Immediately</label>
-                        <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
-                                      name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
-                    </div>
+                <br style="clear:both">
+                <br style="clear:both">
 
-                    <div class="row">
-                        <div class="label"><label for="start-date-input">Start date</label></div>
-                        <div class="value"><input type="text"  name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}" />" class="date" size="10"/>
-                            <a href="#" id="start-date-input-calbutton">
+                <div class="section autoclear collapsible">
+                    <h2 class="topBordered">Delay or advance</h2>
+
+                    <div class="content" style="display: none">
+                        <laf:division>
+                            Shift the scheduled or conditional activities by
+                            <input id="toDate" size="5" path="toDate" value="7"/>
+                            day(s) as of date:
+                            <input id="currentDate" path="currentDate" size="15"
+                                   value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" class="date"/>
+
+                            <a href="#" id="currentDate-calbutton">
                                 <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
                                      height="16" border="0" align="absmiddle"/>
                             </a>
 
-                        </div>
-                    </div>
-                    <div class="alignStudySegmentButtonInTheMiddle">
-                        <tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" style="margin:auto;"
-                                                                                         value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/>
+
+                            . Reason: <input type="text" id="reason" name="reason" value="" size="50"/>
+                            <input type="submit" value="Submit" onclick="ajaxform();"/>
+                        </laf:division>
                     </div>
                 </div>
-                </form>
-                <tags:epochsAndStudySegments plannedCalendar="${plannedCalendar}"/>
-        </div>
-        <br style="clear:both">
-        <br style="clear:both">
-            <div class="section autoclear collapsible">
-                <h2 class="topBordered">Delay or advance</h2>
-                <div class="content" style="display: none">
-                    <laf:division>
-                            Shift the scheduled or conditional activities by
-                                <input id="toDate" size="5" path="toDate" value="7"/>
-                            day(s) as of date:
-                        <input id="currentDate" path="currentDate" size="15" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" class="date"/>
 
-                        <a href="#" id="currentDate-calbutton">
-                            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
-                                 height="16" border="0" align="absmiddle"/>
-                        </a>
-
-
-                        . Reason: <input type="text" id="reason" name="reason" value="" size="50"/>
-                        <input type="submit" value="Submit" onclick="ajaxform();" />
-                    </laf:division>
-                </div>
-            </div>                                                       
-
-        </div>
+            </div>
         </laf:division>
     </laf:box>
 </c:if>
@@ -521,14 +558,16 @@
 <div id="scheduled-studySegments" class="section">
     <laf:box title="Study segments scheduled">
         <laf:division>
-        <!--<h2>Study segments scheduled</h2>-->
-        <p class="tip">Select a study segment to show its detailed schedule below.</p>
-        <ul id="scheduled-studySegments-list">
-            <li id="scheduled-studySegments-indicator-item"><tags:activityIndicator id="scheduled-studySegments-indicator"/></li>
-            <c:forEach items="${calendar.scheduledStudySegments}" var="scheduledStudySegment">
-                <sched:scheduledStudySegmentsListItem currentStudySegment="${studySegment}" scheduledStudySegment="${scheduledStudySegment}"/>
-            </c:forEach>
-        </ul>
+            <!--<h2>Study segments scheduled</h2>-->
+            <p class="tip">Select a study segment to show its detailed schedule below.</p>
+            <ul id="scheduled-studySegments-list">
+                <li id="scheduled-studySegments-indicator-item"><tags:activityIndicator
+                        id="scheduled-studySegments-indicator"/></li>
+                <c:forEach items="${calendar.scheduledStudySegments}" var="scheduledStudySegment">
+                    <sched:scheduledStudySegmentsListItem currentStudySegment="${studySegment}"
+                                                          scheduledStudySegment="${scheduledStudySegment}"/>
+                </c:forEach>
+            </ul>
         </laf:division>
     </laf:box>
 </div>
