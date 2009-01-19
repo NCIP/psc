@@ -14,11 +14,14 @@ import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.resource.InputRepresentation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author John Dzak
@@ -81,6 +84,10 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         expectResolvedSubjectAssignment();
         request.setResourceRef(String.format("%s/studies/%s/schedules/%s.ics", ROOT_URI, STUDY_IDENTIFIER_ENCODED, ASSIGNMENT_IDENTIFIER));
         request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName() + ".ics", ASSIGNMENT_IDENTIFIER);
+
+        List<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
+        preferences.add(new Preference<MediaType>(MediaType.TEXT_CALENDAR));
+        request.getClientInfo().setAcceptedMediaTypes(preferences);
 
         doGet();
 
