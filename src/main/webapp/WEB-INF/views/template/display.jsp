@@ -775,6 +775,11 @@
                                 <div class="value">
                                     <c:if test="${not empty studySite.unapprovedAmendments}">
                                         Waiting for approval at site ${studySite.site.name}. A <b>Site Coordinator</b> can do that
+                                        <c:if test="${not empty studySite.amendmentApprovals}">
+                                            <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
+                                                Assign Subject
+                                            </tags:restrictedListItem>
+                                        </c:if>
                                     </c:if>
                                     <c:if test="${empty studySite.unapprovedAmendments}">
                                         <c:set var="isSubjectCoordinatorAssigned" value="false"/>
