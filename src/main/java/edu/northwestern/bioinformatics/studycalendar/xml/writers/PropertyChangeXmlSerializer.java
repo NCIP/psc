@@ -54,6 +54,12 @@ public class PropertyChangeXmlSerializer extends AbstractChangeXmlSerializer {
         String expectedPropertyName = ((PropertyChange) change).getPropertyName();
         String oldValue = ((PropertyChange) change).getOldValue();
         String newValue = ((PropertyChange) change).getNewValue();
+        if (oldValue == null) {
+            oldValue = "";
+        }
+        if (newValue == null) {
+            newValue = "";
+        }
         if (!StringUtils.equals(expectedPropertyName, eChange.attributeValue(PROPERTY_NAME))) {
             errorMessageStringBuffer.append(String.format("property name is different. expected:%s , found (in imported document) :%s \n",
                     expectedPropertyName, eChange.attributeValue(PROPERTY_NAME)));
