@@ -1,29 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractCsvXlsSerializer;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InputStream;
-import java.util.List;
-import java.util.ArrayList;
-
 import com.csvreader.CsvReader;
-import org.jruby.RubyStruct;
-import org.springframework.beans.factory.annotation.Required;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractCsvXlsSerializer;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 
+// TODO: Why the hell is this in the "xml" package
 public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
 
     private final static String ACTIVITY_NAME = "Name";
@@ -60,7 +58,6 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
         return sb.toString();
     }
 
-
     public String constructHeader(String delimiter) {
         StringBuffer sb = new StringBuffer();
         for (String header : arrayOfHeaders) {
@@ -71,10 +68,9 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
         return sb.toString();
     }
 
-    public Source readDocument(InputStream inputStream) throws Exception {
+    public Source readDocument(InputStream inputStream) {
         Source source = null;
         List<Activity> activitiesToAddAndRemove = new ArrayList<Activity>();
-
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -110,21 +106,18 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
                 if (!StringUtils.isBlank(type) && activityTypeDao.getByName(type) != null) {
                     activity.setType(activityTypeDao.getByName(type));
                 } else {
-                    String message = String.format("Activity type %s either does not exists or it is null. Please choose %s activity type only.", type, activityTypeDao.getAll());
-                    logger.error(message);
-                    throw new Exception(message);
-
+                    throw new StudyCalendarValidationException(
+                        "Activity type %s is invalid. Please choose from this list: %s.",
+                        type, activityTypeDao.getAll());
                 }
                 if (source != null) {
                     if (!StringUtils.equals(sourceName, source.getName())) {
-                        String message = String.format("All activities must belong to same source. %s and %s are not same source.", source.getName(), sourceName);
-                        logger.error(message);
-                        throw new Exception(message);
+                        throw new StudyCalendarValidationException(
+                            "All activities must belong to same source. %s and %s are not same source.",
+                            source.getName(), sourceName);
                     }
                 } else {
-                    String s = String.format("source %s does not exists.", sourceName);
-                    logger.error(s);
-                    throw new Exception(s);
+                    throw new StudyCalendarValidationException("source %s does not exist.", sourceName);
                 }
                 if(!activitiesToAddAndRemove.isEmpty()){
                     for(Activity a:activitiesToAddAndRemove) {
@@ -134,20 +127,14 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
                     }
                 }
                 activitiesToAddAndRemove.add(activity);
-
-
             }
             sourceService.updateSource(source, activitiesToAddAndRemove);
             reader.close();
-
-
         } catch (IOException e) {
             logger.error(e.getMessage());
-            throw new Exception("error importing csv file", e);
-
+            throw new StudyCalendarSystemException("error importing csv file", e);
         }
         return source;
-
     }
 
     @Required
