@@ -19,7 +19,9 @@ import java.util.Arrays;
  * This is obviously 100% insecure, so it should only be used for testing and as an example.
  *
  * @author Rhett Sutphin
+ * @deprecated Use {@link InsecureAuthenticationSystem} instead.
  */
+@Deprecated
 public class InsecureApiAuthenticationSystem extends LocalAuthenticationSystem {
 
     @Override

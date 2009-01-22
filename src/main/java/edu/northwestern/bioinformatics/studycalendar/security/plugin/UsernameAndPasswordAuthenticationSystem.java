@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
-import org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint;
-import org.acegisecurity.ui.AuthenticationEntryPoint;
+import static edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools.prepareBean;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.ui.AuthenticationEntryPoint;
+import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
+import org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint;
 
 import javax.servlet.Filter;
-
-import static edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools.*;
 
 /**
  * Base class for all authentication systems that use the local
@@ -37,7 +36,18 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
         return prepareBean(getApplicationContext(), filter);
     }
 
-    public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
+    /**
+     * Creates a {@link UsernamePasswordAuthenticationToken}.
+     * <p>
+     * The Acegi filter used in the GUI will always return an authentication of this form,
+     * so the authentication manager provided by any subclass must be prepared to deal with
+     * it.
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public final Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
         return new UsernamePasswordAuthenticationToken(username, password);
     }
 
