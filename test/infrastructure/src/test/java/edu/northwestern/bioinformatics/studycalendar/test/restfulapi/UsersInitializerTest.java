@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializerTestCase;
 import static org.easymock.EasyMock.expect;
@@ -17,7 +16,6 @@ import java.util.Arrays;
  * @author Rhett Sutphin
  */
 public class UsersInitializerTest extends SchemaInitializerTestCase {
-    private UserDao userDao;
     private UserService userService;
     private SiteDao siteDao;
     private Site site;
@@ -25,7 +23,6 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        userDao = registerDaoMockFor(UserDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         userService = registerMockFor(UserService.class);
         site = Fixtures.createSite("NU", "IL036");
@@ -65,7 +62,7 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
 
     public void testUpdatesUserIfExists() throws Exception {
         User originalUser = Fixtures.createUser("charlie", Role.SYSTEM_ADMINISTRATOR);
-        expect(userDao.getByName("charlie")).andReturn(originalUser);
+        expect(userService.getUserByName("charlie")).andReturn(originalUser);
 
         expectGetSite();
         User updatedUser = Fixtures.createUser("charlie", Role.SYSTEM_ADMINISTRATOR, Role.SITE_COORDINATOR);
@@ -84,13 +81,12 @@ public class UsersInitializerTest extends SchemaInitializerTestCase {
 
     private void expectNoExistingUsers(String... usernames) {
         for (String username : usernames) {
-            expect(userDao.getByName(username)).andReturn(null);
+            expect(userService.getUserByName(username)).andReturn(null);
         }
     }
 
     private UsersInitializer createInitializer(String yaml) throws Exception {
         UsersInitializer initializer = new UsersInitializer();
-        initializer.setUserDao(userDao);
         initializer.setUserService(userService);
         initializer.setSiteDao(siteDao);
         initializer.setYamlResource(literalYamlResource(yaml));

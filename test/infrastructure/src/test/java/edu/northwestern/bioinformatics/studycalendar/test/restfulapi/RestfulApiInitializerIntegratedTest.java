@@ -30,6 +30,7 @@ public class RestfulApiInitializerIntegratedTest extends SchemaInitializerTestCa
         initializer.setConfigurationInitializer(new ConfigurationInitializer());
         initializer.setSitesInitializer(new SitesInitializer());
         initializer.setUsersInitializer(new UsersInitializer());
+        initializer.setSampleSourceInitializer(new SampleActivitySourceInitializer());
         assertFalse("Test setup failure: no initializers created",
             initializer.getInitializerSeries().isEmpty());
     }

@@ -20,6 +20,7 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
     private SitesInitializer sitesInitializer;
     private ConfigurationInitializer configurationInitializer;
     private UsersInitializer usersInitializer;
+    private SampleActivitySourceInitializer sampleSourceInitializer;
 
     @Override
     public void setUp() throws Exception {
@@ -35,12 +36,14 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
         sitesInitializer = new SitesInitializer();
         configurationInitializer = new ConfigurationInitializer();
         usersInitializer = new UsersInitializer();
+        sampleSourceInitializer = new SampleActivitySourceInitializer();
 
         initializer = new RestfulApiTestInitializer();
         initializer.setDataSource(dataSource);
         initializer.setSitesInitializer(sitesInitializer);
         initializer.setConfigurationInitializer(configurationInitializer);
         initializer.setUsersInitializer(usersInitializer);
+        initializer.setSampleSourceInitializer(sampleSourceInitializer);
     }
 
     public void testSitesTableHandledByInjectedSiteInitializer() throws Exception {
@@ -56,6 +59,13 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
         assertSame("Initializer is not the injected one", configurationInitializer, initializer.getInitializerSeries().get(0));
+    }
+
+    public void testSourcesHandledByInjectedSampleSourceInitializer() throws Exception {
+        metadata.solo("sources");
+
+        assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
+        assertSame("Initializer is not the injected one", sampleSourceInitializer, initializer.getInitializerSeries().get(0));
     }
 
     public void testUsersAndRolesHandledByUserInitializer() throws Exception {

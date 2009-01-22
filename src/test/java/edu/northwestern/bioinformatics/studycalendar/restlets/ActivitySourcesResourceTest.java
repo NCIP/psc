@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 
@@ -20,6 +20,7 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
     private SourceDao sourceDao;
     private ActivityService activityService;
     private ActivityTypeDao activityTypeDao;
+    private ActivityType procedureType;
 
     @Override
     public void setUp() throws Exception {
@@ -27,6 +28,7 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         activityService = registerMockFor(ActivityService.class);
+        procedureType = setId(4, createActivityType("Procedure"));
     }
 
     @Override
@@ -62,7 +64,7 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
     public void testGetXmlForSourcesFilteredByName() throws Exception {
         String search = "day a";
         QueryParameters.Q.putIn(request, search);
-        List<Source> sources = Collections.singletonList(Fixtures.createSource("Etc"));
+        List<Source> sources = Collections.singletonList(createSource("Etc"));
         expect(activityService.getFilteredSources(search, null, null)).andReturn(sources);
         expect(xmlSerializer.createDocumentString(sources)).andReturn(MOCK_XML);
 
@@ -72,16 +74,37 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void testGetXmlForSourcesFilteredByType() throws Exception {
+    @Deprecated /* To remove in 2.6 or so */
+    public void testGetXmlForSourcesFilteredByTypeId() throws Exception {
         QueryParameters.TYPE_ID.putIn(request, "4");
-        List<Source> sources = Collections.singletonList(Fixtures.createSource("Etc"));
-        ActivityType activityType = Fixtures.createActivityType("PROCEDURE");
-        expect(activityService.getFilteredSources(null, activityType, null)).andReturn(sources);
-        expect(activityTypeDao.getById(4)).andReturn(activityType).anyTimes();
+        List<Source> sources = Collections.singletonList(createSource("Etc"));
+        expect(activityService.getFilteredSources(null, procedureType, null)).andReturn(sources);
+        expect(activityTypeDao.getById(4)).andReturn(procedureType);
         expect(xmlSerializer.createDocumentString(sources)).andReturn(MOCK_XML);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testGetXmlForSourcesFilteredByType() throws Exception {
+        QueryParameters.TYPE.putIn(request, "Procedure");
+        List<Source> sources = Collections.singletonList(createSource("Etc"));
+        expect(activityTypeDao.getByName("Procedure")).andReturn(procedureType);
+        expect(activityService.getFilteredSources(null, procedureType, null)).andReturn(sources);
+        expect(xmlSerializer.createDocumentString(sources)).andReturn(MOCK_XML);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertResponseIsCreatedXml();
+    }
+
+    public void testGetXmlWithUnknownActivityType() throws Exception {
+        QueryParameters.TYPE.putIn(request, "Proc");
+        expect(activityTypeDao.getByName("Proc")).andReturn(null);
+
+        doGet();
+        assertResponseStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown activity type: Proc"));
     }
 }

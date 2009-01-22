@@ -82,6 +82,18 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         assertTransientSource("Problem with first source", actual.get(0), "Another", c);
         assertTransientSource("Problem with second source", actual.get(1), Fixtures.DEFAULT_ACTIVITY_SOURCE.getName(), a, b);
     }
+
+    public void testGetFilteredSourcesIgnoresSourcelessActivities() throws Exception {
+        Activity a = createActivity("A");
+        a.setSource(null);
+        expect(activityDao.getActivitiesBySearchText("search", null, null)).andReturn(Arrays.asList(a));
+
+        replayMocks();
+        List<Source> actual = service.getFilteredSources("search", null, null);
+        verifyMocks();
+
+        assertEquals("Wrong number of sources: " + actual, 0, actual.size());
+    }
     
     public void testGetFilteredSourcesObeysTypeAndSource() throws Exception {
         Activity a = createActivity("A");

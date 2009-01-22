@@ -33,14 +33,21 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     }
 
     @Override
+    @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Collection<Source> getAllObjects() throws ResourceException {
         String q = QueryParameters.Q.extractFrom(getRequest());
+        String typeName = QueryParameters.TYPE.extractFrom(getRequest());
         String typeId = QueryParameters.TYPE_ID.extractFrom(getRequest());
-        if (q == null && typeId == null) {
+        if (q == null && typeId == null && typeName == null) {
             return sourceDao.getAll();
         }
         ActivityType type = null;
-        if (typeId != null) {
+        if (typeName != null) {
+            type = activityTypeDao.getByName(typeName);
+            if (type == null) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown activity type: " + typeName);
+            }
+        } else if (typeId != null) {
             try {
                 type = activityTypeDao.getById(Integer.parseInt(typeId));
             } catch (NumberFormatException nfe) {
@@ -50,6 +57,7 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
         return activityService.getFilteredSources(q, type, null);
     }
 
+    @Override
     public StudyCalendarXmlCollectionSerializer<Source> getXmlSerializer() {
         return xmlSerializer;
     }
