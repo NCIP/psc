@@ -30,6 +30,7 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
     private SitesInitializer sitesInitializer;
     private ConfigurationInitializer configurationInitializer;
     private UsersInitializer usersInitializer;
+    private SampleActivitySourceInitializer sampleSourceInitializer;
 
     @Override
     public void oneTimeSetup() {
@@ -56,6 +57,8 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
             return sitesInitializer;
         } else if (tableName.equals(usersInitializer.getTableName())) {
             return usersInitializer;
+        } else if (tableName.equals(sampleSourceInitializer.getTableName())) {
+            return sampleSourceInitializer;
         } else if (NO_INITIALIZER_TABLES.contains(tableName)) {
             return null;
         } else if (ALTERNATE_PK_TABLES.containsKey(tableName)) {
@@ -83,5 +86,10 @@ public class RestfulApiTestInitializer extends IntegratedTestDatabaseInitializer
     @Required
     public void setUsersInitializer(UsersInitializer usersInitializer) {
         this.usersInitializer = usersInitializer;
+    }
+
+    @Required
+    public void setSampleSourceInitializer(SampleActivitySourceInitializer sampleSourceInitializer) {
+        this.sampleSourceInitializer = sampleSourceInitializer;
     }
 }

@@ -499,8 +499,16 @@
                     <param style="query" name="q" type="xsd:string">
                         <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
                     </param>
+                    <param style="query" name="type" type="xsd:string">
+                        <doc>
+                            If specified, only activities whose type's name matches the given value will be returned.
+                        </doc>
+                    </param>
                     <param style="query" name="type-id" type="xsd:integer">
-                        <doc>If specified, only activities whose type-id matches the given value will be returned.</doc>
+                        <doc>
+                            If specified, only activities whose type-id matches the given value will be returned.
+                            <html:strong>Deprecated.  Will be removed in PSC 2.6 or later.</html:strong>
+                        </doc>
                     </param>
                 </request>
                 <response>
@@ -519,8 +527,16 @@
                         <param style="query" name="q" type="xsd:string">
                             <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
                         </param>
+                        <param style="query" name="type" type="xsd:string">
+                            <doc>
+                                If specified, only activities whose type's name matches the given value will be returned.
+                            </doc>
+                        </param>
                         <param style="query" name="type-id" type="xsd:integer">
-                            <doc>If specified, only activities whose type-id matches the given value will be returned.</doc>
+                            <doc>
+                                If specified, only activities whose type-id matches the given value will be returned.
+                                <html:strong>Deprecated.  Will be removed in PSC 2.6 or later.</html:strong>
+                            </doc>
                         </param>
                     </request>
                     <response>

@@ -49,7 +49,7 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
     }
 
     private void createOrUpdateUser(String username, Map<String, List<String>> rolesAndSites) {
-        User user = userDao.getByName(username);
+        User user = userService.getUserByName(username);
         if (user == null) {
             user = new User();
             user.setName(username);

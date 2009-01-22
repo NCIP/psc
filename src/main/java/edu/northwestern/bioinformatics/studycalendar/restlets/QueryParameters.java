@@ -8,7 +8,8 @@ import org.restlet.data.Request;
  */
 public enum QueryParameters {
     Q,
-    TYPE_ID
+    TYPE_ID, /* deprecated */
+    TYPE
     ;
 
     public String attributeName() {

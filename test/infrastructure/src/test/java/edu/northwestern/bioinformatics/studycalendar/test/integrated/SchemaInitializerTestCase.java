@@ -16,7 +16,7 @@ public abstract class SchemaInitializerTestCase extends StudyCalendarTestCase {
     protected ConnectionSource connectionSource;
 
     @Override
-    public void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
         jdbc = registerMockFor(JdbcTemplate.class);
         connectionSource = new MockConnectionSource(jdbc);

@@ -51,6 +51,7 @@ public class ActivityService {
         List<Activity> matches = activityDao.getActivitiesBySearchText(nameOrCodeSearch, desiredType, desiredSource);
         Map<String, Source> sources = new TreeMap<String, Source>(String.CASE_INSENSITIVE_ORDER);
         for (Activity match : matches) {
+            if (match.getSource() == null) continue;
             String key = match.getSource().getNaturalKey();
             if (!sources.containsKey(key)) {
                 Source newSource = match.getSource().transientClone();

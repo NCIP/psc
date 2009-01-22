@@ -29,4 +29,10 @@
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.UsersInitializer">
         <property name="yamlResource" value="file:test/restful-api/static-data/users.yml"/>
     </bean>
+
+    <bean id="sampleActivitySourceInitializer" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SampleActivitySourceInitializer">
+        <property name="xmlResource" value="file:test/restful-api/static-data/activities.xml"/>
+        <property name="importActivitiesService" ref="importActivitiesService"/>
+    </bean>
 </beans>
