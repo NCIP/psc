@@ -27,7 +27,6 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class UsersInitializer extends RowPreservingInitializer implements InitializingBean {
-    private UserDao userDao;
     private UserService userService;
 
     private Resource yaml;
@@ -70,11 +69,6 @@ public class UsersInitializer extends RowPreservingInitializer implements Initia
     }
 
     ////// CONFIGURATION
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Required
     public void setUserService(UserService userService) {

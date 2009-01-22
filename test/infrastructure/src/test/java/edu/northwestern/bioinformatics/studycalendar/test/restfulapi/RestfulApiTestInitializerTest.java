@@ -62,7 +62,7 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
     }
 
     public void testSourcesHandledByInjectedSampleSourceInitializer() throws Exception {
-        metadata.solo("source");
+        metadata.solo("sources");
 
         assertEquals("Wrong number of initializers", 1, initializer.getInitializerSeries().size());
         assertSame("Initializer is not the injected one", sampleSourceInitializer, initializer.getInitializerSeries().get(0));
