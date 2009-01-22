@@ -2,4 +2,4 @@ configuration:
   deploymentName: RESTful API Integrated Test PSC
   showDebugInformation: "true"
 authentication_system_conf:
-  authenticationSystem: edu.northwestern.bioinformatics.studycalendar.security.plugin.InsecureApiAuthenticationSystem
+  authenticationSystem: edu.northwestern.bioinformatics.studycalendar.security.plugin.InsecureAuthenticationSystem
