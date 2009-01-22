@@ -488,6 +488,13 @@
         <antcall target="dist"/>
     </target>
 
+    <target name="dist.xsd" description="uploads the XSD to bioinformatics.northwestern.edu">
+        <exec executable="scp">
+            <arg value="${basedir}/src/main/java/psc.xsd"/>
+            <arg value="ligand:/usr/local/share/www/www_bioinformatics_northwestern_edu/ns/psc"/>
+        </exec>
+    </target>
+
     <!-- AUTOMATED BUILDS -->
 
     <target name="oracle">
