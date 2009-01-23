@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class ImportActivitiesService {
     private ActivitySourceXmlSerializer xmlSerializer;
     private SourceSerializer sourceSerializer;
 
-    public Source loadAndSave(InputStream sourcesXml) throws Exception {
+    public Source loadAndSave(InputStream sourcesXml) {
         Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
 
@@ -28,16 +28,15 @@ public class ImportActivitiesService {
         return validSources.iterator().next();
     }
 
-    public Source loadAndSaveCSVFile(InputStream inputStream) throws Exception {
+    public Source loadAndSaveCSVFile(InputStream inputStream) {
         return sourceSerializer.readDocument(inputStream);
-
     }
 
-    protected Collection<Source> readData(InputStream dataFile) throws Exception {
+    protected Collection<Source> readData(InputStream dataFile) {
         return xmlSerializer.readCollectionOrSingleDocument(dataFile);
     }
 
-    protected List<Source> replaceCollidingSources(Collection<Source> sources) throws Exception {
+    protected List<Source> replaceCollidingSources(Collection<Source> sources) {
         List<Source> validSources = new ArrayList<Source>();
         List<Source> existingSources = sourceDao.getAll();
 
