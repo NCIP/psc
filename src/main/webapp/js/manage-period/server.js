@@ -86,7 +86,7 @@ Object.extend(SC.MP, {
 
     var params = { };
     if (!searchString.blank()) params.q = searchString;
-    if (!selectedType.blank()) params['type-id'] = selectedType;
+    if (!selectedType.blank()) params['type'] = selectedType;
 
     SC.asyncRequest(uri, {
       method: "GET", parameters: params,
@@ -94,21 +94,15 @@ Object.extend(SC.MP, {
         var doc = response.responseXML;
         var activities = SC.objectifyXml("activity", doc, function(elt, activity) {
           activity.source = elt.parentNode.getAttribute("name")
-          activity.type = SC.MP.lookupActivityTypeNameById(activity['type-id'])
+          activity.type = {
+              name: activity['type'],
+              selector: "activity-type-" + activity['type'].toLowerCase().replace(" ", "_")
+          }
           if (!activity.code) activity.code = "";
         })
 
         receiver(activities)
       }
     })
-  },
-
-  // This is a bit of a hack, but it should work
-  lookupActivityTypeNameById: function(id) {
-    var opt = $A($('activity-type-filter').options).find(function(option) { return option.value == id } )
-    var name = opt ? opt.innerHTML : null;
-    return {
-      id: id, name: name
-    }
   }
 })

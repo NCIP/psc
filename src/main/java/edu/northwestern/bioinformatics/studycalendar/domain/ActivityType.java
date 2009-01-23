@@ -1,17 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.*;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 
 /**
@@ -39,10 +35,14 @@ public class ActivityType extends AbstractMutableDomainObject
     }
 
     @Transient
+    public String getSelector() {
+        return "activity-type-" + getName().toLowerCase().replaceAll("\\s+", "_");
+    }
+
+    @Transient
     public String getNaturalKey() {
         return getName();
     }
-
 
     public int compareTo(ActivityType o) {
         return ComparisonUtils.nullSafeCompare(toLower(getName()), toLower(o.getName()));
