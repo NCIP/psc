@@ -45,7 +45,7 @@
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_activity_tbody_template">
-        <tbody class="activity-type activity-type-[#= id #]">
+        <tbody class="activity-type [#= selector #]">
             <tr class="activity-type">
                 <th>
                     <span class="text">[#= name #]</span>
@@ -54,7 +54,7 @@
         </tbody>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_days_tbody_template">
-        <tbody class="activity-type activity-type-[#= id #]">
+        <tbody class="activity-type [#= selector #]">
             <tr class="activity-type">
                 [# for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { #]
                 <td>
@@ -65,7 +65,7 @@
         </tbody>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_notes_tbody_template">
-        <tbody class="activity-type activity-type-[#= id #]">
+        <tbody class="activity-type [#= selector #]">
             <tr class="activity-type">
                 <td>
                     <span class="text">&nbsp;</span>
@@ -74,7 +74,7 @@
         </tbody>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_activity_autocompleter_row">
-        <li activity-type-id="[#= type.id #]" activity-type-name="[#= type.name #]">
+        <li activity-type-selector="[#= type.selector #]" activity-type-name="[#= type.name #]">
             <span class="activity-name">[#= name #]</span>
             <span class="informal">
                 (<span class="activity-code">[#= code #]</span>)
@@ -198,7 +198,7 @@
     <div class="activities column" id="activities">
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                <tbody class="activity-type ${typeAndRows.key.selector}">
                     <tr class="activity-type">
                         <th>
                             <span class="text">${typeAndRows.key.name}</span>
@@ -227,7 +227,7 @@
     <div class="days column" id="days">
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                <tbody class="activity-type ${typeAndRows.key.selector}">
                     <!-- stripe for activity type -->
                     <tr class="activity-type">
                         <c:forEach begin="1" end="${grid.columnCount}">
@@ -275,7 +275,7 @@
         </div>
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type activity-type-${typeAndRows.key.id}">
+                <tbody class="activity-type ${typeAndRows.key.selector}">
                     <!-- stripe for activity type -->
                     <tr class="activity-type">
                         <td>
@@ -351,7 +351,7 @@
         <select id="activity-type-filter">
             <option value="">Any type</option>
             <c:forEach items="${activityTypes}" var="activityType">
-                <option value="${activityType.id}">${activityType.name}</option>
+                <option>${activityType.name}</option>
             </c:forEach>
         </select>
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"

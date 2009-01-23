@@ -24,16 +24,16 @@ Object.extend(SC.MP, {
   },
 
   addNewActivityGroup: function(activityType) {
-    var activitiesGroup = $$("#activities tbody.activity-type-" + activityType.id).first()
+    var activitiesGroup = $$("#activities tbody." + activityType.selector).first()
     if (activitiesGroup) {
       console.log("There is already a group for %o", activityType.name)
       return;
     }
-    var prefix = "activity-type-"
+    var selectorPrefix = "activity-type-"
     var beforeBodyClass = $$("#activities tbody").map(function(group) {
-      return $w(group.className).detect(function(clz) { return clz.indexOf(prefix) == 0 })
+      return $w(group.className).detect(function(clz) { return clz.indexOf(selectorPrefix) == 0 })
     }).detect(function(typeClass) {
-      return typeClass ? activityType.id < typeClass.substring(prefix.length) : false
+      return typeClass ? activityType.selector < typeClass : false
     })
 
     SC.MP.insertNewActivityTypeTbody("activities", "new_activity_tbody_template",
@@ -44,7 +44,7 @@ Object.extend(SC.MP, {
       beforeBodyClass, activityType)
     SC.MP.reindex();
 
-    return $$("#activities .activity-type-" + activityType.id).first()
+    return $$("#activities ." + activityType.selector).first()
   },
   
   insertNewActivityTypeTbody: function(container, template, bodyClass, activityType) {
@@ -63,7 +63,7 @@ Object.extend(SC.MP, {
   },
 
   addActivityRow: function(activity, activityType) {
-    var activitiesGroup = $$("#activities tbody.activity-type-" + activityType.id).first()
+    var activitiesGroup = $$("#activities tbody." + activityType.selector).first()
     if (!activitiesGroup) { activitiesGroup = SC.MP.addNewActivityGroup(activityType) }
     var rows = activitiesGroup.select("tr.activity")
     var beforeRowClass = SC.MP.findActivityRowClassToInsertBefore(activity.name, rows, 0, rows.length - 1)
@@ -77,7 +77,7 @@ Object.extend(SC.MP, {
       beforeRowClass, activity, activityType)
     SC.MP.reindex()
     
-    var daysGroup = $$("#days .activity-type-" + activityType.id).first()
+    var daysGroup = $$("#days ." + activityType.selector).first()
     var newRowIndex = beforeRowClass ? 
       parseInt(beforeRowClass.split('-')[1]) :
       parseInt(daysGroup.getAttribute("drop-first-row-index")) + daysGroup.select("tr.activity").length - 1
@@ -138,7 +138,7 @@ Object.extend(SC.MP, {
     if (rowClass) {
       $$("#" + container + " ." + rowClass).first().insert({ before: newRow })
     } else {
-      $$('#' + container + " .activity-type-" + activityType.id).first().insert({ bottom: newRow })
+      $$('#' + container + " ." + activityType.selector).first().insert({ bottom: newRow })
     }
   },
   
@@ -172,7 +172,7 @@ Object.extend(SC.MP, {
             source: selected.select(".activity-source").first().innerHTML
           }
           var activityType = {
-            id: selected.getAttribute("activity-type-id"),
+            selector: selected.getAttribute("activity-type-selector"),
             name: selected.getAttribute("activity-type-name")
           }
           SC.MP.addActivityRow(activity, activityType)
