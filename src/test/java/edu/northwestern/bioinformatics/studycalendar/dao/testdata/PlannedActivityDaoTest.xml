@@ -82,7 +82,7 @@
 
 
     <ACTIVITY_TYPES id="-19" name="DISEASE_MEASURE"/>
-    <ACTIVITIES id="-17" name="DC" activity_type_id="-19"/>
+    <ACTIVITIES id="-17" name="DC 2" activity_type_id="-19"/>
     <AMENDMENTS id="-19" amendment_date="2007-01-01"/>
     <PLANNED_ACTIVITIES id="-189" activity_id="-17" day="1"/>
     <DELTAS id="-197" node_id="-189" node_type="period" amendment_id="-19"/>
