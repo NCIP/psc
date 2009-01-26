@@ -29,5 +29,19 @@
         duration_quantity="6"
         duration_unit="week"
         repetitions="3"/>
-    
+
+    <STUDY_SEGMENTS id="-10" name="Don't care"/>
+
+    <STUDIES id="-19" assigned_identifier="Don't care" long_title="Study"/>
+    <PLANNED_CALENDARS id="-19" study_id="-19"/>
+    <EPOCHS id="-19" planned_calendar_id="-19" name="Don't care"/>
+    <STUDY_SEGMENTS id="-101" epoch_id="-19" name="Don't care"/>
+
+    <AMENDMENTS id="-18" amendment_date="2007-01-01"/>
+    <STUDIES id="-18" version="0" assigned_identifier="Don't care 1" long_title="Study 1"/>
+    <PLANNED_CALENDARS id="-18" study_id="-18"/>
+    <EPOCHS id="-18" planned_calendar_id="-18" name="Don't care 1"/>
+    <STUDY_SEGMENTS id="-18" name="Don't care 1"/>
+    <DELTAS id="-18" node_id="-18" node_type="epoch" amendment_id="-18"/>
+    <CHANGES id="-18" delta_id="-18" new_value='-18' action="add"/>
 </dataset>

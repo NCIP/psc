@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-public class StudySegmentDao extends StudyCalendarMutableDomainObjectDao<StudySegment> implements DeletableDomainObjectDao<StudySegment> {
+public class StudySegmentDao extends ChangeableDao<StudySegment> {
     @Override
     public Class<StudySegment> domainClass() {
         return StudySegment.class;
@@ -19,5 +19,9 @@ public class StudySegmentDao extends StudyCalendarMutableDomainObjectDao<StudySe
      */
     public void delete(StudySegment segment) {
         getHibernateTemplate().delete(segment);
+    }
+
+    public void deleteOrphans() {
+        deleteOrphans("StudySegment", "epoch", "EpochDelta", "epoch");
     }
 }

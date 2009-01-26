@@ -9,7 +9,7 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly=true)
-public class PlannedActivityDao extends StudyCalendarMutableDomainObjectDao<PlannedActivity> implements DeletableDomainObjectDao<PlannedActivity> {
+public class PlannedActivityDao extends ChangeableDao<PlannedActivity> {
     @Override
     public Class<PlannedActivity> domainClass() {
         return PlannedActivity.class;
@@ -34,5 +34,9 @@ public class PlannedActivityDao extends StudyCalendarMutableDomainObjectDao<Plan
     @SuppressWarnings({ "unchecked" })
     public List<PlannedActivity> getPlannedActivitiesForActivity(Integer activityId) {
         return (List<PlannedActivity>) getHibernateTemplate().find("select pa from PlannedActivity as pa where pa.activity.id=?",activityId);
+    }
+
+    public void deleteOrphans() {
+        deleteOrphans("PlannedActivity", "period", "PeriodDelta", "period");
     }
 }

@@ -49,4 +49,43 @@
         planned_activity_id="-12"
         label="thirty-seven"
         />
+
+    <ACTIVITIES
+        id="-201"
+        version="0"
+        name="CT1"
+        description="Not blank 1"
+        activity_type_id="3"
+        />
+
+    <PLANNED_ACTIVITIES
+        id="-122"
+        version="0"
+        activity_id="-201"
+        day="4"
+        condition="condit"
+        population_id="-45"
+    />
+
+
+    <ACTIVITY_TYPES id="-181" name="NEW TYPE"/>
+    <ACTIVITIES id="-182" name="DC" activity_type_id="-181"/>
+    <AMENDMENTS id="-183" amendment_date="2007-01-01"/>
+    <STUDIES id="-188" assigned_identifier="Don't care" long_title="Study"/>
+    <PLANNED_CALENDARS id="-187" study_id="-188"/>
+    <EPOCHS id="-181" planned_calendar_id="-187" name="Don't care"/>
+    <STUDY_SEGMENTS id="-185" epoch_id="-181" name="Don't care"/>
+    <PERIODS id="-184" study_segment_id="-185" name="Don't care" duration_quantity="1" duration_unit="day"/>
+    <PLANNED_ACTIVITIES id="-18" period_id="-184" activity_id="-182" day="1"/>
+    <DELTAS id="-184" node_id="-18" node_type="period" amendment_id="-183"/>
+    <CHANGES id="-18" delta_id="-184" new_value="-18" action="add"/>
+
+
+    <ACTIVITY_TYPES id="-19" name="DISEASE_MEASURE"/>
+    <ACTIVITIES id="-17" name="DC" activity_type_id="-19"/>
+    <AMENDMENTS id="-19" amendment_date="2007-01-01"/>
+    <PLANNED_ACTIVITIES id="-189" activity_id="-17" day="1"/>
+    <DELTAS id="-197" node_id="-189" node_type="period" amendment_id="-19"/>
+    <CHANGES id="-196" delta_id="-197" new_value='-189' action="add"/>
+
 </dataset>

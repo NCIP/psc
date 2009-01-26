@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
@@ -35,6 +36,7 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
 
     private AmendmentService amendmentService;
     private BeanFactory beanFactory;
+    private TemplateDevelopmentService templateDevelopmentService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -92,7 +94,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     public void remove(final Amendment amendment) {
         log.debug("Deleting amendment {} for study {}",
                 amendment.getNaturalKey(), study.getAssignedIdentifier());
-        amendmentService.deleteDevelopmentAmendmentOnly(study);
+//        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
 
     }
 
@@ -140,7 +143,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
 
         if (study.getDevelopmentAmendment() != null) {
             //first delete the existing development amendment
-            amendmentService.deleteDevelopmentAmendmentOnly(study);
+//            amendmentService.deleteDevelopmentAmendmentOnly(study);
+            templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
 
         }
         study.setDevelopmentAmendment(amendment);
@@ -202,5 +206,10 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    @Required
+    public void setTemplateDevelopmentService(final TemplateDevelopmentService templateDevelopmentService) {
+        this.templateDevelopmentService = templateDevelopmentService;
     }
 }

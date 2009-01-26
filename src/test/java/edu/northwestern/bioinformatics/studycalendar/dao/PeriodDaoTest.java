@@ -92,4 +92,29 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong period loaded", "Renaissance", loaded.getName());
     }
+
+    public void testDeleteJustPlainOrphans() throws Exception {
+        Period p = getDao().getById(-10);
+        assertNotNull(p);
+        assertTrue("Period is attached ", p.isDetached());
+        assertNull("Period has a parent ", p.getParent());
+        getDao().deleteOrphans();
+        assertNull(getDao().getById(-10));
+    }
+
+    public void testDeletePeriodWithParent() throws Exception {
+        Period pa = getDao().getById(-101);
+        assertNotNull(pa);
+        assertNotNull("Period does not have a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-101));
+    }
+
+    public void testToDeletePeriodWithAddOnly() throws Exception {
+        Period p = getDao().getById(-19);
+        assertTrue("Period is attached ", p.isDetached());
+        assertNull("Period has a parent ", p.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-19));
+    }
 }

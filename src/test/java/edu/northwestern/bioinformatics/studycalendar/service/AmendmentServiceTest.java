@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -40,6 +37,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private Subject subject;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
     private NotificationService notificationService;
+    private TemplateDevelopmentService templateDevService;
 
 
     @Override
@@ -90,6 +88,15 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         subject = Fixtures.createSubject("first", "last");
         StudySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         service.setStudySubjectAssignmentDao(StudySubjectAssignmentDao);
+
+        templateDevService = new TemplateDevelopmentService();
+        templateDevService.setAmendmentService(service);
+        templateDevService.setTemplateService(mockTemplateService);
+        templateDevService.setAmendmentDao(amendmentDao);
+        templateDevService.setStudyDao(studyDao);
+        templateDevService.setDaoFinder(daoFinder);
+        templateDevService.setDeltaService(mockDeltaService);
+        templateDevService.setStudyService(studyService);
     }
 
     @Override
@@ -355,11 +362,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         mockDeltaService.delete(delta);
         amendmentDao.delete(dev);
         studyService.save(study);
-//        populationService.delete(study.getPopulations());
 
         replayMocks();
-        service.deleteDevelopmentAmendment(study);
-
+        templateDevService.deleteDevelopmentAmendment(study);
         assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
         verifyMocks();
     }
@@ -376,7 +381,6 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         study.setAmendment(null);
         study.setDevelopmentAmendment(dev);
 
-//        populationService.delete(study.getPopulations());
         mockDeltaService.delete(d1);
         mockDeltaService.delete(d2);
         mockTemplateService.delete(study.getPlannedCalendar());
@@ -384,7 +388,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         studyDao.delete(study);
 
         replayMocks();
-        service.deleteDevelopmentAmendment(study);
+        templateDevService.deleteDevelopmentAmendment(study);
         verifyMocks();
     }
 
@@ -406,7 +410,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         studyService.save(study);
 
         replayMocks();
-        service.deleteDevelopmentAmendmentOnly(study);
+//        service.deleteDevelopmentAmendmentOnly(study);
+        templateDevService.deleteDevelopmentAmendmentOnly(study);
         assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
         verifyMocks();
     }

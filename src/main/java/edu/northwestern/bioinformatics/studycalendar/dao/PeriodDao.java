@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> implements DeletableDomainObjectDao<Period> {
+public class PeriodDao extends ChangeableDao<Period> {
     @Override
     public Class<Period> domainClass() {
         return Period.class;
@@ -29,5 +29,9 @@ public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> imple
     */
     public void delete(Period period) {
         getHibernateTemplate().delete(period);
+    }
+
+    public void deleteOrphans() {
+        deleteOrphans("Period", "studySegment", "StudySegmentDelta", "segmnt");
     }
 }

@@ -9,7 +9,7 @@ import org.hibernate.Hibernate;
 /**
  * @author Rhett Sutphin
  */
-public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> implements DeletableDomainObjectDao<Epoch> {
+public class EpochDao extends ChangeableDao<Epoch> {
     @Override public Class<Epoch> domainClass() { return Epoch.class; }
 
     /**
@@ -46,5 +46,9 @@ public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> impleme
     */
     public void delete(Epoch epoch) {
         getHibernateTemplate().delete(epoch);
+    }
+
+    public void deleteOrphans() {
+        deleteOrphans("Epoch", "plannedCalendar", "PlannedCalendarDelta", "cal");
     }
 }
