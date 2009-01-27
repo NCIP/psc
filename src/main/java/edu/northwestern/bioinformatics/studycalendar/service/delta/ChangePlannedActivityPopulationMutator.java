@@ -3,8 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import java.util.List;
 /**
  * @author Rhett Sutphin
  */
@@ -22,7 +26,27 @@ public class ChangePlannedActivityPopulationMutator extends ChangePlannedActivit
 
     @Override
     protected Object getAssignableValue(String value) {
-        return value == null ? null : populationDao.getByAbbreviation(study, value);
+        Population population = null;
+        if(value != null) {
+            population = populationDao.getByAbbreviation(study,value);
+            if(population!=null) {
+                return population;
+            } else {
+                for(Delta delta:study.getDevelopmentAmendment().getDeltas()) {
+                   if(delta.getNode() instanceof Study) {
+                       List<ChildrenChange> changes = delta.getChanges();
+                       for(ChildrenChange change:changes  ) {
+                           if ((ChangeAction.ADD).equals(change.getAction())) {
+                                    population  = populationDao.getById(change.getChildId());
+                                    if(value.equals(population.getAbbreviation()))
+                                        return population;
+                           }
+                       }
+                   }
+               }
+            }
+        }
+        return population;
     }
 
     @Override
