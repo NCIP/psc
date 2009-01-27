@@ -3,8 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
@@ -26,5 +25,14 @@ public class StaticDaoFinder implements DaoFinder {
         DomainObjectDao<T> found = (DomainObjectDao<T>) byClass.get(klass);
         if (found == null) throw new StudyCalendarSystemException("No DAO for %s", klass.getName());
         return found;
+    }
+
+    public <T extends ChangeableDao> List<ChangeableDao<?>> findStudyCalendarMutableDomainObjectDaos() {
+        Collection<DomainObjectDao<?>> collectionOfDaos = byClass.values();
+        List<ChangeableDao<?>> listOfDaos = new ArrayList<ChangeableDao<?>>();
+        for(DomainObjectDao dao : collectionOfDaos) {
+            listOfDaos.add((ChangeableDao)dao);
+        }
+        return listOfDaos;
     }
 }

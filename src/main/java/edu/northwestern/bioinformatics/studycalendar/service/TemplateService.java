@@ -4,18 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.nwu.bioinformatics.commons.StringUtils;
@@ -591,20 +587,22 @@ public class TemplateService {
     // TODO: this should be in a more generic service, perhaps
     @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     public <T extends MutableDomainObject> void delete(T object) {
-        DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
-        if (!(dao instanceof DeletableDomainObjectDao)) {
-            throw new StudyCalendarSystemException(
-                    "DAO for %s (%s) does not implement the deletable interface",
-                    object.getClass().getSimpleName(), dao.getClass().getName()
-            );
+        if (object != null) {
+            DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
+            if (!(dao instanceof DeletableDomainObjectDao)) {
+                throw new StudyCalendarSystemException(
+                        "DAO for %s (%s) does not implement the deletable interface",
+                        object.getClass().getSimpleName(), dao.getClass().getName()
+                );
+            }
+            DeletableDomainObjectDao<T> deleter = (DeletableDomainObjectDao) dao;
+            if (object instanceof Parent) {
+                Parent innerNode = (Parent) object;
+                delete(innerNode.getChildren());
+                innerNode.getChildren().clear();
+            }
+            deleter.delete(object);
         }
-        DeletableDomainObjectDao<T> deleter = (DeletableDomainObjectDao) dao;
-        if (object instanceof Parent) {
-            Parent innerNode = (Parent) object;
-            delete(innerNode.getChildren());
-            innerNode.getChildren().clear();
-        }
-        deleter.delete(object);
     }
 
     ////// CONFIGURATION

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 
 import java.util.List;
@@ -107,4 +108,47 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertNotNull("Could not reload", reloaded);
         assertEquals("Wrong number of labels", 1, reloaded.getPlannedActivityLabels().size());
     }
+
+    public void testDeleteJustPlainOrphans() throws Exception {
+        PlannedActivity pa = getDao().getById(-122);
+        assertNotNull(pa);
+        assertTrue("PlannedActivity is attached ", pa.isDetached());
+        assertNull("PlannedActivity has a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNull(getDao().getById(-122));
+    }
+
+    public void testDeletePAWithParent() throws Exception {
+        PlannedActivity pa = getDao().getById(-12);
+        assertNotNull(pa);
+        assertNotNull("PlannedActivity doesnot have a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-12));
+    }
+
+    public void testDeletePAWithParentAndChangeAdd() throws Exception {
+        PlannedActivity pa = getDao().getById(-18);
+        assertFalse("Epoch is deattached ", pa.isDetached());
+        assertNotNull("Epoch has a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-18));
+    }
+
+    public void testToDeletePAWithAddOnly() throws Exception {
+        PlannedActivity pa = getDao().getById(-189);
+        assertTrue("PlannedActivity is deattached ", pa.isDetached());
+        assertNull("PlannedActivity has a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-189));
+    }
+
+    public void testToDeletePAWithRemoveOnly() throws Exception {
+        PlannedActivity pa = getDao().getById(-100);
+        assertTrue("PlannedActivity is deattached ", pa.isDetached());
+        assertNull("PlannedActivity has a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-100));
+
+    }    
+
 }

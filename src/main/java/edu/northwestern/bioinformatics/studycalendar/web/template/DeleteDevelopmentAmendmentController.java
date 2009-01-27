@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -28,6 +29,7 @@ public class DeleteDevelopmentAmendmentController extends PscSimpleFormControlle
 
     private StudyDao studyDao;
     private AmendmentService amendmentService;
+    private TemplateDevelopmentService templateDevelopmentService;
 
     public DeleteDevelopmentAmendmentController() {
         setCommandClass(DeleteDevelopmentAmendmentCommand.class);
@@ -52,7 +54,7 @@ public class DeleteDevelopmentAmendmentController extends PscSimpleFormControlle
 
     @Override
     protected Object formBackingObject(final HttpServletRequest request) throws Exception {
-        DeleteDevelopmentAmendmentCommand command = new DeleteDevelopmentAmendmentCommand(amendmentService);
+        DeleteDevelopmentAmendmentCommand command = new DeleteDevelopmentAmendmentCommand(amendmentService, templateDevelopmentService);
         return command;
     }
 
@@ -95,5 +97,10 @@ public class DeleteDevelopmentAmendmentController extends PscSimpleFormControlle
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setTemplateDevelopmentService(TemplateDevelopmentService templateDevelopmentService) {
+        this.templateDevelopmentService = templateDevelopmentService;
     }
 }

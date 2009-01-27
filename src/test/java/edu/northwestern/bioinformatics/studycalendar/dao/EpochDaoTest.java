@@ -1,11 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 /**
  * @author Rhett Sutphin
  */
 public class EpochDaoTest extends ContextDaoTestCase<EpochDao> {
+    private EpochDao epochDao = getDao();
 
     public void testGetById() throws Exception {
         Epoch loaded = getDao().getById(-1);
@@ -17,20 +18,48 @@ public class EpochDaoTest extends ContextDaoTestCase<EpochDao> {
         assertEquals("Wrong 2nd study segment", "C", loaded.getStudySegments().get(2).getName());
     }
 
-    public void testSaveDetached() throws Exception {
-        Integer id;
-        {
-            Epoch epoch = new Epoch();
-            epoch.setName("J");
-            getDao().save(epoch);
-            assertNotNull("not saved", epoch.getId());
-            id = epoch.getId();
-        }
-
-        interruptSession();
-
-        Epoch loaded = getDao().getById(id);
-        assertNotNull("Could not reload", loaded);
-        assertEquals("Wrong epoch loaded", "J", loaded.getName());
+    public void testDeleteJustPlainOrphans() throws Exception {
+        Epoch e = epochDao.getById(-12);
+        assertNotNull(e);
+        assertTrue("Epoch is attached ", e.isDetached());
+        assertNull("Epoch has a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNull(epochDao.getById(-12));
     }
+
+    public void testDeleteEpochWithParent() throws Exception {
+        Epoch e = epochDao.getById(-1);
+        assertNotNull(e);
+        assertFalse("Epoch is attached ", e.isDetached());
+        assertNotNull("Epoch doesnot have a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNotNull(epochDao.getById(-1));
+    }
+
+    public void testDeleteEpochWithParentAndChangeAdd() throws Exception {
+        Epoch e = epochDao.getById(-18);
+        assertFalse("Epoch is deattached ", e.isDetached());
+        assertNotNull("Epoch has a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNotNull(epochDao.getById(-18));
+    }
+
+    public void testToDeleteEpochWithAddOnly() throws Exception {
+        Epoch e = epochDao.getById(-199);
+        assertTrue("Epoch is deattached ", e.isDetached());
+        assertNull("Epoch has a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNotNull(epochDao.getById(-199));
+
+    }
+
+    public void testToDeleteEpochWithRemoveOnly() throws Exception {
+        Epoch e = epochDao.getById(-20);
+        assertTrue("Epoch is deattached ", e.isDetached());
+        assertNull("Epoch has a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNotNull(epochDao.getById(-20));
+
+    }
+
 }

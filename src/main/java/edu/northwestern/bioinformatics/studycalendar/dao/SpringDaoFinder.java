@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
@@ -22,7 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
  * @author Rhett Sutphin
  */
 public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
-    private final Logger log = LoggerFactory.getLogger(getClass());
+   private final Logger log = LoggerFactory.getLogger(getClass());
     private SortedSet<DaoEntry> entries;
 
     public SpringDaoFinder() {
@@ -47,8 +44,25 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
         throw new StudyCalendarSystemException("There is no DAO registered for %s", domainClass.getName());
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public <T extends ChangeableDao> List<ChangeableDao<?>> findStudyCalendarMutableDomainObjectDaos() {
+        List<ChangeableDao<?>> daos = new ArrayList<ChangeableDao<?>>();
+        for (DaoEntry entry : entries) {
+            // since the entries are sorted by specificity, we can return the first match
+            if (entry.matchesDaoSuperclas(ChangeableDao.class)) {
+                daos.add((ChangeableDao)entry.getDao());
+            }
+        }
+        if (daos.isEmpty()) {
+            throw new StudyCalendarSystemException("There is no DAO registered for %s", StudyCalendarMutableDomainObjectDao.class.getName());
+        } else {
+            return daos;
+        }
+    }
+
     private static class DaoEntry implements Comparable<DaoEntry> {
         private DomainObjectDao<?> dao;
+        private final Logger log = LoggerFactory.getLogger(getClass());
         private int specificity; // depth from java.lang.Object to the DAO's domain class
 
         public DaoEntry(DomainObjectDao<?> dao) {
@@ -59,6 +73,11 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
         private int countSuperclasses(Class<?> klass, int count) {
             if (klass == null) return count;
             return countSuperclasses(klass.getSuperclass(), count + 1);
+        }
+
+
+        public boolean matchesDaoSuperclas(Class<?> domainClass) {
+            return getDao().getClass().getSuperclass().equals(domainClass);
         }
 
         public boolean matches(Class<?> domainClass) {
@@ -83,5 +102,4 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
                 .append("; specificity: ").append(specificity).append(']')
                 .toString();
         }
-    }
-}
+    }}

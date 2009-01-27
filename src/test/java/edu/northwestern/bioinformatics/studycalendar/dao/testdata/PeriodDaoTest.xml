@@ -54,4 +54,41 @@
         period_id="-100"
         day="5"
         />
+
+
+    <PERIODS
+        id="-10"
+        version="0"
+        start_day="8"
+        name="Treatment"
+        duration_quantity="6"
+        duration_unit="week"
+        repetitions="3"
+        />
+
+    <STUDIES id="-101" assigned_identifier="Don't care" long_title="Study"/>
+    <PLANNED_CALENDARS id="-101" study_id="-101"/>
+    <EPOCHS id="-101" planned_calendar_id="-101" name="Don't care"/>
+    <STUDY_SEGMENTS id="-101" epoch_id="-101" name="Don't care"/>
+    <PERIODS id="-101" version="0" study_segment_id="-101" name="Don't care" duration_quantity="1" duration_unit="day"/>
+
+    <AMENDMENTS id="-180" amendment_date="2007-01-01"/>
+    <PERIODS
+        id="-19"
+        version="0"
+        start_day="8"
+        name="Treatment"
+        duration_quantity="6"
+        duration_unit="week"
+        repetitions="3"
+        />
+    <DELTAS id="-193" node_id="-19" node_type="segmnt" amendment_id="-180"/>
+    <CHANGES id="-194" delta_id="-193" new_value="-19" action="add"/>
+
+
+    <AMENDMENTS id="-200" amendment_date="2007-01-01"/>
+    <PERIODS id="-200" version="0" start_day="8" name="Treatment 1" duration_quantity="6" duration_unit="week" repetitions="3" />
+    <DELTAS id="-200" node_id="-200" node_type="segmnt" amendment_id="-200"/>
+    <CHANGES id="-200" delta_id="-200" old_value="-200" action="remove"/>
+
 </dataset>

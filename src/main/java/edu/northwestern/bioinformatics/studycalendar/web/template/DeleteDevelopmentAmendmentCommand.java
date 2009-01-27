@@ -4,21 +4,25 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 
 /**
  * @author Rhett Sutphin
  */
 public class DeleteDevelopmentAmendmentCommand {
     private AmendmentService amendmentService;
+    private TemplateDevelopmentService templateDevelopmentService;
 
     private Study study;
 
-    public DeleteDevelopmentAmendmentCommand(AmendmentService amendmentService) {
+    public DeleteDevelopmentAmendmentCommand(AmendmentService amendmentService, TemplateDevelopmentService templateDevelopmentService) {
         this.amendmentService = amendmentService;
+        this.templateDevelopmentService = templateDevelopmentService;
     }
 
     public void apply() {
-        amendmentService.deleteDevelopmentAmendment(study);
+//        amendmentService.deleteDevelopmentAmendment(study);
+        templateDevelopmentService.deleteDevelopmentAmendment(study);
     }
 
     ////// BOUND PROPERTIES

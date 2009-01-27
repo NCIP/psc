@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
@@ -44,6 +44,10 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
     private BeanFactory beanFactory;
 
     private AmendmentXmlSerializer amendmentXmlSerializer;
+    private TemplateDevelopmentService templateDevService;
+    private DynamicMockDaoFinder daoFinder;
+    private TemplateService mockTemplateService;
+    private DeltaService mockDeltaService;
 
     @Override
     protected void setUp() throws Exception {
@@ -76,7 +80,12 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
 
         amendmentXmlSerializer = new AmendmentXmlSerializer();
         amendmentXmlSerializer.setAmendmentDao(amendmentDao);
-    }
+
+        mockTemplateService = registerMockFor(TemplateService.class);
+        mockDeltaService = registerMockFor(DeltaService.class);
+        
+        templateDevService = registerMockFor(TemplateDevelopmentService.class);
+     }
 
 
     @Override
@@ -89,6 +98,7 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
         resource.setXmlSerializer(xmlSerializer);
         resource.setStudyService(studyService);
         resource.setBeanFactory(beanFactory);
+        resource.setTemplateDevelopmentService(templateDevService);
         return resource;
     }
 
@@ -106,7 +116,8 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
 
         expectAmendmentXmlSerializer();
         expectAmendmentXmlSerializer();
-        amendmentService.deleteDevelopmentAmendmentOnly(study);
+//        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        templateDevService.deleteDevelopmentAmendmentOnly(study);
         studyService.save(study);
         doPut();
 
@@ -238,7 +249,8 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
     public void testDeleteDevelopmentAmendment() throws Exception {
         expectFoundStudy();
         expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(developmentAmendment);
-        amendmentService.deleteDevelopmentAmendmentOnly(study);
+//        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        templateDevService.deleteDevelopmentAmendmentOnly(study);
         doDelete();
 
         assertEquals("Result should be 200", Status.SUCCESS_OK, response.getStatus());

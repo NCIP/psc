@@ -105,5 +105,38 @@ public class StudySegmentDaoTest extends DaoTestCase {
         StudySegment studySegment = dao.getById(-2);
         assertEquals("The length doesn't match", new Integer(14), studySegment.getCycleLength());
     }
+
+    public void testDeleteJustStudySegmentAsPlainOrphan() throws Exception {
+        StudySegment ss = dao.getById(-10);
+        assertNotNull(ss);
+        assertTrue("StudySegment is attached ", ss.isDetached());
+        assertNull("StudySegment has a parent ", ss.getParent());
+        dao.deleteOrphans();
+        assertNull(dao.getById(-10));
+    }
+
+    public void testDeleteStudySegmentWithParent() throws Exception {
+        StudySegment ss = dao.getById(-101);
+        assertNotNull(ss);
+        assertNotNull("StudySegment does not have a parent ", ss.getParent());
+        dao.deleteOrphans();
+        assertNotNull(dao.getById(-101));
+    }
+
+    public void testToDeleteStudySegmentWithAddOnly() throws Exception {
+        StudySegment ss = dao.getById(-18);
+        assertTrue("StudySegment is attached ", ss.isDetached());
+        assertNull("StudySegment has a parent ", ss.getParent());
+        dao.deleteOrphans();
+        assertNotNull(dao.getById(-18));
+    }
+
+    public void testToDeleteStudySegmentWithRemoveOnly() throws Exception {
+        StudySegment ss = dao.getById(-100);
+        assertTrue("StudySegment is attached ", ss.isDetached());
+        assertNull("StudySegment has a parent ", ss.getParent());
+        dao.deleteOrphans();
+        assertNotNull(dao.getById(-100));
+    }
 }
 

@@ -1,12 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.ChangeableDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * This service provides orchestration methods for incrementally building up templates.
@@ -22,6 +30,13 @@ public class TemplateDevelopmentService {
     private TemplateService templateService;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
+    private DaoFinder daoFinder;
+    private StudyDao studyDao;
+    private StudyService studyService;
+    private AmendmentDao amendmentDao;
+
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * Copies the given period to the target segment (by updating the development amendment for
@@ -53,6 +68,50 @@ public class TemplateDevelopmentService {
         amendmentService.updateDevelopmentAmendmentAndSave(target, Add.create(copy));
         return copy;
     }
+
+
+
+    public void purgeOrphanTemplateElements(){
+        List<ChangeableDao<?>> daos = daoFinder.findStudyCalendarMutableDomainObjectDaos();
+        for (ChangeableDao dao : daos) {
+            dao.deleteOrphans();
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void deleteDevelopmentAmendment(Study study) {
+        purgeOrphanTemplateElements();
+        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
+        if (study.getAmendment() == null) {
+            templateService.delete(study.getPlannedCalendar());
+            studyDao.delete(study);
+        } else {
+            study.setDevelopmentAmendment(null);
+            studyService.save(study);
+        }
+    }
+
+    /**
+     * Deletes the development amendment for the designated study.  Even if the
+     * study has no released amendment, it does not delete the study and the study's
+     * planned calendar.
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void deleteDevelopmentAmendmentOnly(Study study) {
+        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
+        study.setDevelopmentAmendment(null);
+        studyService.save(study);
+    }
+
+    private void deleteDevelopmentAmendment(Amendment dev) {
+        if (dev != null) {
+            for (Delta<?> delta : dev.getDeltas()) {
+                deltaService.delete(delta);
+            }
+            amendmentDao.delete(dev);
+        }
+    }
+
 
     private void updateCopiedPlannedActivity(PlannedActivity pa, Study sourceStudy) {
         if (pa.getPopulation() != null) {
@@ -94,4 +153,25 @@ public class TemplateDevelopmentService {
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
     }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+    
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
+    }
+
 }

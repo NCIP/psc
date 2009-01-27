@@ -3,11 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.easymock.classextension.EasyMock.*;
 import junit.framework.AssertionFailedError;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 /**
  * @author Rhett Sutphin
@@ -36,6 +36,15 @@ public class DynamicMockDaoFinder implements DaoFinder {
             throw new AssertionFailedError("Did not expect to need a DAO for " + klass.getName());
         }
         return mocks.get(klass);
+    }
+
+    public <T extends ChangeableDao> List<ChangeableDao<?>> findStudyCalendarMutableDomainObjectDaos() {
+        Collection<DomainObjectDao> collectionOfDaos = mocks.values();
+        List<ChangeableDao<?>> listOfDaos = new ArrayList<ChangeableDao<?>>();
+        for(DomainObjectDao dao : collectionOfDaos) {
+            listOfDaos.add((ChangeableDao)dao);
+        }
+        return listOfDaos;
     }
 
     public void replayAll() {

@@ -198,43 +198,6 @@ public class AmendmentService {
         }
     }
 
-    /**
-     * Deletes the development amendment for the designated study.  If the
-     * study has no released amendment, it deletes the study and the study's
-     * planned calendar.
-     */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void deleteDevelopmentAmendment(Study study) {
-        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
-        if (study.getAmendment() == null) {
-            templateService.delete(study.getPlannedCalendar());
-            studyDao.delete(study);
-        } else {
-            study.setDevelopmentAmendment(null);
-            studyService.save(study);
-        }
-    }
-
-    /**
-     * Deletes the development amendment for the designated study.  Even if the
-     * study has no released amendment, it does not delete the study and the study's
-     * planned calendar.
-     */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void deleteDevelopmentAmendmentOnly(Study study) {
-        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
-        study.setDevelopmentAmendment(null);
-        studyService.save(study);
-    }
-
-    private void deleteDevelopmentAmendment(Amendment dev) {
-        if (dev != null) {
-            for (Delta<?> delta : dev.getDeltas()) {
-                deltaService.delete(delta);
-            }
-            amendmentDao.delete(dev);
-        }
-    }
 
     ////// CONFIGURATION
 

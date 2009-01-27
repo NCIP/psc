@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 
 /**
  * @author Rhett Sutphin
@@ -13,6 +14,7 @@ public class DeleteDevelopmentAmendmentCommandTest extends StudyCalendarTestCase
 
     private Study study;
     private AmendmentService amendmentService;
+    private TemplateDevelopmentService tempDevService;
 
     @Override
     protected void setUp() throws Exception {
@@ -22,12 +24,15 @@ public class DeleteDevelopmentAmendmentCommandTest extends StudyCalendarTestCase
 
         amendmentService = registerMockFor(AmendmentService.class);
 
-        command = new DeleteDevelopmentAmendmentCommand(amendmentService);
+        tempDevService = registerMockFor(TemplateDevelopmentService.class);
+
+        command = new DeleteDevelopmentAmendmentCommand(amendmentService, tempDevService);
         command.setStudy(study);
     }
     
     public void testApply() throws Exception {
-        amendmentService.deleteDevelopmentAmendment(study);
+//        amendmentService.deleteDevelopmentAmendment(study);
+        tempDevService.deleteDevelopmentAmendment(study);
         replayMocks();
         command.apply();
         verifyMocks();
