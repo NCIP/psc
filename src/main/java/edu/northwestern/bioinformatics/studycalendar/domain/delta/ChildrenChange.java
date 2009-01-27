@@ -110,4 +110,11 @@ public abstract class ChildrenChange extends Change {
         result = 31 * result + (getChildId() != null ? getChildId().hashCode() : 0);
         return result;
     }
+
+    @Override
+    public ChildrenChange clone() {
+        ChildrenChange clone = (ChildrenChange) super.clone();
+        if (getChild() != null) clone.setChild(getChild().clone());
+        return clone;
+    }
 }

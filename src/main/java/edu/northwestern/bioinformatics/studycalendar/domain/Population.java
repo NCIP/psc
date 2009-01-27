@@ -13,9 +13,6 @@ import javax.persistence.Transient;
 import java.util.Comparator;
 import java.util.Set;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-
 /**
  * @author Rhett Sutphin
  */
@@ -129,7 +126,7 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected Population clone() {
+    public Population clone() {
         try {
             Population clone = (Population) super.clone();
             clone.setStudy(null);

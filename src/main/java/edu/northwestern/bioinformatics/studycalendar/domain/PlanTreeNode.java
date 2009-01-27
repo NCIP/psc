@@ -66,7 +66,7 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
 
     @Override
     @SuppressWarnings({"unchecked"})
-    protected PlanTreeNode<P> clone() {
+    public PlanTreeNode<P> clone() {
         try {
             return (PlanTreeNode<P>) super.clone();
         } catch (CloneNotSupportedException e) {

@@ -93,6 +93,24 @@ public class DeltaTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testCloneDeepClonesChanges() throws Exception {
+        Delta<Epoch> src = Delta.createDeltaFor(new Epoch());
+        src.addChange(PropertyChange.create("name", "A", "Aprime"));
+
+        Delta<Epoch> clone = src.clone();
+        assertEquals("Wrong number of cloned changes", 1, clone.getChanges().size());
+        assertNotSame("Changes not deep cloned", src.getChanges().get(0), clone.getChanges().get(0));
+        assertEquals("Changes not cloned", src.getChanges().get(0), clone.getChanges().get(0));
+    }
+
+    public void testCloneClearsParentRef() throws Exception {
+        Delta<Epoch> src = Delta.createDeltaFor(new Epoch());
+        src.setRevision(new Amendment());
+
+        Delta<Epoch> clone = src.clone();
+        assertNull("Clone has stale parent ref", clone.getRevision());
+    }
+
     private static <T extends Changeable> void assertDeltaFor(T node, Class<?> expectedClass) {
         Delta<T> actual = Delta.createDeltaFor(node);
         assertNotNull(actual);

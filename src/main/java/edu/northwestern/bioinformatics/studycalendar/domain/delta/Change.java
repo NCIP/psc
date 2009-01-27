@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -30,7 +31,7 @@ import java.util.List;
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="action", discriminatorType = DiscriminatorType.STRING)
-public abstract class Change extends AbstractMutableDomainObject {
+public abstract class Change extends AbstractMutableDomainObject implements Cloneable {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private Date updatedDate;
@@ -128,6 +129,19 @@ public abstract class Change extends AbstractMutableDomainObject {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public Change clone() {
+        try {
+            Change clone = (Change) super.clone();
+            clone.setDelta(null);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
     }
 
     ////// INNER CLASSES

@@ -6,9 +6,11 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author Rhett Sutphin
  */
-public interface Child<P extends DomainObject> extends Changeable {
+public interface Child<P extends DomainObject> extends Changeable, Cloneable {
     Class<P> parentClass();
 
     void setParent(P parent);
     P getParent();
+
+    Child<P> clone();
 }

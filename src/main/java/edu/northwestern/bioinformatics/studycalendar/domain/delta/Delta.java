@@ -40,7 +40,7 @@ import java.util.ListIterator;
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="node_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Delta<T extends Changeable> extends AbstractMutableDomainObject {
+public abstract class Delta<T extends Changeable> extends AbstractMutableDomainObject implements Cloneable {
     private List<Change> changes;
     private T node;
     private Revision revision;
@@ -156,5 +156,21 @@ public abstract class Delta<T extends Changeable> extends AbstractMutableDomainO
     public String toString() {
         return  new StringBuilder(getClass().getSimpleName())
             .append("[node=").append(getNode()).append(']').toString();
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    public Delta<T> clone() {
+        try {
+            Delta<T> clone = (Delta<T>) super.clone();
+            clone.setRevision(null);
+            clone.setChangesInternal(new ArrayList<Change>(getChangesInternal().size()));
+            for (Change change : getChangesInternal()) {
+                clone.addChange(change.clone());
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
     }
 }

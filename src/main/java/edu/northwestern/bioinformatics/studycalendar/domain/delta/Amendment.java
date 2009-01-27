@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
@@ -35,11 +36,14 @@ import java.util.List;
 @Entity
 @Table(name = "amendments")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
-                @Parameter(name = "sequence", value = "seq_amendments_id")
-        }
+    parameters = {
+        @Parameter(name = "sequence", value = "seq_amendments_id")
+    }
 )
-public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
+public class Amendment
+    extends AbstractMutableDomainObject 
+    implements Revision, NaturallyKeyed, Cloneable
+{
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
 
     private Amendment previousAmendment;
@@ -171,8 +175,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @OrderBy
-    // order by ID for testing consistency
+    @OrderBy // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -257,15 +260,30 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         return result;
     }
 
+    @Override
+    public Amendment clone() {
+        try {
+            Amendment clone = (Amendment) super.clone();
+            if (getPreviousAmendment() != null) {
+                clone.setPreviousAmendment(getPreviousAmendment().clone());
+            }
+            clone.setDeltas(new ArrayList<Delta<?>>(getDeltas().size()));
+            for (Delta<?> delta : getDeltas()) {
+                clone.addDelta(delta.clone());
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
+
     @Transient
     public Delta getMatchingDelta(String gridId, String nodeId) {
         for (Delta delta : this.getDeltas()) {
             if (delta.getGridId().equals(gridId) && delta.getNode() != null && delta.getNode().getGridId().equals(nodeId)) {
                 return delta;
-
             }
         }
-
         return null;
     }
 

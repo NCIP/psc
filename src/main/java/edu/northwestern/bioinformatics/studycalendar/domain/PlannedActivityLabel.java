@@ -118,7 +118,7 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected PlannedActivityLabel clone() {
+    public PlannedActivityLabel clone() {
         try {
             PlannedActivityLabel clone = (PlannedActivityLabel) super.clone();
             clone.setPlannedActivity(null);
