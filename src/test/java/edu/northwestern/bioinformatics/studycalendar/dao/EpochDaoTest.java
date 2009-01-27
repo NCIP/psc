@@ -53,4 +53,13 @@ public class EpochDaoTest extends ContextDaoTestCase<EpochDao> {
 
     }
 
+    public void testToDeleteEpochWithRemoveOnly() throws Exception {
+        Epoch e = epochDao.getById(-20);
+        assertTrue("Epoch is deattached ", e.isDetached());
+        assertNull("Epoch has a parent ", e.getParent());
+        epochDao.deleteOrphans();
+        assertNotNull(epochDao.getById(-20));
+
+    }
+
 }

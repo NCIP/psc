@@ -130,6 +130,13 @@ public class StudySegmentDaoTest extends DaoTestCase {
         dao.deleteOrphans();
         assertNotNull(dao.getById(-18));
     }
-    
+
+    public void testToDeleteStudySegmentWithRemoveOnly() throws Exception {
+        StudySegment ss = dao.getById(-100);
+        assertTrue("StudySegment is attached ", ss.isDetached());
+        assertNull("StudySegment has a parent ", ss.getParent());
+        dao.deleteOrphans();
+        assertNotNull(dao.getById(-100));
+    }
 }
 

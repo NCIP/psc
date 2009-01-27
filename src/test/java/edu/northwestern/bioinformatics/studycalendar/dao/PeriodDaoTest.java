@@ -117,4 +117,12 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         getDao().deleteOrphans();
         assertNotNull(getDao().getById(-19));
     }
+
+    public void testToDeletePeriodWithRemoveOnly() throws Exception {
+        Period p = getDao().getById(-200);
+        assertTrue("Period is attached ", p.isDetached());
+        assertNull("Period has a parent ", p.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-200));
+    }
 }

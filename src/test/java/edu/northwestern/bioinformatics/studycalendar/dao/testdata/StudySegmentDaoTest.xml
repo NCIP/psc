@@ -44,4 +44,13 @@
     <STUDY_SEGMENTS id="-18" name="Don't care 1"/>
     <DELTAS id="-18" node_id="-18" node_type="epoch" amendment_id="-18"/>
     <CHANGES id="-18" delta_id="-18" new_value='-18' action="add"/>
+
+
+    <AMENDMENTS id="-100" amendment_date="2007-01-01"/>
+    <STUDIES id="-100" version="0" assigned_identifier="Don't care 100" long_title="Study 100"/>
+    <PLANNED_CALENDARS id="-100" study_id="-100"/>
+    <EPOCHS id="-100" planned_calendar_id="-100" name="Don't care 100"/>
+    <STUDY_SEGMENTS id="-100" name="Don't care 100"/>
+    <DELTAS id="-100" node_id="-100" node_type="epoch" amendment_id="-100"/>
+    <CHANGES id="-100" delta_id="-100" old_value='-100' action="remove"/>
 </dataset>

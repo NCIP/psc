@@ -140,7 +140,15 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertNull("PlannedActivity has a parent ", pa.getParent());
         getDao().deleteOrphans();
         assertNotNull(getDao().getById(-189));
-
     }
+
+    public void testToDeletePAWithRemoveOnly() throws Exception {
+        PlannedActivity pa = getDao().getById(-100);
+        assertTrue("PlannedActivity is deattached ", pa.isDetached());
+        assertNull("PlannedActivity has a parent ", pa.getParent());
+        getDao().deleteOrphans();
+        assertNotNull(getDao().getById(-100));
+
+    }    
 
 }

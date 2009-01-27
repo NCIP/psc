@@ -47,4 +47,9 @@
     <EPOCHS id="-199" name="Don't care"/>
     <DELTAS id="-197" node_id="-199" node_type="cal" amendment_id="-19"/>
     <CHANGES id="-196" delta_id="-197" new_value='-199' action="add"/>
+
+    <AMENDMENTS id="-20" amendment_date="2007-01-01"/>
+    <EPOCHS id="-20" name="remove epoch 1"/>
+    <DELTAS id="-20" node_id="-20" node_type="cal" amendment_id="-20"/>
+    <CHANGES id="-20" delta_id="-20" old_value='-20' action="remove"/>
 </dataset>

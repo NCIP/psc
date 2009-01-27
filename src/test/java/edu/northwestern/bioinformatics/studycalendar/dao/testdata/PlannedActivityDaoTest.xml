@@ -88,4 +88,12 @@
     <DELTAS id="-197" node_id="-189" node_type="period" amendment_id="-19"/>
     <CHANGES id="-196" delta_id="-197" new_value='-189' action="add"/>
 
+    <ACTIVITY_TYPES id="-100" name="DISEASE_MEASURE 100"/>
+    <ACTIVITIES id="-100" name="DC 100" activity_type_id="-100"/>
+    <AMENDMENTS id="-100" amendment_date="2007-01-01"/>
+    <PLANNED_ACTIVITIES id="-100" activity_id="-100" day="1"/>
+    <DELTAS id="-100" node_id="-100" node_type="period" amendment_id="-100"/>
+    <CHANGES id="-100" delta_id="-100" old_value='-100' action="remove"/>
+    
+
 </dataset>
