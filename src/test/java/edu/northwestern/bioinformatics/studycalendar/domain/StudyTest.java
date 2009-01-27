@@ -206,7 +206,7 @@ public class StudyTest extends StudyCalendarTestCase {
         assertNotSame("Dev amendment not cloned",
             src.getDevelopmentAmendment(), clone.getDevelopmentAmendment());
     }
-/*
+
     public void testTransientCloneIncludesTransientAmendment() throws Exception {
         Study clone = Fixtures.createBasicTemplate().transientClone();
         assertTrue(clone.getAmendment().isMemoryOnly());
@@ -216,7 +216,7 @@ public class StudyTest extends StudyCalendarTestCase {
         Study clone = Fixtures.createInDevelopmentBasicTemplate("DC").transientClone();
         assertTrue(clone.getDevelopmentAmendment().isMemoryOnly());
     }
-*/
+
     public void testLastModifiedDate() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();

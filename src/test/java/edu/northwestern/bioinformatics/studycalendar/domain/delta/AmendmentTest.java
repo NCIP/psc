@@ -217,4 +217,17 @@ public class AmendmentTest extends StudyCalendarTestCase {
             src.getPreviousAmendment().getPreviousAmendment(),
             clone.getPreviousAmendment().getPreviousAmendment());
     }
+
+    public void testSetMemOnlyRecursiveToDeltas() throws Exception {
+        Amendment amendment = Fixtures.createAmendment(null, DateTools.createDate(2008, Calendar.JUNE, 22));
+        amendment.addDelta(Delta.createDeltaFor(new Study()));
+        amendment.setMemoryOnly(true);
+        assertTrue(amendment.getDeltas().get(0).isMemoryOnly());
+    }
+
+    public void testSetMemOnlyRecursiveToPreviousAmendments() throws Exception {
+        Amendment amendment = Fixtures.createAmendments("C", "B", "A");
+        amendment.setMemoryOnly(true);
+        assertTrue(amendment.getPreviousAmendment().isMemoryOnly());
+    }
 }

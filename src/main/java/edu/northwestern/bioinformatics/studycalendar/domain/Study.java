@@ -153,6 +153,12 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
     public void setMemoryOnly(boolean memoryOnly) {
         this.memoryOnly = memoryOnly;
         getPlannedCalendar().setMemoryOnly(true);
+        if (getAmendment() != null) {
+            getAmendment().setMemoryOnly(memoryOnly);
+        }
+        if (getDevelopmentAmendment() != null) {
+            getDevelopmentAmendment().setMemoryOnly(memoryOnly);
+        }
     }
 
     public Study transientClone() {

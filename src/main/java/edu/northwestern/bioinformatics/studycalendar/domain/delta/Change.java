@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -31,11 +32,15 @@ import java.util.List;
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="action", discriminatorType = DiscriminatorType.STRING)
-public abstract class Change extends AbstractMutableDomainObject implements Cloneable {
+public abstract class Change
+    extends AbstractMutableDomainObject
+    implements Cloneable, TransientCloneable<Change>
+{
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private Date updatedDate;
     private Delta<?> delta;
+    private boolean memoryOnly;
 
     /**
      * Return the action used by this change.  It must match the discriminator value for the class.
@@ -109,6 +114,23 @@ public abstract class Change extends AbstractMutableDomainObject implements Clon
 
     protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, Date updateTime, int deletedChangePosition, int thisPreDeletePosition) {
         return null;
+    }
+
+    ////// IMPLEMENTATION OF TransientCloneable
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+    }
+
+    public Change transientClone() {
+        Change clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
     }
 
     ////// BEAN PROPERTIES

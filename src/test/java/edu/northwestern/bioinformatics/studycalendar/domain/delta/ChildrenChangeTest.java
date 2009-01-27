@@ -17,6 +17,12 @@ public class ChildrenChangeTest extends StudyCalendarTestCase {
         assertNotSame("Child of clone is same as child of original", clone.getChild(), src.getChild());
     }
 
+    public void testSetMemOnlyRecursiveToChild() throws Exception {
+        Hide src = new Hide(Epoch.create("Gary"));
+        src.setMemoryOnly(true);
+        assertTrue(src.getChild().isMemoryOnly());
+    }
+
     private static class Hide extends ChildrenChange {
         private Hide(Child<?> child) {
             setChild(child);

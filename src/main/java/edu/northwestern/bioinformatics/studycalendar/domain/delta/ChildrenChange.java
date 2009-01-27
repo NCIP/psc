@@ -77,6 +77,14 @@ public abstract class ChildrenChange extends Change {
         }
     }
 
+    @Override
+    public void setMemoryOnly(boolean memoryOnly) {
+        super.setMemoryOnly(memoryOnly);
+        if (getChild() != null) {
+            getChild().setMemoryOnly(memoryOnly);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     @Transient

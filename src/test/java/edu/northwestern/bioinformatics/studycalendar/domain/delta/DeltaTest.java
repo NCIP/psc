@@ -111,6 +111,13 @@ public class DeltaTest extends StudyCalendarTestCase {
         assertNull("Clone has stale parent ref", clone.getRevision());
     }
 
+    public void testSetMemOnlyRecursiveToChanges() throws Exception {
+        Delta<Epoch> delta = Delta.createDeltaFor(new Epoch());
+        delta.addChange(PropertyChange.create("name", "A", "Aprime"));
+        delta.setMemoryOnly(true);
+        assertTrue(delta.getChanges().get(0).isMemoryOnly());
+    }
+
     private static <T extends Changeable> void assertDeltaFor(T node, Class<?> expectedClass) {
         Delta<T> actual = Delta.createDeltaFor(node);
         assertNotNull(actual);

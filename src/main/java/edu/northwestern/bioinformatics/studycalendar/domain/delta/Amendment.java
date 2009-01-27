@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -10,7 +11,16 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,10 +52,11 @@ import java.util.List;
 )
 public class Amendment
     extends AbstractMutableDomainObject 
-    implements Revision, NaturallyKeyed, Cloneable
+    implements Revision, NaturallyKeyed, Cloneable, TransientCloneable<Amendment>
 {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
 
+    private boolean memoryOnly;
     private Amendment previousAmendment;
     private Date date;
     private String name;
@@ -169,6 +180,29 @@ public class Amendment
             }
         }
         return updated;
+    }
+
+    ////// IMPLEMENTATION OF TransientCloneable
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+        for (Delta<?> delta : getDeltas()) {
+            delta.setMemoryOnly(memoryOnly);
+        }
+        if (getPreviousAmendment() != null) {
+            getPreviousAmendment().setMemoryOnly(memoryOnly);
+        }
+    }
+
+    public Amendment transientClone() {
+        Amendment clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
     }
 
     ////// BEAN PROPERTIES
