@@ -3,10 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
@@ -77,10 +74,12 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                 "You can only update planned activities in the development version of the template");
         }
-        PlannedActivityForm form = new PlannedActivityForm(entity, helper.getRealStudy(), activityDao, populationDao);
+        PlannedActivityForm form ;
         if (isAvailable()) {
+            form = new PlannedActivityForm(entity, getStudy(), activityDao, populationDao);
             updatePlannedActivityFrom(form);
         } else {
+            form = new PlannedActivityForm(entity,helper.getRealStudy(), activityDao, populationDao);
             createNewPlannedActivityFrom(form);
         }
         String responseEntity;
@@ -165,6 +164,9 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         amendmentService.updateDevelopmentAmendmentAndSave(
             templateService.findParent(getRequestedObject()), Remove.create(getRequestedObject()));
         getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+    }
+    private Study getStudy() {
+        return templateService.findStudy(getRequestedObject());
     }
 
     ////// CONFIGURATION
