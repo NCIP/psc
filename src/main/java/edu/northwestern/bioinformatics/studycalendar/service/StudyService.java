@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
@@ -27,6 +28,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -42,11 +44,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @Transactional
 public class StudyService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private ActivityDao activityDao;
     private StudyDao studyDao;
     private DeltaService deltaService;
@@ -55,9 +60,9 @@ public class StudyService {
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
-    protected DaoFinder daoFinder;
+    private DaoFinder daoFinder;
+
     private static final String COPY = "copy";
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -294,6 +299,55 @@ public class StudyService {
         save(example);
     }
 
+    /**
+     * Returns a transient version of <tt>source</tt> that has every {@link Add} in every
+     * amendment resolved to the version of the added node as it existed when it was added.
+     *
+     * @param source
+     * @return a new, transient {@link Study} instance
+     */
+    public Study getCompleteTemplateHistory(Study source) {
+        List<Study> snapshots = new LinkedList<Study>();
+        snapshots.add(source.transientClone());
+        while (last(snapshots).getAmendment() != null && last(snapshots).getAmendment().getPreviousAmendment() != null) {
+            snapshots.add(deltaService.amendToPreviousVersion(last(snapshots).transientClone()));
+            resolveCurrentAdds(last(snapshots));
+        }
+        // The current amendment for each snapshot is now the version we want
+        // to include with the complete history
+        Study complete = source.transientClone();
+        Amendment current = complete.getAmendment();
+        for (int i = 1; i < snapshots.size(); i++) {
+            current.setPreviousAmendment(snapshots.get(i).getAmendment());
+        }
+        return complete;
+    }
+
+    private void resolveCurrentAdds(Study study) {
+        for (Delta<?> delta : study.getAmendment().getDeltas()) {
+            for (Change change : delta.getChanges()) {
+                if (change.getAction() == ChangeAction.ADD) {
+                    Add add = (Add) change;
+                    Child childTemplate;
+                    try {
+                        childTemplate = (Child) ((Parent) delta.getNode()).childClass().newInstance();
+                        childTemplate.setId(add.getChildId());
+                    } catch (InstantiationException e) {
+                        throw new StudyCalendarError("Uninstantiable child class", e);
+                    } catch (IllegalAccessException e) {
+                        throw new StudyCalendarError("Inaccessible child class", e);
+                    }
+                    add.setChild(templateService.findEquivalentChild(study, childTemplate));
+                }
+            }
+        }
+    }
+
+    private <T> T last(List<T> list) {
+        if (list.isEmpty()) return null;
+        else return list.get(list.size() - 1);
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -349,6 +403,8 @@ public class StudyService {
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
     }
+
+    ////// INNER CLASSES
 
     private class CopiedStudyTemporaryNameComparator implements Comparator<Study> {
         private final Logger logger = LoggerFactory.getLogger(getClass());

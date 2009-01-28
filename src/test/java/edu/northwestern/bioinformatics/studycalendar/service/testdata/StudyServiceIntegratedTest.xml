@@ -6,11 +6,7 @@
     <AMENDMENTS id="-220" amendment_date="2008-05-17" previous_amendment_id="-200"/>
     <AMENDMENTS id="-200" name="def" amendment_date="2008-05-17"/>
 
-
-
     <SITES id="-201" name="Old site"/>
-
-
 
     <STUDIES id="-1" assigned_identifier="ECOG" long_title="Study" grid_id="grid0"
              dev_amendment_id="-1" amendment_id="-220"/>

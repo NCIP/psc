@@ -6,12 +6,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
@@ -27,7 +28,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     private static final String STUDY_IDENT = "elf";
 
     private StudyDao studyDao;
-    private Study study;
+    private StudyService studyService;
+    private Study study, fullStudy;
     private ImportTemplateService importTemplateService;
     private StudyXmlSerializer studyXmlSerializer;
     private Date lastModifiedDate = DateUtils.createDate(2007, Calendar.OCTOBER, 5);
@@ -38,6 +40,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
         studyDao = registerDaoMockFor(StudyDao.class);
         importTemplateService = registerMockFor(ImportTemplateService.class);
+        studyService = registerMockFor(StudyService.class);
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
 
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
@@ -47,8 +50,10 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         study.getDevelopmentAmendment().addDelta(delta);
         delta.getChanges().get(0).setUpdatedDate(lastModifiedDate);
         Fixtures.assignIds(study);
+        fullStudy = study.transientClone();
 
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andStubReturn(study);
+        expect(studyService.getCompleteTemplateHistory(study)).andStubReturn(fullStudy);
     }
 
     @Override
@@ -57,6 +62,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         templateResource.setStudyDao(studyDao);
         templateResource.setXmlSerializer(studyXmlSerializer);
         templateResource.setImportTemplateService(importTemplateService);
+        templateResource.setStudyService(studyService);
         return templateResource;
     }
 
@@ -66,8 +72,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testGetReturnsXml() throws Exception {
-        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expectObjectXmlized(study);
+        expectSuccessfulStudyLoad();
+        expectObjectXmlized(fullStudy);
 
         doGet();
 
@@ -80,7 +86,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     public void testGetByGridIdReturnsXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(study);
-        expectObjectXmlized(study);
+        expectStudyFilledOut();
+        expectObjectXmlized(fullStudy);
 
         doGet();
 
@@ -100,7 +107,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testPutExistingXml() throws Exception {
-        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expectSuccessfulStudyLoad();
         InputStream in = expectPutEntity();
         expect(importTemplateService.readAndSaveTemplate(study, in)).andReturn(study);
         expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
@@ -126,8 +133,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testEntityIsInDownloadModeWithDownloadParam() throws Exception {
-        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expectObjectXmlized(study);
+        expectSuccessfulStudyLoad();
+        expectObjectXmlized(fullStudy);
 
         request.getResourceRef().setQuery("download");
         doGet();
@@ -150,4 +157,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
     }
 
+    private void expectSuccessfulStudyLoad() {
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expectStudyFilledOut();
+    }
+
+    private void expectStudyFilledOut() {
+        expect(studyService.getCompleteTemplateHistory(study)).andReturn(fullStudy);
+    }
 }

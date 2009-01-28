@@ -7,13 +7,10 @@ describe "/study" do
     ]
     @studies.each do|s|
       application_context['studyService'].createInDesignStudyFromExamplePlanTree(s)
-      application_context['studyService'].save(s)
     end    
   end
 
-  #get methods test
   describe "GET" do
-
     it "forbids study templates access for unauthenticated users" do
       get "/studies/NU481/template", :as => nil
       response.status_code.should == 401
@@ -27,9 +24,45 @@ describe "/study" do
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
     end
-  
+    
+    describe "with released amendments" do
+      describe "and removes" do
+        before do
+          application_context['amendmentService'].amend(@nu481)
+
+          @nu481_epoch = @nu481.planned_calendar.epochs[0]
+          @removing_amendment = PscTest::Fixtures.createAmendment("Remove B", PscTest::createDate(2008, 3, 7))
+          @removing_amendment.addDelta(
+            PscTest::createDeltaFor(
+              @nu481_epoch,
+              Psc::Domain::Delta::Remove.create(@nu481_epoch.study_segments[1])
+            )
+          )
+          @nu481.setDevelopmentAmendment(@removing_amendment)
+          application_context['amendmentService'].amend(@nu481)
+        end
+        
+        it "it remembers indirectly added but later removed nodes" do
+          get "/studies/NU481/template", :as => :barbara
+          response.status_code.should == 200
+        
+          original_add = response.xml_doc.root.elements.to_a("//amendment/planned-calendar-delta/add").first
+          original_add.should_not be_nil
+          original_add.elements.to_a('//study-segment').collect { |e| e.attributes['name'] }.should == %w(A B)
+        end
+        
+        it "can resolve removes to the originally added nodes" do
+          get "/studies/NU481/template", :as => :barbara
+          response.status_code.should == 200
+          
+          added_segments = response.xml_doc.root.elements.to_a("//amendment/planned-calendar-delta/add//study-segment")
+          remove = response.xml_doc.root.elements.to_a("//amendment/epoch-delta/remove").first
+          
+          added_segments[1].attributes['id'].should == remove.attributes['child-id']
+        end
+      end
+    end
   end
-  
   
   describe "PUT" do
     before do
@@ -61,7 +94,6 @@ describe "/study" do
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU482")
     end
-    
   end
   
 end
