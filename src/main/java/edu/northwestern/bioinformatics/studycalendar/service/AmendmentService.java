@@ -5,8 +5,19 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -96,9 +107,7 @@ public class AmendmentService {
 
         Study amended = source.transientClone();
         while (!target.equals(amended.getAmendment())) {
-            log.debug("Rolling {} back to {}", source, amended.getAmendment().getPreviousAmendment().getName());
-            deltaService.revert(amended, amended.getAmendment());
-            amended.setAmendment(amended.getAmendment().getPreviousAmendment());
+            deltaService.amendToPreviousVersion(amended);
         }
 
         return amended;
@@ -110,8 +119,6 @@ public class AmendmentService {
         Study amended = getAmendedStudy(base, target);
         return (T) templateService.findEquivalentChild(amended, source);
     }
-
-
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Study updateDevelopmentAmendmentForStudyAndSave(Study study, Change... changes) {

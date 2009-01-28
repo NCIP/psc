@@ -16,6 +16,12 @@ module PscTest
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
   end
   
+  def self.createDeltaFor(node, *changes)
+    Psc::Domain::Delta::Delta.createDeltaFor(
+      node, changes.to_java(Psc::Domain::Delta::Change)
+    )
+  end
+  
   class HibernateOpenSession
     def initialize
       mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new
@@ -50,6 +56,17 @@ module PscTest
 end
 
 Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
+
+# Shortcuts for PSC java packages
+module Psc
+  %w(domain domain.delta).each do |pkg|
+    class_eval <<-RUBY
+      module #{pkg.split('.').map(&:capitalize).join('::')}
+        include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
+      end
+    RUBY
+  end
+end
 
 def application_context
   $application_context ||= Class.new do

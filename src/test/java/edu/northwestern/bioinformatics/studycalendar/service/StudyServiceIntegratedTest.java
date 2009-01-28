@@ -1,18 +1,33 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.SortedSet;
-
-import org.easymock.IArgumentMatcher;
-import org.easymock.classextension.EasyMock;
 
 /**
  * @author Rhett Sutphin
@@ -21,6 +36,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private StudyService service;
     private StudyDao studyDao;
     private DeltaService deltaService;
+    private AmendmentService amendmentService;
 
     @Override
     protected void setUp() throws Exception {
@@ -28,6 +44,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         service = (StudyService) getApplicationContext().getBean("studyService");
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
+        amendmentService = (AmendmentService) getApplicationContext().getBean("amendmentService");
     }
 
     private int saveBasicSkeleton() {
@@ -49,8 +66,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertNotNull(copiedStudy);
         assertNotNull("must copy the development amendment ", copiedStudy.getDevelopmentAmendment());
         assertNull("must not copy  amendment ", copiedStudy.getAmendment());
-
-
     }
 
     public void testMustNotCopyStudySites() {
@@ -60,10 +75,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         Study copiedStudy = service.copy(loaded, loaded.getDevelopmentAmendment().getId());
         assertNotNull(copiedStudy);
         assertTrue("must not copy study sites", copiedStudy.getStudySites().isEmpty());
-
-
     }
-
 
     public void testCopyBasicProperties() {
         Study loaded = studyDao.getById(-1);
@@ -94,10 +106,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertSame("copied population  must belong to copied study", copiedPopulation.getStudy(), copiedStudy);
 
         validatePopulation(population, copiedPopulation);
-
-
     }
-
 
     public void testCopyPlannedCalendar() {
         Study loaded = studyDao.getById(-1);
@@ -113,8 +122,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
 
         validateNode(plannedCalendar, copiedPlannedCalendar);
         assertSame("copied planned calendar  must belong to copied study", copiedPlannedCalendar.getStudy(), copiedStudy);
-
-
     }
 
     public void testCopyEpoch() {
@@ -139,8 +146,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         validateNode(epoch, copiedEpoch);
         assertSame("copied epoch  must belong to copied study", copiedEpoch.getParent(), revisedStudy.getPlannedCalendar());
         assertEquals("must copy name", epoch.getName(), copiedEpoch.getName());
-
-
     }
 
     public void testCopyStudySegments() {
@@ -165,8 +170,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         validateNode(studySegment, copiedStudySegment);
         assertSame("copied study segment  must belong to copied study", copiedStudySegment.getParent(), revisedStudy.getPlannedCalendar().getEpochs().get(0));
         assertEquals("must copy name", copiedStudySegment.getName(), studySegment.getName());
-
-
     }
 
     public void testCopyPeriods() {
@@ -196,8 +199,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertEquals("must copy startDay", copiedPeriod.getStartDay(), period.getStartDay());
         assertEquals("must copy duration", copiedPeriod.getDuration(), period.getDuration());
         assertNotSame("duration must not be same reference", copiedPeriod.getDuration(), period.getDuration());
-
-
     }
 
     public void testCopyPlannedActivities() {
@@ -227,7 +228,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertEquals("must copy condition", copiedPlannedActivity.getCondition(), plannedActivity.getCondition());
         assertEquals("must copy day", copiedPlannedActivity.getDay(), plannedActivity.getDay());
         assertEquals("must copy details", copiedPlannedActivity.getDetails(), plannedActivity.getDetails());
-
     }
 
     public void testCopyPlannedActivitiesWithPopulations() {
@@ -257,7 +257,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         validatePopulation(population, copiedPopulation);
         assertSame("copied planned activity must have the population from copied study only", revisedStudy.getPopulations().iterator().next().getName(), copiedPopulation.getName());
         assertSame("copied planned activity must have the population from copied study only", revisedStudy.getPopulations().iterator().next().getAbbreviation(), copiedPopulation.getAbbreviation());
-
     }
 
     public void testCopyPlannedActivitiesWithLabels() {
@@ -284,7 +283,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         PlannedActivityLabel copiedPlannedActivityLabel = copiedPlannedActivities.get(0).getPlannedActivityLabels().iterator().next();
         assertNotSame(" labels must not be same", plannedActivityLabel, copiedPlannedActivityLabel);
         validateIds(plannedActivityLabel, copiedPlannedActivityLabel);
-
     }
 
     private void validateIds(final MutableDomainObject object, final MutableDomainObject copiedObject) {
@@ -353,5 +351,59 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
 
         assertEquals("Amendment version changed even though the amendment itself didn't change",
                 originalAmendmentVersion, (int) reloaded.getDevelopmentAmendment().getVersion());
+    }
+
+    public void testFullTemplateHistoryIsTransient() throws Exception {
+        int id = saveBasicSkeleton();
+        Study fullHistory = service.getCompleteTemplateHistory(studyDao.getById(id));
+        assertMemoryOnly(fullHistory);
+        assertMemoryOnly(fullHistory.getPlannedCalendar());
+        for (Amendment amendment : fullHistory.getAmendmentsList()) {
+            for (Delta<?> delta : amendment.getDeltas()) {
+                for (Change change : delta.getChanges()) {
+                    if (change instanceof ChildrenChange) {
+                        assertMemoryOnly(((ChildrenChange) change).getChild());
+                    }
+                }
+            }
+        }
+    }
+
+    private void assertMemoryOnly(TransientCloneable<?> node) {
+        assertTrue(node + " is not memory-only", node.isMemoryOnly());
+        if (node instanceof Parent) {
+            for (Child<?> child : ((Parent<? extends Child<?>, ?>) node).getChildren()) {
+                assertMemoryOnly(child);
+            }
+        }
+    }
+
+    public void testFullTemplateHistoryIncludesReleasedRemovedNodes() throws Exception {
+        int id = saveBasicSkeleton();
+
+        {
+            Study reloaded = studyDao.getById(id);
+            amendmentService.amend(reloaded);
+            Epoch treatment = reloaded.getPlannedCalendar().getEpochs().get(0);
+            Amendment dev = Fixtures.createAmendment("Bye-bye C", DateTools.createDate(2007, Calendar.APRIL, 6));
+            reloaded.setDevelopmentAmendment(dev);
+            dev.addDelta(
+                Delta.createDeltaFor(treatment, Remove.create(treatment.getStudySegments().get(2)))
+            );
+            amendmentService.amend(reloaded);
+        }
+
+        interruptSession();
+
+        Study fullHistory = service.getCompleteTemplateHistory(studyDao.getById(id));
+        PlannedCalendarDelta initialDelta = (PlannedCalendarDelta) fullHistory.getAmendment().getPreviousAmendment().getDeltas().get(0);
+        assertEquals("Wrong number of changes", 2, initialDelta.getChanges().size());
+        Add treatmentAdd = (Add) initialDelta.getChanges().get(0);
+        assertTrue("Treatment Add doesn't add an Epoch: " + treatmentAdd.getChild(),
+            treatmentAdd.getChild() instanceof Epoch);
+        Epoch treatment = (Epoch) treatmentAdd.getChild();
+        assertEquals(
+            "Wrong number of study segments in treatment epoch of initial template: " + treatment.getStudySegments(),
+            3, treatment.getStudySegments().size());
     }
 }

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
@@ -132,6 +133,25 @@ public class DeltaService {
                 }
             }
         }
+    }
+
+    /**
+     * Rolls the given study instance back to the state it was in in the previous amendment.
+     * Unlike {@link AmendmentService#getAmendedStudy}, it directly modifies the passed-in
+     * instance &mdash; You may want to pass in a transient instance.
+     *
+     * @throws StudyCalendarValidationException if the study doesn't have a previous amendment
+     * @param source
+     * @return the passed-in instance (for chaining)
+     */
+    public Study amendToPreviousVersion(Study source) {
+        if (source.getAmendment() == null || source.getAmendment().getPreviousAmendment() == null) {
+            throw new StudyCalendarValidationException("%s does not have a previous amendment", source);
+        }
+        log.debug("Rolling {} back to {}", source, source.getAmendment().getPreviousAmendment().getName());
+        revert(source, source.getAmendment());
+        source.setAmendment(source.getAmendment().getPreviousAmendment());
+        return source;
     }
 
     /**

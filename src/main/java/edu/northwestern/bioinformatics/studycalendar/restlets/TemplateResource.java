@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -25,6 +26,7 @@ import java.io.IOException;
 public class TemplateResource extends AbstractDomainObjectResource<Study> {
     private boolean useDownloadMode;
     private StudyDao studyDao;
+    private StudyService studyService;
 
     private ImportTemplateService importTemplateService;
 
@@ -51,11 +53,14 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Override
     protected Study loadRequestedObject(Request request) {
         String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
-        Study byAssigned = studyDao.getByAssignedIdentifier(studyIdent);
-        if (byAssigned != null) {
-            return byAssigned;
+        Study base = studyDao.getByAssignedIdentifier(studyIdent);
+        if (base == null) {
+            base = studyDao.getByGridId(studyIdent);
+        }
+        if (base != null) {
+            return studyService.getCompleteTemplateHistory(base);
         } else {
-            return studyDao.getByGridId(studyIdent);
+            return base;
         }
     }
 
@@ -86,6 +91,11 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 
     @Required
