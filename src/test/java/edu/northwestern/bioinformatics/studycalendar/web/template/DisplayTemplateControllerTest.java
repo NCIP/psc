@@ -196,13 +196,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setParameter("amendment", "4");
         Study amended = study.transientClone();
 
-        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
-                .andReturn(singletonList(study)).anyTimes();
+        expect(templateService.filterForVisibility(singletonList(amended),
+            subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(singletonList(study)).anyTimes();
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("amendment"));
-        assertSame(dev, actualModel.get("developmentRevision"));
+        assertSame(amended.getDevelopmentAmendment(), actualModel.get("developmentRevision"));
         assertNotNull(actualModel.get("revisionChanges"));
         assertTrue(actualModel.get("revisionChanges") instanceof RevisionChanges);
     }
@@ -225,7 +225,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("amendment"));
-        assertSame(dev, actualModel.get("developmentRevision"));
+        assertSame(amended.getDevelopmentAmendment(), actualModel.get("developmentRevision"));
         assertNull("Changes should not be included for initial dev", actualModel.get("revisionChanges"));
     }
 
@@ -240,7 +240,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
-        assertSame(dev, actualModel.get("developmentRevision"));
+        assertSame(amended.getDevelopmentAmendment(), actualModel.get("developmentRevision"));
     }
 
     public void testStudyAssignableIfSubjectCoordAssigned() throws Exception {

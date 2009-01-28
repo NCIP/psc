@@ -3,10 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -141,7 +144,6 @@ public class StudyTest extends StudyCalendarTestCase {
         assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
     }
 
-
     public void testCloneShouldCopyBasicProperty() throws Exception {
         study.setPlannedCalendar(new PlannedCalendar());
         study.setAssignedIdentifier("ECOG 0123");
@@ -185,11 +187,34 @@ public class StudyTest extends StudyCalendarTestCase {
         assertNotSame("Clone is same", study, clone);
         assertNotSame("Populations not deep-cloned", study.getPopulations(), clone.getPopulations());
 
-
         assertNotNull("First population not in clone", populationsArray[0]);
         assertNotNull("Second population not in clone", populationsArray[1]);
         assertEquals("Cloned first population does not refer to study clone", clone, populationsArray[0].getStudy());
         assertEquals("Cloned second population does not refer to study clone", clone, populationsArray[1].getStudy());
+    }
+
+    public void testCloneDeepClonesAmendment() throws Exception {
+        Study src = Fixtures.createBasicTemplate();
+        Study clone = src.clone();
+        assertNotSame("Amendments not cloned",
+            src.getAmendment(), clone.getAmendment());
+    }
+
+    public void testCloneDeepClonesDevAmendment() throws Exception {
+        Study src = Fixtures.createInDevelopmentBasicTemplate("DC");
+        Study clone = src.clone();
+        assertNotSame("Dev amendment not cloned",
+            src.getDevelopmentAmendment(), clone.getDevelopmentAmendment());
+    }
+
+    public void testTransientCloneIncludesTransientAmendment() throws Exception {
+        Study clone = Fixtures.createBasicTemplate().transientClone();
+        assertTrue(clone.getAmendment().isMemoryOnly());
+    }
+
+    public void testTransientCloneIncludesTransientDevAmendment() throws Exception {
+        Study clone = Fixtures.createInDevelopmentBasicTemplate("DC").transientClone();
+        assertTrue(clone.getDevelopmentAmendment().isMemoryOnly());
     }
 
     public void testLastModifiedDate() throws Exception {

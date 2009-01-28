@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -9,7 +11,16 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,13 +46,17 @@ import java.util.List;
 @Entity
 @Table(name = "amendments")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
-                @Parameter(name = "sequence", value = "seq_amendments_id")
-        }
+    parameters = {
+        @Parameter(name = "sequence", value = "seq_amendments_id")
+    }
 )
-public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
+public class Amendment
+    extends AbstractMutableDomainObject 
+    implements Revision, NaturallyKeyed, Cloneable, TransientCloneable<Amendment>
+{
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
 
+    private boolean memoryOnly;
     private Amendment previousAmendment;
     private Date date;
     private String name;
@@ -167,12 +182,34 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         return updated;
     }
 
+    ////// IMPLEMENTATION OF TransientCloneable
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+        for (Delta<?> delta : getDeltas()) {
+            delta.setMemoryOnly(memoryOnly);
+        }
+        if (getPreviousAmendment() != null) {
+            getPreviousAmendment().setMemoryOnly(memoryOnly);
+        }
+    }
+
+    public Amendment transientClone() {
+        Amendment clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
+    }
+
     ////// BEAN PROPERTIES
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @OrderBy
-    // order by ID for testing consistency
+    @OrderBy // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -257,15 +294,30 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         return result;
     }
 
+    @Override
+    public Amendment clone() {
+        try {
+            Amendment clone = (Amendment) super.clone();
+            if (getPreviousAmendment() != null) {
+                clone.setPreviousAmendment(getPreviousAmendment().clone());
+            }
+            clone.setDeltas(new ArrayList<Delta<?>>(getDeltas().size()));
+            for (Delta<?> delta : getDeltas()) {
+                clone.addDelta(delta.clone());
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
+
     @Transient
     public Delta getMatchingDelta(String gridId, String nodeId) {
         for (Delta delta : this.getDeltas()) {
             if (delta.getGridId().equals(gridId) && delta.getNode() != null && delta.getNode().getGridId().equals(nodeId)) {
                 return delta;
-
             }
         }
-
         return null;
     }
 

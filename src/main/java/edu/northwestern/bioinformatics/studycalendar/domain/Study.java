@@ -33,6 +33,17 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
+ * Represents a study, its planned template, and all amendments.
+ * <p>
+ * When an instance of this class is loaded directly from the database, its
+ * {@link #getPlannedCalendar, planned calendar} reflects the template as of
+ * its last released amendment.  (If there is no released amendment, the
+ * directly-accessible planned calendar is empty.)  The amendments list contains
+ * all released amendments, deltas, and changes.  However, the node references
+ * within the changes may not be complete if resolved against the database directly.
+ * Use {@link edu.northwestern.bioinformatics.studycalendar.service.StudyService#getCompleteTemplateHistory}
+ * if you need all node references complete.
+ *
  * @author Rhett Sutphin
  */
 @Entity
@@ -142,6 +153,12 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
     public void setMemoryOnly(boolean memoryOnly) {
         this.memoryOnly = memoryOnly;
         getPlannedCalendar().setMemoryOnly(true);
+        if (getAmendment() != null) {
+            getAmendment().setMemoryOnly(memoryOnly);
+        }
+        if (getDevelopmentAmendment() != null) {
+            getDevelopmentAmendment().setMemoryOnly(memoryOnly);
+        }
     }
 
     public Study transientClone() {
@@ -286,8 +303,6 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         }
 
         return copiedStudy;
-
-
     }
 
     @Transient
@@ -392,14 +407,19 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
     @Override
     public Study clone() {
         try {
-            // deep-clone the template portions only, for the moment
             Study clone = (Study) super.clone();
             if (getPlannedCalendar() != null) {
                 clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
             }
             clone.setPopulations(new TreeSet<Population>());
-            for (Population pouPopulation : getPopulations()) {
-                clone.addPopulation(pouPopulation.clone());
+            for (Population population : getPopulations()) {
+                clone.addPopulation(population.clone());
+            }
+            if (getAmendment() != null) {
+                clone.setAmendment(getAmendment().clone());
+            }
+            if (getDevelopmentAmendment() != null) {
+                clone.setDevelopmentAmendment(getDevelopmentAmendment().clone());
             }
             return clone;
         }

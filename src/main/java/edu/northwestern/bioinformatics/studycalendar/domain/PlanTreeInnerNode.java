@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 
 /**
  * @author Rhett Sutphin
@@ -118,7 +117,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
 
 	@Override
 	@SuppressWarnings({"unchecked"})
-	protected PlanTreeInnerNode<P, C, G> clone() {
+    public PlanTreeInnerNode<P, C, G> clone() {
 		PlanTreeInnerNode<P, C, G> clone = (PlanTreeInnerNode<P, C, G>) super.clone();
 		// deep clone the children
 		clone.setChildren(clone.createChildrenCollection());

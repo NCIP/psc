@@ -77,6 +77,14 @@ public abstract class ChildrenChange extends Change {
         }
     }
 
+    @Override
+    public void setMemoryOnly(boolean memoryOnly) {
+        super.setMemoryOnly(memoryOnly);
+        if (getChild() != null) {
+            getChild().setMemoryOnly(memoryOnly);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     @Transient
@@ -109,5 +117,12 @@ public abstract class ChildrenChange extends Change {
         result = (getChild() != null ? getChild().hashCode() : 0);
         result = 31 * result + (getChildId() != null ? getChildId().hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public ChildrenChange clone() {
+        ChildrenChange clone = (ChildrenChange) super.clone();
+        if (getChild() != null) clone.setChild(getChild().clone());
+        return clone;
     }
 }

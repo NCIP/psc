@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -194,5 +196,38 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a3.getDeltas().get(1).getChanges().get(0).setUpdatedDate(DateUtils.createDate(2005, Calendar.MAY, 4));
 
         assertDayOfDate(2005, Calendar.MAY, 4, a3.getUpdatedDate());
+    }
+
+    public void testCloneDeepClonesDeltas() throws Exception {
+        Amendment src = Fixtures.createAmendment(null, DateTools.createDate(2008, Calendar.JUNE, 22));
+        src.addDelta(Delta.createDeltaFor(new Study()));
+
+        Amendment clone = src.clone();
+        assertEquals("Wrong number of cloned changes", 1, clone.getDeltas().size());
+        assertNotSame("Deltas not deep cloned", src.getDeltas().get(0), clone.getDeltas().get(0));
+    }
+    
+    public void testCloneDeepClonesPreviousAmendments() throws Exception {
+        Amendment src = Fixtures.createAmendments("C", "B", "A");
+        Amendment clone = src.clone();
+
+        assertNotSame("Previous amendment not cloned",
+            src.getPreviousAmendment(), clone.getPreviousAmendment());
+        assertNotSame("Previous previous amendment not cloned",
+            src.getPreviousAmendment().getPreviousAmendment(),
+            clone.getPreviousAmendment().getPreviousAmendment());
+    }
+
+    public void testSetMemOnlyRecursiveToDeltas() throws Exception {
+        Amendment amendment = Fixtures.createAmendment(null, DateTools.createDate(2008, Calendar.JUNE, 22));
+        amendment.addDelta(Delta.createDeltaFor(new Study()));
+        amendment.setMemoryOnly(true);
+        assertTrue(amendment.getDeltas().get(0).isMemoryOnly());
+    }
+
+    public void testSetMemOnlyRecursiveToPreviousAmendments() throws Exception {
+        Amendment amendment = Fixtures.createAmendments("C", "B", "A");
+        amendment.setMemoryOnly(true);
+        assertTrue(amendment.getPreviousAmendment().isMemoryOnly());
     }
 }
