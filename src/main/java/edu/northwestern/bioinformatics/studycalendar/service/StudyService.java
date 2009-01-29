@@ -2,25 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -40,13 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Transactional
 public class StudyService {
@@ -141,11 +118,52 @@ public class StudyService {
                 throw new StudyCalendarValidationException("Can not find amendment for given amendment id:" + selectedAmendmentId);
             }
             String newStudyName = this.getNewStudyNameForCopyingStudy(revisedStudy.getName());
-            Study copiedStudy = revisedStudy.copy(newStudyName);
+            Map<Study, Set<Population>> newStudy = revisedStudy.copy(newStudyName);
+            Study copiedStudy = newStudy.keySet().iterator().next();
+            Set<Population> populationSet = newStudy.values().iterator().next();
             studyDao.save(copiedStudy);
+            Set<Population> populations = new TreeSet<Population>();
+            for(Population population:populationSet) {
+                Population copiedPopulation = new Population();
+                copiedPopulation.setAbbreviation(population.getAbbreviation());
+                copiedPopulation.setName(population.getName());
+                copiedPopulation.setStudy(null);
+                Change change = Add.create(copiedPopulation);
+                if (copiedStudy.getDevelopmentAmendment() != null) {
+                    deltaService.updateRevisionForStudy(copiedStudy.getDevelopmentAmendment(),copiedStudy,change);
+                    deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
+                }
+                copiedPopulation = (Population)((ChildrenChange)change).getChild();
+                populations.add(copiedPopulation);
 
+            }
+
+            List<Epoch> epochs  = new ArrayList<Epoch>();
+            for (Delta delta:copiedStudy.getDevelopmentAmendment().getDeltas()) {
+                if (delta.getNode() instanceof PlannedCalendar) {
+                    List<ChildrenChange> changes = delta.getChanges();
+                    for (ChildrenChange change:changes  ) {
+                        if ((ChangeAction.ADD).equals(change.getAction())) {
+                               epochs.add((Epoch)change.getChild());
+                        }
+                    }
+                }
+            }
+
+            for (Epoch epoch:epochs) {
+                List<StudySegment> studySegments = epoch.getChildren();
+                for (StudySegment studySegment : studySegments) {
+                    SortedSet<Period> periods = studySegment.getPeriods();
+                    for (Period period : periods) {
+                        List<PlannedActivity> plannedActivities = period.getChildren();
+                        for (PlannedActivity plannedActivity : plannedActivities) {
+                            plannedActivity.setPopulation(Population.findMatchingPopulationByAbbreviation(populations, plannedActivity.getPopulation()));
+                        }
+                    }
+                }
+            }
             if (copiedStudy.getDevelopmentAmendment() != null) {
-                deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
+               deltaService.saveRevision(copiedStudy.getDevelopmentAmendment());
             }
             return copiedStudy;
         } else {

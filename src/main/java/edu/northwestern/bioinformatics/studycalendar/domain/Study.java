@@ -22,15 +22,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Represents a study, its planned template, and all amendments.
@@ -261,48 +253,25 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         return Collections.unmodifiableList(amendments);
     }
 
-    public Study copy(String newStudyName) {
-
+    public Map<Study,Set<Population>> copy(String newStudyName) {
+        Map<Study,Set<Population>> studyPopulation = new TreeMap<Study,Set<Population>>();
         Study copiedStudy = TemplateSkeletonCreatorImpl.createBase(newStudyName);
         copiedStudy.setLongTitle(this.getLongTitle());
 
         copiedStudy.setStudySites(new ArrayList<StudySite>());
-
-        //now copy populations also
-        copiedStudy.setPopulations(new LinkedHashSet<Population>());
         Set<Population> populationSet = this.getPopulations();
-        for (Population population : populationSet) {
-            Population copiedPopulation = population.clone();
-            copiedPopulation.setId(null);
-            copiedPopulation.setGridId(null);
-            copiedPopulation.setVersion(null);
-            copiedStudy.addPopulation(copiedPopulation);
-        }
-
         if (plannedCalendar != null) {
             List<Epoch> epoches = this.getPlannedCalendar().getChildren();
             for (int i = 0; i < epoches.size(); i++) {
                 Epoch epoch = epoches.get(i);
                 Epoch copiedEpoch = (Epoch) epoch.copy();
                 copiedEpoch.setPlannedCalendar(null);
-                List<StudySegment> studySegments = copiedEpoch.getChildren();
-
-                for (StudySegment studySegment : studySegments) {
-                    SortedSet<Period> periods = studySegment.getPeriods();
-                    for (Period period : periods) {
-                        List<PlannedActivity> plannedActivities = period.getChildren();
-                        for (PlannedActivity plannedActivity : plannedActivities) {
-                            plannedActivity.setPopulation(Population.findMatchingPopulationByAbbreviation(copiedStudy.getPopulations(), plannedActivity.getPopulation()));
-                        }
-                    }
-                }
-
                 TemplateSkeletonCreatorImpl.addEpoch(copiedStudy, i, copiedEpoch);
 
             }
         }
-
-        return copiedStudy;
+        studyPopulation.put(copiedStudy,populationSet);
+        return studyPopulation;
     }
 
     @Transient
