@@ -5,7 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -18,8 +24,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
-import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +34,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provides methods for calculating deltas and for applying them to PlannedCalendars.
@@ -112,9 +120,13 @@ public class DeltaService {
 
     public void revert(Study target, Revision revision) {
         log.debug("Reverting {} from {}", revision, target);
-        for (Delta<?> delta : revision.getDeltas()) {
+        List<Delta<?>> reverseDeltas = new ArrayList<Delta<?>>(revision.getDeltas());
+        Collections.reverse(reverseDeltas);
+        for (Delta<?> delta : reverseDeltas) {
             Changeable affected = findNodeForDelta(target, delta);
-            for (Change change : delta.getChanges()) {
+            List<Change> reverseChanges = new ArrayList<Change>(delta.getChanges());
+            Collections.reverse(reverseChanges);
+            for (Change change : reverseChanges) {
                 log.debug("Rolling back change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).revert(affected);
             }

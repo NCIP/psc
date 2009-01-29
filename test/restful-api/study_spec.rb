@@ -62,6 +62,61 @@ describe "/study" do
         end
       end
     end
+    
+    describe "and periods and planned activities" do
+      before do
+        period = PscTest::Fixtures.createPeriod(1, 14, 1)
+        period.grid_id = "The-Period"
+        period.addPlannedActivity(
+          PscTest::Fixtures.createPlannedActivity( sample_activity('Eye exam'), 1 )
+        )
+        period.addPlannedActivity(
+          PscTest::Fixtures.createPlannedActivity( sample_activity('Eye exam'), 8 )
+        )
+        sole_epoch = application_context['epochDao'].getById(@nu481.development_amendment.deltas[0].changes[0].child_id)
+        sole_epoch.study_segments[0].addPeriod(period)
+        
+        application_context['amendmentService'].amend(@nu481) # release initial template
+        
+        removing_amendment = PscTest::Fixtures.createAmendment("Use reps", PscTest::createDate(2008, 3, 7))
+        removing_amendment.addDelta(
+          PscTest::createDeltaFor(
+            period, 
+            Psc::Domain::Delta::Remove.create(period.planned_activities[1]),
+            Psc::Domain::Delta::PropertyChange.create("duration.quantity", 14, 7),
+            Psc::Domain::Delta::PropertyChange.create("repetitions", 1, 2)
+          )
+        )
+        @nu481.setDevelopmentAmendment(removing_amendment)
+
+        application_context['amendmentService'].amend(@nu481) # release amendment
+      end
+      
+      it "can still export the XML" do
+        get "/studies/NU481/template", :as => :barbara
+        response.status_code.should == 200
+      end
+      
+      it "preserves the original period attributes" do
+        get "/studies/NU481/template", :as => :barbara
+        response.status_code.should == 200
+        
+        original_period = response.xml_elements("//period").first
+        original_period.should_not be_nil
+        original_period.attributes['id'].should == 'The-Period'
+        original_period.attributes['duration-quantity'].should == '14'
+        original_period.attributes['repetitions'].should == '1'
+      end
+      
+      it "reflects the changes in the amendment" do
+        get "/studies/NU481/template", :as => :barbara
+        response.status_code.should == 200
+        
+        delta = response.xml_elements("//period-delta").first
+        delta.should_not be_nil
+        delta.should have(3).elements
+      end
+    end
   end
   
   describe "PUT" do
