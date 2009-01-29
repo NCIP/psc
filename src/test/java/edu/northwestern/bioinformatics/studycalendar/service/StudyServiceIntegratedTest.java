@@ -13,13 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -28,6 +22,7 @@ import gov.nih.nci.cabig.ctms.lang.DateTools;
 import java.util.Calendar;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -90,22 +85,21 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
 
     public void testCopyPopulations() {
         Study loaded = studyDao.getById(-1);
+        List<Change> changes = new ArrayList<Change>();
         assertNotNull(loaded);
         assertFalse("must have populations", loaded.getPopulations().isEmpty());
         assertEquals("must have 1 population", 1, loaded.getPopulations().size());
-        Population population = loaded.getPopulations().iterator().next();
-
         Study copiedStudy = service.copy(loaded, loaded.getDevelopmentAmendment().getId());
         interruptSession();
         copiedStudy = studyDao.getById(copiedStudy.getId());
+        for (Delta delta : copiedStudy.getDevelopmentAmendment().getDeltas()) {
+            if(delta.getNode() instanceof Study) {
+                changes = delta.getChanges();
+            }
+        }
         assertNotNull(copiedStudy);
-        assertFalse("must copy populations", copiedStudy.getPopulations().isEmpty());
-        assertEquals("must copy the population", 1, copiedStudy.getPopulations().size());
-        Population copiedPopulation = copiedStudy.getPopulations().iterator().next();
-
-        assertSame("copied population  must belong to copied study", copiedPopulation.getStudy(), copiedStudy);
-
-        validatePopulation(population, copiedPopulation);
+        assertFalse("must add populations under study delta ", changes.isEmpty());
+        assertEquals("must add populations under study delta", 1, changes.size());
     }
 
     public void testCopyPlannedCalendar() {
@@ -295,6 +289,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private void validatePopulation(final Population population, final Population copiedPopulation) {
         assertNotNull(population);
         assertNotNull(copiedPopulation);
+        System.out.println("=====population===" +population);
+        System.out.println("=====copiedPopulation===" +copiedPopulation);
         assertNotSame("copied population and source population must be different", copiedPopulation, population);
         assertNotSame("copied population and source population must belong to different different studies", copiedPopulation.getStudy(), population.getStudy());
         validateIds(population, copiedPopulation);
