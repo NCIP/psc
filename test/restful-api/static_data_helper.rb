@@ -22,4 +22,8 @@ helper_for Spec::Example::ExampleGroup do
       load_user(username)
     end
   end
+  
+  def sample_activity(name)
+    application_context['activityDao'].getByName(name) or raise "No test activity named #{name}"
+  end
 end
