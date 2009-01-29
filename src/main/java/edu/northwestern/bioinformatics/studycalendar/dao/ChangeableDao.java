@@ -20,8 +20,8 @@ public abstract class ChangeableDao<T extends Changeable> extends StudyCalendarM
     protected void deleteOrphans(String className, String parentName, String classNameDelta, String parentDeltaTypeCode) {
         List<T> listOfOrphans =  getHibernateTemplate().find("from "+ className +
                                                             " orphan where orphan." + parentName + " is null " +
-                                                             "AND not exists(select 'y' from Remove r join r.delta d where d.class=" + classNameDelta+ " and r.childIdText=orphan.id) " +
-                                                             "AND not exists (select 'x' from Add a join a.delta d where d.class=" + classNameDelta+ " and a.childIdText=orphan.id)");
+                                                             "AND not exists(select 'y' from Remove r join r.delta d where d.class=" + classNameDelta+ " and orphan.id=cast(r.childIdText as int)) " +
+                                                             "AND not exists (select 'x' from Add a join a.delta d where d.class=" + classNameDelta+ " and orphan.id=cast(a.childIdText as int))");
 
         if (listOfOrphans!=null && listOfOrphans.size()>0) {
             for (T orphan: listOfOrphans) {
