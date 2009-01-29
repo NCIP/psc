@@ -3,9 +3,10 @@
     xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
     >
+    
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <tx:annotation-driven proxy-target-class="true"/>
@@ -15,22 +16,28 @@
         <property name="dataSource" ref="nonPooledDataSource"/>
     </bean>
 
-    <bean id="configurationInitializer" autowire="byType"
+    <!-- Autowire of beans into the parent context does not work in Spring 2.5.6 -->
+    
+    <bean id="configurationInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.ConfigurationInitializer">
         <property name="yamlResource" value="file:test/restful-api/static-data/configuration.yml"/>
     </bean>
 
-    <bean id="sitesInitializer" autowire="byType"
+    <bean id="sitesInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SitesInitializer">
         <property name="yamlResource" value="file:test/restful-api/static-data/sites.yml"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="siteService" ref="siteService"/>
     </bean>
 
-    <bean id="usersInitializer" autowire="byType"
+    <bean id="usersInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.UsersInitializer">
         <property name="yamlResource" value="file:test/restful-api/static-data/users.yml"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="userService" ref="userService"/>
     </bean>
 
-    <bean id="sampleActivitySourceInitializer" autowire="byType"
+    <bean id="sampleActivitySourceInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SampleActivitySourceInitializer">
         <property name="xmlResource" value="file:test/restful-api/static-data/activities.xml"/>
         <property name="importActivitiesService" ref="importActivitiesService"/>

@@ -4,3 +4,4 @@ hibernate3.jar                  3.2.0cr4
 hibernate-annotations.jar       3.2.0cr2
 jstl.jar and standard.jar       for standard taglib
 restlet & extensions            1.1.1
+backport-util-concurrent        3.0 (from Spring 2.5.6)
