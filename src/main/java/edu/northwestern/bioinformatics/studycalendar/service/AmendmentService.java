@@ -5,25 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -149,6 +139,7 @@ public class AmendmentService {
     /**
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.
+     *
      * @return the study that the
      */
     public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change... changes) {
@@ -175,6 +166,7 @@ public class AmendmentService {
      * Applies a series of changes to the development amendment for the study associated
      * with the node and then saves the associated study.  Unlike #updateDevelopmentAmendment,
      * this method occurs in a single transaction.
+     *
      * @see StudyService#saveStudyFor
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -205,6 +197,20 @@ public class AmendmentService {
         }
     }
 
+    /**
+     * Removes a period
+     *
+     * @param period
+     * @param studySegment
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void removePeriod(Period period, StudySegment studySegment) {
+        for (PlannedActivity toRemove : new ArrayList<PlannedActivity>(period.getPlannedActivities())) {
+            updateDevelopmentAmendment(period, Remove.create(toRemove));
+        }
+        updateDevelopmentAmendmentAndSave(studySegment, Remove.create(period));
+
+    }
 
     ////// CONFIGURATION
 

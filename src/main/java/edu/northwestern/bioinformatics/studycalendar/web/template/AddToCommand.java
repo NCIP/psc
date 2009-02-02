@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-
-import java.util.Map;
-import java.util.List;
-
 import org.springframework.ui.ModelMap;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -32,10 +31,10 @@ public class AddToCommand extends EditTemplateCommand {
         public void performEdit() {
             StudySegment studySegment = new StudySegment();
             studySegment.setName("[Unnamed study segment]");
-            updateRevision(getEpoch(), Add.create(studySegment, getEpoch().getStudySegments().size()));
+            updateRevision(getEpoch(), Add.create(studySegment, getRevisedEpoch().getStudySegments().size()));
         }
 
-        @SuppressWarnings({ "unchecked" })
+        @SuppressWarnings({"unchecked"})
         public Map<String, Object> getModel() {
             List<StudySegment> studySegments = getRevisedEpoch().getStudySegments();
             return new ModelMap("studySegment", studySegments.get(studySegments.size() - 1));
@@ -47,7 +46,7 @@ public class AddToCommand extends EditTemplateCommand {
             return "addEpoch";
         }
 
-        @SuppressWarnings({ "unchecked" })
+        @SuppressWarnings({"unchecked"})
         public Map<String, Object> getModel() {
             List<Epoch> epochs = getRevisedStudy().getPlannedCalendar().getEpochs();
             return new ModelMap("epoch", epochs.get(epochs.size() - 1));
@@ -58,7 +57,7 @@ public class AddToCommand extends EditTemplateCommand {
             PlannedCalendar cal = getStudy().getPlannedCalendar();
 
             updateRevision(getStudy().getPlannedCalendar(),
-                Add.create(epoch, getRevisedStudy().getPlannedCalendar().getEpochs().size()));
+                    Add.create(epoch, getRevisedStudy().getPlannedCalendar().getEpochs().size()));
         }
     }
 }

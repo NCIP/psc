@@ -2,23 +2,24 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.beans.factory.annotation.Required;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DeletePeriodController extends PscSimpleFormController {
@@ -41,10 +42,10 @@ public class DeletePeriodController extends PscSimpleFormController {
 
         Period period = periodDao.getById(periodId);
         StudySegment studySegment = studySegmentDao.getById(studySegmentId);
-        return new DeletePeriodCommand(period,studySegment, amendmentService);
+        return new DeletePeriodCommand(period, studySegment, amendmentService);
     }
 
-   @Override
+    @Override
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         DeletePeriodCommand command = (DeletePeriodCommand) oCommand;
         Map<String, Object> model = new HashMap<String, Object>();
@@ -56,12 +57,13 @@ public class DeletePeriodController extends PscSimpleFormController {
         if (study.getDevelopmentAmendment() != null) {
             studySegment = deltaService.revise(studySegment);
             model.put("developmentRevision", study.getDevelopmentAmendment());
+
         }
 
         Study theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
         model.put("epochs", epochs);
-        model.put("studySegment", new StudySegmentTemplate(command.getStudySegment()));
+        model.put("studySegment", new StudySegmentTemplate(studySegment));
         return new ModelAndView("template/ajax/selectStudySegment", model);
     }
 

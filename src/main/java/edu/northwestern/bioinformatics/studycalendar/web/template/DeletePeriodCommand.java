@@ -1,14 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 public class DeletePeriodCommand implements PeriodCommand {
 
@@ -25,20 +21,10 @@ public class DeletePeriodCommand implements PeriodCommand {
     }
 
     public boolean apply() {
-        removePlannedActivities();
-        removePeriod();
+        amendmentService.removePeriod(getPeriod(), getStudySegment());
         return false;
     }
 
-    private void removePlannedActivities() {
-        for (PlannedActivity toRemove : new ArrayList<PlannedActivity>(getPeriod().getPlannedActivities())) {
-            amendmentService.updateDevelopmentAmendment(getPeriod(), Remove.create(toRemove));
-        }
-    }
-
-    private void removePeriod(){
-        amendmentService.updateDevelopmentAmendment(getStudySegment(), Remove.create(getPeriod()));
-    }
 
     ////// CONFIGURATION
 
