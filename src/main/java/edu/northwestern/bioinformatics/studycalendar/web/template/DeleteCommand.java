@@ -42,6 +42,9 @@ public class DeleteCommand extends EditTemplateCommand {
             } else if (getObjectParent() instanceof PlannedCalendar) {
                 PlannedCalendar calendar = (PlannedCalendar)getObjectParent();
                 epoch = calendar.getEpochs().get(0);
+                if(epoch.getId()==getObject().getId()) {
+                    epoch = calendar.getEpochs().get(1);
+                }
                 studySegment = epoch.getStudySegments().get(0);
             }
             map.put("epoch", epoch);
