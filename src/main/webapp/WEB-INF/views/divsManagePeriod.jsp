@@ -1,6 +1,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
 <tags:escapedUrl var="collectionResource"
     value="api~v1~studies~${study.name}~template~development~epochs~${epoch.name}~study-segments~${studySegment.name}~periods~${period.gridId}~planned-activities"/>
 <html>

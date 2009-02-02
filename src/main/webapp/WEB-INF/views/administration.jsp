@@ -1,7 +1,7 @@
 <%@taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
 <html>
 <title>Administration</title>
     <head>

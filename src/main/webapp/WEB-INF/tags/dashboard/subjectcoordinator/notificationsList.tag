@@ -1,4 +1,4 @@
-<%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
@@ -21,7 +21,7 @@
                             </c:when>
                             <c:otherwise>${value.message}</c:otherwise>
                         </c:choose>
-                        <ul style="margin-left:30%">
+                        <ul style="margin-left:35%">
                             <input class="dismissNotification" style="float:left; margin-left:20px" id="dismissNotification" type="submit" onclick="dismissNotification(${value.id})" value="Dismiss"/>
                         </ul>
                         <br style="clear:both;"/>
