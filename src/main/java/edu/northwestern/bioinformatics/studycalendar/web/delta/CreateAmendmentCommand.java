@@ -1,13 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.nwu.bioinformatics.commons.spring.Validatable;
+import org.springframework.validation.Errors;
 
 import java.util.Date;
 
-public class CreateAmendmentCommand {
+public class CreateAmendmentCommand implements Validatable {
     private Study study;
     private Date date;
     private String name;
@@ -20,7 +21,7 @@ public class CreateAmendmentCommand {
         mandatory = true;
     }
 
-    public void apply() throws Exception{
+    public void apply() throws Exception {
         Amendment a = new Amendment();
         a.setName(getName());
         a.setDate(getDate());
@@ -28,6 +29,12 @@ public class CreateAmendmentCommand {
         a.setMandatory(getMandatory());
         study.setDevelopmentAmendment(a);
         studyService.save(study);
+    }
+
+    public void validate(Errors errors) {
+        if (getDate() == null) {
+            errors.rejectValue("date", "error.empty.amendment.date");
+        }
     }
 
     public String getName() {
@@ -41,7 +48,7 @@ public class CreateAmendmentCommand {
     public Date getDate() {
         return date;
     }
-                                                                       
+
     public void setDate(Date date) {
         this.date = date;
     }

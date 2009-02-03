@@ -6,11 +6,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ public class CreateAmendmentController extends PscCancellableFormController {
         setCommandClass(CreateAmendmentCommand.class);
         setFormView("delta/createAmendment");
         setBindOnNewForm(true);
-
+        setValidator(new ValidatableValidator());
         setSuccessView("redirectToStudyList");
         setCancelView("redirectToStudyList");
     }
