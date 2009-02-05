@@ -30,7 +30,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 	private Integer day;
 	private String details;
 	private String condition;
-	private SortedSet<PlannedActivityLabel> plannedActivityLabels;
+    private Integer weight;
+    private SortedSet<PlannedActivityLabel> plannedActivityLabels;
 
 	public PlannedActivity() {
 		plannedActivityLabels = new TreeSet<PlannedActivityLabel>();
@@ -43,7 +44,9 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 	}
 
 	public int compareTo(PlannedActivity other) {
-		// by day
+        int weightDiff = other.getWeight().compareTo(getWeight());
+        if (weightDiff != 0) return weightDiff;
+        // by day
 		int dayDiff = getDay() - other.getDay();
 		if (dayDiff != 0) return dayDiff;
 		// then by activity
@@ -217,7 +220,15 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		this.condition = condition;
 	}
 
-	////// OBJECT METHODS
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    ////// OBJECT METHODS
 
 	@Override
 	public PlannedActivity clone() {
@@ -256,7 +267,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		if (condition != null ? !condition.equals(that.condition) : that.condition != null)
 			return false;
 		if (day != null ? !day.equals(that.day) : that.day != null) return false;
-		if (details != null ? !details.equals(that.details) : that.details != null) return false;
+		if (weight != null ? !weight.equals(that.weight) : that.weight != null) return false;
+        if (details != null ? !details.equals(that.details) : that.details != null) return false;
 		if (plannedActivityLabels != null ? !plannedActivityLabels.equals(that.plannedActivityLabels) : that.plannedActivityLabels != null)
 			return false;
 		if (population != null ? !population.equals(that.population) : that.population != null)
@@ -271,7 +283,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		result = (activity != null ? activity.hashCode() : 0);
 		result = 31 * result + (population != null ? population.hashCode() : 0);
 		result = 31 * result + (day != null ? day.hashCode() : 0);
-		result = 31 * result + (details != null ? details.hashCode() : 0);
+        result = 31 * result + (weight != null ? weight.hashCode() : 0);
+        result = 31 * result + (details != null ? details.hashCode() : 0);
 		result = 31 * result + (condition != null ? condition.hashCode() : 0);
 		return result;
 	}
@@ -282,7 +295,8 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 			append("[id=").append(getId()).
 			append("; activity=").append(getActivity()).
 			append("; day=").append(getDay()).
-			append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
+            append("; weight=").append(getWeight()).
+            append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
 			append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
 			append(']').toString();
 	}

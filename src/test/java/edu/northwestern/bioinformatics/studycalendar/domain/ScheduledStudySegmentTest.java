@@ -83,6 +83,23 @@ public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
         assertFalse(entries.hasNext());
     }
 
+    public void testEventsByDayWithWeightedPlannedActivity() throws Exception {
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(1,createPlannedActivity("ActivityOne", 20, -5)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(2, createPlannedActivity("ActivityTwo", 20, 0)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(3, createPlannedActivity("ActivityThree", 20, 10)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivity(setId(4, createPlannedActivity("ActivityFour", 20, 2)), 2006, Calendar.SEPTEMBER, 20));
+
+        Map<Date, List<ScheduledActivity>> byDate = scheduledStudySegment.getActivitiesByDate();
+
+        Iterator<Map.Entry<Date, List<ScheduledActivity>>> entries = byDate.entrySet().iterator();
+
+        List<ScheduledActivity> sa = entries.next().getValue();
+        assertEquals("First scheduledActivity in the list is not sorted by weight ", (int) sa.get(0).getPlannedActivity().getWeight(), 10);
+        assertEquals("First scheduledActivity in the list is not sorted by weight ", (int) sa.get(1).getPlannedActivity().getWeight(), 2);
+        assertEquals("First scheduledActivity in the list is not sorted by weight ", (int) sa.get(2).getPlannedActivity().getWeight(), 0);
+        assertEquals("First scheduledActivity in the list is not sorted by weight ", (int) sa.get(3).getPlannedActivity().getWeight(), -5);
+    }
+
     private void assertEventDayRecord(
         Map.Entry<Date, List<ScheduledActivity>> actual, int year, int month, int day, String... expectedActivities
     ) {

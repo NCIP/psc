@@ -19,18 +19,25 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
         super.setUp();
         studySegment = new StudySegment();
         Period pA = setId(1, createPeriod("A", 1, 7, 7));
-        pA.addPlannedActivity(createPlannedActivity("Sailing", 1));
+        pA.addPlannedActivity(createPlannedActivity("Sailing", 1, -5));
         Period pB = setId(2, createPeriod("B", 3, 5, 8));
-        pB.addPlannedActivity(createPlannedActivity("Skydiving", 1));
+        pB.addPlannedActivity(createPlannedActivity("Skydiving", 1, 10));
         Period pC = setId(3, createPeriod("C", 2, 1, 1));
-        pC.addPlannedActivity(createPlannedActivity("Skiing", 1));
+        pC.addPlannedActivity(createPlannedActivity("Skiing", 1, 0));
         Period pD = setId(4, createPeriod("D", -13, 7, 1));
-        pD.addPlannedActivity(createPlannedActivity("Surfing", 1));
+        pD.addPlannedActivity(createPlannedActivity("Surfing", 1, 3));
+
+        Period period = setId(5, createPeriod("E", 10, 7, 3));
+        period.addPlannedActivity(createPlannedActivity("A", 1, -5));
+        period.addPlannedActivity(createPlannedActivity("B", 1, 10));
+        period.addPlannedActivity(createPlannedActivity("F", 1, 0));
+        period.addPlannedActivity(createPlannedActivity("B", 1, 2));
 
         studySegment.addPeriod(pA);
         studySegment.addPeriod(pB);
         studySegment.addPeriod(pC);
         studySegment.addPeriod(pD);
+        studySegment.addPeriod(period);
 
         initTemplate();
     }
@@ -45,9 +52,9 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
 
     public void testPeriodCount() throws Exception {
         StudySegmentTemplate.Month firstMonth = template.getMonths().get(0);
-        assertEquals("Wrong number of periods in month", 4, firstMonth.getPeriods().size());
+        assertEquals("Wrong number of periods in month", 5, firstMonth.getPeriods().size());
         assertEquals("Wrong number of periods in day",
-            4, firstMonth.getDays().get(1).getPeriods().size());
+            5, firstMonth.getDays().get(1).getPeriods().size());
     }
     
     public void testDayCount() throws Exception {
@@ -80,9 +87,19 @@ public class StudySegmentTemplateTest extends StudyCalendarTestCase {
     public void testEventsForDay() throws Exception {
         List<PlannedActivity> actualEvents = template.getMonths().get(0).getDays().get(8).getEvents();
         assertEquals(2, actualEvents.size());
-        assertEquals("Sailing", actualEvents.get(0).getActivity().getName());
-        assertEquals("Skydiving", actualEvents.get(1).getActivity().getName());
+        assertEquals("Sailing", actualEvents.get(1).getActivity().getName());
+        assertEquals("Skydiving", actualEvents.get(0).getActivity().getName());
     }
+
+    public void testEventsForDaySorted() throws Exception {
+        List<PlannedActivity> actualEvents = template.getMonths().get(0).getDays().get(10).getEvents();
+        assertEquals(4, actualEvents.size());
+        assertEquals("First element from sorted list is not what expected", (int) actualEvents.get(0).getWeight(), 10);
+        assertEquals("Second element from sorted list is not what expected", (int) actualEvents.get(1).getWeight(), 2);
+        assertEquals("Third element from sorted list is not what expected", (int) actualEvents.get(2).getWeight(), 0);
+        assertEquals("Forth element from sorted list is not what expected", (int) actualEvents.get(3).getWeight(), -5);
+    }
+
 
     public void testEventsForNegativeDay() throws Exception {
         List<PlannedActivity> actualEvents = template.getMonths().get(0).getDays().get(-13).getEvents();

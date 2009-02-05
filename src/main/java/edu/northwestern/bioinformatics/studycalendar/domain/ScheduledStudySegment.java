@@ -92,19 +92,19 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         List<ScheduledActivity> tempEvents = getActivities();
         List<ScheduledActivity> events = new LinkedList<ScheduledActivity>();
         List<ScheduledActivity> scheduledEvents = new LinkedList<ScheduledActivity>();
+        //TODO : flatten the comparison between the events in compare method of the ScheduledActivity.
         for(ScheduledActivity tempEvent : tempEvents) {
             if((tempEvent.getPlannedActivity() == null) || (tempEvent.getRepetitionNumber() == null)) {
-            events.add(tempEvent);
-            }
-            else {
-            scheduledEvents.add(tempEvent);
+                events.add(tempEvent);
+            } else {
+                scheduledEvents.add(tempEvent);
             }
         }
         Collections.sort(scheduledEvents);
         for(ScheduledActivity scheduledEvent : scheduledEvents) {
             events.add(scheduledEvent);
         }
-
+        Collections.sort(events);
         for (ScheduledActivity event : events) {
             Date key = event.getActualDate();
             if (!byDate.containsKey(key)) {

@@ -139,6 +139,15 @@ public class Fixtures {
         PlannedActivity event = new PlannedActivity();
         event.setActivity(activity);
         event.setDay(day);
+        event.setWeight(0);
+        return event;
+    }
+
+    public static PlannedActivity createPlannedActivity(Activity activity, int day, int weight) {
+        PlannedActivity event = new PlannedActivity();
+        event.setActivity(activity);
+        event.setDay(day);
+        event.setWeight(weight);
         return event;
     }
 
@@ -150,12 +159,19 @@ public class Fixtures {
     public static PlannedActivity createPlannedActivity(String activityName, int day, String details) {
         PlannedActivity event = createPlannedActivity(activityName, day);
         event.setDetails(details);
+        event.setWeight(0);
         return event;
     }
 
     public static PlannedActivity createPlannedActivity(String activityName, int day, String details, String condition) {
         PlannedActivity event = createPlannedActivity(activityName, day, details);
         event.setCondition(condition);
+        return event;
+    }
+
+    public static PlannedActivity createPlannedActivity(String activityName, int day, int weight) {
+        PlannedActivity event = createPlannedActivity(activityName, day);
+        event.setWeight(weight);
         return event;
     }
 

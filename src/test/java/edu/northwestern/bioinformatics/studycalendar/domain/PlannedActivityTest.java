@@ -197,4 +197,29 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
             assertNull("Should not have a grid id, but does: " + label, label.getGridId());
         }
     }
+
+
+    public void testPlannedActivitiesSortingByWeight() throws Exception {
+        PlannedActivity pa0, pa1, pa2, pa3;
+        pa0 = createPlannedActivity(createActivity("0", Fixtures.createActivityType("PROCEDURE")), 1, 5);
+        pa1 = createPlannedActivity(createActivity("1", Fixtures.createActivityType("INTERVENTION")), 2, 0);
+        pa2 = createPlannedActivity(createActivity("2", Fixtures.createActivityType("DESEASE")), 3, -1);
+        pa3 = createPlannedActivity(createActivity("3", Fixtures.createActivityType("OTHER")), 4, 10);
+
+        List<PlannedActivity> listOfPAs = new ArrayList<PlannedActivity>();
+        listOfPAs.add(pa0);
+        listOfPAs.add(pa1);
+        listOfPAs.add(pa2);
+        listOfPAs.add(pa3);
+
+        assertTrue("First element has wrong weight ", listOfPAs.get(0).getWeight()==5);
+        assertTrue("Second element has wrong weight ", listOfPAs.get(1).getWeight()==0);
+        assertTrue("Third element has wrong weight ", listOfPAs.get(2).getWeight()==-1);
+        assertTrue("Forth element has wrong weight ", listOfPAs.get(3).getWeight()==10);
+        Collections.sort(listOfPAs);
+        assertTrue("First element after sorting has wrong weight ", listOfPAs.get(0).getWeight()==10);
+        assertTrue("Second element after sorting has wrong weight ", listOfPAs.get(1).getWeight()==5);
+        assertTrue("Third element after sorting has wrong weight ", listOfPAs.get(2).getWeight()==0);
+        assertTrue("Forth element after sorting has wrong weight ", listOfPAs.get(3).getWeight()==-1);
+    }
 }

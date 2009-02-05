@@ -50,6 +50,7 @@ public class PlannedActivityForm extends ValidatingForm {
 
         PlannedActivity newPlannedActivity = new PlannedActivity();
         newPlannedActivity.setDay(day);
+        newPlannedActivity.setWeight(0);
         newPlannedActivity.setActivity(activity);
         newPlannedActivity.setPopulation(population);
         newPlannedActivity.setCondition(
