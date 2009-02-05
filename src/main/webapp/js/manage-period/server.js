@@ -28,7 +28,9 @@ Object.extend(SC.MP, {
       day: SC.MP.findDay(col),
       population: SC.MP.findPopulation(row, col),
       "activity-code": activity.code,
-      "activity-source": activity.source
+      "activity-source": activity.source,
+//      "weight": activity.weight
+      "weight": 0
     }, notes)
   },
 
@@ -37,7 +39,8 @@ Object.extend(SC.MP, {
     return {
       name: cell.title,
       code: cell.getAttribute("activity-code"),
-      source: cell.getAttribute("activity-source")
+      source: cell.getAttribute("activity-source"),
+      weight: cell.getAttribute("weight")
     }
   },
 

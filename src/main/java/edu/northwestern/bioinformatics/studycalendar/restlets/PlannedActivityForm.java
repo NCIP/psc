@@ -40,17 +40,21 @@ public class PlannedActivityForm extends ValidatingForm {
         validateIntegralityOf(FormParameters.DAY);
         validatePresenceOf(FormParameters.ACTIVITY_CODE);
         validatePresenceOf(FormParameters.ACTIVITY_SOURCE);
+        validatePresenceOf(FormParameters.WEIGHT);
+        validateIntegralityOf(FormParameters.WEIGHT);
+
     }
 
     public PlannedActivity createDescribedPlannedActivity() throws ResourceException {
         throwForValidationFailureIfNecessary();
         Integer day = FormParameters.DAY.extractFirstAsIntegerFrom(this);
+        Integer weight = FormParameters.WEIGHT.extractFirstAsIntegerFrom(this);
         Activity activity = findDescribedActivity();
         Population population = findDescribedPopulation();
 
         PlannedActivity newPlannedActivity = new PlannedActivity();
         newPlannedActivity.setDay(day);
-        newPlannedActivity.setWeight(0);
+        newPlannedActivity.setWeight(weight);
         newPlannedActivity.setActivity(activity);
         newPlannedActivity.setPopulation(population);
         newPlannedActivity.setCondition(

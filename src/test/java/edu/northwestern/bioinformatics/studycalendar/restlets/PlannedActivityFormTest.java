@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class PlannedActivityFormTest extends RestletTestCase {
     private static final Integer DAY = 7;
+    private static final Integer WEIGHT = 8;
     private static final String ACTIVITY_CODE = "F";
     private static final Activity ACTIVITY
         = Fixtures.createActivity("Fool", ACTIVITY_CODE,
@@ -57,6 +58,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
     public void testRequiresDay() throws Exception {
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
         expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("weight", WEIGHT.toString());
 
         PlannedActivityForm form = createForm();
 
@@ -64,10 +66,22 @@ public class PlannedActivityFormTest extends RestletTestCase {
         assertEquals("Missing required parameter day", form.getErrors().get(0));
     }
 
+    public void testRequiresWeight() throws Exception {
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("day", DAY.toString());
+
+        PlannedActivityForm form = createForm();
+
+        assertEquals("Wrong number of errors", 1, form.getErrors().size());
+        assertEquals("Missing required parameter weight", form.getErrors().get(0));
+    }
+
     public void testDayMustBeInteger() throws Exception {
         expectRequestEntityFormAttribute("day", "twelve");
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
         expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("weight", WEIGHT.toString());
 
         PlannedActivityForm form = createForm();
 
@@ -75,8 +89,21 @@ public class PlannedActivityFormTest extends RestletTestCase {
         assertEquals("Parameter day must be an integer ('twelve' isn't)", form.getErrors().get(0));
     }
 
+    public void testWeightMustBeInteger() throws Exception {
+        expectRequestEntityFormAttribute("day", "12");
+        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
+        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("weight", "eight");
+
+        PlannedActivityForm form = createForm();
+
+        assertEquals("Wrong number of errors", 1, form.getErrors().size());
+        assertEquals("Parameter weight must be an integer ('eight' isn't)", form.getErrors().get(0));
+    }
+
     public void testRequiresActivitySource() throws Exception {
         expectRequestEntityFormAttribute("day", "7");
+        expectRequestEntityFormAttribute("weight", "10");
         expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
 
         PlannedActivityForm form = createForm();
@@ -87,6 +114,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
 
     public void testRequiresActivityCode() throws Exception {
         expectRequestEntityFormAttribute("day", "7");
+        expectRequestEntityFormAttribute("weight", "10");
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
 
         PlannedActivityForm form = createForm();
@@ -97,6 +125,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
 
     public void testCreateDescribedPlannedActivityThrowsExceptionWhenInvalid() throws Exception {
         expectRequestEntityFormAttribute("day", "7");
+        expectRequestEntityFormAttribute("weight", "10");
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
 
         PlannedActivityForm form = createForm();
@@ -300,5 +329,6 @@ public class PlannedActivityFormTest extends RestletTestCase {
         expectRequestEntityFormAttribute("day", DAY.toString());
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
         expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("weight", WEIGHT.toString());        
     }
 }

@@ -35,7 +35,7 @@ import java.util.List;
 // in the future.  For now, just implementing form-encoded PUT & simple DELETE.
 public class PlannedActivityResource extends AbstractDomainObjectResource<PlannedActivity> {
     private static final List<String> PLANNED_ACTIVITY_PROPERTIES
-        = Arrays.asList("day", "activity", "population", "details", "condition");
+        = Arrays.asList("day", "activity", "population", "details", "condition", "weight");
 
     private AmendedTemplateHelper helper;
     private AmendmentService amendmentService;

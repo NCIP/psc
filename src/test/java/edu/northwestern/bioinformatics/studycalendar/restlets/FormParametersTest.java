@@ -24,13 +24,27 @@ public class FormParametersTest extends RestletTestCase {
         assertEquals("12", FormParameters.DAY.extractFirstFrom(form));
     }
 
+    public void testGetStringValueFromFormForWeight() throws Exception {
+        form.add("weight", "2");
+        assertEquals("2", FormParameters.WEIGHT.extractFirstFrom(form));
+    }
+
     public void testGetStringValueFromFormWhenNotSet() throws Exception {
         assertNull(FormParameters.DAY.extractFirstFrom(form));
+    }
+
+    public void testGetStringValueFromFormWhenNotSetForWeight() throws Exception {
+        assertNull(FormParameters.WEIGHT.extractFirstFrom(form));
     }
 
     public void testGetIntegerValueFromForm() throws Exception {
         form.add("day", "12");
         assertEquals(12, (int) FormParameters.DAY.extractFirstAsIntegerFrom(form));    
+    }
+
+    public void testGetIntegerValueFromFormForWeight() throws Exception {
+        form.add("weight", "2");
+        assertEquals(2, (int) FormParameters.WEIGHT.extractFirstAsIntegerFrom(form));    
     }
 
     public void testGetIntegerValueFromFormWhenNotSet() throws Exception {

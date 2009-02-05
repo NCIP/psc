@@ -113,7 +113,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expectFindActivityByCodeAndSource();
         expect(plannedActivityDao.getByGridId(expectedIdent)).andReturn(null);
 
-        PlannedActivity expectedPlannedActivity = setGridId(expectedIdent, createPlannedActivity(activity, 6));
+        PlannedActivity expectedPlannedActivity = setGridId(expectedIdent, createPlannedActivity(activity, 6, 8));
 
         expect(amendmentService.updateDevelopmentAmendmentAndSave(period, Add.create(expectedPlannedActivity))).andReturn(study);
 
@@ -156,7 +156,8 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("activity", activity, activity),
             PropertyChange.create("population", null, population),
             PropertyChange.create("details", null, "sharp"),
-            PropertyChange.create("condition", null, "enough")
+            PropertyChange.create("condition", null, "enough"),
+            PropertyChange.create("weight", 0, 8)
         )).andReturn(study);
 
         doPut();
@@ -178,6 +179,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("population", null, null),
             PropertyChange.create("details", null, null),
             PropertyChange.create("condition", null, null),
+            PropertyChange.create("weight", 0, 8),
             Add.create(Fixtures.createPlannedActivityLabel("jones"))
         )).andReturn(study);
 
@@ -202,6 +204,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("population", null, null),
             PropertyChange.create("details", null, null),
             PropertyChange.create("condition", null, null),
+            PropertyChange.create("weight", 0, 8),
             Add.create(Fixtures.createPlannedActivityLabel("jones", 1))
         )).andReturn(study);
 
@@ -226,6 +229,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("population", null, null),
             PropertyChange.create("details", null, null),
             PropertyChange.create("condition", null, null),
+            PropertyChange.create("weight", 0, 8),                
             Remove.create(existing)
         )).andReturn(study);
 
@@ -253,6 +257,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
             PropertyChange.create("population", null, null),
             PropertyChange.create("details", null, null),
             PropertyChange.create("condition", null, null),
+            PropertyChange.create("weight", 0, 8),
             Remove.create(existing3)
         )).andReturn(study);
 
@@ -295,6 +300,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
 
     private void expectMinimumPutEntity() throws IOException {
         expectRequestEntityFormAttribute("day", "6");
+        expectRequestEntityFormAttribute("weight", "8");
         expectRequestEntityFormAttribute("activity-code", activity.getCode());
         expectRequestEntityFormAttribute("activity-source", activity.getSource().getNaturalKey());
     }

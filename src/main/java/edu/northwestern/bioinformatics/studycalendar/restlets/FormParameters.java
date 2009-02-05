@@ -14,7 +14,8 @@ public enum FormParameters {
     DETAILS,
     CONDITION,
     LABEL,
-    POPULATION;
+    POPULATION,
+    WEIGHT;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();

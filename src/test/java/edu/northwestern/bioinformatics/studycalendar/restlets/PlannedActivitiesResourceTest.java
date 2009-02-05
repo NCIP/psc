@@ -45,6 +45,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     private static final Integer DAY = 7;
     private static final Population POPULATION = Fixtures.createPopulation("T", "Tea");
     private Set<Population> populations = new HashSet<Population>();
+    private static final Integer WEIGHT = 8;
 
     private AmendedTemplateHelper helper;
     private AmendmentService amendmentService;
@@ -129,7 +130,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectMinimumPostAttributes();
         expectFindActivity();
 
-        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY, WEIGHT);
         expectPlannedActivityAdd(expectedPlannedActivity);
 
         doPost();
@@ -156,7 +157,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectRequestEntityFormAttribute("details", "foom");
         expectRequestEntityFormAttribute("condition", "foom > 12");
 
-        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY, WEIGHT);
         expectedPlannedActivity.setDetails("foom");
         expectedPlannedActivity.setCondition("foom > 12");
         expectPlannedActivityAdd(expectedPlannedActivity);
@@ -172,7 +173,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectFindActivity();
         expectRequestEntityFormAttribute("population", "T");
 
-        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY, WEIGHT);
         expectedPlannedActivity.setPopulation(POPULATION);
         expectPlannedActivityAdd(expectedPlannedActivity);
 
@@ -243,7 +244,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectMinimumPostAttributes();
         expectFindActivity();
 
-        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY, WEIGHT);
         expect(amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(revisedPeriod, expectedPlannedActivity))
             .andThrow(new StudyCalendarValidationException("I have some bad news"));
 
@@ -260,7 +261,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectRequestEntityFormAttribute("details", "Four &amp; five are outr&eacute;");
         expectRequestEntityFormAttribute("condition", "x &lt; 4 or y &gt; 5");
 
-        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY);
+        PlannedActivity expectedPlannedActivity = createPlannedActivity(ACTIVITY, DAY, WEIGHT);
         expectedPlannedActivity.setDetails("Four & five are outré");
         expectedPlannedActivity.setCondition("x < 4 or y > 5");
 
@@ -302,5 +303,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         expectRequestEntityFormAttribute("day", DAY.toString());
         expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
         expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
+        expectRequestEntityFormAttribute("weight", WEIGHT.toString());
     }
 }
