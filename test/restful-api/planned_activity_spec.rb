@@ -31,7 +31,7 @@ describe "/planned-activity" do
     application_context['activityTypeDao'].save(@activityType1)
     @activity1 = PscTest::Fixtures.createActivity("Initial Diagnosis", "diag1", @source1, @activityType1, "Stage 1 diagnosis for malaria")
     application_context['activityDao'].save(@activity1)
-    @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity1, 4)
+    @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity1, 4, 6)
     @planned_activity1 = PscTest::Fixtures.setGridId("301", @planned_activity1) #replace auto-generated planned-activity id
     application_context['plannedActivityDao'].save(@planned_activity1) 
     @period1.addPlannedActivity(@planned_activity1)
@@ -86,7 +86,7 @@ describe "/planned-activity" do
         #create an activity to be linked to planned activity
         @activity2 = PscTest::Fixtures.createActivity("Immunization", "treat2", @source1, @activityType1, "Stage 2 treatment for malaria")
         application_context['activityDao'].save(@activity2)
-        @data = 'day=2&activity=Immunization&activity-code=treat2&activity-source=Malaria&condition=OK&details=No%20detail&label='
+        @data = 'day=2&activity=Immunization&activity-code=treat2&activity-source=Malaria&weight=0&condition=OK&details=No%20detail&label='
       end
     
       it "modifies an existing planned activity" do       
