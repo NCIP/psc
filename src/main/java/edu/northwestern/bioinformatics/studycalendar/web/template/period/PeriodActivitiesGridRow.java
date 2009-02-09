@@ -128,4 +128,8 @@ public class PeriodActivitiesGridRow implements Comparable<PeriodActivitiesGridR
     public List<PlannedActivity> getPlannedActivities() {
         return plannedActivities;
     }
+
+    public Integer getWeight() {
+        return getKey().getWeight();
+    }
 }

@@ -29,8 +29,7 @@ Object.extend(SC.MP, {
       population: SC.MP.findPopulation(row, col),
       "activity-code": activity.code,
       "activity-source": activity.source,
-//      "weight": activity.weight
-      "weight": 0
+      "weight": activity.weight
     }, notes)
   },
 
@@ -51,7 +50,7 @@ Object.extend(SC.MP, {
 
   findNotes: function(row) {
     var content = $$("#notes .row-" + row + " .notes-content").first()
-    var params = $w("details condition").inject({}, function(notes, kind) {
+    var params = $w("details condition weight").inject({}, function(notes, kind) {
       notes[kind] = content.select("." + kind).first().innerHTML.strip()
       return notes
     })

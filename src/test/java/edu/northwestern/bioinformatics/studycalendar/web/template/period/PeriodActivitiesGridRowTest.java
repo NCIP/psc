@@ -227,7 +227,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
 
     private static class TestKey extends PeriodActivitiesGridRowKey {
         public TestKey(Integer activityId) {
-            super(activityId, null, null, Collections.<String>emptySet());
+            super(activityId, null, null, Collections.<String>emptySet(), 0);
         }
 
         public void setDetails(String details) {

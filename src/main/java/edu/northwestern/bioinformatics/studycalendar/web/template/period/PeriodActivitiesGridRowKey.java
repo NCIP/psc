@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.BeanPropertyListComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +17,8 @@ import java.util.TreeSet;
  * @author Rhett Sutphin
 */
 public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGridRowKey> {
+        private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final BeanPropertyListComparator<PeriodActivitiesGridRowKey> COMPARATOR
         = new BeanPropertyListComparator<PeriodActivitiesGridRowKey>().
             addProperty("details", new NullComparator(String.CASE_INSENSITIVE_ORDER)).
@@ -25,10 +29,11 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
     protected String details;
     protected String condition;
     protected Collection<String> labels;
+    protected Integer weight;
 
     public static PeriodActivitiesGridRowKey create(Activity activity) {
         return new PeriodActivitiesGridRowKey(
-            activity.getId(), null, null, Collections.<String>emptySet()
+            activity.getId(), null, null, Collections.<String>emptySet(), 0
         );
     }
 
@@ -40,15 +45,17 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
             plannedActivity.getActivity().getId(),
             plannedActivity.getDetails(),
             plannedActivity.getCondition(),
-            plannedActivity.getLabels()
+            plannedActivity.getLabels(),
+            plannedActivity.getWeight()
         );
     }
 
-    public PeriodActivitiesGridRowKey(Integer activityId, String details, String condition, Collection<String> labels) {
+    public PeriodActivitiesGridRowKey(Integer activityId, String details, String condition, Collection<String> labels, Integer weight) {
         this.activityId = activityId;
         this.details = details;
         this.condition = condition;
         this.labels = new TreeSet<String>(labels);
+        this.weight = weight;
     }
 
     public Integer getActivityId() {
@@ -65,6 +72,10 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
 
     public Collection<String> getLabels() {
         return labels;
+    }
+
+    public Integer getWeight() {
+        return weight;
     }
 
     public String getComparableLabels() {
@@ -92,7 +103,7 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
         if (condition != null ? !condition.equals(key.condition) : key.condition != null)
             return false;
         if (details != null ? !details.equals(key.details) : key.details != null) return false;
-
+        if (weight != null ? !weight.equals(key.weight) : key.weight != null) return false;
         String thisLabels = getComparableLabels();
         String otherLabels = getComparableLabels();
         return !(thisLabels != null ? !thisLabels.equals(otherLabels) : otherLabels != null);
@@ -106,6 +117,7 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
         result = 31 * result + (condition != null ? condition.hashCode() : 0);
         String thisLabels = getComparableLabels();
         result = 31 * result + (thisLabels != null ? thisLabels.hashCode() : 0);
+        result = 31 * result + (weight != null ? weight.hashCode() : 0);
         return result;
     }
 
@@ -116,6 +128,7 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
             append(getDetails()).
             append(getCondition()).
             append(getComparableLabels()).
+            append(getWeight()).
             toString();
     }
 }

@@ -39,6 +39,7 @@
                     <span class="details" style="display: none"></span>
                     <span class="condition" style="display: none"></span>
                     <span class="labels" style="display: none"></span>
+                    <span class="weight" >0</span>
                     &nbsp;
                 </div>
             </td>
@@ -186,6 +187,9 @@
             <li class='labels'>
                 <a href='#labels'>Labels</a>
             </li>
+            <li class='weight'>
+                <a href='#weight'>Weight</a>
+            </li>
         </ul>
     </div>
 </div>
@@ -270,6 +274,8 @@
                 <!-- Labels will be enabled in 2.2.1 -->
                 <dt>Labels</dt>
                 <dd class='none' id='labels-preview'>None</dd>
+                <dt>Weight</dt>
+                <dd class='none' id='weight-preview'>0</dd>
             </dl>
             <p id="notes-preview-edit">Click to edit</p>
         </div>
@@ -295,6 +301,9 @@
                                     <span class='condition' style='display: none'>
                                         ${row.condition}
                                     </span>
+                                    <span class='weight'>
+                                        ${row.weight}
+                                    </span>                                    
                                     <span class='labels' style='display: none'>
                                         <c:forEach items="${row.labels}" var="label">
                                             ${label}
@@ -433,6 +442,15 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="label">
+                <label for="edit-notes-weight">Weight</label>
+            </div>
+            <div class="value">
+                <input type="text" class="text" id="edit-notes-weight" hint="Default is 0" />
+            </div>
+        </div>        
         <div class="row">
             <div class="submit">
                 <input type="button" value="Done" id="edit-notes-done"/>

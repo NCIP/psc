@@ -2,7 +2,7 @@ if (!window.SC) { window.SC = { } }
 if (!SC.MP) { SC.MP = { } }
 
 Object.extend(SC.MP, {
-  NOTE_TYPES: $w("details condition labels"),
+  NOTE_TYPES: $w("details condition labels weight"),
   DEFAULT_NOTE_TYPE: "details",
 
   selectDisplayedNotes: function(evt) {
@@ -108,7 +108,7 @@ Object.extend(SC.MP, {
     $$(".column ." + rowClass).invoke("addClassName", "emphasized")
     $$("#edit-notes-lightbox .activity-name").invoke("update", activity.name)
     SC.MP.NOTES_OBSERVERS = { }
-    $w("details condition labels").each(function(noteKind) {
+    $w("details condition labels weight").each(function(noteKind) {
       var noteSpan = notesRow.select(".notes-content ." + noteKind).first();
       var noteInput = $('edit-notes-' + noteKind);
       // copy in current values from spans
