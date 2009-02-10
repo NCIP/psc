@@ -103,6 +103,10 @@ Object.extend(SC.MP, {
     if (lo > hi) {
       return null;
     } else if (lo == 0 && hi == 0) {
+        var oldName = rows[0].select("td").first().title
+        if(newName.toLowerCase() >= oldName.toLowerCase()) {  //new comes after old
+            return null;
+        }
       console.log("Should insert before %d / %o", 0, rows[0])
       return SC.MP.findRowIndexClass(rows[0])
     }
