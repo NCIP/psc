@@ -37,16 +37,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
 
-    <bean id="csmAuthenticationProvider"
-          class="gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider">
-        <property name="csmAuthenticationManager" ref="csmAuthenticationManager"/>
+    <bean id="pscAuthenticationProvider"
+         class="edu.northwestern.bioinformatics.studycalendar.security.plugin.PSCAuthenticationProvider">
+        <property name="studyCalendarAuthenticationManager" ref="pscAuthenticationManager"/>
         <property name="userDetailsService" ref="pscUserDetailsService"/>
         <property name="userCache" ref="userCache"/>
     </bean>
 
-    <bean class="gov.nih.nci.security.SecurityServiceProvider"
-          id="csmAuthenticationManager" factory-method="getAuthenticationManager">
-        <constructor-arg ref="csmContextName"/>
+    <bean class="edu.northwestern.bioinformatics.studycalendar.security.plugin.StudyCalendarAuthenticationManager" id="pscAuthenticationManager">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="pscUserDetailsService"

@@ -8,7 +8,6 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.context.ApplicationContext;
-import gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider;
 
 /**
  * @author Rhett Sutphin
@@ -18,7 +17,7 @@ public class InsecureApiAuthenticationSystemTest extends StudyCalendarTestCase {
 
     private UserDetailsService userDetailsService;
     private ApplicationContext applicationContext;
-    private CSMAuthenticationProvider csmAuthenticationProvider;
+    private PSCAuthenticationProvider pscAuthenticationProvider;
 
     @Override
     protected void setUp() throws Exception {
@@ -27,10 +26,10 @@ public class InsecureApiAuthenticationSystemTest extends StudyCalendarTestCase {
 
         applicationContext = registerNiceMockFor(ApplicationContext.class);
         userDetailsService = registerMockFor(UserDetailsService.class);
-        csmAuthenticationProvider = new CSMAuthenticationProvider();
+        pscAuthenticationProvider = new PSCAuthenticationProvider();
 
         expect(applicationContext.getBean("pscUserDetailsService")).andReturn(userDetailsService).anyTimes();
-        expect(applicationContext.getBean("csmAuthenticationProvider")).andReturn(csmAuthenticationProvider).anyTimes();
+        expect(applicationContext.getBean("pscAuthenticationProvider")).andReturn(pscAuthenticationProvider).anyTimes();
     }
     
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {

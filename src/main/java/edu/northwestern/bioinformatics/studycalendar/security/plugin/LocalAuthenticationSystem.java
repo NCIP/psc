@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
-import gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider;
 import org.acegisecurity.AuthenticationManager;
 
 /**
@@ -16,8 +15,8 @@ public class LocalAuthenticationSystem extends UsernameAndPasswordAuthentication
 
     @Override
     protected AuthenticationManager createAuthenticationManager() {
-        CSMAuthenticationProvider provider
-            = (CSMAuthenticationProvider) getApplicationContext().getBean("csmAuthenticationProvider");
+        PSCAuthenticationProvider provider
+            = (PSCAuthenticationProvider) getApplicationContext().getBean("pscAuthenticationProvider");
         return AuthenticationSystemTools.createProviderManager(getApplicationContext(), provider);
     }
 

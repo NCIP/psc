@@ -9,7 +9,6 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 
-import gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider;
 
 import java.util.Arrays;
 
@@ -26,8 +25,8 @@ public class InsecureApiAuthenticationSystem extends LocalAuthenticationSystem {
 
     @Override
     protected AuthenticationManager createAuthenticationManager() {
-        AuthenticationProvider csm = (CSMAuthenticationProvider) getApplicationContext()
-            .getBean("csmAuthenticationProvider");
+        AuthenticationProvider csm = (PSCAuthenticationProvider) getApplicationContext()
+            .getBean("pscAuthenticationProvider");
         UserDetailsService service = (UserDetailsService) getApplicationContext()
             .getBean("pscUserDetailsService");
         AuthenticationProvider insecure = new UsernameAssertedAuthenticationProvider(service);
