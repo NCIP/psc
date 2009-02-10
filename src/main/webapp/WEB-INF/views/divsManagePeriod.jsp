@@ -39,7 +39,7 @@
                     <span class="details" style="display: none"></span>
                     <span class="condition" style="display: none"></span>
                     <span class="labels" style="display: none"></span>
-                    <span class="weight" >0</span>
+                    <span class="weight"  style="display: none"></span>
                     &nbsp;
                 </div>
             </td>
@@ -275,7 +275,7 @@
                 <dt>Labels</dt>
                 <dd class='none' id='labels-preview'>None</dd>
                 <dt>Weight</dt>
-                <dd class='none' id='weight-preview'>0</dd>
+                <dd class='none' id='weight-preview'>None</dd>
             </dl>
             <p id="notes-preview-edit">Click to edit</p>
         </div>

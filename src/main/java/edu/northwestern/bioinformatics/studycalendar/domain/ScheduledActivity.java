@@ -77,8 +77,19 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     
     public int compareTo(ScheduledActivity o) {
         if (getPlannedActivity()!= null && o.getPlannedActivity()!=null){
-            int weightDiff =  o.getPlannedActivity().getWeight().compareTo(getPlannedActivity().getWeight());
+            Integer weightOne = o.getPlannedActivity().getWeight();
+            Integer weightTwo = getPlannedActivity().getWeight();
+
+            if (weightOne == null) {
+                weightOne = 0;
+            }
+            if (weightTwo == null) {
+                weightTwo = 0;
+            }
+
+            int weightDiff = weightOne.compareTo(weightTwo);
             if (weightDiff != 0) return weightDiff;
+
         }
         if(getActivity().getType() !=null && o.getActivity().getType()!=null) {
             // by type first

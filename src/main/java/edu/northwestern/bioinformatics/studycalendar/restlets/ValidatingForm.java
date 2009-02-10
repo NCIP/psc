@@ -5,6 +5,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,9 @@ import java.util.regex.Pattern;
  * @author Rhett Sutphin
  */
 public class ValidatingForm extends Form {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Pattern INTEGER_PATTERN = Pattern.compile("^\\d+$");
+    private static final Pattern INTEGER_NULL_PATTERN = Pattern.compile("^-?\\d*$");
 
     private List<String> errors = new ArrayList<String>();
 
@@ -39,6 +43,17 @@ public class ValidatingForm extends Form {
         String value = getFirstValue(name);
         if (!StringUtils.isBlank(value)) {
             if (!INTEGER_PATTERN.matcher(value.trim()).matches()) {
+                addError("Parameter %s must be an integer ('%s' isn't)", name, value);
+            }
+        }
+        return this;
+    }
+
+    public ValidatingForm validateIntegralityOfPosNegNullInteger(FormParameters param) {
+        String name = param.attributeName();
+        String value = getFirstValue(name);
+        if (!StringUtils.isBlank(value)) {
+            if (!INTEGER_NULL_PATTERN.matcher(value.trim()).matches()) {
                 addError("Parameter %s must be an integer ('%s' isn't)", name, value);
             }
         }

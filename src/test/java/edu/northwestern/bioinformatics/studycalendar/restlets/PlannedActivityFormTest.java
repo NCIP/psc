@@ -66,16 +66,6 @@ public class PlannedActivityFormTest extends RestletTestCase {
         assertEquals("Missing required parameter day", form.getErrors().get(0));
     }
 
-    public void testRequiresWeight() throws Exception {
-        expectRequestEntityFormAttribute("activity-source", ACTIVITY_SOURCE_NAME);
-        expectRequestEntityFormAttribute("activity-code", ACTIVITY_CODE);
-        expectRequestEntityFormAttribute("day", DAY.toString());
-
-        PlannedActivityForm form = createForm();
-
-        assertEquals("Wrong number of errors", 1, form.getErrors().size());
-        assertEquals("Missing required parameter weight", form.getErrors().get(0));
-    }
 
     public void testDayMustBeInteger() throws Exception {
         expectRequestEntityFormAttribute("day", "twelve");

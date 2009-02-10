@@ -4,6 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -33,7 +35,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     private Integer weight;
     private SortedSet<PlannedActivityLabel> plannedActivityLabels;
 
-	public PlannedActivity() {
+    public PlannedActivity() {
 		plannedActivityLabels = new TreeSet<PlannedActivityLabel>();
 	}
 
@@ -44,7 +46,17 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 	}
 
 	public int compareTo(PlannedActivity other) {
-        int weightDiff = other.getWeight().compareTo(getWeight());
+        Integer weightOne = other.getWeight();
+        Integer weightTwo = getWeight();
+
+        if (weightOne == null) {
+            weightOne = 0;
+        }
+        if (weightTwo == null) {
+            weightTwo = 0;
+        }
+
+        int weightDiff = weightOne.compareTo(weightTwo);
         if (weightDiff != 0) return weightDiff;
         // by day
 		int dayDiff = getDay() - other.getDay();
