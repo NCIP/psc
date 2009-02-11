@@ -24,6 +24,7 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
     private static final String DETAILS = "details";
     private static final String DAY = "day";
     private static final String CONDITION = "condition";
+    private static final String WEIGHT = "weight";
 
     private PlannedActivityDao plannedActivityDao;
 
@@ -47,6 +48,9 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         ((PlannedActivity) node).setDetails(element.attributeValue(DETAILS));
         ((PlannedActivity) node).setDay(new Integer(element.attributeValue(DAY)));
         ((PlannedActivity) node).setCondition(element.attributeValue(CONDITION));
+        if (element.attributeValue(WEIGHT) != null) {
+            ((PlannedActivity) node).setWeight(new Integer(element.attributeValue(WEIGHT)));
+        }
 
         String populationAbbreviation = element.attributeValue(POPULATION);
         if (populationAbbreviation != null) {
@@ -76,7 +80,9 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
         element.addAttribute(DETAILS, ((PlannedActivity) node).getDetails());
         element.addAttribute(DAY, ((PlannedActivity) node).getDay().toString());
         element.addAttribute(CONDITION, ((PlannedActivity) node).getCondition());
-
+        if( ((PlannedActivity) node).getWeight() != null) {
+            element.addAttribute(WEIGHT, ((PlannedActivity) node).getWeight().toString());
+        }    
         if(!(((PlannedActivity) node).getPlannedActivityLabels().isEmpty())) {
             for(PlannedActivityLabel label:((PlannedActivity) node).getPlannedActivityLabels()) {
                 Element eLabel = plannedActivityLabelXmlSerializer.createElement(label);
@@ -136,6 +142,11 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
             errorMessageStringBuffer.append(String.format("conditions  are different for " + planTreeNode.getClass().getSimpleName()
                     + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getCondition(),
                     element.attributeValue(CONDITION)));
+
+        } else if (!StringUtils.equals(StringTools.valueOf(plannedActivity.getWeight()), element.attributeValue(WEIGHT))) {
+            errorMessageStringBuffer.append(String.format("weights  are different for " + planTreeNode.getClass().getSimpleName()
+                    + ". expected:%s , found (in imported document) :%s \n", plannedActivity.getWeight(),
+                    element.attributeValue(WEIGHT)));
 
         }
 

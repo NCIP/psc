@@ -119,6 +119,7 @@
         <xsd:attribute name="details" type="xsd:string"/>
         <xsd:attribute name="condition" type="xsd:string"/>
         <xsd:attribute name="population" type="xsd:string"/>
+        <xsd:attribute name="weight" type="xsd:integer" use="optional"/>
     </xsd:complexType>
 
     <!-- Elements of amendments (deltas & changes) -->

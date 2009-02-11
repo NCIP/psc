@@ -61,12 +61,13 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Element actual = serializer.createElement(plannedActivity);
         verifyMocks();
-        assertEquals("Wrong attribute size", 5, actual.attributeCount());
+        assertEquals("Wrong attribute size", 6, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
         assertEquals("Wrong day", "2", actual.attributeValue("day"));
         assertEquals("Wrong details", "scan details", actual.attributeValue("details"));
         assertEquals("Wrong condition", "no mice", actual.attributeValue("condition"));
         assertEquals("Wrong population", "MP", actual.attributeValue("population"));
+        assertEquals("Wrong weight", "0", actual.attributeValue("weight"));
     }
 
     public void testReadElementStudyPlannedActivity() {
@@ -76,6 +77,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("day")).andReturn("2");
         expect(element.attributeValue("details")).andReturn("scan details");
         expect(element.attributeValue("condition")).andReturn("no mice");
+        expect(element.attributeValue("weight")).andReturn(null);
         expect(element.attributeValue("population")).andReturn("MP");
         expect(element.elementIterator("label")).andReturn(labelList.iterator());
         expect(plannedActivityLabelXmlSerializer.readElement((Element)labelList.iterator().next())).andReturn(new PlannedActivityLabel());
