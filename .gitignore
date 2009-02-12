@@ -8,4 +8,5 @@ api-report
 tools/tomcat/context.xml
 tools/tomcat/tomcat.properties
 db/hsqldb
+core/hsqldb
 */reports
