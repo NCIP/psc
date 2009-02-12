@@ -2,20 +2,6 @@ require 'rest-open-uri'
 require 'builder'
 require 'rexml/document'
 
-def tomcat_properties
-  $tomcat_properties ||= Class.new do
-    def initialize
-      @properties = Java::JavaUtil::Properties.new()
-      @properties.load(Java::JavaIo::FileInputStream.new(
-        File.expand_path("../../tools/tomcat/tomcat.properties", File.dirname(__FILE__))))
-    end
-
-    def [](k)
-      @properties.getProperty(k)
-    end
-  end.new
-end
-
 helper_for Spec::Example::ExampleGroup do
   attr_reader :response
 
@@ -43,8 +29,9 @@ helper_for Spec::Example::ExampleGroup do
     execute_request!(relative_uri, options)
   end
 
+  # TODO: parameterize
   def full_uri(relative)
-    "http://#{tomcat_properties['tomcat.server']}:8080#{tomcat_properties['webapp.deploy-path']}/api/v1#{relative}"
+    "http://localhost:7200/psc/api/v1#{relative}"
   end
 
   def psc_xml(root_name, root_attributes={}, &block)

@@ -57,12 +57,12 @@ define "psc" do
     task :refilter do
       rm_rf Dir[_(resources.target.to_s, "applicationContext-{spring,setup}.xml")]
     end
-    resources.enhance [:refilter]
+    # resources.enhance [:refilter]
     
     def filter_tokens
       {
         'application-short-name'  => APPLICATION_SHORT_NAME,
-        'config.database'         => db_name,
+        # 'config.database'         => db_name,
         "buildInfo.versionNumber" => project.version,
         "buildInfo.username"      => ENV['USER'],
         "buildInfo.hostname"      => `hostname`.chomp,
@@ -111,10 +111,10 @@ define "psc" do
     package(:sources)
     
     check do
-      acSpring = File.read(_('target/resources/applicationContext-spring.xml'))
+      # acSpring = File.read(_('target/resources/applicationContext-spring.xml'))
       acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
       
-      acSpring.should include(filter_tokens['config.database'])
+      # acSpring.should include(filter_tokens['config.database'])
       acSetup.should include(filter_tokens['buildInfo.hostname'])
       acSetup.should include(project.version)
     end
@@ -223,6 +223,33 @@ define "psc" do
     package(:jar)
     package(:sources)
   end
+  
+  desc "Integrated tests for the RESTful API"
+  define "restful-api-test", :base_dir => _('test/restful-api') do
+    task :set_db do
+      set_db_name(ENV['INTEGRATION_DB'] || 'rest-test')
+      test.options[:properties]['psc.config.datasource'] = db_name
+    end
+    
+    compile.with(project('web'), project('web').compile.dependencies)
+    test.using(:jtestr).
+      with(
+        project('test-infrastructure'), 
+        project('test-infrastructure').compile.dependencies, 
+        project('test-infrastructure').test.compile.dependencies
+      ).using(
+        :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2' },
+        :properties => { 
+          'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
+        }
+      )
+    test.enhance [task(:set_db)]
+    test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)
+
+    test.setup { 
+      jetty.use 
+    }
+  end
 end
 
 ###### Shared configuration
@@ -267,7 +294,7 @@ end
 desc "Run PSC from #{jetty.url}/psc"
 task :server do
   ENV['test'] = 'no'
-  ENV['DB'] = 'datasource'
+  set_db_name 'datasource'
   
   csm_conf = project("psc")._('tmp/csm_jaas.conf')
   rm_rf csm_conf

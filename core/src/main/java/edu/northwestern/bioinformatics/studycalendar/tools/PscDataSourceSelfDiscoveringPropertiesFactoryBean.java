@@ -10,6 +10,8 @@ import gov.nih.nci.cabig.ctms.tools.DataSourceSelfDiscoveringPropertiesFactoryBe
  * @author Rhett Sutphin
  */
 public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourceSelfDiscoveringPropertiesFactoryBean {
+    private static final String DATASOURCE_SYSTEM_PROPERTY = "psc.config.datasource";
+
     private static final String AUTH_MODE_PROPERTY = "authenticationMode";
     private static final String WEBSSO_SERVER_URL_PROPERTY = "webSSO.server.baseUrl";
     private static final String WEBSSO_SERVER_CERT_PROPERTY = "webSSO.server.trustCert";
@@ -32,6 +34,16 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
     };
 
     @Override
+    public String getDatabaseConfigurationName() {
+        String fromSys = System.getProperty(DATASOURCE_SYSTEM_PROPERTY);
+        if (fromSys != null) {
+            return fromSys;
+        } else {
+            return super.getDatabaseConfigurationName();
+        }
+    }
+
+    @Override
     protected void computeProperties() {
         super.computeProperties();
         setPropertyDefault(AUTH_MODE_PROPERTY, "local");
@@ -42,7 +54,6 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
         setPropertyDefault(GRID_STUDY_CONSUMER_URL, GRID_STUDY_CONSUMER_VALUE);
         setPropertyDefault(GRID_REGISTRATION_CONSUMER_URL, GRID_REGISTRATION_CONSUMER_VALUE);
         setPropertyDefault(GRID_ROLLBACK_TIMEOUT, GRID_ROLLBACK_TIMEOUT_VALUE);
-
     }
 
     private void setPropertyDefault(String propertyName, String defaultValue) {

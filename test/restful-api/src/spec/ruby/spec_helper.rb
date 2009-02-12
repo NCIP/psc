@@ -8,8 +8,21 @@ require 'jruby'
 # a la http://www.ruby-forum.com/topic/153160
 Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJRubyClassLoader
 
+# Shortcuts for PSC java packages
+module Psc
+  %w(domain domain.delta core).each do |pkg|
+    class_eval <<-RUBY
+      module #{pkg.split('.').map(&:capitalize).join('::')}
+        include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
+      end
+    RUBY
+  end
+end
+
 module PscTest
   include_package "edu.northwestern.bioinformatics.studycalendar.test"
+
+  Fixtures = Psc::Core::Fixtures
 
   def self.createDate(year, month, day)
     # DateTools expects month as java.util.Calendar constant. They start with 0.
@@ -21,6 +34,8 @@ module PscTest
       node, changes.to_java(Psc::Domain::Delta::Change)
     )
   end
+
+  puts "spec_helper in module PscTest"
   
   class HibernateOpenSession
     def initialize
@@ -57,30 +72,17 @@ end
 
 Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
 
-# Shortcuts for PSC java packages
-module Psc
-  %w(domain domain.delta).each do |pkg|
-    class_eval <<-RUBY
-      module #{pkg.split('.').map(&:capitalize).join('::')}
-        include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
-      end
-    RUBY
-  end
-end
-
 def application_context
   $application_context ||= Class.new do
     def initialize
-      FileUtils.cd(File.expand_path("../..", File.dirname(__FILE__))) do
-        @context = Java::OrgSpringframeworkContextSupport::GenericApplicationContext.new(
-          Java::OrgSpringframeworkBeansFactoryXml::XmlBeanFactory.new(
-            Java::OrgSpringframeworkCoreIo::FileSystemResource.new(
-              File.expand_path("static-data/applicationContext.xml", File.dirname(__FILE__))
-            ),
-            PscTest::StudyCalendarTestHelper.getDeployedApplicationContext()
-          )
+      path = J::System.getProperty("applicationContext.path")
+      puts "Loading framework application context from #{path}"
+      @context = Java::OrgSpringframeworkContextSupport::GenericApplicationContext.new(
+        Java::OrgSpringframeworkBeansFactoryXml::XmlBeanFactory.new(
+          Java::OrgSpringframeworkCoreIo::FileSystemResource.new(path),
+          Psc::Core::StudyCalendarApplicationContextBuilder.getDeployedApplicationContext()
         )
-      end
+      )
     end
 
     def [](beanName)
@@ -108,3 +110,5 @@ end
 
 application_context['databaseInitializer'].beforeAll
 # afterAll is invoked via a jtestr after block (in jtestr_config.rb)
+
+puts "spec_helper done"

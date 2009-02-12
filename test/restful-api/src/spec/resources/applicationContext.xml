@@ -20,26 +20,26 @@
     
     <bean id="configurationInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.ConfigurationInitializer">
-        <property name="yamlResource" value="file:test/restful-api/static-data/configuration.yml"/>
+        <property name="yamlResource" value="file:@resources.target@/configuration.yml"/>
     </bean>
 
     <bean id="sitesInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SitesInitializer">
-        <property name="yamlResource" value="file:test/restful-api/static-data/sites.yml"/>
+        <property name="yamlResource" value="file:@resources.target@/sites.yml"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="siteService" ref="siteService"/>
     </bean>
 
     <bean id="usersInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.UsersInitializer">
-        <property name="yamlResource" value="file:test/restful-api/static-data/users.yml"/>
+        <property name="yamlResource" value="file:@resources.target@/users.yml"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="userService" ref="userService"/>
     </bean>
 
     <bean id="sampleActivitySourceInitializer"
           class="edu.northwestern.bioinformatics.studycalendar.test.restfulapi.SampleActivitySourceInitializer">
-        <property name="xmlResource" value="file:test/restful-api/static-data/activities.xml"/>
+        <property name="xmlResource" value="file:@resources.target@/activities.xml"/>
         <property name="importActivitiesService" ref="importActivitiesService"/>
     </bean>
 </beans>

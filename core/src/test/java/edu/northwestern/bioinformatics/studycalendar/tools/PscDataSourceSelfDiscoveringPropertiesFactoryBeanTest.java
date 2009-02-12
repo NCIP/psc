@@ -6,24 +6,23 @@ import java.util.Properties;
 
 /**
  * @author Saurabh Agrawal
+ * @author Rhett Sutphin
  */
 public class PscDataSourceSelfDiscoveringPropertiesFactoryBeanTest extends TestCase {
 
-    private PscDataSourceSelfDiscoveringPropertiesFactoryBean propertiesFactoryBean;
+    private PscDataSourceSelfDiscoveringPropertiesFactoryBean bean;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        propertiesFactoryBean = new PscDataSourceSelfDiscoveringPropertiesFactoryBean();
-        propertiesFactoryBean.setApplicationDirectoryName("psc");
-        propertiesFactoryBean.setDatabaseConfigurationName("datasource");
-        //(PscDataSourceSelfDiscoveringPropertiesFactoryBean) getDeployedApplicationContext().getBeansOfType(PscDataSourceSelfDiscoveringPropertiesFactoryBean.class);
-        assertNotNull(propertiesFactoryBean);
+        bean = new PscDataSourceSelfDiscoveringPropertiesFactoryBean();
+        bean.setApplicationDirectoryName("psc");
+        assertNotNull(bean);
     }
 
     public void testGridConfiguration() {
-        Properties properties = propertiesFactoryBean.getProperties();
-
+        bean.setDatabaseConfigurationName("datasource");
+        Properties properties = bean.getProperties();
 
         assertNotNull("registration consumer grid url can not be null", properties.getProperty("grid.registrationconsumer.url"));
         assertEquals("registration consumer grid url value can not be null", "/wsrf-psc/services/cagrid/RegistrationConsumer", properties.getProperty("grid.registrationconsumer.url"));
@@ -33,6 +32,12 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBeanTest extends TestC
 
         assertNotNull("roll back time should not be null", properties.getProperty("grid.rollback.timeout"));
         assertEquals("rollback timeout should not be null", "1", properties.getProperty("grid.rollback.timeout"));
+    }
+    
+    public void testDatabaseConfigurationNameTakenFromSystemPropertyIfSet() throws Exception {
+        String expected = "hsqldb";
+        System.setProperty("psc.config.datasource", expected);
 
+        assertEquals("Config name not taken from system prop", expected, bean.getDatabaseConfigurationName());
     }
 }

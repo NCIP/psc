@@ -1,7 +1,16 @@
 ###### HELPERS
 
 def db_name
-  ENV['DB'] || 'hsqldb'
+  set_db_name($db_name || ENV['DB'] || 'hsqldb')
+end
+
+def set_db_name(name)
+  unless $db_name && $db_name == name
+    info "#{$db_name ? 'Switching' : 'Setting'} datasource configuration name to #{name.inspect}"
+  end
+  $db_name = name
+  Java.java.lang.System.setProperty("psc.config.datasource", $db_name)
+  $db_name
 end
 
 def emma?
