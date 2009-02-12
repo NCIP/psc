@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
-import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.assertPropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +14,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class PropertyChangeTest extends StudyCalendarTestCase {
+public class PropertyChangeTest extends TestCase {
     private static final Date NOW = DateTools.createDate(2025, Calendar.MAY, 9);
 
     private PropertyChange change;

@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import junit.framework.TestCase;
 
-public class UserRoleTest extends StudyCalendarTestCase {
+public class UserRoleTest extends TestCase {
     public void testRemoveStudySites() throws Exception {
         Study study0 = setId(1, createNamedInstance("Study A", Study.class));
         Study study1 = setId(2, createNamedInstance("Study B", Study.class));

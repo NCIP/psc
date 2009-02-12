@@ -2,14 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
-public class ChildrenChangeTest extends StudyCalendarTestCase {
+public class ChildrenChangeTest extends TestCase {
 
     public void testCloneDeepClonesChild() throws Exception {
         Hide src = new Hide(Epoch.create("Gary"));

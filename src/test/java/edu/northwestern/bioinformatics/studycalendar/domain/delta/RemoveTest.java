@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class RemoveTest extends StudyCalendarTestCase {
+public class RemoveTest extends TestCase {
     private static final Date NOW = DateTools.createDate(2010, Calendar.JANUARY, 1);
 
     private Remove remove;

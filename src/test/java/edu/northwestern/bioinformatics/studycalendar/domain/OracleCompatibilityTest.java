@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
-import org.hibernate.mapping.PersistentClass;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.mapping.PersistentClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 
 import java.util.Iterator;
 

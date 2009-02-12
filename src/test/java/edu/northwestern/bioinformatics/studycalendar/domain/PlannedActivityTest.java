@@ -3,11 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
-public class PlannedActivityTest extends StudyCalendarTestCase {
+public class PlannedActivityTest extends TestCase {
     private PlannedActivity pa0, pa1;
 
     protected void setUp() throws Exception {

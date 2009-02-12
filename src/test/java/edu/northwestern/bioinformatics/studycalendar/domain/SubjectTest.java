@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class SubjectTest extends StudyCalendarTestCase {
+public class SubjectTest extends TestCase {
     private Subject subject = new Subject();
 
     protected void setUp() throws Exception {

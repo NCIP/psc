@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import junit.framework.TestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import org.acegisecurity.GrantedAuthority;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 /**
  * @author Rhett Sutphin
  */
-public class UserTest extends StudyCalendarTestCase {
+public class UserTest extends TestCase {
     private User user;
 
     @Override

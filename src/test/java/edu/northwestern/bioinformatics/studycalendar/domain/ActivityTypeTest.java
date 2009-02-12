@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class ActivityTypeTest extends StudyCalendarTestCase {
+public class ActivityTypeTest extends TestCase {
     private ActivityType t1, t4;
 
     @Override

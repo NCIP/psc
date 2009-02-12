@@ -5,9 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class AmendmentTest extends StudyCalendarTestCase {
+public class AmendmentTest extends TestCase {
     private Amendment a3, a2, a1, a0;
     private Amendment b2;
 

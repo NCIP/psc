@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class SiteTest extends StudyCalendarTestCase {
+public class SiteTest extends TestCase {
     private Site site;
 
     @Override

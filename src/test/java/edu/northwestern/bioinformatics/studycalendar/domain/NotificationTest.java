@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendment;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +14,7 @@ import java.util.Date;
 /**
  * @author Saurabh Agrawal
  */
-public class NotificationTest extends CoreTestCase {
+public class NotificationTest extends TestCase {
 
     private Notification notification;
 

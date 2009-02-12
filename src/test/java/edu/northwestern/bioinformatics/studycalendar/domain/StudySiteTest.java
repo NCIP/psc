@@ -1,13 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class StudySiteTest extends StudyCalendarTestCase {
+public class StudySiteTest extends TestCase {
     private StudySite studySite;
     private Amendment aOrig, a2003, a2004, a2005;
 

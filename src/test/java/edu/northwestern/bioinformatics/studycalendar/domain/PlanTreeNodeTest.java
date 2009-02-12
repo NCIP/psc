@@ -1,17 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import junit.framework.TestCase;
 
 /**
  * Tests for common behaviors in {@link PlanTreeNode} and {@link PlanTreeInnerNode}.
  *
  * @author Rhett Sutphin
  */
-public class PlanTreeNodeTest extends StudyCalendarTestCase {
+public class PlanTreeNodeTest extends TestCase {
     private Study study;
     @Override
     protected void setUp() throws Exception {

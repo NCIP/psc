@@ -1,7 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Arrays;
@@ -11,7 +18,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class DeltaTest extends StudyCalendarTestCase {
+public class DeltaTest extends DomainTestCase {
     private static final Date NOW = DateTools.createDate(2005, Calendar.SEPTEMBER, 5);
 
     public void testDeltaForPlannedCalendar() throws Exception {

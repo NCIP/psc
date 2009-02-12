@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Nataliya Shurupova
  */
 
-public class WeekdayTest extends StudyCalendarTestCase {
+public class WeekdayTest extends TestCase {
     WeekdayBlackout dayOfTheWeek = new WeekdayBlackout();
 
     protected void setUp() throws Exception {
@@ -74,6 +75,4 @@ public class WeekdayTest extends StudyCalendarTestCase {
         assertNotEquals("days of the week are equals", true, d2.equals(dayOfTheWeek));
         assertEquals("days of the week are equals", true, d3.equals(dayOfTheWeek));
     }
-    
-
 }

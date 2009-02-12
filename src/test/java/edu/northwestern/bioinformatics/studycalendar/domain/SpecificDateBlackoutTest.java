@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 import java.util.Calendar;
 
@@ -8,7 +9,7 @@ import java.util.Calendar;
  * @author Nataliya Shurupova
  */
 
-public class SpecificDateBlackoutTest extends StudyCalendarTestCase {
+public class SpecificDateBlackoutTest extends TestCase {
     private SpecificDateBlackout recurringHoliday = new SpecificDateBlackout();
     private SpecificDateBlackout nonRecurringHoliday = new SpecificDateBlackout();
 

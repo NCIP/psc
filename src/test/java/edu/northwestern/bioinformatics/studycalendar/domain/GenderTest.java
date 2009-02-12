@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import junit.framework.TestCase;
 
 import java.util.Map;
 import java.util.Set;
@@ -8,15 +8,13 @@ import java.util.Set;
 /**
  * @author Saurabh Agrawal
  */
-public class GenderTest extends CoreTestCase {
+public class GenderTest extends TestCase {
 
     public void testDislayName() {
         assertEquals("Male", Gender.MALE.getDisplayName());
         assertEquals("Female", Gender.FEMALE.getDisplayName());
         assertEquals("Not Reported", Gender.NOT_REPORTED.getDisplayName());
         assertEquals("Unknown", Gender.UNKNOWN.getDisplayName());
-
-
     }
 
     public void testCodes() throws Exception {
@@ -35,7 +33,6 @@ public class GenderTest extends CoreTestCase {
     }
 
     public void testGetGenderMap() {
-
         assertEquals(4, Gender.values().length);
 
         Map<String, String> genders = Gender.getGenderMap();
@@ -45,7 +42,5 @@ public class GenderTest extends CoreTestCase {
         assertTrue(keys.contains("Female"));
         assertTrue(keys.contains("Not Reported"));
         assertTrue(keys.contains("Unknown"));
-
-
     }
 }

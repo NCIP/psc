@@ -2,13 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.*;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-public class PeriodTest extends StudyCalendarTestCase {
+public class PeriodTest extends DomainTestCase {
     private Period period;
 
     @Override

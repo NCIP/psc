@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
-public class PlannedCalendarTest extends StudyCalendarTestCase {
+public class PlannedCalendarTest extends DomainTestCase {
     private PlannedCalendar calendar;
 
     @Override

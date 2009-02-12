@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.Set;
 /**
  * @author Rhett Sutphin
  */
-public class PopulationTest extends StudyCalendarTestCase {
+public class PopulationTest extends TestCase {
     private Study study = new Study();
     private final Set<Population> populations = new HashSet<Population>();
 

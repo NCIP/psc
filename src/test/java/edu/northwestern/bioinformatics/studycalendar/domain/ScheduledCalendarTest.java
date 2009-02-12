@@ -1,18 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-
-import java.util.List;
-import java.util.Arrays;
-
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.easymock.classextension.EasyMock;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledCalendarTest extends StudyCalendarTestCase {
+public class ScheduledCalendarTest extends DomainTestCase {
     private ScheduledCalendar scheduledCalendar;
 
     protected void setUp() throws Exception {

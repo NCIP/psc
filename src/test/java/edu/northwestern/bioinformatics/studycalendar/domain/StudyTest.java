@@ -2,8 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,7 +15,7 @@ import java.util.Set;
 /**
  * @author Rhett Sutphin
  */
-public class StudyTest extends StudyCalendarTestCase {
+public class StudyTest extends TestCase {
     private Study study = new Study();
 
     public void testGetSites() throws Exception {

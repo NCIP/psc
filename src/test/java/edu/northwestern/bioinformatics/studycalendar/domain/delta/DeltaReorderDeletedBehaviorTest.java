@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
-import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import junit.framework.TestCase;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ import java.util.Date;
  *
  * @author Rhett Sutphin
  */
-public class DeltaReorderDeletedBehaviorTest extends StudyCalendarTestCase {
+public class DeltaReorderDeletedBehaviorTest extends TestCase {
     private Epoch epoch;
     private StudySegment[] studySegments;
     private StudySegment anotherStudySegment;

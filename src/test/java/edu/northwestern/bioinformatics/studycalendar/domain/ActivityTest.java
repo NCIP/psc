@@ -1,14 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import junit.framework.TestCase;
 
 import java.util.Map;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class ActivityTest extends StudyCalendarTestCase {
+public class ActivityTest extends TestCase {
     private Activity a0, a1;
 
     protected void setUp() throws Exception {

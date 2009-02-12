@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class ScheduledActivityModeTest extends StudyCalendarTestCase {
+public class ScheduledActivityModeTest extends TestCase {
     public void testScheduledGetAvailableModesPos() throws Exception {
         Scheduled scheduledState = new Scheduled("Scheduled", DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
         List<ScheduledActivityMode> modes = getAvailableModes(scheduledState, true);

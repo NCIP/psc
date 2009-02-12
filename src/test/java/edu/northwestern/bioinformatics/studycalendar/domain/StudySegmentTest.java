@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.assertDayRange;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 /**
  * @author Moses Hohman
  */
-public class StudySegmentTest extends StudyCalendarTestCase {
+public class StudySegmentTest extends DomainTestCase {
     private StudySegment studySegment = new StudySegment();
 
     public void testAddPeriod() {

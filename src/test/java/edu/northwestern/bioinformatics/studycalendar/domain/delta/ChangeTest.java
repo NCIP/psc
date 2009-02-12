@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author Rhett Sutphin
  */
-public class ChangeTest extends StudyCalendarTestCase {
+public class ChangeTest extends TestCase {
     public void testCloneDoesNotIncludeParentDelta() throws Exception {
         SampleChange source = new SampleChange();
         source.setDelta(Delta.createDeltaFor(new Epoch()));

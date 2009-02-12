@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.week;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.day;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.*;
 import junit.framework.TestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-public class DurationTest extends StudyCalendarTestCase {
+public class DurationTest extends TestCase {
     public void testToString() {
         assertEquals("null (null unit)s", new Duration().toString());
         assertEquals("5 days", new Duration(5, day).toString());

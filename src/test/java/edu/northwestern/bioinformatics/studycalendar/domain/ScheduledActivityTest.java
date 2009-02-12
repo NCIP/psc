@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledActivityTest extends StudyCalendarTestCase {
+public class ScheduledActivityTest extends TestCase {
     private ScheduledActivity scheduledActivity = new ScheduledActivity();
     private PlannedActivity plannedActivity = new PlannedActivity();
 

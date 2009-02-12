@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import static java.util.Calendar.AUGUST;
 import java.util.Collection;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class StudySubjectAssignmentTest extends StudyCalendarTestCase {
+public class StudySubjectAssignmentTest extends TestCase {
     private StudySubjectAssignment assignment = new StudySubjectAssignment();
 
     public void testSetCalendarMaintainsBidrectionality() throws Exception {

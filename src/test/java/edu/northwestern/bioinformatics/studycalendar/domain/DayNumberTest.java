@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class DayNumberTest extends StudyCalendarTestCase {
+public class DayNumberTest extends TestCase {
     public void testStringRepresentationInCycle() throws Exception {
         assertEquals("C1D1", DayNumber.createCycleDayNumber(1, 1).toString());
         assertEquals("C3D8", DayNumber.createCycleDayNumber(28, 10).toString());

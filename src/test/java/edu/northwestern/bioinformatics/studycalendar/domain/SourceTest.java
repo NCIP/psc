@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class SourceTest extends StudyCalendarTestCase {
+public class SourceTest extends TestCase {
     private Source source = createSource("Test-o");
 
     public void testTransientClone() throws Exception {

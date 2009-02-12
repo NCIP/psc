@@ -6,10 +6,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.Range;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
+public class ScheduledStudySegmentTest extends TestCase {
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
     private ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
 
