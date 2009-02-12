@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Methods to ease the creation of domain objects for testing.
  *
- * @see edu.northwestern.bioinformatics.studycalendar.domain.test.ServicedFixtures
+ * @see edu.northwestern.bioinformatics.studycalendar.domain.core.ServicedFixtures
  * @author Rhett Sutphin
  */
 public class Fixtures {

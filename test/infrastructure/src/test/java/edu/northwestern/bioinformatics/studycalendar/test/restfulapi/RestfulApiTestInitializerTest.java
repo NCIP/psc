@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 import edu.northwestern.bioinformatics.studycalendar.test.MockDbMetadata;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 
 import javax.sql.DataSource;

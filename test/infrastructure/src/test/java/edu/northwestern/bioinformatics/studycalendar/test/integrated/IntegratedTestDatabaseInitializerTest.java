@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.TableOrderer;
 import org.easymock.classextension.EasyMock;
 import org.slf4j.Logger;

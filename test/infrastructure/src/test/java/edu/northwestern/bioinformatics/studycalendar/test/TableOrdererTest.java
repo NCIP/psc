@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 
 import java.sql.SQLException;
 import java.util.Arrays;

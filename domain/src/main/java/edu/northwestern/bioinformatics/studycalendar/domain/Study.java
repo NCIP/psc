@@ -271,6 +271,8 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         copiedStudy.setLongTitle(this.getLongTitle());
         copiedStudy.setPlannedCalendar(new PlannedCalendar());
         Amendment devAmendment = new Amendment();
+        devAmendment.setDate(new Date());
+        devAmendment.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
         devAmendment.addDelta(Delta.createDeltaFor(copiedStudy.getPlannedCalendar()));
         copiedStudy.setDevelopmentAmendment(devAmendment);
 

@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.StudyCalendarTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextTestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
@@ -27,7 +27,7 @@ public class OneTimeSetup  {
         try {
             applicationContext = new GenericApplicationContext(
                 new XmlBeanFactory(new FileSystemResource(new File(pscRoot, "test/restful-api/static-data/applicationContext.xml"))),
-                StudyCalendarTestHelper.getDeployedApplicationContext()
+                StudyCalendarApplicationContextTestHelper.getDeployedApplicationContext()
             );
         } catch (RuntimeException e) {
             e.printStackTrace();

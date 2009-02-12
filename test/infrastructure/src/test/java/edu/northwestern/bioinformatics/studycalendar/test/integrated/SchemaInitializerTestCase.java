@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.jvyaml.YAML;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
