@@ -41,13 +41,14 @@ define "psc" do
   
   define "Pure utility code"
   define "utility" do
-    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections
+    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
+    test.with(UNIT_TESTING)
     package(:jar)
   end
   
   desc "The domain classes for PSC"
   define "domain" do
-    compile.with project('utility'), SLF4J, LOGBACK, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
+    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
     test.with(UNIT_TESTING).include("*Test")
     package(:jar)
   end

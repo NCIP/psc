@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.JavaDateComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.io.Serializable;
  * @author rsutphin
  */
 public class Range<T extends Comparable<T>> implements Comparable<Range<T>>, Serializable {
+    // TODO: this shouldn't have survived generification
     private static final NullComparator NULLS_HIGH_COMPARATOR = new NullComparator(new JavaDateComparator(), true);
 
     // Note that Ranges are by default immutable.  If a sublclass changes the value of

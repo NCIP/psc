@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

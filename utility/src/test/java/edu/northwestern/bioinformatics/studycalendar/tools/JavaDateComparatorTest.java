@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;

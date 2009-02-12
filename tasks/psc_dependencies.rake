@@ -23,9 +23,12 @@ CTMS_COMMONS_VERSION = "0.9-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 
-CTMS_COMMONS = group(%w{base core laf lang web}.map { |a| "ctms-commons-#{a}"}, 
-  :under => "gov.nih.nci.cabig.ctms", :version => CTMS_COMMONS_VERSION)
-
+CTMS_COMMONS = struct(
+  %w{base core laf lang web}.inject({}) do |h, a|
+    h[a.to_sym] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:#{CTMS_COMMONS_VERSION}"
+    h
+  end
+)
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = [
@@ -138,8 +141,9 @@ UNIT_TESTING = [
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",
-  "org.springframework:spring-test:jar:#{SPRING_VERSION}"
-]
+  "org.springframework:spring-test:jar:#{SPRING_VERSION}",
+  LOGBACK
+].flatten
 
 DB = struct(
   :hsqldb => eponym("hsqldb", "1.8.0.7"),
