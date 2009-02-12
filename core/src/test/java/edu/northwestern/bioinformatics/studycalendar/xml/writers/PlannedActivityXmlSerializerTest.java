@@ -61,6 +61,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateElementPlannedActivity() {
+        plannedActivity.setWeight(8);
         expect(plannedActivityLabelXmlSerializer.createElement(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivityLabel("testlabel"))).andReturn(eLabel);
         expect(activitySerializer.createElement(plannedActivity.getActivity())).andReturn(eActivity);
         replayMocks();
@@ -73,7 +74,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong details", "scan details", actual.attributeValue("details"));
         assertEquals("Wrong condition", "no mice", actual.attributeValue("condition"));
         assertEquals("Wrong population", "MP", actual.attributeValue("population"));
-        assertEquals("Wrong weight", "0", actual.attributeValue("weight"));
+        assertEquals("Wrong weight", "8", actual.attributeValue("weight"));
     }
 
     public void testReadElementStudyPlannedActivity() {

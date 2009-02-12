@@ -28,6 +28,8 @@ define "psc" do
   compile.options.source = "1.5"
   compile.options.other = %w(-encoding UTF-8)
   
+  test.using(:properties => { "psc.config.datasource" => db_name })
+  
   task :public_demo_deploy do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
