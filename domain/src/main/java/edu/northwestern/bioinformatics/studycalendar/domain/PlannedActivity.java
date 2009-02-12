@@ -307,15 +307,17 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		return result;
 	}
 
-	@Override
-	public String toString() {
-		return new StringBuilder(getClass().getSimpleName()).
-			append("[id=").append(getId()).
-			append("; activity=").append(getActivity()).
-			append("; day=").append(getDay()).
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[id=").append(getId()).
+            append("; activity=").append(getActivity()).
+            append("; day=").append(getDay()).
+            append("; details=").append(getDetails()).
+            append("; condition=").append(getCondition()).
             append("; weight=").append(getWeight()).
             append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
-			append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
-			append(']').toString();
-	}
+            append("; labels=").append(getLabels() == null ? "<none>" : getLabels()).
+            append(']').toString();
+    }
 }
