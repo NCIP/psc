@@ -5,10 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.apache.commons.lang.StringUtils;
@@ -91,7 +91,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     }
 
     public void testBindActivityType() throws Exception{
-        ActivityType activityType = ServicedFixtures.createActivityType("INTERVENTION");
+        ActivityType activityType = Fixtures.createActivityType("INTERVENTION");
         expect (activityTypeDao.getById(2)).andReturn(activityType).anyTimes();
         expectActivityTypeDaoCall();
         request.addParameter("filters.activityType", "2");

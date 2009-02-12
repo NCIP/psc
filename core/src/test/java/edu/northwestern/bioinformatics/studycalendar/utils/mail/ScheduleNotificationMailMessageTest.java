@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import org.springframework.mail.SimpleMailMessage;
 
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class ScheduleNotificationMailMessageTest extends MailMessageTestCase<Sch
         studySubjectAssignment.setSubject(subject);
         studySubjectAssignment.setStudySite(studySite);
         subject.addAssignment(studySubjectAssignment);
-        scheduledActivity = ServicedFixtures.createScheduledActivity("sch activity", 2008, 2, 3);
+        scheduledActivity = Fixtures.createScheduledActivity("sch activity", 2008, 2, 3);
 
 
     }
@@ -75,7 +75,7 @@ public class ScheduleNotificationMailMessageTest extends MailMessageTestCase<Sch
     public void testMessageForNonMandatoryAmendment() {
         amendmentApproval.setAmendment(amendment);
         amendmentApproval.setStudySite(studySite);
-        StudySubjectAssignment studySubjectAssignment = ServicedFixtures.createAssignment(studySite.getStudy(), studySite.getSite(), subject);
+        StudySubjectAssignment studySubjectAssignment = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAssignment(studySite.getStudy(), studySite.getSite(), subject);
         notification = Notification.createNotificationForNonMandatoryAmendments(studySubjectAssignment, amendment);
         String msg = getMessageText();
         validateMessage(msg);

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import org.dom4j.Element;
@@ -17,7 +17,7 @@ public class PlannedActivityLabelXmlSerializerTest  extends StudyCalendarXmlTest
     @Override
     protected void setUp() throws Exception {
            super.setUp();
-           paLabel =  ServicedFixtures.createPlannedActivityLabel("testlabel",2);
+           paLabel =  Fixtures.createPlannedActivityLabel("testlabel",2);
            plannedActivityLabelXmlSerializer = new PlannedActivityLabelXmlSerializer();
        }
 
@@ -25,12 +25,12 @@ public class PlannedActivityLabelXmlSerializerTest  extends StudyCalendarXmlTest
         Element actual =  plannedActivityLabelXmlSerializer.createElement(paLabel);
         assertFalse( plannedActivityLabelXmlSerializer.validateElement(null, actual));
 
-        PlannedActivityLabel paLabel2 = ServicedFixtures.createPlannedActivityLabel("testlabel",2);
+        PlannedActivityLabel paLabel2 = Fixtures.createPlannedActivityLabel("testlabel",2);
         assertTrue( plannedActivityLabelXmlSerializer.validateElement(paLabel2, actual));
         paLabel2.setLabel("testlabel1");
         assertFalse( plannedActivityLabelXmlSerializer.validateElement(paLabel2, actual));
 
-        PlannedActivityLabel paLabel1 = ServicedFixtures.createPlannedActivityLabel("testlabel",2);
+        PlannedActivityLabel paLabel1 = Fixtures.createPlannedActivityLabel("testlabel",2);
         assertTrue( plannedActivityLabelXmlSerializer.validateElement(paLabel1, actual));
         paLabel1.setRepetitionNumber(3);
         assertFalse( plannedActivityLabelXmlSerializer.validateElement(paLabel1, actual));

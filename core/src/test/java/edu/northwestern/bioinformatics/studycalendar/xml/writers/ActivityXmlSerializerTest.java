@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
@@ -28,13 +28,13 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
-        source = ServicedFixtures.createNamedInstance(SOURCE_NAME, Source.class);
+        source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
         activity = createActivity();
         standalone = new ActivityXmlSerializer(false);
         embedded = new ActivityXmlSerializer(true);
         standalone.setActivityTypeDao(activityTypeDao);
         embedded.setActivityTypeDao(activityTypeDao);
-        activityType = ServicedFixtures.createActivityType("ActivityType1");
+        activityType = Fixtures.createActivityType("ActivityType1");
         activityType.setId(4);
 //        activi
     }
@@ -69,7 +69,7 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         anotherActivity = createActivity();
         assertTrue(embedded.validateElement(activity, actual));
-        ActivityType activityType = ServicedFixtures.createActivityType("DISEASE_MEASURE");
+        ActivityType activityType = Fixtures.createActivityType("DISEASE_MEASURE");
         anotherActivity.setType(activityType);
         assertFalse(embedded.validateElement(anotherActivity, actual));
 
@@ -175,9 +175,9 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private Activity createActivity() {
-        activityType = ServicedFixtures.createActivityType("PROCEDURE");
-        activity = ServicedFixtures.createActivity("Pogo", "PG", source,
-                ServicedFixtures.createActivityType("OTHER"), "15 minutes, at least");
+        activityType = Fixtures.createActivityType("PROCEDURE");
+        activity = Fixtures.createActivity("Pogo", "PG", source,
+                Fixtures.createActivityType("OTHER"), "15 minutes, at least");
         return activity;
     }
 }

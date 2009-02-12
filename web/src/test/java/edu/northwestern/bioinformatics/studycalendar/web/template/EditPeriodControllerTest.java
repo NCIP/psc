@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -66,7 +66,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         int studySegmentId = 45;
         int studyId = 87;
         int amendmentId = 55;
-        Study study = setId(studyId, ServicedFixtures.createSingleEpochStudy("S", "E"));
+        Study study = setId(studyId, Fixtures.createSingleEpochStudy("S", "E"));
         study.setDevelopmentAmendment(setId(amendmentId, new Amendment("dev")));
         setId(studySegmentId, study
             .getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0)).addPeriod(period);

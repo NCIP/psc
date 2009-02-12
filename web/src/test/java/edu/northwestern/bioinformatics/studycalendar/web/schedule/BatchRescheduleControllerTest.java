@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -58,7 +58,7 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
     }
 
     public void testBindScheduledCalendar() throws Exception {
-        ScheduledCalendar expectedCalendar = ServicedFixtures.setId(7, new ScheduledCalendar());
+        ScheduledCalendar expectedCalendar = Fixtures.setId(7, new ScheduledCalendar());
         request.addParameter("scheduledCalendar", "7");
         expect(scheduledCalendarDao.getById(7)).andReturn(expectedCalendar);
         doHandle();
@@ -72,8 +72,8 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
     }
 
     public void testBindScheduledActivities() throws Exception {
-        ScheduledActivity expectedEvent = ServicedFixtures.setId(7, new ScheduledActivity());
-        ScheduledActivity expectedEvent2 = ServicedFixtures.setId(8, new ScheduledActivity());
+        ScheduledActivity expectedEvent = Fixtures.setId(7, new ScheduledActivity());
+        ScheduledActivity expectedEvent2 = Fixtures.setId(8, new ScheduledActivity());
         request.addParameter("events", "7");
         request.addParameter("events", "8");
         expect(scheduledActivityDao.getById(7)).andReturn(expectedEvent);

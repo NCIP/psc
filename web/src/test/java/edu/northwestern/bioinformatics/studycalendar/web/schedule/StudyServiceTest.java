@@ -9,8 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -70,18 +71,18 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 2));
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
+        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 3))));
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
+        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
+        studySegment1.addEvent(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
@@ -109,17 +110,17 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
+        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
-        studySegment0.addEvent(ServicedFixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
+        studySegment1.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
-        studySegment1.addEvent(ServicedFixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
+        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
@@ -144,8 +145,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
     public void testSave() {
         Study study = createNamedInstance("Study A", Study.class);
-        Amendment amend0 = ServicedFixtures.createAmendments("Amendment A");
-        Amendment amend1 = ServicedFixtures.createAmendments("Amendment B");
+        Amendment amend0 = Fixtures.createAmendments("Amendment A");
+        Amendment amend1 = Fixtures.createAmendments("Amendment B");
         amend1.setPreviousAmendment(amend0);
         study.setAmendment(amend1);
 
@@ -159,7 +160,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testCreateInDesignStudyFromExamplePlanTree() throws Exception {
-        Study example = ServicedFixtures.createBasicTemplate();
+        Study example = Fixtures.createBasicTemplate();
         PlannedCalendar expectedPC = example.getPlannedCalendar();
         // copy the list since the one in the PC is destroyed in the tested method
         List<Epoch> expectedEpochs = new ArrayList<Epoch>(expectedPC.getEpochs());

@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -25,11 +25,11 @@ public class PlannedActivityFormTest extends RestletTestCase {
     private static final Integer WEIGHT = 8;
     private static final String ACTIVITY_CODE = "F";
     private static final Activity ACTIVITY
-        = ServicedFixtures.createActivity("Fool", ACTIVITY_CODE,
-            ServicedFixtures.DEFAULT_ACTIVITY_SOURCE, ServicedFixtures.DEFAULT_ACTIVITY_TYPE);
+        = Fixtures.createActivity("Fool", ACTIVITY_CODE,
+            Fixtures.DEFAULT_ACTIVITY_SOURCE, Fixtures.DEFAULT_ACTIVITY_TYPE);
     private static final String ACTIVITY_SOURCE_NAME
-        = ServicedFixtures.DEFAULT_ACTIVITY_SOURCE.getName();
-    private static final Population POPULATION = ServicedFixtures.createPopulation("T", "Tea");
+        = Fixtures.DEFAULT_ACTIVITY_SOURCE.getName();
+    private static final Population POPULATION = Fixtures.createPopulation("T", "Tea");
 
     private Study study;
     private ActivityDao activityDao;
@@ -38,7 +38,7 @@ public class PlannedActivityFormTest extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        study = ServicedFixtures.createBasicTemplate();
+        study = Fixtures.createBasicTemplate();
         activityDao = registerDaoMockFor(ActivityDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
     }

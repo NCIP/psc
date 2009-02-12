@@ -8,8 +8,8 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 /**
  * @author John Dzak
@@ -126,12 +126,12 @@ public class ScheduledActivitiesReportRowDaoTest extends
     }
 
     public void testSearchWithSubjectCoordinatorFilter_Pos() {
-        filters.setSubjectCoordinator(ServicedFixtures.setId(-200, new User()));
+        filters.setSubjectCoordinator(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId(-200, new User()));
         assertSearchWithResults(NEG_17, NEG_16);
     }
 
     public void testSearchWithSubjectCoordinatorFilter_Neg() {
-        filters.setSubjectCoordinator(ServicedFixtures.setId(-100, new User()));
+        filters.setSubjectCoordinator(Fixtures.setId(-100, new User()));
         assertSearchWithResults();
     }
 

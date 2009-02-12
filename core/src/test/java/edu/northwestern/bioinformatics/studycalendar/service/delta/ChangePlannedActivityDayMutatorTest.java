@@ -4,9 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -33,7 +33,7 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        plannedActivity = ServicedFixtures.createPlannedActivity("Rolling", 2);
+        plannedActivity = Fixtures.createPlannedActivity("Rolling", 2);
         se0 = createScheduledActivity();
         se1 = createScheduledActivity();
         scheduledCalendar = new ScheduledCalendar();

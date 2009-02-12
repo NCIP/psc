@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
@@ -21,15 +21,15 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateSingleElement() throws Exception {
-        Study sA = ServicedFixtures.createNamedInstance("A", Study.class);
+        Study sA = Fixtures.createNamedInstance("A", Study.class);
 
         Element actual = serializer.createElement(sA);
         assertEquals("study", actual.getName());
     }
     
     public void testSerializeCollection() throws Exception {
-        Study sA = ServicedFixtures.createNamedInstance("A", Study.class);
-        Study sB = ServicedFixtures.createNamedInstance("B", Study.class);
+        Study sA = Fixtures.createNamedInstance("A", Study.class);
+        Study sB = Fixtures.createNamedInstance("B", Study.class);
 
         Element actual = serializer.createDocument(Arrays.asList(sA, sB)).getRootElement();
         assertEquals("studies", actual.getName());

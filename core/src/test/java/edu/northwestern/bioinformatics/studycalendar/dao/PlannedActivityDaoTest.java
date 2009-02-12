@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 
@@ -68,8 +68,8 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
             plannedActivity.setDay(5);
             plannedActivity.setActivity(getDao().getById(-12).getActivity());
 
-            plannedActivity.addPlannedActivityLabel(ServicedFixtures.createPlannedActivityLabel("bar"));
-            plannedActivity.addPlannedActivityLabel(ServicedFixtures.createPlannedActivityLabel("zam"));
+            plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("bar"));
+            plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("zam"));
 
             getDao().save(plannedActivity);
             assertNotNull("not saved", plannedActivity.getId());

@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
@@ -548,9 +548,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSchedulePlannedEventWithPopulationWhenSubjectIsInPopulation() throws Exception {
-        PlannedActivity plannedActivity = ServicedFixtures.createPlannedActivity("elph", 4);
+        PlannedActivity plannedActivity = Fixtures.createPlannedActivity("elph", 4);
         plannedActivity.setPopulation(createNamedInstance("H+", Population.class));
-        Period period = ServicedFixtures.createPeriod("DC", 2, 7, 1);
+        Period period = Fixtures.createPeriod("DC", 2, 7, 1);
 
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.addPopulation(plannedActivity.getPopulation());
@@ -565,9 +565,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSchedulePlannedEventWithPopulationWhenSubjectIsInNotPopulation() throws Exception {
-        PlannedActivity plannedActivity = ServicedFixtures.createPlannedActivity("elph", 4);
+        PlannedActivity plannedActivity = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivity("elph", 4);
         plannedActivity.setPopulation(createNamedInstance("H+", Population.class));
-        Period period = ServicedFixtures.createPeriod("DC", 2, 7, 1);
+        Period period = Fixtures.createPeriod("DC", 2, 7, 1);
 
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.addPopulation(createNamedInstance("Different population", Population.class));
@@ -579,10 +579,10 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSchedulePlannedActivityCopiesLabelsForCorrectRepetitionOnly() throws Exception {
-        PlannedActivity plannedActivity = ServicedFixtures.createPlannedActivity("elph", 4);
+        PlannedActivity plannedActivity = Fixtures.createPlannedActivity("elph", 4);
         labelPlannedActivity(plannedActivity, "all");
         labelPlannedActivity(plannedActivity, 0, "zero");
-        Period period = ServicedFixtures.createPeriod("DC", 2, 7, 2);
+        Period period = Fixtures.createPeriod("DC", 2, 7, 2);
 
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledStudySegment segment = createScheduledStudySegment(assignment);

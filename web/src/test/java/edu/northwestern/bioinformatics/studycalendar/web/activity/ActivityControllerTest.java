@@ -5,9 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -46,10 +46,10 @@ public class ActivityControllerTest extends ControllerTestCase {
         controller.setPlannedActivityDao(plannedActivityDao);
         controller.setActivityTypeDao(activityTypeDao);
 
-        a1 = ServicedFixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), ServicedFixtures.createActivityType("Desease Measure"));
-        a2 = ServicedFixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), ServicedFixtures.createActivityType("Lab Test"));
-        a3 = ServicedFixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), ServicedFixtures.createActivityType("Intervention"));
-        a4 = ServicedFixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), ServicedFixtures.createActivityType("Another Type"));
+        a1 = Fixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), Fixtures.createActivityType("Desease Measure"));
+        a2 = Fixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), Fixtures.createActivityType("Lab Test"));
+        a3 = Fixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), Fixtures.createActivityType("Intervention"));
+        a4 = Fixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), Fixtures.createActivityType("Another Type"));
         listOfActivities = new ArrayList<Activity>();
         listOfActivities.add(a1);
         listOfActivities.add(a2);
@@ -101,14 +101,14 @@ public class ActivityControllerTest extends ControllerTestCase {
     public void testHandleRequestInternal() throws Exception {
         Activity a11, a12, a13, a14;
         ActivityType at11, at12, at13, at14;
-        at11 = ServicedFixtures.createActivityType("Desease Measure");
-        at12 = ServicedFixtures.createActivityType("Lab Test");
-        at13 = ServicedFixtures.createActivityType("Intervention");
-        at14 = ServicedFixtures.createActivityType("Another Type");
-        a11 = ServicedFixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), at11);
-        a12 = ServicedFixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), at12);
-        a13 = ServicedFixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), at13);
-        a14 = ServicedFixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), at14);
+        at11 = Fixtures.createActivityType("Desease Measure");
+        at12 = Fixtures.createActivityType("Lab Test");
+        at13 = Fixtures.createActivityType("Intervention");
+        at14 = Fixtures.createActivityType("Another Type");
+        a11 = Fixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), at11);
+        a12 = Fixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), at12);
+        a13 = Fixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), at13);
+        a14 = Fixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), at14);
         List<Activity> listOfActivitiesLocal = new ArrayList<Activity>();
         listOfActivitiesLocal.add(a11);
         listOfActivitiesLocal.add(a12);
@@ -120,7 +120,7 @@ public class ActivityControllerTest extends ControllerTestCase {
         listOfActivityTypes.add(at13);
         listOfActivityTypes.add(at14);
 
-        Source source = setId(12, ServicedFixtures.createSource("My Test Source"));
+        Source source = setId(12, Fixtures.createSource("My Test Source"));
         request.setParameter("d-16544-p","1");
         request.addParameter("d-16544-n","1");
         request.addParameter("d-16544-s","name");
@@ -154,14 +154,14 @@ public class ActivityControllerTest extends ControllerTestCase {
     public void testHandleRequestInternalWithNegativeIndex() throws Exception {
         Activity a11, a12, a13, a14;
         ActivityType at11, at12, at13, at14;
-        at11 = ServicedFixtures.createActivityType("Desease Measure");
-        at12 = ServicedFixtures.createActivityType("Lab Test");
-        at13 = ServicedFixtures.createActivityType("Intervention");
-        at14 = ServicedFixtures.createActivityType("Another Type");
-        a11 = ServicedFixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), at11);
-        a12 = ServicedFixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), at12);
-        a13 = ServicedFixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), at13);
-        a14 = ServicedFixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), at14);
+        at11 = Fixtures.createActivityType("Desease Measure");
+        at12 = Fixtures.createActivityType("Lab Test");
+        at13 = Fixtures.createActivityType("Intervention");
+        at14 = Fixtures.createActivityType("Another Type");
+        a11 = Fixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), at11);
+        a12 = Fixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), at12);
+        a13 = Fixtures.createActivity("My Activity Three", "Code3", setId(128, createNamedInstance("Test Source 3", Source.class)), at13);
+        a14 = Fixtures.createActivity("My Forth Activity", "Code4", setId(129, createNamedInstance("Test Source 4", Source.class)), at14);
         List<Activity> listOfActivitiesLocal = new ArrayList<Activity>();
         listOfActivitiesLocal.add(a11);
         listOfActivitiesLocal.add(a12);
@@ -173,7 +173,7 @@ public class ActivityControllerTest extends ControllerTestCase {
         listOfActivityTypes.add(at13);
         listOfActivityTypes.add(at14);
 
-        Source source = setId(12, ServicedFixtures.createSource("My Test Source"));
+        Source source = setId(12, Fixtures.createSource("My Test Source"));
         request.setParameter("d-16544-p","1");
         request.addParameter("d-16544-n","1");
         request.addParameter("d-16544-s","type");

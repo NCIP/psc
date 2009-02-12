@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
@@ -42,7 +42,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setPeriodDao(periodDao);
         serializer.setStudy(study);
 
-        period = setGridId("grid0", ServicedFixtures.createPeriod("Period A", 1, 7, 3));
+        period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
 
         periods = new TreeSet<Period>();
     }
@@ -154,7 +154,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
 
 
     private Period createPeriod() {
-        Period period = setGridId("grid0", ServicedFixtures.createPeriod("Period A", 1, 7, 3));
+        Period period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
         periods.clear();
         periods.add(period);
         return period;

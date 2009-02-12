@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -35,11 +35,11 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
 
-        study = ServicedFixtures.createSingleEpochStudy("AG 0701", "QoL");
-        studySubjectAssignment = ServicedFixtures.createAssignment(
+        study = Fixtures.createSingleEpochStudy("AG 0701", "QoL");
+        studySubjectAssignment = Fixtures.createAssignment(
             study,
-            ServicedFixtures.createNamedInstance("AG", Site.class),
-            ServicedFixtures.createSubject("Jo", "Jo")
+            Fixtures.createNamedInstance("AG", Site.class),
+            Fixtures.createSubject("Jo", "Jo")
         );
         studySubjectAssignment.setGridId("SSA-GRID");
 
@@ -65,7 +65,7 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
 
     public void testGetXmlForAllScheduledActivitiesForASelectedDate() throws Exception {
         List<ScheduledActivity> scheduledActivityList
-            = Arrays.asList(ServicedFixtures.createScheduledActivity("A", 2008, Calendar.AUGUST, 12));
+            = Arrays.asList(Fixtures.createScheduledActivity("A", 2008, Calendar.AUGUST, 12));
 
         expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId()))
             .andReturn(studySubjectAssignment);

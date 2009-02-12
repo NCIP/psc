@@ -14,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -386,7 +386,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
             Study reloaded = studyDao.getById(id);
             amendmentService.amend(reloaded);
             Epoch treatment = reloaded.getPlannedCalendar().getEpochs().get(0);
-            Amendment dev = ServicedFixtures.createAmendment("Bye-bye C", DateTools.createDate(2007, Calendar.APRIL, 6));
+            Amendment dev = Fixtures.createAmendment("Bye-bye C", DateTools.createDate(2007, Calendar.APRIL, 6));
             reloaded.setDevelopmentAmendment(dev);
             dev.addDelta(
                 Delta.createDeltaFor(treatment, Remove.create(treatment.getStudySegments().get(2)))

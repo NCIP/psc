@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 
 import java.util.Map;
@@ -70,7 +70,7 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
 
     private class TestableCommand extends EditTemplateCommand {
         public TestableCommand() {
-            setDeltaService(ServicedFixtures.getTestingDeltaService());
+            setDeltaService(Fixtures.getTestingDeltaService());
             setStudy(study);
         }
 

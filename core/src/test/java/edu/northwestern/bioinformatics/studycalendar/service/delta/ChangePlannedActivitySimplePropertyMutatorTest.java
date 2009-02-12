@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -27,7 +27,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedActivity = ServicedFixtures.createPlannedActivity("Elph", 4);
+        plannedActivity = Fixtures.createPlannedActivity("Elph", 4);
         scheduledCalendar = new ScheduledCalendar();
 
         // Needed for side effects
@@ -40,7 +40,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyDetails() throws Exception {
-        ScheduledActivity expectedSE = ServicedFixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
         expectedSE.setDetails("D");
         EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
@@ -52,7 +52,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyToOccurredDetails() throws Exception {
-        ScheduledActivity expectedSE = ServicedFixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, new Occurred());
+        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, new Occurred());
         expectedSE.setDetails("D");
         EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));

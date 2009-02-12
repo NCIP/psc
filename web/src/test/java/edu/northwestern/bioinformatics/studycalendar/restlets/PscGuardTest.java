@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
@@ -50,7 +50,7 @@ public class PscGuardTest extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = ServicedFixtures.createNamedInstance(USERNAME, User.class);
+        user = Fixtures.createNamedInstance(USERNAME, User.class);
         authenticated = new UsernamePasswordAuthenticationToken(
             user, PASSWORD, new GrantedAuthority[0]);
 

@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertContains;
 
@@ -26,7 +26,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
 	}
 
 	public void testGetByGridIdByTemplate() throws Exception {
-		Study actual = getDao().getByGridId(ServicedFixtures.setGridId("long-GUID-string", new Study()));
+		Study actual = getDao().getByGridId(Fixtures.setGridId("long-GUID-string", new Study()));
 		assertIsTestStudy100(actual);
 	}
 

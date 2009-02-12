@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.mock.web.MockFilterConfig;

@@ -6,9 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 import java.util.Map;
 import java.util.List;
@@ -46,16 +46,16 @@ public class DeleteControllerTest extends ControllerTestCase {
 
         source = setId(11, createNamedInstance("Test Source", Source.class));
 
-        a0 = ServicedFixtures.createActivity("Activity 0", "code0", source, ServicedFixtures.createActivityType("INTERVENTION"));
+        a0 = Fixtures.createActivity("Activity 0", "code0", source, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createActivityType("INTERVENTION"));
         a0.setId(10);
 
-        a1 = ServicedFixtures.createActivity("Activity 1", "code1", source, ServicedFixtures.createActivityType("LAB_TEST"));
+        a1 = Fixtures.createActivity("Activity 1", "code1", source, Fixtures.createActivityType("LAB_TEST"));
         a1.setId(20);
 
-        a2 = ServicedFixtures.createActivity("Activity 2", "code2", source, ServicedFixtures.createActivityType("DISEASE_MEASURE"));
+        a2 = Fixtures.createActivity("Activity 2", "code2", source, Fixtures.createActivityType("DISEASE_MEASURE"));
         a2.setId(30);
 
-        PlannedActivity pa = ServicedFixtures.createPlannedActivity(a2.getName(), 2);
+        PlannedActivity pa = Fixtures.createPlannedActivity(a2.getName(), 2);
     }
 
     @SuppressWarnings({ "unchecked" })

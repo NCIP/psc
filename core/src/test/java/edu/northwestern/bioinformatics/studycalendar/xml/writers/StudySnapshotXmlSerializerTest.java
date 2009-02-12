@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createPopulation;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPopulation;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
 

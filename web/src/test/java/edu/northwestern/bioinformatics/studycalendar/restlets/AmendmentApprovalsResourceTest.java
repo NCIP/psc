@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -47,7 +47,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         study = createNamedInstance("Cancer Study", Study.class);
         site = createNamedInstance("Northwestern University", Site.class);
         study.setAmendment(amendment);
-        ServicedFixtures.createStudySite(study, site);
+        Fixtures.createStudySite(study, site);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);

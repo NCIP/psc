@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
@@ -30,7 +30,7 @@ public class ReorderXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private Reorder createReorder() {
-        epoch1 = ServicedFixtures.createNamedInstance("Treatment", Epoch.class);
+        epoch1 = Fixtures.createNamedInstance("Treatment", Epoch.class);
         epoch1.setGridId("690361c1-433e-4a25-bfe2-09db0ce2edab");
 
         Reorder reorder = Reorder.create(epoch1, 2, 1);

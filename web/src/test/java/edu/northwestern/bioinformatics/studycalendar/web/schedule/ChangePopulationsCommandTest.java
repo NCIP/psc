@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 import java.util.Collections;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class ChangePopulationsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testPopulationsPrepopulatedFromAssignment() throws Exception {
-        Population expectedPopulation = ServicedFixtures.setId(4, new Population());
+        Population expectedPopulation = Fixtures.setId(4, new Population());
         assignment.setPopulations(Collections.singleton(expectedPopulation));
         initCommand();
 

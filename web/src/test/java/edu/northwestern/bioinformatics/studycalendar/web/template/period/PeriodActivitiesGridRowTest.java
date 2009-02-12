@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertOrder;
 
-import java.util.Collections;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -28,9 +29,9 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
         super.setUp();
         duration = new Duration(7, Duration.Unit.day);
 
-        a11 = setId(11, createActivity("Bingo", "11", null, ServicedFixtures.createActivityType("DISEASE_MEASURE")));
-        a12 = setId(12, createActivity("aleph", "12", null, ServicedFixtures.createActivityType("DISEASE_MEASURE")));
-        a20 = setId(20, createActivity("iota", "20", null, ServicedFixtures.createActivityType("INTERVENTION")));
+        a11 = setId(11, createActivity("Bingo", "11", null, Fixtures.createActivityType("DISEASE_MEASURE")));
+        a12 = setId(12, createActivity("aleph", "12", null, Fixtures.createActivityType("DISEASE_MEASURE")));
+        a20 = setId(20, createActivity("iota", "20", null, Fixtures.createActivityType("INTERVENTION")));
 
         p0 = createPopulation("P", "People");
         p1 = createPopulation("Pp", "Persons");
@@ -77,7 +78,7 @@ public class PeriodActivitiesGridRowTest extends StudyCalendarTestCase {
     }
 
     public void testGridRowPreventsAdditionOfPlannedActivitiesForOtherActivities() throws Exception {
-        Activity b = ServicedFixtures.createActivity("B");
+        Activity b = Fixtures.createActivity("B");
         pa0.setActivity(b);
 
         try {

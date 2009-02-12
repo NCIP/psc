@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
@@ -112,12 +112,12 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         parameterEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID, new ScheduledActivity());
         parameterAssignment = setGridId(ASSIGNMENT_BIG_ID, new StudySubjectAssignment());
 
-        loadedStudy = setGridId(STUDY_BIG_ID, ServicedFixtures.createBasicTemplate());
+        loadedStudy = setGridId(STUDY_BIG_ID, Fixtures.createBasicTemplate());
         loadedSite = setGridId(SITE_BIG_ID, createNamedInstance("NU", Site.class));
         loadedStudy.addSite(loadedSite);
         loadedStudySegment = setGridId(STUDY_SEGMENT_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0));
         loadedEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID,
-            ServicedFixtures.createScheduledActivity("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
+            Fixtures.createScheduledActivity("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
 
         loadedSubject = setGridId(PARTICIPANT_BIG_ID, createSubject("Edward", "Armor-o"));
 

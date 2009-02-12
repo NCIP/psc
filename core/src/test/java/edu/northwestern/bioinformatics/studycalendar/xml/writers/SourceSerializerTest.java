@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
@@ -45,8 +45,8 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         source = createNamedInstance(SOURCE_NAME, Source.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
 
-        activityType1 = ServicedFixtures.createActivityType("OTHER");
-        activityType2 = ServicedFixtures.createActivityType("INTERVENTION");
+        activityType1 = Fixtures.createActivityType("OTHER");
+        activityType2 = Fixtures.createActivityType("INTERVENTION");
 
         act1 = createActivity("Activity1", "Code1", source, activityType1);
         act2 = createActivity("Activity2", "Code2", source, activityType2);
@@ -179,8 +179,8 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     public void testImportCSVForNullActivityType() throws Exception {
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
-        ActivityType at1 = ServicedFixtures.createActivityType("Other");
-        ActivityType at2 = ServicedFixtures.createActivityType("invalid type");
+        ActivityType at1 = Fixtures.createActivityType("Other");
+        ActivityType at2 = Fixtures.createActivityType("invalid type");
         expect(activityTypeDao.getByName("Other")).andReturn(at1).anyTimes();
         expect(activityTypeDao.getByName("invalid type")).andReturn(at2).anyTimes();
         replayMocks();

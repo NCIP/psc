@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -35,9 +35,9 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
         serializer.setActivityTypeDao(activityTypeDao);
         source = createNamedInstance(SOURCE_NAME, Source.class);
-        actWalk = createActivity("Walk", "W", source, ServicedFixtures.createActivityType("OTHER"));
-        actRun = createActivity("Run", "R", source, ServicedFixtures.createActivityType("INTERVENTION"));
-        actSleep = createActivity("Sleep", "S", source, ServicedFixtures.createActivityType("OTHER"));
+        actWalk = createActivity("Walk", "W", source, Fixtures.createActivityType("OTHER"));
+        actRun = createActivity("Run", "R", source, Fixtures.createActivityType("INTERVENTION"));
+        actSleep = createActivity("Sleep", "S", source, Fixtures.createActivityType("OTHER"));
     }
 
     public void testCreateSingleElement() throws Exception {

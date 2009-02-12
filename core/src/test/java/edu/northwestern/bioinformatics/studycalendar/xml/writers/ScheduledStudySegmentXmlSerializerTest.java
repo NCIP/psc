@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -30,7 +30,7 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
         serializer = new ScheduledStudySegmentXmlSerializer();
         serializer.setScheduledActivityXmlSerializer(scheduledActivitySerializer);
 
-        StudySegment segment = ServicedFixtures.setGridId("segment-grid0", new StudySegment());
+        StudySegment segment = Fixtures.setGridId("segment-grid0", new StudySegment());
 
         activity0 = new ScheduledActivity();
         activity1 = new ScheduledActivity();

@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -41,7 +41,7 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateElement() {
-        StudySite studySite = ServicedFixtures.createStudySite(study, site);
+        StudySite studySite = Fixtures.createStudySite(study, site);
 
         Element actual = serializer.createElement(studySite);
 
@@ -51,7 +51,7 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhereStudySiteLinkExists() {
-        StudySite studySite = ServicedFixtures.createStudySite(study, site);
+        StudySite studySite = Fixtures.createStudySite(study, site);
 
         StudySite actual = expectStudySiteLookup(study, site, element);
 

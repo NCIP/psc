@@ -1,24 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import static org.easymock.EasyMock.expect;
-import org.easymock.classextension.EasyMock;
-import org.easymock.IArgumentMatcher;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import static org.easymock.EasyMock.expect;
+import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
 
 import java.util.Arrays;
-
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 /**
  * @author Rhett Sutphin
@@ -47,20 +46,20 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         service.setSiteDao(siteDao);
         service.setTemplateService(templateService);
 
-        parameterStudy = ServicedFixtures.createNamedInstance("S1", Study.class);
+        parameterStudy = Fixtures.createNamedInstance("S1", Study.class);
         parameterStudy.setGridId("UNIQUE!");
         addSite(parameterStudy, 1);
 
-        loadedStudy = ServicedFixtures.createNamedInstance("S1", Study.class);
+        loadedStudy = Fixtures.createNamedInstance("S1", Study.class);
         loadedStudy.setGridId("UNIQUE!");
         loadedStudy.setPlannedCalendar(new PlannedCalendar());
         addSite(loadedStudy, 1);
     }
 
     private void addSite(Study target, int n) {
-        Site site = ServicedFixtures.createNamedInstance("Site " + n, Site.class);
+        Site site = Fixtures.createNamedInstance("Site " + n, Site.class);
         site.setGridId("SITE" + n + "-GUID");
-        ServicedFixtures.createStudySite(target, site);
+        Fixtures.createStudySite(target, site);
     }
 
     public void testRegisterRequiresGridId() throws Exception {

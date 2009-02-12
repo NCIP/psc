@@ -4,12 +4,12 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.api.PlannedCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 
 import java.io.FileOutputStream;
 import java.io.File;
@@ -38,11 +38,11 @@ public class PlannedCalendarServiceIntegrationTest extends DaoTestCase {
         super.setUp();
 
 
-        parameterStudy = ServicedFixtures.createNamedInstance("S1", Study.class);
+        parameterStudy = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance("S1", Study.class);
         parameterStudy.setGridId("UNIQUE!");
         // addSite(parameterStudy, 1);
 
-        loadedStudy = ServicedFixtures.createNamedInstance("S1", Study.class);
+        loadedStudy = Fixtures.createNamedInstance("S1", Study.class);
         loadedStudy.setGridId("UNIQUE!");
         loadedStudy.setPlannedCalendar(new PlannedCalendar());
         //addSite(loadedStudy, 1);

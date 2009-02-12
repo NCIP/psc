@@ -9,9 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -40,18 +40,18 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        originalPopulation = ServicedFixtures.createPopulation("Abbreviation", "Name");
+        originalPopulation = Fixtures.createPopulation("Abbreviation", "Name");
         amendmentService = registerMockFor(AmendmentService.class);
         populationService = registerMockFor(PopulationService.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
 
 
-        originalPopulation = ServicedFixtures.createPopulation("Abbr", "name");
+        originalPopulation = Fixtures.createPopulation("Abbr", "name");
         originalPopulation.setId(10);
         Set<Population> pops = new HashSet<Population>();
         pops.add(originalPopulation);
 
-        study = setId(100, ServicedFixtures.createBasicTemplate());
+        study = setId(100, Fixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
 
         a2 = setId(2, createAmendments("A0", "A1", "A2"));

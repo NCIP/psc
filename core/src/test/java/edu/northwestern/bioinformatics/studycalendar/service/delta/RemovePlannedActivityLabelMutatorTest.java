@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
@@ -36,8 +36,8 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedActivity = setId(21, ServicedFixtures.createPlannedActivity("pa", 8));
-        paLabel = setId(51, ServicedFixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
+        plannedActivity = setId(21, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivity("pa", 8));
+        paLabel = setId(51, Fixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
         remove = Remove.create(paLabel);
         amendment = createAmendments("amendment1");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
@@ -56,7 +56,7 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     }
 
     public void testRemoveLabelFromOneScheduledActivity() throws Exception {
-        ScheduledActivity expectedSA = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSA = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
                 .andReturn(Arrays.asList(expectedSA));
         expectedSA.removeLabel(paLabel.getLabel());
@@ -67,8 +67,8 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
     }
 
     public void testRemoveLabelFromManyScheduledActivity() throws Exception {
-        ScheduledActivity sa1 = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
-        ScheduledActivity sa2 = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
+        ScheduledActivity sa1 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity sa2 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);

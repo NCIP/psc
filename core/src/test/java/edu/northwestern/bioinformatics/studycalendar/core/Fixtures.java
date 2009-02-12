@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.core;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -22,8 +21,8 @@ import java.util.Calendar;
  *
  * @author Rhett Sutphin
  */
-public class ServicedFixtures extends Fixtures {
-    private static final Logger log = LoggerFactory.getLogger(ServicedFixtures.class);
+public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.domain.Fixtures {
+    private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     private static final DeltaService deltaService = new DeltaService();
     private static final AmendmentService amendmentService = new AmendmentService();
 
@@ -81,5 +80,5 @@ public class ServicedFixtures extends Fixtures {
     }
 
     // static class
-    protected ServicedFixtures() { super(); }
+    protected Fixtures() { super(); }
 }

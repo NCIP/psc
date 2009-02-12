@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 
 import java.util.Arrays;
@@ -28,13 +28,13 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         super.setUp();
         service = new AuthorizationService();
 
-        user = ServicedFixtures.createUser("jimbo");
+        user = Fixtures.createUser("jimbo");
 
-        studyA = ServicedFixtures.createNamedInstance("A", Study.class);
-        studyB = ServicedFixtures.createNamedInstance("B", Study.class);
-        studyAB = ServicedFixtures.createNamedInstance("AB", Study.class);
-        siteA = ServicedFixtures.createNamedInstance("a", Site.class);
-        siteB = ServicedFixtures.createNamedInstance("b", Site.class);
+        studyA = Fixtures.createNamedInstance("A", Study.class);
+        studyB = Fixtures.createNamedInstance("B", Study.class);
+        studyAB = Fixtures.createNamedInstance("AB", Study.class);
+        siteA = Fixtures.createNamedInstance("a", Site.class);
+        siteB = Fixtures.createNamedInstance("b", Site.class);
         studyA.addSite(siteA);
         studyB.addSite(siteB);
         studyAB.addSite(siteA);
@@ -43,7 +43,7 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testStudyVisibilityForSubjectCoordinator() throws Exception {
-        UserRole coord = ServicedFixtures.createUserRole(user, Role.SUBJECT_COORDINATOR, siteB);
+        UserRole coord = Fixtures.createUserRole(user, Role.SUBJECT_COORDINATOR, siteB);
         coord.addStudySite(studyAB.getStudySite(siteB));
         assertFalse(service.isTemplateVisible(coord, studyA));
         assertFalse(service.isTemplateVisible(coord, studyB));
@@ -51,28 +51,28 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testStudyVisibilityForSiteCoordinator() throws Exception {
-        UserRole coord = ServicedFixtures.createUserRole(user, Role.SITE_COORDINATOR, siteA);
+        UserRole coord = Fixtures.createUserRole(user, Role.SITE_COORDINATOR, siteA);
         assertTrue(service.isTemplateVisible(coord, studyA));
         assertFalse(service.isTemplateVisible(coord, studyB));
         assertTrue(service.isTemplateVisible(coord, studyAB));
     }
 
     public void testStudyVisibilityForSystemAdministrator() throws Exception {
-        UserRole admin = ServicedFixtures.createUserRole(user, Role.SYSTEM_ADMINISTRATOR, siteA);
+        UserRole admin = Fixtures.createUserRole(user, Role.SYSTEM_ADMINISTRATOR, siteA);
         assertFalse(service.isTemplateVisible(admin, studyA));
         assertFalse(service.isTemplateVisible(admin, studyB));
         assertFalse(service.isTemplateVisible(admin, studyAB));
     }
 
     public void testStudyVisibilityForStudyAdministrator() throws Exception {
-        UserRole admin = ServicedFixtures.createUserRole(user, Role.STUDY_ADMIN);
+        UserRole admin = Fixtures.createUserRole(user, Role.STUDY_ADMIN);
         assertTrue(service.isTemplateVisible(admin, studyA));
         assertTrue(service.isTemplateVisible(admin, studyB));
         assertTrue(service.isTemplateVisible(admin, studyAB));
     }
 
     public void testStudyVisibilityForStudyCoordinator() throws Exception {
-        UserRole coord = ServicedFixtures.createUserRole(user, Role.STUDY_COORDINATOR);
+        UserRole coord = Fixtures.createUserRole(user, Role.STUDY_COORDINATOR);
         assertTrue(service.isTemplateVisible(coord, studyA));
         assertTrue(service.isTemplateVisible(coord, studyB));
         assertTrue(service.isTemplateVisible(coord, studyAB));
@@ -83,8 +83,8 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFilterAssignmentsForVisibility() throws Exception {
-        StudySubjectAssignment ssa1 = ServicedFixtures.createAssignment(studyAB.getStudySite(siteA), null);
-        StudySubjectAssignment ssa2 = ServicedFixtures.createAssignment(studyAB.getStudySite(siteB), null);
+        StudySubjectAssignment ssa1 = Fixtures.createAssignment(studyAB.getStudySite(siteA), null);
+        StudySubjectAssignment ssa2 = Fixtures.createAssignment(studyAB.getStudySite(siteB), null);
         addRole(Role.SUBJECT_COORDINATOR).addStudySite(studyAB.getStudySite(siteB));
 
         List<StudySubjectAssignment> filtered = service.filterAssignmentsForVisibility(Arrays.asList(ssa1, ssa2), user);

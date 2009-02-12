@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -53,7 +54,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         templateService = registerMockFor(TemplateService.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
-        study = setId(100, ServicedFixtures.createBasicTemplate());
+        study = setId(100, Fixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
         seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
@@ -80,7 +81,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
 
-        subjectCoord = ServicedFixtures.createUser("john", Role.SUBJECT_COORDINATOR);
+        subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord.getName(), "asdf");
 
          expect(userDao.getByName(subjectCoord.getName())).andReturn(subjectCoord).anyTimes();

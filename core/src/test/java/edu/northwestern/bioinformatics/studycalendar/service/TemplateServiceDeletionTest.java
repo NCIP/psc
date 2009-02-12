@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -37,11 +37,11 @@ public class TemplateServiceDeletionTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        plannedCalendar = ServicedFixtures.createBasicTemplate().getPlannedCalendar();
+        plannedCalendar = Fixtures.createBasicTemplate().getPlannedCalendar();
         epoch = plannedCalendar.getEpochs().get(1);
         segment = epoch.getStudySegments().get(0);
-        plannedActivity = ServicedFixtures.createPlannedActivity("Toothpick", 7);
-        period = ServicedFixtures.createPeriod("A", 5, 7, 6);
+        plannedActivity = Fixtures.createPlannedActivity("Toothpick", 7);
+        period = Fixtures.createPeriod("A", 5, 7, 6);
         period.addPlannedActivity(plannedActivity);
         segment.addPeriod(period);
 

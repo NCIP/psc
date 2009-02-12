@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
@@ -22,7 +22,7 @@ public class CopyPeriodCommandTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         studySegment = new StudySegment();
-        selectedPeriod = ServicedFixtures.createPeriod(2, 3, 4);
+        selectedPeriod = Fixtures.createPeriod(2, 3, 4);
         templateDevelopmentService = registerMockFor(TemplateDevelopmentService.class);
 
         command = new CopyPeriodCommand(templateDevelopmentService);

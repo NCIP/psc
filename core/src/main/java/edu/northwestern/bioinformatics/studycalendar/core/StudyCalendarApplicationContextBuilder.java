@@ -5,9 +5,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
+ * Provides a consistent way to build a static {@link ApplicationContext}
+ * for use outside the main webapp.
+ *
+ * @see #getDeployedApplicationContext()
  * @author Rhett Sutphin
  */
-public class StudyCalendarApplicationContextTestHelper {
+public class StudyCalendarApplicationContextBuilder {
     public static final String[] DEPLOYED_CONFIG_LOCATIONS = new String[] {
         "classpath*:/applicationContext*.xml"
     };
@@ -30,7 +34,7 @@ public class StudyCalendarApplicationContextTestHelper {
      * not retry the load.  This makes running a partially failing suite much faster.
      */
     public static ApplicationContext getDeployedApplicationContext() {
-        synchronized (StudyCalendarApplicationContextTestHelper.class) {
+        synchronized (StudyCalendarApplicationContextBuilder.class) {
             if (applicationContext == null && acLoadingFailure == null) {
                 try {
                     applicationContext = createDeployedApplicationContext();
@@ -46,5 +50,5 @@ public class StudyCalendarApplicationContextTestHelper {
     }
 
     // static class
-    private StudyCalendarApplicationContextTestHelper() { }
+    private StudyCalendarApplicationContextBuilder() { }
 }

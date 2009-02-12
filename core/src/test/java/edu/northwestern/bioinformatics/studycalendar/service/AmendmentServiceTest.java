@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.*;
 
@@ -75,7 +75,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         
         service = new AmendmentService();
         service.setStudyService(studyService);
-        service.setDeltaService(ServicedFixtures.getTestingDeltaService());
+        service.setDeltaService(Fixtures.getTestingDeltaService());
         service.setTemplateService(templateService);
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
@@ -85,7 +85,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
 
-        subject = ServicedFixtures.createSubject("first", "last");
+        subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("first", "last");
         StudySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         service.setStudySubjectAssignmentDao(StudySubjectAssignmentDao);
 
@@ -158,7 +158,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setDeltaService(mockDeltaService);
         a1.setMandatory(false);
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
-        StudySubjectAssignment assignment = ServicedFixtures.createAssignment(study, portlandSS.getSite(), subject);
+        StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
         portlandSS.addStudySubjectAssignment(assignment);
         StudySubjectAssignmentDao.save(assignment);
         notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));

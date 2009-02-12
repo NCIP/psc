@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import static org.easymock.EasyMock.expect;
@@ -26,7 +26,7 @@ public class NewSiteControllerTest  extends ControllerTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        nu = setId(1, ServicedFixtures.createNamedInstance("Northwestern", Site.class));
+        nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
         siteService.setSiteDao(siteDao);
         hibernateTemplate = registerMockFor(HibernateTemplate.class);
         siteDao.setHibernateTemplate(hibernateTemplate);

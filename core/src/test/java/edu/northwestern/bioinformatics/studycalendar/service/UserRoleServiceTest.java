@@ -3,14 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import static java.util.Arrays.asList;
 
 import static org.easymock.EasyMock.expect;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createStudySite;
 
 import static java.util.Collections.singleton;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createUserRole;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;

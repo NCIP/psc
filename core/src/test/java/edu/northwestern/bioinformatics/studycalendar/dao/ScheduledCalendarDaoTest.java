@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
@@ -113,7 +113,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         Date expectedActualDate = DateUtils.createDate(2006, Calendar.SEPTEMBER, 22);
         ScheduledActivityMode expectedMode = ScheduledActivityMode.OCCURRED;
         String expectedReason = "All done";
-        Activity expectedActivity = ServicedFixtures.setId(-100, ServicedFixtures.createNamedInstance("Infusion", Activity.class));
+        Activity expectedActivity = Fixtures.setId(-100, Fixtures.createNamedInstance("Infusion", Activity.class));
         expectedActivity.setVersion(0);
         Amendment expectedAmendment = amendmentDao.getById(-17);
 
@@ -124,9 +124,9 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             calendar.setAssignment(assignmentDao.getById(-2));
             StudySegment studySegment4 = studySegmentDao.getById(-4);
             StudySegment studySegment3 = studySegmentDao.getById(-3);
-            calendar.addStudySegment(ServicedFixtures.createScheduledStudySegment(studySegment4));
-            calendar.addStudySegment(ServicedFixtures.createScheduledStudySegment(studySegment3));
-            ScheduledStudySegment lastScheduledStudySegment = ServicedFixtures.createScheduledStudySegment(studySegment4);
+            calendar.addStudySegment(Fixtures.createScheduledStudySegment(studySegment4));
+            calendar.addStudySegment(Fixtures.createScheduledStudySegment(studySegment3));
+            ScheduledStudySegment lastScheduledStudySegment = Fixtures.createScheduledStudySegment(studySegment4);
             calendar.addStudySegment(lastScheduledStudySegment);
 
             ScheduledActivity event = new ScheduledActivity();

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -49,7 +49,7 @@ public class UserServiceIntegratedTest extends StudyCalendarDbTestCase {
     // including the mirror into CSM
     public void testUserCreationWorks() throws Exception {
         {
-            User user = ServicedFixtures.createUser("joe", Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
+            User user = Fixtures.createUser("joe", Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
             getUserService().saveUser(user, "alfalfa", "user@email.com");
         }
 
@@ -60,13 +60,13 @@ public class UserServiceIntegratedTest extends StudyCalendarDbTestCase {
     public void testUserCreationWithSiteBasedRoleWorks() throws Exception {
         {
             Integer siteId;
-            Site site = ServicedFixtures.createSite("NU");
+            Site site = Fixtures.createSite("NU");
             getSiteService().createOrUpdateSite(site);
             siteId = site.getId();
             assertNotNull(siteId);
 
             Site nu = getSiteDao().getById(siteId);
-            User user = ServicedFixtures.createUser("joe", Role.SUBJECT_COORDINATOR);
+            User user = Fixtures.createUser("joe", Role.SUBJECT_COORDINATOR);
             user.getUserRole(Role.SUBJECT_COORDINATOR).addSite(nu);
             getUserService().saveUser(user, "alfalfa", "user@email.com");
         }

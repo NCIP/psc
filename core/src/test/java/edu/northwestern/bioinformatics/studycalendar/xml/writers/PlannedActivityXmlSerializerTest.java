@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -61,7 +61,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateElementPlannedActivity() {
-        expect(plannedActivityLabelXmlSerializer.createElement(Fixtures.createPlannedActivityLabel("testlabel"))).andReturn(eLabel);
+        expect(plannedActivityLabelXmlSerializer.createElement(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPlannedActivityLabel("testlabel"))).andReturn(eLabel);
         expect(activitySerializer.createElement(plannedActivity.getActivity())).andReturn(eActivity);
         replayMocks();
 

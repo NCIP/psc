@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 
 import static java.util.Arrays.asList;
 import java.util.List;

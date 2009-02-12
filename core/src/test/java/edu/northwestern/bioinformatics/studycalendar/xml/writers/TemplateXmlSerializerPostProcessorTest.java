@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -11,7 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.expect;
 
@@ -181,7 +181,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     }
 
     private Amendment amendment0() {
-        Amendment amendment = ServicedFixtures.createAmendments("Amendment 0");
+        Amendment amendment = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments("Amendment 0");
 
         Add add0 = setId(0, Add.create(activity0));
         Delta delta0 = Delta.createDeltaFor(period, add0);
@@ -198,7 +198,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     }
 
     private Amendment amendment1() {
-        Amendment amendment = ServicedFixtures.createAmendments("Amendment 1");
+        Amendment amendment = Fixtures.createAmendments("Amendment 1");
 
         Add add = setId(2, Add.create(activity2));
         Delta delta0 = Delta.createDeltaFor(period, add);
@@ -213,7 +213,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     }
 
     private Amendment developmentAmendment() {
-        Amendment amendment = ServicedFixtures.createAmendments("Development Amendment");
+        Amendment amendment = Fixtures.createAmendments("Development Amendment");
 
         Add add = setId(4, Add.create(activity4));
         Delta delta0 = Delta.createDeltaFor(period, add);

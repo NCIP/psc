@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
@@ -34,7 +34,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_CODE.attributeName(), ACTIVITY_NAME);
 
-        activity = ServicedFixtures.createNamedInstance(ACTIVITY_NAME, Activity.class);
+        activity = Fixtures.createNamedInstance(ACTIVITY_NAME, Activity.class);
     }
 
     @Override

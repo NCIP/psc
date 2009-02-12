@@ -3,9 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setGridId;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -182,7 +182,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private Add createAdd() {
-        Add add = ServicedFixtures.createAddChange(1, 0);
+        Add add = Fixtures.createAddChange(1, 0);
         add.setChild(epoch);
         add.setGridId("cb6e3130-9d2e-44e8-80ac-170d1875db5c");
 

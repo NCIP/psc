@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -24,7 +24,7 @@ public class CycleCommandTest extends StudyCalendarTestCase {
     public void setUp()  throws Exception  {
         super.setUp();
         int id = 44;
-        studySegment = ServicedFixtures.setId(id, ServicedFixtures.createNamedInstance("StudySegment", StudySegment.class));
+        studySegment = Fixtures.setId(id, Fixtures.createNamedInstance("StudySegment", StudySegment.class));
         studySegment.setCycleLength(10);
         amendmentService = registerMockFor(AmendmentService.class);
         templateService = registerMockFor(TemplateService.class);

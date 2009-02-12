@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -52,7 +52,7 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         study = createNamedInstance("Cancer Study", Study.class);
         Site site = createNamedInstance("Northwestern University", Site.class);
         study.setAmendment(amendment);
-        StudySite studySite = ServicedFixtures.createStudySite(study, site);
+        StudySite studySite = Fixtures.createStudySite(study, site);
         Date currentDate = new Date();
         studySite.approveAmendment(amendment, currentDate);
         amendmentApproval = studySite.getAmendmentApprovals().get(0);

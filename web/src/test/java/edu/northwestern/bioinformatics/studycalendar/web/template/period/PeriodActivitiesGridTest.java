@@ -1,9 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
-//import static edu.northwestern.bioinformatics.studycalendar.domain.ActivityType.DISEASE_MEASURE;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-        import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.expect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin

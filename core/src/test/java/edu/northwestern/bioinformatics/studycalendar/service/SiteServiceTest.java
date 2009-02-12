@@ -4,11 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.classextension.EasyMock.expect;
@@ -44,9 +44,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         service.setStudySiteDao(studySiteDao);
         service.setUserDao(userDao);
 
-        user = ServicedFixtures.createUser(7, "jimbo", 73L, true);
-        nu = setId(1, ServicedFixtures.createNamedInstance("Northwestern", Site.class));
-        mayo = setId(4, ServicedFixtures.createNamedInstance("Mayo", Site.class));
+        user = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser(7, "jimbo", 73L, true);
+        nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
+        mayo = setId(4, Fixtures.createNamedInstance("Mayo", Site.class));
 
         expect(userDao.getByName("jimbo")).andReturn(user).anyTimes();
     }
@@ -91,7 +91,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testGetSitesForSubjectCoordinators() {
         Set<Site> expectedSites = Collections.singleton(nu);
 
-        ServicedFixtures.setUserRoles(user, SUBJECT_COORDINATOR);
+        Fixtures.setUserRoles(user, SUBJECT_COORDINATOR);
         user.getUserRole(SUBJECT_COORDINATOR).setSites(expectedSites);
 
         replayMocks();
@@ -103,7 +103,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetSitesForUser() throws Exception {
-        ServicedFixtures.setUserRoles(user, SUBJECT_COORDINATOR, SITE_COORDINATOR);
+        Fixtures.setUserRoles(user, SUBJECT_COORDINATOR, SITE_COORDINATOR);
         user.getUserRole(SUBJECT_COORDINATOR).setSites(Collections.singleton(nu));
         user.getUserRole(SITE_COORDINATOR).setSites(Collections.singleton(mayo));
 
@@ -136,7 +136,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCheckIfSiteCanBeDeletedWhenItIsNotDeletable() throws Exception {
         Site site = setId(4, new Site());
-        ServicedFixtures.createAssignment(new Study(), site, new Subject());
+        Fixtures.createAssignment(new Study(), site, new Subject());
 
         assertFalse("site should not be deletable", service.checkIfSiteCanBeDeleted(site));
     }
@@ -155,7 +155,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     
     public void testRemoveSiteWhenSiteMayNotBeRemoved() throws Exception {
         Site site = setId(4, new Site());
-        ServicedFixtures.createAssignment(new Study(), site, new Subject());
+        Fixtures.createAssignment(new Study(), site, new Subject());
 
         replayMocks(); // expect nothing to happen
         service.removeSite(site);

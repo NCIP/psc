@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 
 import java.util.List;
 

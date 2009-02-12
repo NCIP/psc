@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -50,7 +50,7 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
         saveStudyAndReplace();
 
         activityType = activityTypeDao.getByName("DISEASE_MEASURE");
-        activity = ServicedFixtures.createActivity("Foo", "Foo", null, activityType);
+        activity = Fixtures.createActivity("Foo", "Foo", null, activityType);
         ((ActivityDao) getApplicationContext().getBean("activityDao")).save(activity);
     }
 
@@ -63,11 +63,11 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
 
     public void testAddPlannedActivityToPeriodWhichIsAlsoNewDoesNotUpdatePeriodVersion() throws Exception {
         amendmentService.updateDevelopmentAmendment(
-            treatmentEpoch.getStudySegments().get(0), Add.create(ServicedFixtures.createPeriod(1, 4, 2)));
+            treatmentEpoch.getStudySegments().get(0), Add.create(Fixtures.createPeriod(1, 4, 2)));
         saveStudyAndReplace();
 
         Period target = treatmentEpoch.getStudySegments().get(0).getPeriods().first();
-        PlannedActivity newPA = ServicedFixtures.createPlannedActivity(activity, 2);
+        PlannedActivity newPA = Fixtures.createPlannedActivity(activity, 2);
         amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(target, newPA);
         saveStudyAndReplace();
 
@@ -78,11 +78,11 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
 
     public void testAddPlannedActivityToPeriodWithExistingDeltaDoesNotUpdatePeriodDeltaVersion() throws Exception {
         amendmentService.updateDevelopmentAmendment(
-            treatmentEpoch.getStudySegments().get(0), Add.create(ServicedFixtures.createPeriod(1, 4, 2)));
+            treatmentEpoch.getStudySegments().get(0), Add.create(Fixtures.createPeriod(1, 4, 2)));
         saveStudyAndReplace();
 
         amendmentService.amend(study);
-        Amendment dev = ServicedFixtures.createAmendment("DC", DateTools.createDate(2007, Calendar.JANUARY, 3));
+        Amendment dev = Fixtures.createAmendment("DC", DateTools.createDate(2007, Calendar.JANUARY, 3));
         study.setDevelopmentAmendment(dev);
         saveStudyAndReplace();
 
@@ -92,7 +92,7 @@ public class AmendmentServiceIntegratedTest extends DaoTestCase {
 
         Period target = treatmentEpoch.getStudySegments().get(0).getPeriods().first();
         PeriodDelta delta = (PeriodDelta) study.getDevelopmentAmendment().getDeltas().get(0);
-        PlannedActivity newPA = ServicedFixtures.createPlannedActivity(activity, 2);
+        PlannedActivity newPA = Fixtures.createPlannedActivity(activity, 2);
         amendmentService.addPlannedActivityToDevelopmentAmendmentAndSave(target, newPA);
         saveStudyAndReplace();
 

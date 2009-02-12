@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class ActivityDaoTest extends DaoTestCase {
         assertNotNull("Screening Activity not found", activity);
         assertEquals("Wrong name", "Screening Activity", activity.getName());
         assertEquals("Wrong description", "Description of screening activity", activity.getDescription());
-        assertEquals("Wrong type", ServicedFixtures.createNamedInstance("LAB_TEST", ActivityType.class).getName(), activity.getType().getName());
+        assertEquals("Wrong type", Fixtures.createNamedInstance("LAB_TEST", ActivityType.class).getName(), activity.getType().getName());
         assertEquals("Wrong source", "ICD9", activity.getSource().getName());
         assertEquals("Wrong code", "SA", activity.getCode());
     }
@@ -62,7 +62,7 @@ public class ActivityDaoTest extends DaoTestCase {
             assertNotNull("Could not reload activity with id " + savedId, loaded);
             assertEquals("Wrong code", "AA", loaded.getCode());
             assertEquals("Wrong name", "Give drug", loaded.getName());
-            assertEquals("Wrong name for activity type", ServicedFixtures.createNamedInstance("PROCEDURE", ActivityType.class).getName(),
+            assertEquals("Wrong name for activity type", Fixtures.createNamedInstance("PROCEDURE", ActivityType.class).getName(),
                     loaded.getType().getName());
         }
     }

@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
@@ -174,7 +174,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
 
     public void testUpdateRevisionForStudy() throws Exception {
         Amendment rev = new Amendment();
-        Population population = ServicedFixtures.createPopulation("new abbr ", "new name");
+        Population population = Fixtures.createPopulation("new abbr ", "new name");
         Change change = Add.create(population, 3);
         Delta<?> studyDelta = Delta.createDeltaFor(study, change);
         rev.addDelta(studyDelta);
@@ -187,7 +187,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
 
     public void testUpdateRevisionForStudyWithExistingDelta() throws Exception {
         Amendment rev = new Amendment();
-        Population population = ServicedFixtures.createPopulation("new abbr ", "new name");
+        Population population = Fixtures.createPopulation("new abbr ", "new name");
         Change change = Add.create(population, 3);
         Delta<?> studyDelta = Delta.createDeltaFor(study, change);
         rev.addDelta(studyDelta);

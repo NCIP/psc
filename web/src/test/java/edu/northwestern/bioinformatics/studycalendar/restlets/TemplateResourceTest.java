@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.*;
@@ -44,12 +44,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
 
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
-        study = ServicedFixtures.setGridId("44", ServicedFixtures.setId(44, ServicedFixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
+        study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
         study.setDevelopmentAmendment(new Amendment());
         Delta<Epoch> delta = Delta.createDeltaFor(new Epoch(), PropertyChange.create("name", "A", "B"));
         study.getDevelopmentAmendment().addDelta(delta);
         delta.getChanges().get(0).setUpdatedDate(lastModifiedDate);
-        ServicedFixtures.assignIds(study);
+        Fixtures.assignIds(study);
         fullStudy = study.transientClone();
 
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andStubReturn(study);

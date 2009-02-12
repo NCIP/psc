@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
@@ -38,7 +38,7 @@ public class UserInRequestFilterTest extends WebTestCase {
     }
     
     public void testAttributeSetWhenLoggedIn() throws Exception {
-        User cab = ServicedFixtures.createUser("cab");
+        User cab = Fixtures.createUser("cab");
         SecurityContextHolderTestHelper.setSecurityContext("cab", "pass");
 
         expect(mockApplicationContext.getBean("userDao")).andReturn(userDao);

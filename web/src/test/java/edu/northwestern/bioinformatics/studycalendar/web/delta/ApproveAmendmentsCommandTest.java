@@ -1,22 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
-
-import java.util.Date;
-import static java.util.Calendar.*;
-import java.sql.Timestamp;
-
-import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static org.easymock.classextension.EasyMock.*;
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import org.easymock.IArgumentMatcher;
+import static org.easymock.classextension.EasyMock.*;
+
+import java.sql.Timestamp;
+import static java.util.Calendar.*;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin

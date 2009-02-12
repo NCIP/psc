@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 import java.util.Iterator;
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
 
             actualUserRole.setRole(Role.SITE_COORDINATOR);
-            actualUserRole.removeSite(ServicedFixtures.setId(-300, ServicedFixtures.createNamedInstance("Northwestern Clinic", Site.class)));
+            actualUserRole.removeSite(Fixtures.setId(-300, Fixtures.createNamedInstance("Northwestern Clinic", Site.class)));
 
             getDao().save(actualUserRole);
             savedId = actualUserRole.getId();

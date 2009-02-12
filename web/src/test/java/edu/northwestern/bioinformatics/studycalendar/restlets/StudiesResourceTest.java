@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -50,7 +50,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
 
     @SuppressWarnings({ "unchecked" })
     public void testAllRenderedOut() throws Exception {
-        Study a = ServicedFixtures.createBasicTemplate("A"), b = ServicedFixtures.createBasicTemplate("B");
+        Study a = Fixtures.createBasicTemplate("A"), b = Fixtures.createBasicTemplate("B");
         List<Study> aAndB = Arrays.asList(a, b);
         List<Study> justA = Arrays.asList(a);
 

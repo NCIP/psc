@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
 import junit.framework.TestCase;
@@ -24,7 +24,7 @@ public class DispatcherServletInitializationTest extends TestCase {
     }
 
     public void testWebApplicationContextItself() throws Exception {
-        ApplicationContext context = StudyCalendarApplicationContextTestHelper.getDeployedApplicationContext();
+        ApplicationContext context = StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
         // no exceptions
         assertPositive("No bean definitions loaded", context.getBeanDefinitionCount());
     }

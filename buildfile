@@ -53,7 +53,7 @@ define "psc" do
   define "domain" do
     compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
       JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
-    test.with(UNIT_TESTING) #.include("*Test")
+    test.with(UNIT_TESTING)
     package(:jar)
     package(:sources)
   end
@@ -162,7 +162,8 @@ define "psc" do
     compile.with LOGBACK, project('core'), project('core').compile.dependencies, 
       SPRING_WEB, RESTLET, WEB, CAGRID
     test.with project('test-infrastructure'), 
-      project('test-infrastructure').compile.dependencies
+      project('test-infrastructure').compile.dependencies,
+      project('test-infrastructure').test.compile.dependencies
     package(:war).exclude(CONTAINER_PROVIDED)
     package(:sources)
   end
@@ -170,7 +171,9 @@ define "psc" do
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB,
-      %w(domain core).collect { |n| project(n) }.collect { |p| [p, p.compile.dependencies, p.test.compile.target] }
+      project('core'), project('core').compile.dependencies
+    test.with project('core').test.compile.target, 
+      project('core').test.compile.dependencies
     package(:jar)
     package(:sources)
   end

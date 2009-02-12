@@ -31,7 +31,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     }
 
     public static ApplicationContext getDeployedApplicationContext() {
-        return StudyCalendarApplicationContextTestHelper.getDeployedApplicationContext();
+        return StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
     }
 
     @Override

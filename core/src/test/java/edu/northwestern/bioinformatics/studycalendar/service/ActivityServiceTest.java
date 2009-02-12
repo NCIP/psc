@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -80,7 +80,7 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong number of sources: " + actual, 2, actual.size());
         assertTransientSource("Problem with first source", actual.get(0), "Another", c);
-        assertTransientSource("Problem with second source", actual.get(1), ServicedFixtures.DEFAULT_ACTIVITY_SOURCE.getName(), a, b);
+        assertTransientSource("Problem with second source", actual.get(1), Fixtures.DEFAULT_ACTIVITY_SOURCE.getName(), a, b);
     }
 
     public void testGetFilteredSourcesIgnoresSourcelessActivities() throws Exception {
@@ -99,7 +99,7 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
         Activity a = createActivity("A");
 
         ActivityType expectedType = createActivityType("DISEASE_MEASURE");
-        Source expectedSource = ServicedFixtures.DEFAULT_ACTIVITY_SOURCE;
+        Source expectedSource = Fixtures.DEFAULT_ACTIVITY_SOURCE;
         expect(activityDao.getActivitiesBySearchText(
             "search", expectedType, expectedSource)).andReturn(Arrays.asList(a));
 

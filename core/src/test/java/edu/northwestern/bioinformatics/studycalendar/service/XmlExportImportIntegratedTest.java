@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -144,10 +144,10 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch e1 = expectedExport.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Test setup failure -- expected 1 segment in epoch 1 to start", 1, e1.getStudySegments().size());
         Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
-        Add newSegment = setGridId("ADD", Add.create(setGridId("NS", ServicedFixtures.createNamedInstance("New Segment", StudySegment.class))));
+        Add newSegment = setGridId("ADD", Add.create(setGridId("NS", Fixtures.createNamedInstance("New Segment", StudySegment.class))));
         dev.addDelta(setGridId("D", Delta.createDeltaFor(e1, newSegment)));
         expectedExport.setDevelopmentAmendment(dev);
-        ServicedFixtures.amend(expectedExport);
+        Fixtures.amend(expectedExport);
 
         InputStream xml = export(expectedExport);
         Study actual = doImport(xml);
@@ -169,7 +169,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
 
         Study study = reload().transientClone();
         study.setDevelopmentAmendment(createAmendment("A0", new Date()));
-//        Population population = ServicedFixtures.createPopulation("P0", "New Population");
+//        Population population = Fixtures.createPopulation("P0", "New Population");
 //        study.addPopulation(population);
 
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
@@ -183,7 +183,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Add add = setGridId("A", Add.create(period));
         Delta delta = setGridId("Delt", Delta.createDeltaFor(studySegment, add));
         study.getDevelopmentAmendment().addDelta(delta);
-        ServicedFixtures.amend(study);
+        Fixtures.amend(study);
 
         InputStream xml = export(study);
         Study importedStudy = doImport(xml);

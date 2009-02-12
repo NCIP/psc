@@ -5,7 +5,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
@@ -53,7 +53,7 @@ public class ScheduleNextStudySegmentControllerTest extends ControllerTestCase {
     
     public void testBindStudySegment() throws Exception {
         int id = 44;
-        StudySegment expectedStudySegment = ServicedFixtures.setId(id, ServicedFixtures.createNamedInstance("Baker", StudySegment.class));
+        StudySegment expectedStudySegment = Fixtures.setId(id, Fixtures.createNamedInstance("Baker", StudySegment.class));
         expect(studySegmentDao.getById(id)).andReturn(expectedStudySegment);
         request.addParameter("studySegment", Integer.toString(id));
 
@@ -64,7 +64,7 @@ public class ScheduleNextStudySegmentControllerTest extends ControllerTestCase {
 
     public void testBindCalendar() throws Exception {
         int id = 17;
-        ScheduledCalendar expectedCalendar = ServicedFixtures.setId(id, new ScheduledCalendar());
+        ScheduledCalendar expectedCalendar = Fixtures.setId(id, new ScheduledCalendar());
         expect(scheduledCalendarDao.getById(id)).andReturn(expectedCalendar);
         request.addParameter("calendar", Integer.toString(id));
 

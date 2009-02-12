@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createAddChange;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAddChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -31,7 +30,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactory;
-import static org.easymock.EasyMock.expect;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -107,9 +105,9 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         source = new Source();
         source.setName("NU Sample Activities");
 
-        activity1 = ServicedFixtures.createActivity("CBC", "CBC", source, ServicedFixtures.createActivityType("DISEASE_MEASURE"));
-        activity2 = ServicedFixtures.createActivity("CBC", "CBC", null, ServicedFixtures.createActivityType("LAB_TEST"));
-        activity3 = ServicedFixtures.createActivity("Azacitidine", "100001", source, ServicedFixtures.createActivityType("INTERVENTION"));
+        activity1 = Fixtures.createActivity("CBC", "CBC", source, Fixtures.createActivityType("DISEASE_MEASURE"));
+        activity2 = Fixtures.createActivity("CBC", "CBC", null, Fixtures.createActivityType("LAB_TEST"));
+        activity3 = Fixtures.createActivity("Azacitidine", "100001", source, Fixtures.createActivityType("INTERVENTION"));
         activity3.setDescription("");
 
         plannedActivity1 = new PlannedActivity();
@@ -128,26 +126,26 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         plannedActivity2.setActivity(activity2);
         plannedActivity2.setDay(8);
 
-        period1 = ServicedFixtures.createPeriod("period1", 1, Duration.Unit.day, 21, 4);
+        period1 = Fixtures.createPeriod("period1", 1, Duration.Unit.day, 21, 4);
         period1.setGridId("494db4ea-6d29-4a88-96c7-128d7947fbce");
         period1.getPlannedActivities().add(plannedActivity1);
         period1.getPlannedActivities().add(plannedActivity2);
 
-        period2 = ServicedFixtures.createPeriod("Transplant", 0, Duration.Unit.day, 15, 1);
+        period2 = Fixtures.createPeriod("Transplant", 0, Duration.Unit.day, 15, 1);
         period2.setGridId("9922be01-5d8a-4077-8fd4-3236b8fe040b");
 
         period3 = new Period();
         period3.setGridId("04fed30f-3cda-4843-936a-b5d9d9d07492");
 
 
-        period4 = ServicedFixtures.createPeriod(null, 1, Duration.Unit.day, 24, 3);
+        period4 = Fixtures.createPeriod(null, 1, Duration.Unit.day, 24, 3);
         period4.setGridId("773f67c7-8c9a-4c39-b9db-efd9a2e93e83");
         period4.addPlannedActivity(plannedActivity3);
 
-        studySegment1 = ServicedFixtures.createNamedInstance("A", StudySegment.class);
+        studySegment1 = Fixtures.createNamedInstance("A", StudySegment.class);
         studySegment1.setGridId("0400e3b7-76b6-4ecb-88a1-61dcb5ecbae9");
 
-        studySegment2 = ServicedFixtures.createNamedInstance("Transplant", StudySegment.class);
+        studySegment2 = Fixtures.createNamedInstance("Transplant", StudySegment.class);
         studySegment2.setGridId("111f8f6c-3d5e-4bf8-99bf-1b7122ace4d0");
 
         studySegment1.getPeriods().add(period1);
@@ -155,12 +153,12 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         studySegment2.getPeriods().add(period2);
 
 
-        epoch1 = ServicedFixtures.createNamedInstance("Treatment", Epoch.class);
+        epoch1 = Fixtures.createNamedInstance("Treatment", Epoch.class);
         epoch1.addStudySegment(studySegment1);
         epoch1.addStudySegment(studySegment2);
         epoch1.setGridId("690361c1-433e-4a25-bfe2-09db0ce2edab");
 
-        add1 = ServicedFixtures.createAddChange(1, 0);
+        add1 = Fixtures.createAddChange(1, 0);
         add1.setChild(epoch1);
         add1.setGridId("cb6e3130-9d2e-44e8-80ac-170d1875db5c");
 
@@ -203,12 +201,12 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         epochDelta.addChange(add1);
 
 
-        calendar = ServicedFixtures.setGridId("grid1", new PlannedCalendar());
-        population = ServicedFixtures.createPopulation("MP", "My Population");
+        calendar = Fixtures.setGridId("grid1", new PlannedCalendar());
+        population = Fixtures.createPopulation("MP", "My Population");
 
 
-        amendment = ServicedFixtures.createAmendment("[Second Expected]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.AUGUST, 16), true);
-        firstAmendment = ServicedFixtures.createAmendment("[First]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.JANUARY, 2), true);
+        amendment = Fixtures.createAmendment("[Second Expected]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.AUGUST, 16), true);
+        firstAmendment = Fixtures.createAmendment("[First]", edu.nwu.bioinformatics.commons.DateUtils.createDate(2008, Calendar.JANUARY, 2), true);
 
 
         study = createStudy();
@@ -424,7 +422,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
 
 
     private Study createStudy() {
-        Study study = ServicedFixtures.createNamedInstance("Study A", Study.class);
+        Study study = Fixtures.createNamedInstance("Study A", Study.class);
         study.setPlannedCalendar(calendar);
         study.addPopulation(population);
         return study;

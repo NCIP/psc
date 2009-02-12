@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -48,13 +48,13 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         manager = new StudyCalendarAuthorizationManager();
         manager.setUserProvisioningManager(userProvisioningManager);
 
-        user = ServicedFixtures.createUser("jimbo");
+        user = Fixtures.createUser("jimbo");
 
-        studyA = ServicedFixtures.createNamedInstance("A", Study.class);
-        studyB = ServicedFixtures.createNamedInstance("B", Study.class);
-        studyAB = ServicedFixtures.createNamedInstance("AB", Study.class);
-        siteA = ServicedFixtures.createNamedInstance("a", Site.class);
-        siteB = ServicedFixtures.createNamedInstance("b", Site.class);
+        studyA = Fixtures.createNamedInstance("A", Study.class);
+        studyB = Fixtures.createNamedInstance("B", Study.class);
+        studyAB = Fixtures.createNamedInstance("AB", Study.class);
+        siteA = Fixtures.createNamedInstance("a", Site.class);
+        siteB = Fixtures.createNamedInstance("b", Site.class);
         studyA.addSite(siteA);
         studyB.addSite(siteB);
         studyAB.addSite(siteA);

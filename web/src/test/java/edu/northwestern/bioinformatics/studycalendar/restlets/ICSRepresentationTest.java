@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import junit.framework.TestCase;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
@@ -20,14 +20,14 @@ public class ICSRepresentationTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Subject subject = ServicedFixtures.createSubject("firstName", "lastName");
+        Subject subject = Fixtures.createSubject("firstName", "lastName");
         StudySite studySite = new StudySite();
         Study study = new Study();
         study.setAssignedIdentifier("test-study");
         studySite.setStudy(study);
         ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
-        studySubjectAssignment = ServicedFixtures.createAssignment(studySite, subject);
+        studySubjectAssignment = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAssignment(studySite, subject);
         studySubjectAssignment.setGridId("grid-0");
         studySubjectAssignment.setScheduledCalendar(scheduledCalendar);
 

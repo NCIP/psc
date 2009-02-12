@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -158,7 +158,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     }
 
     public void testCreatePlannedActivityAddLabelMutator() throws Exception {
-        Mutator actual = factory.createMutator(new PlannedActivity(), Add.create(ServicedFixtures.createPlannedActivityLabel("elab")));
+        Mutator actual = factory.createMutator(new PlannedActivity(), Add.create(Fixtures.createPlannedActivityLabel("elab")));
         assertNotNull(actual);
         // This will work until the schedule is involved
         assertEquals(AddPlannedActivityLabelMutator.class, actual.getClass());

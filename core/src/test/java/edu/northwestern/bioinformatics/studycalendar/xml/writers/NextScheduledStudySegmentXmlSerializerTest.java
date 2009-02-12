@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -29,7 +29,7 @@ public class NextScheduledStudySegmentXmlSerializerTest extends StudyCalendarTes
         serializer = new NextScheduledStudySegmentXmlSerializer();
         serializer.setStudySegmentDao(studySegmentDao);
 
-        segment = ServicedFixtures.setGridId("segment-grid0", new StudySegment());
+        segment = Fixtures.setGridId("segment-grid0", new StudySegment());
     }
 
     public void testReadElement() {

@@ -3,10 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createActivity;
-import static edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures.createSingleActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createActivity;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import org.dom4j.Element;
@@ -24,7 +23,7 @@ public class ActivityPropertyXmlSerializerTest   extends StudyCalendarXmlTestCas
     protected void setUp() throws Exception {
            super.setUp();
            activity = setId(20, createActivity("Bone Scan"));
-           activityProperty =  ServicedFixtures.createSingleActivityProperty(activity, namespace ,"id.template" ,"templateValue");
+           activityProperty =  Fixtures.createSingleActivityProperty(activity, namespace ,"id.template" ,"templateValue");
            activityPropertyXmlSerializer = new ActivityPropertyXmlSerializer();
        }
     

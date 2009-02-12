@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.core.ServicedFixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,8 +26,8 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        study = ServicedFixtures.createBasicTemplate();
-        ServicedFixtures.assignIds(study);
+        study = Fixtures.createBasicTemplate();
+        Fixtures.assignIds(study);
         studySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
         studySegment.setId(STUDY_SEGMENT_ID);
 

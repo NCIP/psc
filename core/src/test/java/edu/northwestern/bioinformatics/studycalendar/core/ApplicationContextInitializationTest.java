@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class ApplicationContextInitializationTest extends StudyCalendarTestCase {
     public void testApplicationContextItself() throws Exception {
-        ApplicationContext context = StudyCalendarApplicationContextTestHelper.getDeployedApplicationContext();
+        ApplicationContext context = StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
         // no exceptions
         assertPositive("No bean definitions loaded", context.getBeanDefinitionCount());
     }
