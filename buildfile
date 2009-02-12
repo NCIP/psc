@@ -7,7 +7,7 @@ VERSION_NUMBER="2.5-SNAPSHOT"
 
 ###### PROJECT
 
-desc "The main Study Calendar application, including core data access, business logic, and the web interface"
+desc "Patient Study Calendar"
 define "psc" do
   project.version = VERSION_NUMBER
   project.group = "edu.northwestern.bioinformatics.studycalendar"
@@ -41,21 +41,47 @@ define "psc" do
   
   desc "Pure utility code"
   define "utility" do
-    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
+    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, 
+      JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
     package(:jar)
+    package(:sources)
   end
   
   desc "The domain classes for PSC"
   define "domain" do
-    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
-    test.with(UNIT_TESTING).include("*Test")
+    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
+      JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
+    test.with(UNIT_TESTING) #.include("*Test")
     package(:jar)
+    package(:sources)
+  end
+  
+  desc "Core data access, XML serialization, and non-replaceable business logic"
+  define "core" do
+    compile.with project('domain'), project('domain').compile.dependencies, XML,
+      RESTLET.framework, FREEMARKER, CSV, CONTAINER_PROVIDED
+    test.with(UNIT_TESTING)
+    package(:jar)
+    package(:sources)
+  end
+  
+  desc "Web interfaces, including the GUI and the RESTful API"
+  define "web" do
+    compile.with LOGBACK, project('core'), project('core').compile.dependencies, 
+      SPRING_WEB, RESTLET, WEB, FREEMARKER
+    test.with project('test-infrastructure'), 
+      project('test-infrastructure').compile.dependencies
+    package(:war)
+    package(:sources)
   end
   
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
-    compile.with project('domain'), project('domain').compile.dependencies, project('domain').test, UNIT_TESTING
+    compile.with UNIT_TESTING,
+      project('domain'), project('domain').compile.dependencies, project('domain').test,
+      project('core'), project('core').compile.dependencies, project('core').test,
     package(:jar)
+    package(:sources)
   end
 end
