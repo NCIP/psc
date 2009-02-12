@@ -3,13 +3,11 @@
 ###### REPOS
 
 # NU m2 repo (for ctms-commons, caGrid, other non-repo dependencies)
-repositories.remote << "http://download.bioinformatics.northwestern.edu/download/maven2"
-# restlet repo
-repositories.remote << "http://maven.restlet.org"
+repositories.remote << "http://download.bioinformatics.northwestern.edu/maven2/"
 # ical4j repo
-repositories.remote << "http://m2.modularity.net.au/releases"
+repositories.remote << "http://m2.modularity.net.au/releases/"
 # main m2 repo
-repositories.remote << "http://repo1.maven.org/maven2"
+repositories.remote << "http://repo1.maven.org/maven2/"
 
 ###### HELPERS
 
@@ -23,15 +21,11 @@ end
 # Only list versions which appear in more than one artifact here
 CTMS_COMMONS_VERSION = "0.9-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
-SPRING_VERSION = "2.5.6"
-RESTLET_VERSION = "1.1.1"
+SPRING_VERSION = "2.0.7"
 
-CTMS_COMMONS = struct(
-  %w{base core laf lang web}.inject({}) do |h, a|
-    h[a.to_sym] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:#{CTMS_COMMONS_VERSION}"
-    h
-  end
-)
+CTMS_COMMONS = group(%w{base core laf lang web}.map { |a| "ctms-commons-#{a}"}, 
+  :under => "gov.nih.nci.cabig.ctms", :version => CTMS_COMMONS_VERSION)
+
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = [
@@ -39,34 +33,25 @@ XML = [
   eponym("jdom", "1.0b8")
 ]
 
-CSV = [
-  "net.sourceforge.javacsv:javacsv:jar:2.0"
-]
-
 LOGBACK = group(%w{log4j-bridge logback-core logback-classic},
   :under => "ch.qos.logback", :version => "0.9.7")
-SLF4J = group('slf4j-api', 'jcl-over-slf4j', 'jul-to-slf4j',
+SLF4J = group('slf4j-api', 'jcl104-over-slf4j', 'jul-to-slf4j',
   :under => "org.slf4j", :version => "1.5.2")
 
-JAKARTA_COMMONS = struct({
-  :beanutils  => eponym("commons-beanutils", "1.7.0"),
-  :collections => eponym("commons-collections", "3.2"),
-  :dbcp       => eponym("commons-dbcp", "1.2.1"),
-  :digester   => eponym("commons-digester", "1.7"),
-  :discovery  => eponym("commons-discovery", "0.4"),
-  :io         => "org.apache.commons:commons-io:jar:1.3.2",
-  :lang       => eponym("commons-lang", "2.1"),
-  :pool       => eponym("commons-pool", "1.2"),
-  :fileupload => eponym("commons-fileupload", "1.2"),
-  :collections_generic => "net.sourceforge.collections:collections-generic:jar:4.01"
-})
+JAKARTA_COMMONS = [
+  eponym("commons-beanutils", "1.7.0"),
+  eponym("commons-collections", "3.2"),
+  eponym("commons-dbcp", "1.2.1"),
+  eponym("commons-digester", "1.7"),
+  eponym("commons-discovery", "0.4"),
+  "org.apache.commons:commons-io:jar:1.3.2",
+  eponym("commons-lang", "2.1"),
+  eponym("commons-pool", "1.2"),
+  eponym("commons-fileupload", "1.2")
+]
 
 SPRING = [
   "org.springframework:spring:jar:#{SPRING_VERSION}",
-]
-
-SPRING_WEB = [
-  "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
   "org.springframework:spring-webflow:jar:1.0.5",
   "org.springframework:spring-binding:jar:1.0.5",
   "javax.activation:activation:jar:1.0.2",
@@ -132,27 +117,15 @@ BERING = [
   eponym("asm", "2.2.3")
 ]
 
-FREEMARKER = [
-  "org.freemarker:freemarker:jar:2.3.10"
-]
-
 WEB = [
   "itext:itext:jar:1.3.1",
   "opensymphony:sitemesh:jar:2.2.1",
   "poi:poi-2.5.1-final:jar:20040804",
+  "org.freemarker:freemarker:jar:2.3.10",
   "taglibs:standard:jar:1.1.2",
   eponym("jstl", "1.1.2"),
   "net.fortuna:ical4j:jar:1.0-beta4"
 ]
-
-RESTLET = struct({
-  :framework        => "org.restlet:org.restlet:jar:#{RESTLET_VERSION}",
-  :spring_ext       => "org.restlet:org.restlet.ext.spring:jar:#{RESTLET_VERSION}",
-  :freemarker_ext   => "org.restlet:org.restlet.ext.freemarker:jar:#{RESTLET_VERSION}",
-  :nre              => "com.noelios.restlet:com.noelios.restlet:jar:#{RESTLET_VERSION}",
-  :servlet_nre_ext  => "com.noelios.restlet:com.noelios.restlet.ext.servlet:jar:#{RESTLET_VERSION}",
-  :spring_nre_ext   => "com.noelios.restlet:com.noelios.restlet.ext.spring:jar:#{RESTLET_VERSION}"
-})
 
 CONTAINER_PROVIDED = [
   "javax.servlet:servlet-api:jar:2.5",
@@ -161,13 +134,11 @@ CONTAINER_PROVIDED = [
 
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
-  "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",
-  "org.springframework:spring-test:jar:#{SPRING_VERSION}",
-  LOGBACK
-].flatten
+  "org.springframework:spring-mock:jar:#{SPRING_VERSION}"
+]
 
 DB = struct(
   :hsqldb => eponym("hsqldb", "1.8.0.7"),

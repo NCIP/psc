@@ -1,21 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import edu.nwu.bioinformatics.commons.testing.DbTestCase;
-import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import java.util.Date;
+import java.util.Properties;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.dao.DataAccessException;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
+import edu.nwu.bioinformatics.commons.testing.DbTestCase;
+import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 
 /**
  * @author Rhett Sutphin

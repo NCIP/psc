@@ -10,9 +10,7 @@ Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJR
 
 module PscTest
   include_package "edu.northwestern.bioinformatics.studycalendar.test"
-
-  Fixtures = ServicedFixtures
-
+  
   def self.createDate(year, month, day)
     # DateTools expects month as java.util.Calendar constant. They start with 0.
     Java::GovNihNciCabigCtmsLang::DateTools.createDate(year, month - 1, day)
