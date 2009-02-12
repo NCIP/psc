@@ -54,9 +54,6 @@ define "psc" do
   
   define "Pure utility code"
   define "utility" do
-    resources.from(_("src/main/java")).exclude("**/*.java")
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
-    
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
@@ -67,9 +64,6 @@ define "psc" do
   
   desc "The domain classes for PSC"
   define "domain" do
-    resources.from(_("src/main/java")).exclude("**/*.java")
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
-    
     compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
       JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
     test.with(UNIT_TESTING)
@@ -98,7 +92,7 @@ define "psc" do
     
     # :ant filtering, but with deferred token creation so that the db name
     # can be influenced by other tasks
-    resources.from(_("src/main/java")).exclude("**/*.java").filter.using do |path, content|
+    resources.filter.using do |path, content|
       deferred_tokens = filter_tokens
       content.gsub(/@.*?@/) do |key|
         deferred_tokens[key[1..-2]] || key
@@ -117,7 +111,6 @@ define "psc" do
       SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
@@ -203,9 +196,6 @@ define "psc" do
   
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
-    resources.from(_("src/main/java")).exclude("**/*.java")
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
-    
     compile.with LOGBACK, 
       project('core'), project('core').compile.dependencies, 
       SPRING_WEB, RESTLET, WEB, CAGRID
@@ -242,9 +232,6 @@ define "psc" do
   
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
-    resources.from(_("src/main/java")).exclude("**/*.java")
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
-
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB,
       project('core'), project('core').compile.dependencies
     test.with project('core').test.compile.target, 
@@ -258,11 +245,6 @@ end
 
 projects.each do |p|
   if File.exist?(p._("src/main/java"))
-    # This doesn't work with the test task for some reason
-    # All resources come from source path
-    # p.resources.from(p._("src/main/java")).exclude("**/*.java")
-    # p.test.resources.from(p._("src/test/java")).exclude("**/*.java")
-  
     # Use same logback test config for all modules
     logback_test_src = project("psc")._("src/test/resources/logback-test.xml")
     logback_test_dst = File.join(p.test.resources.target.to_s, "logback-test.xml")
@@ -284,6 +266,8 @@ task :migrate => 'psc:core:migrate'
 
 desc "Manually create the HSQLDB instance for unit testing"
 task :create_hsqldb => 'psc:core:create_hsqldb'
+
+###### Development deployment sans Tomcat
 
 directory project("psc")._('tmp')
 file project("psc")._('tmp/csm_jaas.conf') => project("psc")._('tmp') do |t|
@@ -316,7 +300,6 @@ task :server do
     project('psc:web')._('src/main/webapp').to_s
   
   msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
-  
   puts "=" * msg.size
   puts msg
   puts "=" * msg.size

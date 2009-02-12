@@ -9,7 +9,7 @@ def hsqldb
   {
     :dir => hsqldb_dir,
     :url => "jdbc:hsqldb:file:#{hsqldb_dir}/#{db_name}",
-    :files => %w(script properties).collect { |ext| File.join(hsqldb_dir, "#{db_name}.#{ext}") }
+    :files => %w(script properties).collect { |ext| File.join(hsqldb_dir, "#{db_name}.#{ext}") } + [ "#{ENV['HOME']}/.#{APPLICATION_SHORT_NAME}/#{db_name}.properties" ]
   }
 end
 
