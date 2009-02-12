@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
@@ -19,10 +19,10 @@ public class DeleteCommandTest extends EditCommandTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         command = new DeleteCommand();
-        command.setDeltaService(Fixtures.getTestingDeltaService());
+        command.setDeltaService(ServicedFixtures.getTestingDeltaService());
         study.getPlannedCalendar().addEpoch(Epoch.create("E1", "A", "B", "C"));
         study.getPlannedCalendar().addEpoch(Epoch.create("E2"));
-        Fixtures.assignIds(study);
+        ServicedFixtures.assignIds(study);
         command.setStudy(study);
     }
 

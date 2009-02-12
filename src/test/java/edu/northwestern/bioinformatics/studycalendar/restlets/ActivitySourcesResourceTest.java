@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 

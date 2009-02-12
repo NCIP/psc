@@ -70,7 +70,7 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
     }
 
     public void testTransientClone() throws Exception {
-        PlannedCalendar cal = Fixtures.createBasicTemplate().getPlannedCalendar();
+        PlannedCalendar cal = Fixtures.createReleasedTemplate().getPlannedCalendar();
         int id = 4;
         cal.setId(id++);
         for (Epoch epoch : cal.getEpochs()) {
@@ -106,12 +106,12 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
     }
 
     public void testFindMatchingChildSegmentWhenPresent() throws Exception {
-        PlannedCalendar pc = Fixtures.createBasicTemplate().getPlannedCalendar();
+        PlannedCalendar pc = Fixtures.createReleasedTemplate().getPlannedCalendar();
         assertSame("Not found", pc.getEpochs().get(0), pc.findNaturallyMatchingChild("Treatment"));
     }
 
     public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
-        PlannedCalendar pc = Fixtures.createBasicTemplate().getPlannedCalendar();
+        PlannedCalendar pc = Fixtures.createReleasedTemplate().getPlannedCalendar();
         assertNull(pc.findNaturallyMatchingChild("LTFU"));
     }
 }

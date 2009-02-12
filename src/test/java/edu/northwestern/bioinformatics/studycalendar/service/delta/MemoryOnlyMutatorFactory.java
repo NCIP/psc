@@ -14,7 +14,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
  *
  * @see edu.northwestern.bioinformatics.studycalendar.domain.delta.Add#getChild
  * @see edu.northwestern.bioinformatics.studycalendar.domain.delta.Add#getChildId
- * @see edu.northwestern.bioinformatics.studycalendar.test.Fixtures
+ * @see edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures
  * @author Rhett Sutphin
  */
 public class MemoryOnlyMutatorFactory extends MutatorFactory {

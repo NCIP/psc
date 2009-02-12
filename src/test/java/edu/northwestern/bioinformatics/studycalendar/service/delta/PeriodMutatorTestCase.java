@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
@@ -50,20 +50,20 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected void setUp() throws Exception {
         super.setUp();
         studySegment = Epoch.create("E1", "A", "B").getStudySegments().get(0);
-        period0 = Fixtures.createPeriod("P0", 1, 9, PERIOD_0_REPS);
-        period0.addPlannedActivity(p0e0 = Fixtures.createPlannedActivity("P0.E0", 2));
-        period0.addPlannedActivity(p0e1 = Fixtures.createPlannedActivity("P0.E1", 6));
-        period1 = Fixtures.createPeriod("P1", 1, 11, PERIOD_1_REPS);
-        period1.addPlannedActivity(p1e0 = Fixtures.createPlannedActivity("P1.E0", 1));
-        period1.addPlannedActivity(p1e1 = Fixtures.createPlannedActivity("P1.E1", 4));
+        period0 = ServicedFixtures.createPeriod("P0", 1, 9, PERIOD_0_REPS);
+        period0.addPlannedActivity(p0e0 = ServicedFixtures.createPlannedActivity("P0.E0", 2));
+        period0.addPlannedActivity(p0e1 = ServicedFixtures.createPlannedActivity("P0.E1", 6));
+        period1 = ServicedFixtures.createPeriod("P1", 1, 11, PERIOD_1_REPS);
+        period1.addPlannedActivity(p1e0 = ServicedFixtures.createPlannedActivity("P1.E0", 1));
+        period1.addPlannedActivity(p1e1 = ServicedFixtures.createPlannedActivity("P1.E1", 4));
 
         change = createChange();
         delta = createDelta();
-        amendment = Fixtures.createAmendments("Oops");
+        amendment = ServicedFixtures.createAmendments("Oops");
         amendment.setDate(DateTools.createDate(1909, Calendar.FEBRUARY, 4));
         amendment.addDelta(delta);
         scheduledCalendar = new ScheduledCalendar();
-        scheduledStudySegment = Fixtures.createScheduledStudySegment(studySegment);
+        scheduledStudySegment = ServicedFixtures.createScheduledStudySegment(studySegment);
         scheduledStudySegment.setStartDay(1);
         scheduledStudySegment.setStartDate(STUDY_SEGMENT_START_DATE);
         scheduledCalendar.addStudySegment(scheduledStudySegment);

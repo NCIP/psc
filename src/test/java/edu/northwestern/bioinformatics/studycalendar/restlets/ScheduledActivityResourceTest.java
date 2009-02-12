@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -42,19 +42,19 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
-        scheduledActivity = Fixtures.setId(12, Fixtures.createScheduledActivity("A", 2007, Calendar.MARCH, 4));
+        scheduledActivity = ServicedFixtures.setId(12, ServicedFixtures.createScheduledActivity("A", 2007, Calendar.MARCH, 4));
         scheduledActivity.setGridId("SA-GRID");
 
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
-        study = Fixtures.createSingleEpochStudy("AG 0701", "QoL");
-        assignment = Fixtures.createAssignment(
+        study = ServicedFixtures.createSingleEpochStudy("AG 0701", "QoL");
+        assignment = ServicedFixtures.createAssignment(
             study,
-            Fixtures.createNamedInstance("AG", Site.class),
-            Fixtures.createSubject("Jo", "Jo")
+            ServicedFixtures.createNamedInstance("AG", Site.class),
+            ServicedFixtures.createSubject("Jo", "Jo")
         );
         assignment.setGridId("SSA-GRID");
         assignment.getScheduledCalendar().addStudySegment(
-            Fixtures.createScheduledStudySegment(study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0)));
+            ServicedFixtures.createScheduledStudySegment(study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0)));
         assignment.getScheduledCalendar().getScheduledStudySegments().get(0)
             .addEvent(scheduledActivity);
 

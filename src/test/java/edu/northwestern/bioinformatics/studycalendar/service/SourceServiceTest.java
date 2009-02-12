@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
@@ -33,14 +33,14 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         sourceService.setActivityService(activityService);
 
         sourceService.setSourceDao(sourceDao);
-        source = Fixtures.createSource(SOURCE);
-        targetSource = Fixtures.createSource(TARGET_SOURCE);
+        source = ServicedFixtures.createSource(SOURCE);
+        targetSource = ServicedFixtures.createSource(TARGET_SOURCE);
 
-        activity = Fixtures.createActivity("activity1", "code", null, Fixtures.createActivityType("LAB_TEST"));
+        activity = ServicedFixtures.createActivity("activity1", "code", null, ServicedFixtures.createActivityType("LAB_TEST"));
 
-        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, Fixtures.createActivityType("LAB_TEST"));
-        activityToUpdate = Fixtures.createActivity("activityToUpdate", "code2", null, Fixtures.createActivityType("LAB_TEST"));
-        activityToDelete = Fixtures.createActivity("activityToDelete", "code3", null, Fixtures.createActivityType("LAB_TEST"));
+        anotherActivity = ServicedFixtures.createActivity("anotherActivity", "code2", null, ServicedFixtures.createActivityType("LAB_TEST"));
+        activityToUpdate = ServicedFixtures.createActivity("activityToUpdate", "code2", null, ServicedFixtures.createActivityType("LAB_TEST"));
+        activityToDelete = ServicedFixtures.createActivity("activityToDelete", "code3", null, ServicedFixtures.createActivityType("LAB_TEST"));
     }
 
     public void testUpdateSourceWhenSourceHasNoActivity() {

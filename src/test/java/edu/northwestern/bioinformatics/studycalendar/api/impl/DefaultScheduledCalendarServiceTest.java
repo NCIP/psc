@@ -1,20 +1,47 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import static org.easymock.EasyMock.isA;
 import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.reset;
-import static org.easymock.EasyMock.isA;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -87,7 +114,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         parameterEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID, new ScheduledActivity());
         parameterAssignment = setGridId(ASSIGNMENT_BIG_ID, new StudySubjectAssignment());
 
-        loadedStudy = setGridId(STUDY_BIG_ID, Fixtures.createBasicTemplate());
+        loadedStudy = setGridId(STUDY_BIG_ID, ServicedFixtures.createBasicTemplate());
         loadedSite = setGridId(SITE_BIG_ID, createNamedInstance("NU", Site.class));
         loadedStudy.addSite(loadedSite);
         loadedStudySegment = setGridId(STUDY_SEGMENT_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0));

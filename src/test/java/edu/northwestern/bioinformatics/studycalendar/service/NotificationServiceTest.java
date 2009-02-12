@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import org.easymock.classextension.EasyMock;
 import org.springframework.mail.MailSender;
 
@@ -66,7 +66,7 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
     public void testNotifyUsersForNewScheduleNotifications() {
 
 
-        User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
+        User user = ServicedFixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
         String emailAddress = "user@email.com";
         EasyMock.expect(userService.getEmailAddresssForUser(user)).andReturn(emailAddress);
         ScheduleNotificationMailMessage notificationMailMessage = new ScheduleNotificationMailMessage();

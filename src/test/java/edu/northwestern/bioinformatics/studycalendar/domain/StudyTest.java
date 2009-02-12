@@ -194,26 +194,26 @@ public class StudyTest extends StudyCalendarTestCase {
     }
 
     public void testCloneDeepClonesAmendment() throws Exception {
-        Study src = Fixtures.createBasicTemplate();
+        Study src = Fixtures.createReleasedTemplate();
         Study clone = src.clone();
         assertNotSame("Amendments not cloned",
             src.getAmendment(), clone.getAmendment());
     }
 
     public void testCloneDeepClonesDevAmendment() throws Exception {
-        Study src = Fixtures.createInDevelopmentBasicTemplate("DC");
+        Study src = Fixtures.createInDevelopmentTemplate("DC");
         Study clone = src.clone();
         assertNotSame("Dev amendment not cloned",
             src.getDevelopmentAmendment(), clone.getDevelopmentAmendment());
     }
 
     public void testTransientCloneIncludesTransientAmendment() throws Exception {
-        Study clone = Fixtures.createBasicTemplate().transientClone();
+        Study clone = Fixtures.createReleasedTemplate().transientClone();
         assertTrue(clone.getAmendment().isMemoryOnly());
     }
 
     public void testTransientCloneIncludesTransientDevAmendment() throws Exception {
-        Study clone = Fixtures.createInDevelopmentBasicTemplate("DC").transientClone();
+        Study clone = Fixtures.createInDevelopmentTemplate("DC").transientClone();
         assertTrue(clone.getDevelopmentAmendment().isMemoryOnly());
     }
 

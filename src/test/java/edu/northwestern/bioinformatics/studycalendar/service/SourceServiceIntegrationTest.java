@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
@@ -31,18 +31,18 @@ public class SourceServiceIntegrationTest extends DaoTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        source = Fixtures.createSource(SOURCE);
-        targetSource = Fixtures.createSource(TARGET_SOURCE);
+        source = ServicedFixtures.createSource(SOURCE);
+        targetSource = ServicedFixtures.createSource(TARGET_SOURCE);
 
         activitiesToAddAndRemove = new ArrayList<Activity>();
 
-        activityType = Fixtures.createActivityType("LAB_TEST");
+        activityType = ServicedFixtures.createActivityType("LAB_TEST");
         activityTypeDao.save(activityType);
 
-        activity = Fixtures.createActivity("activity1", "code", null, activityType);
-        anotherActivity = Fixtures.createActivity("anotherActivity", "code2", null, activityType);
-        activityToUpdate = Fixtures.createActivity("activityToUpdate", "CS", null, activityType);
-        activityToDelete = Fixtures.createActivity("activityToDelete", "CS", null, activityType);
+        activity = ServicedFixtures.createActivity("activity1", "code", null, activityType);
+        anotherActivity = ServicedFixtures.createActivity("anotherActivity", "code2", null, activityType);
+        activityToUpdate = ServicedFixtures.createActivity("activityToUpdate", "CS", null, activityType);
+        activityToDelete = ServicedFixtures.createActivity("activityToDelete", "CS", null, activityType);
 
         activitiesToAddAndRemove.add(activity);
         activitiesToAddAndRemove.add(anotherActivity);

@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityTypeService;
 
 import java.util.List;
@@ -42,10 +42,10 @@ public class AddEditActivityTypeControllerTest extends ControllerTestCase {
         controller.setActivityTypeService(activityTypeService);
 
 
-        activityType = setId(5, Fixtures.createActivityType("DISEASE_MEASURE"));
+        activityType = setId(5, ServicedFixtures.createActivityType("DISEASE_MEASURE"));
         activityTypes.add(activityType);
 
-        Activity activity = Fixtures.createActivity("activity 1", activityType);
+        Activity activity = ServicedFixtures.createActivity("activity 1", activityType);
         activities.add(activity);
 
     }
@@ -53,7 +53,7 @@ public class AddEditActivityTypeControllerTest extends ControllerTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testModelForAdd() throws Exception {
         String newActivityTypeName = "New Activity Type";
-        ActivityType newActivityType = Fixtures.createActivityType(newActivityTypeName);
+        ActivityType newActivityType = ServicedFixtures.createActivityType(newActivityTypeName);
         request.addParameter("action","add");
         request.addParameter("activityTypeName", newActivityType.getName());
         Map<String, Object> actualModel;
@@ -79,7 +79,7 @@ public class AddEditActivityTypeControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     public void testModelForEdit() throws Exception {
-        ActivityType editActivityType = setId(10, Fixtures.createActivityType("Edit Activity Type"));
+        ActivityType editActivityType = setId(10, ServicedFixtures.createActivityType("Edit Activity Type"));
         activityTypes.add(editActivityType);
 
         String editedActiivityTypeName = "EditedActivityTypeName";
@@ -108,7 +108,7 @@ public class AddEditActivityTypeControllerTest extends ControllerTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testModelForDelete() throws Exception {
         String toBeDeletedActivityTypeName = "Delete Activity Type";
-        ActivityType toBeDeletedActivityType = setId(10, Fixtures.createActivityType(toBeDeletedActivityTypeName));
+        ActivityType toBeDeletedActivityType = setId(10, ServicedFixtures.createActivityType(toBeDeletedActivityTypeName));
         activityTypes.add(toBeDeletedActivityType);
         request.setParameter("action", "delete");
         request.setParameter("activityTypeName", toBeDeletedActivityTypeName);

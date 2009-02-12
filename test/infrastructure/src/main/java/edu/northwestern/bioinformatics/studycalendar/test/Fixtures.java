@@ -30,22 +30,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
-import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,27 +50,16 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Methods to ease the creation of domain objects for testing.  This class must have
+ * no PSC dependencies outside of the domain package.
+ *
+ * @see ServicedFixtures
  * @author Rhett Sutphin
  */
 public class Fixtures {
     private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
-    private static final DeltaService deltaService = new DeltaService();
-    private static final AmendmentService amendmentService = new AmendmentService();
     public static final ActivityType DEFAULT_ACTIVITY_TYPE = createActivityType("LAB_TEST");
     public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
-
-    static {
-        deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
-        deltaService.setTemplateService(new TestingTemplateService());
-        StaticNowFactory nowFactory = new StaticNowFactory();
-        nowFactory.setNowTimestamp(DateTools.createTimestamp(2000, Calendar.MARCH, 9));
-        deltaService.setNowFactory(nowFactory);
-
-        amendmentService.setDeltaService(deltaService);
-        amendmentService.setStudyService(new StudyService() {
-            @Override public void save(Study study) { /* No-op */ }
-        });
-    }
 
     public static <T extends DomainObject> T setId(Integer id, T target) {
         target.setId(id);
@@ -115,6 +98,44 @@ public class Fixtures {
     public static <T extends GridIdentifiable> T setGridId(String gridId, T target) {
         target.setGridId(gridId);
         return target;
+    }
+
+    /**
+     * Creates a template similar to the default one PSC builds when "new template" is selected,
+     * except that it has already been released.
+     */
+    public static Study createReleasedTemplate() {
+        Study study = createInDevelopmentTemplate();
+        study.setAmendment(study.getDevelopmentAmendment());
+        study.setDevelopmentAmendment(null);
+        for (Change change : study.getAmendment().getDeltas().get(0).getChanges()) {
+            study.getPlannedCalendar().addEpoch(
+                (Epoch) ((Add) change).getChild()
+            );
+        }
+        return study;
+    }
+
+    /**
+     * Creates a template similar to the default one PSC builds when "new template" is selected in the GUI.
+     */
+    public static Study createInDevelopmentTemplate(String ident) {
+        Study study = new Study();
+        study.setAssignedIdentifier(ident);
+        PlannedCalendar cal = new PlannedCalendar();
+        study.setPlannedCalendar(cal);
+        study.setDevelopmentAmendment(new Amendment());
+        study.getDevelopmentAmendment().addDelta(
+            Delta.createDeltaFor(cal,
+                Add.create(Epoch.create("Treatment", "A", "B", "C"), 0),
+                Add.create(Epoch.create("Follow up"), 1)
+            )
+        );
+        return study;
+    }
+
+    public static Study createInDevelopmentTemplate() {
+        return createInDevelopmentTemplate(null);
     }
 
     public static Period createPeriod(int startDay, int dayCount, int repetitions) {
@@ -211,46 +232,6 @@ public class Fixtures {
         study.setPlannedCalendar(new PlannedCalendar());
         study.getPlannedCalendar().addEpoch(Epoch.create(epochName, studySegmentNames));
         return study;
-    }
-
-    public static Study createBlankTemplate() {
-        return createApprovedTemplate(TemplateSkeletonCreator.BLANK);
-    }
-
-    public static Study createBasicTemplate() {
-        return createBasicTemplate(null);
-    }
-
-    public static Study createBasicTemplate(String name) {
-        Study study = createApprovedTemplate(TemplateSkeletonCreator.BASIC);
-        study.setAssignedIdentifier(name);
-        return study;
-    }
-
-    public static Study createInDevelopmentBasicTemplate(String name) {
-        return TemplateSkeletonCreator.BASIC.create(name);
-    }
-
-    private static Study createApprovedTemplate(TemplateSkeletonCreator skeletonCreator) {
-        log.debug("Creating concrete template from skeleton");
-        Study dev = skeletonCreator.create(null);
-        amendmentService.amend(dev);
-        return dev;
-    }
-
-    /**
-     * A fixture-compatible version of AmendmentService#amend
-     */
-    public static void amend(Study study) {
-        amendmentService.amend(study);
-    }
-
-    public static Study revise(Study study, Revision revision) {
-        return deltaService.revise(study, revision);
-    }
-
-    public static DeltaService getTestingDeltaService() {
-        return deltaService;
     }
 
     public static StudySite createStudySite(Study study, Site site) {
@@ -569,6 +550,5 @@ public class Fixtures {
     }
 
     // static class
-    private Fixtures() {
-    }
+    protected Fixtures() { }
 }

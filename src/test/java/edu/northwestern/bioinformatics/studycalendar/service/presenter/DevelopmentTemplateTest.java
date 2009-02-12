@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 

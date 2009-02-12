@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
@@ -54,7 +54,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         templateService = registerMockFor(TemplateService.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
-        study = setId(100, Fixtures.createBasicTemplate());
+        study = setId(100, ServicedFixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
         seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
@@ -81,7 +81,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
 
-        subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
+        subjectCoord = ServicedFixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord.getName(), "asdf");
 
          expect(userDao.getByName(subjectCoord.getName())).andReturn(subjectCoord).anyTimes();

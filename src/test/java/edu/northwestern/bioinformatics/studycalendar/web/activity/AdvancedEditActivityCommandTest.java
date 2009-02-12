@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
-import junit.framework.TestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createActivity;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createActivityProperty;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createSingleActivityProperty;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createActivity;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createActivityProperty;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createSingleActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;

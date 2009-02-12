@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.List;
@@ -28,9 +28,9 @@ public class BlackoutDatesCommandTest extends StudyCalendarTestCase {
         command = new BlackoutDatesCommand(siteDao, blackoutDateDao);
 
         site = new Site();
-        site.getBlackoutDates().add(Fixtures.setId(1, new SpecificDateBlackout()));
-        site.getBlackoutDates().add(Fixtures.setId(2, new WeekdayBlackout()));
-        site.getBlackoutDates().add(Fixtures.setId(3, new RelativeRecurringBlackout()));
+        site.getBlackoutDates().add(ServicedFixtures.setId(1, new SpecificDateBlackout()));
+        site.getBlackoutDates().add(ServicedFixtures.setId(2, new WeekdayBlackout()));
+        site.getBlackoutDates().add(ServicedFixtures.setId(3, new RelativeRecurringBlackout()));
         command.setSite(site);
     }
 

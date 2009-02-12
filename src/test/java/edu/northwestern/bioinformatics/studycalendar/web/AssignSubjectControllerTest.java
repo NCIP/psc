@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import static java.util.Arrays.asList;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
@@ -81,7 +81,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         tacomaSS = createStudySite(study, tacoma);
         olympiaSS = createStudySite(study, olympia);
 
-        user = Fixtures.createUser("jimbo", Role.SUBJECT_COORDINATOR);
+        user = ServicedFixtures.createUser("jimbo", Role.SUBJECT_COORDINATOR);
         user.getUserRole(Role.SUBJECT_COORDINATOR).setSites(new HashSet<Site>(asList(seattle, tacoma, olympia)));
         user.getUserRole(Role.SUBJECT_COORDINATOR).setStudySites(asList(seattleSS, tacomaSS, olympiaSS));
 
@@ -199,7 +199,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     public void testSitesMapInRefdata() throws Exception {
-        Amendment current = Fixtures.createAmendments(
+        Amendment current = ServicedFixtures.createAmendments(
             DateTools.createDate(2001, Calendar.JANUARY, 1),
             DateTools.createDate(2004, Calendar.APRIL, 4),
             DateTools.createDate(2007, Calendar.JULY, 7)

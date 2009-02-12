@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
@@ -195,7 +195,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expectFindActivityByCodeAndSource();
 
         expectRequestEntityFormAttribute("label", "jones;1 4");
-        plannedActivity.addPlannedActivityLabel(Fixtures.createPlannedActivityLabel("jones", 4));
+        plannedActivity.addPlannedActivityLabel(ServicedFixtures.createPlannedActivityLabel("jones", 4));
 
         expect(amendmentService.updateDevelopmentAmendmentAndSave(
             plannedActivity,
@@ -219,7 +219,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expectMinimumPutEntity();
         expectFindActivityByCodeAndSource();
 
-        PlannedActivityLabel existing = Fixtures.createPlannedActivityLabel("thirteen");
+        PlannedActivityLabel existing = ServicedFixtures.createPlannedActivityLabel("thirteen");
         plannedActivity.addPlannedActivityLabel(existing);
 
         expect(amendmentService.updateDevelopmentAmendmentAndSave(
@@ -245,8 +245,8 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
         expectFindActivityByCodeAndSource();
 
         expectRequestEntityFormAttribute("label", "city;1");
-        PlannedActivityLabel existing1 = Fixtures.createPlannedActivityLabel("city", 1);
-        PlannedActivityLabel existing3 = Fixtures.createPlannedActivityLabel("city", 3);
+        PlannedActivityLabel existing1 = ServicedFixtures.createPlannedActivityLabel("city", 1);
+        PlannedActivityLabel existing3 = ServicedFixtures.createPlannedActivityLabel("city", 3);
         plannedActivity.addPlannedActivityLabel(existing1);
         plannedActivity.addPlannedActivityLabel(existing3);
 

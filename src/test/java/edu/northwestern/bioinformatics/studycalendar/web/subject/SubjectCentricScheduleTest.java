@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;

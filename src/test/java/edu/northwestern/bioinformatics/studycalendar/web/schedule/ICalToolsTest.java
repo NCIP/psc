@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -48,14 +48,14 @@ public class ICalToolsTest extends junit.framework.TestCase {
     }
 
     public void testGenerateCalendarFileName() throws Exception {
-        Subject subject = Fixtures.createSubject("firstName", "lastName");
+        Subject subject = ServicedFixtures.createSubject("firstName", "lastName");
         StudySite studySite = new StudySite();
         Study study = new Study();
         study.setAssignedIdentifier("test-study");
         studySite.setStudy(study);
         ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
-        studySubjectAssignment = Fixtures.createAssignment(studySite, subject);
+        studySubjectAssignment = ServicedFixtures.createAssignment(studySite, subject);
         studySubjectAssignment.setGridId("grid-0");
 
         String calendarFileName = ICalTools.generateICSfileName(studySubjectAssignment);
@@ -86,7 +86,7 @@ public class ICalToolsTest extends junit.framework.TestCase {
     public void testGenerateCalendarForPatientHavingNonEmptySchedule() throws Exception {
 
         studySubjectAssignment = new StudySubjectAssignment();
-        Subject subject = Fixtures.createSubject("firstName", "lastName");
+        Subject subject = ServicedFixtures.createSubject("firstName", "lastName");
         studySubjectAssignment.setSubject(subject);
 
         ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
@@ -169,7 +169,7 @@ public class ICalToolsTest extends junit.framework.TestCase {
     }
 
     private Activity createActivity(final String name) {
-        ActivityType activityType = Fixtures.createActivityType("PROCEDURE");
+        ActivityType activityType = ServicedFixtures.createActivityType("PROCEDURE");
         Activity activity = new Activity();
         activity.setName("activity name:" + name);
         activity.setType(activityType);

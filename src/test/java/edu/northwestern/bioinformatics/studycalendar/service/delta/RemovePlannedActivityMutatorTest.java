@@ -5,9 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
@@ -32,9 +32,9 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        pe0 = Fixtures.createPlannedActivity("E0", 2);
-        pe1 = Fixtures.createPlannedActivity("E1", 8);
-        pe2 = Fixtures.createPlannedActivity("E2", 4);
+        pe0 = ServicedFixtures.createPlannedActivity("E0", 2);
+        pe1 = ServicedFixtures.createPlannedActivity("E1", 8);
+        pe2 = ServicedFixtures.createPlannedActivity("E2", 4);
 
         remove = Remove.create(pe1);
         delta = Delta.createDeltaFor(new Period(), remove);

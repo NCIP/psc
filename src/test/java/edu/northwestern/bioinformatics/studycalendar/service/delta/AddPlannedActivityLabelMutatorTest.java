@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
@@ -40,8 +40,8 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        plannedActivity = setId(21, Fixtures.createPlannedActivity("pa", 8));
-        paLabel = setId(51, Fixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
+        plannedActivity = setId(21, ServicedFixtures.createPlannedActivity("pa", 8));
+        paLabel = setId(51, ServicedFixtures.createPlannedActivityLabel(plannedActivity,"TestLabel",5));
         add = Add.create(paLabel);
         amendment = createAmendments("amendment1");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
@@ -60,7 +60,7 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyToOneScheduledActivityWithOneLabel() throws Exception {
-        ScheduledActivity expectedSA = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSA = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSA));
         expectedSA.addLabel("newLabel");
@@ -71,7 +71,7 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyToOneScheduledActivity() throws Exception {
-        ScheduledActivity expectedSA = Fixtures.createScheduledActivity("Activity1", 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSA = ServicedFixtures.createScheduledActivity("Activity1", 2007, Calendar.MARCH, 4);
         expectedSA.setRepetitionNumber(0);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSA));
@@ -84,8 +84,8 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
 
 
     public void testApplyToManyScheduledActivity() throws Exception {
-        ScheduledActivity sa1 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
-        ScheduledActivity sa2 = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
+        ScheduledActivity sa1 = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
+        ScheduledActivity sa2 = ServicedFixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 5);
         List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa1);
         scheduledActivities.add(sa2);

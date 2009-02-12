@@ -30,7 +30,7 @@ public class StudySiteTest extends StudyCalendarTestCase {
         a2004 = a2005.getPreviousAmendment();
         a2003 = a2004.getPreviousAmendment();
 
-        Study study = Fixtures.createBasicTemplate();
+        Study study = Fixtures.createReleasedTemplate();
         study.setName("Picnic");
         aOrig = study.getAmendment();
         a2003.setPreviousAmendment(study.getAmendment());

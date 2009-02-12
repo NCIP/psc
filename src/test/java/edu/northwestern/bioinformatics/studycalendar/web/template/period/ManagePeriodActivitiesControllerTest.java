@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -49,7 +49,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         parent.setDevelopmentAmendment(new Amendment("dev"));
         studySegment = parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         studySegment.addPeriod(period);
-        Fixtures.assignIds(parent);
+        ServicedFixtures.assignIds(parent);
 
         sources = asList(createNamedInstance("Source A", Source.class));
 
@@ -70,7 +70,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         controller.setTemplateService(templateService);
         controller.setActivityTypeDao(activityTypeDao);
 
-        a1 = Fixtures.createActivityType("LAB_TEST");
+        a1 = ServicedFixtures.createActivityType("LAB_TEST");
         activityTypes.add(a1);
 
         request.addParameter("period", "15");
@@ -122,7 +122,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         parent.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(p3);
 
         PeriodActivitiesGrid grid = (PeriodActivitiesGrid) doHandle().getModel().get("grid");
-        Collection<PeriodActivitiesGridRow> rows = grid.getRowGroups().get(Fixtures.DEFAULT_ACTIVITY_TYPE);
+        Collection<PeriodActivitiesGridRow> rows = grid.getRowGroups().get(ServicedFixtures.DEFAULT_ACTIVITY_TYPE);
         assertEquals("Should be one row for each activity", 4, rows.size());
         Iterator<PeriodActivitiesGridRow> it = rows.iterator();
         assertGridRow(a0, false, it.next());

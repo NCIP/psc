@@ -2,10 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.apache.commons.lang.StringUtils;
 import org.easymock.IArgumentMatcher;
@@ -57,7 +57,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setStudySubjectId(studySubjectId);
         command.setStudy(study);
         command.setSite(site);
-        command.setStudySegment(setId(17, Fixtures.createNamedInstance("Worcestershire", StudySegment.class)));
+        command.setStudySegment(setId(17, ServicedFixtures.createNamedInstance("Worcestershire", StudySegment.class)));
         command.setPopulations(populations);
         assignment.setSubject(subject);
         subjectDao.save(subjectEq(subject));

@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -41,7 +41,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         period = setId(PERIOD_ID, createPeriod("P1", 4, 17, 8));
         add = Add.create(period);
 
-        amendment = Fixtures.createAmendments("Oops");
+        amendment = ServicedFixtures.createAmendments("Oops");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
         amendment.addDelta(Delta.createDeltaFor(studySegment, add));
 

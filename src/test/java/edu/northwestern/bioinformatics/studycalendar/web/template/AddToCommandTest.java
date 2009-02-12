@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class AddToCommandTest extends EditCommandTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Fixtures.assignIds(study);
+        ServicedFixtures.assignIds(study);
         command.setDeltaService(getTestingDeltaService());
     }
 
@@ -53,7 +53,7 @@ public class AddToCommandTest extends EditCommandTestCase {
     public void testEpochModePerformEdit() throws Exception {
         Epoch epoch = Epoch.create("Holocene", "A", "B");
         study.getPlannedCalendar().addEpoch(epoch);
-        Fixtures.assignIds(study);
+        ServicedFixtures.assignIds(study);
         command.setEpoch(epoch);
         command.setStudy(study);
 
@@ -76,7 +76,7 @@ public class AddToCommandTest extends EditCommandTestCase {
         StudySegment newStudySegment = epoch.getStudySegments().remove(1);
         study.getDevelopmentAmendment().addDelta(
             Delta.createDeltaFor(epoch, Add.create(newStudySegment, 1)));
-        Fixtures.assignIds(study);
+        ServicedFixtures.assignIds(study);
 
         command.setEpoch(epoch);
         command.setStudy(study);

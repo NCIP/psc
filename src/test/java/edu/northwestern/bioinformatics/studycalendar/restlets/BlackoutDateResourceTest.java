@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
@@ -29,7 +29,7 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);
         request.getAttributes().put(UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.attributeName(), BLACKOUT_DATE_IDENTIFIER);
 
-        site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
+        site = ServicedFixtures.createNamedInstance(SITE_NAME, Site.class);
         site.setAssignedIdentifier(SITE_IDENTIFIER);
 
         monthDayHoliday = new SpecificDateBlackout();

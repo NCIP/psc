@@ -16,7 +16,7 @@ public class PlanTreeNodeTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        study = Fixtures.createBasicTemplate();
+        study = Fixtures.createReleasedTemplate();
     }
     
     public void testIsDetachedWhenNotDetached() throws Exception {
