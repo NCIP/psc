@@ -2,7 +2,7 @@
 
     <!-- PROPERTIES AND PATHS -->
     <property name="application-short-name" value="psc"/>
-    <property name="version" value="2.4.2"/>
+    <property name="version" value="2.4.3-SNAPSHOT"/>
     <property name="svn-executable" value="svn"/>
 
     <property name="src-dir.main"      value="src/main/java"/>
