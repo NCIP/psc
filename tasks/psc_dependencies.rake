@@ -21,7 +21,7 @@ end
 # Only list versions which appear in more than one artifact here
 CTMS_COMMONS_VERSION = "0.9-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
-SPRING_VERSION = "2.0.7"
+SPRING_VERSION = "2.5.6"
 
 CTMS_COMMONS = group(%w{base core laf lang web}.map { |a| "ctms-commons-#{a}"}, 
   :under => "gov.nih.nci.cabig.ctms", :version => CTMS_COMMONS_VERSION)
@@ -137,7 +137,7 @@ UNIT_TESTING = [
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",
-  "org.springframework:spring-mock:jar:#{SPRING_VERSION}"
+  "org.springframework:spring-test:jar:#{SPRING_VERSION}"
 ]
 
 DB = struct(
