@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
 
 import java.util.Arrays;

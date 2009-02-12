@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import org.easymock.EasyMock;
 
 /**

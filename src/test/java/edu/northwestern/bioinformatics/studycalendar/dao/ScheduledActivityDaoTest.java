@@ -6,7 +6,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 
 import java.util.Calendar;
 import java.util.Collection;

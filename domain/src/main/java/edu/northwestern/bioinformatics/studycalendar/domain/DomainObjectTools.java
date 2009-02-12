@@ -1,6 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -66,7 +66,7 @@ public class DomainObjectTools {
         }
     }
 
-    public static <T extends DomainObject> T loadFromExternalObjectId(String objectId, StudyCalendarDao<T> dao) {
+    public static <T extends DomainObject> T loadFromExternalObjectId(String objectId, DomainObjectDao<T> dao) {
         return dao.getById(parseExternalObjectId(objectId));
     }
 

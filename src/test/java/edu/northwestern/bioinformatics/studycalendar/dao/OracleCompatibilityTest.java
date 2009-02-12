@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain;
+package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.hibernate.annotations.GenericGenerator;

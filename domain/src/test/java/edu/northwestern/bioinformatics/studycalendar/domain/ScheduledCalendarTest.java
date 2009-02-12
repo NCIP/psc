@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import org.easymock.classextension.EasyMock;
 
 import java.util.Arrays;

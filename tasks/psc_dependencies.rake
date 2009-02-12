@@ -3,11 +3,11 @@
 ###### REPOS
 
 # NU m2 repo (for ctms-commons, caGrid, other non-repo dependencies)
-repositories.remote << "http://download.bioinformatics.northwestern.edu/maven2/"
+repositories.remote << "http://download.bioinformatics.northwestern.edu/download/maven2"
 # ical4j repo
-repositories.remote << "http://m2.modularity.net.au/releases/"
+repositories.remote << "http://m2.modularity.net.au/releases"
 # main m2 repo
-repositories.remote << "http://repo1.maven.org/maven2/"
+repositories.remote << "http://repo1.maven.org/maven2"
 
 ###### HELPERS
 
@@ -134,6 +134,7 @@ CONTAINER_PROVIDED = [
 
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
+  "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",

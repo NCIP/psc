@@ -1,21 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.easymock.classextension.EasyMock;
 
@@ -27,7 +13,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class DomainObjectToolsTest extends StudyCalendarTestCase {
+public class DomainObjectToolsTest extends DomainTestCase {
     private Comparator<TestObject> byIdComparator = new DomainObjectTools.ById<TestObject>();
 
     private TestObject o1, o2;
@@ -98,7 +84,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
 
     public void testLoadFromExternalObjectId() throws Exception {
         TestObject expected = new TestObject(66);
-        StudyCalendarDao<TestObject> dao = registerDaoMockFor(TestObject.MockableDao.class);
+        DomainObjectDao<TestObject> dao = registerMockFor(TestObject.MockableDao.class);
         EasyMock.expect(dao.getById(66)).andReturn(expected);
 
         replayMocks();

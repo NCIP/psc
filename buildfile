@@ -47,13 +47,13 @@ define "psc" do
   
   desc "The domain classes for PSC"
   define "domain" do
-    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
+    compile.with project('utility'), SLF4J, LOGBACK, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
     test.with(UNIT_TESTING).include("*Test")
     package(:jar)
   end
   
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
-    compile.with project('domain').compile, project('domain').compile.dependencies, project('domain').test
+    compile.with project('domain'), project('domain').compile.dependencies, project('domain').test, UNIT_TESTING
   end
 end

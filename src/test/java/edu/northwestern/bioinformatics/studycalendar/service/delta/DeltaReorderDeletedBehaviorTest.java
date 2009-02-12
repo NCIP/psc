@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.delta;
+package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import junit.framework.TestCase;
 
 import java.util.Date;

@@ -9,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.classextension.EasyMock.expect;
