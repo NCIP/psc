@@ -39,7 +39,7 @@ define "psc" do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
   
-  define "Pure utility code"
+  desc "Pure utility code"
   define "utility" do
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
@@ -56,5 +56,6 @@ define "psc" do
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with project('domain'), project('domain').compile.dependencies, project('domain').test, UNIT_TESTING
+    package(:jar)
   end
 end
