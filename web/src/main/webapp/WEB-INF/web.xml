@@ -10,7 +10,20 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath:applicationContext*.xml
+            <!-- core -->
+            classpath:applicationContext-acegi-security.xml
+            classpath:applicationContext-api.xml
+            classpath:applicationContext-dao.xml
+            classpath:applicationContext-db.xml
+            classpath:applicationContext-mail.xml
+            classpath:applicationContext-representations.xml
+            classpath:applicationContext-security.xml
+            classpath:applicationContext-service.xml
+            classpath:applicationContext-setup.xml
+            classpath:applicationContext-spring.xml
+            <!-- web -->
+            classpath:applicationContext-command.xml
+            classpath:applicationContext-webflow.xml
         </param-value>
     </context-param>
 

@@ -40,15 +40,21 @@ CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_
 
 XML = [
   eponym("dom4j", "1.6.1"),
-  eponym("jdom", "1.0b8")
+  eponym("jdom", "1.0b8"),
+  # Saxon 9 isn't in the maven repo for some reason
+  artifact("net.sf.saxon:saxon:jar:9").from(static_lib('saxon9.jar')),
+  artifact("net.sf.saxon:saxon-dom:jar:9").from(static_lib('saxon9-dom.jar'))
 ]
 
 CSV = [
   "net.sourceforge.javacsv:javacsv:jar:2.0"
 ]
 
-LOGBACK = group(%w{log4j-bridge logback-core logback-classic},
-  :under => "ch.qos.logback", :version => "0.9.7")
+LOGBACK = [
+  group(%w{log4j-bridge logback-core logback-classic},
+    :under => "ch.qos.logback", :version => "0.9.7"),
+  eponym("janino", "2.5.10")
+]
 SLF4J = group('slf4j-api', 'jcl-over-slf4j', 'jul-to-slf4j',
   :under => "org.slf4j", :version => "1.5.2")
 
@@ -160,6 +166,10 @@ WEB = [
   "net.fortuna:ical4j:jar:1.0-beta4",
   artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
   eponym('displaytag', '1.1.1'),
+  "displaytag:displaytag-export-poi:jar:1.1.1",
+  artifact("org.johaml:johaml-bridge:jar:0.0").from(static_lib('johaml-bridge-0.0.jar')),
+  artifact("org.johaml:patched-jruby:jar:1.1.3").from(static_lib('patched-jruby-complete-1.1.3.jar')),
+  eponym("bsf", "2.4.0")
 ]
 
 RESTLET = struct({

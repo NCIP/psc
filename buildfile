@@ -86,6 +86,11 @@ define "psc" do
     
     resources.from(_("src/main/java")).exclude("**/*.java").
       filter.using(:ant, filter_tokens)
+    resources.enhance do
+      filter.from(_("src/main/db/migrate")).
+        into(resources.target.to_s + "/db/migrate").run
+    end
+
     compile.with project('domain'), project('domain').compile.dependencies, 
       BERING, DB, XML, RESTLET.framework, FREEMARKER, CSV, CONTAINER_PROVIDED,
       QUARTZ, 
@@ -188,7 +193,9 @@ define "psc" do
       project('test-infrastructure').compile.dependencies,
       project('test-infrastructure').test.compile.dependencies
 
-    package(:war).exclude(CONTAINER_PROVIDED)
+    package(:war, :file => _('target/psc.war')).tap do |war|
+      war.libs -= artifacts(CONTAINER_PROVIDED)
+    end
     package(:sources)
   end
   
@@ -236,3 +243,7 @@ task :migrate => 'psc:core:migrate'
 
 desc "Manually create the HSQLDB instance for unit testing"
 task :create_hsqldb => 'psc:core:create_hsqldb'
+
+task :start do
+  
+end
