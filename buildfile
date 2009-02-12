@@ -1,5 +1,6 @@
 require "buildr"
 require "buildr/jetty"
+require "buildr/emma" if emma?
 
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
@@ -7,9 +8,9 @@ require "buildr/jetty"
 VERSION_NUMBER="2.5-SNAPSHOT"
 APPLICATION_SHORT_NAME = 'psc'
 
-
 ###### Jetty config
 
+# enable JSP support in Jetty
 Java.classpath << [
   "org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
   "org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
@@ -23,31 +24,10 @@ define "psc" do
   project.version = VERSION_NUMBER
   project.group = "edu.northwestern.bioinformatics.studycalendar"
 
-  # resources.from(_("src/main/java")).exclude("**/*.java")
   compile.options.target = "1.5"
   compile.options.source = "1.5"
   compile.options.other = %w(-encoding UTF-8)
-  # compile.with CTMS_COMMONS, CORE_COMMONS, SECURITY, XML, SPRING, HIBERNATE, 
-  #   LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, BERING, WEB, DB, CONTAINER_PROVIDED
   
-  # test.resources.from(_("src/test/java")).exclude("**/*.java")
-  # test.with(UNIT_TESTING, 'psc:test-infrastructure').include("*Test")
-
-  # package(:war).exclude(CONTAINER_PROVIDED)
-  # package(:sources)
-  
-  # resources task(:init)
-  
-  # db = ENV['DB'] || 'studycalendar'
-  # dbprops = { } # Filled in by :init
-  
-  # test.resources task(:test_csm_config)
-  
-  # task :test_csm_config => :init do
-  #   filter(_("conf/upt")).include('*.xml').into(_("target/test-classes")).
-  #     using(:ant, {'tomcat.security.dir' => _("target/test-classes")}.merge(dbprops)).run
-  # end
-
   task :public_demo_deploy do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
@@ -122,6 +102,10 @@ define "psc" do
         end
       end
     end
+
+    if emma?
+      emma.exclude "edu.yale.*"
+    end
     
     package(:jar)
     package(:sources)
@@ -190,7 +174,7 @@ define "psc" do
         f.puts "hsqldb.files_readonly=true"
       end
       
-      puts "Read-only HSQLB instance named #{db_name} generated in #{hsqldb[:dir]}"
+      info "Read-only HSQLB instance named #{db_name} generated in #{hsqldb[:dir]}"
     end
   end # core
   
@@ -300,9 +284,9 @@ task :server do
     project('psc:web')._('src/main/webapp').to_s
   
   msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
-  puts "=" * msg.size
-  puts msg
-  puts "=" * msg.size
+  info "=" * msg.size
+  info msg
+  info "=" * msg.size
   
   # Keep the script running until interrupted
   while(true)

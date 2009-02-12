@@ -4,6 +4,10 @@ def db_name
   ENV['DB'] || 'hsqldb'
 end
 
+def emma?
+  ENV['EMMA']
+end
+
 def hsqldb
   hsqldb_dir = ENV['HSQLDB_DIR'] || _('hsqldb')
   {

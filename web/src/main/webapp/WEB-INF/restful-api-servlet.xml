@@ -181,7 +181,8 @@
     <bean id="resourceFreemarkerConfiguration"
           class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
         <property name="templateLoaderPath"
-                  value="classpath:edu/northwestern/bioinformatics/studycalendar"/>
+                  value="classpath:edu/northwestern/bioinformatics/studycalendar/restlets"/>
+        <property name="preferFileSystemAccess" value="false"/>
         <property name="freemarkerSettings">
             <props>
                 <prop key="number_format">0</prop>

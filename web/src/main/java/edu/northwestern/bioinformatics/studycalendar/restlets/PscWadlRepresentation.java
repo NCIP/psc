@@ -13,7 +13,7 @@ import java.util.Collections;
  * @author Rhett Sutphin
  */
 public class PscWadlRepresentation extends TemplateRepresentation {
-    public static final String PSC_WADL_PATH = "restlets/psc.wadl";
+    public static final String PSC_WADL_PATH = "psc.wadl";
 
     protected PscWadlRepresentation(Configuration config, Object dataModel) {
         super(PSC_WADL_PATH, config, dataModel, MediaType.APPLICATION_WADL_XML);
