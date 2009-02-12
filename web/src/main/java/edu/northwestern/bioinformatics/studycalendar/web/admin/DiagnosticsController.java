@@ -1,30 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.beans.factory.annotation.Required;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.restlet.util.Template;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.mail.SimpleMailMessage;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_EXCEPTIONS_TO;
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_REPLY_TO;
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarMailMessage;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
-
 import java.util.List;
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class DiagnosticsController extends PscSimpleFormController {

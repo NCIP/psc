@@ -62,7 +62,8 @@ JAKARTA_COMMONS = struct({
   :lang       => eponym("commons-lang", "2.1"),
   :pool       => eponym("commons-pool", "1.2"),
   :fileupload => eponym("commons-fileupload", "1.2"),
-  :collections_generic => "net.sourceforge.collections:collections-generic:jar:4.01"
+  :collections_generic => "net.sourceforge.collections:collections-generic:jar:4.01",
+  :validator  => eponym("commons-validator", "1.1.4")
 })
 
 SPRING = [
@@ -102,6 +103,7 @@ SECURITY = [
   artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar'))
 ]
 
+# This is out of date, probably
 CAGRID = [
   group(%w{
     authentication-service-client
@@ -130,7 +132,9 @@ CAGRID = [
   "org.globus:cog-axis:jar:4.0.3-globus",
   "org.globus:cog-jglobus:jar:1.2",
   "org.globus:cog-tomcat:jar:4.0.3-globus",
-  "org.globus:cog-url:jar:1.2"
+  "org.globus:cog-url:jar:1.2",
+  "net.sourceforge.addressing:addressing:jar:1.1",
+  "org.apache.axis:axis:jar:1.4"
 ]
 
 BERING = [
@@ -153,7 +157,9 @@ WEB = [
   "poi:poi-2.5.1-final:jar:20040804",
   "taglibs:standard:jar:1.1.2",
   eponym("jstl", "1.1.2"),
-  "net.fortuna:ical4j:jar:1.0-beta4"
+  "net.fortuna:ical4j:jar:1.0-beta4",
+  artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
+  eponym('displaytag', '1.1.1'),
 ]
 
 RESTLET = struct({

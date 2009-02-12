@@ -160,7 +160,7 @@ define "psc" do
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
     compile.with LOGBACK, project('core'), project('core').compile.dependencies, 
-      SPRING_WEB, RESTLET, WEB
+      SPRING_WEB, RESTLET, WEB, CAGRID
     test.with project('test-infrastructure'), 
       project('test-infrastructure').compile.dependencies
     package(:war).exclude(CONTAINER_PROVIDED)
@@ -194,7 +194,7 @@ def ant_classpath(proj)
   [proj.compile.dependencies + LOGBACK].flatten.collect { |a| a.to_s }.join(':')
 end
 
-# Discovers and loads the datasource properties file into the target any project
+# Discovers and loads the datasource properties file into the target ant project
 def datasource_properties(ant)
   ant.taskdef :name => 'datasource_properties', 
     :classname => "gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask",
