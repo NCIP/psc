@@ -24,5 +24,4 @@ def datasource_properties(ant)
     :classpath => ant_classpath(project('psc:core'))
   ant.datasource_properties :applicationDirectoryName => APPLICATION_SHORT_NAME,
     :databaseConfigurationName => db_name
-  ant.echo :message => "Migrating ${datasource.url}"
 end

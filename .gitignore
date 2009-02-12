@@ -10,3 +10,4 @@ core/hsqldb
 reports
 web/src/main/webapp/WEB-INF/classes
 web/src/main/webapp/WEB-INF/lib
+tmp
