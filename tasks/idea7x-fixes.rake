@@ -1,3 +1,4 @@
+# Monkeypatch for BUILDR-241: https://issues.apache.org/jira/browse/BUILDR-241
 module Buildr::Idea7x
 
   IPR_TEMPLATE_ABSOLUTE = File.join(
