@@ -1,5 +1,7 @@
 target
-psc.i*
+*.ipr
+*.iml
+*.iws
 src/main/webapp/WEB-INF/classes
 api-report
 *.log
