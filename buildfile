@@ -159,11 +159,16 @@ define "psc" do
   
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
-    compile.with LOGBACK, project('core'), project('core').compile.dependencies, 
+    resources.from(_("src/main/java")).exclude("**/*.java")
+    compile.with LOGBACK, 
+      project('core'), project('core').compile.dependencies, 
       SPRING_WEB, RESTLET, WEB, CAGRID
+
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
     test.with project('test-infrastructure'), 
       project('test-infrastructure').compile.dependencies,
       project('test-infrastructure').test.compile.dependencies
+
     package(:war).exclude(CONTAINER_PROVIDED)
     package(:sources)
   end
