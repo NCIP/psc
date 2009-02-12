@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -22,7 +23,16 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Represents a study, its planned template, and all amendments.
@@ -253,21 +263,26 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         return Collections.unmodifiableList(amendments);
     }
 
+    // TODO: this method must just return Study
     public Map<Study,Set<Population>> copy(String newStudyName) {
         Map<Study,Set<Population>> studyPopulation = new TreeMap<Study,Set<Population>>();
-        Study copiedStudy = TemplateSkeletonCreatorImpl.createBase(newStudyName);
+        Study copiedStudy = new Study();
+        copiedStudy.setAssignedIdentifier(newStudyName);
         copiedStudy.setLongTitle(this.getLongTitle());
+        copiedStudy.setPlannedCalendar(new PlannedCalendar());
+        Amendment devAmendment = new Amendment();
+        devAmendment.addDelta(Delta.createDeltaFor(copiedStudy.getPlannedCalendar()));
+        copiedStudy.setDevelopmentAmendment(devAmendment);
 
         copiedStudy.setStudySites(new ArrayList<StudySite>());
         Set<Population> populationSet = this.getPopulations();
         if (plannedCalendar != null) {
-            List<Epoch> epoches = this.getPlannedCalendar().getChildren();
-            for (int i = 0; i < epoches.size(); i++) {
-                Epoch epoch = epoches.get(i);
+            List<Epoch> epochs = this.getPlannedCalendar().getChildren();
+            for (int i = 0; i < epochs.size(); i++) {
+                Epoch epoch = epochs.get(i);
                 Epoch copiedEpoch = (Epoch) epoch.copy();
                 copiedEpoch.setPlannedCalendar(null);
-                TemplateSkeletonCreatorImpl.addEpoch(copiedStudy, i, copiedEpoch);
-
+                devAmendment.getDeltas().get(0).addChange(Add.create(copiedEpoch, i));
             }
         }
         studyPopulation.put(copiedStudy,populationSet);

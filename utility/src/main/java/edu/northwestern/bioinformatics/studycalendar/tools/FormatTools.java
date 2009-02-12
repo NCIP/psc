@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

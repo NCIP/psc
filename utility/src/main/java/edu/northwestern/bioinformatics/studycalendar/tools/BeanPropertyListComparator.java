@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;

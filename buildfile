@@ -1,7 +1,7 @@
 require "buildr"
 
 ###### buildr script for PSC
-# In order to use this, you'll need buildr.  See http://buildr.rubyforge.org/ .
+# In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
 VERSION_NUMBER="2.5-SNAPSHOT"
 
@@ -10,7 +10,7 @@ VERSION_NUMBER="2.5-SNAPSHOT"
 desc "The main Study Calendar application, including core data access, business logic, and the web interface"
 define "psc" do
   project.version = VERSION_NUMBER
-  project.group = "gov.nih.nci.cabig.psc"
+  project.group = "edu.northwestern.bioinformatics.studycalendar"
 
   resources.from(_("src/main/java")).exclude("**/*.java")
   compile.options.target = "1.5"
@@ -39,7 +39,21 @@ define "psc" do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
   
+  define "Pure utility code"
+  define "utility" do
+    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections
+    package(:jar)
+  end
+  
+  desc "The domain classes for PSC"
+  define "domain" do
+    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
+    test.with(UNIT_TESTING).include("*Test")
+    package(:jar)
+  end
+  
+  desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
-    
+    compile.with project('domain').compile, project('domain').compile.dependencies, project('domain').test
   end
 end

@@ -1,9 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar;
 
-import org.springframework.validation.Errors;
-
-import static java.lang.String.format;
-
 /**
  * @author Rhett Sutphin
  */

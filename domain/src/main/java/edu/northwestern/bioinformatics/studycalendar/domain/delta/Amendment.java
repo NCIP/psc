@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
-import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
+import static edu.northwestern.bioinformatics.studycalendar.tools.FormatTools.formatDate;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.apache.commons.lang.StringUtils;

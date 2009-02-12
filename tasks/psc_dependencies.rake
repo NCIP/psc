@@ -35,20 +35,20 @@ XML = [
 
 LOGBACK = group(%w{log4j-bridge logback-core logback-classic},
   :under => "ch.qos.logback", :version => "0.9.7")
-SLF4J = group('slf4j-api', 'jcl104-over-slf4j', 'jul-to-slf4j',
+SLF4J = group('slf4j-api', 'jcl-over-slf4j', 'jul-to-slf4j',
   :under => "org.slf4j", :version => "1.5.2")
 
-JAKARTA_COMMONS = [
-  eponym("commons-beanutils", "1.7.0"),
-  eponym("commons-collections", "3.2"),
-  eponym("commons-dbcp", "1.2.1"),
-  eponym("commons-digester", "1.7"),
-  eponym("commons-discovery", "0.4"),
-  "org.apache.commons:commons-io:jar:1.3.2",
-  eponym("commons-lang", "2.1"),
-  eponym("commons-pool", "1.2"),
-  eponym("commons-fileupload", "1.2")
-]
+JAKARTA_COMMONS = struct({
+  :beanutils  => eponym("commons-beanutils", "1.7.0"),
+  :collections => eponym("commons-collections", "3.2"),
+  :dbcp       => eponym("commons-dbcp", "1.2.1"),
+  :digester   => eponym("commons-digester", "1.7"),
+  :discovery  => eponym("commons-discovery", "0.4"),
+  :io         => "org.apache.commons:commons-io:jar:1.3.2",
+  :lang       => eponym("commons-lang", "2.1"),
+  :pool       => eponym("commons-pool", "1.2"),
+  :fileupload => eponym("commons-fileupload", "1.2")
+})
 
 SPRING = [
   "org.springframework:spring:jar:#{SPRING_VERSION}",
