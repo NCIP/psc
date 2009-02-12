@@ -1,7 +1,16 @@
 ###### HELPERS
 
 def db_name
-  ENV['DB'] || 'datasource'
+  ENV['DB'] || 'hsqldb'
+end
+
+def hsqldb
+  hsqldb_dir = ENV['HSQLDB_DIR'] || _('hsqldb')
+  {
+    :dir => hsqldb_dir,
+    :url => "jdbc:hsqldb:file:#{hsqldb_dir}/#{db_name}",
+    :files => %w(script properties).collect { |ext| File.join(hsqldb_dir, "#{db_name}.#{ext}") }
+  }
 end
 
 def ant_classpath(proj)
