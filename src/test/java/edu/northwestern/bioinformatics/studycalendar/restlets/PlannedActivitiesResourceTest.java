@@ -1,12 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -17,14 +15,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Status;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -38,12 +37,12 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     private static final String ACTIVITY_CODE = "F";
     private static final Activity ACTIVITY
-        = Fixtures.createActivity("Fool", ACTIVITY_CODE,
-            Fixtures.DEFAULT_ACTIVITY_SOURCE, Fixtures.DEFAULT_ACTIVITY_TYPE);
+        = ServicedFixtures.createActivity("Fool", ACTIVITY_CODE,
+            ServicedFixtures.DEFAULT_ACTIVITY_SOURCE, ServicedFixtures.DEFAULT_ACTIVITY_TYPE);
     private static final String ACTIVITY_SOURCE_NAME
-        = Fixtures.DEFAULT_ACTIVITY_SOURCE.getName();
+        = ServicedFixtures.DEFAULT_ACTIVITY_SOURCE.getName();
     private static final Integer DAY = 7;
-    private static final Population POPULATION = Fixtures.createPopulation("T", "Tea");
+    private static final Population POPULATION = ServicedFixtures.createPopulation("T", "Tea");
     private Set<Population> populations = new HashSet<Population>();
     private static final Integer WEIGHT = 8;
 

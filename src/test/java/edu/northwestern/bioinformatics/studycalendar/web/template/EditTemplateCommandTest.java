@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -29,9 +29,9 @@ public class EditTemplateCommandTest extends StudyCalendarTestCase {
             EditTemplateCommand.class.getMethod("getRelativeViewName")
         );
         command.setStudyService(studyService);
-        command.setDeltaService(Fixtures.getTestingDeltaService());
+        command.setDeltaService(ServicedFixtures.getTestingDeltaService());
 
-        study = Fixtures.createSingleEpochStudy("Study 1234", "E1", "A", "B");
+        study = ServicedFixtures.createSingleEpochStudy("Study 1234", "E1", "A", "B");
         study.getPlannedCalendar().addEpoch(Epoch.create("E2"));
         study.setDevelopmentAmendment(new Amendment());
     }

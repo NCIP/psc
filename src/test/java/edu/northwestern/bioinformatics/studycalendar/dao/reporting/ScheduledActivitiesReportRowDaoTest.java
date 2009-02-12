@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Calendar;

@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityCommand;
@@ -66,7 +66,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
     }
 
     private void expectSuccessfulSubmit() {
-        ActivityType expected = Fixtures.createActivityType("LAB_TEST");
+        ActivityType expected = ServicedFixtures.createActivityType("LAB_TEST");
         expect(activityTypeDao.getById(4)).andReturn(expected).anyTimes();
         request.setMethod("POST");
         request.addParameter("activity.type", "4");
@@ -86,7 +86,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
     }
 
     public void testBindActivityType() throws Exception {
-        ActivityType expected = Fixtures.createActivityType("LAB_TEST");
+        ActivityType expected = ServicedFixtures.createActivityType("LAB_TEST");
         expect(activityTypeDao.getById(1)).andReturn(expected).anyTimes();
         expect(sourceDao.getByName(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME)).andReturn(source);
         activityDao.save((Activity) notNull());

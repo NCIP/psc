@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 

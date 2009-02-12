@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoord
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
@@ -13,7 +13,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -173,11 +172,11 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int year = c.get(Calendar.YEAR);
 
         e1 =  createScheduledActivity("C", year, month, day);
-        e1.setActivity(Fixtures.createActivity("Activity1"));
+        e1.setActivity(ServicedFixtures.createActivity("Activity1"));
         e2 =  createScheduledActivity("O", year, month, day+1);
-        e2.setActivity(Fixtures.createActivity("Activity2"));
+        e2.setActivity(ServicedFixtures.createActivity("Activity2"));
         e3 =  createScheduledActivity("S", year, month, day+2);
-        e3.getActivity().setType(Fixtures.createActivityType("INTERVENTION"));
+        e3.getActivity().setType(ServicedFixtures.createActivityType("INTERVENTION"));
 
         addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
 
@@ -189,9 +188,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         studySubjectAssignment.add(assignment);
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("DISEASE_MEASURE"), true);
-        activities.put(Fixtures.createActivityType("LAB_TEST"), false);
-        activities.put(Fixtures.createActivityType("INTERVENTION"), true);
+        activities.put(ServicedFixtures.createActivityType("DISEASE_MEASURE"), true);
+        activities.put(ServicedFixtures.createActivityType("LAB_TEST"), false);
+        activities.put(ServicedFixtures.createActivityType("INTERVENTION"), true);
 
 
         Collection<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
@@ -253,7 +252,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledActivity e1, e2, e3, e5, e6, e7;
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("LAB_TEST"), true);
+        activities.put(ServicedFixtures.createActivityType("LAB_TEST"), true);
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addStudySegment(new ScheduledStudySegment());
@@ -388,10 +387,10 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledActivity e1, e2, e3, e5, e6, e7;
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("DISEASE_MEASURE"), true);
-        activities.put(Fixtures.createActivityType("LAB_TEST"), false);
-        activities.put(Fixtures.createActivityType("INTERVENTION"), true);
-        activities.put(Fixtures.createActivityType("PROCEDURE"), true);
+        activities.put(ServicedFixtures.createActivityType("DISEASE_MEASURE"), true);
+        activities.put(ServicedFixtures.createActivityType("LAB_TEST"), false);
+        activities.put(ServicedFixtures.createActivityType("INTERVENTION"), true);
+        activities.put(ServicedFixtures.createActivityType("PROCEDURE"), true);
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addStudySegment(new ScheduledStudySegment());
@@ -406,9 +405,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int year = c.get(Calendar.YEAR);
 
         e1 =  createScheduledActivity("C", year, month, day);
-        e1.getActivity().setType(Fixtures.createActivityType("PROCEDURE"));
+        e1.getActivity().setType(ServicedFixtures.createActivityType("PROCEDURE"));
         e2 =  createScheduledActivity("O", year, month, day+1);
-        e2.getActivity().setType(Fixtures.createActivityType("INTERVENTION"));
+        e2.getActivity().setType(ServicedFixtures.createActivityType("INTERVENTION"));
         e3 =  createScheduledActivity("S", year, month, day+2);
 
         addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
@@ -416,7 +415,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         e5 = createScheduledActivity("C", year, month, day +1);
         e6 = createScheduledActivity("O", year, month, day +2);
-        e6.getActivity().setType(Fixtures.createActivityType("INTERVENTION"));
+        e6.getActivity().setType(ServicedFixtures.createActivityType("INTERVENTION"));
         e7 = createScheduledActivity("S", year, month, day +3);
 
 

@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -33,7 +33,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         study.setDevelopmentAmendment(rev);
         treatment = study.getPlannedCalendar().getEpochs().get(0);
         studySegmentB = treatment.getStudySegments().get(1);
-        Fixtures.assignIds(study);
+        ServicedFixtures.assignIds(study);
 
         mockDaoFinder = new DynamicMockDaoFinder();
     }
@@ -53,8 +53,8 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     }
 
     public void testChangesOnlyForTargetNodeAndChildrenIfProvided() throws Exception {
-        Period p1 = setId(1, Fixtures.createPeriod("P1", 3, 6, 1));
-        Period p2 = setId(2, Fixtures.createPeriod("P2", 1, 17, 42));
+        Period p1 = setId(1, ServicedFixtures.createPeriod("P1", 3, 6, 1));
+        Period p2 = setId(2, ServicedFixtures.createPeriod("P2", 1, 17, 42));
         PlannedActivity pa1 = setId(3, createPlannedActivity("PA1", 5));
         PlannedActivity pa2 = setId(4, createPlannedActivity("PA2", 7));
         studySegmentB.addPeriod(p1);
@@ -103,7 +103,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     }
 
     public void testNodeNameForPlannedActivityWithActivity() throws Exception {
-        PlannedActivity pe = Fixtures.createPlannedActivity("CBC", 4);
+        PlannedActivity pe = ServicedFixtures.createPlannedActivity("CBC", 4);
         assertEquals("a planned CBC", RevisionChanges.getNodeName(pe));
     }
     

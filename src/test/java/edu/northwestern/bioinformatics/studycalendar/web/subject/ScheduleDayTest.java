@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
@@ -21,7 +21,7 @@ public class ScheduleDayTest extends StudyCalendarTestCase {
     }
 
     public void testNotEmptyWhenHasAnActivity() throws Exception {
-        day.getActivities().add(Fixtures.createScheduledActivity("A", 2008, Calendar.JANUARY, 4));
+        day.getActivities().add(ServicedFixtures.createScheduledActivity("A", 2008, Calendar.JANUARY, 4));
         assertFalse(day.isEmpty());
     }
 

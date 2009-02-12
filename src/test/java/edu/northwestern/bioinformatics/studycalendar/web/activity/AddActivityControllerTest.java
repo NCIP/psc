@@ -6,9 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityCommand;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,7 +52,7 @@ public class AddActivityControllerTest extends ControllerTestCase {
         controller.setPlannedActivityDao(plannedActivityDao);
         controller.setActivityTypeDao(activityTypeDao);
         command = new NewActivityCommand(activityDao);
-        activityType = Fixtures.createActivityType("DISEASE_MEASURE");
+        activityType = ServicedFixtures.createActivityType("DISEASE_MEASURE");
         command.setActivityType(activityType);
 
         source = setId(11, createNamedInstance("Test Source", Source.class));
@@ -97,8 +97,8 @@ public class AddActivityControllerTest extends ControllerTestCase {
     }
 
     public void testCreatingNewActivity() throws Exception {
-        ActivityType activityType1 = Fixtures.createActivityType("INTERVENTION");
-        Activity a1 = Fixtures.createActivity("Activity1", "Code1", setId(12, createNamedInstance("Test Source 1", Source.class)), activityType1);
+        ActivityType activityType1 = ServicedFixtures.createActivityType("INTERVENTION");
+        Activity a1 = ServicedFixtures.createActivity("Activity1", "Code1", setId(12, createNamedInstance("Test Source 1", Source.class)), activityType1);
         command.setActivityCode(a1.getCode());
         command.setActivityName(a1.getName());
         command.setActivityType(a1.getType());

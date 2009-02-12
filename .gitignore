@@ -1,0 +1,11 @@
+target
+*.ipr
+*.iml
+*.iws
+src/main/webapp/WEB-INF/classes
+api-report
+*.log
+tools/tomcat/context.xml
+tools/tomcat/tomcat.properties
+db/hsqldb
+*/reports

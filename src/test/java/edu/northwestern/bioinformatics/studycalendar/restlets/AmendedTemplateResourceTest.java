@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createBasicTemplate;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;

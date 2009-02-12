@@ -10,9 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createAmendments;
 import java.util.*;
 
 import static org.easymock.EasyMock.expect;
@@ -56,11 +56,11 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
 
         Set<Population> pops = new HashSet<Population>();
-        originalPopulation = Fixtures.createPopulation("Abbr", "name");
+        originalPopulation = ServicedFixtures.createPopulation("Abbr", "name");
         originalPopulation.setId(10);
         pops.add(originalPopulation);
 
-        study = setId(100, Fixtures.createBasicTemplate());
+        study = setId(100, ServicedFixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
         a2 = setId(2, createAmendments("A0", "A1", "A2"));
         a1 = setId(1, a2.getPreviousAmendment());

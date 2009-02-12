@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createNamedInstance;
 import static org.easymock.EasyMock.expect;
 
 

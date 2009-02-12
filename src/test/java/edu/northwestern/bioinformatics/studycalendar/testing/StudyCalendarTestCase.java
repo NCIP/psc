@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.test.StudyCalendarTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
@@ -15,7 +14,6 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,15 +39,6 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         ApplicationSecurityManager.removeUserSession();
-    }
-    public static <T extends Comparable<T>> void assertOrder(T first, T second) {
-        assertNegative(first.compareTo(second));
-        assertPositive(second.compareTo(first));
-    }
-
-    public static <T> void assertOrder(Comparator<T> comparator, T first, T second) {
-        assertNegative(comparator.compare(first, second));
-        assertPositive(comparator.compare(second, first));
     }
 
     ////// MOCK REGISTRATION AND HANDLING
@@ -97,11 +86,6 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected static <T> T matchByProperties(T template) {
         EasyMock.reportMatcher(new PropertyMatcher<T>(template));
         return null;
-    }
-
-    protected static void assertDayRange(Integer expectedStart, Integer expectedEnd, DayRange actual) {
-        assertEquals("Wrong start day", expectedStart, actual.getStartDay());
-        assertEquals("Wrong end day", expectedEnd, actual.getEndDay());
     }
 
     /**

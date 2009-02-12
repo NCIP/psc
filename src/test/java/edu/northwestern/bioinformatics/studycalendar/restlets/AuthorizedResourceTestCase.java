@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.restlet.data.Method;
 import org.restlet.resource.Resource;
@@ -23,7 +23,7 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = Fixtures.createUser("josephine");
+        user = ServicedFixtures.createUser("josephine");
         PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(user, "dc", new Role[] { Role.SUBJECT_COORDINATOR }));
         userService = registerMockFor(UserService.class);
     }

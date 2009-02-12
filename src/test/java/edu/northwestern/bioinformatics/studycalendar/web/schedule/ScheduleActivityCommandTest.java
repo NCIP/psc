@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -35,7 +35,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         scheduledCalendarDao = registerMockFor(ScheduledCalendarDao.class);
         command = new ScheduleActivityCommand(scheduledCalendarDao);
 
-        event = Fixtures.createScheduledActivity("ABC", 2003, Calendar.MARCH, 13);
+        event = ServicedFixtures.createScheduledActivity("ABC", 2003, Calendar.MARCH, 13);
         event.setScheduledStudySegment(new ScheduledStudySegment());
         event.getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
 
@@ -100,7 +100,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
 
 
     public void testEventSpecificModesForConditionalEvent() throws Exception {
-        ScheduledActivity conditionalEvent = Fixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
+        ScheduledActivity conditionalEvent = ServicedFixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
         conditionalEvent.changeState(new Scheduled("Schedule", DateUtils.createDate(2003, Calendar.MARCH, 13)));
         command.setEvent(conditionalEvent);
         command.setNewMode(ScheduledActivityMode.SCHEDULED);

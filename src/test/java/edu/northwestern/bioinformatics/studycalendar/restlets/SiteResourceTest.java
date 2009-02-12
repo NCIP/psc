@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
@@ -26,7 +26,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
         siteService = registerMockFor(SiteService.class);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);
 
-        site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
+        site = ServicedFixtures.createNamedInstance(SITE_NAME, Site.class);
         site.setAssignedIdentifier(SITE_IDENTIFIER);
     }
 

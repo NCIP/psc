@@ -5,11 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         userName = "USER NAME";
-        user = Fixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
+        user = ServicedFixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
         subjectDao = registerDaoMockFor(SubjectDao.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
@@ -60,7 +60,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
         paService = new SubjectCoordinatorDashboardService();
 
-        study = setId(100, Fixtures.createBasicTemplate());
+        study = setId(100, ServicedFixtures.createBasicTemplate());
         studies.add(study);
         ownedStudies.add(study);
 

@@ -5,12 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createPeriod;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createAmendments;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createPeriod;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
+import static edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -45,7 +45,7 @@ public class AddPlannedActivityMutatorTest extends StudyCalendarTestCase {
         studySegment = setId(45, new StudySegment());
         period = setId(81, createPeriod("P1", 4, 17, 8));
 
-        plannedActivity = setId(21, Fixtures.createPlannedActivity("Swim", 8));
+        plannedActivity = setId(21, ServicedFixtures.createPlannedActivity("Swim", 8));
         add = Add.create(plannedActivity, 4);
         amendment = createAmendments("Oops");
         amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));

@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -37,7 +37,7 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
 
     public void testGetCurrentUser() throws Exception {
         assertNull(tools.getCurrentUser(request));
-        User user = Fixtures.createUser("jimbo");
+        User user = ServicedFixtures.createUser("jimbo");
         request.setAttribute("currentUser", user);
         assertSame(user, tools.getCurrentUser(request));
     }

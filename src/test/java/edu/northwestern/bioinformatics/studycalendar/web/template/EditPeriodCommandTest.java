@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.test.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.test.ServicedFixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -45,7 +45,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         period.getDuration().setUnit(DURATION_UNIT);
         period.setId(88);
 
-        study = Fixtures.createBasicTemplate();
+        study = ServicedFixtures.createBasicTemplate();
         studySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         studySegment.addPeriod(period);
         
@@ -114,8 +114,8 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
     }
 
     public void testPurgeOldPlannedActivities() throws Exception {
-        PlannedActivity chem = Fixtures.createPlannedActivity("Chem-7", 3);
-        PlannedActivity cbc = Fixtures.createPlannedActivity("CBC", 70);
+        PlannedActivity chem = ServicedFixtures.createPlannedActivity("Chem-7", 3);
+        PlannedActivity cbc = ServicedFixtures.createPlannedActivity("CBC", 70);
         period.addPlannedActivity(chem);
         period.addPlannedActivity(cbc);
         command.getPeriod().getDuration().setQuantity(60);
