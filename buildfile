@@ -44,18 +44,26 @@ define "psc" do
   
   define "Pure utility code"
   define "utility" do
+    resources.from(_("src/main/java")).exclude("**/*.java")
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
+    
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
+    
     package(:jar)
     package(:sources)
   end
   
   desc "The domain classes for PSC"
   define "domain" do
+    resources.from(_("src/main/java")).exclude("**/*.java")
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
+    
     compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
       JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
     test.with(UNIT_TESTING)
+    
     package(:jar)
     package(:sources)
   end
@@ -83,8 +91,8 @@ define "psc" do
       QUARTZ, 
       SPRING_WEB # tmp for mail
 
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
     test.with UNIT_TESTING, project('domain').test.compile.target
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
     
     package(:jar)
     package(:sources)
@@ -157,16 +165,17 @@ define "psc" do
       
       puts "Read-only HSQLB instance named #{db_name} generated in #{hsqldb_dir}"
     end
-  end
+  end # core
   
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
     resources.from(_("src/main/java")).exclude("**/*.java")
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
+    
     compile.with LOGBACK, 
       project('core'), project('core').compile.dependencies, 
       SPRING_WEB, RESTLET, WEB, CAGRID
 
-    test.resources.from(_("src/test/java")).exclude("**/*.java")
     test.with project('test-infrastructure'), 
       project('test-infrastructure').compile.dependencies,
       project('test-infrastructure').test.compile.dependencies
@@ -177,12 +186,38 @@ define "psc" do
   
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
+    resources.from(_("src/main/java")).exclude("**/*.java")
+    test.resources.from(_("src/test/java")).exclude("**/*.java")
+
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB,
       project('core'), project('core').compile.dependencies
     test.with project('core').test.compile.target, 
       project('core').test.compile.dependencies
     package(:jar)
     package(:sources)
+  end
+end
+
+###### Shared configuration
+
+projects.each do |p|
+  if File.exist?(p._("src/main/java"))
+    # This doesn't work with the test task for some reason
+    # All resources come from source path
+    # p.resources.from(p._("src/main/java")).exclude("**/*.java")
+    # p.test.resources.from(p._("src/test/java")).exclude("**/*.java")
+  
+    # Use same logback test config for all modules
+    logback_test_src = project("psc")._("src/test/resources/logback-test.xml")
+    logback_test_dst = File.join(p.test.resources.target.to_s, "logback-test.xml")
+    file logback_test_dst => logback_test_src do |t|
+      filter.clear.from(project("psc")._("src/test/resources")).
+        include("logback-test.xml").
+        into(p.test.resources.target.to_s).
+        using(:project_root => p._).
+        run
+    end
+    p.test.resources.enhance [logback_test_dst.to_sym]
   end
 end
 
@@ -193,23 +228,3 @@ task :migrate => 'psc:core:migrate'
 
 desc "Recreate the HSQLDB instance for unit testing"
 task :create_hsqldb => 'psc:core:create_hsqldb'
-
-###### HELPERS
-
-def db_name
-  ENV['DB'] || 'datasource'
-end
-
-def ant_classpath(proj)
-  [proj.compile.dependencies + LOGBACK].flatten.collect { |a| a.to_s }.join(':')
-end
-
-# Discovers and loads the datasource properties file into the target ant project
-def datasource_properties(ant)
-  ant.taskdef :name => 'datasource_properties', 
-    :classname => "gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask",
-    :classpath => ant_classpath(project('psc:core'))
-  ant.datasource_properties :applicationDirectoryName => APPLICATION_SHORT_NAME,
-    :databaseConfigurationName => db_name
-  ant.echo :message => "Migrating ${datasource.url}"
-end
