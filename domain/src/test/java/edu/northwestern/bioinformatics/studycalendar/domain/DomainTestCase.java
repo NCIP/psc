@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * @author Rhett Sutphin
  */
-public class DomainTestCase extends TestCase {
+public abstract class DomainTestCase extends TestCase {
     private final Log log = LogFactory.getLog(getClass());
     private MockRegistry mocks;
 
