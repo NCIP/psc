@@ -3,7 +3,7 @@
 <%@attribute name="studySegment" type="edu.northwestern.bioinformatics.studycalendar.web.template.StudySegmentTemplate"%>
 <%@attribute name="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
-<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 

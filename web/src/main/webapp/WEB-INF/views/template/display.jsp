@@ -5,7 +5,7 @@
 <%@ taglib prefix="templ" tagdir="/WEB-INF/tags/template" %>
 <%@ taglib prefix="security"
            uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
-<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>

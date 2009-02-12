@@ -1,6 +1,6 @@
 <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
 <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
-<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sched" tagdir="/WEB-INF/tags/schedule" %>

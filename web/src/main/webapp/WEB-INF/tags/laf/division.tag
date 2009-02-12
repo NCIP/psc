@@ -1,5 +1,5 @@
 <%--<%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>--%>
-<%@taglib prefix="laf"  uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf"  tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@attribute name="title"%>
 <%@attribute name="id"%>

@@ -1,4 +1,4 @@
-<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ attribute name="revision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision"%>
 <%@ attribute name="changes" type="edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges"%>

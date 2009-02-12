@@ -1,6 +1,6 @@
 <%@tag%>
 <%--<%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf"%>--%>
-<%@taglib prefix="laf" uri="/WEB-INF/tags/laf.tld"%>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <laf:stylesheetLink name="debug"/>
 <laf:stylesheetLink name="common"/>
 <laf:stylesheetLink name="fields"/>
