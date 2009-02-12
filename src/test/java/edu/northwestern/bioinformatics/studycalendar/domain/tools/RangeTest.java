@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.Date;
 /**
  * @author Moses Hohman
  */
-public class RangeTest extends CoreTestCase {
+public class RangeTest extends TestCase {
     public void testCompareBasedOnStopDate() {
         Range<Date> r1 = createRange(5, 15);
         Range<Date> r2 = createRange(5, 16);

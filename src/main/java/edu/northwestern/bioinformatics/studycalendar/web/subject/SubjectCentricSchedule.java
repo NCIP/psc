@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.Range;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Range;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
 import java.text.SimpleDateFormat;

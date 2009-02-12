@@ -1,7 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class MutableRangeTest extends StudyCalendarTestCase {
+public class MutableRangeTest extends TestCase {
     public void testAddWhenNonOverlapping() throws Exception {
         Date oneStart = createDate(2007, Calendar.MARCH, 5);
         Date oneStop = createDate(2007, Calendar.MARCH, 17);

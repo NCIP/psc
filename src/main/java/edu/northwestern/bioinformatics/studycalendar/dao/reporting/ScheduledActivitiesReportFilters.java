@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
 
 import java.util.Date;
 

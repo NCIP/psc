@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import static junit.framework.Assert.*;
 
 

@@ -1,7 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
-
-import java.util.List;
-import java.util.ArrayList;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
 /**
  * @author Rhett Sutphin

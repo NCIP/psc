@@ -1,13 +1,14 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.assertDayRange;
+import junit.framework.TestCase;
 
 import java.util.Arrays;
 
 /**
  * @author Rhett Sutphin
  */
-public class DefaultDayRangeTest extends StudyCalendarTestCase {
+public class DefaultDayRangeTest extends TestCase {
     public void testDayCount() throws Exception {
         assertEquals(12, new DefaultDayRange(1, 12).getDayCount());
         assertEquals(25, new DefaultDayRange(-12, 12).getDayCount());

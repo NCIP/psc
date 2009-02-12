@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.subject;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.utils.Range;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Range;
 
 import java.util.Collections;
 import java.util.Date;

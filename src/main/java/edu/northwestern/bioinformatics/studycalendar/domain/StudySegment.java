@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.EmptyDayRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;

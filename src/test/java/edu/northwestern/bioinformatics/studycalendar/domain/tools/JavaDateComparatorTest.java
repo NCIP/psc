@@ -1,6 +1,8 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import junit.framework.TestCase;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -9,7 +11,7 @@ import java.util.Date;
 /**
  * @author rsutphin
  */
-public class JavaDateComparatorTest extends CoreTestCase {
+public class JavaDateComparatorTest extends TestCase {
     private JavaDateComparator comparator = new JavaDateComparator();
 
     public void testCompareDifferentDates() {
@@ -69,11 +71,11 @@ public class JavaDateComparatorTest extends CoreTestCase {
     }
 
     private static Date createDateForDay(int day) {
-        return edu.nwu.bioinformatics.commons.DateUtils.createDate(2005, Calendar.MARCH, day);
+        return DateTools.createDate(2005, Calendar.MARCH, day);
     }
 
     private static Timestamp createTimestampForDay(int day, int nanos) {
-        Timestamp timestamp = edu.nwu.bioinformatics.commons.DateUtils.createTimestamp(2005, Calendar.MARCH, day);
+        Timestamp timestamp = DateTools.createTimestamp(2005, Calendar.MARCH, day);
         timestamp.setNanos(nanos);
         return timestamp;
     }

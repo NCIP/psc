@@ -1,11 +1,11 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class EmptyDayRangeTest extends StudyCalendarTestCase {
+public class EmptyDayRangeTest extends TestCase {
     public void testContains() throws Exception {
         assertFalse("Should contain nothing", EmptyDayRange.INSTANCE.containsDay(0));
         assertFalse("Should contain nothing", EmptyDayRange.INSTANCE.containsDay(5));

@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
-import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.Filter;
 import org.hibernate.HibernateException;
