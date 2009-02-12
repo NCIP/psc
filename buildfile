@@ -15,6 +15,8 @@ define "psc" do
 
   # resources.from(_("src/main/java")).exclude("**/*.java")
   compile.options.target = "1.5"
+  compile.options.source = "1.5"
+  compile.options.other = %w(-encoding UTF-8)
   # compile.with CTMS_COMMONS, CORE_COMMONS, SECURITY, XML, SPRING, HIBERNATE, 
   #   LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, BERING, WEB, DB, CONTAINER_PROVIDED
   
