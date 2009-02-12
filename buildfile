@@ -95,6 +95,35 @@ define "psc" do
       acSetup.should include(filter_tokens['buildInfo.hostname'])
       acSetup.should include(project.version)
     end
+    
+    task :migrate do
+      ant('bering') do |ant|
+        cp = [project('core').compile.dependencies + LOGBACK].flatten.collect { |a| a.to_s }.join(':')
+        
+        # Load DS properties from /etc/psc or ~/.psc
+        ant.taskdef :name => 'datasource_properties', 
+          :classname => "gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask",
+          :classpath => cp
+        ant.taskdef :resource => "edu/northwestern/bioinformatics/bering/antlib.xml",
+          :classpath => cp
+        ant.datasource_properties :applicationDirectoryName => APPLICATION_SHORT_NAME,
+          :databaseConfigurationName => ENV['DB'] || 'datasource'
+        ant.echo :message => "Migrating ${datasource.url}"
+        
+        # default values
+        ant.property :name => 'migrate.version', :value => ENV['MIGRATE_VERSION'] || ""
+        ant.property :name => 'bering.dialect', :value => ""
+        
+        ant.migrate :driver => '${datasource.driver}',
+          :dialect => "${bering.dialect}",
+          :url => "${datasource.url}",
+          :userid => "${datasource.username}",
+          :password => "${datasource.password}",
+          :targetVersion => "${migrate.version}",
+          :migrationsDir => _("src/main/db/migrate"),
+          :classpath => cp
+      end
+    end
   end
   
   desc "Web interfaces, including the GUI and the RESTful API"
@@ -115,3 +144,6 @@ define "psc" do
     package(:sources)
   end
 end
+
+desc "Update the core database schema via bering"
+task :migrate => 'psc:core:migrate'
