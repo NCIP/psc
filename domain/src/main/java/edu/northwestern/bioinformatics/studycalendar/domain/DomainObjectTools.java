@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,7 +94,7 @@ public class DomainObjectTools {
 
     public static class ById<T extends DomainObject> implements Comparator<T> {
         public int compare(T o1, T o2) {
-            return ComparisonUtils.nullSafeCompare(o1.getId(), o2.getId());
+            return ComparisonTools.nullSafeCompare(o1.getId(), o2.getId());
         }
     }
 }
