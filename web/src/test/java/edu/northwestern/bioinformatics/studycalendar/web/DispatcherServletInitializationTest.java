@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import junit.framework.TestCase;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.restlet.resource.Resource;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
+import junit.framework.TestCase;
+import org.restlet.resource.Resource;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * @author Rhett Sutphin
@@ -19,6 +21,12 @@ public class DispatcherServletInitializationTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
+    }
+
+    public void testWebApplicationContextItself() throws Exception {
+        ApplicationContext context = StudyCalendarApplicationContextTestHelper.getDeployedApplicationContext();
+        // no exceptions
+        assertPositive("No bean definitions loaded", context.getBeanDefinitionCount());
     }
 
     public void testSpringServletContext() throws Exception {
