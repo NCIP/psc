@@ -80,8 +80,8 @@ SPRING_WEB = [
   "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
   "org.springframework:spring-webflow:jar:1.0.5",
   "org.springframework:spring-binding:jar:1.0.5",
-  "javax.activation:activation:jar:1.0.2",
-  "javax.mail:mail:jar:1.3.2",
+  "javax.activation:activation:jar:1.1",
+  "javax.mail:mail:jar:1.4.1",
   eponym("oro", "2.0.8"),
   eponym("ognl", "2.6.9") # For webflow
 ]
