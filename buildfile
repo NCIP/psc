@@ -282,29 +282,11 @@ task :create_hsqldb => 'psc:core:create_hsqldb'
 
 ###### Development deployment sans Tomcat
 
-directory project("psc")._('tmp')
-file project("psc")._('tmp/csm_jaas.conf') => project("psc")._('tmp') do |t|
-  ant('csm') do |ant|
-    datasource_properties(ant)
-    %w(url username password driver).each do |v|
-      ant.filter :token => "datasource.#{v}", :value => "${datasource.#{v}}"
-    end
-    ant.copy :file => project("psc")._('csm/csm_jaas.config'), :tofile => t.to_s, :filtering => 'yes'
-  end
-end
-
 desc "Run PSC from #{jetty.url}/psc"
 task :server do
   ENV['test'] = 'no'
   set_db_name 'datasource'
   
-  csm_conf = project("psc")._('tmp/csm_jaas.conf')
-  rm_rf csm_conf
-  task(csm_conf).invoke
-  Java.java.lang.System.setProperty(
-    'java.security.auth.login.config', 
-    csm_conf
-  )
   jetty.use.invoke
   
   task('psc:web:explode').invoke
