@@ -11,10 +11,10 @@ APPLICATION_SHORT_NAME = 'psc'
 ###### Jetty config
 
 # enable JSP support in Jetty
-Java.classpath << [
+Java.classpath.concat([
   "org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
   "org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
-]
+])
 jetty.url = "http://localhost:7200"
 
 ###### PROJECT
@@ -209,6 +209,39 @@ define "psc" do
       end
     end
     
+    directory _('tmp/logs')
+    
+    task :local_jetty => _('tmp/logs') do
+      ENV['test'] = 'no'
+      set_db_name 'datasource'
+      
+      # System property set by set_db_name needed before jetty starts
+      # jetty.use.invoke
+
+      task('psc:web:explode').invoke
+
+      logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
+      rm _('src/main/webapp/WEB-INF/classes/logback.xml')
+      filter(_('src/main/java')).
+        using(:maven, 'catalina.home' => _('tmp').to_s).
+        include(File.basename(logconfig)).
+        into(File.dirname(logconfig)).
+        run
+      Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
+      
+      jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
+
+      msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
+      info "=" * msg.size
+      info msg
+      info "=" * msg.size
+
+      # Keep the script running until interrupted
+      while(true)
+        sleep(1)
+      end
+    end
+    
     # clean exploded files, too
     clean { 
       rm_rf _('src/main/webapp/WEB-INF/lib')
@@ -283,24 +316,4 @@ task :create_hsqldb => 'psc:core:create_hsqldb'
 ###### Development deployment sans Tomcat
 
 desc "Run PSC from #{jetty.url}/psc"
-task :server do
-  ENV['test'] = 'no'
-  set_db_name 'datasource'
-  
-  jetty.use.invoke
-  
-  task('psc:web:explode').invoke
-  
-  jetty.deploy "#{jetty.url}/psc", 
-    project('psc:web')._('src/main/webapp').to_s
-  
-  msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
-  info "=" * msg.size
-  info msg
-  info "=" * msg.size
-  
-  # Keep the script running until interrupted
-  while(true)
-    sleep(1)
-  end
-end
+task :server => 'psc:web:local_jetty'
