@@ -96,10 +96,10 @@ define "psc" do
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
-    if db_name =~ /hsqldb/
-      test.enhance hsqldb[:files]
-      hsqldb[:files].each do |f|
-        file(f => Dir[_('src/main/db/migrate/**/*')]) do
+    test.enhance hsqldb[:files]
+    hsqldb[:files].each do |f|
+      file(f => Dir[_('src/main/db/migrate/**/*')]) do
+        if db_name =~ /hsqldb/
           task(:create_hsqldb).invoke
         end
       end
