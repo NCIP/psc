@@ -34,7 +34,7 @@ define "psc" do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
   
-  define "Pure utility code"
+  desc "Pure utility code"
   define "utility" do
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.lang
