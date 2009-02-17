@@ -55,7 +55,7 @@ public class StudyCalendarAuthenticationManager{
 			 }
 
              encryptedPassword = StringUtilities.initTrimmedString(encryptedPassword);
-             String query="SELECT * FROM CSM_USER WHERE LOGIN_NAME =? and PASSWORD =?";
+             String query="SELECT * FROM CSM_USER WHERE LOGIN_NAME = (SELECT NAME FROM USERS WHERE NAME = ? and ACTIVE_FLAG = ?) and PASSWORD =?";
              return executeQuery(connection, query, userName,encryptedPassword);
               
           } catch (SQLException le) {
@@ -68,11 +68,13 @@ public class StudyCalendarAuthenticationManager{
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		boolean validLogin = false;
+        boolean active_flag = true;
 		try
 		{
-			statement = connection.prepareStatement(query);
+		    statement = connection.prepareStatement(query);
 			statement.setString(1, userID);
-			statement.setString(2,password);
+            statement.setBoolean(2,active_flag);
+			statement.setString(3,password);
 			resultSet = statement.executeQuery();
 			if (resultSet != null)
 			{
