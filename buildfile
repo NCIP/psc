@@ -204,28 +204,12 @@ define "psc" do
       end
     end
     
-    directory _('tmp/logs')
-    
-    task :local_jetty => _('tmp/logs') do
+    task :local_jetty do
       ENV['test'] = 'no'
       set_db_name 'datasource'
       
-      # System property set by set_db_name needed before jetty starts
-      # jetty.use.invoke
-
-      task('psc:web:explode').invoke
-
-      logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
-      rm _('src/main/webapp/WEB-INF/classes/logback.xml')
-      filter(_('src/main/java')).
-        using(:maven, 'catalina.home' => _('tmp').to_s).
-        include(File.basename(logconfig)).
-        into(File.dirname(logconfig)).
-        run
-      Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
+      task(:jetty_deploy).invoke
       
-      jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
-
       msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
       info "=" * msg.size
       info msg
@@ -235,6 +219,21 @@ define "psc" do
       while(true)
         sleep(1)
       end
+    end
+    
+    directory _('tmp/logs')
+    
+    task :jetty_deploy => ['psc:web:explode', _('tmp/logs')] do
+      logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
+      rm _('src/main/webapp/WEB-INF/classes/logback.xml')
+      filter(_('src/main/java')).
+        using(:maven, 'catalina.home' => _('tmp').to_s).
+        include(File.basename(logconfig)).
+        into(File.dirname(logconfig)).
+        run
+      Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
+
+      jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
     end
     
     # clean exploded files, too
@@ -256,29 +255,40 @@ define "psc" do
   
   desc "Integrated tests for the RESTful API"
   define "restful-api-test", :base_dir => _('test/restful-api') do
-    task :set_db do
+    # Only set_db after everything is built
+    task :set_db => project('psc:web').task(:explode) do
       set_db_name(ENV['INTEGRATION_DB'] || 'rest-test')
       test.options[:properties]['psc.config.datasource'] = db_name
     end
     
     compile.with(project('web'), project('web').compile.dependencies)
-    test.using(:jtestr).
+    test.using(:integration, :rspec).
       with(
         project('test-infrastructure'), 
         project('test-infrastructure').compile.dependencies, 
         project('test-infrastructure').test.compile.dependencies
       ).using(
         :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2' },
+        :requires => %w(spec http static_data).collect { |help| _("src/spec/ruby/#{help}_helper.rb") }, # + [_('src/spec/ruby/buildr-252-patches.rb')],
         :properties => { 
           'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
         }
       )
-    test.enhance [task(:set_db)]
     test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)
 
-    test.setup { 
-      jetty.use 
+    integration.enhance
+    integration.setup {
+      task(:set_db).invoke 
+      task('psc:web:jetty_deploy').invoke
     }
+    
+    desc "One-time setup for the RESTful API integrated tests"
+    task :setup => [:set_db, :'test:compile', project('psc:core').task('migrate')] do
+      Java::Commands.java(
+        'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._, 
+        :classpath => test.compile.dependencies,
+        :properties => { "psc.config.datasource" => db_name })
+    end
   end
 end
 

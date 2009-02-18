@@ -26,7 +26,7 @@ public class OneTimeSetup  {
         ApplicationContext applicationContext = null;
         try {
             applicationContext = new GenericApplicationContext(
-                new XmlBeanFactory(new FileSystemResource(new File(pscRoot, "test/restful-api/static-data/applicationContext.xml"))),
+                new XmlBeanFactory(new FileSystemResource(new File(pscRoot, "test/restful-api/target/spec/resources/applicationContext.xml"))),
                 StudyCalendarApplicationContextBuilder.getDeployedApplicationContext()
             );
         } catch (RuntimeException e) {

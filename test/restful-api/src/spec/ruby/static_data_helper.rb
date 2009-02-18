@@ -1,12 +1,12 @@
 require 'yaml'
 
-helper_for Spec::Example::ExampleGroup do
+module StaticDataHelper
   def load_site(assigned_identifier)
     application_context['siteDao'].getByAssignedIdentifier(assigned_identifier)
   end
 
   # creates literate accessors for each of the sites defined in sites.yml
-  YAML.load_file("#{File.dirname(__FILE__)}/static-data/sites.yml").each do |short_name, attributes|
+  YAML.load_file("#{File.dirname(__FILE__)}/../../../target/spec/resources/sites.yml").each do |short_name, attributes|
     define_method(short_name) do
       load_site(attributes['assignedIdentifier'])
     end
@@ -17,7 +17,7 @@ helper_for Spec::Example::ExampleGroup do
   end
   
   # creates literate accessors for each of the users defined in users.yml
-  YAML.load_file("#{File.dirname(__FILE__)}/static-data/users.yml").each do |username, _|
+  YAML.load_file("#{File.dirname(__FILE__)}/../../../target/spec/resources/users.yml").each do |username, _|
     define_method(username) do
       load_user(username)
     end
@@ -26,4 +26,8 @@ helper_for Spec::Example::ExampleGroup do
   def sample_activity(name)
     application_context['activityDao'].getByName(name) or raise "No test activity named #{name}"
   end
+end
+
+class Spec::Example::ExampleGroup
+  include StaticDataHelper
 end

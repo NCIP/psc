@@ -2,7 +2,7 @@ require 'rest-open-uri'
 require 'builder'
 require 'rexml/document'
 
-helper_for Spec::Example::ExampleGroup do
+module HttpHelper
   attr_reader :response
 
   def get(relative_uri, options={})
@@ -115,4 +115,8 @@ helper_for Spec::Example::ExampleGroup do
       @rexml_doc ||= REXML::Document.new(entity)
     end
   end
+end
+
+class Spec::Example::ExampleGroup
+  include HttpHelper
 end

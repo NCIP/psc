@@ -35,8 +35,6 @@ module PscTest
     )
   end
 
-  puts "spec_helper in module PscTest"
-  
   class HibernateOpenSession
     def initialize
       mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new
@@ -75,7 +73,7 @@ Role = Java::EduNorthwesternBioinformaticsStudycalendarDomain::Role
 def application_context
   $application_context ||= Class.new do
     def initialize
-      path = J::System.getProperty("applicationContext.path")
+      path = Java::JavaLang::System.getProperty("applicationContext.path")
       puts "Loading framework application context from #{path}"
       @context = Java::OrgSpringframeworkContextSupport::GenericApplicationContext.new(
         Java::OrgSpringframeworkBeansFactoryXml::XmlBeanFactory.new(
@@ -109,6 +107,3 @@ Spec::Runner.configure do |config|
 end
 
 application_context['databaseInitializer'].beforeAll
-# afterAll is invoked via a jtestr after block (in jtestr_config.rb)
-
-puts "spec_helper done"
