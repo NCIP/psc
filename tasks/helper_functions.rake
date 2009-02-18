@@ -17,6 +17,10 @@ def emma?
   ENV['EMMA']
 end
 
+def hsqldb?
+  db_name =~ /hsqldb/
+end
+
 def hsqldb
   hsqldb_dir = ENV['HSQLDB_DIR'] || _('hsqldb')
   {
