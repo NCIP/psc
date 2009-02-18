@@ -208,7 +208,7 @@ define "psc" do
       ENV['test'] = 'no'
       set_db_name 'datasource'
       
-      task(:jetty_deploy).invoke
+      task(:jetty_deploy_exploded).invoke
       
       msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
       info "=" * msg.size
@@ -223,7 +223,7 @@ define "psc" do
     
     directory _('tmp/logs')
     
-    task :jetty_deploy => ['psc:web:explode', _('tmp/logs')] do
+    task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
       logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
       rm _('src/main/webapp/WEB-INF/classes/logback.xml')
       filter(_('src/main/java')).
@@ -276,10 +276,9 @@ define "psc" do
       )
     test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)
 
-    integration.enhance
     integration.setup {
       task(:set_db).invoke 
-      task('psc:web:jetty_deploy').invoke
+      task('psc:web:jetty_deploy_exploded').invoke
     }
     
     desc "One-time setup for the RESTful API integrated tests"
