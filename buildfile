@@ -56,11 +56,6 @@ define "psc" do
   
   desc "Core data access, serialization and non-substitutable business logic"
   define "core" do
-    task :refilter do
-      rm_rf Dir[_(resources.target.to_s, "applicationContext-{spring,setup}.xml")]
-    end
-    # resources.enhance [:refilter]
-    
     def filter_tokens
       {
         'application-short-name'  => APPLICATION_SHORT_NAME,
