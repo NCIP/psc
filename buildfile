@@ -281,6 +281,23 @@ define "psc" do
         :properties => { "psc.config.datasource" => db_name })
     end
   end
+  
+  # This is just a direct port from ant -- might be possible to do something better with buildr
+  desc "Build the binary distribution package"
+  task :dist do |task|
+    class << task; attr_accessor :filename; end
+    ENV['test'] = 'no'
+    task('psc:web:package').invoke
+
+    dist_dir = "target/dist/bin"
+    mkdir_p _("#{dist_dir}/conf-samples")
+    cp _("db/datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
+    cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
+    puts `svn export https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
+
+    task.filename = _("target/dist/psc-#{VERSION_NUMBER}-bin.zip")
+    zip(task.filename).path("psc-#{VERSION_NUMBER}").include("#{dist_dir}/*").root.invoke
+  end
 end
 
 ###### Shared configuration
@@ -322,5 +339,16 @@ namespace :ci do
     if emma?
       [:'emma:html', :'emma:xml'].each { |t| task(t).invoke }
     end
+  end
+  
+  task :nightly => [:unit, 'psc:dist', :artifacts_dir] do
+    now = Time.now.strftime "%Y%m%d-%H%M%S"
+    cp task('psc:dist').filename, "#{task('ci:artifacts_dir').dir}/psc-#{VERSION_NUMBER}-#{now}.zip"
+  end
+  
+  directory project('psc')._('target/artifacts')
+  task :artifacts_dir => project('psc')._('target/artifacts') do |task|
+    class << task; attr_accessor :dir; end
+    task.dir = task.prerequisites.first.to_s
   end
 end
