@@ -42,7 +42,7 @@ public class XMLValidator implements Validator {
             log.debug("Validating against {}", uncompiledSchema.getAbsolutePath());
             
             // 3. Compile the schema.
-            javax.xml.validation.Schema schema = factory.newSchema(uncompiledSchema);
+            javax.xml.validation.Schema schema = factory.newSchema(this.schema.url());
 
             // 4. Get a validator from the schema.
             javax.xml.validation.Validator validator = schema.newValidator();

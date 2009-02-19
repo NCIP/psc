@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 
 public class StudySegmentDeltaXmlSerializer  extends AbstractDeltaXmlSerializer {
     public static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
 
-    protected PlanTreeNode<?> nodeInstance() {
+    protected Changeable nodeInstance() {
         return new StudySegment();
     }
 
