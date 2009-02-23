@@ -217,7 +217,7 @@
             #study-info ul li {
                 list-style-type: none;
             }
-            
+
             #outside-links {
                 margin: 1em;
                 text-align: right
@@ -439,7 +439,12 @@
 
                         var studySegmentId = aElement.id.substring('studySegment'.length+1)
                         selectedStudySegmentId = studySegmentId
-                        aElement.href = '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId
+                        var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId;
+
+                        <c:if test="${not empty developmentRevision}">
+                             href = href + '&developmentRevision=true';
+                        </c:if>
+                        aElement.href = href;
 
                         lastRequest = new Ajax.Request(aElement.href,
                             {
@@ -500,7 +505,7 @@
 			function hideSetup(){
                 if (init == null) {
                     initialize_arrows();
-                }                
+                }
                 registerHideHandler()
 			}
 
@@ -630,7 +635,7 @@
                 document.getElementById("cycleError").innerHTML = "";
                 }
             }
-            
+
             <c:if test="${not empty developmentRevision}">
             Element.observe(window, "load", function() {
                 $$("#cycleLength").each(function(fn) {
@@ -831,7 +836,7 @@
                         </c:if>
                     </c:if>
                 </ul>
-            
+
                 <div id="outside-links">
                     <c:if test="${configuration.studyPageUrlConfigured}">
                         <c:set var="studyPageUrlAvail" value="${not empty configuration.map.studyPageUrl}"/>
@@ -846,7 +851,7 @@
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
                 <p class="controls" id="addEpoch"/>
-              
+
                 <laf:division>
                     <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
                 </laf:division>
