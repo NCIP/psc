@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.tools;
+package edu.northwestern.bioinformatics.studycalendar.core;
 
 import gov.nih.nci.cabig.ctms.tools.DataSourceSelfDiscoveringPropertiesFactoryBean;
 

@@ -1,5 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
@@ -10,38 +11,45 @@ import java.util.Date;
  * @author Moses Hohman
  */
 public class RangeTest extends TestCase {
-    public void testCompareBasedOnStopDate() {
-        Range<Date> r1 = createRange(5, 15);
-        Range<Date> r2 = createRange(5, 16);
+    public void testCompareBasedOnEnd() {
+        Range<Date> r1 = createDateRange(5, 15);
+        Range<Date> r2 = createDateRange(5, 16);
         assertNegative("r1 not < r2", r1.compareTo(r2));
         assertPositive("r2 not > r1", r2.compareTo(r1));
     }
 
     public void testCompareBasedOnStartDateIfStopDatesEqual() {
-        Range<Date> r1 = createRange(5, 15);
-        Range<Date> r2 = createRange(6, 15);
+        Range<Date> r1 = createDateRange(5, 15);
+        Range<Date> r2 = createDateRange(6, 15);
         assertNegative("r1 not < r2", r1.compareTo(r2));
         assertPositive("r2 not > r1", r2.compareTo(r1));
     }
 
     public void testCompareZeroWhenEqual() {
-        Range<Date> r1 = createRange(5, 15);
-        Range<Date> r2 = createRange(5, 15);
+        Range<Date> r1 = createDateRange(5, 15);
+        Range<Date> r2 = createDateRange(5, 15);
         assertEquals("r1 != r2", 0, r1.compareTo(r2));
         assertEquals("r2 != r1", 0, r2.compareTo(r1));
     }
 
+    public void testCompareWithIntegerRange() throws Exception {
+        Range<Integer> r1 = new Range<Integer>(0, 2);
+        Range<Integer> r2 = new Range<Integer>(1, 2);
+        assertNegative("r1 not < r2", r1.compareTo(r2));
+        assertPositive("r2 not > r1", r2.compareTo(r1));
+    }
+
     public void testCompareDateToTimestampWorks() {
         Range<Date> r1 = new Range<Date>(
-            edu.nwu.bioinformatics.commons.DateUtils.createDate(2005, Calendar.JULY, 11), null);
+            DateTools.createDate(2005, Calendar.JULY, 11), null);
         Range<Date> r2 = new Range<Date>(
-            edu.nwu.bioinformatics.commons.DateUtils.createTimestamp(2005, Calendar.JULY, 12), null);
+            DateTools.createTimestamp(2005, Calendar.JULY, 12), null);
         assertNegative("r1 not < r2", r1.compareTo(r2));
         assertPositive("r2 not > r1", r2.compareTo(r1));
     }
 
     public void testStopDateNullIsHigh() {
-        Range<Date> r1 = createRange(5, 15);
+        Range<Date> r1 = createDateRange(5, 15);
         Range<Date> r2 = createRangeWithNullStopDate(5);
         assertNegative("r1 not < r2", r1.compareTo(r2));
         assertPositive("r2 not > r1", r2.compareTo(r1));
@@ -55,21 +63,21 @@ public class RangeTest extends TestCase {
         assertEquals("r6 != r5", 0, r6.compareTo(r5));
     }
 
-    private static Range<Date> createRange(int startDay, int stopDay) {
+    private static Range<Date> createDateRange(int startDay, int stopDay) {
         return new Range<Date>(
-                edu.nwu.bioinformatics.commons.DateUtils.createDate(2005, Calendar.JULY, startDay),
-                edu.nwu.bioinformatics.commons.DateUtils.createDate(2005, Calendar.JULY, stopDay));
+                DateTools.createDate(2005, Calendar.JULY, startDay),
+                DateTools.createDate(2005, Calendar.JULY, stopDay));
     }
 
     private static Range<Date> createRangeWithNullStopDate(int startDay) {
         return new Range<Date>(
-                edu.nwu.bioinformatics.commons.DateUtils.createDate(2005, Calendar.JULY, startDay),
+                DateTools.createDate(2005, Calendar.JULY, startDay),
                 null);
     }
 
     public void testIntersectsWhenSuperset() {
-        Range<Date> superset = createRange(2, 22);
-        Range<Date> subset = createRange(6, 14);
+        Range<Date> superset = createDateRange(2, 22);
+        Range<Date> subset = createDateRange(6, 14);
         Range<Date> indefinite = createRangeWithNullStopDate(1);
 
         assertTrue("Concrete superset intersects concrete subset", superset.intersects(subset));
@@ -79,8 +87,8 @@ public class RangeTest extends TestCase {
     }
 
     public void testIntersectsWhenOverlapping() {
-        Range<Date> left = createRange(1, 8);
-        Range<Date> right = createRange(6, 15);
+        Range<Date> left = createDateRange(1, 8);
+        Range<Date> right = createDateRange(6, 15);
         Range<Date> indefinite = createRangeWithNullStopDate(12);
 
         assertTrue("Left intersects with right", left.intersects(right));
@@ -90,8 +98,8 @@ public class RangeTest extends TestCase {
     }
 
     public void testIntersectsWhenTangent() {
-        Range<Date> left = createRange(1, 8);
-        Range<Date> right = createRange(8, 15);
+        Range<Date> left = createDateRange(1, 8);
+        Range<Date> right = createDateRange(8, 15);
         Range<Date> indefinite = createRangeWithNullStopDate(15);
 
         assertTrue("Left intersects with right", left.intersects(right));
@@ -101,7 +109,7 @@ public class RangeTest extends TestCase {
     }
 
     public void testSelfIntersectsSelf() {
-        Range<Date> concrete = createRange(5, 12);
+        Range<Date> concrete = createDateRange(5, 12);
         Range<Date> indefinite = createRangeWithNullStopDate(15);
 
         assertTrue("Concrete intersects self", concrete.intersects(concrete));
@@ -109,15 +117,15 @@ public class RangeTest extends TestCase {
     }
 
     public void testIncludesRange() throws Exception {
-        Range<Date> one = createRange(3, 15);
-        Range<Date> two = createRange(6, 12);
+        Range<Date> one = createDateRange(3, 15);
+        Range<Date> two = createDateRange(6, 12);
 
         assertTrue(one.includes(two));
         assertFalse(two.includes(one));
     }
 
     public void testConcreteRangeIncludesSelf() throws Exception {
-        Range<Date> concrete = createRange(5, 12);
+        Range<Date> concrete = createDateRange(5, 12);
         assertTrue(concrete.includes(concrete));
     }
 

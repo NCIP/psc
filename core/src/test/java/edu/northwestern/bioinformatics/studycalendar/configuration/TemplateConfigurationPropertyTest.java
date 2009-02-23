@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
+package edu.northwestern.bioinformatics.studycalendar.configuration;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.configuration.TemplateConfigurationProperty;
 import org.restlet.util.Template;
 
 public class TemplateConfigurationPropertyTest extends StudyCalendarTestCase {

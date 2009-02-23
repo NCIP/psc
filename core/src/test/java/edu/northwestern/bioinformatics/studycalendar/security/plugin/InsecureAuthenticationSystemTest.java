@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
 import gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetailsService;

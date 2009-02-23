@@ -1,12 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.restlet.util.Template;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import edu.northwestern.bioinformatics.studycalendar.web.GeneratedUriTemplateVariable;
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
+import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;

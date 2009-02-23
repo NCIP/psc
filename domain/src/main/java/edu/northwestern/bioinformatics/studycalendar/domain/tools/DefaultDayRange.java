@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.Range;
+
 /**
  * @author Rhett Sutphin
  */
 public class DefaultDayRange extends AbstractDayRange {
     public DefaultDayRange(int startDay, int endDay) {
-        super(endDay, startDay);
+        super(startDay, endDay);
     }
 
     /**
@@ -13,8 +15,7 @@ public class DefaultDayRange extends AbstractDayRange {
      * the minimum start day and the maximum end day of the two ranges.
      * @param other
      */
-    public void add(DayRange other) {
-        setStartDay(Math.min(getStartDay(), other.getStartDay()));
-        setEndDay(Math.max(getEndDay(), other.getEndDay()));
+    public void addDayRange(DayRange other) {
+        add(new Range<Integer>(other.getStartDay(), other.getEndDay()));
     }
 }

@@ -1,5 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.JavaDateComparator;
+import edu.northwestern.bioinformatics.studycalendar.tools.Range;
+import org.apache.commons.collections.comparators.NullComparator;
+
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -8,8 +13,16 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class DateRange extends Range<Date> {
+    private static final NullComparator NULLS_HIGH_COMPARATOR = new NullComparator(new JavaDateComparator(), true);
+
     public DateRange(Date start, Date stop) {
         super(start, stop);
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked"})
+    protected Comparator<Date> endPointComparator() {
+        return NULLS_HIGH_COMPARATOR;
     }
 
     public int getDayCount() {

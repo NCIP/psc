@@ -1,16 +1,15 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.JavaDateComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * @author rsutphin
  */
 public class Range<T extends Comparable<T>> implements Comparable<Range<T>>, Serializable {
-    // TODO: this shouldn't have survived generification
-    private static final NullComparator NULLS_HIGH_COMPARATOR = new NullComparator(new JavaDateComparator(), true);
+    private static final NullComparator NULLS_HIGH_COMPARATOR = new NullComparator(true);
 
     // Note that Ranges are by default immutable.  If a sublclass changes the value of
     // start or stop after the constructor (or allows other code to do so), it should
@@ -28,6 +27,11 @@ public class Range<T extends Comparable<T>> implements Comparable<Range<T>>, Ser
     public boolean isMutable() { return false; }
 
     ///// COMPARISON
+
+    @SuppressWarnings({"unchecked"})
+    protected Comparator<T> endPointComparator() {
+        return NULLS_HIGH_COMPARATOR;
+    }
 
     public int compareTo(Range<T> range) {
         int stopDateResult = NULLS_HIGH_COMPARATOR.compare(this.stop, range.stop);

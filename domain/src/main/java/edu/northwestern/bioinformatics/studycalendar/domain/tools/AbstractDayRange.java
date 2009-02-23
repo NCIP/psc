@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +8,9 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class AbstractDayRange implements DayRange {
-    private Integer startDay;
-    private Integer endDay;
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    public AbstractDayRange(int endDay, int startDay) {
-        this.endDay = endDay;
-        this.startDay = startDay;
+public class AbstractDayRange extends MutableRange<Integer> implements DayRange {
+    public AbstractDayRange(int startDay, int endDay) {
+        super(startDay, endDay);
     }
 
     public int getDayCount() {
@@ -23,7 +18,7 @@ public class AbstractDayRange implements DayRange {
     }
 
     public boolean containsDay(int day) {
-        return getStartDay() <= day && day <= getEndDay();
+        return includes(day);
     }
 
     public List<Integer> getDays() {
@@ -34,47 +29,20 @@ public class AbstractDayRange implements DayRange {
         return days;
     }
 
-    public List<Integer> getWeeks() {
-        return getListOfDays(7);
-    }
-
-    public List<Integer> getMonths() {
-        return getListOfDays(28);
-    }    
-
-    public List<Integer> getFortnights() {
-        return getListOfDays(14);
-    }
-
-    public List<Integer> getQuarters() {
-        return getListOfDays(91);
-    }
-
-    private List<Integer> getListOfDays(int interval) {
-        List<Integer> days = new ArrayList<Integer>();
-        int startDay = getStartDay();
-        days.add(startDay);
-        while (startDay < getEndDay()){
-            days.add(startDay + interval);
-            startDay = startDay + interval;
-        }
-        return days;
-    }
-
     public Integer getStartDay() {
-        return startDay;
+        return getStart();
     }
 
     protected void setStartDay(Integer startDay) {
-        this.startDay = startDay;
+        setStart(startDay);
     }
 
     public Integer getEndDay() {
-        return endDay;
+        return getStop();
     }
 
     protected void setEndDay(Integer endDay) {
-        this.endDay = endDay;
+        setStop(endDay);
     }
 
     public String toString() {

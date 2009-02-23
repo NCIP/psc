@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
-import org.restlet.util.Template;
-import org.apache.commons.lang.StringUtils;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 //import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
 
 /**

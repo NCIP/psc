@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 /**
  * @author rsutphin

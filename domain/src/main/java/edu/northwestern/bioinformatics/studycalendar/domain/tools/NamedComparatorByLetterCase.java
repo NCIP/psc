@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 
 import java.util.Comparator;
 

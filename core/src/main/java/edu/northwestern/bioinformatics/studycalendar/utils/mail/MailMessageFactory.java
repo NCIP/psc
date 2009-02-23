@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_EXCEPTIONS_TO;
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.MAIL_REPLY_TO;
+import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_EXCEPTIONS_TO;
+import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.MAIL_REPLY_TO;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

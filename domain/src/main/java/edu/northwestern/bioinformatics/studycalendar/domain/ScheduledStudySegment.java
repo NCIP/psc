@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Range;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.tools.Range;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;

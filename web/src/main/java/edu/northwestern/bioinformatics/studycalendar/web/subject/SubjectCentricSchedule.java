@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.tools.Range;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.MutableRange;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.Range;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
 import java.text.SimpleDateFormat;

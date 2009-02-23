@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.nwu.bioinformatics.commons.FreeMarkerMailMessage;
 
-import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
+import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
 
 import java.util.Map;
 

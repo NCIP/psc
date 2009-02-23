@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;

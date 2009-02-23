@@ -4,6 +4,7 @@
 <%@ tag import="org.restlet.util.Template" %>
 <%@ tag import="edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration" %>
 <%@ tag import="edu.northwestern.bioinformatics.studycalendar.web.GeneratedUriTemplateVariable" %>
+<%@ tag import="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration" %>
 <%
     BreadcrumbContext context = (BreadcrumbContext) request.getAttribute("breadcrumbContext");
     Template uriTemplate = (Template) ((Configuration) request.getAttribute("configuration")).getMap().get(property);

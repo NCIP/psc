@@ -1,6 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
+import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
 import junit.framework.TestCase;
 
 import java.util.Calendar;

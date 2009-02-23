@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;

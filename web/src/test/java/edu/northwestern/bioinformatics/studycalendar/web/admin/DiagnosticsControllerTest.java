@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
-import org.springframework.mail.MailSender;
 
 /**
  * @author Saurabh Agrawal

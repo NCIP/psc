@@ -68,7 +68,7 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
         } else {
             DefaultDayRange range = new DefaultDayRange(Integer.MAX_VALUE, Integer.MIN_VALUE);
             for (Period period : getPeriods()) {
-                range.add(period.getTotalDayRange());
+                range.addDayRange(period.getTotalDayRange());
             }
             return range;
         }

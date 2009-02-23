@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
+package edu.northwestern.bioinformatics.studycalendar.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import org.restlet.util.Template;
