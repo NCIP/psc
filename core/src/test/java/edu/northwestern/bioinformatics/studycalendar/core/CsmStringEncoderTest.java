@@ -1,21 +1,19 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.core;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import gov.nih.nci.security.util.StringEncrypter;
+import junit.framework.TestCase;
 
-public class StringEncoderTest extends StudyCalendarTestCase {
-
-    protected void setUp() throws Exception {
-        super.setUp();    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
+/**
+ * Exploratory test for CSM's string encryption class.
+ */
+public class CsmStringEncoderTest extends TestCase {
     public void testDecryption() throws Exception {
         StringEncrypter se = new StringEncrypter();
         String s = se.decrypt("yDq1c1nU4E7almNpMZNexg==");
         assertEquals("system_admin", s);
     }
 
-     public void testEncryption() throws Exception {
+    public void testEncryption() throws Exception {
         StringEncrypter se = new StringEncrypter();
         String encryptedText = se.encrypt("superuser");
         assertEquals("sAybp9IVe7feRIv4iO8hcA==", encryptedText);
@@ -35,7 +33,5 @@ public class StringEncoderTest extends StudyCalendarTestCase {
         System.out.println("sitecd_2: "        + se.encrypt("sitecd_2"));
         System.out.println("system_admin1: "   + se.encrypt("system_admin1"));
         System.out.println("system_admin2: "   + se.encrypt("system_admin2"));
-
     }
-
 }
