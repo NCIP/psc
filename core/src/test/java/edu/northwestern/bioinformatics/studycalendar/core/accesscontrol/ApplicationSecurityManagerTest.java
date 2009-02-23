@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.acegisecurity.context.SecurityContextHolder;

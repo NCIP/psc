@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.context.SecurityContextHolder;

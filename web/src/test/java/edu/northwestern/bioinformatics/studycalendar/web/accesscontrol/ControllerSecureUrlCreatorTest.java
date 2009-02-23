@@ -1,7 +1,9 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerSecureUrlCreator;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

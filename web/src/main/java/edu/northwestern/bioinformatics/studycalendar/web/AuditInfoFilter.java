@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import edu.northwestern.bioinformatics.studycalendar.web.tools.FilterAdapter;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 
 /**

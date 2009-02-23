@@ -17,7 +17,7 @@
     </bean>
 
     <bean id="studyCalendarAuthorizationManager" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
+          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager"/>
 
     <bean id="csmAuthorizationDao"
           class="gov.nih.nci.security.dao.DIAuthorizationDao"

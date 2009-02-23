@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.editors;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
+import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyEditorSupport;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.lang.StringUtils;
+import java.lang.reflect.Method;
 
 /**
  * @author Rhett Sutphin

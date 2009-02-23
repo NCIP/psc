@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 /**
