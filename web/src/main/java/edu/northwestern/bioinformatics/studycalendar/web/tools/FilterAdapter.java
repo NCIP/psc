@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;

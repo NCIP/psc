@@ -1,25 +1,28 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import static org.easymock.classextension.EasyMock.*;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.easymock.classextension.EasyMock.*;
-
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
+public class ScheduledActivityStateTypeTest extends DomainTestCase {
     private static final Date DATE = DateUtils.createDate(2003, Calendar.APRIL, 6);
     private static final String REASON = "reason";
     private static final String[] COLUMN_NAMES = new String[] { "current_state_mode_id", "current_state_reason", "current_state_date" };
@@ -93,10 +96,6 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
         expect(rs.getInt(COLUMN_NAMES[0])).andReturn(expectedMode.getId());
     }
 
-    private void assertScheduledActivityState(Class<? extends ScheduledActivityState> expectedType, String expectedReason, ScheduledActivityState actual) {
-        assertScheduledActivityState(expectedType, expectedReason, null, actual);
-    }
-
     private void assertScheduledActivityState(Class<? extends ScheduledActivityState> expectedType, String expectedReason, Date expectedDate, ScheduledActivityState actual) {
         assertEquals("Wrong type", expectedType, actual.getClass());
         assertEquals("Wrong reason", expectedReason, actual.getReason());
@@ -137,7 +136,7 @@ public class ScheduledActivityStateTypeTest extends StudyCalendarTestCase {
     }
 
     private void expectSetStateFields(ScheduledActivityMode expectedMode, int index, boolean expectDate) throws SQLException {
-        st.setObject(index + 0, expectedMode.getId(), Types.INTEGER);
+        st.setObject(index    , expectedMode.getId(), Types.INTEGER);
         st.setString(index + 1, REASON);
         st.setDate(index + 2, expectDate ? new java.sql.Date(DATE.getTime()) : null);
     }

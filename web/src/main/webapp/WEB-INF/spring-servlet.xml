@@ -594,7 +594,7 @@
         <property name="urlResolver" ref="urlResolver"/>
     </bean>
 
-    <bean id="sectionInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.SecureSectionInterceptor"
+    <bean id="sectionInterceptor" class="edu.northwestern.bioinformatics.studycalendar.web.tools.SecureSectionInterceptor"
           autowire="byName">
         <property name="sections">
             <list>

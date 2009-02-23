@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
+import edu.northwestern.bioinformatics.studycalendar.tools.ExpandingMap;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

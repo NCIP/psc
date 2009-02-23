@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import edu.nwu.bioinformatics.commons.DelegatingMap;
 import edu.nwu.bioinformatics.commons.DelegatingSortedMap;

@@ -22,7 +22,7 @@
             </list>
         </property>
         <property name="namingStrategy">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StudyCalendarNamingStrategy"/>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
         </property>
         <property name="annotatedClasses">
             <list>
@@ -84,10 +84,7 @@
             </list>
         </property>
 
-
         <property name="entityInterceptor">
-       <!--      <bean class="edu.northwestern.bioinformatics.studycalendar.utils.GridIdentifierInterceptor" autowire="byType">
-            </bean>-->
             <ref local="chainedInterceptor"/>
         </property>
     </bean>
@@ -101,7 +98,7 @@
             </list>
         </property>
         <property name="namingStrategy">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StudyCalendarNamingStrategy"/>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.StudyCalendarNamingStrategy"/>
         </property>
         <property name="annotatedClasses">
             <list>
@@ -111,7 +108,7 @@
         </property>
     </bean>
 
-    <bean  id="gridIdentifierInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.GridIdentifierInterceptor" autowire="byType"></bean>
+    <bean  id="gridIdentifierInterceptor" class="edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierInterceptor" autowire="byType"></bean>
 
 	<bean id="chainedInterceptor" class="gov.nih.nci.cabig.ctms.audit.ChainedInterceptor" autowire="byType">
 		<property name="interceptors">
@@ -185,7 +182,7 @@
 		<property name="auditAll"><value>false</value></property>
 	</bean>
 
-    <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.utils.LocalGridIdentifierCreator"/>
+    <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.dao.LocalGridIdentifierCreator"/>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
         <property name="singleSession"><value>true</value></property>

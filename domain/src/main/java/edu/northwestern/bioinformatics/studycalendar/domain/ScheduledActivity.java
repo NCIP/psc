@@ -207,7 +207,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         this.plannedActivity = plannedActivity;
     }
 
-    @Type(type = "edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledActivityStateType")
+    @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate.ScheduledActivityStateType")
     @Columns(columns = {
         @Column(name = "current_state_mode_id"),
         @Column(name = "current_state_reason"),

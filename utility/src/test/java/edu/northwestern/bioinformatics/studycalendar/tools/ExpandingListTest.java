@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import junit.framework.TestCase;
+import junit.framework.Assert;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +21,8 @@ public class ExpandingListTest extends TestCase {
     }
 
     public void testGetExisting() throws Exception {
-        assertEquals("0", list.get(0));
-        assertEquals("1", list.get(1));
+        Assert.assertEquals("0", list.get(0));
+        Assert.assertEquals("1", list.get(1));
     }
 
     public void testGetNonExistent() throws Exception {
@@ -33,13 +34,13 @@ public class ExpandingListTest extends TestCase {
     }
 
     public void testGetNonExistentFills() throws Exception {
-        assertEquals(list.get(8), "fill 8");
+        Assert.assertEquals(list.get(8), "fill 8");
         assertLength(9);
         assertEquals("Fills not stored in list", "fill 5", internal.get(5));
     }
 
     public void testDefaultExtenderIsNull() throws Exception {
-        assertEquals(null, new ExpandingList<Object>().get(15));
+        Assert.assertEquals(null, new ExpandingList<Object>().get(15));
     }
 
     public void testSetAtEnd() throws Exception {
@@ -98,7 +99,7 @@ public class ExpandingListTest extends TestCase {
     }
 
     private void assertLength(int len) {
-        assertEquals("Wrong external length: " + list, len, list.size());
+        Assert.assertEquals("Wrong external length: " + list, len, list.size());
         assertEquals("Wrong internal length: " + internal, len, internal.size());
     }
 

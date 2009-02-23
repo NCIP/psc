@@ -1,18 +1,18 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import junit.framework.Assert;
+import junit.framework.TestCase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
  */
-public class ExpandingMapTest extends StudyCalendarTestCase {
+public class ExpandingMapTest extends TestCase {
     private SortedMap<String, String> internal = new TreeMap<String, String>();
     private ExpandingMap<String, String> map = new ExpandingMap<String, String>(new TestFiller(), internal);
 
@@ -23,38 +23,38 @@ public class ExpandingMapTest extends StudyCalendarTestCase {
     }
 
     public void testNoFillForGetExisting() throws Exception {
-        assertEquals("1", map.get("one"));
-        assertEquals(2, map.size());
-        assertEquals(2, internal.size());
+        Assert.assertEquals("1", map.get("one"));
+        Assert.assertEquals(2, map.size());
+        Assert.assertEquals(2, internal.size());
     }
 
     public void testGetNonExistent() throws Exception {
         String nonExistentKey = "34";
-        assertNull(internal.get(nonExistentKey));
-        assertFalse(internal.containsKey(nonExistentKey));
-        assertEquals(fillValue(nonExistentKey), map.get(nonExistentKey));
-        assertEquals(3, internal.size());
-        assertEquals(fillValue(nonExistentKey), internal.get(nonExistentKey));
+        Assert.assertNull(internal.get(nonExistentKey));
+        Assert.assertFalse(internal.containsKey(nonExistentKey));
+        Assert.assertEquals(fillValue(nonExistentKey), map.get(nonExistentKey));
+        Assert.assertEquals(3, internal.size());
+        Assert.assertEquals(fillValue(nonExistentKey), internal.get(nonExistentKey));
     }
 
     public void testContainsKeyForNonExistentDoesNothing() throws Exception {
-        assertFalse(internal.containsKey("foo"));
-        assertFalse(map.containsKey("foo"));
-        assertFalse(internal.containsKey("foo"));
+        Assert.assertFalse(internal.containsKey("foo"));
+        Assert.assertFalse(map.containsKey("foo"));
+        Assert.assertFalse(internal.containsKey("foo"));
     }
 
     public void testDefaultFillIsNull() throws Exception {
         Map<Integer, Integer> def = new ExpandingMap<Integer, Integer>();
-        assertEquals(0, def.size());
-        assertEquals(null, def.get(15));
-        assertTrue(def.containsKey(15));
-        assertEquals(1, def.size());
+        Assert.assertEquals(0, def.size());
+        Assert.assertEquals(null, def.get(15));
+        Assert.assertTrue(def.containsKey(15));
+        Assert.assertEquals(1, def.size());
     }
 
     public void testConstructorFiller() throws Exception {
         Map<Integer, List> cons = new ExpandingMap<Integer, List>(new ExpandingMap.ConstructorFiller<List>(ArrayList.class));
-        assertNotNull(cons.get(8));
-        assertEquals(0, cons.get(17).size());
+        Assert.assertNotNull(cons.get(8));
+        Assert.assertEquals(0, cons.get(17).size());
     }
 
     private static class TestFiller implements ExpandingMap.Filler<String> {

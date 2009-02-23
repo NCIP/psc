@@ -1,14 +1,14 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class StudyCalendarNamingStrategyTest extends StudyCalendarTestCase {
+public class StudyCalendarNamingStrategyTest extends TestCase {
     private static final String DC = "DON'T CARE";
 
     private StudyCalendarNamingStrategy strategy = new StudyCalendarNamingStrategy();

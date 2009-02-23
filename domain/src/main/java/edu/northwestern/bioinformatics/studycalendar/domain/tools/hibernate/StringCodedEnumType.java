@@ -1,12 +1,10 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import gov.nih.nci.cabig.ctms.tools.hibernate.CodedEnumType;
 
 import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 public class StringCodedEnumType extends CodedEnumType {
 

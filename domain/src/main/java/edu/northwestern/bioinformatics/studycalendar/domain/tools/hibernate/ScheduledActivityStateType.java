@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 

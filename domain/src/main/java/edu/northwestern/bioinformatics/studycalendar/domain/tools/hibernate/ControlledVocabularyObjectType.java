@@ -1,24 +1,21 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
-
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import org.hibernate.usertype.UserType;
-import org.hibernate.usertype.ParameterizedType;
-import org.hibernate.HibernateException;
-//import org.apache.commons.logging.Log;
-import org.slf4j.Logger;
-
-import java.util.Properties;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.io.Serializable;
+package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.usertype.ParameterizedType;
+import org.hibernate.usertype.UserType;
+import org.slf4j.Logger;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Properties;
 
 /**
  * A Hibernate UserType for subclasses of {@link edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject}.

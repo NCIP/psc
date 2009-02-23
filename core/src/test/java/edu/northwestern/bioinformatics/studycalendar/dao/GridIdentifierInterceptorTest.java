@@ -1,8 +1,10 @@
-package edu.northwestern.bioinformatics.studycalendar.utils;
+package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierCreator;
+import edu.northwestern.bioinformatics.studycalendar.dao.GridIdentifierInterceptor;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.hibernate.type.Type;
 
