@@ -40,11 +40,18 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         if (source == null) return null;
 
         String q = QueryParameters.Q.extractFrom(request);
+        String typeName = QueryParameters.TYPE.extractFrom(getRequest());
         String typeId = QueryParameters.TYPE_ID.extractFrom(request);
-        if (q == null && typeId == null) return source;
+        if (q == null && typeId == null && typeName == null) return source;
 
         ActivityType type = null;
-        if (typeId != null) {
+        if (typeName != null) {
+            type = activityTypeDao.getByName(typeName);
+            if (type == null) {
+                setClientErrorReason("Unknown activity type: " + typeName);
+                return null;
+            }
+        } else if (typeId != null) {
             try {
                 type = activityTypeDao.getById(Integer.parseInt(typeId));
             } catch (NumberFormatException nfe) {
