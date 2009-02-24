@@ -101,11 +101,23 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
 
     private void addDeltas(final Element element, Amendment amendment) {
+         //Need first to process studyDeltaSerializer if exists to set populations to the study
         for (Object oDelta : element.elements()) {
             Element eDelta = (Element) oDelta;
             AbstractDeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
-            Delta delta = serializer.readElement(eDelta);
-            amendment.addDelta(delta);
+            if (serializer instanceof StudyDeltaXmlSerializer){
+                Delta delta = serializer.readElement(eDelta);
+                amendment.addDelta(delta);
+            }
+        }
+
+        for (Object oDelta : element.elements()) {
+            Element eDelta = (Element) oDelta;
+            AbstractDeltaXmlSerializer serializer = getDeltaXmlSerializerFactory().createXmlSerializer(eDelta);
+            if (! (serializer instanceof StudyDeltaXmlSerializer)) {
+                Delta delta = serializer.readElement(eDelta);
+                amendment.addDelta(delta);
+            }
         }
     }
 

@@ -31,6 +31,7 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
             population.setAbbreviation(abbreviation);
             population.setName(element.attributeValue(NAME));
             population.setStudy(study);
+            study.getPopulations().add(population);
         }
         return population;
     }
