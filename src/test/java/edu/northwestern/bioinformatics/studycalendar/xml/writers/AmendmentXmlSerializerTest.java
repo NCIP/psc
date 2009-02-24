@@ -2,13 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.test.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -127,6 +127,8 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("previous-amendment-key")).andReturn("2008-01-01~Amendment 0");
 
         expect(element.elements()).andReturn(Collections.singletonList(eDelta));
+        expect(element.elements()).andReturn(Collections.singletonList(eDelta));
+        expect(deltaSerializerFactory.createXmlSerializer(eDelta)).andReturn(deltaSerializer);
         expect(deltaSerializerFactory.createXmlSerializer(eDelta)).andReturn(deltaSerializer);
         expect(deltaSerializer.readElement(eDelta)).andReturn(delta);
         replayMocks();

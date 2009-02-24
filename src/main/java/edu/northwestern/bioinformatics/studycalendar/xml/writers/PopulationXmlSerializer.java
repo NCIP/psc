@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -32,6 +31,7 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
             population.setAbbreviation(abbreviation);
             population.setName(element.attributeValue(NAME));
             population.setStudy(study);
+            study.getPopulations().add(population);
         }
         return population;
     }

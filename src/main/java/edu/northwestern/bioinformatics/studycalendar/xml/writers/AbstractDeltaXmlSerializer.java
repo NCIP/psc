@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +23,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
     protected abstract Delta deltaInstance();
 
-    protected abstract PlanTreeNode<?> nodeInstance();
+    protected abstract Changeable nodeInstance();
 
     protected abstract String elementName();
 
@@ -51,7 +52,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
             delta = deltaInstance();
             delta.setGridId(gridId);
 
-            PlanTreeNode<?> node = nodeInstance();
+            Changeable node = nodeInstance();
             node.setGridId(element.attributeValue(NODE_ID));
             delta.setNode(node);
 

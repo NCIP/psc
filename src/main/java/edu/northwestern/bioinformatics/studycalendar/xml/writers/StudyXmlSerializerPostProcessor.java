@@ -1,10 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -18,7 +15,10 @@ import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.springframework.beans.factory.annotation.Required;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -34,8 +34,12 @@ public class StudyXmlSerializerPostProcessor {
     private StudyService studyService;
     private DaoFinder daoFinder;
     private DeltaService deltaService;
+    private Study study = null;
+
+protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public void process(Study study) {
+        this.study = study;
         resolveExistingActivitiesAndSources(study);
         resolveChangeChildrenFromPlanTreeNodeTree(study);
     }
@@ -142,7 +146,12 @@ public class StudyXmlSerializerPostProcessor {
      */
     private <T extends Changeable> T findRealNode(T nodeTemplate) {
         GridIdentifiableDao<T> dao = (GridIdentifiableDao<T>) daoFinder.findDao(nodeTemplate.getClass());
-        return dao.getByGridId(nodeTemplate.getGridId());
+        if (dao instanceof PopulationDao) {
+            return (T) nodeTemplate;
+        }
+        else {
+            return dao.getByGridId(nodeTemplate.getGridId());
+        }
     }
 
     private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {

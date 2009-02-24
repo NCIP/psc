@@ -23,7 +23,13 @@ public enum Schema {
     }
 
     public File file() {
-        URL schemaLocation = getClass().getClassLoader().getResource(fileName);
+        URL schemaLocation = url();
         return new File(schemaLocation.getFile());
     }
+
+    protected URL url() {
+        return getClass().getClassLoader().getResource(fileName);
+    }
+
+
 }
