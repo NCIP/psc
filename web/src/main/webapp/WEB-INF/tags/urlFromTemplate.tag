@@ -2,7 +2,7 @@
 <%@attribute name="property"%>
 <%@ tag import="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext" %>
 <%@ tag import="org.restlet.util.Template" %>
-<%@ tag import="edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration" %>
+<%--<%@ tag import="edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration" %>--%>
 <%@ tag import="edu.northwestern.bioinformatics.studycalendar.web.GeneratedUriTemplateVariable" %>
 <%@ tag import="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration" %>
 <%
