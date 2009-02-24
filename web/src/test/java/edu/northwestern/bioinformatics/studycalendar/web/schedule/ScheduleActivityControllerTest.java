@@ -9,12 +9,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -23,13 +27,15 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     private ScheduleActivityController controller;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
-
+    private ActivityService activityService;
+    private ScheduledActivity event;
     private ScheduleActivityCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        activityService = registerMockFor(ActivityService.class);
         command = registerMockFor(ScheduleActivityCommand.class,
             ScheduleActivityCommand.class.getMethod("apply"));
 
@@ -40,16 +46,13 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
         };
         controller.setScheduledCalendarDao(scheduledCalendarDao);
         controller.setScheduledActivityDao(scheduledActivityDao);
+        controller.setActivityService(activityService);
         controller.setControllerTools(controllerTools);
 
         request.setMethod("GET");
     }
 
     public void testBindEvent() throws Exception {
-        ScheduledActivity event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
-        expect(scheduledActivityDao.getById(16)).andReturn(event);
-        request.setParameter("event", "16");
-
         expectShowFormWithNoErrors();
 
         assertSame(event, command.getEvent());
@@ -124,6 +127,12 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     }
 
     private void expectShowFormWithNoErrors() throws Exception {
+        event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
+        expect(scheduledActivityDao.getById(16)).andReturn(event);
+        Map<String,List<String>> uriListMap = new TreeMap<String, List<String>>();
+        expect(activityService.createActivityUriList(event.getActivity())).andReturn(uriListMap);
+        request.setParameter("event", "16");
+
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();

@@ -115,7 +115,15 @@
                 </div>
                 <c:set var="count" value="${count + 1}"/>
             </c:if>
-            
+            <c:if test="${not empty uri}">
+                <div class="row ${commons:parity(count)}">
+                    <div class="label">Links</div>
+                    <c:forEach items="${uri}" var="uriMap" varStatus="keyStatus">
+                        <div class="value"><a href="<c:url value="${uriMap.value}"/>">${uriMap.key}</a></div>
+                    </c:forEach>
+                </div>
+            <c:set var="count" value="${count + 1}"/>
+            </c:if>
             <div class="row ${commons:parity(count)}">
                 <div class="label">
                     Status
