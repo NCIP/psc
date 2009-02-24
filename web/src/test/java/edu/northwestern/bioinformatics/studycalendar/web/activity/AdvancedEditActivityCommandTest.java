@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createActivity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createActivityProperty;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSingleActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -22,12 +21,12 @@ import java.util.*;
  */
 public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     private Activity activity0;
-    List<ActivityProperty> activityProperties,activityPropertiesAll;
+    List<ActivityProperty> activityProperties = new ArrayList<ActivityProperty>();;
     private ActivityDao activityDao = new ActivityDao();
     private ActivityPropertyDao activityPropertyDao  = new ActivityPropertyDao();
     private AdvancedEditActivityCommand command;
     private HibernateTemplate hibernateTemplate = new HibernateTemplate();
-    private final String namespace = "uri";
+    private final String namespace = "URI";
 
     @Override
     protected void setUp() throws Exception {
@@ -46,13 +45,11 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testCreateExistingUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"1.template","http://templateValue.com","1.text","textValue");
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
-
+        ActivityProperty activityProperty = createActivityProperty(namespace,"1.template","http://templateValue.com");
+        activity0.addProperty(activityProperty);
         replayMocks();
         Map<String, AdvancedEditActivityCommand.UriPropertyList> actual = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao).getExistingUri();
         verifyMocks();
-
         assertEquals(actual.get("1").getTemplateValue(), "http://templateValue.com");
 
     }
@@ -65,13 +62,17 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
 
 
     public void testUpdateActivityWithExistingUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"1.template","http://UpdatedTemplateValue.com","1.text","UpdatedTextValue");
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
-        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.template")).andReturn(activityProperties.get(0));
-        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.text")).andReturn(activityProperties.get(1));
+        ActivityProperty activityProperty1 = createActivityProperty(namespace,"1.template","http://UpdatedTemplateValue.com");
+        ActivityProperty activityProperty2 = createActivityProperty(namespace,"1.text","UpdatedTextValue");
+
+        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.template")).andReturn(activityProperty1);
+        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.text")).andReturn(activityProperty2);
+        activity0.addProperty(activityProperty1);
+        activity0.addProperty(activityProperty2);
+
         activityDao.save(activity0);
-        activityPropertyDao.save(activityProperties.get(0));
-        activityPropertyDao.save(activityProperties.get(1));
+        activityPropertyDao.save(activityProperty1);
+        activityPropertyDao.save(activityProperty2);
 
         replayMocks();
         command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
@@ -83,11 +84,12 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testUpdateActivityWithExistingUriWithOneValueOnly() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"1.template","http://UpdatedTemplateValueOnly.com");
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
-        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.template")).andReturn(activityProperties.get(0));
+        ActivityProperty activityProperty = createActivityProperty(namespace,"1.template","http://UpdatedTemplateValueOnly.com");
+        expect(activityPropertyDao.getByNamespaceAndName(20,namespace,"1.template")).andReturn(activityProperty);
+
+        activity0.addProperty(activityProperty);
         activityDao.save(activity0);
-        activityPropertyDao.save(activityProperties.get(0));
+        activityPropertyDao.save(activityProperty);
 
         replayMocks();
         command = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao);
@@ -98,11 +100,11 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testUpdateActivityWithMultipleNewUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"0.template","http://templateValue.com","0.text","textValue");
+        ActivityProperty ap = createActivityProperty(activity0,namespace,"0.template","http://templateValue.com");
+        activityProperties.add(ap);
         activityDao.save(activity0);
-        ActivityProperty activityProperty1 = createSingleActivityProperty(activity0,namespace,"1.template","TemplateValue");
-        ActivityProperty activityProperty2 = createSingleActivityProperty(activity0,namespace,"1.text","TextValue");
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(null);
+        ActivityProperty activityProperty1 = createActivityProperty(activity0,namespace,"1.template","TemplateValue");
+        ActivityProperty activityProperty2 = createActivityProperty(activity0,namespace,"1.text","TextValue");
         expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
         activityPropertyDao.save(ActivityPropertyEq(activityProperty1));
         activityPropertyDao.save(ActivityPropertyEq(activityProperty2));
@@ -119,8 +121,7 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
         public void testUpdateActivityWithNewUriWithOneValueOnly() throws Exception {
 
         activityDao.save(activity0);
-        ActivityProperty activityProperty = createSingleActivityProperty(activity0,namespace,"0.template","http://newTemplateValue.com");
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(null);
+        ActivityProperty activityProperty = createActivityProperty(activity0,namespace,"0.template","http://newTemplateValue.com");
         expect(activityPropertyDao.getByActivityId(20)).andReturn(null);
         activityPropertyDao.save(ActivityPropertyEq(activityProperty));
 
@@ -132,10 +133,8 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testGetKeyForExistingUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"template","http://templateValue.com","text","textValue");
-        ActivityProperty activityProperty = createSingleActivityProperty(activity0,namespace,"12.template","http://newTemplateValue.com");
-        activityProperties.add(activityProperty);
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
+        ActivityProperty activityProperty = createActivityProperty(namespace,"12.template","http://newTemplateValue.com");
+        activity0.addProperty(activityProperty);
 
         replayMocks();
         Map<String, AdvancedEditActivityCommand.UriPropertyList> actual = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao).getExistingUri();
@@ -146,12 +145,10 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testGetKeyWithStringValueForExistingUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"template","http://templateValue.com","text","textValue");
-        ActivityProperty activityProperty = createSingleActivityProperty(activity0,namespace,"id.template","http://newTemplateValue.com");
-        ActivityProperty activityProperty1 = createSingleActivityProperty(activity0,namespace,"id.text","textValue");
-        activityProperties.add(activityProperty);
-        activityProperties.add(activityProperty1);
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
+        ActivityProperty activityProperty1 = createActivityProperty(namespace,"id.template","http://newTemplateValue.com");
+        ActivityProperty activityProperty2 = createActivityProperty(namespace,"id.text","textValue");
+        activity0.addProperty(activityProperty1);
+        activity0.addProperty(activityProperty2);
 
         replayMocks();
         Map<String, AdvancedEditActivityCommand.UriPropertyList> actual = new AdvancedEditActivityCommand(activity0, activityDao, activityPropertyDao).getExistingUri();
@@ -163,14 +160,14 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
     public void testGetKeyIndexFoNewUri() throws Exception {
-        activityProperties = createActivityProperty(activity0,namespace,"0.template","http://templateValue.com","0.text","textValue");
-        ActivityProperty activityProperty1 = createSingleActivityProperty(activity0,namespace,"1.template","TemplateValue");
-        ActivityProperty activityProperty2 = createSingleActivityProperty(activity0,namespace,"template","TemplateValue");
-        ActivityProperty activityProperty3 = createSingleActivityProperty(activity0,namespace,"2.template","TemplateValue");
+        ActivityProperty ap= createActivityProperty(activity0,namespace,"0.template","http://templateValue.com");
+        activityProperties.add(ap);
+        ActivityProperty activityProperty1 = createActivityProperty(activity0,namespace,"1.template","TemplateValue");
+        ActivityProperty activityProperty2 = createActivityProperty(activity0,namespace,"template","TemplateValue");
+        ActivityProperty activityProperty3 = createActivityProperty(activity0,namespace,"2.template","TemplateValue");
         activityProperties.add(activityProperty1);
         activityProperties.add(activityProperty2);
         activityDao.save(activity0);
-        expect(activityPropertyDao.getByActivityId(20)).andReturn(null);
         expect(activityPropertyDao.getByActivityId(20)).andReturn(activityProperties);
         activityPropertyDao.save(ActivityPropertyEq(activityProperty3));
 
@@ -182,7 +179,7 @@ public class AdvancedEditActivityCommandTest  extends StudyCalendarTestCase {
     }
 
 
-     private static ActivityProperty ActivityPropertyEq(ActivityProperty expectedActivityProperty) {
+    private static ActivityProperty ActivityPropertyEq(ActivityProperty expectedActivityProperty) {
         EasyMock.reportMatcher(new ActivityPropertyMatcher(expectedActivityProperty));
         return null;
      }

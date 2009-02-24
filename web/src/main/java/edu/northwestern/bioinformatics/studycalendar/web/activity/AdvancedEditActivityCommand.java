@@ -4,10 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
-import edu.northwestern.bioinformatics.studycalendar.tools.ExpandingMap;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 
 import java.util.*;
@@ -16,10 +15,10 @@ import java.util.*;
  * @author Jalpa Patel
  */
 public class AdvancedEditActivityCommand implements Validatable {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
     private Activity activity;
     private final String namespace = "URI";
     private ActivityDao activityDao;
+    private ActivityService activityService  = new  ActivityService();
     private ActivityPropertyDao activityPropertyDao;
     private Map<String, UriPropertyList> existingUri;
     private Map<String, UriPropertyList> newUri;
@@ -46,9 +45,9 @@ public class AdvancedEditActivityCommand implements Validatable {
         while (iterator.hasNext()) {
                Map.Entry entry = (Map.Entry)iterator.next();
                String indexValue = (String)entry.getKey();
-               if(getExistingUri().get(entry.getKey()).getTemplateValue()!=null) {
+               if (getExistingUri().get(entry.getKey()).getTemplateValue()!=null) {
                     String templateName = indexValue.concat(".").concat("template");
-                    ActivityProperty activityProperty1 = activityPropertyDao.getByNamespaceAndName(activity.getId(),"uri",templateName);
+                    ActivityProperty activityProperty1 = activityPropertyDao.getByNamespaceAndName(activity.getId(),namespace,templateName);
                     if(activityProperty1 == null) {
                         activityProperty1 = new ActivityProperty();
                         activityProperty1.setActivity(activity);
@@ -60,10 +59,10 @@ public class AdvancedEditActivityCommand implements Validatable {
                     }
                     activityPropertyDao.save(activityProperty1);
                }
-               if(getExistingUri().get(entry.getKey()).getTextValue()!=null) {
+               if (getExistingUri().get(entry.getKey()).getTextValue()!=null) {
                     String textName = indexValue.concat(".").concat("text");
-                    ActivityProperty activityProperty2 = activityPropertyDao.getByNamespaceAndName(activity.getId(),"uri",textName);
-                    if(activityProperty2 == null) {
+                    ActivityProperty activityProperty2 = activityPropertyDao.getByNamespaceAndName(activity.getId(),namespace,textName);
+                    if (activityProperty2 == null) {
                         activityProperty2 = new ActivityProperty();
                         activityProperty2.setActivity(activity);
                         activityProperty2.setNamespace(namespace);
@@ -87,11 +86,11 @@ public class AdvancedEditActivityCommand implements Validatable {
             String templateName = "0".concat(".").concat("template");
             String textName = "0".concat(".").concat("text");
             activityProperties = activityPropertyDao.getByActivityId(activity.getId());
-            if(activityProperties!=null) {
-               for(int k = activityProperties.size();k>0;k--) {
+            if (activityProperties!=null) {
+               for (int k = activityProperties.size();k>0;k--) {
                     ActivityProperty property = activityProperties.get(k-1);
                     String[] indexValue = property.getName().split("\\.");
-                    if(indexValue!=null && indexValue[0].matches("\\d+")) {
+                    if (indexValue!=null && indexValue[0].matches("\\d+")) {
                         int value = Integer.parseInt(indexValue[0]);
                         String index = String.valueOf(value+1);
                         templateName = index.concat(".").concat("template");
@@ -100,7 +99,7 @@ public class AdvancedEditActivityCommand implements Validatable {
                     }
                 }
             }
-            if(getNewUri().get(entry.getKey()).getTemplateValue()!=null)  {
+            if (getNewUri().get(entry.getKey()).getTemplateValue()!=null)  {
                 ActivityProperty activityProperty1 = new ActivityProperty();
                 activityProperty1.setActivity(activity);
                 activityProperty1.setNamespace(namespace);
@@ -108,7 +107,7 @@ public class AdvancedEditActivityCommand implements Validatable {
                 activityProperty1.setValue(getNewUri().get(entry.getKey()).getTemplateValue());
                 activityPropertyDao.save(activityProperty1);
             }
-            if(getNewUri().get(entry.getKey()).getTextValue()!=null) {
+            if (getNewUri().get(entry.getKey()).getTextValue()!=null) {
                 ActivityProperty activityProperty2 = new ActivityProperty();
                 activityProperty2.setActivity(activity);
                 activityProperty2.setNamespace(namespace);
@@ -124,54 +123,20 @@ public class AdvancedEditActivityCommand implements Validatable {
     }
 
     private Map<String,UriPropertyList> createExistingUri() {
-       Map<String,UriPropertyList> existingList = new TreeMap<String,UriPropertyList>();
-       List<ActivityProperty> activityProperties;
-       if(activity.getId()!=null){
-           activityProperties = activityPropertyDao.getByActivityId(activity.getId());
-           if(activityProperties !=null) {
-                Iterator iterator = activityProperties.iterator();
-                int i=0;
-                String indexSize[] = new String[activityProperties.size()];
-                String[][] data = new String[activityProperties.size()][2];
-
-                //Get the Index of the Activity Property to be compare
-                while(iterator.hasNext())   {
-                    ActivityProperty activityPropertyFirst = (ActivityProperty)iterator.next();
-                    String[] indexValueFirst = activityPropertyFirst.getName().split("\\.");
-                    if(indexValueFirst!=null) {
-                        Iterator iteratorAll = activityProperties.iterator();
-
-                        //Compare with all other properties For Activity and Put together similar Index Activity Property
-                        while(iteratorAll .hasNext()) {
-                            ActivityProperty activityPropertyAll = (ActivityProperty)iteratorAll.next();
-                            String[] indexValueAll = activityPropertyAll.getName().split("\\.");
-                            if(indexValueAll!=null && indexValueAll.length==2) {
-                                if(indexValueFirst[0].equals(indexValueAll[0])) {
-                                    if(indexValueAll[1].equalsIgnoreCase("template")) {
-                                        data[i][0] = activityPropertyAll.getValue();
-                                    }
-                                    if(indexValueAll[1].equalsIgnoreCase("text")) {
-                                        data[i][1] = activityPropertyAll.getValue();
-                                    }
-                                    indexSize[i] = indexValueFirst[0];
-                                }
-                            }
-                        }
-                    }
-                    i++;
-                }
-
-           //Contruct Map with Key as Index and Value as PropertyList
-           for(int j=0;j<activityProperties.size();j=j+2) {
+        Map<String,UriPropertyList> existingList = new TreeMap<String,UriPropertyList>();
+        if (activity.getId()!=null){
+           Map<String,List<String>> uriListMap = activityService.createActivityUriList(activity);
+           Iterator iterator = uriListMap.entrySet().iterator();
+           while (iterator.hasNext()) {
+               Map.Entry entry = (Map.Entry)iterator.next();
                UriPropertyList uriList = new UriPropertyList();
-               uriList.setTemplateValue(data[j][0]);
-               uriList.setTextValue(data[j][1]);
-               if(indexSize[j]!=null)
-               existingList.put(indexSize[j],uriList);
+               List<String> uriValues = (List)entry.getValue();
+               uriList.setTemplateValue(uriValues.get(1));
+               uriList.setTextValue(uriValues.get(0));
+               existingList.put((String)entry.getKey(),uriList);
            }
-       }
-    }
-    return existingList;
+        }
+        return existingList;
     }
 
     public Map<String, UriPropertyList> getNewUri() {

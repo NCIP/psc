@@ -23,7 +23,7 @@ public class ActivityPropertyXmlSerializerTest   extends StudyCalendarXmlTestCas
     protected void setUp() throws Exception {
            super.setUp();
            activity = setId(20, createActivity("Bone Scan"));
-           activityProperty =  Fixtures.createSingleActivityProperty(activity, namespace ,"id.template" ,"templateValue");
+           activityProperty =  Fixtures.createActivityProperty(activity, namespace ,"id.template" ,"templateValue");
            activityPropertyXmlSerializer = new ActivityPropertyXmlSerializer();
        }
     

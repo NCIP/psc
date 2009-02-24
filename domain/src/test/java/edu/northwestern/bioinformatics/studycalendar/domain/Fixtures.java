@@ -331,40 +331,20 @@ public class Fixtures {
         return activity;
     }
 
-    public static List<ActivityProperty> createActivityProperty(Activity activity, String namespace, String templateName, String templateValue, String textName, String textValue) {
-        List<ActivityProperty> properties = new ArrayList<ActivityProperty>();
+    public static ActivityProperty createActivityProperty(Activity activity, String namespace, String name, String value) {
         ActivityProperty activityProperty = new ActivityProperty();
-        ActivityProperty activityProperty1 = new ActivityProperty();
         activityProperty.setNamespace(namespace);
-        activityProperty.setName(templateName);
-        activityProperty.setValue(templateValue);
-        activityProperty1.setNamespace(namespace);
-        activityProperty1.setName(textName);
-        activityProperty1.setValue(textValue);
+        activityProperty.setName(name);
+        activityProperty.setValue(value);
         activityProperty.setActivity(activity);
-        activityProperty1.setActivity(activity);
-        properties.add(activityProperty);
-        properties.add(activityProperty1);
-        return properties;
+        return activityProperty;
     }
 
-    public static List<ActivityProperty> createActivityProperty(Activity activity, String namespace, String templateName, String templateValue) {
-        List<ActivityProperty> properties = new ArrayList<ActivityProperty>();
+    public static ActivityProperty createActivityProperty(String namespace,String name, String value) {
         ActivityProperty activityProperty = new ActivityProperty();
         activityProperty.setNamespace(namespace);
-        activityProperty.setName(templateName);
-        activityProperty.setValue(templateValue);
-        activityProperty.setActivity(activity);
-        properties.add(activityProperty);
-        return properties;
-    }
-
-    public static ActivityProperty createSingleActivityProperty(Activity activity, String namespace, String templateName, String templateValue) {
-        ActivityProperty activityProperty = new ActivityProperty();
-        activityProperty.setNamespace(namespace);
-        activityProperty.setName(templateName);
-        activityProperty.setValue(templateValue);
-        activityProperty.setActivity(activity);
+        activityProperty.setName(name);
+        activityProperty.setValue(value);
         return activityProperty;
     }
 

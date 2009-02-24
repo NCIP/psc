@@ -2,19 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Nataliya Shurupova
@@ -24,6 +19,7 @@ import java.util.TreeMap;
 public class ActivityService {
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * Deletes the activity, if it has no reference by planned activity.
@@ -63,6 +59,60 @@ public class ActivityService {
             Collections.sort(source.getActivities());
         }
         return new ArrayList<Source>(sources.values());
+    }
+
+    /**
+     * Create Activity Property Map with Key value as Index Value and put similar index property into URI List.
+     * @param activity
+     * @return Map - Index as key and Properties as List
+     */
+
+    public Map<String,List<String>> createActivityUriList(Activity activity) {
+        List<ActivityProperty> activityProperties = activity.getProperties();
+        Map<String,List<String>> uriMap = new TreeMap<String,List<String>>();
+        if (activityProperties !=null) {
+             int i=0;
+             String[] indexValue = new String[activityProperties.size()];
+             String[][] dataValue = new String[activityProperties.size()][2];
+             Iterator iterator = activityProperties.iterator();
+
+             //Get the Index of the Activity Property to be compare
+              while (iterator.hasNext())   {
+                    ActivityProperty activityPropertyNext = (ActivityProperty)iterator.next();
+                    String[] indexValueNext = activityPropertyNext.getName().split("\\.");
+                    if(indexValueNext[0]!=null) {
+                        Iterator iteratorAll = activityProperties.iterator();
+
+                        //Compare with all other properties For Activity and Put together similar Index Activity Property
+                        while (iteratorAll .hasNext()) {
+                            ActivityProperty activityPropertyAll = (ActivityProperty)iteratorAll.next();
+                            String[] indexValueAll = activityPropertyAll.getName().split("\\.");
+                            if(indexValueAll!=null && indexValueAll.length==2) {
+                                if(indexValueNext[0].equals(indexValueAll[0])) {
+                                    if(indexValueAll[1].equalsIgnoreCase("text")) {
+                                        dataValue[i][0] = activityPropertyAll.getValue();
+                                    }
+                                    if(indexValueAll[1].equalsIgnoreCase("template")) {
+                                        dataValue[i][1] = activityPropertyAll.getValue();
+                                    }
+                                    indexValue[i] = indexValueNext[0];
+                                }
+                            }
+                        }
+                    }
+                    i++;
+                }
+
+                //Contruct Map with Key as Index and Value(Template & Text) as uriList
+                for (int j=0;j<activityProperties.size();j=j+2) {
+                    List<String> uriList = new ArrayList<String>();
+                    uriList.add(0,dataValue[j][0]);
+                    uriList.add(1,dataValue[j][1]);
+                    if(indexValue[j]!=null)
+                        uriMap.put(indexValue[j],uriList);
+                }
+        }
+        return uriMap;
     }
 
     ////// CONFIGURATION
