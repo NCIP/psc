@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
+import edu.northwestern.bioinformatics.studycalendar.tools.ExpandingMap;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.springframework.validation.Errors;
 
