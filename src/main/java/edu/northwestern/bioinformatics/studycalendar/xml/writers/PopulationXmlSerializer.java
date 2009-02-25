@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import edu.northwestern.bioinformatics.studycalendar.StudyImportException
 
 public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<Population> implements StatefulTemplateXmlSerializer<Population> {
     public static final String ABBREVIATION = "abbreviation";
