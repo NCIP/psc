@@ -98,6 +98,19 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
+    public void testGetFiltersByTypeNameIfProvided() throws Exception {
+        QueryParameters.TYPE.putIn(request, "LAB_TEST");
+        Source expectedSource = source.transientClone();
+        expect(activityTypeDao.getByName("LAB_TEST")).andReturn(new ActivityType("LAB_TEST")).anyTimes();
+        expectFoundSource(source);
+        expect(activityService.getFilteredSources(null,  Fixtures.createActivityType("LAB_TEST"), source)).
+            andReturn(Collections.singletonList(expectedSource));
+        expectObjectXmlized(expectedSource);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
     public void testGetRendersEmptySourceIfFilteringComesUpWithNothing() throws Exception {
         QueryParameters.TYPE_ID.putIn(request, "3");
         Source expectedSource = Fixtures.createSource(source.getName());

@@ -60,5 +60,20 @@ describe "/activities" do
       activity_names.should include("Bone Marrow Cultures")
       activity_names.should include("serum bone alkaline phosphatase")
     end
+	
+	it "searches single source activities with activity type=" do
+	  get'/activities/Northwestern%20University?type=Intervention', :as => :alice
+      response.status_code.should == 200
+      response_activity_count.should == 246
+	  response.xml_attributes("activity", "type").uniq.should have(1).kind
+    end
+	
+	it "searches single source activities with q= and type=" do
+	  get'/activities/Northwestern%20University?q=HLA&type=Lab+Test',:as => :alice
+	  response.status_code.should == 200
+	  response_activity_count.should == 3
+	  response.xml_attributes("activity","type").uniq.should have(1).kind
+	end
+	  
   end
 end
