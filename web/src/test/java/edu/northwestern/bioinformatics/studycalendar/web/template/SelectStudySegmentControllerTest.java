@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -44,7 +45,7 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         request.setParameter("studySegment", Integer.toString(STUDY_SEGMENT_ID));
         request.setMethod("GET");
     }
-    
+
     // TODO: test the inclusion of the plan tree hierarchy
     public void testRequest() throws Exception {
         replayMocks();
@@ -59,8 +60,9 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         System.out.println("mv.getModel " + mv.getModel());
         assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
     }
-    
+
     public void testRequestWhenAmended() throws Exception {
+        request.setParameter("developmentRevision", "true");
         study.setDevelopmentAmendment(new Amendment("dev"));
         expect(deltaService.revise(studySegment)).andReturn((StudySegment) studySegment.transientClone());
         expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
@@ -75,5 +77,20 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertNotNull("dev revision missing", mv.getModel().get("developmentRevision"));
 
         assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
+    }
+
+    public void testRequestWhenReleasedTemplateIsSelected() throws Exception {
+        study.setDevelopmentAmendment(new Amendment("dev"));
+
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+
+        Object actualStudySegment = mv.getModel().get("studySegment");
+        assertNotNull("study segment missing", actualStudySegment);
+        assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
+        assertNull("must not revise study", mv.getModel().get("developmentRevision"));
+
+        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
     }
 }
