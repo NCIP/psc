@@ -8,7 +8,8 @@
 <head>
     <tags:stylesheetLink name="admin"/>
     <script type="text/javascript">
-        var authSystemField = 'conf[${authenticationSystemKey}].value';
+        var authSystemField = 'auth-system-selector';
+        var authSystemFieldName = 'conf[${authenticationSystemKey}].value';
         var customClassCache = '${command.customAuthenticationSystemClass}';
 
         function selectCustomClass() {
@@ -30,7 +31,7 @@
                 selectedSystem = $F(authSystemField)
             }
             var params = { }
-            params[authSystemField] = selectedSystem
+            params[authSystemFieldName] = selectedSystem
             $("auth-enum-indicator").reveal()
             new Ajax.Request("<c:url value="/pages/admin/configureAuthentication"/>", {
                 parameters: params,
@@ -57,7 +58,7 @@
             </p>
             <p id="system-select">
                 <tags:activityIndicator id="auth-enum-indicator"/>
-                <form:select path="conf[${authenticationSystemKey}].value">
+                <form:select path="conf[${authenticationSystemKey}].value" id="auth-system-selector">
                     <form:options items="${knownAuthenticationSystems}" itemLabel="displayName"/>
                     <option value="" <c:if test="${isCustomAuthenticationSystem}">selected="selected"</c:if>>custom</option>
                 </form:select>
