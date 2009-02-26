@@ -1,30 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
-import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.acegisecurity.AuthenticationManager;
-import org.acegisecurity.AuthenticationException;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import org.acegisecurity.Authentication;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationContext;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.BeansException;
-import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.ServletException;
-import javax.servlet.FilterConfig;
-import javax.servlet.FilterChain;
 import java.io.IOException;
-
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.LocalAuthenticationSystem;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationListener;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEvent;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 
 /**
  * @author Rhett Sutphin

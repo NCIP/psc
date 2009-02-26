@@ -55,6 +55,52 @@ define "psc" do
     package(:sources)
   end
   
+  desc "Pluggable authentication definition and included plugins"
+  define "authentication" do
+    desc "Interfaces and base classes for the pluggable authentication system"
+    define "plugin-api" do
+      compile.with project('utility'), SLF4J, 
+        CONTAINER_PROVIDED, SPRING, SECURITY, CTMS_COMMONS.core, 
+        JAKARTA_COMMONS.lang
+      test.with(UNIT_TESTING)
+      package(:jar)
+    end
+    
+    desc "Authentication using PSC's local CSM instance"
+    define "local-plugin" do
+      compile.with project('plugin-api').and_dependencies
+      test.with project('plugin-api').test_dependencies
+      package(:jar)
+    end
+    
+    desc "Authentication via an enterprise-wide CAS server"
+    define "cas-plugin" do
+      compile.with project('plugin-api').and_dependencies
+      test.with project('plugin-api').test_dependencies,
+        project('core').and_dependencies
+      package(:jar)
+    end
+    
+    desc "Authentication via caGrid's customized version of CAS"
+    define "websso-plugin" do
+      compile.with project('plugin-api').and_dependencies,
+        project('cas-plugin').and_dependencies
+      test.with project('plugin-api').test_dependencies,
+        project('cas-plugin').test_dependencies, 
+        project('domain').and_dependencies, 
+        project('domain').test_dependencies
+      package(:jar)
+    end
+    
+    desc "A completely insecure implementation for integrated tests and the like"
+    define "insecure-plugin" do
+      compile.with project('plugin-api').and_dependencies
+      test.with project('plugin-api').test_dependencies, 
+        project('domain').and_dependencies, project('domain').test_dependencies
+      package(:jar)
+    end
+  end
+
   desc "Core data access, serialization and non-substitutable business logic"
   define "core" do
     def filter_tokens
@@ -83,12 +129,15 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end
 
-    compile.with project('domain'), project('domain').compile.dependencies, 
-      BERING, DB, XML, RESTLET.framework, FREEMARKER, CSV, CONTAINER_PROVIDED,
+    compile.with project('domain').and_dependencies,
+      project('authentication:plugin-api').and_dependencies,
+      project('authentication:local-plugin').and_dependencies, # since it's the default
+      BERING, DB, XML, RESTLET.framework, FREEMARKER, CSV,
       QUARTZ, 
       SPRING_WEB # tmp for mail
 
-    test.with UNIT_TESTING, project('domain').test.compile.target
+    test.with UNIT_TESTING, project('domain').test.compile.target, 
+      project('authentication:plugin-api').test_dependencies
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
@@ -171,7 +220,8 @@ define "psc" do
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
     compile.with LOGBACK, 
-      project('core'), project('core').compile.dependencies, 
+      project('core').and_dependencies,
+      projects('authentication').collect { |p| p.and_dependencies },
       SPRING_WEB, RESTLET, WEB, CAGRID
 
     test.with project('test-infrastructure'), 
@@ -180,7 +230,7 @@ define "psc" do
 
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
-      war.libs -= war.libs.select { |artifact| artifact.classifier == 'sources' }
+      war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
     end
     package(:sources)
     

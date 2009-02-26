@@ -37,17 +37,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
 
-    <bean id="pscAuthenticationProvider"
-         class="edu.northwestern.bioinformatics.studycalendar.security.plugin.PSCAuthenticationProvider">
-        <property name="studyCalendarAuthenticationManager" ref="pscAuthenticationManager"/>
-        <property name="userDetailsService" ref="pscUserDetailsService"/>
-        <property name="userCache" ref="userCache"/>
-    </bean>
-
-    <bean class="edu.northwestern.bioinformatics.studycalendar.security.plugin.StudyCalendarAuthenticationManager" id="pscAuthenticationManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
     <bean id="pscUserDetailsService"
           class="edu.northwestern.bioinformatics.studycalendar.security.PscUserDetailsService">
         <property name="userService" ref="userService"/>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Beans used by WebSsoAuthenticationSystem.
+ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       ">
+    <bean id="cctsAuthoritiesPopulator"
+          class="edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.WebSSOAuthoritiesPopulator">
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
+    </bean>
+
+    <bean id="cctsCasProxyTicketValidator"
+          class="gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator">
+        <property name="casValidate" value="${cas.server.url.validate}"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
+        <property name="trustStore" value="${cas.server.trustStore}"/>
+    </bean>
+</beans>

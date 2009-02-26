@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.CasAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.StubAuthenticationSystem;
@@ -34,14 +33,14 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
         assertEquals("Wrong number of properties for local", 1, configuration.getProperties().size());
         assertContains("Sole property for local should be auth system", configuration.getProperties().getAll(), AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM);
 
-        setMinimumCasParameters();
-        selectAuthenticationSystem(KnownAuthenticationSystem.CAS.name());
-        assertNotNull("No properties for CAS", configuration.getProperties());
-        assertContains("CAS props should contain auth system", configuration.getProperties().getAll(), AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM);
-        assertContains("CAS props should contain CAS system props", configuration.getProperties().getAll(), CasAuthenticationSystem.APPLICATION_URL);
-        assertEquals("Wrong number of properties for CAS", 4, configuration.getProperties().size());
+        setMinimumTestSystemParameters();
+        selectAuthenticationSystem(TestableAuthenticationSystem.class.getName());
+        assertNotNull("No properties for TAS", configuration.getProperties());
+        assertContains("TAS props should contain auth system", configuration.getProperties().getAll(), AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM);
+        assertContains("TAS props should contain TAS system props", configuration.getProperties().getAll(), TestableAuthenticationSystem.APPLICATION_URL);
+        assertEquals("Wrong number of properties for TAS", 3, configuration.getProperties().size());
         assertEquals("Property details should be available for per-system props",
-            "Service URL", configuration.getProperties().getNameFor(CasAuthenticationSystem.SERVICE_URL.getKey()));
+            "Service URL", configuration.getProperties().getNameFor(TestableAuthenticationSystem.SERVICE_URL.getKey()));
     }
 
     public void testCreateDefaultAuthenticationSystem() throws Exception {
@@ -56,12 +55,12 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
         AuthenticationSystem initialSystem = configuration.getAuthenticationSystem();
         assertNotNull("No system created initially", initialSystem);
 
-        setMinimumCasParameters();
-        selectAuthenticationSystem(KnownAuthenticationSystem.CAS.name());
+        setMinimumTestSystemParameters();
+        selectAuthenticationSystem(TestableAuthenticationSystem.class.getName());
         AuthenticationSystem newSystem = configuration.getAuthenticationSystem();
         assertNotSame("New system is not new", initialSystem, newSystem);
         assertTrue("Wrong new system created",
-            KnownAuthenticationSystem.CAS.getAuthenticationSystemClass().isAssignableFrom(newSystem.getClass()));
+            TestableAuthenticationSystem.class.isAssignableFrom(newSystem.getClass()));
     }
 
     public void testCreateAuthenticationSystemFromClassName() throws Exception {
@@ -107,9 +106,9 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
         assertFalse(configuration.isCustomAuthenticationSystem());
     }
 
-    private void setMinimumCasParameters() {
-        configuration.set(CasAuthenticationSystem.SERVICE_URL, "not-null");
-        configuration.set(CasAuthenticationSystem.APPLICATION_URL, "not-null");
+    private void setMinimumTestSystemParameters() {
+        configuration.set(TestableAuthenticationSystem.SERVICE_URL, "not-null");
+        configuration.set(TestableAuthenticationSystem.APPLICATION_URL, "not-null");
     }
 
     private void selectAuthenticationSystem(String requested) {

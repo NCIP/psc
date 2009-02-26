@@ -93,6 +93,8 @@ SPRING_WEB = [
   "org.ognl:com.springsource.org.ognl:jar:2.6.9" # For webflow
 ]
 
+CGLIB = "net.sourceforge.cglib:com.springsource.net.sf.cglib:jar:2.1.3"
+
 HIBERNATE = [
   "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
   "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
@@ -100,7 +102,7 @@ HIBERNATE = [
   "org.hibernate:com.springsource.org.hibernate.validator:jar:3.1.0.GA",
   "org.antlr:com.springsource.antlr:jar:2.7.7",
   "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
-  "net.sourceforge.cglib:com.springsource.net.sf.cglib:jar:2.1.3",
+  CGLIB,
   "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
   "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
   "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
@@ -199,9 +201,11 @@ CONTAINER_PROVIDED = [
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
+  CTMS_COMMONS.base,
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",
+  CGLIB,
   "org.springframework:spring-test:jar:#{SPRING_VERSION}",
   eponym("xmlunit", "1.1"),
   LOGBACK
