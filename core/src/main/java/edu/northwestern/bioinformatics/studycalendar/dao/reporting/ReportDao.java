@@ -5,6 +5,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import java.util.Collections;
@@ -23,7 +24,7 @@ public abstract class ReportDao<F extends ReportFilters, R extends DomainObject>
                     logger.debug("No filters selected, skipping search: " + filters);
                     return Collections.emptyList();
                 } else {
-                    Criteria criteria = session.createCriteria(domainClass());
+                    Criteria criteria = session.createCriteria(domainClass()).addOrder(Order.asc("id"));
                     filters.apply(session);
                     return (List<R>) criteria.list();
 
