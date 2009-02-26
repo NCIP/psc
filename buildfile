@@ -103,25 +103,13 @@ define "psc" do
 
   desc "Core data access, serialization and non-substitutable business logic"
   define "core" do
-    def filter_tokens
-      {
-        'application-short-name'  => APPLICATION_SHORT_NAME,
-        # 'config.database'         => db_name,
-        "buildInfo.versionNumber" => project.version,
-        "buildInfo.username"      => ENV['USER'],
-        "buildInfo.hostname"      => `hostname`.chomp,
-        "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
-      }
-    end
-    
-    # :ant filtering, but with deferred token creation so that the db name
-    # can be influenced by other tasks
-    resources.filter.using do |path, content|
-      deferred_tokens = filter_tokens
-      content.gsub(/@.*?@/) do |key|
-        deferred_tokens[key[1..-2]] || key
-      end
-    end
+    resources.filter.using(:ant, 
+      'application-short-name'  => APPLICATION_SHORT_NAME,
+      "buildInfo.versionNumber" => project.version,
+      "buildInfo.username"      => ENV['USER'],
+      "buildInfo.hostname"      => `hostname`.chomp,
+      "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    )
     
     # Migrations are resources, too
     resources.enhance do
@@ -158,11 +146,9 @@ define "psc" do
     package(:sources)
     
     check do
-      # acSpring = File.read(_('target/resources/applicationContext-spring.xml'))
       acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
       
-      # acSpring.should include(filter_tokens['config.database'])
-      acSetup.should include(filter_tokens['buildInfo.hostname'])
+      acSetup.should include(`hostname`.chomp)
       acSetup.should include(project.version)
     end
     
