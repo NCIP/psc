@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.StubAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
 import org.springframework.context.ApplicationContext;
 
 /**
