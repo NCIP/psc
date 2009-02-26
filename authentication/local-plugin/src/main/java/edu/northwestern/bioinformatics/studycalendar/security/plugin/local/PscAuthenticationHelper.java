@@ -19,13 +19,13 @@ import java.sql.SQLException;
 /**
  * @author Jalpa Patel
  */
-public class StudyCalendarAuthenticationManager{
+public class PscAuthenticationHelper {
     private DataSource dataSource;
-    private static final Logger log = LoggerFactory.getLogger(StudyCalendarAuthenticationManager.class);
+    private static final Logger log = LoggerFactory.getLogger(PscAuthenticationHelper.class);
 
     public boolean authenticate(Authentication authentication) {
         Boolean value = validate(authentication.getPrincipal().toString(),authentication.getCredentials().toString());
-        if(value == false)
+        if(!value)
             throw new BadCredentialsException("Invalid username or password");
         return true;
     }

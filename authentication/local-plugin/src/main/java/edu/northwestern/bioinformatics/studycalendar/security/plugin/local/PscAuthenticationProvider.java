@@ -11,14 +11,14 @@ import org.acegisecurity.providers.dao.AbstractUserDetailsAuthenticationProvider
 /**
  * @author Jalpa Patel
  */
-public class PSCAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class PscAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private UserDetailsService userDetailsService;
-    private StudyCalendarAuthenticationManager studyCalendarAuthenticationManager;
+    private PscAuthenticationHelper pscAuthenticationHelper;
 
     public Authentication authenticate(Authentication authentication) {
-      Boolean valid = studyCalendarAuthenticationManager.authenticate(authentication);
-        if(valid == false){
+      Boolean valid = pscAuthenticationHelper.authenticate(authentication);
+        if(!valid){
             throw new BadCredentialsException("Invalid username or password");
         }
         UserDetails user = userDetailsService.loadUserByUsername(authentication.getPrincipal().toString());
@@ -40,11 +40,11 @@ public class PSCAuthenticationProvider extends AbstractUserDetailsAuthentication
         this.userDetailsService = userDetailsService;
     }
 
-    public StudyCalendarAuthenticationManager getStudyCalendarAuthenticationManager() {
-        return studyCalendarAuthenticationManager;
+    public PscAuthenticationHelper getPscAuthenticationHelper() {
+        return pscAuthenticationHelper;
     }
 
-    public void setStudyCalendarAuthenticationManager(StudyCalendarAuthenticationManager studyCalendarAuthenticationManager) {
-        this.studyCalendarAuthenticationManager = studyCalendarAuthenticationManager;
+    public void setPscAuthenticationHelper(PscAuthenticationHelper pscAuthenticationHelper) {
+        this.pscAuthenticationHelper = pscAuthenticationHelper;
     }
 }

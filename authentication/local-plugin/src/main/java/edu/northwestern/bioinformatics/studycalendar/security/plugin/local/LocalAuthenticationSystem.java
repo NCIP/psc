@@ -27,8 +27,8 @@ public class LocalAuthenticationSystem extends UsernameAndPasswordAuthentication
 
     @Override
     protected AuthenticationManager createAuthenticationManager() {
-        PSCAuthenticationProvider provider
-            = (PSCAuthenticationProvider) localSystemContext.getBean("pscAuthenticationProvider");
+        PscAuthenticationProvider provider
+            = (PscAuthenticationProvider) localSystemContext.getBean("pscAuthenticationProvider");
         return AuthenticationSystemTools.createProviderManager(localSystemContext, provider);
     }
 

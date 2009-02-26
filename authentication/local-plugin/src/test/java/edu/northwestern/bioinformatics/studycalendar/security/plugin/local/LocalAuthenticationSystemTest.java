@@ -48,7 +48,7 @@ public class LocalAuthenticationSystemTest extends AuthenticationTestCase {
         ProviderManager manager = (ProviderManager) system.authenticationManager();
         assertEquals("Wrong number of providers", 2, manager.getProviders().size());
         assertTrue("First provider is not PSC-local provider",
-                manager.getProviders().get(0) instanceof PSCAuthenticationProvider);
+                manager.getProviders().get(0) instanceof PscAuthenticationProvider);
     }
 
     private static class FakeUserDetailsService implements UserDetailsService {

@@ -10,12 +10,12 @@
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        ">
     <bean id="pscAuthenticationProvider"
-         class="edu.northwestern.bioinformatics.studycalendar.security.plugin.local.PSCAuthenticationProvider">
-        <property name="studyCalendarAuthenticationManager" ref="pscAuthenticationManager"/>
+         class="edu.northwestern.bioinformatics.studycalendar.security.plugin.local.PscAuthenticationProvider">
+        <property name="pscAuthenticationHelper" ref="pscAuthenticationHelper"/>
         <property name="userDetailsService" ref="pscUserDetailsService"/>
     </bean>
 
-    <bean class="edu.northwestern.bioinformatics.studycalendar.security.plugin.local.StudyCalendarAuthenticationManager" id="pscAuthenticationManager">
+    <bean class="edu.northwestern.bioinformatics.studycalendar.security.plugin.local.PscAuthenticationHelper" id="pscAuthenticationHelper">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 </beans>
