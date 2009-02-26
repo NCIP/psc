@@ -221,7 +221,7 @@ define "psc" do
   define "web" do
     compile.with LOGBACK, 
       project('core').and_dependencies,
-      projects('authentication').collect { |p| p.and_dependencies },
+      %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
       SPRING_WEB, RESTLET, WEB, CAGRID
 
     test.with project('test-infrastructure'), 
@@ -231,6 +231,7 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
+      war.libs -= war.libs.select { |artifact| File.directory?(artifact.to_s) }
     end
     package(:sources)
     
