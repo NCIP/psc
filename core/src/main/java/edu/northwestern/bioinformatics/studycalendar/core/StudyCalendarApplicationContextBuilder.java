@@ -13,7 +13,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class StudyCalendarApplicationContextBuilder {
     public static final String[] DEPLOYED_CONFIG_LOCATIONS = new String[] {
-        "classpath*:/applicationContext*.xml"
+        "classpath:applicationContext-acegi-security.xml" ,
+        "classpath:applicationContext-api.xml"            ,
+        "classpath:applicationContext-dao.xml"            ,
+        "classpath:applicationContext-db.xml"             ,
+        "classpath:applicationContext-mail.xml"           ,
+        "classpath:applicationContext-representations.xml",
+        "classpath:applicationContext-security.xml"       ,
+        "classpath:applicationContext-service.xml"        ,
+        "classpath:applicationContext-setup.xml"          ,
+        "classpath:applicationContext-spring.xml"         ,
     };
 
     private static ApplicationContext applicationContext = null;

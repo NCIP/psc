@@ -76,7 +76,7 @@ define "psc" do
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
       compile.with project('plugin-api').and_dependencies
-      test.with project('plugin-api').test_dependencies,
+      test.with project('plugin-api').test_dependencies, 
         project('core').and_dependencies
       package(:jar)
     end
@@ -231,7 +231,6 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      war.libs -= war.libs.select { |artifact| File.directory?(artifact.to_s) }
     end
     package(:sources)
     

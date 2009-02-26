@@ -23,12 +23,6 @@ public class DispatcherServletInitializationTest extends TestCase {
         servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
     }
 
-    public void testWebApplicationContextItself() throws Exception {
-        ApplicationContext context = StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
-        // no exceptions
-        assertPositive("No bean definitions loaded", context.getBeanDefinitionCount());
-    }
-
     public void testSpringServletContext() throws Exception {
         assertDispatcherServletConfigLoads("spring");
     }
@@ -72,7 +66,11 @@ public class DispatcherServletInitializationTest extends TestCase {
         XmlWebApplicationContext context = new XmlWebApplicationContext();
         context.setParent(parent);
         context.setServletContext(servletContext);
-        context.setConfigLocations(new String[] { "WEB-INF/" + servletName + "-servlet.xml" });
+        context.setConfigLocations(new String[] { 
+            "classpath:applicationContext-command.xml",
+            "classpath:applicationContext-webflow.xml",
+            "WEB-INF/" + servletName + "-servlet.xml" 
+        });
         context.refresh();
         return context;
     }

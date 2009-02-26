@@ -1,7 +1,7 @@
 # Adds some methods for cleaner dependency on another project and its deps
 class Buildr::Project
   def and_dependencies
-    [self, self.resources.target, self.compile.dependencies].compact
+    [self, self.compile.dependencies].compact
   end
   
   def test_dependencies
