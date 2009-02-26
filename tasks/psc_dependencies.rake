@@ -8,6 +8,9 @@ repositories.remote << "http://download.bioinformatics.northwestern.edu/download
 repositories.remote << "http://maven.restlet.org"
 # ical4j repo
 repositories.remote << "http://m2.modularity.net.au/releases"
+# SpringSource osgi-ified bundle repos
+repositories.remote << "http://repository.springsource.com/maven/bundles/release"
+repositories.remote << "http://repository.springsource.com/maven/bundles/external"
 # main m2 repo
 repositories.remote << "http://repo1.maven.org/maven2"
 
@@ -39,8 +42,8 @@ CTMS_COMMONS = struct(
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = [
-  eponym("dom4j", "1.6.1"),
-  eponym("jdom", "1.0b8"),
+  "org.dom4j:com.springsource.org.dom4j:jar:1.5.2",
+  # "org.jdom:com.springsource.org.jdom:jar:1.0.0", # unused?
   # Saxon 9 isn't in the maven repo for some reason
   artifact("net.sf.saxon:saxon:jar:9").from(static_lib('saxon9.jar')),
   artifact("net.sf.saxon:saxon-dom:jar:9").from(static_lib('saxon9-dom.jar'))
@@ -56,20 +59,24 @@ LOGBACK = [
   eponym("janino", "2.5.10")
 ]
 SLF4J = group('slf4j-api', 'jcl-over-slf4j', 'jul-to-slf4j',
-  :under => "org.slf4j", :version => "1.5.2")
+  :under => "org.slf4j", :version => "1.5.6")
+
+def spring_osgi_apache_commons(name, version)
+  "org.apache.commons:com.springsource.org.apache.commons.#{name}:jar:#{version}"
+end
 
 JAKARTA_COMMONS = struct({
-  :beanutils  => eponym("commons-beanutils", "1.7.0"),
-  :collections => eponym("commons-collections", "3.2"),
-  :dbcp       => eponym("commons-dbcp", "1.2.1"),
-  :digester   => eponym("commons-digester", "1.7"),
-  :discovery  => eponym("commons-discovery", "0.4"),
-  :io         => "org.apache.commons:commons-io:jar:1.3.2",
-  :lang       => eponym("commons-lang", "2.1"),
-  :pool       => eponym("commons-pool", "1.2"),
-  :fileupload => eponym("commons-fileupload", "1.2"),
+  :beanutils  => spring_osgi_apache_commons("beanutils", "1.7.0"),
+  :collections => spring_osgi_apache_commons("collections", "3.2.0"),
+  :dbcp       => spring_osgi_apache_commons("dbcp", "1.2.2.osgi"),
+  :digester   => spring_osgi_apache_commons("digester", "1.8.0"),
+  :discovery  => spring_osgi_apache_commons("discovery", "0.4.0"),
+  :io         => spring_osgi_apache_commons("io", "1.4.0"),
+  :lang       => spring_osgi_apache_commons("lang", "2.1.0"),
+  :pool       => spring_osgi_apache_commons("pool", "1.4.0"),
+  :fileupload => spring_osgi_apache_commons("fileupload", "1.2.0"),
   :collections_generic => "net.sourceforge.collections:collections-generic:jar:4.01",
-  :validator  => eponym("commons-validator", "1.1.4")
+  :validator  => spring_osgi_apache_commons("validator", "1.1.4")
 })
 
 SPRING = [
@@ -80,23 +87,26 @@ SPRING_WEB = [
   "org.springframework:spring-webmvc:jar:#{SPRING_VERSION}",
   "org.springframework:spring-webflow:jar:1.0.5",
   "org.springframework:spring-binding:jar:1.0.5",
-  "javax.activation:activation:jar:1.1",
-  "javax.mail:mail:jar:1.4.1",
-  eponym("oro", "2.0.8"),
-  eponym("ognl", "2.6.9") # For webflow
+  "javax.activation:com.springsource.javax.activation:jar:1.1.1",
+  "javax.mail:com.springsource.javax.mail:jar:1.4.1",
+  "org.apache.oro:com.springsource.org.apache.oro:jar:2.0.8",
+  "org.ognl:com.springsource.org.ognl:jar:2.6.9" # For webflow
 ]
 
 HIBERNATE = [
-  "org.hibernate:hibernate:jar:3.2.5.ga",
-  "org.hibernate:hibernate-annotations:jar:3.2.0.ga",
-  eponym("antlr", "2.7.6"),
-  eponym("c3p0", "0.9.1"),
-  "cglib:cglib-nodep:jar:2.1_3",
-  "net.sf.ehcache:ehcache:jar:1.5.0",
-  "net.sf.jsr107cache:jsr107cache:jar:1.0",
-  "javax.transaction:jta:jar:1.0.1B",
-  "javax.persistence:persistence-api:jar:1.0",
-  eponym('backport-util-concurrent', '3.0')
+  "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
+  "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
+  "org.hibernate:com.springsource.org.hibernate.annotations.common:jar:3.3.0.ga",
+  "org.hibernate:com.springsource.org.hibernate.validator:jar:3.1.0.GA",
+  "org.antlr:com.springsource.antlr:jar:2.7.7",
+  "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
+  "net.sourceforge.cglib:com.springsource.net.sf.cglib:jar:2.1.3",
+  "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
+  "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
+  "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
+  "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
+  "edu.emory.mathcs.backport:com.springsource.edu.emory.mathcs.backport:jar:3.0.0",
+  "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
 ]
 
 SECURITY = [
@@ -145,16 +155,16 @@ CAGRID = [
 
 BERING = [
   "edu.northwestern.bioinformatics:bering:jar:0.7",
-  eponym("groovy", "1.0-jsr-06"),
-  eponym("asm", "2.2.3")
+  "org.codehaus.groovy:com.springsource.org.codehaus.groovy:jar:1.5.7",
+  "org.objectweb.asm:com.springsource.org.objectweb.asm:jar:2.2.3"
 ]
 
 QUARTZ = [
-  'opensymphony:quartz:jar:1.6.0'
+  "com.opensymphony.quartz:com.springsource.org.quartz:jar:1.6.0"
 ]
 
 FREEMARKER = [
-  "org.freemarker:freemarker:jar:2.3.10"
+  "org.freemarker:com.springsource.freemarker:jar:2.3.12"
 ]
 
 WEB = [
@@ -203,7 +213,7 @@ INTEGRATED_TESTING = [
 ]
 
 DB = struct(
-  :hsqldb => eponym("hsqldb", "1.8.0.7"),
+  :hsqldb => "org.hsqldb:com.springsource.org.hsqldb:jar:1.8.0.9",
   :postgresql => eponym("postgresql", "8.2-504.jdbc3"),
   :oracle => "com.oracle:ojdbc14:jar:10.2.0.2.0"
 )
