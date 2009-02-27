@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.core;
 
 import edu.nwu.bioinformatics.commons.StringUtils;
+import edu.northwestern.bioinformatics.studycalendar.database.StudyCalendarDbTestCase;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -8,7 +9,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.context.ApplicationContext;
 
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -130,5 +133,14 @@ public abstract class DaoTestCase extends StudyCalendarDbTestCase {
         dump.append("  ").append(rows.size()).append(" row").append(rows.size() != 1 ? "s\n" : "\n");
 
         System.out.print(dump);
+    }
+
+    @Override
+    protected DataSource getDataSource() {
+        return (DataSource) getApplicationContext().getBean("dataSource");
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return StudyCalendarTestCase.getDeployedApplicationContext();
     }
 }

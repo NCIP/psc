@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.core;
+package edu.northwestern.bioinformatics.studycalendar.database;
 
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
 import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
@@ -35,15 +35,6 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
     protected void tearDown() throws Exception {
         DataAuditInfo.setLocal(null);
         super.tearDown();
-    }
-
-    @Override
-    protected DataSource getDataSource() {
-        return (DataSource) getApplicationContext().getBean("dataSource");
-    }
-
-    public static ApplicationContext getApplicationContext() {
-        return StudyCalendarTestCase.getDeployedApplicationContext();
     }
 
     @Override

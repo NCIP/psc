@@ -6,12 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarDbTestCase;
+import edu.northwestern.bioinformatics.studycalendar.database.StudyCalendarDbTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.context.ApplicationContext;
 
+import javax.sql.DataSource;
 import java.util.Set;
 
 /**
@@ -94,5 +97,14 @@ public class UserServiceIntegratedTest extends StudyCalendarDbTestCase {
 
     private SiteService getSiteService() {
         return (SiteService) getApplicationContext().getBean("siteService");
+    }
+
+    @Override
+    protected DataSource getDataSource() {
+        return (DataSource) getApplicationContext().getBean("dataSource");
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return StudyCalendarTestCase.getDeployedApplicationContext();
     }
 }

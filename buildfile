@@ -54,6 +54,14 @@ define "psc" do
     package(:jar)
     package(:sources)
   end
+
+  desc "Database configuration and testing"
+  define "database" do
+    compile.with SLF4J, SPRING, CORE_COMMONS, CTMS_COMMONS.core
+    test.with UNIT_TESTING
+    package(:jar)
+    package(:sources)
+  end
   
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
@@ -69,7 +77,8 @@ define "psc" do
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
       compile.with project('plugin-api').and_dependencies
-      test.with project('plugin-api').test_dependencies
+      test.with project('plugin-api').test_dependencies,
+        project('domain').and_dependencies, project('domain').test_dependencies
       package(:jar)
     end
     
@@ -120,12 +129,14 @@ define "psc" do
     compile.with project('domain').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:local-plugin').and_dependencies, # since it's the default
+      project('database').and_dependencies,
       BERING, DB, XML, RESTLET.framework, FREEMARKER, CSV,
       QUARTZ, 
       SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
-      project('authentication:plugin-api').test_dependencies
+      project('authentication:plugin-api').test_dependencies,
+      project('database').test_dependencies
 
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.

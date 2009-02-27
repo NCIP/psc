@@ -1,8 +1,10 @@
-package edu.northwestern.bioinformatics.studycalendar.core;
+package edu.northwestern.bioinformatics.studycalendar.database;
 
 import junit.framework.TestCase;
 
 import java.util.Properties;
+
+import edu.northwestern.bioinformatics.studycalendar.database.PscDataSourceSelfDiscoveringPropertiesFactoryBean;
 
 /**
  * @author Saurabh Agrawal
