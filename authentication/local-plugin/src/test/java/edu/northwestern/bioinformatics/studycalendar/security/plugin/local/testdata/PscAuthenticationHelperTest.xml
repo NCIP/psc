@@ -1,0 +1,30 @@
+<dataset>
+    <CSM_USER
+        login_name ="superuser"
+        password = "sAybp9IVe7feRIv4iO8hcA=="
+        user_id  ="-100"
+        first_name = "fname"
+        last_name = "lname"
+     />
+    <USERS
+        name ="superuser"
+        active_flag = "true"
+        id = "-101"
+        csm_user_id = "-100"
+     />
+
+     <CSM_USER
+        login_name ="study_admin"
+        password = "kWIfWvsUd66SoxTyR4VAOg=="
+        user_id  ="-101"
+        first_name = "fname"
+        last_name = "lname"
+     />
+    <USERS
+        name ="study_admin"
+        active_flag = "false"
+        id = "-102"
+        csm_user_id = "-101"
+     />
+
+</dataset>

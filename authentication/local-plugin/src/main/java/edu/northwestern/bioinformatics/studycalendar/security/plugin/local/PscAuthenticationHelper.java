@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import gov.nih.nci.security.util.StringEncrypter;
 import gov.nih.nci.security.util.StringUtilities;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.BadCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +23,7 @@ public class PscAuthenticationHelper {
     private static final Logger log = LoggerFactory.getLogger(PscAuthenticationHelper.class);
 
     public boolean authenticate(Authentication authentication) {
-        Boolean value = validate(authentication.getPrincipal().toString(),authentication.getCredentials().toString());
-        if(!value)
-            throw new BadCredentialsException("Invalid username or password");
-        return true;
+        return validate(authentication.getPrincipal().toString(),authentication.getCredentials().toString());
     }
 
     private boolean validate(String userName, String password) throws StudyCalendarValidationException
