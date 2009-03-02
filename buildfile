@@ -63,7 +63,7 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end    
     compile.with BERING, SLF4J, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
-    JAKARTA_COMMONS, DB
+    JAKARTA_COMMONS, DB, HIBERNATE
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
