@@ -63,7 +63,7 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end    
     compile.with BERING, SLF4J, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
-    JAKARTA_COMMONS, DB, HIBERNATE
+      JAKARTA_COMMONS, DB, HIBERNATE
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
@@ -97,6 +97,17 @@ define "psc" do
           :targetVersion => "${migrate.version}",
           :migrationsDir => _("src/main/db/migrate"),
           :classpath => ant_classpath(project('database'))
+        if hsqldb?
+          # database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
+          # released and the tests can reopen it
+          ant.sql :driver => "${datasource.driver}", 
+            :url => "${datasource.url}",
+            :userid => "${datasource.username}",
+            :password => "${datasource.password}",
+            :autocommit => "true",
+            :classpath => ant_classpath(project('database')),
+            :pcdata => "SHUTDOWN SCRIPT;"
+        end
       end
     end
     
