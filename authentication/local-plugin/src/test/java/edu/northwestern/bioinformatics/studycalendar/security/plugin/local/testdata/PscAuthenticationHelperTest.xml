@@ -8,7 +8,7 @@
      />
     <USERS
         name ="superuser"
-        active_flag = "true"
+        active_flag="1"
         id = "-101"
         csm_user_id = "-100"
      />
@@ -22,7 +22,7 @@
      />
     <USERS
         name ="study_admin"
-        active_flag = "false"
+        active_flag="0"
         id = "-102"
         csm_user_id = "-101"
      />
