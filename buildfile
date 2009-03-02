@@ -78,7 +78,9 @@ define "psc" do
     define "local-plugin" do
       compile.with project('plugin-api').and_dependencies
       test.with project('plugin-api').test_dependencies,
-        project('domain').and_dependencies, project('domain').test_dependencies
+        project('domain').and_dependencies, project('domain').test_dependencies,
+        project('database').and_dependencies, project('database').test_dependencies, DB
+      test.resources.filter.using(:ant, 'application-short-name'  => APPLICATION_SHORT_NAME)
       package(:jar)
     end
     
