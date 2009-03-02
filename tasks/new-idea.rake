@@ -328,7 +328,7 @@ module Buildr::IntellijIdea
     
     def detect_vcs
       if File.directory?(buildr_project._('.svn'))
-        "Subversion"
+        "svn"
       elsif File.directory?(buildr_project._('.git')) # TODO: this might be in a parent directory
         "Git"
       end
