@@ -6,7 +6,7 @@ api-report
 *.log
 tools/tomcat/context.xml
 tools/tomcat/tomcat.properties
-core/hsqldb
+database/hsqldb
 reports
 web/src/main/webapp/WEB-INF/classes
 web/src/main/webapp/WEB-INF/lib
