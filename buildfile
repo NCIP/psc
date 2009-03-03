@@ -99,6 +99,10 @@ define "psc" do
         if hsqldb?
           # database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
           # released and the tests can reopen it
+          
+          # TODO: this sometimes (why not in all situations?) kills the buildr
+          #  process.  Using CHECKPOINT instead also kills the process, 
+          #  as do plain SHUTDOWN and SHUTDOWN COMPACT.
           ant.sql :driver => "${datasource.driver}", 
             :url => "${datasource.url}",
             :userid => "${datasource.username}",
