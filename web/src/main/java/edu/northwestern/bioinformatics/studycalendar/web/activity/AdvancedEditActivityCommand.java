@@ -1,15 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
-import edu.northwestern.bioinformatics.studycalendar.tools.ExpandingMap;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.map.LazySortedMap;
 import org.springframework.validation.Errors;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author Jalpa Patel
@@ -144,13 +149,11 @@ public class AdvancedEditActivityCommand implements Validatable {
     }
 
     private Map<String,UriPropertyList> createNewUri() {
-        Map<String, UriPropertyList> newList = new ExpandingMap<String, UriPropertyList>(
-                new ExpandingMap.Filler<UriPropertyList>() {
-                    public UriPropertyList createNew(Object key) { return new UriPropertyList(); }
-                }
-         );
-
-    return newList;
+        return LazySortedMap.decorate(new TreeMap<String, UriPropertyList>(), new Factory<UriPropertyList>() {
+            public UriPropertyList create() {
+                return new UriPropertyList();
+            }
+        });
     }
     
     ////CONFIGURATION

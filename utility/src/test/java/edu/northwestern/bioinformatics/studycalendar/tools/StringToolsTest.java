@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
-import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
+import junit.framework.TestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class StringToolsTest extends CoreTestCase {
+public class StringToolsTest extends TestCase {
     public void testHumanizeOneWord() throws Exception {
         assertEquals("windowsill", StringTools.humanizeClassName("Windowsill"));
     }

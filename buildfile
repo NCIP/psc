@@ -37,8 +37,7 @@ define "psc" do
   
   desc "Pure utility code"
   define "utility" do
-    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CORE_COMMONS,
-      JAKARTA_COMMONS.collections_generic, CTMS_COMMONS.lang
+    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
     
     package(:jar)

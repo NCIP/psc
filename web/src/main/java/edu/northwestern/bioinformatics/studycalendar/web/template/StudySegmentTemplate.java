@@ -5,15 +5,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
-import edu.northwestern.bioinformatics.studycalendar.tools.ExpandingMap;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.map.LazySortedMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -73,11 +74,10 @@ public class StudySegmentTemplate {
 
         private void initPeriods() {
             // temporary structure, indexed by Period#id.
-            SortedMap<Integer, MonthOfPeriod> byPeriodId = new ExpandingMap<Integer, MonthOfPeriod>(
-                new ExpandingMap.Filler<MonthOfPeriod>() {
-                    public MonthOfPeriod createNew(Object key) { return new MonthOfPeriod(); }
-                }
-            );
+            SortedMap<Integer, MonthOfPeriod> byPeriodId
+                = LazySortedMap.decorate(new TreeMap<Integer, MonthOfPeriod>(), new Factory<MonthOfPeriod>() {
+                    public MonthOfPeriod create() { return new MonthOfPeriod(); }
+                });
             for (Day day : getDays().values()) {
                 for (DayOfPeriod dayOfPeriod : day.getPeriods()) {
                     byPeriodId.get(dayOfPeriod.getId()).addDay(dayOfPeriod);
