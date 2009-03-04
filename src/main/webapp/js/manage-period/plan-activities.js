@@ -272,7 +272,7 @@ Object.extend(SC.MP, {
   
   cellSize: function() {
     console.time('cell size')
-    var aGroup = $$('#days tbody').first()
+    var aGroup = $$('#days tbody.activity-type').first()
     if (!aGroup) return { width: 1, height: 1 }
     var groupSize = aGroup.getDimensions()
     var headerSize = aGroup.select("tr.activity-type").first().getDimensions()
@@ -282,13 +282,13 @@ Object.extend(SC.MP, {
       throw "Expected at least one row"
     }
     dim.height = (groupSize.height - headerSize.height) / rows.length
-    
+
     var colCount = rows[0].getElementsByTagName("td").length
     if (colCount == 0) {
       throw "Expected at least one column"
     }
     dim.width = groupSize.width / colCount
-    
+
     console.timeEnd('cell size')
     return dim
   },
@@ -363,7 +363,7 @@ Object.extend(SC.MP, {
     }
     var rowGroup = SC.MP.findDaysRowGroup(daysRelativeMarkerLocation.y)
     if (!rowGroup) { return [undefined, undefined] }
-    
+
     var rowOffset = Math.floor(
       parseInt(daysRelativeMarkerLocation.y - rowGroup.getAttribute("drop-top")) / cellSize.height)
     var row = parseInt(rowGroup.getAttribute("drop-first-row-index")) + rowOffset

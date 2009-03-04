@@ -10,8 +10,11 @@ Object.extend(SC.MP, {
     $$("#days tbody").each(function(groupElt) {
       var totalBounds = SC.MP.bounds(groupElt)
       var header = $(groupElt).select("tr.activity-type").first()
-      var headerHeight = header.getDimensions().height
-      groupElt.setAttribute("drop-top", totalBounds.top + headerHeight - daysBounds.top)
+      //need to do this check for IE not to fail. Otherwise it's failing on the header to be unidentified
+      if (header != null) {
+        var headerHeight = header.getDimensions().height
+        groupElt.setAttribute("drop-top", totalBounds.top + headerHeight - daysBounds.top)
+      }
       groupElt.setAttribute("drop-bottom", totalBounds.top + totalBounds.height - daysBounds.top)
       groupElt.setAttribute("drop-first-row-index", rowCount)
       rowCount += $(groupElt).select("tr.activity").length
