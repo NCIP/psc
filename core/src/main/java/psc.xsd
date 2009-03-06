@@ -459,5 +459,19 @@
         <xsd:attribute name="week-number" type="xsd:integer" use="optional"/>
     </xsd:complexType>
 
+    <xsd:complexType name="roles">
+        <xsd:sequence>
+            <xsd:element name="role" type="psc:Role"  minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="role" type="psc:Role"/>
+
+    <xsd:complexType name="Role">
+        <xsd:sequence>
+            <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
 
 </xsd:schema>

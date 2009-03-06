@@ -175,6 +175,19 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDateResource"
             >
     </bean>
+    <!--Users Role -->
+    <bean name="/users/{username}/roles"
+          id="userRolesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRolesResource"
+            >
+        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+    </bean>
+    <bean name="/users/{username}/roles/{rolename}"
+          id="userRoleResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.UserRoleResource"
+            >
+        <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
+    </bean>
 
     <!-- AUXILIARIES -->
 

@@ -101,7 +101,9 @@ public enum XsdAttribute {
     NOTIFICATION_TITLE("title"),
     NOTIFICATION_ACTION_REQUIRED("action-required"),
     NOTIFICATION_DISMISSED("dismissed"),
-    NOTIFICATION_ID("id");
+    NOTIFICATION_ID("id"),
+
+    USER_ROLE_NAME("name");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 

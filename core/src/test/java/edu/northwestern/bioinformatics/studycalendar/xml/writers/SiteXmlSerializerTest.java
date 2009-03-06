@@ -3,11 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
 import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
 
@@ -36,6 +38,26 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong element name", XsdElement.SITE.xmlName(), actualElement.getName());
         assertEquals("Wrong study name", "assigned id", actualElement.attributeValue("assigned-identifier"));
         assertEquals("Wrong site name", "Northwestern University", actualElement.attributeValue("site-name"));
+    }
+
+    public void testCreateElementWithStudy() throws Exception {
+        Study study = createNamedInstance("Protocol1",Study.class);
+        StudySite studySite = Fixtures.createStudySite(study,site);
+        StudiesXmlSerializer studiesXmlSerializer = registerMockFor(StudiesXmlSerializer.class);
+        serializer.setStudiesXmlSerializer(studiesXmlSerializer);
+        UserRole userRole = new UserRole();
+        Role role = SUBJECT_COORDINATOR;
+        userRole.setRole(role);
+        userRole.addStudySite(studySite);
+        serializer.setUserRole(userRole);
+        Element eStudy = DocumentHelper.createElement("study");
+        expect(studiesXmlSerializer.createElement(study)).andReturn(eStudy);
+
+        replayMocks();
+        Element actualElement = serializer.createElement(site);
+        verifyMocks();
+
+
     }
 
     public void testReadElementForExitingSite() {

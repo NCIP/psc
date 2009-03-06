@@ -3,6 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -17,6 +20,10 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
     private final String SITE_NOT_FOUND_MESSAGE = "Site '%s' not found. Please define a site that exists.";
 
     private SiteDao siteDao;
+
+    private StudiesXmlSerializer studiesXmlSerializer;
+
+    private UserRole userRole;
 
     @Override
     protected XsdElement collectionRootElement() {
@@ -33,6 +40,13 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
         Element siteElement = rootElement().create();
         SITE_SITE_NAME.addTo(siteElement, site.getName());
         SITE_ASSIGNED_IDENTIFIER.addTo(siteElement, site.getAssignedIdentifier());
+        if (userRole != null) {
+            if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)) {
+                for (StudySite studySite : userRole.getStudySites()) {
+                    siteElement.add(studiesXmlSerializer.createElement(studySite.getStudy()));
+                }
+            }
+        }
         return siteElement;
     }
 
@@ -49,5 +63,13 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    public void setStudiesXmlSerializer(StudiesXmlSerializer studiesXmlSerializer) {
+        this.studiesXmlSerializer = studiesXmlSerializer;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 }

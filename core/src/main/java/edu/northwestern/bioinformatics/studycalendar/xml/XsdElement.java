@@ -56,7 +56,10 @@ public enum XsdElement {
 
 
     PLANNED_ACTIVITY_LABELS("labels"),
-    PLANNED_ACTIVITY_LABEL("label");
+    PLANNED_ACTIVITY_LABEL("label"),
+
+    USER_ROLES("roles"),
+    USER_ROLE("role");
 
     private String elementName;
 
