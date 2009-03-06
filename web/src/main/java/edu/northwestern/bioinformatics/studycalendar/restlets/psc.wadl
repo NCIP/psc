@@ -652,36 +652,52 @@
         </resource>
 
         <resource path="users/{username}/roles">
-            <doc>All the roles of given user.</doc>
+            <doc>
+                <html:p>
+                    A list of the roles for the specified user.  System adminstrator users
+                    may see the roles for any user in the system; all other users may only
+                    see their own roles.
+                </html:p>
+            </doc>
             <param style="template" name="username">
                 <doc>
-                    <html:p>
-                        The username of the user.
-                    </html:p>
+                    <html:p>The username of the user.</html:p>
                 </doc>
             </param>
             <method name="GET">
-                <doc>
-                    Returns roles of the given user.
-                </doc>
                 <response>
                     <representation href="#roles-xml"/>
                 </response>
             </method>
             <resource path="{rolename}">
                 <doc>
-                    <html:p>Associated StudySites or Sites for particular Roll</html:p>
+                    <html:p>
+                        The details of a particular role for a user.  As with the parent resource,
+                        most users may only access the resource corresponding with their own
+                        account.
+                    </html:p>
+                    <html:p>
+                        The details for a role include the sites for which it is enabled for the
+                        user (if it is a site-specific role).  For study- and site-specific roles,
+                        the associated studies nest within the associated sites.
+                    </html:p>
                 </doc>
                 <param style="template" name="rolename">
                     <doc>
-                        <html:p>
-                            The role of the user.
-                        </html:p>
+                        <html:p>The role for which details are being requested.</html:p>
                     </doc>
                 </param>
                 <method name="GET">
                     <doc>
-                        Returns associated StudySites or Sites of the given Role.
+                        <html:p>
+                            Returns the details of a particular role.
+                        </html:p>
+                        <html:p>
+                            If the authenticated user is not permitted to see account information
+                            for the requested username, it returns status 403.  If the authenticated
+                            user is permitted to see account information, but the account doesn't
+                            have the requested role, it returns 404.
+                        </html:p>
                     </doc>
                     <response>
                         <representation href="#role-xml"/>
