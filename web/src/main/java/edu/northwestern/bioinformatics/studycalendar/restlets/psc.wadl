@@ -650,44 +650,45 @@
                 </resource>
             </resource>
         </resource>
+
         <resource path="users/{username}/roles">
-                <doc>All the roles of given user.</doc>
-                <param style="template" name="username">
+            <doc>All the roles of given user.</doc>
+            <param style="template" name="username">
+                <doc>
+                    <html:p>
+                        The username of the user.
+                    </html:p>
+                </doc>
+            </param>
+            <method name="GET">
+                <doc>
+                    Returns roles of the given user.
+                </doc>
+                <response>
+                    <representation href="#roles-xml"/>
+                </response>
+            </method>
+            <resource path="{rolename}">
+                <doc>
+                    <html:p>Associated StudySites or Sites for particular Roll</html:p>
+                </doc>
+                <param style="template" name="rolename">
                     <doc>
                         <html:p>
-                            The username of the user.
+                            The role of the user.
                         </html:p>
                     </doc>
                 </param>
                 <method name="GET">
                     <doc>
-                        Returns roles of the given user.
+                        Returns associated StudySites or Sites of the given Role.
                     </doc>
                     <response>
-                        <representation href="#roles-xml"/>
+                        <representation href="#role-xml"/>
                     </response>
                 </method>
-               <resource path="{rolename}">
-                   <doc>
-                       <html:p>Associated StudySites or Sites for particular Roll</html:p>
-                   </doc>
-                   <param style="template" name="rolename">
-                        <doc>
-                           <html:p>
-                                The role of the user.
-                            </html:p>
-                        </doc>
-                   </param>
-                   <method name="GET">
-                        <doc>
-                            Returns associated StudySites or Sites of the given Role.
-                        </doc>
-                        <response>
-                            <representation href="#role-xml"/>
-                        </response>
-                   </method>
-               </resource>
-         </resource>
+            </resource>
+        </resource>
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
