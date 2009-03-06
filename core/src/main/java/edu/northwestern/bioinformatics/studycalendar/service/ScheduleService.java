@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import org.springframework.beans.factory.annotation.Required;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
@@ -13,6 +16,7 @@ import gov.nih.nci.cabig.ctms.lang.StringTools;
  * @author Rhett Sutphin
  */
 public class ScheduleService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private SubjectService subjectService;
 
     /**
@@ -31,11 +35,16 @@ public class ScheduleService {
         ScheduledActivityState currentState = event.getCurrentState();
         newDate.setTime(currentState.getDate());
         newDate.add(Calendar.DAY_OF_YEAR, amount);
-        ScheduledActivityState newState = currentState.getMode().createStateInstance();
+        ScheduledActivityState newState;
+        if (amount == 0 && event.isConditionalEvent()) {
+            newState = ScheduledActivityMode.CONDITIONAL.createStateInstance();
+            newState.setReason(createReason(source));
+        } else {
+            newState = currentState.getMode().createStateInstance();
+            newState.setReason(createShiftReason(amount, source));
+        }
         newState.setDate(newDate.getTime());
-        newState.setReason(createShiftReason(amount, source));
         event.changeState(newState);
-
         subjectService.avoidBlackoutDates(event);
     }
 
@@ -45,6 +54,10 @@ public class ScheduleService {
             .append(' ').append(StringTools.createCountString(Math.abs(amount), "day"))
             .append(" in revision ").append(source.getDisplayName())
             .toString();
+    }
+
+    private String createReason(Revision source) {
+        return new StringBuilder("State change").append(" in revision ").append(source.getDisplayName()).toString();
     }
 
     ////// CONFIGURATION

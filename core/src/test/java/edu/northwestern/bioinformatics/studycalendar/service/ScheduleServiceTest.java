@@ -77,6 +77,18 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 23, event.getActualDate());
     }
 
+    public void testReviseConditionForConditionalScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC 1", 2004, Calendar.APRIL, 30,
+            new Conditional("DC 2", DateTools.createDate(2004, Calendar.APRIL, 30)));
+        scheduledStudySegment.addEvent(event);
+
+        service.reviseDate(event, 0, amendment);
+        assertEquals(3, event.getAllStates().size());
+        assertEquals("State change in revision " + REVISION_DISPLAY_NAME, event.getCurrentState().getReason());
+        assertEquals(ScheduledActivityMode.CONDITIONAL, event.getCurrentState().getMode());
+        assertEquals("Wrong state of the event", ScheduledActivityMode.CONDITIONAL, event.getCurrentState().getMode());
+    }
+
     public void testReviseDateForOccurredScheduledActivity() throws Exception {
         ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
             new Occurred("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
