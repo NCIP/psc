@@ -42,7 +42,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
 
 
     @Override
-    public void store(Activity activity) {
+    public void store(Activity activity) throws ResourceException {
         if (getRequestedObject() == null) {
             activityDao.save(activity);
         } else {

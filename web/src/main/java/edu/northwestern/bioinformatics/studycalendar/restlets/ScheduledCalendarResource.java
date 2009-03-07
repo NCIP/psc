@@ -115,7 +115,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         }
     }
 
-    private ScheduledStudySegment store(NextScheduledStudySegment scheduled) {
+    private ScheduledStudySegment store(NextScheduledStudySegment scheduled) throws ResourceException {
         ScheduledCalendar cal = getRequestedObject();
         return subjectService.scheduleStudySegment(cal.getAssignment(), scheduled.getStudySegment(), scheduled.getStartDate(), scheduled.getMode());
     }

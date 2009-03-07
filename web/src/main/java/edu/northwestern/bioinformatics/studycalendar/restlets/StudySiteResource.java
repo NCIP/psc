@@ -55,7 +55,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
-    public void store(StudySite studySite) {
+    public void store(StudySite studySite) throws ResourceException {
         if (getRequestedObject() == null) {
             studySiteDao.save(studySite);
         }

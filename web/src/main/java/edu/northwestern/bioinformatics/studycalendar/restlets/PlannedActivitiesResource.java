@@ -95,7 +95,7 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
             getRequest().getResourceRef().addSegment(newPlannedActivity.getGridId()));
     }
 
-    private Study getStudy() {
+    private Study getStudy() throws ResourceException {
         return templateService.findStudy(getRequestedObject());
     }
 

@@ -165,7 +165,8 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             templateService.findParent(getRequestedObject()), Remove.create(getRequestedObject()));
         getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
     }
-    private Study getStudy() {
+    
+    private Study getStudy() throws ResourceException {
         return templateService.findStudy(getRequestedObject());
     }
 

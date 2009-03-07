@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.restlet.Context;
+import org.restlet.resource.ResourceException;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -73,7 +74,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     }
 
     @Override
-    public void store(Source source) {
+    public void store(Source source) throws ResourceException {
         if (getRequestedObject() == null) {
             sourceDao.save(source);
         } else {

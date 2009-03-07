@@ -42,6 +42,6 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
         }
     }
 
-    public abstract void store(D instance);
+    public abstract void store(D instance) throws ResourceException;
     protected void validateEntity(Representation entity) throws ResourceException {}
 }

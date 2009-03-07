@@ -168,15 +168,13 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Override
-    public AmendmentXmlSerializer getXmlSerializer() {
+    public AmendmentXmlSerializer getXmlSerializer() throws ResourceException {
         if (getRequestedObject().equals(study.getAmendment())) {
             return getAmendmentSerializer(study);
         } else {
             return getDevelopmentAmendmentSerializer(study);
         }
-
     }
-
 
     ////// Bean Setters
     @Required

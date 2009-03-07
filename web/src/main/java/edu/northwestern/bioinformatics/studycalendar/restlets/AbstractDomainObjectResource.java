@@ -19,12 +19,16 @@ import org.restlet.resource.Variant;
 public abstract class AbstractDomainObjectResource<D extends DomainObject> extends AbstractPscResource {
     private D requestedObject;
     protected StudyCalendarXmlSerializer<D> xmlSerializer;
+    private ResourceException objectLoadException;
 
     /**
      * Load the domain object which corresponds to the requested resource.  If
      * there isn't one, this method must return null.
+     * @throws ResourceException when some unusual condition is met.  This method should
+     *   not throw ResourceException for 404s, but rather for 403s and similar conditions
+     *   where you need to short-circuit the usual domain object loading process.
      */
-    protected abstract D loadRequestedObject(Request request);
+    protected abstract D loadRequestedObject(Request request) throws ResourceException;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -34,8 +38,13 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         getVariants().add(new Variant(MediaType.TEXT_XML));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
 
-        requestedObject = loadRequestedObject(request);
-        setAvailable(requestedObject != null);
+        try {
+            requestedObject = loadRequestedObject(request);
+        } catch (ResourceException e) {
+            // Defer throwing exception until the subclass actually attempts to access the object
+            objectLoadException = e;
+        }
+        setAvailable(requestedObject != null || objectLoadException != null);
         if (isAvailable()) {
             log.debug("Request {} maps to {}", request.getResourceRef(), requestedObject);
         } else {
@@ -43,8 +52,12 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         }
     }
 
-    public D getRequestedObject() {
-        return requestedObject;
+    public D getRequestedObject() throws ResourceException {
+        if (objectLoadException != null) {
+            throw objectLoadException;
+        } else {
+            return requestedObject;
+        }
     }
 
     @Override
@@ -63,14 +76,14 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     }
 
-    protected Representation createXmlRepresentation(D object) {
+    protected Representation createXmlRepresentation(D object) throws ResourceException {
         return new StringRepresentation(
                 getXmlSerializer().createDocumentString(object), MediaType.TEXT_XML);
     }
 
     ////// CONFIGURATION
 
-    public StudyCalendarXmlSerializer<D> getXmlSerializer() {
+    public StudyCalendarXmlSerializer<D> getXmlSerializer() throws ResourceException {
         return xmlSerializer;
     }
 
