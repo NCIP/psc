@@ -41,7 +41,6 @@ describe "GET" do
   end
   
   it "forbids access to non-existent roles for other users" do
-    pending "#569"
     get "/users/frieda/roles/Subject+coordinator", :as => :hannah
     response.status_code.should == 403
   end
@@ -56,7 +55,7 @@ describe "GET" do
     end
     
     it "of the given User:" do
-      get "/users/hannah/roles/Subject+coordinator", :as => hannah
+      get "/users/hannah/roles/Subject+coordinator", :as => :hannah
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.xml_elements('//site').size == 1

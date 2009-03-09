@@ -31,6 +31,7 @@ public class UserRoleResourceTest extends ResourceTestCase<UserRoleResource> {
         user = Fixtures.createUser(USERNAME, role);
         Fixtures.setUserRoles(user,role);
         userRoles = user.getUserRoles();
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(USERNAME, USERNAME, new Role[] { Role.SUBJECT_COORDINATOR}));
     }
 
     @Override
@@ -56,8 +57,26 @@ public class UserRoleResourceTest extends ResourceTestCase<UserRoleResource> {
         assertResponseIsCreatedXml();
     }
 
-    public void test404ForNoRoleWithUser() throws Exception {
+    public void test404ForNonExistentRoleForUser() throws Exception {
         PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(USERNAME, USERNAME, new Role[] { Role.SUBJECT_COORDINATOR}));
+        request.getAttributes().put(UriTemplateParameters.ROLENAME.attributeName(),"Site coordinator");
+        expect(userService.getUserByName(USERNAME)).andReturn(user);
+
+        doGet();
+        assertEquals("Result not 'not found'", 404, response.getStatus().getCode());
+    }
+
+    public void test403ForUnauthorisedUser() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("subjectCo1", "subjectCo1", new Role[] { Role.SUBJECT_COORDINATOR}));
+        expect(userService.getUserByName(USERNAME)).andReturn(user);
+        request.getAttributes().put(UriTemplateParameters.ROLENAME.attributeName(),"Subject coordinator");
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
+    }
+    
+    public void test404ForNonExistentRolesForSysAdmin() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(USERNAME, USERNAME, new Role[] { Role.SYSTEM_ADMINISTRATOR}));
         request.getAttributes().put(UriTemplateParameters.ROLENAME.attributeName(),"Site coordinator");
         expect(userService.getUserByName(USERNAME)).andReturn(user);
 
