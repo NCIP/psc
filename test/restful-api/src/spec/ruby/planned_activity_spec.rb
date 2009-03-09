@@ -110,6 +110,36 @@ describe "/planned-activity" do
       end
     
   end
+
+
+  describe "POST" do
+      before do
+        @data = 'day=4&activity=Initial+Diagnosis&activity-code=diag1&activity-source=Malaria&weight=9&condition=&details=%20detail&label='
+        get "/studies/NU480/template/development", :as => :juno
+
+        #puts response.entity #code displaying a study-snapshot before delete
+
+        response.xml_attributes("planned-activity", "id").should include("301")
+        response.xml_attributes("planned-activity", "weight").should include("6")
+        response.xml_elements('//planned-activity').should have(1).elements
+      end
+
+      it "modifies an existing planned activity" do
+        #PUT
+        put "/studies/NU480/template/development/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", @data,
+        :as => :juno, 'Content-Type' => "application/x-www-form-urlencoded"
+
+        response.status_code.should == 200
+
+        #VERIFY AFTER PUT:
+        get "/studies/NU480/template/development", :as => :juno
+        #puts response.entity #code displaying a study-snapshot after put
+        response.xml_elements('//planned-activity').should have(1).elements
+        response.xml_attributes("planned-activity", "weight").should include("9")
+
+      end
+
+  end
   
   
 end
