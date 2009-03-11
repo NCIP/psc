@@ -5,7 +5,7 @@ require "buildr/emma" if emma?
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
-VERSION_NUMBER="2.5-SNAPSHOT"
+VERSION_NUMBER="2.5.0"
 APPLICATION_SHORT_NAME = 'psc'
 
 ###### Jetty config
