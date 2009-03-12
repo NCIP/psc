@@ -12,17 +12,18 @@ import com.noelios.restlet.ext.servlet.ServletCall;
 /**
  * @author Jalpa Patel
  */
-public class PscResourceFilter extends Filter{
+public class ErrorMailingRestletFilter extends Filter {
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
-    protected int doHandle(Request request, Response response){
+
+    @Override
+    protected int doHandle(Request request, Response response) {
         try {
             return super.doHandle(request,response);
         } catch (RuntimeException exception) {
             ExceptionMailMessage mailMessage = mailMessageFactory.createExceptionMailMessage(exception, ServletCall.getRequest(request));
             if (mailMessage != null) mailSender.send(mailMessage);
             throw exception;
-
         }
     }
 

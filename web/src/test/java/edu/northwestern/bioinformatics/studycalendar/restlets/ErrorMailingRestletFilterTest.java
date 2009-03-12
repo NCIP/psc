@@ -1,55 +1,54 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.springframework.mail.MailSender;
-import static org.easymock.EasyMock.expect;
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
-
-import javax.servlet.http.HttpServletRequest;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
+import static org.easymock.EasyMock.expect;
+import org.springframework.mail.MailSender;
 
 /**
  * @author Jalpa Patel
  */
-public class PscResourceFilterTest extends RestletTestCase {
-    private PscResourceFilter pscResourceFilter;
+public class ErrorMailingRestletFilterTest extends RestletTestCase {
+    private ErrorMailingRestletFilter filter;
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
-    private HttpServletRequest httpRequest;
     private MockRestlet next;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
-        super.setUp();
+        useHttpRequest();
+        
         mailSender = registerMockFor(MailSender.class);
         mailMessageFactory = registerMockFor(MailMessageFactory.class);
-
-        pscResourceFilter = new PscResourceFilter();
-        pscResourceFilter.setMailMessageFactory(mailMessageFactory);
-        pscResourceFilter.setMailSender(mailSender);
         next = new MockRestlet();
-        pscResourceFilter.setNext(next);
+
+        filter = new ErrorMailingRestletFilter();
+        filter.setMailMessageFactory(mailMessageFactory);
+        filter.setMailSender(mailSender);
+        filter.setNext(next);
     }
 
     public void testMailWhenException() throws Exception {
         RuntimeException exception =  new RuntimeException("Uncaught exception");
         ExceptionMailMessage expectedMessage = new ExceptionMailMessage();
-        expect(mailMessageFactory.createExceptionMailMessage(exception,httpRequest)).
+        expect(mailMessageFactory.createExceptionMailMessage(exception, servletRequest)).
                 andReturn(expectedMessage);
         mailSender.send(expectedMessage);
+
         try {
             replayMocks();
             next.setException(exception);
-            pscResourceFilter.doHandle(request,response);
+            filter.doHandle(request, response);
             verifyMocks();
         } catch (RuntimeException re) {
-            assertEquals("Same exception should not thrown", exception, re);
+            assertEquals("Same exception was not thrown", exception, re);
         }
     }
 
     public void testNoMailWhenNoException() throws Exception {
         replayMocks();
-        pscResourceFilter.doHandle(request,response);
+        filter.doHandle(request, response);
         verifyMocks();
     }
-
 }
