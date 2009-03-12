@@ -14,12 +14,9 @@ import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import static org.easymock.classextension.EasyMock.expect;
-import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 import java.util.regex.Pattern;
@@ -260,18 +257,4 @@ public class PscGuardTest extends RestletTestCase {
         }
     }
 
-    private static final class MockRestlet extends Restlet {
-        private Request lastRequest;
-        private Response lastResponse;
-
-        @Override
-        public void handle(Request request, Response response) {
-            this.lastRequest = request;
-            this.lastResponse = response;
-        }
-
-        public boolean handleCalled() {
-            return lastRequest != null;
-        }
-    }
 }
