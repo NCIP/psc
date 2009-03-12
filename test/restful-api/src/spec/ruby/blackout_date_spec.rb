@@ -1,6 +1,6 @@
 describe "/blackout-date" do
 
-  #ISSUE
+  #ISSUE '#639'
   #1. POST /sites/{site-identifier}/blackout-dates request returns "Authenticated account is not authorized for this resource and method"
   #   BUG: POST should not require site-id but site assigned-identifier instead
   #2. DELETE /sites/{site-identifier}/blackout-dates/{blackout-date identifier} request returns "Authenticated account is not authorized for this resource and method"
@@ -43,7 +43,7 @@ describe "/blackout-date" do
       end
   
       it "creates a specific blackout date for a site" do
-          pending
+          pending '#639'
           post '/sites/site1/blackout-dates', @blackoutdate_xml, :as => :juno
           puts response.entity
           response.status_code.should == 201
@@ -61,11 +61,12 @@ describe "/blackout-date" do
       application_context['blackoutDateDao'].save(@blackoutdate1)
       @blackoutdate2 = PscTest::Fixtures.createBlackoutDate(2008, 12, 25, "Christmas party", @site1)
       application_context['blackoutDateDao'].save(@blackoutdate2)
-      ## need code to modify blackoutDate id       
+      ## need code to modify blackoutDate id
     end
     
     it "allows deletion of a blackout-date for authorized user" do      
-      pending
+      pending '#639'
+      #needs to be modifed while fixing #639
       delete '/sites/site1/blackout-dates/someIdentifier', :as => :juno
       puts response.entity
       

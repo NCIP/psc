@@ -47,7 +47,20 @@ describe "/studies" do
     response.xml_elements('//study').should have(0).elements
   end
 
-  it "shows only assigned studies to a subject coordinator"
+  describe "shows only assigned studies" do 
+    before do
+      @nu480_at_northwestern = PscTest::Fixtures.createStudySite(@nu480, northwestern)
+      application_context['studySiteDao'].save(@nu480_at_northwestern)
+      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, northwestern, erin)
+    end
+    it " to a subject coordinator" do
+      get "/studies", :as => :erin
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      response.xml_elements('//study').should have(1).elements
+      study_names.should include("NU 480")
+    end
+  end
 
   it "shows nothing to to a sys admin" do
     get "/studies", :as => :zelda
@@ -78,7 +91,7 @@ describe "/studies" do
 
   describe "POST" do
     before do
-      @nu328_xml = psc_xml("study-snapshot", 'assigned-identifier' => "NU 328") { |ss|
+      @nu328_xml = psc_xml("study-snapshot", 'assigned-identifier' => "NU328") { |ss|
         ss.tag!('planned-calendar') { |pc|
           pc.epoch('name' => 'Treatment')
           pc.epoch('name' => 'LTFU')
@@ -108,23 +121,20 @@ describe "/studies" do
     end
 
     it "accepts a study snapshot from a study coordinator" do
-      pending
-      #puts "Test 123"#
-      #puts @nu328_xml#
       post '/studies', @nu328_xml, :as => :alice
       #response.should be_success
-      get '/studies', :as => :alice#
+      get '/studies', :as => :alice
       #puts response.entity#
       response.xml_elements('//study').should have(4).elements
-      study_names.should include("NU 328")
+      study_names.should include("NU328")
     end
 
     it "accepts a study snapshot and provides a link to the permanent URI for it" do
-      pending
+      # pending
       post '/studies', @nu328_xml, :as => :alice
       response.status_code.should == 201
-      response.meta['Location'].should =~ %r{/api/v1/studies/NU 328/template$}
-      response.meta['Location'].should =~ %r{^http}
+      response.meta['location'].should =~ %r{/api/v1/studies/NU328/template$}
+      response.meta['location'].should =~ %r{^http}
     end
 
     it "does not accept a study snapshot with the same name as an existing study" do

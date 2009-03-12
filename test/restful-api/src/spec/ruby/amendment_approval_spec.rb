@@ -1,8 +1,5 @@
 describe "/amendment_approval" do
   
-  #ISSUE:
-  #1) post /studies/{study-identifier}/sites/{site-identifier}/approvals returns error:
-  #   Authenticated account is not authorized for this resource and method
   
   describe "POST" do
     
@@ -27,7 +24,6 @@ describe "/amendment_approval" do
     end
     
     it "approves an amendment for an authorized user" do
-      pending
       puts @approve_xml
       post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :juno
       puts response.entity
@@ -36,7 +32,7 @@ describe "/amendment_approval" do
       response.content_type.should == 'text/xml'
       response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
       response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
-      response.xml_elements('//amendment-approval').should have(1).elements      
+      response.xml_elements('//amendment-approval').should have(1).elements
     end
     
         

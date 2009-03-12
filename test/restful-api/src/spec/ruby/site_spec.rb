@@ -2,9 +2,10 @@ describe "/site" do
 
   #ISSUE
   #1. put /sites/{site-identifier} generates the following error:
-  # could not execute query; nested exception is org.hibernate.exception.SQLGrammarException: could not execute query
+  # could not execute query; nested exception is org.hibernate.exception.SQLGrammarException: could not execute query  # Related to '#633'
   #2. delete /sites/{site-identifier} generates the folloing error:
-  # Authenticated account is not authorized for this resource and method 
+  # Authenticated account is not authorized for this resource and method # Related to '#634'
+  #3. get /sites/{site-identifier} should not allowed to unauthorized user # Related to '#635'
 
   describe "GET" do
     before do
@@ -32,7 +33,7 @@ describe "/site" do
     end
   
     it "does not show a site of a user to the other users" do
-      pending
+      pending '#635'
       get "/sites/MN026", :as => :carla #carla is only authorized for IL036
       puts response.entity
       response.status_code.should == 401
@@ -52,13 +53,13 @@ describe "/site" do
     end
     
     it "updates an existing site for an authorized user" do
-      pending
+      pending '#633'
       put '/sites/MN026', @newsite_xml, :as => :juno
       puts response.entity
     end
             
     it "creates a new site for authorized user" do
-      pending
+      pending '#633'
       put '/sites/DB026', @newsite_xml, :as => :juno
       puts response.entity
       #get '/sites/', :as => :juno
@@ -76,7 +77,7 @@ describe "/site" do
     end
     
     it "delete a site for an authorized user" do
-      pending
+      pending '#634'
       delete '/sites/site2', :as => :juno
       # puts response.entity
     end  

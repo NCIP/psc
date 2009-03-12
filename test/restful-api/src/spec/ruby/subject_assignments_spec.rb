@@ -1,11 +1,5 @@
 describe "/subject_assignments" do
   
-  #ISSUE:
-  #1) post /studies/{study-identifier}/sites/{site-identifier}/subject-assignments returns error:
-  #   Authenticated account is not authorized for this resource and method
-  #   Need to call application_context['templateService'].assignTemplateToSubjectCoordinator in order for POST to succeed
-  #   but encounter Hibernate lazy initialization issue
-  
   before do
     #create a study with an amendment
     @nu480 = PscTest::Fixtures.createBasicTemplate("NU480")
@@ -65,8 +59,8 @@ describe "/subject_assignments" do
       }
     end
     
-    it "does not allow the study coordinator to assign patients when the template has not been made available" do
-      pending
+    it "does not allow the subject coordinator to assign patients when the template has not been made available" do
+      pending '#636'
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       puts response.entity
       response.status_code.should == 403

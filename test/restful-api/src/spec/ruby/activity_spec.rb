@@ -1,8 +1,8 @@
 describe "/activity" do
   
   #ISSUE:
-  #1. put /activities/{activity-source-name}/{activity-code} succeeds even when source does not exist yet
-  #2. delete /activities/{activity-source-name}/{activity-code} fails with error: Authenticated account is not authorized for this resource & method
+  #1. put /activities/{activity-source-name}/{activity-code} succeeds even when source does not exist yet # related to '#630'
+  #2. delete /activities/{activity-source-name}/{activity-code} fails with error: Authenticated account is not authorized for this resource & method #related to '#629'
     
  describe "PUT" do
     before do
@@ -20,7 +20,7 @@ describe "/activity" do
     end
  
     it "forbids creation of a specific activity to an authorized user when source has not yet existed" do
-        pending
+        pending '#630'
         puts @activity_xml
         put '/activities/Diabetes/Code1', @activity_xml, :as => :juno
         response.status_code.should == 404
@@ -83,7 +83,7 @@ describe "/activity" do
       end
       
       it "deletes a specific activity" do
-        pending
+        pending '#629'
         delete '/activities/Malaria/diag1', :as => :juno
         puts response.entity
       end

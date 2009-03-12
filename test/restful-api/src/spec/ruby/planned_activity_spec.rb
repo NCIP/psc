@@ -10,10 +10,20 @@ describe "/planned-activity" do
     @study1 = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["A", "B"].to_java(:String))
     @study1.planned_calendar.epochs.first.study_segments[0].grid_id = "segment1" #replace auto-generated study-segment id
     @study1.planned_calendar.epochs.first.study_segments[1].grid_id = "segment2"
+    
+    #create amendment,Add period and link to study
+    @amend_date = PscTest.createDate(2008,11,10)
+    @am = PscTest::Fixtures.createAmendment("am",@amend_date,true)
+    @study1.amendment = @am
+    @period = PscTest::Fixtures.createPeriod("PeriodInAm", 3, 5, 6)
+    @period = PscTest::Fixtures.setGridId("10002", @period) #replace auto-generated period id
+    application_context['periodDao'].save(@period)
+    @study1.plannedCalendar.epochs.first.study_segments[1].addPeriod(@period)
+    application_context['studyService'].save(@study1)
       
-    #create amendment and link to study
+    #create development amendment and link to study
     @amend_date1 = PscTest.createDate(2008, 12, 10)      
-    @amendment = PscTest::Fixtures.createAmendment("am1", @amend_date1, true)
+    @amendment = PscTest::Fixtures.createInDevelopmentAmendment("am1", @amend_date1, true)
     @study1.developmentAmendment = @amendment
     application_context['studyService'].save(@study1)
     
@@ -42,16 +52,22 @@ describe "/planned-activity" do
   describe "GET" do 
     
     it "shows a study snapshot" do
-      pending
       # code below display a study-snapshot
-      get "/studies/NU480/template/2008-12-10~am1", :as => :juno
+      get "/studies/NU480/template/2008-11-10~am", :as => :juno
       puts response.entity
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      response.content_type.should == 'text/xml'
+      response.xml_attributes("period","name").should include("PeriodInAm")
     end
     
     it "allows access to planned activity" do
-      pending
-      get "/studies/NU480/template/2008-12-10~am1/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", :as => :juno
+      pending '#632'
+      get "/studies/NU480/template/2008-11-10~am/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", :as => :juno
       puts response.entity
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      response.content_type.should == 'text/xml'
     end
   
   end

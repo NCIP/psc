@@ -1,7 +1,7 @@
 describe "/sites" do
 
   #ISSUE
-  # 1. get /sites will return all sites to any authenticate user
+  # 1. get /sites will return all sites to any authenticate user # Related to '#638'
 
   it "forbids any site access for unauthenticated users" do
     get "/sites", :as => nil
@@ -20,6 +20,7 @@ describe "/sites" do
   end
 
   it "shows all sites to study coordinator" do
+    #need to rewrite while fixing #638
     get "/sites", :as => :alice
     #puts response.entity
     response.status_code.should == 200
@@ -43,7 +44,7 @@ describe "/sites" do
 
 
   it "shows 1 site to the site coordinator of the site" do
-    pending
+    pending '#638'
     get "/sites", :as => :carla
     puts response.entity
     response.status_code.should == 200
