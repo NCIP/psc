@@ -7,11 +7,15 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <bean name="apiApplication" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscApplication">
-        <property name="root" ref="guard"/>
+        <property name="root" ref="filter"/>
         <property name="metadataService" ref="metadataService"/>
     </bean>
 
     <bean id="metadataService" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService"/>
+
+    <bean name="filter" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscResourceFilter" autowire="byName">
+         <property name="next" ref="guard"/>
+    </bean>
 
     <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
         <property name="except" value="docs.*"/>
