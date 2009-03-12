@@ -428,7 +428,7 @@ public class Fixtures {
         return population;
     }
 
-    public static Amendment createAmendment(String name, Date date) {
+    public static Amendment createAmendment(String name, Date date) {              
         return createAmendment(name, date, true);
     }
 
@@ -438,6 +438,14 @@ public class Fixtures {
         amendment.setName(name);
         amendment.setDate(date);
         amendment.setReleasedDate(date);
+        return amendment;
+    }
+
+    public static Amendment createInDevelopmentAmendment(String name, Date date, boolean mandatory) {
+        Amendment amendment = new Amendment();
+        amendment.setMandatory(mandatory);
+        amendment.setName(name);
+        amendment.setDate(date);
         return amendment;
     }
 
