@@ -27,27 +27,13 @@
 
     <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
 
-    <bean name="/docs/psc.wadl"
-          id="wadlResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
-            >
-        <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
-    </bean>
-
     <bean name="/docs"
-          id="wadlHtmlResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlHtmlResource"
+          id="docResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.DocResource"
             >
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
-    <bean name="/docs/psc.xsd"
-          id="xsdResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.ClasspathResource"
-            >
-        <property name="mimeType" value="text/xml"/>
-        <property name="resourcePath" value="psc.xsd"/>
-    </bean>
 
     <bean name="/studies"
           id="studiesResource" autowire="byName" scope="prototype"
