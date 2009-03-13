@@ -183,6 +183,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         newSite.setName("new Name");
         siteDao.save(nu);
         expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(new ProtectionGroup());
+        expect(siteDao.getById(1)).andReturn(nu);
 
         replayMocks();
 

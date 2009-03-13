@@ -22,7 +22,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
+        setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
     }
 
 

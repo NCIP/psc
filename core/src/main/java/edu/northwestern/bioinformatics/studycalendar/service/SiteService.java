@@ -144,8 +144,10 @@ public class SiteService {
         if (existingSite == null) {
             return createOrUpdateSite(newSite);
         } else {
-            BeanUtils.copyProperties(newSite, existingSite, new String[]{"studySites", "id", "blackoutDates"});
-            return createOrUpdateSite(existingSite);
+            Site site = siteDao.getById(existingSite.getId());
+            site.setName(newSite.getName());
+            if (newSite.getAssignedIdentifier() != null) site.setAssignedIdentifier(newSite.getAssignedIdentifier());
+            return createOrUpdateSite(site);
         }
 
 

@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
@@ -10,7 +8,6 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
-import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -19,15 +16,11 @@ import static org.easymock.EasyMock.expect;
 public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SiteXmlSerializer serializer;
     private Site site;
-    private SiteDao siteDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        siteDao = registerMockFor(SiteDao.class);
-
         serializer = new SiteXmlSerializer();
-        serializer.setSiteDao(siteDao);
 
         site = createNamedInstance("Northwestern University", Site.class);
         site.setAssignedIdentifier("assigned id");
@@ -60,42 +53,18 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    public void testReadElementForExitingSite() {
+    public void testReadElement() {
+        Element actual = XsdElement.SITE.create();
+        SITE_SITE_NAME.addTo(actual,"site");
+        SITE_ASSIGNED_IDENTIFIER.addTo(actual,"siteId");
+        Site read = serializer.readElement(actual);
+        assertNotNull(read);
+        assertNull(read.getId());
+        assertNull(null,read.getGridId());
+        assertEquals("Wrong site name", "site", read.getName());
+        assertEquals("wrong site assigned identifier", "siteId", read.getAssignedIdentifier());
 
-        expect(siteDao.getByName(site.getName())).andReturn(site);
-        replayMocks();
-
-        Element aElement = createElement(site);
-        Site actual = serializer.readElement(aElement);
-        verifyMocks();
-
-        assertEquals("Site should be the same", site, actual);
     }
 
-    public void testReadElementForNonExistantSite() {
-        Site invalidSite = createNamedInstance("Invalid Site", Site.class);
-        Element invalidElement = createElement(invalidSite);
-
-        expect(siteDao.getByName("Invalid Site")).andReturn(null);
-        replayMocks();
-
-        try {
-            serializer.readElement(invalidElement);
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            verifyMocks();
-            assertEquals("Site 'Invalid Site' not found. Please define a site that exists.",
-                    scve.getMessage());
-        }
-    }
-
-    //// Test Helper Methods
-    private Element createElement(Site aSite) {
-        Element elt = new BaseElement(XsdElement.SITE.name());
-        elt.addAttribute(SITE_SITE_NAME.name(), aSite.getName());
-        elt.addAttribute(SITE_ASSIGNED_IDENTIFIER.name(), site.getAssignedIdentifier());
-
-        return elt;
-    }
 }
 

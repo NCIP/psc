@@ -1,8 +1,6 @@
 describe "/site" do
 
   #ISSUE
-  #1. put /sites/{site-identifier} generates the following error:
-  # could not execute query; nested exception is org.hibernate.exception.SQLGrammarException: could not execute query  # Related to '#633'
   #2. delete /sites/{site-identifier} generates the folloing error:
   # Authenticated account is not authorized for this resource and method # Related to '#634'
   #3. get /sites/{site-identifier} should not allowed to unauthorized user # Related to '#635'
@@ -44,6 +42,7 @@ describe "/site" do
     
     before do
       @newsite_xml = psc_xml("site", 'assigned-identifier' => "DB026", 'site-name' => "DB026")
+      @updatesite_xml = psc_xml("site", 'assigned-identifier' => "MN026", 'site-name' => "NewSiteName")
     end
     
     it "forbid site creation for unauthorized user" do
@@ -53,18 +52,20 @@ describe "/site" do
     end
     
     it "updates an existing site for an authorized user" do
-      pending '#633'
-      put '/sites/MN026', @newsite_xml, :as => :juno
-      puts response.entity
+      put '/sites/MN026', @updatesite_xml, :as => :juno
+      response.status_code.should == 200
+      response.xml_attributes("site", "assigned-identifier").should include("MN026")
+      response.xml_attributes("site", "site-name").should include("NewSiteName")
+      response.xml_elements('//site').should have(1).elements
+      
     end
             
     it "creates a new site for authorized user" do
-      pending '#633'
       put '/sites/DB026', @newsite_xml, :as => :juno
-      puts response.entity
-      #get '/sites/', :as => :juno
-      #puts response.entity
       response.status_code.should == 201
+      response.xml_attributes("site", "assigned-identifier").should include("DB026")
+      response.xml_attributes("site", "site-name").should include("DB026")
+      response.xml_elements('//site').should have(1).elements
     end
               
   end
