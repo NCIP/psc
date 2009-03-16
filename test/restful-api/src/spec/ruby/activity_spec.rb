@@ -36,6 +36,24 @@ describe "/activity" do
         response.xml_elements('//activity').should have(1).elements
     end
     
+    describe "updates properties of" do
+      before do
+         @activityType = PscTest::Fixtures.createActivityType("MalariaTreatment")
+         application_context['activityTypeDao'].save(@activityType)
+         @activity = PscTest::Fixtures.createActivity("InitialDiagnosis", "ActivityCode",@source, @activityType, "diagnosis for diabetes")
+         application_context['activityDao'].save(@activity)
+         @updateActivity_xml = psc_xml("activity", 'name' => "InitialDiagnosis", 'code' => "UpdatedActivityCode", 'source' => "Diabetes", 
+          'type' => @activityType, 'description' => "diagnosis for diabetes")
+      end
+      
+      it "the existing activity" do
+         put '/activities/Diabetes/ActivityCode', @updateActivity_xml, :as => :juno
+         response.status_code.should == 200
+         response.content_type.should == 'text/xml'
+         response.xml_attributes("activity", "code").should include("UpdatedActivityCode")
+      end
+    end
+    
   end
   
   describe "GET" do
