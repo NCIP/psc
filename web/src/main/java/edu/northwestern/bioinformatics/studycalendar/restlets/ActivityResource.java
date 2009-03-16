@@ -57,8 +57,12 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
         if (getRequestedObject() == null) {
             activityDao.save(activity);
         } else {
-            Activity existingActivity = getRequestedObject();
-            existingActivity.updateActivity(activity);
+            //Search the existing activity and edit the properties
+            Activity existingActivity = activityDao.getById(getRequestedObject().getId());
+            existingActivity.setCode(activity.getCode());
+            existingActivity.setName(activity.getName());
+            existingActivity.setDescription(activity.getDescription());
+            existingActivity.setType(activity.getType());
             activityDao.save(existingActivity);
 
         }

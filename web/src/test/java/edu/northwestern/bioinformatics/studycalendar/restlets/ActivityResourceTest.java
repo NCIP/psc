@@ -87,12 +87,13 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
     }
 
     public void testPutExistingActivity() throws Exception {
+        activity.setId(1);
         Activity newActivity = new Activity();
         expectExistentSource(source);
         expectFoundActivity(activity);
         expectReadXmlFromRequestAs(newActivity);
         expectObjectXmlized(newActivity);
-
+        expect(activityDao.getById(1)).andReturn(activity);
         activityDao.save(activity);
         doPut();
 
