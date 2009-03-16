@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -24,6 +26,8 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
 
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    private Source source;
+    private SourceDao sourceDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -33,13 +37,20 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     }
 
     @Override
-    protected Activity loadRequestedObject(Request request) {
+    protected Activity loadRequestedObject(Request request) throws ResourceException {
         String activitySourceName = UriTemplateParameters.ACTIVITY_SOURCE_NAME.extractFrom(request);
         String activityCode = UriTemplateParameters.ACTIVITY_CODE.extractFrom(request);
-
-        return activityDao.getByCodeAndSourceName(activityCode, activitySourceName);
+        if (activitySourceName == null) {
+           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,"No Source in the request");
+        }
+        source = sourceDao.getByName(activitySourceName);
+        if (source == null) {
+           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,"Unknown Source " + activitySourceName);
+        }
+        else {
+           return activityDao.getByCodeAndSourceName(activityCode, activitySourceName);
+        }
     }
-
 
     @Override
     public void store(Activity activity) throws ResourceException {
@@ -87,5 +98,9 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     @Required
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
+    }
+    @Required
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
     }
 }

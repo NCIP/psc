@@ -1,18 +1,17 @@
 describe "/activity" do
   
   #ISSUE:
-  #1. put /activities/{activity-source-name}/{activity-code} succeeds even when source does not exist yet # related to '#630'
   #2. delete /activities/{activity-source-name}/{activity-code} fails with error: Authenticated account is not authorized for this resource & method #related to '#629'
     
  describe "PUT" do
     before do
-      @source_xml = psc_xml("source", 'name' => "Diabetes")
+      @source = PscTest::Fixtures.createSource("Diabetes")
+      application_context['sourceDao'].save(@source)
       @activity_xml = psc_xml("activity", 'id' => "id1", 'type' => "DiabetesTreatment", 'type-id' => 23, 
       'name' => "DiabetesTreatment1", 'code' => "Code1", 'source' => "Diabetes") 
     end
  
     it "forbids activity creation for an unauthorized user" do
-        put '/activities/Diabetes/', @source_xml, :as => :juno #creates source before creating activity
         put '/activities/Diabetes/Code1', @activity_xml, :as => nil #unauthorized user
         response.status_code.should == 401
         response.status_message.should == "Unauthorized"
@@ -20,16 +19,13 @@ describe "/activity" do
     end
  
     it "forbids creation of a specific activity to an authorized user when source has not yet existed" do
-        pending '#630'
         puts @activity_xml
-        put '/activities/Diabetes/Code1', @activity_xml, :as => :juno
-        response.status_code.should == 404
-        response.status_message.should == "Not Found"
+        put '/activities/NewSoure/Code1', @activity_xml, :as => :juno
+        response.status_code.should == 400
+        response.status_message.should == "Bad Request"
     end
- 
- 
+    
     it "creates a specific activity for an authorized user when the source exists" do
-        put '/activities/Diabetes/', @source_xml, :as => :juno #creates source before creating activity
         put '/activities/Diabetes/Code1', @activity_xml, :as => :juno #creates activity
         response.status_code.should == 201
         response.status_message.should == "Created"
