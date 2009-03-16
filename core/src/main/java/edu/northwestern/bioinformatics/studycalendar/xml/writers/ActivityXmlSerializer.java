@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     private boolean embeddedInSource;
     private ActivityTypeDao activityTypeDao;
+    private SourceDao sourceDao;
     private ActivityPropertyXmlSerializer activityPropertyXmlSerializer = new ActivityPropertyXmlSerializer();
     public ActivityXmlSerializer() {
         this(false);
@@ -94,10 +96,16 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
         }
 
         if (!embeddedInSource) {
-            Source sourceTemplate = new Source();
-            sourceTemplate.setName(XsdAttribute.ACTIVITY_SOURCE.from(element));
-            activity.setSource(sourceTemplate);
+            String sourceName = XsdAttribute.ACTIVITY_SOURCE.from(element);
+            Source source = sourceDao.getByName(sourceName);
+            if (source == null) {
+                source = new Source();
+                source.setName(sourceName);
+                sourceDao.save(source);
+            }
+            activity.setSource(source);
         }
+
         if (embeddedInSource) {
             for(Element apElt:(List<Element>) element.elements("property")) {
                 activity.addProperty(activityPropertyXmlSerializer.readElement(apElt));
@@ -139,7 +147,11 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
     }
-    
+
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
+    }
+
     @Required
     public void setActivityPropertyXmlSerializer(ActivityPropertyXmlSerializer activityPropertyXmlSerializer) {
         this.activityPropertyXmlSerializer = activityPropertyXmlSerializer;

@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCa
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import org.dom4j.Element;
 
 /**
@@ -23,16 +24,19 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ActivityXmlSerializer standalone;
     private ActivityXmlSerializer embedded;
     private ActivityTypeDao activityTypeDao;
+    private SourceDao sourceDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
         activity = createActivity();
         standalone = new ActivityXmlSerializer(false);
         embedded = new ActivityXmlSerializer(true);
         standalone.setActivityTypeDao(activityTypeDao);
+        standalone.setSourceDao(sourceDao);
         embedded.setActivityTypeDao(activityTypeDao);
         activityType = Fixtures.createActivityType("ActivityType1");
         activityType.setId(4);
@@ -154,6 +158,7 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
 
         expect(activityTypeDao.getByName("2")).andReturn(at).anyTimes();
+        expect(sourceDao.getByName("Ether")).andReturn(Fixtures.createNamedInstance("Ether", Source.class));
 
         replayMocks();
         Activity read = standalone.readElement(param);
