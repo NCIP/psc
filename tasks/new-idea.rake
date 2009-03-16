@@ -198,7 +198,7 @@ module Buildr::IntellijIdea
       project_libs, others = deps.partition { |path| path.is_a?(Project) }
       # Separate artifacts from Maven2 repository
       m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
-
+      
       IdeaModule.component("NewModuleRootManager", "inherit-compiler-output" => "false") do |xml|
         generate_compile_output(xml)
         generate_content(xml)
@@ -219,8 +219,12 @@ module Buildr::IntellijIdea
     end
     
     def generate_compile_output(xml)
-      xml.output(:url => "#{MODULE_DIR_URL}/#{relative(buildr_project.compile.target.to_s)}") if buildr_project.compile.target
-      xml.tag!("output-test", :url => "#{MODULE_DIR_URL}/#{relative(buildr_project.test.compile.target.to_s)}") if buildr_project.test.compile.target
+      main_out = buildr_project.compile.target || buildr_project.path_to(:target, :main, 'idea')
+      xml.output(:url => "#{MODULE_DIR_URL}/#{relative(main_out.to_s)}")
+      
+      test_out = buildr_project.test.compile.target || buildr_project.path_to(:target, :test, 'idea')
+      xml.tag!("output-test", :url => "#{MODULE_DIR_URL}/#{relative(test_out.to_s)}")
+      
       xml.tag!("exclude-output")
     end
     
