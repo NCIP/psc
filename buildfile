@@ -31,6 +31,17 @@ define "psc" do
   test.using(:properties => { "psc.config.datasource" => db_name })
   test.enhance [:check_module_packages]
   
+  ipr.add_component("CompilerConfiguration") do |component|
+    component.option :name => 'DEFAULT_COMPILER', :value => 'Javac'
+    component.option :name => 'DEPLOY_AFTER_MAKE', :value => '0'
+    component.resourceExtensions do |xml|
+      xml.entry :name => '.+\.nonexistent'
+    end
+    component.wildcardResourceExtensions do |xml|
+      xml.entry :name => '?*.nonexistent'
+    end
+  end
+  
   task :public_demo_deploy do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end

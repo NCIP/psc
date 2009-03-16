@@ -107,12 +107,21 @@ module Buildr::IntellijIdea
       @components ||= self.default_components
     end
     
+    def add_component(name, attrs = {}, &xml)
+      self.components << IdeaFile.component(name, attrs, &xml)
+      self
+    end
+    
     def document
       doc = base_document
       # replace overridden components, if any
       self.components.each do |comp_elt|
-        doc.root.delete_element("//component[@name='#{comp_elt.attributes['name']}']")
-        doc.root.add_element comp_elt
+        # execute deferred components
+        comp_elt = comp_elt.call if Proc === comp_elt
+        if comp_elt
+          doc.root.delete_element("//component[@name='#{comp_elt.attributes['name']}']")
+          doc.root.add_element comp_elt
+        end
       end
       doc
     end
@@ -174,7 +183,7 @@ module Buildr::IntellijIdea
     
     def default_components
       [
-        module_root_component
+        lambda { module_root_component }
       ]
     end
     
@@ -296,7 +305,7 @@ module Buildr::IntellijIdea
     
     def default_components
       [
-        modules_component,
+        lambda { modules_component },
         vcs_component
       ].compact
     end
