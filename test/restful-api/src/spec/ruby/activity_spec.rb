@@ -1,8 +1,5 @@
 describe "/activity" do
-  
-  #ISSUE:
-  #2. delete /activities/{activity-source-name}/{activity-code} fails with error: Authenticated account is not authorized for this resource & method #related to '#629'
-    
+
  describe "PUT" do
     before do
       @source = PscTest::Fixtures.createSource("Diabetes")
@@ -97,9 +94,20 @@ describe "/activity" do
       end
       
       it "deletes a specific activity" do
-        pending '#629'
+        #Verify Before Delete 
+        get '/activities/Malaria/diag1', :as => :juno
+        response.status_code.should == 200
+        response.xml_attributes("activity", "source").should include("Malaria")
+        response.xml_elements('//activity').should have(1).elements
+        #Delete the Activity
         delete '/activities/Malaria/diag1', :as => :juno
         puts response.entity
+        response.status_code.should == 200
+        response.status_message.should == "OK"
+        #Check after delete
+        get '/activities/Malaria/diag1', :as => :juno
+        response.status_code.should == 404
+        response.status_message.should == "Not Found"
       end
     end
     
