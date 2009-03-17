@@ -43,6 +43,7 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
+        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
     }
 
     @Override
