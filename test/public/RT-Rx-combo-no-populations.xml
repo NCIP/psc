@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="RT-Rx-combo" last-modified-date="2009-02-13T14:46:47.928Z" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="7ade7e86-1cde-47c3-bf91-8e5f21ea234c"/>
+  <development-amendment name="[Original]" date="2009-02-13" mandatory="true" updated-date="2009-02-13T14:46:47.928Z">
+    <planned-calendar-delta id="4ccba46e-848d-4af5-b40d-68fc2bfa47d8" node-id="7ade7e86-1cde-47c3-bf91-8e5f21ea234c">
+      <add id="4bd1e75a-6ca1-486b-8349-33ffb480654b" index="0">
+        <epoch id="09072b19-f551-4294-beb7-a96126a78067" name="Treatment">
+          <study-segment id="04bf243f-73b2-4155-9bbc-e6ab8ada98d0" name="Cycle 1 w/ CCI-779 Arm A">
+            <period id="01ed9829-9a9a-4bc0-b50c-66dd5b0f7a35" name="First week tests" repetitions="1" start-day="1" duration-quantity="1" duration-unit="day">
+              <planned-activity id="507b9724-dfe9-4ab4-ba64-fb3298f18770" day="1" population="C">
+                <activity name="INR" code="574" type="Lab Test" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="2c0d7d2c-e6d5-4d16-afca-af193d5e43db" day="1" population="Loc">
+                <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="1a4ddf47-ab8b-4038-9a85-a1eff6255296" details="MRI preferred, CT acceptable" day="1">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="970860b5-1a24-46fe-a726-a329c3a12927" name="Weekly tests" repetitions="7" start-day="1" duration-quantity="7" duration-unit="day">
+              <planned-activity id="d43f3297-e277-4c99-8db4-26714ed1438e" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="6fff4b90-542a-4396-9f07-27a8e37de0ad" details="Weight and performance status" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="0db124db-641c-4051-9277-a1f798bb4b6e" details="Weight and performance status" day="1">
+                <activity name="CBC w Diff" code="362" type="Lab Test" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="bbc74dfa-2234-4b56-8df9-0b4bacf668d5" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+            </period>
+            <period id="b3cee033-d30d-46f9-9fd9-eeaf47934116" name="CCI-779" repetitions="7" start-day="1" duration-quantity="1" duration-unit="week">
+              <planned-activity id="05ed8b60-4d03-4752-8534-62070d1a8e75" day="1">
+                <activity name="Benadryl" code="25" type="Intervention" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="1d74156c-8a8b-4127-8347-7fd20e9fee53" day="1">
+                <activity name="CCI-779" code="CCI-779" description="IV chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="75ce7c77-ac9a-4e6a-941a-91c15d1e2ff6" name="Second week tests" repetitions="1" start-day="8" duration-quantity="1" duration-unit="day">
+              <planned-activity id="67ac90e2-a9d3-4969-bd46-fb0e4234c2fe" day="1" population="Loc">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="9dee1167-cb33-40b6-af21-f2f839b38f5d" name="Daily TMZ" repetitions="40" start-day="8" duration-quantity="1" duration-unit="day">
+              <planned-activity id="bfa5cbb2-04f7-43b0-ada3-f1e5ea2c14ce" day="1">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="ae604b23-ca34-4438-9d2f-73255919b0d6" day="1">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="a4ddec8e-2b5d-4d0f-9aed-e70e951fdef1" name="Weekly RT" repetitions="6" start-day="8" duration-quantity="7" duration-unit="day">
+              <planned-activity id="db259f80-0a15-4f27-aafc-06aff9a0024f" day="1">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="b63bbb1d-4857-424c-ba17-9095b9df08c7" day="2">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="3f3e60a6-ba73-4911-9066-19be8dbb1cdc" day="3">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="c20146b8-dac6-40e1-8312-80f7e4c3048e" day="4">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="4e696912-d54e-4618-989b-7e739fd44d57" day="5">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="73a2362c-265e-4d69-aa2b-7747dc9847b8" name="Week 4 of RT tests" repetitions="1" start-day="29" duration-quantity="1" duration-unit="day">
+              <planned-activity id="e7e5b697-0d8a-40c5-a80e-d5e7955622ad" day="1">
+                <activity name="Chemistry group" code="chem" description="" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="8362b125-2b32-49e2-bc0e-bedf822aa150" name="Last week tests" repetitions="1" start-day="43" duration-quantity="1" duration-unit="day">
+              <planned-activity id="94955a39-f65a-46d2-87fd-20a794276987" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="a6161202-a286-4113-837c-224101258a7a" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="66c8c7fb-367e-47e1-ae7d-59e506a4428b" day="1" population="Loc">
+                <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="5a0c5eee-2a9a-429c-b2ea-d08cbb79e4ad" name="Cycle 1 w/o CCI-779 Arm B">
+            <period id="56f892c7-e0be-497e-86b2-6ce74899eb72" name="Prior to RT and TMZ" repetitions="1" start-day="0" duration-quantity="1" duration-unit="day">
+              <planned-activity id="c0b5ce9e-8f7c-436f-9af7-f5ec24e4e564" day="1" population="C">
+                <activity name="INR" code="574" type="Lab Test" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="624ded4b-a53a-4038-8125-c39a90b441e9" details="Perform prior to RT and TMZ" day="1">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="14afb846-1117-4029-bba4-a38db68866ec" day="1" population="Loc">
+                <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="62ac35ea-85ca-4f53-9ded-a04f0ab0fc7c" name="Daily TMZ" repetitions="40" start-day="1" duration-quantity="1" duration-unit="day">
+              <planned-activity id="a949c216-1648-47e9-a954-e1b9d050a692" day="1">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="30c81ad8-36a0-406e-86d6-5cc5494d18b7" day="1">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="3e2606cc-1525-4bbb-afe6-e2b9efb81fce" name="Weekly tests" repetitions="6" start-day="1" duration-quantity="7" duration-unit="day">
+              <planned-activity id="ef5a9dc8-9301-4e71-a531-64dfd536a605" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="c070fdc1-c94c-4c2f-a640-22331bc19e80" details="Weight and performance status" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="c8b55965-1acf-4812-85cb-913ad0e384d9" details="Weight and performance status" day="1">
+                <activity name="CBC w Diff" code="362" type="Lab Test" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="3b191aba-e35f-48eb-a2a5-52c9ca75827a" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+            </period>
+            <period id="8b6f497a-2b40-41b6-855e-f003c2071968" name="Weekly RT" repetitions="6" start-day="1" duration-quantity="7" duration-unit="day">
+              <planned-activity id="f387db50-b44a-498c-a7ab-34600922134d" day="1">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="295b98a6-ba54-41e5-ac22-edf22180f66e" day="2">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="dd873db2-0893-49d4-95f8-bb05380610a3" day="3">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="e90ec5b9-73af-416a-bd23-f52761aa8c4d" day="4">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="87548227-e254-45c0-a60c-3d3ed16ee674" day="5">
+                <activity name="Radiation" code="RT" description="Radiation Therapy" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="14796c15-ac8f-45d1-89c4-bcb679a42111" name="Week 4 of RT tests" repetitions="1" start-day="22" duration-quantity="1" duration-unit="day">
+              <planned-activity id="d6310dfa-5497-4564-8fc7-4be167a47498" day="1">
+                <activity name="Chemistry group" code="chem" description="" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="29959ed1-8161-4437-b72b-4398223e83d0" name="Last week tests" repetitions="1" start-day="36" duration-quantity="1" duration-unit="day">
+              <planned-activity id="8c0424f1-6fd5-462a-84cc-cab10f28fa8a" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="34684e29-644d-44c2-97bd-bcb09186d19c" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="e6daeb80-41a3-4f1f-b7f0-5e8d6ba2f584" day="1" population="Loc">
+                <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="ad075755-f339-4e64-9fce-c1bdff713263" name="Cycle 2">
+            <period id="be2360d0-cc13-4f20-9a6f-d8ff809e4b22" name="Rest" repetitions="1" start-day="1" duration-quantity="6" duration-unit="week">
+              <planned-activity id="612eedd7-37c3-407e-adb7-b53a34ee3a73" details="Rest 4 - 6 weeks" day="1">
+                <activity name="Rest" code="rest" description="recovery time" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="3ab1fd70-4358-4713-9b39-088e32a148d7" name="Cycles 3-8">
+            <period id="c7d2bf6b-7bea-4f18-961b-e73fc7fcb10b" name="Cycles 3 and 5" repetitions="2" start-day="57" duration-quantity="56" duration-unit="day">
+              <planned-activity id="9c2b9545-4042-4422-8ab4-04309a7acaac" day="1" population="Loc">
+                <activity name="Research bloods" code="researchbloods" description="Blood draw for research purposes" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="d009ab4d-4f2a-4bce-b118-fe1763ecf1da" name="Each cycle" repetitions="6" start-day="57" duration-quantity="28" duration-unit="day">
+              <planned-activity id="94db5a50-a4e2-4a18-ad71-0a7333d6b410" day="1">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="53b143e1-b1a7-43a2-8d2b-7fad6f625c72" day="2">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="1d8e0806-19b1-4f3b-963f-e9d12292ec5c" day="3">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="651754f7-a13c-4a18-ba7d-d19db3183fe2" day="4">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="49fcd454-19d0-428b-94b0-1f46953c5afe" day="5">
+                <activity name="TMZ" code="TMZ" description="Oral chemo" type="Intervention" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="1ff88b2e-e5b8-48a7-9b1f-5a33b966d82f" day="1">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="2705dec4-623d-459c-81f2-2cb1f6de4e95" day="2">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="1b313a86-03d0-4a36-b62d-db45ffe69aff" day="3">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="a2489a08-30a9-44d7-add5-ca4c1f78bf7c" day="4">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="715259cc-cf91-4421-beee-770e0f91a6df" day="5">
+                <activity name="Pill Diary" code="pilldiary" description="shows that patient took pills as per protocol" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="6078c210-b72d-43b2-9eec-3d0158609b82" day="1">
+                <activity name="Medical Onc Consult" code="Med Onc" description="Medical Oncology Consult" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="bcffae85-ddf9-4d0f-bbea-516d25b6883f" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="9bee76df-970f-4633-bc6e-ecb1c3af2477" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="ea85c8e6-d82e-4dfe-acd9-22144799cd95" day="1">
+                <activity name="CBC w Diff" code="362" type="Lab Test" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="9705633e-f31a-48d4-8425-abf4ac0ab8a1" day="1">
+                <activity name="Chemistry group" code="chem" description="" type="Lab Test" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="52fe181e-c49e-4df7-a0de-8576fd723ee6" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+            </period>
+            <period id="44605eca-92e9-45c2-9a72-39fb48ef6a2c" name="Every other cycle" repetitions="3" start-day="57" duration-quantity="56" duration-unit="day">
+              <planned-activity id="f15ace61-2955-479f-a15f-17317e0d53fc" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="bfc807dc-ea08-4292-b370-7fd321f7ff4a" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="f73e556a-8693-4d95-ab2a-c4c9b7a7caea" details="Should happen every two months.  Exact schedule may need to be adjusted." day="29">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="1b15172d-f2b0-46c7-8a46-88083bf3d4c5" index="1">
+        <epoch id="e7530134-3f7c-48ff-9847-1a9f923110ec" name="Observation - Arm A only">
+          <study-segment id="565d0787-68b6-42a6-957f-2d63a1f27b0a" name="Observation - Arm A only">
+            <period id="42477130-0f5e-4c7e-83fa-a7e6017f13c6" name="Two month observation" repetitions="6" start-day="1" duration-quantity="61" duration-unit="day">
+              <planned-activity id="466770f8-b9b0-493a-b1dc-56d7f62c8c43" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="6158d08b-a09d-4826-b455-ab631dab55b1" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="a8c37cca-8fc9-46fc-94cd-029dc58fecca" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="b21f737a-3c38-4674-bac6-121de7364e32" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="7fcc5f50-66e8-47da-90c0-ed94850c075b" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="bdb79b41-5adf-4bb4-b85f-fed97035cbb4" day="1">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="200e4ab7-572b-42c2-9755-84972d27af1e" name="Three month observation" repetitions="4" start-day="367" duration-quantity="1" duration-unit="quarter">
+              <planned-activity id="c0a2c118-6d13-4bbb-ab57-bb4764cf153e" day="1">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="f714f184-63bd-48b2-b25f-ae8770e43fad" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="131af2fb-4189-47f3-9e0c-9b60a2013dca" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="caf26a11-cd97-4708-be81-b2cef0c896df" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="be7ee827-ee26-44f1-9304-82cdd365a66e" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="e2ad2b31-57ce-4ff3-ade0-0c41b5e50b2a" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+            <period id="81b1b3db-8a2a-4d16-a3af-13bdbc47deaf" name="Six month observation" repetitions="2" start-day="731" duration-quantity="2" duration-unit="quarter">
+              <planned-activity id="1d9e674f-17bf-43d3-ba41-dcac7781b634" day="1">
+                <activity name="Toxicity Evaluation" code="1035" type="Procedure" source="NU test upload"/>
+              </planned-activity>
+              <planned-activity id="7e7b4120-1a88-4fe0-acb9-d0a82bc6d82b" day="1">
+                <activity name="MRI" code="MRI" description="Research MRI" type="Procedure" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="99e36821-f7d6-4879-b5da-bb44fee88f19" day="1">
+                <activity name="Exam,Wt,PS" code="Exam, Wt, PS" description="Exam, weight, PS" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="bf817230-4eec-4bba-8f74-630308b892b2" day="1">
+                <activity name="Neuro hx &amp; exam" code="Neuro " description="Neuro history and exam " type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="356543d6-20e9-49ae-bbfc-425b335ceef2" day="1">
+                <activity name="Mini mental exam" code="MMSE" description="MMSE" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+              <planned-activity id="55c3ccf2-3b07-42bf-80a4-fe986c2cec12" day="1">
+                <activity name="Concomitant Meds Check" code="909" type="Other" source="NU test upload"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="1570c612-bd87-4966-8c27-a51b55efe351" index="2">
+        <epoch id="a2e2e782-78db-4656-8449-3736634eeda3" name="Event Monitoring">
+          <study-segment id="8935eb4d-bc04-42c9-8f0d-c12bdb261e54" name="Event Monitoring - before PROG">
+            <period id="1655f85a-6058-4147-a2e8-80f93ab1aa81" name="Q 3 months" repetitions="17" start-day="1" duration-quantity="1" duration-unit="quarter">
+              <planned-activity id="9eef7486-8c7f-4b66-93a2-739833fc92bc" day="1">
+                <activity name="survival-progression" code="survivalprogression" description="" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+          <study-segment id="207600e8-1fd0-4ff1-846a-19429db95867" name="Event Monitoring - after PROG - Arm A only">
+            <period id="7e5be186-5085-4f0b-a89a-5aab89c09c7e" name="Q 6 months" repetitions="9" start-day="1" duration-quantity="2" duration-unit="quarter">
+              <planned-activity id="983af595-cd31-4584-b400-63d958eb21fc" day="1">
+                <activity name="survival" code="survival" description="" type="Other" source="PSC - Manual Activity Creation"/>
+              </planned-activity>
+            </period>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </development-amendment>
+</study>
