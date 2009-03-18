@@ -17,8 +17,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.*;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
@@ -48,9 +47,12 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
     public void init(Context context, Request request, Response response) {
         helper.setRequest(request);
         super.init(context, request, response);
+        getVariants().clear();
+        getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
+        setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
-        setReadable(false); // pending
+        setReadable(true);
     }
 
     @Override public boolean allowPut() { return true; }
@@ -91,6 +93,19 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
             type = MediaType.TEXT_PLAIN;
         }
         getResponse().setEntity(responseEntity, type);
+    }
+
+
+    @Override
+    public Representation represent(Variant variant) throws ResourceException {
+        if (variant.getMediaType().isCompatible(MediaType.APPLICATION_WWW_FORM)) {
+            String ident = UriTemplateParameters.PLANNED_ACTIVITY_IDENTIFIER.extractFrom(getRequest());
+            PlannedActivity pa = plannedActivityDao.getByGridId(ident);
+            PlannedActivityForm form = new PlannedActivityForm(pa, getStudy(), activityDao, populationDao);
+            Representation rep = form.getWebRepresentation();
+            return rep;
+        }
+        return null;
     }
 
     private void updatePlannedActivityFrom(PlannedActivityForm form) throws ResourceException {

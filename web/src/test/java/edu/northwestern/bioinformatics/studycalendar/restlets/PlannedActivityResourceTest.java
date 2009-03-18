@@ -74,7 +74,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
     public void testEnabledMethods() throws Exception {
         expectSuccessfulDrillDown();
         replayMocks();
-        assertAllowedMethods("PUT", "DELETE");
+        assertAllowedMethods("PUT", "DELETE", "GET");
     }
 
     public void testPutAllowedForStudyCoordinator() throws Exception {

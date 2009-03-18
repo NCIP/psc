@@ -62,16 +62,15 @@ describe "/planned-activity" do
     end
     
     it "allows access to planned activity" do
-      pending '#632'
       get "/studies/NU480/template/2008-11-10~am/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", :as => :juno
       puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
-      response.content_type.should == 'text/xml'
+      response.content_type.should == 'application/x-www-form-urlencoded'
     end
   
   end
-  
+
   describe "DELETE" do
     
     it "shows a study snapshot" do

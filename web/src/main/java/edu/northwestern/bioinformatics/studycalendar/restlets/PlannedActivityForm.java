@@ -44,6 +44,28 @@ public class PlannedActivityForm extends ValidatingForm {
         validateIntegralityOfPosNegNullInteger(FormParameters.WEIGHT);
     }
 
+    public PlannedActivityForm(PlannedActivity pa, Study study, ActivityDao activityDao, PopulationDao populationDao) {
+        this((Representation) null, study, activityDao, populationDao);
+
+        setParams(FormParameters.DAY, "DAY", pa.getDay());
+        setParams(FormParameters.ACTIVITY_CODE, "ACTIVITY_CODE", pa.getActivity().getCode());
+        setParams(FormParameters.ACTIVITY_SOURCE, "ACTIVITY_SOURCE", pa.getActivity().getSource());
+        setParams(FormParameters.DETAILS, "DETAILS", pa.getDetails());
+        setParams(FormParameters.CONDITION, "CONDITION", pa.getCondition());
+        setParams(FormParameters.LABEL, "LABEL", pa.getLabels());
+        setParams(FormParameters.POPULATION, "POPULATION", pa.getPopulation());
+        setParams(FormParameters.WEIGHT, "WEIGHT", pa.getWeight());
+    }
+
+    private void setParams(FormParameters param, String paramName, Object value){
+        if (value != null) {
+            param.setParameter(this, paramName, value);
+        } else {
+            value = "";
+            setParams(param, paramName, value);
+        }
+    }
+
     public PlannedActivity createDescribedPlannedActivity() throws ResourceException {
         throwForValidationFailureIfNecessary();
         Integer day = FormParameters.DAY.extractFirstAsIntegerFrom(this);

@@ -36,4 +36,9 @@ public enum FormParameters {
                 "Expected %s parameter value to be an integer, not '%s'", nfe, attributeName(), val);
         }
     }
+
+    public void setParameter(Form parameter, String paramName, Object value) {
+        parameter.set(paramName, String.valueOf(value), false);
+    }
+    
 }
