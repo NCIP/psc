@@ -1,8 +1,5 @@
 describe "/site" do
 
-  #ISSUE
-  #2. delete /sites/{site-identifier} generates the folloing error:
-  # Authenticated account is not authorized for this resource and method # Related to '#634'
   #3. get /sites/{site-identifier} should not allowed to unauthorized user # Related to '#635'
 
   describe "GET" do
@@ -78,11 +75,26 @@ describe "/site" do
     end
     
     it "delete a site for an authorized user" do
-      pending '#634'
+      #Verify before Delete
+      get '/sites/site2', :as => :juno
+      response.status_code.should == 200 
+      response.xml_attributes("site", "site-name").should include("My Site")
+      response.xml_attributes("site", "assigned-identifier").should include("site2")
+      response.xml_elements('//site').should have(1).elements
+      #Delete the Site
       delete '/sites/site2', :as => :juno
-      # puts response.entity
-    end  
-
-  end  
-  
+      response.status_code.should == 200
+      response.status_message.should == "OK"
+      #Check after delete
+      get '/sites/site2', :as => :juno
+      response.status_code.should == 404
+      response.status_message.should == "Not Found"
+    end 
+    
+    it "gets 404 if site with given assigned identifier doesn't exist" do 
+      delete '/sites/My%20Site', :as => :juno
+      response.status_code.should == 404
+      response.status_message.should == "Not Found"
+    end
+  end 
 end

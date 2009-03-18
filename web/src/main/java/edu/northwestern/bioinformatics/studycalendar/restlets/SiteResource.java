@@ -23,6 +23,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
+        setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
     }
 
 
@@ -61,6 +62,9 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     @Override
     public void verifyRemovable(final Site site) throws ResourceException {
         super.verifyRemovable(site);
+        if (site == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Unknown Site Identifier " +UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
+        }
         boolean siteCanBeDeleted = siteService.checkIfSiteCanBeDeleted(site);
         if (!siteCanBeDeleted) {
             String message = "Can not delete the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) +
