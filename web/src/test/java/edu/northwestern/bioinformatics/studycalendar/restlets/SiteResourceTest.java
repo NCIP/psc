@@ -2,9 +2,15 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 
 /**
  * @author Saurabh Agrawal
@@ -17,6 +23,8 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
 
     private SiteService siteService;
 
+    private UserService userService;
+
     private Site site;
 
 
@@ -25,6 +33,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
         super.setUp();
         siteService = registerMockFor(SiteService.class);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);
+        userService = registerMockFor(UserService.class);
 
         site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
         site.setAssignedIdentifier(SITE_IDENTIFIER);
@@ -35,6 +44,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
         SiteResource resource = new SiteResource();
         resource.setSiteService(siteService);
         resource.setXmlSerializer(xmlSerializer);
+        resource.setUserService(userService);
         return resource;
     }
 
@@ -43,6 +53,9 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
     }
 
     public void testGetXmlForExistingSite() throws Exception {
+        User user = createUser("studyCo", STUDY_ADMIN);
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("studyCo","studyCo", new Role[] {STUDY_ADMIN}));
+        expect(userService.getUserByName("studyCo")).andReturn(user);
         expectFoundSite(site);
         expectObjectXmlized(site);
 
@@ -50,6 +63,17 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
         assertResponseIsCreatedXml();
+    }
+
+    public void testGet403ForUnauthorizedUser() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("subjectCo","subjectCo", new Role[] {SUBJECT_COORDINATOR}));
+        User user = createUser("subjectCo",SUBJECT_COORDINATOR);
+        expect(userService.getUserByName("subjectCo")).andReturn(user);
+        expectFoundSite(site);
+        expectObjectXmlized(site);
+
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 
     public void testGetXmlForNonExistentSiteIs404() throws Exception {

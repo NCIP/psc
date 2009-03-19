@@ -1,7 +1,5 @@
 describe "/site" do
 
-  #3. get /sites/{site-identifier} should not allowed to unauthorized user # Related to '#635'
-
   describe "GET" do
     before do
       @site1 = PscTest::Fixtures.createSite("My Site", "site1")
@@ -28,10 +26,8 @@ describe "/site" do
     end
   
     it "does not show a site of a user to the other users" do
-      pending '#635'
       get "/sites/MN026", :as => :carla #carla is only authorized for IL036
-      puts response.entity
-      response.status_code.should == 401
+      response.status_code.should == 403
     end   
   end
   

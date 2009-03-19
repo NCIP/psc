@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import org.restlet.Context;
 import org.restlet.data.Method;
@@ -9,6 +10,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -75,6 +78,25 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
                     message);
 
         }
+    }
+
+    @Override
+    public Representation represent(Variant variant) throws ResourceException {
+        Representation representation = super.represent(variant);
+        if (getRequestedObject() != null ) {
+           for (UserRole userRole : getCurrentUser().getUserRoles()) {
+                if (userRole.getRole().equals(Role.SYSTEM_ADMINISTRATOR) || userRole.getRole().equals(Role.STUDY_ADMIN) || userRole.getRole().equals(Role.STUDY_COORDINATOR)) {
+                    return representation;
+                }
+                for (Site site :  userRole.getSites()) {
+                    if (getRequestedObject().equals(site)) {
+                        return representation;
+                    }
+                }
+                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,"User is not allowed " +getCurrentUser().getDisplayName());
+           }
+       }
+       throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown Site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
     }
 
     @Required
