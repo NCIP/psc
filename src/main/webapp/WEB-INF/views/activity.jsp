@@ -2,7 +2,7 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
-<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
@@ -165,18 +165,18 @@
         function editActivity(activityId) {
             var inputName = 'InputName'+activityId
             var labelName = 'Name'+activityId
-            $(inputName).type = 'visible'
+            $(inputName).show()
             $(labelName).hide();
 
 
             var inputCode = 'InputCode'+activityId
             var labelCode = 'Code'+activityId
-            $(inputCode).type ='visible'
+            $(inputCode).show()
             $(labelCode).hide();
 
             var inputDescription = 'InputDescription'+activityId
             var labelDescription = 'Description'+activityId
-            $(inputDescription).type ='visible'
+            $(inputDescription).show()
             $(labelDescription).hide();
 
             var divType ='DivType'+activityId
@@ -221,15 +221,15 @@
                 method: 'post',
                 onComplete: function(t) {
                     $(labelName).innerHTML = $(inputName).value;
-                    $(inputName).type ='hidden'
+                    $(inputName).hide()
                     $(labelName).show()
 
                     $(labelCode).innerHTML = $(inputCode).value
-                    $(inputCode).type ='hidden'
+                    $(inputCode).hide()
                     $(labelCode).show()
 
                     $(labelDescription).innerHTML = $(inputDescription).value
-                    $(inputDescription).type ='hidden'
+                    $(inputDescription).hide()
                     $(labelDescription).show()
 
                     $(labelType).innerHTML = $(selectType).options[$(selectType).selectedIndex].innerHTML
@@ -307,7 +307,7 @@
 
         function deleteTheActivity(activityId) {
             var indicator = $('myIndicator')
-            indicator.reveal()            
+            indicator.reveal()
             var inputName = 'InputName'+activityId
             var inputCode = 'InputCode'+activityId
             var selectType = 'SourceTypes'+activityId
@@ -401,7 +401,7 @@
                 <a id="exportActivitiesLinkCSV" class="underlined">CSV</a>
                 <a id="exportActivitiesLinkXLS" class="underlined">Excel</a>
 
-                 
+
             </div>
 
             <div id="errors" style="margin-right:10px; margin-left:0.5em;">

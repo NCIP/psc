@@ -11,7 +11,7 @@
 
     <display:column title="Name" sortable="true" sortName="name">
         <label id="Name${row.id}">${row.name}</label>
-        <input id="InputName${row.id}" type="hidden" value="${row.name}"/>
+        <input id="InputName${row.id}" type="text" value="${row.name}" style="display:none"/>
     </display:column>
 
     <display:column title="Type" sortable="true" sortName="type">
@@ -33,12 +33,12 @@
 
     <display:column title="Code">
         <label id="Code${row.id}">${row.code}</label>
-        <input id="InputCode${row.id}" type="hidden" value="${row.code}"/>
+        <input id="InputCode${row.id}" type="text" value="${row.code}" style="display:none"/>
     </display:column>
 
     <display:column title="Description">
         <label id="Description${row.id}">${row.description}</label>
-        <input id="InputDescription${row.id}" type="hidden" value="${row.description}"/>
+        <input id="InputDescription${row.id}" type="text" value="${row.description}" style="display:none"/>
     </display:column>
 
     <display:column title="Source" media="excel csv">
@@ -47,8 +47,8 @@
 
     <display:column title="Controls" media="html">
         <input id="Edit${row.id}" type="button" name="EditButton" value="Edit" onclick="editActivity(${row.id})"/>
-        <input id="AdvancedEdit${row.id}" type="button" name="AdvancedEditButton" value="AdvancedEdit" onclick="location.href='<c:url value="/pages/advancedEditActivity?activityId=${row.id}"/>'"/>
         <input id="Save${row.id}" type="button" name="SaveButton" value="Save" style="display:none" onclick="saveActivity(${row.id})"/>
+        <input id="AdvancedEdit${row.id}" type="button" name="AdvancedEditButton" value="AdvancedEdit" onclick="location.href='<c:url value="/pages/advancedEditActivity?activityId=${row.id}"/>'"/>
             <c:if test="${row.deletable}">
                 <input id="Delete${row.id}" type="button" id="DeleteButton" name="DeleteButton" value="Delete" onclick="deleteActivity(${row.id})"/>
             </c:if>
