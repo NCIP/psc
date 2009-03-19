@@ -1,8 +1,5 @@
 describe "/sites" do
-
-  #ISSUE
-  # 1. get /sites will return all sites to any authenticate user # Related to '#638'
-
+  
   it "forbids any site access for unauthenticated users" do
     get "/sites", :as => nil
     response.status_code.should == 401
@@ -10,7 +7,6 @@ describe "/sites" do
 
   it "shows all sites to superuser" do
     get "/sites", :as => :juno
-    #puts response.entity
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.xml_attributes("site", "assigned-identifier").should include("MN026")
@@ -20,9 +16,7 @@ describe "/sites" do
   end
 
   it "shows all sites to study coordinator" do
-    #need to rewrite while fixing #638
     get "/sites", :as => :alice
-    #puts response.entity
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.xml_attributes("site", "assigned-identifier").should include("MN026")
@@ -33,7 +27,6 @@ describe "/sites" do
   
   it "shows all sites to study admin" do
     get "/sites", :as => :barbara
-    #puts response.entity
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.xml_attributes("site", "assigned-identifier").should include("MN026")
@@ -43,14 +36,9 @@ describe "/sites" do
   end
 
 
-  it "shows 1 site to the site coordinator of the site" do
-    pending '#638'
-    get "/sites", :as => :carla
-    puts response.entity
-    response.status_code.should == 200
-    response.status_message.should == "OK"
-    response.xml_attributes("site", "assigned-identifier").should include("IL036")
-    response.xml_elements('//site').should have(1).elements
+  it "forbids access to the list of sites to the site coordinator/subject coordinator" do
+    get "/sites", :as => :carla #doesn't have access to the all the sites of system
+    response.status_code.should == 403
   end 
   
 end
