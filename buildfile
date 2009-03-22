@@ -227,10 +227,6 @@ define "psc" do
       project('authentication:plugin-api').test_dependencies,
       project('database').test_dependencies
 
-    if emma?
-      emma.exclude "edu.yale.*"
-    end
-    
     package(:jar)
     package(:sources)
     
