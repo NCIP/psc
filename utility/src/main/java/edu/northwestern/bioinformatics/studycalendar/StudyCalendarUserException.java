@@ -13,10 +13,6 @@ public abstract class StudyCalendarUserException extends StudyCalendarRuntimeExc
         super(message, messageParameters);
     }
 
-    public StudyCalendarUserException(String message, Throwable cause, Object... messageParameters) {
-        super(message, messageParameters, cause);
-    }
-
     public void rejectInto(Errors errors) {
         errors.reject("error.literal", getMessage());
     }
