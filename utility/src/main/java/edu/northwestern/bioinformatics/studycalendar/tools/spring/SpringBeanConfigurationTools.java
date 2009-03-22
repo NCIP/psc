@@ -74,7 +74,7 @@ public class SpringBeanConfigurationTools {
                 ((InitializingBean) bean).afterPropertiesSet();
             } catch (Exception e) {
                 throw new StudyCalendarSystemException("Initializing instance of %s failed",
-                    bean.getClass().getName(), e);
+                    e, bean.getClass().getName());
             }
         }
         return bean;
