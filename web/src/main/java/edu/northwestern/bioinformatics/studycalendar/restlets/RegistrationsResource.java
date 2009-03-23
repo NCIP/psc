@@ -45,12 +45,18 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
             value.setSubjectCoordinator((User) auth.getPrincipal());
         }
         if (value.getSubject().getId() == null || subjectDao.getAssignment(value.getSubject(), getStudy(), getSite()) == null) {
-            StudySubjectAssignment assigned = subjectService.assignSubject(
-                value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-                value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
-            return String.format("studies/%s/schedules/%s",
-                Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
-                Reference.encode(assigned.getGridId()));
+           for (StudySite studySite : value.getSubjectCoordinator().getUserRole(Role.SUBJECT_COORDINATOR).getStudySites() ) {
+               if (studySite.equals(getStudySite())) {
+                   StudySubjectAssignment assigned = subjectService.assignSubject(
+                       value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
+                       value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
+                   return String.format("studies/%s/schedules/%s",
+                       Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
+                       Reference.encode(assigned.getGridId()));
+                }
+            }
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Study " + getStudy().getAssignedIdentifier()
+                       +" is not visible to the subject coordinator " +value.getSubjectCoordinator().getDisplayName());
         } else {
             String message = String.format("Subject %s already assigned to the study %s",
                     value.getSubject().getPersonId(), getStudy().getAssignedIdentifier());

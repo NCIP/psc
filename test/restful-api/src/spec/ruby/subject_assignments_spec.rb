@@ -51,7 +51,7 @@ describe "/subject_assignments" do
     before do
       @subject_registration_xml = psc_xml(
         "registration", 'first-study-segment-id' => "segment1", 'date' => "2008-12-27",
-        'subject-coordinator-name' => "juno"
+        'subject-coordinator-name' => "erin"
       ) { |subject|
         subject.tag!('subject',
             'first-name' => "Andre", 'last-name' => "Suzuki",
@@ -60,7 +60,6 @@ describe "/subject_assignments" do
     end
     
     it "does not allow the subject coordinator to assign patients when the template has not been made available" do
-      pending '#636'
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
       puts response.entity
       response.status_code.should == 403

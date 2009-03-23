@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
@@ -141,7 +142,9 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         Subject expectedSubject = setId(4, new Subject());
         String expectedAssignmentId = "DC";
         Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
-        posted.setSubjectCoordinator(new User());
+        User user = Fixtures.createUser("subjectCo", SUBJECT_COORDINATOR);
+        user.getUserRole(SUBJECT_COORDINATOR).addStudySite(studySite);
+        posted.setSubjectCoordinator(user);
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
@@ -156,13 +159,14 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
             response.getLocationRef().getTargetRef().toString());
     }
 
-    public void testPostAddsAssignmentWithoutSubjectCoordinator() throws Exception {
+    public void testPostAddsAssignmentWithoutSubjectCoordinatorName() throws Exception {
         Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
         StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         Subject expectedSubject = setId(7, new Subject());
         String expectedAssignmentId = "DC";
         Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
-        User subjCoord = createNamedInstance("Subject Coord", User.class);
+        User subjCoord = Fixtures.createUser("subjectCo", SUBJECT_COORDINATOR);
+        subjCoord.getUserRole(SUBJECT_COORDINATOR).addStudySite(studySite);
         Authentication auth = new TestingAuthenticationToken(subjCoord, null, null);
         request.getAttributes().put(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY, auth);
 
@@ -177,6 +181,23 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
+    }
+    
+    public void testPost403WhenStudyNotVisibleToSubjectCoordinator() throws Exception {
+        Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
+        StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        Subject expectedSubject = setId(7, new Subject());
+        String expectedAssignmentId = "DC";
+        Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
+
+        User subjCoord = Fixtures.createUser("subjectCo", SUBJECT_COORDINATOR);
+        posted.setSubjectCoordinator(subjCoord);
+        expectResolvedStudyAndSite(study, site);
+        expectReadXmlFromRequestAs(posted);
+        expect(subjectDao.getAssignment(expectedSubject,study,site)).andReturn(null);
+
+        doPost();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 
     public void testPutWithAuthorizedRole() {
