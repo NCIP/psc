@@ -2,9 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import org.restlet.data.Status;
 import org.restlet.data.MediaType;
-import org.restlet.resource.TransformRepresentation;
+import org.restlet.resource.Variant;
+import org.restlet.resource.Representation;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+
+import java.util.List;
 
 /**
  * @author Nataliya Shurupova
@@ -26,6 +29,7 @@ public class DocResourceTest extends ResourceTestCase<DocResource> {
         assertNotNull("Could not load config", conf);
         Template template = conf.getTemplate(PscWadlRepresentation.PSC_WADL_PATH);
         assertContains(template.toString(), "<application");
+        assertContains(template.toString(), "http://research.sun.com/wadl/2006/10"); // WADL namespace
         assertNotNull("Could not load template", template);
     }
 
@@ -37,6 +41,43 @@ public class DocResourceTest extends ResourceTestCase<DocResource> {
         assertEquals("Response is not HTML", MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertContains(text, "<html");
         assertContains(text, "Patient Study Calendar RESTful API"); // Title
+    }
+
+    public void testResourceVariants() throws Exception {
+        doGet();
+        List<Variant> variants = getResource().getVariants();
+        assertEquals("Quantity of the variants is incorrect ", 3, variants.size());
+    }
+
+
+    public void testResourceRepresentationIsHtml() throws Exception {
+        doGet();
+        List<Variant> variants = getResource().getVariants();
+        Representation represent = getResource().represent(variants.get(0));
+        assertEquals("Response is not HTML", MediaType.TEXT_HTML, represent.getMediaType());
+        assertContains(represent.getText(), "<html");
+        assertContains(represent.getText(), "Patient Study Calendar RESTful API");
+    }
+
+
+    public void testResourceRepresentationIsXsd() throws Exception {
+        doGet();
+        List<Variant> variants = getResource().getVariants();
+        Representation represent = getResource().represent(variants.get(1));
+        assertNotNull("Could not get the representation ", represent);
+        assertEquals("Response is not HTML", MediaType.APPLICATION_W3C_SCHEMA_XML, represent.getMediaType());
+        assertContains(represent.getText(), "<xsd:schema");
+    }
+
+   public void testResourceRepresentationIsWadl() throws Exception {
+        doGet();
+        List<Variant> variants = getResource().getVariants();
+        Representation represent = getResource().represent(variants.get(2));
+        assertNotNull("Could not get the representation ", represent);
+        assertEquals("Response is not HTML", MediaType.APPLICATION_WADL_XML, represent.getMediaType());
+        assertContains(represent.getText(), "<application");
+        assertContains(represent.getText(), "http://research.sun.com/wadl/2006/10"); // WADL namespace
+        assertContains(represent.getText(), String.format("<resources base=\"%s\">", ROOT_URI)); // WADL root element
     }
 }
 

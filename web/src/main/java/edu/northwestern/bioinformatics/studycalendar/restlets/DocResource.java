@@ -19,13 +19,12 @@ public class DocResource extends Resource {
 
     private Configuration freemarkerConfiguration;
     private static final String WSDL_DOC_XSLT = "/edu/northwestern/bioinformatics/studycalendar/restlets/wadl_documentation.xsl";
-    private static final String MIME_APPLICATION_X_XSD_XML = "application/x-xsd+xml";
 
     @Override
         public void init(Context context, Request request, Response response) {
             super.init(context, request, response);
             getVariants().add(new Variant(MediaType.TEXT_HTML));
-            getVariants().add(new ClasspathResourceRepresentation(new MediaType(MIME_APPLICATION_X_XSD_XML), "psc.xsd"));
+            getVariants().add(new ClasspathResourceRepresentation(MediaType.APPLICATION_W3C_SCHEMA_XML, "psc.xsd"));
             getVariants().add(PscWadlRepresentation.create(freemarkerConfiguration, request));
         }
 
