@@ -309,9 +309,10 @@
                                              </c:if>
                                          </c:forEach>
                                          <c:if test="${isSubjectCoordinatorAssigned == false}">
-                                             <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.</div>
+                                             <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.
                                              <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
                                                                       queryString="study=${template.id}"> Copy </tags:restrictedItem>
+                                             </div>
                                          </c:if>
                                      </c:if>
                                  </c:forEach>
