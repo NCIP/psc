@@ -449,8 +449,8 @@
 
 
     <xsd:complexType name="blackout-date">
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-        <xsd:attribute name="site-id" type="xsd:integer" use="required"/>
+        <xsd:attribute name="id" type="xsd:string"/>
+        <xsd:attribute name="site-identifier" type="xsd:string" use="required"/>
         <xsd:attribute name="day" type="xsd:integer" use="optional"/>
         <xsd:attribute name="month" type="xsd:integer" use="optional"/>
         <xsd:attribute name="year" type="xsd:integer" use="optional"/>

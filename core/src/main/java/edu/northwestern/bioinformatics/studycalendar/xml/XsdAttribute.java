@@ -63,7 +63,7 @@ public enum XsdAttribute {
     BLACKOUT_DATE_DESCRIPTION("description"),
     BLACKOUT_DATE_DAY("day"),
     BLACKOUT_DATE_MONTH("month"),
-    BLACKOUT_DATE_SITE_ID("site-id"),
+    BLACKOUT_DATE_SITE_ID("site-identifier"),
     BLACKOUT_DATE_YEAR("year"),
     BLACKOUT_DATE_DAY_OF_WEEK("day-of-the-week"),
     BLACKOUT_DATE_WEEK_NUMBER("week-number"),
