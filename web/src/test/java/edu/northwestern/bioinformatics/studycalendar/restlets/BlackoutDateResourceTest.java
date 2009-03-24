@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
+import org.restlet.data.Status;
 
 /**
  * @author Saurabh Agrawal
@@ -13,7 +14,7 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
 
     public static final String SITE_IDENTIFIER = "site_id";
 
-    public static final String BLACKOUT_DATE_IDENTIFIER = "1";
+    public static final String BLACKOUT_DATE_IDENTIFIER = "blackoutDateId";
 
     public static final String SITE_NAME = "site_name";
 
@@ -56,25 +57,17 @@ public class BlackoutDateResourceTest extends ResourceTestCase<BlackoutDateResou
 
     public void testDeleteHolidayWhichDoesNotExists() throws Exception {
         expectFoundSite(site);
-        //expectSiteUsedByAssignments(site, true);
-        //expect(siteService.createOrUpdateSite(site)).andReturn(site);
         doDelete();
-
-        assertEquals("Result is success", 400, response.getStatus().getCode());
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
-    private void expectSiteUsedByAssignments(final Site site, final boolean siteUsedByAssignment) {
-        expect(siteService.checkIfSiteCanBeDeleted(site)).andReturn(siteUsedByAssignment);
-    }
 
     public void testDeleteHolidayWhichExists() throws Exception {
+        monthDayHoliday.setGridId("blackoutDateId");
         expectFoundSite(site);
         expect(siteService.createOrUpdateSite(site)).andReturn(site);
-        request.getAttributes().put(UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.attributeName(), monthDayHoliday.getId() + " ");
-
         doDelete();
-
-        assertEquals("Result is success", 200, response.getStatus().getCode());
+        assertResponseStatus(Status.SUCCESS_OK);
     }
 
 

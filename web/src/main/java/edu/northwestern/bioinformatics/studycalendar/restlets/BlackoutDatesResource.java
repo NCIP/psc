@@ -1,17 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.BlackoutDateXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -23,40 +22,36 @@ import java.util.Collection;
 public class BlackoutDatesResource extends AbstractStorableCollectionResource<BlackoutDate> {
 
     private SiteService siteService;
-
+    private StudyCalendarXmlCollectionSerializer<BlackoutDate> xmlSerializer;
     private Site site;
+    private BlackoutDateDao blackoutDateDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
-        String assignedIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
-        site = siteService.getByAssignedIdentifier(assignedIdentifier);
-
+        setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+        setAuthorizedFor(Method.POST, Role.SYSTEM_ADMINISTRATOR);
     }
 
-    public Collection<BlackoutDate> getAllObjects() {
-        if (site != null) {
+    public Collection<BlackoutDate> getAllObjects() throws ResourceException {
+        String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
+        if (siteIdentifier == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No site in request");
+        }
+        site = siteService.getByAssignedIdentifier(siteIdentifier);
+        if (site == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown site " + siteIdentifier );
+        } else {
             return site.getBlackoutDates();
         }
-        return null;
     }
 
     @Override
-    public String store(final BlackoutDate blackoutDate) {
+    public String store(BlackoutDate blackoutDate){
         try {
-
-            site.addOrMergeExistingHoliday(blackoutDate);
-
-//            for (BlackoutDate blackoutDate : holidays) {
-//                site.addOrMergeExistingHoliday(blackoutDate);
-//            }
-
-
-            siteService.createOrUpdateSite(site);
+            blackoutDateDao.save(blackoutDate);
             return String.format("sites/%s/blackout-dates/%s",
-                    site.getAssignedIdentifier(), blackoutDate.getId());
+                    blackoutDate.getSite().getAssignedIdentifier(), blackoutDate.getGridId());
         } catch (Exception e) {
             String message = "Can not POST the blackoutDate on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
@@ -66,18 +61,12 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
         return null;
     }
 
-    protected void validateEntity(final Representation entity) throws ResourceException {
-        super.validateEntity(entity);
-        if (site == null) {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "No site with identifier " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
-        }
+    public StudyCalendarXmlCollectionSerializer<BlackoutDate> getXmlSerializer() {
+        return xmlSerializer;
     }
 
-    public StudyCalendarXmlCollectionSerializer<BlackoutDate> getXmlSerializer() {
-        BlackoutDateXmlSerializer xmlSerializer = new BlackoutDateXmlSerializer(site);
-
-        return xmlSerializer;
+    public void setXmlSerializer(StudyCalendarXmlCollectionSerializer<BlackoutDate> xmlSerializer) {
+        this.xmlSerializer = xmlSerializer;
     }
 
     @Required
@@ -85,5 +74,8 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
         this.siteService = siteService;
     }
 
-
+    @Required
+    public void setBlackoutDateDao(BlackoutDateDao blackoutDateDao) {
+        this.blackoutDateDao = blackoutDateDao;
+    }
 }

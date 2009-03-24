@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
@@ -11,7 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCa
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import org.dom4j.Element;
+import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -21,8 +24,9 @@ import java.util.Collections;
  */
 public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     private BlackoutDateXmlSerializer serializer;
-    private Element dayOfTheWeekHolidayElement, relativeRecurringHolidayElement, monthDayHolidayElement;
+    private Element monthDayHolidayElement;
     private Site site;
+    private SiteService siteService;
 
     private WeekdayBlackout dayOfTheWeek;
 
@@ -33,94 +37,113 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-
         site = createNamedInstance("Northwestern University", Site.class);
-        site.setAssignedIdentifier("assigned id");
-        site.setId(1);
-        serializer = new BlackoutDateXmlSerializer(site);
+        site.setAssignedIdentifier("NU");
+        siteService = registerMockFor(SiteService.class);
 
-
+        serializer = new BlackoutDateXmlSerializer();
+        serializer.setSiteService(siteService);
         dayOfTheWeek = new WeekdayBlackout();
-        dayOfTheWeek.setId(1);
         dayOfTheWeek.setDayOfTheWeek("Sunday");
         dayOfTheWeek.setDescription("day of the week");
+        dayOfTheWeek.setSite(site);
+        dayOfTheWeek.setGridId("1");
 
         relativeRecurringHoliday = new RelativeRecurringBlackout();
         relativeRecurringHoliday.setDayOfTheWeek("Monday");
         relativeRecurringHoliday.setMonth(2);
         relativeRecurringHoliday.setWeekNumber(4);
         relativeRecurringHoliday.setDescription("relative recurring holiday");
-        relativeRecurringHoliday.setId(2);
+        relativeRecurringHoliday.setSite(site);
+        relativeRecurringHoliday.setGridId("2");
 
         monthDayHoliday = new SpecificDateBlackout();
         monthDayHoliday.setDay(2);
         monthDayHoliday.setMonth(1);
         monthDayHoliday.setYear(2008);
         monthDayHoliday.setDescription("month day holiday");
-        monthDayHoliday.setId(3);
-
-        site.getBlackoutDates().add(dayOfTheWeek);
-        site.getBlackoutDates().add(monthDayHoliday);
-        site.getBlackoutDates().add(relativeRecurringHoliday);
+        monthDayHoliday.setSite(site);
+        monthDayHoliday.setGridId("3");
 
     }
 
-    // TODO: these should be separate tests
-    public void testCreateElement() {
+    public void testCreateElementForWeekdayBlackout() {
         Element actualElement = serializer.createElement(dayOfTheWeek);
+        
         assertEquals("Wrong element name", XsdElement.BLACKOUT_DATE.xmlName(), actualElement.getName());
-
         assertEquals("Wrong day-of-the-week", dayOfTheWeek.getDayOfTheWeek(), actualElement.attributeValue("day-of-the-week"));
         assertEquals("Wrong description", dayOfTheWeek.getDescription(), actualElement.attributeValue("description"));
-        assertEquals("Wrong site", site.getId() + "", actualElement.attributeValue("site-id"));
+        assertEquals("Wrong site", site.getAssignedIdentifier(), actualElement.attributeValue("site-identifier"));
+    }
 
-        actualElement = serializer.createElement(relativeRecurringHoliday, true);
+    public void testCreateElementForRelativeRecurringBlackout() throws Exception {
+        Element actualElement = serializer.createElement(relativeRecurringHoliday, true);
 
         assertEquals("Wrong day-of-the-week", relativeRecurringHoliday.getDayOfTheWeek(), actualElement.attributeValue("day-of-the-week"));
         assertEquals("Wrong description", relativeRecurringHoliday.getDescription(), actualElement.attributeValue("description"));
-        assertEquals("Wrong month ", relativeRecurringHoliday.getMonth() + "", actualElement.attributeValue("month"));
-        assertEquals("Wrong week-number", relativeRecurringHoliday.getWeekNumber() + "", actualElement.attributeValue("week-number"));
+        assertEquals("Wrong month ", relativeRecurringHoliday.getMonth().toString(), actualElement.attributeValue("month"));
+        assertEquals("Wrong week-number", relativeRecurringHoliday.getWeekNumber().toString(), actualElement.attributeValue("week-number"));
+        assertEquals("Wrong site", site.getAssignedIdentifier(), actualElement.attributeValue("site-identifier"));
+    }
 
-        actualElement = serializer.createElement(monthDayHoliday, true);
+    public void testCreateElementForSpecificDateBlackout() throws Exception {
+        Element actualElement = serializer.createElement(monthDayHoliday, true);
 
-        assertEquals("Wrong year", monthDayHoliday.getYear() + "", actualElement.attributeValue("year"));
+        assertEquals("Wrong year", monthDayHoliday.getYear().toString(), actualElement.attributeValue("year"));
         assertEquals("Wrong description", monthDayHoliday.getDescription(), actualElement.attributeValue("description"));
-        assertEquals("Wrong month ", monthDayHoliday.getMonth() + "", actualElement.attributeValue("month"));
-        assertEquals("Wrong day", monthDayHoliday.getDay() + "", actualElement.attributeValue("day"));
+        assertEquals("Wrong month ", monthDayHoliday.getMonth().toString(), actualElement.attributeValue("month"));
+        assertEquals("Wrong day", monthDayHoliday.getDay().toString(), actualElement.attributeValue("day"));
+        assertEquals("Wrong site", site.getAssignedIdentifier(), actualElement.attributeValue("site-identifier"));
     }
 
-    public void testReadElementForHoliday() {
-
-        dayOfTheWeekHolidayElement = serializer.createElement(dayOfTheWeek, true);
-        relativeRecurringHolidayElement = serializer.createElement(relativeRecurringHoliday, true);
-        monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
-
-        BlackoutDate newDayOfTheWeekholiday = serializer.readElement(dayOfTheWeekHolidayElement);
-
-        assertEquals("day of week holiday should be the same", dayOfTheWeek, newDayOfTheWeekholiday);
-
-        BlackoutDate newMonthDayHoliday = serializer.readElement(monthDayHolidayElement);
-
-        assertEquals("month day holiday should be the same", monthDayHoliday, newMonthDayHoliday);
-
-        BlackoutDate newRelativeRecurringHoliday = serializer.readElement(relativeRecurringHolidayElement);
-
-        assertEquals("relative recurring holiday should be the same", relativeRecurringHoliday, newRelativeRecurringHoliday);
-
+    public void testReadElementForWeekdayBlackout() throws Exception {
+        Element element = XsdElement.BLACKOUT_DATE.create();
+        BLACKOUT_DATE_SITE_ID.addTo(element,"NU");
+        BLACKOUT_DATE_DESCRIPTION.addTo(element,"WeekdayBlackout");
+        BLACKOUT_DATE_DAY_OF_WEEK.addTo(element,"Monday");
+        BlackoutDate read = expectReadElement(element);
+        assertNotNull(read);
+        assertNull(read.getId());
+        assertNull(read.getGridId());
+        assertEquals("Wrong day of week","Monday",((WeekdayBlackout)read).getDayOfTheWeek());
+        assertEquals("Wrong site identifier",site,read.getSite());
+        assertEquals("Wrong Description","WeekdayBlackout",read.getDescription());
+    }
+    
+    public void testReadElementRelativeRecurringBlackout() throws Exception {
+        Element element = XsdElement.BLACKOUT_DATE.create();
+        BLACKOUT_DATE_SITE_ID.addTo(element,"NU");
+        BLACKOUT_DATE_DESCRIPTION.addTo(element,"RelativeRecurringBlackout");
+        BLACKOUT_DATE_DAY_OF_WEEK.addTo(element,"Monday");
+        BLACKOUT_DATE_MONTH.addTo(element,5);
+        BLACKOUT_DATE_WEEK_NUMBER.addTo(element,2);
+        BlackoutDate read = expectReadElement(element);
+        assertNotNull(read);
+        assertNull(read.getId());
+        assertNull(read.getGridId());
+        assertEquals("Wrong day of week","Monday",((RelativeRecurringBlackout)read).getDayOfTheWeek());
+        assertEquals("Wrong Month","5",((RelativeRecurringBlackout)read).getMonth().toString());
+        assertEquals("Wrong Week number",2,((RelativeRecurringBlackout)read).getDayOfTheWeekInteger());
+        assertEquals("Wrong site identifier",site,read.getSite());
+        assertEquals("Wrong Description","RelativeRecurringBlackout",read.getDescription());
     }
 
-    public void testReadElementForNonExistingHoliday() {
-        site.getBlackoutDates().remove(monthDayHoliday);
-        try {
-            monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
-
-            serializer.readElement(monthDayHolidayElement);
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException e) {
-            assertEquals("No Holday existis with id:" + monthDayHoliday.getId() + " at the site:" + site.getAssignedIdentifier(),
-                    e.getMessage());
-        }
+    public void testReadElementForSpecificDateBlackout() throws Exception {
+        Element element = XsdElement.BLACKOUT_DATE.create();
+        BLACKOUT_DATE_SITE_ID.addTo(element,"NU");
+        BLACKOUT_DATE_DESCRIPTION.addTo(element,"SpecificDateBlackout");
+        BLACKOUT_DATE_MONTH.addTo(element,5);
+        BLACKOUT_DATE_DAY.addTo(element,4);
+        BLACKOUT_DATE_YEAR.addTo(element,2009);
+        BlackoutDate read = expectReadElement(element);
+        assertNotNull(read);
+        assertNull(read.getId());
+        assertNull(read.getGridId());
+        assertEquals("Wrong Month","5",((SpecificDateBlackout)read).getMonth().toString());
+        assertEquals("Wrong Week number","4",((SpecificDateBlackout)read).getDay().toString());
+        assertEquals("Wrong Year","2009",((SpecificDateBlackout)read).getYear().toString());
+        assertEquals("Wrong site identifier",site,read.getSite());
+        assertEquals("Wrong Description","SpecificDateBlackout",read.getDescription());
     }
 
     public void testReadElementForNullHolidayId() {
@@ -134,8 +157,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    public void testCreateOrReadElementForNullSiteOrElement() {
-        //first check for null element
+    public void testCreateOrReadElementForNullElement() {
         try {
             serializer.createElement(null, true);
             fail("Exception not thrown");
@@ -151,15 +173,6 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
             assertEquals("element can not be null",
                     scve.getMessage());
         }
-        //now check for site
-
-        try {
-            serializer = new BlackoutDateXmlSerializer(null);
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("site can not be null",
-                    scve.getMessage());
-        }
 
     }
 
@@ -172,12 +185,12 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
         expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day=\"{3}\" month=\"{4}\" year=\"2008\"/>", monthDayHoliday.getId(),
-                monthDayHoliday.getDescription(), site.getId(), monthDayHoliday.getDay(), monthDayHoliday.getMonth()));
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-identifier=\"{2}\" day=\"{3}\" month=\"{4}\" year=\"2008\"/>", monthDayHoliday.getGridId(),
+                monthDayHoliday.getDescription(), site.getAssignedIdentifier(), monthDayHoliday.getDay(), monthDayHoliday.getMonth()));
 
         expected.append("</blackout-dates>");
 
-
+        replayMocks();
         String actual = serializer.createDocumentString(Collections.<BlackoutDate>singleton(monthDayHoliday));
         verifyMocks();
 
@@ -193,13 +206,13 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
         expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" week-number=\"{4}\" month=\"{5}\" />",
-                relativeRecurringHoliday.getId(), relativeRecurringHoliday.getDescription(), site.getId(),
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-identifier=\"{2}\" day-of-the-week=\"{3}\" week-number=\"{4}\" month=\"{5}\" />",
+                relativeRecurringHoliday.getGridId(), relativeRecurringHoliday.getDescription(), site.getAssignedIdentifier(),
                 relativeRecurringHoliday.getDayOfTheWeek(), relativeRecurringHoliday.getWeekNumber(), relativeRecurringHoliday.getMonth()));
 
         expected.append("</blackout-dates>");
 
-
+        replayMocks();
         String actual = serializer.createDocumentString(Collections.<BlackoutDate>singleton(relativeRecurringHoliday));
         verifyMocks();
 
@@ -215,16 +228,26 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append(MessageFormat.format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
         expected.append(MessageFormat.format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-id=\"{2}\" day-of-the-week=\"{3}\" />", dayOfTheWeek.getId(),
-                dayOfTheWeek.getDescription(), site.getId(), dayOfTheWeek.getDayOfTheWeek()));
+        expected.append(MessageFormat.format("<blackout-date id=\"{0}\" description=\"{1}\" site-identifier=\"{2}\" day-of-the-week=\"{3}\" />", dayOfTheWeek.getGridId(),
+                dayOfTheWeek.getDescription(), site.getAssignedIdentifier(), dayOfTheWeek.getDayOfTheWeek()));
 
         expected.append("</blackout-dates>");
 
-
+        replayMocks();
         String actual = serializer.createDocumentString(Collections.<BlackoutDate>singleton(dayOfTheWeek));
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
     }
+
+    // Test Helper Method
+    public BlackoutDate expectReadElement(Element element) {
+        expect(siteService.getByAssignedIdentifier("NU")).andReturn(site);
+        replayMocks();
+        BlackoutDate blackoutDate = serializer.readElement(element);
+        verifyMocks();
+        return blackoutDate;
+    }
+
 }
 

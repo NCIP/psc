@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -10,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
@@ -17,15 +19,7 @@ import java.util.List;
  * @author Saurabh Agrawal
  */
 public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<BlackoutDate> {
-
-    private Site site;
-
-    public BlackoutDateXmlSerializer(final Site site) {
-        if (site == null) {
-            throw new StudyCalendarValidationException("site can not be null");
-        }
-        this.site = site;
-    }
+    private SiteService siteService;
 
     @Override
     protected XsdElement collectionRootElement() {
@@ -45,9 +39,9 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         }
         Element blackoutDateElement = rootElement().create();
 
-        XsdAttribute.BLACKOUT_DATE_ID.addTo(blackoutDateElement, blackoutDate.getId());
+        XsdAttribute.BLACKOUT_DATE_ID.addTo(blackoutDateElement, blackoutDate.getGridId());
         XsdAttribute.BLACKOUT_DATE_DESCRIPTION.addTo(blackoutDateElement, blackoutDate.getDescription());
-        XsdAttribute.BLACKOUT_DATE_SITE_ID.addTo(blackoutDateElement, site.getId());
+        XsdAttribute.BLACKOUT_DATE_SITE_ID.addTo(blackoutDateElement, blackoutDate.getSite().getAssignedIdentifier());
 
         if (blackoutDate instanceof WeekdayBlackout) {
             WeekdayBlackout dayOfTheWeek = (WeekdayBlackout) blackoutDate;
@@ -55,11 +49,8 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
 
         } else if (blackoutDate instanceof SpecificDateBlackout) {
             SpecificDateBlackout monthDayHoliday = (SpecificDateBlackout) blackoutDate;
-
             XsdAttribute.BLACKOUT_DATE_DAY.addTo(blackoutDateElement, monthDayHoliday.getDay());
-
             XsdAttribute.BLACKOUT_DATE_MONTH.addTo(blackoutDateElement, monthDayHoliday.getMonth());
-
             XsdAttribute.BLACKOUT_DATE_YEAR.addTo(blackoutDateElement, monthDayHoliday.getYear());
 
         } else if (blackoutDate instanceof RelativeRecurringBlackout) {
@@ -69,7 +60,6 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
             XsdAttribute.BLACKOUT_DATE_MONTH.addTo(blackoutDateElement, relativeRecurringHoliday.getMonth());
 
         }
-
         return blackoutDateElement;
     }
 
@@ -79,67 +69,46 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
             throw new StudyCalendarValidationException("element can not be null");
 
         }
-        String holidayId = XsdAttribute.BLACKOUT_DATE_ID.from(element);
+        BlackoutDate blackoutDate;
+        String siteIdentifier = XsdAttribute.BLACKOUT_DATE_SITE_ID.from(element);
+        String dayOfWeek = XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.from(element);
+        String day = XsdAttribute.BLACKOUT_DATE_DAY.from(element);
+        String month = XsdAttribute.BLACKOUT_DATE_MONTH.from(element);
+        String year = XsdAttribute.BLACKOUT_DATE_YEAR.from(element);
+        String weekNumber = XsdAttribute.BLACKOUT_DATE_WEEK_NUMBER.from(element);
+        String dateDesc = XsdAttribute.BLACKOUT_DATE_DESCRIPTION.from(element);
 
-        if (holidayId == null) {
-            //create a new blackoutDate
-            BlackoutDate blackoutDate = null;
-            final String blackOutDateId = XsdAttribute.BLACKOUT_DATE_ID.from(element);
-
-            final String dayOfWeek = XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.from(element);
-            final String day = XsdAttribute.BLACKOUT_DATE_DAY.from(element);
-
-            final String month = XsdAttribute.BLACKOUT_DATE_MONTH.from(element);
-            final String year = XsdAttribute.BLACKOUT_DATE_YEAR.from(element);
-            final String weekNumber = XsdAttribute.BLACKOUT_DATE_WEEK_NUMBER.from(element);
-            final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESCRIPTION.from(element);
-
-            if (dayOfWeek != null && !dayOfWeek.trim().equals("")) {
-                blackoutDate = new WeekdayBlackout();
-                ((WeekdayBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
-
-            } else if (month != null || day != null || year != null) {
-                blackoutDate = new SpecificDateBlackout();
-                if (day != null && !day.trim().equalsIgnoreCase("")) {
-
-                    ((SpecificDateBlackout) blackoutDate).setDay(Integer.parseInt(day));
-                }
-                if (month != null && !month.trim().equalsIgnoreCase("")) {
-
-                    ((SpecificDateBlackout) blackoutDate).setMonth(Integer.parseInt(month));
-                }
-                if (year != null && !year.trim().equalsIgnoreCase("")) {
-
-                    ((SpecificDateBlackout) blackoutDate).setYear(Integer.parseInt(year));
-                }
-            } else if (weekNumber != null || dayOfWeek != null || month != null) {
-                blackoutDate = new RelativeRecurringBlackout();
-                ((RelativeRecurringBlackout) blackoutDate).setDayOfTheWeek(dayOfWeek);
-                if (month != null && !month.trim().equalsIgnoreCase("")) {
-                    ((RelativeRecurringBlackout) blackoutDate).setMonth(Integer.parseInt(month));
-                }
-                if (weekNumber != null && !weekNumber.trim().equalsIgnoreCase("")) {
-
-                    ((RelativeRecurringBlackout) blackoutDate).setWeekNumber(Integer.parseInt(weekNumber));
-                }
-
-            }
-            if (blackoutDate != null) {
-                blackoutDate.setDescription(dateDesc);
-            }
-            return blackoutDate;
+        if (month != null && day != null) {
+            SpecificDateBlackout specificDateBlackout = new SpecificDateBlackout();
+            specificDateBlackout.setMonth(Integer.parseInt(month));
+            specificDateBlackout.setDay(Integer.parseInt(day));
+            if (year != null) specificDateBlackout.setYear(Integer.parseInt(year));
+            blackoutDate = specificDateBlackout;
+        } else if (dayOfWeek != null && weekNumber == null && month == null) {
+            WeekdayBlackout dayOfTheWeek = new WeekdayBlackout();
+            dayOfTheWeek.setDayOfTheWeek(dayOfWeek);
+            blackoutDate = dayOfTheWeek;
+        } else {
+            RelativeRecurringBlackout relativeRecurringBlackout = new RelativeRecurringBlackout();
+            relativeRecurringBlackout.setDayOfTheWeek(dayOfWeek);
+            relativeRecurringBlackout.setMonth(Integer.parseInt(month));
+            relativeRecurringBlackout.setWeekNumber(Integer.parseInt(weekNumber));
+            blackoutDate = relativeRecurringBlackout;
         }
 
-        List<BlackoutDate> blackoutDates = site.getBlackoutDates();
-        for (BlackoutDate blackoutDate : blackoutDates) {
-            if (blackoutDate.getId() != null && holidayId.equals(blackoutDate.getId().intValue() + "")) {
-                return blackoutDate;
-            }
+        if (blackoutDate != null) {
+            blackoutDate.setDescription(dateDesc);
         }
+        
+        if (siteIdentifier != null) {
+            Site site = siteService.getByAssignedIdentifier(siteIdentifier);
+            blackoutDate.setSite(site);
+        }
+        return blackoutDate;
+   }
 
-
-        throw new StudyCalendarValidationException("No Holday existis with id:" + holidayId + " at the site:" + site.getAssignedIdentifier());
-
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
-
 }

@@ -1,17 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Saurabh Agrawal
@@ -23,14 +22,16 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
     public static final String SITE_NAME = "site_name";
 
     private SiteService siteService;
-
+    private BlackoutDateDao blackoutDateDao;
     private Site site;
     private SpecificDateBlackout monthDayHoliday;
+    private List<BlackoutDate> blackoutDates = new ArrayList<BlackoutDate>();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         siteService = registerMockFor(SiteService.class);
+        blackoutDateDao = registerDaoMockFor(BlackoutDateDao.class);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);
 
         site = Fixtures.createNamedInstance(SITE_NAME, Site.class);
@@ -42,7 +43,10 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         monthDayHoliday.setYear(2008);
         monthDayHoliday.setDescription("month day holiday");
         monthDayHoliday.setId(3);
+        monthDayHoliday.setGridId("blackoutDateId");
+        monthDayHoliday.setSite(site);
         site.getBlackoutDates().add(monthDayHoliday);
+        blackoutDates.add(monthDayHoliday);
 
     }
 
@@ -50,6 +54,8 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
     protected BlackoutDatesResource createResource() {
         BlackoutDatesResource resource = new BlackoutDatesResource();
         resource.setSiteService(siteService);
+        resource.setXmlSerializer(xmlSerializer);
+        resource.setBlackoutDateDao(blackoutDateDao);
         return resource;
     }
 
@@ -57,87 +63,41 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         assertAllowedMethods("GET", "POST");
     }
 
+    public void testPostBlackoutDateToSite() throws Exception {
+        expectReadXmlFromRequestAs(monthDayHoliday);
+        blackoutDateDao.save(monthDayHoliday);
 
-    public void testPostExistingXml() throws Exception {
-        expectFoundSite(site);
-
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<blackout-date  id=\"3\" description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n";
-
-        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
-
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        expectCreateOrUpdateSite(site);
         doPost();
-
         assertResponseStatus(Status.SUCCESS_CREATED);
-        assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/3",
+        assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/blackoutDateId",
                 response.getLocationRef().getTargetRef().toString());
     }
 
-    public void testPostNewXml() throws Exception {
-        expectFoundSite(site);
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "  <blackout-date description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n";
+    public void testGet404IfSiteIsNull() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), null);
 
-
-        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
-
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        expectCreateOrUpdateSite(site);
-        doPost();
-
-        assertResponseStatus(Status.SUCCESS_CREATED);
-        assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/null",
-                response.getLocationRef().getTargetRef().toString());
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
-    public void testPostInvalidXml() throws Exception {
+    public void testGet404IfSiteIsUnknown() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(),"UnknownSite");
+        expect(siteService.getByAssignedIdentifier("UnknownSite")).andReturn(null);
+        
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void testGetBlackoutDatesForSite() throws Exception {
         expectFoundSite(site);
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "\n" +
-                "  <blackout-date id=\"4\" description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n";
+        expect(xmlSerializer.createDocumentString(blackoutDates)).andReturn(MOCK_XML);
 
-        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
-
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        try {
-            doPost();
-
-        } catch (StudyCalendarValidationException e) {
-            fail("No Holday existis with id:" + 4 + " at the site:" + site.getAssignedIdentifier());
-            assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-
-        }
-
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertResponseIsCreatedXml();
     }
 
     private void expectFoundSite(final Site expectedSite) {
         expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
-
     }
-
-    private void expectCreateOrUpdateSite(final Site existingSite) throws Exception {
-        expect(siteService.createOrUpdateSite(existingSite)).andReturn(existingSite);
-
-    }
-
-    public void testGetXmlForAllBlackoutDates() throws Exception {
-        expectFoundSite(site);
-        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "\n" +
-                "<blackout-dates xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\">\n" +
-                "  <blackout-date id=\"3\" description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n" +
-                "</blackout-dates>\n";
-
-        doGet();
-        assertResponseStatus(Status.SUCCESS_OK);
-        assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
-        String actualEntityBody = response.getEntity().getText();
-        assertEquals("Wrong text", expectedXml, actualEntityBody);
-    }
-
 }

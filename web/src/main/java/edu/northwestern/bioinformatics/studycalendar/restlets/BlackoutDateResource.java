@@ -18,9 +18,7 @@ import java.util.List;
  * @author Saurabh Agrawal
  */
 public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectResource<BlackoutDate> {
-
     private SiteService siteService;
-
     private Site site;
 
     @Override
@@ -36,26 +34,25 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
-
+        setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
     }
 
-
     @Override
-    protected BlackoutDate loadRequestedObject(Request request) {
+    protected BlackoutDate loadRequestedObject(Request request) throws ResourceException{
         String blackoutDateIdentifier = UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.extractFrom(request);
-        String assignedIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
-        site = siteService.getByAssignedIdentifier(assignedIdentifier);
+        String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
 
-        if (site == null || blackoutDateIdentifier == null) {
-            return null;
-            //     throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Site dost not exists for given identifier:" + assignedIdentifier);
+        if (siteIdentifier == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No site in request");
         }
-        List<BlackoutDate> holidaysAndWeekends = site.getBlackoutDates();
+        site = siteService.getByAssignedIdentifier(siteIdentifier);
+        if (site == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown site " + siteIdentifier );
+        }
+        List<BlackoutDate> blackoutDates = site.getBlackoutDates();
 
-        for (BlackoutDate blackoutDate : holidaysAndWeekends) {
-            if (blackoutDateIdentifier.trim().equals(blackoutDate.getId().intValue() + "")) {
+        for (BlackoutDate blackoutDate : blackoutDates) {
+            if (blackoutDateIdentifier.equals(blackoutDate.getGridId())) {
                 return blackoutDate;
             }
         }
@@ -88,8 +85,8 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
 
         holidayExists = site.checkIfHolidayExists(blackoutDate);
         if (!holidayExists) {
-            String message = "Can not delete the blackoutDate" + UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.extractFrom(getRequest()) +
-                    " on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) + " because blackoutDate does not exists on this site.";
+            String message = "Can not delete the blackoutDate " + UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.extractFrom(getRequest()) +
+                    " on the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) + " because blackoutDate does not exists on this site.";
             log.error(message);
 
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
