@@ -168,12 +168,19 @@
 
             #revision-changes {
                 float: right;
-                width: 29%;
+                width: 5%;
             }
 
             #with-changes #selected-studySegment {
-                width: 70%;
+                width: 93%;
                 float: left;
+            }
+
+            #changesTable {
+                width: 300%;
+                position:relative;
+                float:inherit;
+                margin-top:25px;
             }
 
             p#addEpoch{
@@ -461,6 +468,23 @@
                     } });
                 })
             }
+
+            function showChangesSetup() {
+                var show = $("showChanges")
+                Event.observe(show, "click", function(e) {
+                    var mytext = show.innerHTML
+                    Event.stop(e)
+                    if (mytext.indexOf("Show changes", 0) == 0) {
+                        show.innerHTML = "Hide changes"
+                        $('changesTable').style.display='block'
+                    } else if (mytext.indexOf("Hide changes", 0) == 0) {
+                        show.innerHTML = "Show changes"
+                        $('changesTable').style.display='none'
+                    }
+
+                });
+            }
+
 			function registerShowHandler(){
 				Event.observe(showButton, "click", function(e) {
 		            Event.stop(e);
@@ -673,6 +697,7 @@
                 addToBeginSentence();
                 hideShowReleaseTemplateButton();
                 arrowsHideShowSetup();
+                showChangesSetup()
             }
 
             function loadFunctionsForStudySegment() {
@@ -860,8 +885,9 @@
 
         <c:set var="showChanges" value="${not empty developmentRevision and not study.inInitialDevelopment}"/>
         <c:if test="${showChanges}">
-            <div id="with-changes">
+            <div id="with-changes" >
                 <div id="revision-changes" class="section">
+                    <a id="showChanges" class="showChanges" href="#" name="showChanges" style="visibility: visible;">Show changes</a>
                     <templ:changes revision="${developmentRevision}" changes="${revisionChanges}"/>
                 </div>
             <%-- #with-changes is closed below --%>
