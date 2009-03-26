@@ -1,6 +1,7 @@
 require 'rest-open-uri'
 require 'builder'
 require 'rexml/document'
+require 'json/pure'
 
 module HttpHelper
   attr_reader :response
@@ -113,6 +114,11 @@ module HttpHelper
     def xml_doc
       content_type.should == 'text/xml'
       @rexml_doc ||= REXML::Document.new(entity)
+    end
+    
+    def json
+      content_type.should == 'application/json'
+      @json ||= JSON.parse(entity)
     end
   end
 end
