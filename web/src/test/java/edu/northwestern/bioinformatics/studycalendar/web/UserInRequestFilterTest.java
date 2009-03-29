@@ -28,6 +28,8 @@ public class UserInRequestFilterTest extends ContextRetainingFilterTestCase {
 
         // should always continue
         filterChain.doFilter(request, response);
+        expect(mockApplicationContext.getBean("applicationSecurityManager")).
+            andStubReturn(applicationSecurityManager);
     }
 
     public void testAttributeSetWhenLoggedIn() throws Exception {

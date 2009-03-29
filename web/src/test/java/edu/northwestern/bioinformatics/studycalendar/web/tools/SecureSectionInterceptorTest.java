@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import edu.northwestern.bioinformatics.studycalendar.web.tools.SecureSectionInterceptor;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -47,6 +46,7 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         interceptor = new SecureSectionInterceptor();
         interceptor.setUserDao(userDao);
+        interceptor.setApplicationSecurityManager(applicationSecurityManager);
         interceptor.postProcessBeanFactory(beanFactory);
 
         task0 = new Task();

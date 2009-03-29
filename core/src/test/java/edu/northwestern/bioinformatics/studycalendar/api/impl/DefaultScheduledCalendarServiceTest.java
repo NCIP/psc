@@ -104,6 +104,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setStudySubjectAssignmentDao (assignmentDao);
         service.setUserDao(userDao);
         service.setNotificationService(notificationService);
+        service.setApplicationSecurityManager(applicationSecurityManager);
 
         parameterStudy = setGridId(STUDY_BIG_ID, new Study());
         parameterSite = setGridId(SITE_BIG_ID, new Site());

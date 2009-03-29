@@ -1,22 +1,41 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static java.util.Arrays.asList;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.expect;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.Errors;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static java.util.Arrays.asList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -38,7 +57,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private User user;
     private Site seattle, tacoma, olympia;
     private StudySite seattleSS, tacomaSS, olympiaSS;
-//    private Errors errors;
 
     @Override
     protected void setUp() throws Exception {
@@ -60,8 +78,9 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setStudySegmentDao(studySegmentDao);
         controller.setPopulationDao(populationDao);
         controller.setControllerTools(controllerTools);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
-//        // Stop controller from calling validation
+        // Stop controller from calling validation
         controller.setValidateOnBinding(false);
 
         commandForRefdata = new AssignSubjectCommand();
@@ -100,6 +119,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         mockableController.setSubjectDao(subjectDao);
         mockableController.setStudySegmentDao(studySegmentDao);
         mockableController.setPopulationDao(populationDao);
+        mockableController.setApplicationSecurityManager(applicationSecurityManager);
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
 
         mockCommand.setSubjectCoordinator(user);

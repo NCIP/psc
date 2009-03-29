@@ -18,7 +18,6 @@ import java.util.List;
  * @author Saurabh Agrawal
  */
 public class NotificationServiceTest extends StudyCalendarTestCase {
-
     private NotificationService notificationService;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private Integer numberOfDays;
@@ -26,7 +25,6 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
     private MailMessageFactory mailMessageFactory;
 
     private UserService userService;
-
 
     @Override
     protected void setUp() throws Exception {
@@ -43,10 +41,9 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         notificationService.setMailMessageFactory(mailMessageFactory);
         notificationService.setMailSender(mailSender);
         notificationService.setUserService(userService);
+        notificationService.setApplicationSecurityManager(applicationSecurityManager);
 
         SecurityContextHolderTestHelper.setSecurityContext("user", "password");
-
-
     }
 
     public void testAddNotificationIfNothingIsScheduledForPatient() {
@@ -64,9 +61,7 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testNotifyUsersForNewScheduleNotifications() {
-
-
-        User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
+       User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
         String emailAddress = "user@email.com";
         EasyMock.expect(userService.getEmailAddresssForUser(user)).andReturn(emailAddress);
         ScheduleNotificationMailMessage notificationMailMessage = new ScheduleNotificationMailMessage();

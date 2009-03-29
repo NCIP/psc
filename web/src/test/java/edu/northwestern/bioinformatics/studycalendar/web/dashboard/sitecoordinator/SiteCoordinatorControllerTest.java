@@ -40,6 +40,7 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
 
         controller = new SiteCoordinatorController();
         controller.setUserDao(userDao);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         studyA  = createNamedInstance("A", Study.class);
         studyB  = createNamedInstance("B", Study.class);

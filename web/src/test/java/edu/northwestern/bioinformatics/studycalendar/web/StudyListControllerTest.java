@@ -51,6 +51,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setUserDao(userDao);
         controller.setTemplateService(templateService);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         user = createUser("jimbo");
         SecurityContextHolderTestHelper.setSecurityContext("jimbo", "password");

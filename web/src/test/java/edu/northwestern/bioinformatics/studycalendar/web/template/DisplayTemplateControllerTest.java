@@ -77,6 +77,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setTemplateService(templateService);
         controller.setAmendmentService(amendmentService);
         controller.setControllerTools(controllerTools);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());

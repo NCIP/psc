@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 /**
  * @author Rhett Sutphin
  */
-public class ContextRetainingFilterTestCase extends WebTestCase {
+public abstract class ContextRetainingFilterTestCase extends WebTestCase {
     protected WebApplicationContext mockApplicationContext;
 
     @Override

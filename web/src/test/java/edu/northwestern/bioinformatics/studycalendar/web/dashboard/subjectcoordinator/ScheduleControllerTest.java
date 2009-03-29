@@ -96,6 +96,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setActivityTypeDao(activityTypeDao);
         controller.setTemplateService(templateService);
         controller.setSubjectCoordinatorDashboardService(paService);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");

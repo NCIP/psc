@@ -7,7 +7,9 @@ import static org.easymock.EasyMock.expect;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.ServletException;
 import java.util.Date;
+import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
@@ -39,7 +41,7 @@ public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
     }
 
     public void testAuditInfoSetForChainHandling() throws Exception {
-        filter.doFilter(request, response, new FilterChain() {
+        doFilter(new FilterChain() {
             public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse) {
                 gov.nih.nci.cabig.ctms.audit.DataAuditInfo actualLocal 
                     = gov.nih.nci.cabig.ctms.audit.DataAuditInfo.getLocal();
@@ -57,7 +59,7 @@ public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
     public void testAuditInfoNotSetIfNotLoggedIn() throws Exception {
         applicationSecurityManager.removeUserSession();
 
-        filter.doFilter(request, response, new FilterChain() {
+        doFilter(new FilterChain() {
             public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse) {
                 assertNotNull(DataAuditInfo.getLocal());
             }
@@ -67,11 +69,15 @@ public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
     public void testAuditInfoClearAfterExecution() throws Exception {
         FilterChain filterChain = registerMockFor(FilterChain.class);
         filterChain.doFilter(request, response);
-        replayMocks();
 
-        filter.doFilter(request, response, filterChain);
-        verifyMocks();
+        doFilter(filterChain);
 
         assertNull(DataAuditInfo.getLocal());
+    }
+
+    private void doFilter(FilterChain filterChain) throws IOException, ServletException {
+        replayMocks();
+        filter.doFilter(request, response, filterChain);
+        verifyMocks();
     }
 }

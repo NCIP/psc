@@ -33,7 +33,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     private AbstractAssignSubjectCoordinatorCommand command;
 
-
     private List<Site> sites;
     private List<Study> studies;
     private User siteCoordinator;
@@ -60,6 +59,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         command = registerMockFor(SimpleAssignSubjectCoordinatorCommand.class);
 
