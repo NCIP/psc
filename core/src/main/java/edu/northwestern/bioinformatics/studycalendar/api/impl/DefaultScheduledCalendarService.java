@@ -53,7 +53,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         StudySite join = loader.validateSiteInStudy();
         loader.validateStudySegmentInStudy();
 
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         StudySubjectAssignment newAssignment = subjectService.assignSubject(
                 loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user);

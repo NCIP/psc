@@ -67,7 +67,7 @@ public class NotificationService {
 
     public void notifyUsersForNewScheduleNotifications(final Notification notification) {
         //first find the email address of subject coordinators
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         if (userName != null) {
             User user = userService.getUserByName(userName);
 

@@ -44,7 +44,7 @@ public class SubjectCentricScheduleController extends PscAbstractController {
 
         List<StudySubjectAssignment> allAssignments = subject.getAssignments();
         List<StudySubjectAssignment> visibleAssignments
-            = authorizationService.filterAssignmentsForVisibility(allAssignments, ApplicationSecurityManager.getUserObj());
+            = authorizationService.filterAssignmentsForVisibility(allAssignments, ApplicationSecurityManager.getUser());
         Set<StudySubjectAssignment> hiddenAssignments
             = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
         for (StudySubjectAssignment visibleAssignment : visibleAssignments) {

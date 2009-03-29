@@ -95,7 +95,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         command.setSubjectCoordinator(user);
         StudySubjectAssignment assignment = command.assignSubject();
@@ -111,7 +111,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     private void addAvailableSitesRefdata(Map<String, Object> refdata, Study study) {
-        UserRole subjCoord = userDao.getByName(ApplicationSecurityManager.getUser()).getUserRole(Role.SUBJECT_COORDINATOR);
+        UserRole subjCoord = userDao.getByName(ApplicationSecurityManager.getUserName()).getUserRole(Role.SUBJECT_COORDINATOR);
         List<StudySite> applicableStudySites = new LinkedList<StudySite>();
         for (StudySite studySite : study.getStudySites()) {
             if (subjCoord.getStudySites().contains(studySite)) applicableStudySites.add(studySite);

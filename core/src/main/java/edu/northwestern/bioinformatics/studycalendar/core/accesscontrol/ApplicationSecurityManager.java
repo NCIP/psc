@@ -10,11 +10,6 @@ import org.acegisecurity.context.SecurityContextHolder;
  */
 public class ApplicationSecurityManager {
 
-    @Deprecated
-    public static String getUser() {
-        return getUserName();
-    }
-
     public static String getUserName() {
         String user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -24,8 +19,7 @@ public class ApplicationSecurityManager {
         return user;
     }
 
-    // TODO: remove the other getUser and rename this to getUser
-    public static User getUserObj() {
+    public static User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return null;

@@ -41,7 +41,7 @@ public class SiteCoordinatorController extends PscAbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        User user = userDao.getByName(ApplicationSecurityManager.getUser());
+        User user = userDao.getByName(ApplicationSecurityManager.getUserName());
         Collection<Site> sites = new TreeSet<Site>(new NamedComparator());
         sites.addAll(user.getUserRole(Role.SITE_COORDINATOR).getSites());
 

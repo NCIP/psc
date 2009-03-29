@@ -61,7 +61,7 @@ public class DisplayTemplateController extends PscAbstractController {
 
 
         if (study.isReleased()) {
-            String userName = ApplicationSecurityManager.getUser();
+            String userName = ApplicationSecurityManager.getUserName();
             User user = userDao.getByName(userName);
             List<Study> subjectAssignableStudies = templateService.filterForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
             Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();

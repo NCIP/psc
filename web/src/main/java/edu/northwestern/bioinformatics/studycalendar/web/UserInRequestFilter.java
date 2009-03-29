@@ -16,7 +16,7 @@ import java.io.IOException;
 public class UserInRequestFilter extends ContextRetainingFilterAdapter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        String username = ApplicationSecurityManager.getUser();
+        String username = ApplicationSecurityManager.getUserName();
         if (username != null) {
             servletRequest.setAttribute("currentUser", getUserDao().getByName(username));
             // old behavior preserved for backwards compatibility

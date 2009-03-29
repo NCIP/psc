@@ -44,7 +44,7 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
 
             List<Study> studies = studyDao.searchStudiesByStudyName(searchText);
             log.debug("{} studies found total", studies.size());
-            String userName = ApplicationSecurityManager.getUser();
+            String userName = ApplicationSecurityManager.getUserName();
             User user = userDao.getByName(userName);
 
             List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);

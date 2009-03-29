@@ -22,7 +22,7 @@ public class AuditInfoFilter extends FilterAdapter {
         final ServletRequest request, final ServletResponse response, final FilterChain chain
     ) throws IOException, ServletException {
         HttpServletRequest httpReq = (HttpServletRequest) request;
-        String username = ApplicationSecurityManager.getUser();
+        String username = ApplicationSecurityManager.getUserName();
         if (username == null) {
             username = "<not logged in>";
         }

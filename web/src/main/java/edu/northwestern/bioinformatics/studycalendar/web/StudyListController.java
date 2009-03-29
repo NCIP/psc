@@ -34,7 +34,7 @@ public class StudyListController extends PscAbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
         log.debug("{} studies found total", studies.size());
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
 
         List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);

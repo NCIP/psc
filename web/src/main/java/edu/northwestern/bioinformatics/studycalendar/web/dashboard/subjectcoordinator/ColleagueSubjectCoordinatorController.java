@@ -59,7 +59,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         Integer colleagueId = ServletRequestUtils.getIntParameter(httpServletRequest, "id");
 
         Collection<Site> sitesForCollegueUser = siteService.getSitesForSubjectCoordinator(userDao.getById(colleagueId).getName());
-        List<Site> sitesToDisplay = getSitesToDisplay(ApplicationSecurityManager.getUser(), userDao.getById(colleagueId).getName());
+        List<Site> sitesToDisplay = getSitesToDisplay(ApplicationSecurityManager.getUserName(), userDao.getById(colleagueId).getName());
 
         if (sitesToDisplay.size()< sitesForCollegueUser.size()) {
             int numberOfUnauthorizedSites = sitesForCollegueUser.size() - sitesToDisplay.size();
@@ -89,8 +89,8 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     }
 
     private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
-        String userName = ApplicationSecurityManager.getUser();
-        User user = userDao.getByName(ApplicationSecurityManager.getUser());
+        String userName = ApplicationSecurityManager.getUserName();
+        User user = userDao.getByName(ApplicationSecurityManager.getUserName());
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
 

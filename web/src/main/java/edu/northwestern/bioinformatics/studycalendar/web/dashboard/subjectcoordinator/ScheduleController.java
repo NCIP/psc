@@ -45,7 +45,7 @@ public class ScheduleController extends PscSimpleFormController {
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
         User user = userDao.getByName(userName);
@@ -103,7 +103,7 @@ public class ScheduleController extends PscSimpleFormController {
     }
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
 
         Map<User, List<StudySite>> mapOfUsersAndStudies = new HashMap<User, List<StudySite>>();
 
@@ -138,7 +138,7 @@ public class ScheduleController extends PscSimpleFormController {
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = ApplicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         if (scheduleCommand.getNotificationId() != null ) {
             Notification notification = notificationDao.getById(scheduleCommand.getNotificationId());

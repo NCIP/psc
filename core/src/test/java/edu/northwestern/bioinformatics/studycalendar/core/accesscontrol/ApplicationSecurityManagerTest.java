@@ -22,21 +22,21 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
 
     public void testSetUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("jim" , "pass");
-        assertNotNull("Session attribute not set", ApplicationSecurityManager.getUser());
+        assertNotNull("Session attribute not set", ApplicationSecurityManager.getUserName());
     }
 
     public void testGetUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("james" , "pass");
-        assertEquals("james", ApplicationSecurityManager.getUser());
+        assertEquals("james", ApplicationSecurityManager.getUserName());
     }
 
     public void testGetWhenNotSet() throws Exception {
-        assertNull("Incorrect response for non logged-in user", ApplicationSecurityManager.getUser());
+        assertNull("Incorrect response for non logged-in user", ApplicationSecurityManager.getUserName());
     }
 
     public void testGetWhenNoSessionDoesNotCreateSession() throws Exception {
         request.setSession(null);
-        assertNull(ApplicationSecurityManager.getUser());
+        assertNull(ApplicationSecurityManager.getUserName());
         assertNull(request.getSession(false));
     }
 

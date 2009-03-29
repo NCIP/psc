@@ -87,7 +87,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     }
 
     protected User getSiteCoordinator() {
-        return userDao.getByName(ApplicationSecurityManager.getUser());
+        return userDao.getByName(ApplicationSecurityManager.getUserName());
     }
                                                                                                                 
     protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User subjectCoordinator) {

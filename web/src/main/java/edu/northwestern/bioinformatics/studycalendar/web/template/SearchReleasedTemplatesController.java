@@ -39,7 +39,7 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
             String searchText = command.getSearchText() != null ? command.getSearchText() : EMPTY;
             List<Study> studies = studyDao.getAll();
             log.debug("{} studies found total", studies.size());
-            String userName = ApplicationSecurityManager.getUser();
+            String userName = ApplicationSecurityManager.getUserName();
             User user = userDao.getByName(userName);
 
             List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
