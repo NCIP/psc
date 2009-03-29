@@ -300,6 +300,9 @@ define "psc" do
       jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
     end
     
+    # exclude exploded files from IDEA
+    iml.excluded_directories << _('src/main/webapp/WEB-INF/lib') << _('src/main/webapp/WEB-INF/classes')
+    
     # clean exploded files, too
     clean { 
       rm_rf _('src/main/webapp/WEB-INF/lib')

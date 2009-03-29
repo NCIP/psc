@@ -276,9 +276,7 @@ module Buildr::IntellijIdea
       net = []
       all = excluded_directories.map { |dir| relative(dir.to_s) }.sort_by { |d| d.size }
       all.each_with_index do |dir, i|
-        if all[0 ... i].find { |other| dir =~ /^#{other}/ }
-          break
-        else
+        unless all[0 ... i].find { |other| dir =~ /^#{other}/ }
           net << dir
         end
       end
