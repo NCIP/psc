@@ -1,22 +1,39 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import org.springframework.web.bind.ServletRequestUtils;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimpleFormController {
@@ -27,6 +44,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     private SubjectDao subjectDao;
     private StudyDao studyDao;
     private SiteDao siteDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public AssignSubjectToSubjectCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/assignSubjectToSubjectCoordinator");
@@ -87,7 +105,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     }
 
     protected User getSiteCoordinator() {
-        return userDao.getByName(ApplicationSecurityManager.getUserName());
+        return userDao.getByName(applicationSecurityManager.getUserName());
     }
                                                                                                                 
     protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User subjectCoordinator) {
@@ -191,5 +209,10 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
 
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

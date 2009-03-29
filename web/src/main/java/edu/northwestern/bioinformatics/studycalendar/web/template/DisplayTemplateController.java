@@ -1,26 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -32,7 +41,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private DaoFinder daoFinder;
     private UserDao userDao;
     private TemplateService templateService;
-    private String study;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -58,10 +67,8 @@ public class DisplayTemplateController extends PscAbstractController {
         Boolean canNotViewPopulations = study.isReleased() && selectedAmendmentId==null ;
         model.put("canNotViewPopulations", canNotViewPopulations);
 
-
-
         if (study.isReleased()) {
-            String userName = ApplicationSecurityManager.getUserName();
+            String userName = applicationSecurityManager.getUserName();
             User user = userDao.getByName(userName);
             List<Study> subjectAssignableStudies = templateService.filterForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
             Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();
@@ -195,6 +202,11 @@ public class DisplayTemplateController extends PscAbstractController {
 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private static class Crumb extends DefaultCrumb {

@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 
 /**
  * @author Rhett Sutphin
@@ -12,37 +11,39 @@ import org.acegisecurity.context.SecurityContextHolder;
 public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     private MockHttpSession session;
     private MockHttpServletRequest request;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     protected void setUp() throws Exception {
         super.setUp();
         session = new MockHttpSession();
         request = new MockHttpServletRequest();
         request.setSession(session);
+        applicationSecurityManager = new ApplicationSecurityManager();
     }
 
     public void testSetUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("jim" , "pass");
-        assertNotNull("Session attribute not set", ApplicationSecurityManager.getUserName());
+        assertNotNull("Session attribute not set", applicationSecurityManager.getUserName());
     }
 
     public void testGetUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("james" , "pass");
-        assertEquals("james", ApplicationSecurityManager.getUserName());
+        assertEquals("james", applicationSecurityManager.getUserName());
     }
 
     public void testGetWhenNotSet() throws Exception {
-        assertNull("Incorrect response for non logged-in user", ApplicationSecurityManager.getUserName());
+        assertNull("Incorrect response for non logged-in user", applicationSecurityManager.getUserName());
     }
 
     public void testGetWhenNoSessionDoesNotCreateSession() throws Exception {
         request.setSession(null);
-        assertNull(ApplicationSecurityManager.getUserName());
+        assertNull(applicationSecurityManager.getUserName());
         assertNull(request.getSession(false));
     }
 
     public void testRemoveUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("leaving" , "pass");
-        ApplicationSecurityManager.removeUserSession();
+        applicationSecurityManager.removeUserSession();
         assertNull("Session attribute not cleared", SecurityContextHolder.getContext().getAuthentication());
     }
 }

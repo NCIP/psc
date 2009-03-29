@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
 
 import javax.servlet.FilterChain;
@@ -16,13 +16,17 @@ import java.io.IOException;
 public class UserInRequestFilter extends ContextRetainingFilterAdapter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        String username = ApplicationSecurityManager.getUserName();
+        String username = getApplicationSecurityManager().getUserName();
         if (username != null) {
             servletRequest.setAttribute("currentUser", getUserDao().getByName(username));
             // old behavior preserved for backwards compatibility
             servletRequest.setAttribute("user", username);
         }
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private ApplicationSecurityManager getApplicationSecurityManager() {
+        return (ApplicationSecurityManager) getApplicationContext().getBean("applicationSecurityManager");
     }
 
     private UserDao getUserDao() {

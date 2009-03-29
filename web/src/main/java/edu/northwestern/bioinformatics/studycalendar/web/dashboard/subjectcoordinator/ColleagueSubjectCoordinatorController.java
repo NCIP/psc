@@ -1,46 +1,52 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleCommand;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.ModelAndView;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.validation.BindException;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ColleagueSubjectCoordinatorController extends PscSimpleFormController {
-	private TemplateService templateService;
+    private TemplateService templateService;
 
     private ScheduledActivityDao scheduledActivityDao;
-	private StudyDao studyDao;
+    private StudyDao studyDao;
     private UserDao userDao;
     private SiteService siteService;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
     private ActivityTypeDao activityTypeDao;
 
-    private static final Logger log = LoggerFactory.getLogger(ColleagueSubjectCoordinatorController.class.getName());
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ColleagueSubjectCoordinatorController() {
         setCommandClass(ScheduleCommand.class);
@@ -59,7 +65,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         Integer colleagueId = ServletRequestUtils.getIntParameter(httpServletRequest, "id");
 
         Collection<Site> sitesForCollegueUser = siteService.getSitesForSubjectCoordinator(userDao.getById(colleagueId).getName());
-        List<Site> sitesToDisplay = getSitesToDisplay(ApplicationSecurityManager.getUserName(), userDao.getById(colleagueId).getName());
+        List<Site> sitesToDisplay = getSitesToDisplay(applicationSecurityManager.getUserName(), userDao.getById(colleagueId).getName());
 
         if (sitesToDisplay.size()< sitesForCollegueUser.size()) {
             int numberOfUnauthorizedSites = sitesForCollegueUser.size() - sitesToDisplay.size();
@@ -89,8 +95,8 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     }
 
     private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
-        String userName = ApplicationSecurityManager.getUserName();
-        User user = userDao.getByName(ApplicationSecurityManager.getUserName());
+        String userName = applicationSecurityManager.getUserName();
+        User user = userDao.getByName(applicationSecurityManager.getUserName());
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
 
@@ -181,6 +187,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         return subjectCoordinatorDashboardService;
     }
 
+    @Required
     public void setSubjectCoordinatorDashboardService(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService) {
         this.subjectCoordinatorDashboardService = subjectCoordinatorDashboardService;
     }
@@ -188,6 +195,16 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 
     private static class Crumb extends DefaultCrumb {
@@ -207,10 +224,5 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
             return params;
 
         }
-    }
-
-    @Required
-    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
-        this.activityTypeDao = activityTypeDao;
     }
 }

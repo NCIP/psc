@@ -1,21 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author John Dzak
@@ -23,11 +28,13 @@ import java.util.*;
 public class SecureSectionInterceptor extends SectionInterceptor implements BeanFactoryPostProcessor {
     private UserDao userDao;
     private ConfigurableListableBeanFactory beanFactory;
+    private ApplicationSecurityManager applicationSecurityManager;
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         super.preHandle(request,  response, handler);
 
-        User user = userDao.getByName(ApplicationSecurityManager.getUserName());
+        User user = userDao.getByName(applicationSecurityManager.getUserName());
 
         List<Section> filtered = new ArrayList<Section>();
 
@@ -52,7 +59,6 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
 
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
-
     }
 
     protected List<Role> getAllowedRoles(Controller controller) {
@@ -65,8 +71,14 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
         return Arrays.asList(roles);
     }
 
-    ////// Bean Setters
-    public void setUserDao  (UserDao userDao) {
+    ////// CONFIGURATION
+
+    public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

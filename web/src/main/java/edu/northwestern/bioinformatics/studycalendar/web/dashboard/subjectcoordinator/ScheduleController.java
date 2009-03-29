@@ -1,12 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -20,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
-
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
     private TemplateService templateService;
@@ -32,20 +42,22 @@ public class ScheduleController extends PscSimpleFormController {
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
     private NotificationDao notificationDao;
     private ActivityTypeDao activityTypeDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);
         setBindOnNewForm(true);
     }
 
-
+    @Override
     public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
         setFormView("/subjectCoordinatorSchedule");
         return showForm(request, response, errors, null);
     }
 
+    @Override
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
         User user = userDao.getByName(userName);
@@ -74,9 +86,7 @@ public class ScheduleController extends PscSimpleFormController {
         return model;
     }
 
-
     public Map<Subject, List<Notification>> getMapOfSubjectsAndNotifications(List<StudySubjectAssignment> studySubjectAssignments) throws Exception {
-
         Map<Subject, List<Notification>> subjectNotificationSubject = new HashMap<Subject, List<Notification>>();
 
         for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
@@ -91,7 +101,6 @@ public class ScheduleController extends PscSimpleFormController {
         return subjectNotificationSubject;
     }
 
-
     public boolean areAllNotificationsDismissed(List<Notification> notifications) throws Exception {
         boolean dismissed = true;
         for (Notification notification : notifications) {
@@ -103,7 +112,7 @@ public class ScheduleController extends PscSimpleFormController {
     }
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
 
         Map<User, List<StudySite>> mapOfUsersAndStudies = new HashMap<User, List<StudySite>>();
 
@@ -128,17 +137,19 @@ public class ScheduleController extends PscSimpleFormController {
         return mapOfUsersAndStudies;
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ScheduleCommand command = new ScheduleCommand();
         command.setToDate(7);
         return command;
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         if (scheduleCommand.getNotificationId() != null ) {
             Notification notification = notificationDao.getById(scheduleCommand.getNotificationId());
@@ -165,6 +176,7 @@ public class ScheduleController extends PscSimpleFormController {
 
     }
 
+    @Override
     protected void initBinder(HttpServletRequest httpServletRequest,
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
@@ -173,6 +185,7 @@ public class ScheduleController extends PscSimpleFormController {
     }
 
     ////// CONFIGURATION
+
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
@@ -209,7 +222,6 @@ public class ScheduleController extends PscSimpleFormController {
         this.subjectCoordinatorDashboardService = subjectCoordinatorDashboardService;
     }
 
-
     public NotificationDao getNotificationDao() {
         return notificationDao;
     }
@@ -222,5 +234,10 @@ public class ScheduleController extends PscSimpleFormController {
     @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

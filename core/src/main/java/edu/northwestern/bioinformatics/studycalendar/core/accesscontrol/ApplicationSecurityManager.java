@@ -10,7 +10,7 @@ import org.acegisecurity.context.SecurityContextHolder;
  */
 public class ApplicationSecurityManager {
 
-    public static String getUserName() {
+    public String getUserName() {
         String user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -19,7 +19,7 @@ public class ApplicationSecurityManager {
         return user;
     }
 
-    public static User getUser() {
+    public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             return null;
@@ -28,10 +28,7 @@ public class ApplicationSecurityManager {
         }
     }
 
-    public static void removeUserSession() {
+    public void removeUserSession() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-
-    // All-static class
-    private ApplicationSecurityManager() { }
 }

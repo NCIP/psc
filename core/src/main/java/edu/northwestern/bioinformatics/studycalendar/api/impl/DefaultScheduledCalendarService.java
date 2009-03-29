@@ -1,12 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.springframework.beans.factory.annotation.Required;
@@ -30,6 +50,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private UserDao userDao;
     private NotificationService notificationService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ScheduledCalendar assignSubject(
             Study study, Subject subject, Site site, StudySegment firstStudySegment, Date startDate, String assignmentGridId
@@ -53,7 +74,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         StudySite join = loader.validateSiteInStudy();
         loader.validateStudySegmentInStudy();
 
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         StudySubjectAssignment newAssignment = subjectService.assignSubject(
                 loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user);
@@ -167,6 +188,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     @Required
     public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     //////

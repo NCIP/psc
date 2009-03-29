@@ -25,6 +25,7 @@ import java.util.Set;
  */
 public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected Set<Object> mocks = new HashSet<Object>();
+    protected ApplicationSecurityManager applicationSecurityManager;
 
     static {
         SLF4JBridgeHandler.install();
@@ -35,9 +36,15 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     }
 
     @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        applicationSecurityManager = new ApplicationSecurityManager();
+    }
+
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        ApplicationSecurityManager.removeUserSession();
+        applicationSecurityManager.removeUserSession();
     }
 
     ////// MOCK REGISTRATION AND HANDLING
@@ -54,6 +61,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         return registered(EasyMock.createMock(forClass, methodsToMock));
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     protected <T extends StudyCalendarDao> T registerDaoMockFor(Class<T> forClass) {
         List<Method> methods = new LinkedList<Method>(Arrays.asList(forClass.getMethods()));
         for (Iterator<Method> iterator = methods.iterator(); iterator.hasNext();) {
@@ -90,6 +98,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     /**
      * Easymock matcher that compares two objects on their property values
      */
+    @SuppressWarnings({ "unchecked" })
     private static class PropertyMatcher<T> implements IArgumentMatcher {
         private T template;
         private Map<String, Object> templateProperties;

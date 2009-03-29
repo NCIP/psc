@@ -1,20 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import static org.easymock.EasyMock.expect;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
 import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
-public class AuditInfoFilterTest extends WebTestCase {
+public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
     private static final String REMOTE_ADDR = "123.45.67.8";
     private static final String USERNAME = "jimbo";
     private static final String PASSWORD = "password";
@@ -26,9 +24,12 @@ public class AuditInfoFilterTest extends WebTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         filter = new AuditInfoFilter();
+        initFilter(filter);
         request.setRemoteAddr(REMOTE_ADDR);
         request.setRequestURI(URL);
         SecurityContextHolderTestHelper.setSecurityContext(USERNAME, PASSWORD);
+        expect(mockApplicationContext.getBean("applicationSecurityManager")).
+            andStubReturn(applicationSecurityManager);
     }
 
     @Override
@@ -39,8 +40,7 @@ public class AuditInfoFilterTest extends WebTestCase {
 
     public void testAuditInfoSetForChainHandling() throws Exception {
         filter.doFilter(request, response, new FilterChain() {
-            public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse)
-                throws IOException, ServletException {
+            public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse) {
                 gov.nih.nci.cabig.ctms.audit.DataAuditInfo actualLocal 
                     = gov.nih.nci.cabig.ctms.audit.DataAuditInfo.getLocal();
                 assertTrue("Local is not of the PSC subclass",
@@ -55,11 +55,10 @@ public class AuditInfoFilterTest extends WebTestCase {
     }
 
     public void testAuditInfoNotSetIfNotLoggedIn() throws Exception {
-        ApplicationSecurityManager.removeUserSession();
+        applicationSecurityManager.removeUserSession();
 
         filter.doFilter(request, response, new FilterChain() {
-            public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse)
-                throws IOException, ServletException {
+            public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse) {
                 assertNotNull(DataAuditInfo.getLocal());
             }
         });

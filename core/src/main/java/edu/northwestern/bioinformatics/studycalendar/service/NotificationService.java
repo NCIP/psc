@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.apache.commons.logging.Log;
@@ -36,6 +36,7 @@ public class NotificationService {
     private MailMessageFactory mailMessageFactory;
 
     private UserService userService;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     /**
      * This method will add notification when nothing is scheduled for a patient. This method is used by Cron
@@ -43,13 +44,11 @@ public class NotificationService {
      */
     @Transactional(readOnly = false)
     public void addNotificationIfNothingIsScheduledForPatient() {
-
         Calendar calendar = Calendar.getInstance();
 
         logger.debug("executing scan on " + calendar.getTime());
 
         calendar.add(Calendar.DATE, numberOfDays);
-
 
         List<StudySubjectAssignment> studySubjectAssignments = studySubjectAssignmentDao.getAllAssignmenetsWhichHaveNoActivityBeyondADate(calendar.getTime());
         logger.debug("found  " + studySubjectAssignments.size() + " assignments");
@@ -60,14 +59,12 @@ public class NotificationService {
             //do not send the email
             studySubjectAssignment.getNotifications().add(notification);
             studySubjectAssignmentDao.save(studySubjectAssignment);
-
         }
-
     }
 
     public void notifyUsersForNewScheduleNotifications(final Notification notification) {
         //first find the email address of subject coordinators
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         if (userName != null) {
             User user = userService.getUserByName(userName);
 
@@ -86,12 +83,10 @@ public class NotificationService {
         }
     }
 
-
     @Required
     public void setUserService(final UserService userService) {
         this.userService = userService;
     }
-
 
     @Required
     public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
@@ -113,5 +108,8 @@ public class NotificationService {
         this.mailMessageFactory = mailMessageFactory;
     }
 
-
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }
 }

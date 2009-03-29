@@ -1,27 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController implements CrumbSource {
@@ -34,6 +43,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private SiteService siteService;
     private UserService userService;
     private Crumb crumb;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -56,7 +66,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected User getSiteCoordinator() {
-        return userDao.getByName(ApplicationSecurityManager.getUserName());
+        return userDao.getByName(applicationSecurityManager.getUserName());
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
@@ -147,5 +157,10 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     public void setCrumb(Crumb crumb) {
         this.crumb = crumb;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

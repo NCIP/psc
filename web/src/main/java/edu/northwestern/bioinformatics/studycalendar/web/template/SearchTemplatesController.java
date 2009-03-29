@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -7,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,6 +28,7 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
     private StudyDao studyDao;
     private TemplateService templateService;
     private UserDao userDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public SearchTemplatesController() {
         setCommandClass(SearchTemplateCommand.class);
@@ -44,7 +45,7 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
 
             List<Study> studies = studyDao.searchStudiesByStudyName(searchText);
             log.debug("{} studies found total", studies.size());
-            String userName = ApplicationSecurityManager.getUserName();
+            String userName = applicationSecurityManager.getUserName();
             User user = userDao.getByName(userName);
 
             List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
@@ -64,7 +65,6 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
         }
     }
 
-
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
@@ -78,5 +78,10 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

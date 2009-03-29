@@ -1,23 +1,34 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
-
-import javax.servlet.http.HttpServletRequest;
-
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class ScheduleControllerTest extends ControllerTestCase {
     private ScheduleController controller;
@@ -91,12 +102,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
         expect(userDao.getByName(userName)).andReturn(user).anyTimes();
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testReferenceData() throws Exception {

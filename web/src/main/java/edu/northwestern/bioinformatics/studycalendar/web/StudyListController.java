@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -7,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +25,7 @@ public class StudyListController extends PscAbstractController {
     private StudyDao studyDao;
     private TemplateService templateService;
     private UserDao userDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public StudyListController() {
         setCrumb(new DefaultCrumb("Studies"));
@@ -34,7 +35,7 @@ public class StudyListController extends PscAbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
         log.debug("{} studies found total", studies.size());
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
 
         List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
@@ -72,5 +73,10 @@ public class StudyListController extends PscAbstractController {
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }

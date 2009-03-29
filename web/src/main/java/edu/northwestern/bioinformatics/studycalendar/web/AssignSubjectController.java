@@ -35,6 +35,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     private UserDao userDao;
     private SiteDao siteDao;
     private PopulationDao populationDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
@@ -95,7 +96,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
-        String userName = ApplicationSecurityManager.getUserName();
+        String userName = applicationSecurityManager.getUserName();
         User user = userDao.getByName(userName);
         command.setSubjectCoordinator(user);
         StudySubjectAssignment assignment = command.assignSubject();
@@ -111,7 +112,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     private void addAvailableSitesRefdata(Map<String, Object> refdata, Study study) {
-        UserRole subjCoord = userDao.getByName(ApplicationSecurityManager.getUserName()).getUserRole(Role.SUBJECT_COORDINATOR);
+        UserRole subjCoord = userDao.getByName(applicationSecurityManager.getUserName()).getUserRole(Role.SUBJECT_COORDINATOR);
         List<StudySite> applicableStudySites = new LinkedList<StudySite>();
         for (StudySite studySite : study.getStudySites()) {
             if (subjCoord.getStudySites().contains(studySite)) applicableStudySites.add(studySite);
@@ -181,6 +182,11 @@ public class AssignSubjectController extends PscSimpleFormController {
     @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 
     private static class Crumb extends DefaultCrumb {

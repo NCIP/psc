@@ -80,6 +80,7 @@
         <property name="mailSender" ref="mailSender"/>
         <property name="mailMessageFactory" ref="mailMessageFactory"/>
         <property name="userService" ref="userService"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
     <bean id="activityService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
@@ -89,4 +90,7 @@
 
     <bean id="plannedActivityLabelService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.LabelService"/>
+
+    <bean id="applicationSecurityManager" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager"/>
 </beans>
