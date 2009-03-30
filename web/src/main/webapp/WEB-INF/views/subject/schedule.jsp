@@ -11,6 +11,47 @@
     <tags:sassLink name="schedule"/>
     <tags:sassLink name="single-schedule"/>
     <tags:javascriptLink name="subject/timeline"/>
+    <tags:javascriptLink name="jquery/ui.core"/>
+    <tags:javascriptLink name="jquery/ui.accordion"/>
+    <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
+    <script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.core.js"></script>
+
+     <style type="text/css">
+         .myaccordion {
+            position: absolute;
+            right: 1em;
+            width: 20%;
+            height: 30em;
+            font-size: 11pt;
+            border: 1px solid #444;
+            background-color: white;
+            overflow: auto;
+        }
+
+        .legendSetup {
+            position: static;
+            width: 90%;
+        }
+
+        .myaccordion #schedule-legend  {
+            width: 70%;
+            position: inherit;
+        }
+
+        .myaccordion .accordionDiv .accordionA{
+            padding: 0px;
+            border: 0px;
+        }         
+
+    </style>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            jQuery("#accordion").accordion();
+        });
+
+    </script>
+
 </head>
 <body>
 <laf:box autopad="true" title="Timeline">
@@ -94,7 +135,38 @@
     </div>
 </laf:box>
 <laf:box autopad="true" title="Scheduled activities" id="scheduled-activities-box">
-    <sched:legend/>
+
+    <%--TODO - move css to display.jsp, make accordion fit in the box--%>
+    <div id="accordion" class="myaccordion">
+      <div class="accordionDiv">
+        <h3><a class="accordionA" href="#">Legend </a></h3>
+      </div>
+      <div><sched:legend/> </div>
+      <div class="accordionDiv">
+        <h3><a class="accordionA" href="#">Delay or Advance</a></h3>
+      </div>
+      <div>slsdfskflsdfj </div>
+      <div class="accordionDiv">
+        <h3><a class="accordionA" href="#">Mark</a></h3>
+      </div>
+        <div> </div>
+        <div class="accordionDiv">
+          <h3><a class="accordionA" href="#">Filter</a></h3>
+        </div>
+        <div> </div>
+        <div class="accordionDiv">
+          <h3><a class="accordionA" href="#">Next Segment</a></h3>
+        </div>
+        <div> </div>
+        <div class="accordionDiv">
+          <h3><a class="accordionA" href="#">Population</a></h3>
+        </div>
+        <div> </div>
+    </div>
+
+
+
+    <%--<sched:legend/>--%>
     <div id="scheduled-activities">
         <c:forEach items="${schedule.days}" var="day">
             <c:if test="${day.today}">

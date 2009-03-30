@@ -22,6 +22,7 @@
     <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="error-console"/>
     <tags:stylesheetLink name="common"/>
+    <tags:javascriptLink name="jquery/jquery"/><script type="text/javascript">var jQuery = jQuery.noConflict(); </script>
 
     <laf:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
