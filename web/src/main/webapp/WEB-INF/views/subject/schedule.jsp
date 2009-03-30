@@ -181,6 +181,8 @@
                                 <c:forEach items="${day.activities}" var="sa">
                                     <c:set var="study" value="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study}"/>
                                     <li>
+                                        <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if>
+                                        <c:if test="${(event.conditionalState || event.scheduledState) && entry.key < studySegment.todayDate}">past-due-event</c:if>"/>
                                         <img src="<c:url value="/images/${sa.currentState.mode.name}.png"/>" alt="Status: ${sa.currentState.mode.name}"/>
                                         <span title="Study" class="study <tags:studyClass study="${study}"/>">${study.assignedIdentifier}</span>
                                         / <span title="Segment" class="segment">${sa.scheduledStudySegment.name}</span>
