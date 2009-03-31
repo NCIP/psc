@@ -93,4 +93,495 @@
 
     <bean id="applicationSecurityManager" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager"/>
+
+    <!-- Temporary mock service -->
+
+    <bean id="siteProvider" class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockSiteProvider">
+        <property name="sites">
+            <map>
+                <entry key="MN008" value="Abbott Northwestern Hospital"/>
+                <entry key="PA120" value="Abington Memorial Hospital"/>
+                <entry key="OH182" value="Adena Regional Medical Center"/>
+                <entry key="OH055" value="Akron City Hospital"/>
+                <entry key="AL002" value="Alabama, Univ of (Birmingham)"/>
+                <entry key="PA094" value="Albert Einstein Cancer Center (PA)"/>
+                <entry key="NY043" value="Albert Einstein College of Medicine"/>
+                <entry key="NM003" value="Albuquerque VAMC"/>
+                <entry key="NE055" value="Alegent Health Lakeside Hospital"/>
+                <entry key="IA052" value="Alegent Health Mercy Hospital"/>
+                <entry key="39004" value="AMNCH, Tallaght"/>
+                <entry key="PR025" value="Andres Grillasca Hosp (Ponce Onc)"/>
+                <entry key="MD042" value="Anne Arundel Medical Center"/>
+                <entry key="IN073" value="Arnett Clinic, LLC"/>
+                <entry key="WI028" value="Aspirus Regional Cancer Center"/>
+                <entry key="KS056" value="Associates in Womens Health"/>
+                <entry key="NJ037" value="AtlantiCare Regional Medical Center"/>
+                <entry key="GA019" value="Augusta VA Medical Center"/>
+                <entry key="OH100" value="Aultman Hospital"/>
+                <entry key="SD021" value="Avera Cancer Institute"/>
+                <entry key="SD002" value="Avera McKennan Hospital"/>
+                <entry key="TN019" value="Baptist Hospital of East Tennessee"/>
+                <entry key="FL003" value="Baptist Medical Ctr"/>
+                <entry key="LA030" value="Baton Rouge General Med Ctr"/>
+                <entry key="WI092" value="Bay Area Medical Center"/>
+                <entry key="DE012" value="Bayhealth Medical Center"/>
+                <entry key="MA004" value="Baystate Med Center"/>
+                <entry key="39021" value="Beaumont Hospital"/>
+                <entry key="DE014" value="Beebe Medical Center"/>
+                <entry key="39013" value="Belfast City Hospital"/>
+                <entry key="NE017" value="Bergan Mercy Medical Center"/>
+                <entry key="MA038" value="Beth Israel Deaconess Med Ctr"/>
+                <entry key="NY003" value="Beth Israel Medical Center"/>
+                <entry key="AL011" value="Birmingham VA Medical Center"/>
+                <entry key="MI070" value="Bixby Medical Center"/>
+                <entry key="TN122" value="Blue Ridge Medical Specialists, PC"/>
+                <entry key="FL050" value="Boca Raton Community Hospital"/>
+                <entry key="39007" value="Bon Secours Hospital"/>
+                <entry key="MI041" value="Borgess Medical Center"/>
+                <entry key="CO017" value="Boulder Community Hospital"/>
+                <entry key="TX063" value="Brackenridge Hospital"/>
+                <entry key="IL085" value="BroMenn Regional Medical Center"/>
+                <entry key="MI044" value="Bronson Methodist Hospital"/>
+                <entry key="PA066" value="Bryn Mawr Hospital"/>
+                <entry key="IA031" value="Burgess Memorial Hospital"/>
+                <entry key="IL176" value="Ca Care &amp; Hem Spec of Chicagoland"/>
+                <entry key="KS051" value="Ca Ctr of Kansas-Chanute (EAPP)"/>
+                <entry key="KS075" value="Ca Ctr of Kansas-El Dorado"/>
+                <entry key="KS066" value="Ca Ctr of Kansas-Kingman (EAPP)"/>
+                <entry key="KS003" value="Ca Ctr of Kansas-Lawrence Mem Hosp"/>
+                <entry key="KS064" value="Ca Ctr of Kansas-Liberal (EAPP)"/>
+                <entry key="KS069" value="Ca Ctr of Kansas-McPherson (EAPP)"/>
+                <entry key="KS067" value="Ca Ctr of Kansas-Medical Arts Tower"/>
+                <entry key="KS052" value="Ca Ctr of Kansas-Newton (EAPP)"/>
+                <entry key="KS073" value="Ca Ctr of Kansas-Parsons"/>
+                <entry key="KS063" value="Ca Ctr of Kansas-Pratt (EAPP)"/>
+                <entry key="KS054" value="Ca Ctr of Kansas-Salina (EAPP)"/>
+                <entry key="KS053" value="Ca Ctr of Kansas-Wellington (EAPP)"/>
+                <entry key="KS050" value="Ca Ctr of Kansas-Winfield (EAPP)"/>
+                <entry key="CA551" value="California Cancer Care, Inc."/>
+                <entry key="03105" value="Calvary Mater Newcastle"/>
+                <entry key="MA050" value="Cambridge Health Alliance"/>
+                <entry key="LA028" value="CancerCare Ctr @ Terrebonne General"/>
+                <entry key="SC052" value="Cancer Care Institute of Carolina"/>
+                <entry key="PA105" value="Cancer Ctr @ Phoenixville Hosp"/>
+                <entry key="KS044" value="Cancer Ctr of Kansas-Arkansas City"/>
+                <entry key="KS036" value="Cancer Ctr of Kansas-Dodge City"/>
+                <entry key="KS034" value="Cancer Ctr of Kansas-Wichita"/>
+                <entry key="IL280" value="Cancer Institute @ Alexian Brothers"/>
+                <entry key="NJ066" value="Cancer Institute of New Jersey"/>
+                <entry key="NJ097" value="Cancer Institute of NJ-Hamilton"/>
+                <entry key="IL099" value="Carbondale Clinic"/>
+                <entry key="IL168" value="Carle Cancer Center CCOP"/>
+                <entry key="IL086" value="Carle Clinic Association"/>
+                <entry key="NV048" value="Carson Tahoe Hospital"/>
+                <entry key="OH036" value="Case Western-MetroHealth Med Ctr"/>
+                <entry key="IA036" value="Cedar Rapids Oncology Associates"/>
+                <entry key="IL147" value="Central Illinois CCOP (EAPP)"/>
+                <entry key="PA159" value="Central PA Hem &amp; Med Onc Assoc, PC"/>
+                <entry key="TX026" value="Central Texas Veterans Health Care"/>
+                <entry key="WV004" value="Charleston Area Med Ctr- Mem Div"/>
+                <entry key="PA102" value="Chester Co. Hospital"/>
+                <entry key="DE002" value="Christiana Care CCOP -(EAPP)"/>
+                <entry key="OH027" value="Cleveland Clinic Foundation"/>
+                <entry key="CO037" value="Colorado Cancer Research Prog. CCOP"/>
+                <entry key="OH013" value="Columbus CCOP -(EAPP)"/>
+                <entry key="IL232" value="Community Cancer Center-Normal"/>
+                <entry key="OH090" value="Community Hospital-Springfield OH"/>
+                <entry key="CA115" value="Community Hosp of Monterey Peninsul"/>
+                <entry key="IA032" value="Community Memorial Hospital"/>
+                <entry key="CT043" value="Connecticut Oncology &amp; Hematology"/>
+                <entry key="NJ036" value="Cooper Hospital/University Med Ctr"/>
+                <entry key="39018" value="Cork University Hospital"/>
+                <entry key="GA013" value="Crawford-Long Hosp of Emory Univ"/>
+                <entry key="NE009" value="Creighton University Medical Center"/>
+                <entry key="TX002" value="Dallas VA Medical Center"/>
+                <entry key="CT030" value="Danbury Hospital"/>
+                <entry key="NH012" value="Dartmouth Hitchcock Medical Center"/>
+                <entry key="AL073" value="DCH Regional Medical Center"/>
+                <entry key="WI059" value="Dean Hematology and Oncology Clinic"/>
+                <entry key="IL094" value="Decatur Memorial Hospital (EAPP)"/>
+                <entry key="PA069" value="Delaware County Memorial Hospital"/>
+                <entry key="NY360" value="Dickstein Cancer Treatment Center"/>
+                <entry key="OH005" value="Doctors Hospital (North and West)"/>
+                <entry key="PA128" value="Doylestown Hospital"/>
+                <entry key="KY055" value="Drs Carroll, Sheth, Raghavan"/>
+                <entry key="MN024" value="Duluth Clinic"/>
+                <entry key="IL364" value="DuPage Medical Group"/>
+                <entry key="DE008" value="DuPont Hospital for Children"/>
+                <entry key="CT038" value="Eastern CT Hem &amp; Onc Associates"/>
+                <entry key="PA158" value="Easton Hospital"/>
+                <entry key="CA076" value="Eisenhower Medical Center"/>
+                <entry key="IN030" value="Elkhart General Hospital"/>
+                <entry key="IL206" value="Elmhurst Memorial Hospital"/>
+                <entry key="CA719" value="Emanuel Medical Center"/>
+                <entry key="GA005" value="Emory University"/>
+                <entry key="PA243" value="Ephrata Cancer Center"/>
+                <entry key="TN009" value="Erlanger Medical Center"/>
+                <entry key="IL139" value="Eureka Hospital"/>
+                <entry key="CO001" value="Exempla Lutheran Medical Center"/>
+                <entry key="CO012" value="Exempla Saint Joseph Hospital"/>
+                <entry key="OH157" value="Fairfield Medical Center"/>
+                <entry key="MN031" value="Fairview-Southdale Hospital"/>
+                <entry key="MN070" value="Fairview Ridges Hospital"/>
+                <entry key="CA668" value="Feather River Hospital Cancer Ctr"/>
+                <entry key="FL015" value="Florida, Univ. of (Gainesville)"/>
+                <entry key="OH012" value="Flower Memorial Hospital"/>
+                <entry key="MS008" value="Forrest General Hospital"/>
+                <entry key="PA086" value="Fox Chase Cancer Center"/>
+                <entry key="WI062" value="Fox Valley Hem Onc Assoc - Appleton"/>
+                <entry key="PA116" value="Frankford Hospital"/>
+                <entry key="MD036" value="Frederick Mem Hosp"/>
+                <entry key="VA140" value="Fredericksburg Oncology Inc"/>
+                <entry key="NE023" value="Fremont Area Medical Center"/>
+                <entry key="CO071" value="Front Range Cancer Specialists"/>
+                <entry key="OH135" value="Fulton County Health Ctr"/>
+                <entry key="IL188" value="Galesburg Clinic"/>
+                <entry key="IL121" value="Galesburg Cottage Hospital"/>
+                <entry key="PA052" value="Geisinger Medical Ctr"/>
+                <entry key="PA281" value="Geisinger Scenery Park Onc Clinic"/>
+                <entry key="PA061" value="Geisinger South Wilkes Barre"/>
+                <entry key="PA209" value="Geisinger So Wilkes Barre-Hazelton"/>
+                <entry key="PA138" value="Geisinger Wyoming Valley"/>
+                <entry key="OH327" value="Genesis HealthCare System"/>
+                <entry key="MI088" value="Genesys Regional Medical Center"/>
+                <entry key="DC014" value="George Washington Univ Cancer Ctr"/>
+                <entry key="GA003" value="Grady Memorial Hospital"/>
+                <entry key="OH159" value="Grady Memorial Hospital"/>
+                <entry key="IL079" value="Graham Hospital Association"/>
+                <entry key="PA063" value="Grand View Hospital"/>
+                <entry key="OH246" value="Grant Medical Center"/>
+                <entry key="MD018" value="Greater Baltimore Med Ctr"/>
+                <entry key="IL216" value="Greater Chicago Oncology Research"/>
+                <entry key="MS017" value="Gulfport Mem Hospital"/>
+                <entry key="WI029" value="Gundersen Lutheran"/>
+                <entry key="PA062" value="Guthrie Found for Educ &amp; Reseach"/>
+                <entry key="NJ074" value="Hackensack Medical Center"/>
+                <entry key="MS009" value="Hattiesburg Clinic"/>
+                <entry key="PA155" value="Hem &amp; Onc Assoc of NE PA (Scranton)"/>
+                <entry key="NM017" value="Hematology Oncology Associates"/>
+                <entry key="OH284" value="Hematology Oncology Center Inc."/>
+                <entry key="IL037" value="Hem Onc Assoc -Chicago, IL"/>
+                <entry key="IL225" value="Hem Onc Assoc - Highland Park"/>
+                <entry key="IL244" value="Hem Onc Assoc - Skokie"/>
+                <entry key="IL372" value="Hem Onc Assoc of Illinois-Berwyn"/>
+                <entry key="MI181" value="Hem Onc Assoc of Ohio &amp; Michigan,PC"/>
+                <entry key="MN013" value="Hennepin County Medical Center"/>
+                <entry key="IL032" value="Hinsdale Hospital"/>
+                <entry key="PA411" value="Holy Redeemer Hospital and Med Ctr"/>
+                <entry key="IN124" value="Horizon Oncology Center"/>
+                <entry key="IN062" value="Howard Regional Health System"/>
+                <entry key="NJ045" value="Hunterdon Medical Center"/>
+                <entry key="MI052" value="Hurley Medical Center"/>
+                <entry key="MN074" value="Hutchinson Area Health Care"/>
+                <entry key="PR021" value="I. Gonzales Martinez Oncologic Hosp"/>
+                <entry key="IL101" value="Illinois CancerCare-Peoria"/>
+                <entry key="IL167" value="Illinois Oncology Research Assoc."/>
+                <entry key="IL130" value="Illinois Valley Hospital"/>
+                <entry key="NE025" value="Immanuel Medical Center"/>
+                <entry key="IN007" value="Indiana University Cancer Center"/>
+                <entry key="IL105" value="Ingalls Medical Center"/>
+                <entry key="VA002" value="Inova Fairfax Hospital"/>
+                <entry key="55004" value="Inst de Enfermedades Neoplasicas"/>
+                <entry key="FL206" value="Integrated Community Oncology Net"/>
+                <entry key="IL140" value="Intercomm Ca Ctr Western IL"/>
+                <entry key="IA030" value="Iowa Lutheran Hospital"/>
+                <entry key="IA004" value="Iowa Methodist M.C."/>
+                <entry key="IA038" value="Iowa Oncology Research Assoc."/>
+                <entry key="ICORG" value="Irish Clinical Onc Research Group"/>
+                <entry key="MS014" value="Jackson Oncology Associates PLLC"/>
+                <entry key="NY042" value="Jacobi Medical Center"/>
+                <entry key="PA235" value="Jennersville Regional Hospital"/>
+                <entry key="NJ064" value="Jersey Shore Medical Center"/>
+                <entry key="IL039" value="Jesse Brown VA Medical Center"/>
+                <entry key="OH075" value="Jewish Hospital"/>
+                <entry key="IL042" value="John H Stroger Hosp of Cook County"/>
+                <entry key="MD017" value="Johns Hopkins University"/>
+                <entry key="MI030" value="Kalamazoo CCOP"/>
+                <entry key="KS016" value="Kansas, Univ of - Wichita (EAPP)"/>
+                <entry key="MA017" value="Lahey Clinic Medical Center"/>
+                <entry key="MI108" value="Lakeland Hospital"/>
+                <entry key="FL071" value="Lakeland Regional Cancer Center"/>
+                <entry key="PA048" value="Lancaster General Hospital"/>
+                <entry key="WI146" value="Langlade Hospital and Cancer Center"/>
+                <entry key="PA125" value="Lankenau Hospital"/>
+                <entry key="IN035" value="LaPorte Hospital"/>
+                <entry key="PA055" value="Lehigh Valley Hospital"/>
+                <entry key="PA043" value="Lewistown Hospital"/>
+                <entry key="OH122" value="Licking Memorial Hospital"/>
+                <entry key="OH137" value="Lima Memorial Hospital"/>
+                <entry key="NY287" value="Lincoln Medical and Mental Hlth Ctr"/>
+                <entry key="NE037" value="LMEF Cancer Resource Center"/>
+                <entry key="CO079" value="Longmont United Hospital"/>
+                <entry key="NM011" value="Lovelace Sandia Health Systems"/>
+                <entry key="LA002" value="LSU Medical Center CCOP (EAPP)"/>
+                <entry key="PA011" value="Magee-Womens Hospital"/>
+                <entry key="NY076" value="Maimonides Medical Center"/>
+                <entry key="PA163" value="Main Line Health CCOP"/>
+                <entry key="CT003" value="Manchester Memorial Hospital"/>
+                <entry key="OH091" value="Marietta Memorial Hospital"/>
+                <entry key="WI031" value="Marshfield Clinic"/>
+                <entry key="LA035" value="Mary Bird Perkins Cancer Center"/>
+                <entry key="NY143" value="Mary Imogene Bassett"/>
+                <entry key="NE029" value="Mary Lanning Memorial Hospital"/>
+                <entry key="OH379" value="Mary Rutan Hospital"/>
+                <entry key="IL132" value="Mason District Hospital"/>
+                <entry key="MA034" value="Massachusetts General Hospital"/>
+                <entry key="39030" value="Mater Misericordiae Univ Hospital"/>
+                <entry key="39015" value="Mater Private Hospital"/>
+                <entry key="FL080" value="Mayo Clinic - Jacksonville"/>
+                <entry key="MN026" value="Mayo Clinic Rochester"/>
+                <entry key="AZ020" value="Mayo Clinic Scottsdale-Phoenix"/>
+                <entry key="IL131" value="McDonough District Hospital"/>
+                <entry key="IA003" value="McFarland Clinic, PC"/>
+                <entry key="CO060" value="McKee Medical Center"/>
+                <entry key="LA029" value="Med Ctr of LA @ New Orleans"/>
+                <entry key="CO030" value="Medical Center of Aurora-HealthOne"/>
+                <entry key="GA029" value="Medical Center of Central Georgia"/>
+                <entry key="GA020" value="Medical College of Georgia"/>
+                <entry key="WI013" value="Medical College of Wisconsin"/>
+                <entry key="IN050" value="Medical Consultants"/>
+                <entry key="WI085" value="Medical Consultants, Ltd"/>
+                <entry key="IA074" value="Medical Onc &amp; Hem Assoc-Laurel St"/>
+                <entry key="IA072" value="Medical Onc &amp; Hem Assoc-Pleasant St"/>
+                <entry key="IA071" value="Medical Onc &amp; Hem Assoc-Univ Ave"/>
+                <entry key="MA062" value="Medical Specialists of Taunton,P.C."/>
+                <entry key="SD010" value="Medical X-Ray Center"/>
+                <entry key="TN037" value="Meharry Medical College"/>
+                <entry key="MD033" value="Memorial Hosp at Easton"/>
+                <entry key="IL133" value="Memorial Hospital (Carthage)"/>
+                <entry key="IL157" value="Memorial Hospital Carbondale"/>
+                <entry key="WI087" value="Memorial Hospital of Oconomowoc"/>
+                <entry key="IN036" value="Memorial Hospital of South Bend"/>
+                <entry key="CA182" value="Memorial Medical Center"/>
+                <entry key="IL097" value="Memorial Medical Center"/>
+                <entry key="LA032" value="Memorial Medical Center-New Orleans"/>
+                <entry key="IA009" value="Mercy Capitol"/>
+                <entry key="WI015" value="Mercy Health Systems"/>
+                <entry key="MN019" value="Mercy Hospital"/>
+                <entry key="IA020" value="Mercy Hospital - Cedar Rapids"/>
+                <entry key="MI057" value="Mercy Hospital-Port Huron"/>
+                <entry key="OH329" value="Mercy Hospital of Tiffin"/>
+                <entry key="OH064" value="Mercy Medical Center"/>
+                <entry key="IA008" value="Mercy Medical Center - Des Moines"/>
+                <entry key="IA027" value="Mercy Medical Center - North Iowa"/>
+                <entry key="IA014" value="Mercy Medical Center-Sioux City"/>
+                <entry key="OH088" value="Mercy Medical Center-Springfield OH"/>
+                <entry key="MI061" value="Mercy Memorial Hospital (Monroe)"/>
+                <entry key="39009" value="Mercy University Hospital"/>
+                <entry key="ND003" value="MeritCare Hospital CCOP"/>
+                <entry key="KY025" value="Merle Mahr Cancer Center"/>
+                <entry key="IL081" value="Methodist Med Center (Ill)"/>
+                <entry key="MN043" value="Metro-MN CCOP Administrative Office"/>
+                <entry key="FL028" value="Miami, University of"/>
+                <entry key="MI086" value="Michigan Ca Res Consortium CCOP"/>
+                <entry key="39022" value="Mid-Western Regional Hosp Limerick"/>
+                <entry key="39026" value="Midland Regional Hospital Tullamore"/>
+                <entry key="NE024" value="Midlands Community Hospital"/>
+                <entry key="IL261" value="Midwest Ctr for Hematology/Oncology"/>
+                <entry key="MN030" value="Miller-Dwan Hospital"/>
+                <entry key="MS004" value="Mississippi Baptist Medical Center"/>
+                <entry key="NE026" value="Missouri Valley Cancer Consortium"/>
+                <entry key="MN075" value="MOHPA - Maplewood Cancer Center"/>
+                <entry key="MN098" value="MOHPA - Woodbury"/>
+                <entry key="NY045" value="Montefiore Hospital"/>
+                <entry key="IL222" value="Morris Hospital"/>
+                <entry key="NJ028" value="Morristown Memorial Hospital"/>
+                <entry key="OH220" value="Mount Carmel Health System"/>
+                <entry key="PA037" value="Mount Nittany Medical Center"/>
+                <entry key="IL034" value="Mount Sinai Hospital Medical Center"/>
+                <entry key="TN118" value="Nashville Oncology Associates, PC"/>
+                <entry key="NV012" value="Nevada Cancer Res Fnd CCOP (EAPP)"/>
+                <entry key="NJ015" value="Newark Beth Israel Medical Center"/>
+                <entry key="NJ011" value="New Jersey Medical School"/>
+                <entry key="NM022" value="New Mexico Cancer Care Associates"/>
+                <entry key="NY342" value="New York Oncology Hematology, P.C."/>
+                <entry key="NY011" value="New York University Med Ctr"/>
+                <entry key="OH412" value="North Coast Cancer Care-Clyde"/>
+                <entry key="OH314" value="North Coast Cancer Center"/>
+                <entry key="CO020" value="North Colorado Medical Center"/>
+                <entry key="GA089" value="Northeast Georgia Cancer Care, LLC"/>
+                <entry key="IN090" value="Northern Indiana CRC CCOP (EAPP)"/>
+                <entry key="MN054" value="North Memorial Medical Center"/>
+                <entry key="IL224" value="North Shore Oncology Hematology"/>
+                <entry key="IL018" value="NorthShore University HealthSystem"/>
+                <entry key="CO045" value="North Suburban Medical Center"/>
+                <entry key="IL036" value="Northwestern University"/>
+                <entry key="MI015" value="Oakwood Hospital and Medical Center"/>
+                <entry key="NJ135" value="Ocean Medical Center"/>
+                <entry key="LA007" value="Ochsner Clinic"/>
+                <entry key="LA024" value="Ochsner Clinic-Baton Rouge"/>
+                <entry key="LA082" value="Ochsner Clinic Found Northshore M C"/>
+                <entry key="IA024" value="Oncology Associates"/>
+                <entry key="55005" value="Oncosalud SAC"/>
+                <entry key="IL319" value="OSF St Francis Radiation Oncology"/>
+                <entry key="IL141" value="Ottawa Reg Hosp &amp; Healthcare Center"/>
+                <entry key="IA019" value="Ottumwa Regional Health Center"/>
+                <entry key="NJ026" value="Overlook Hospital"/>
+                <entry key="KY051" value="Owensboro Medical Health System"/>
+                <entry key="PA124" value="Paoli Memorial Hospital"/>
+                <entry key="TX006" value="Parkland Health and Hosp System"/>
+                <entry key="MN014" value="Park Nicollet Health Services"/>
+                <entry key="IL245" value="Pekin Cancer Treatment Center"/>
+                <entry key="IL135" value="Pekin Hospital"/>
+                <entry key="PA042" value="Penn State Cancer Institute"/>
+                <entry key="PA075" value="Pennsylvania, University of"/>
+                <entry key="PA131" value="Pennsylvania Hospital"/>
+                <entry key="CO021" value="Penrose-St Francis HealthCare"/>
+                <entry key="IL136" value="Perry Memorial Hospital"/>
+                <entry key="PA082" value="Philadelphia VA Medical Center"/>
+                <entry key="PA045" value="Pinnacle Health Regional Cancer Ctr"/>
+                <entry key="PA015" value="Pittsburgh, University of"/>
+                <entry key="PA178" value="Pocono Medical Center"/>
+                <entry key="CO008" value="Porter Adventis Hospital"/>
+                <entry key="PA127" value="Pottstown Memorial Medical Center"/>
+                <entry key="CO019" value="Poudre Valley Hospital"/>
+                <entry key="CO062" value="Poudre Valley Radiation Oncology"/>
+                <entry key="CO010" value="Presby/St Luke's Med Ctr-HealthOne"/>
+                <entry key="NM005" value="Presbyterian Kaseman Hospital"/>
+                <entry key="IL137" value="Proctor Hospital"/>
+                <entry key="40007" value="Rambam Medical Center"/>
+                <entry key="PA107" value="Reading Hospital"/>
+                <entry key="MN001" value="Regions Hospital"/>
+                <entry key="NV005" value="Renown Regional Medical Center"/>
+                <entry key="IN004" value="Richard L. Roudebush VA Med Ctr"/>
+                <entry key="MN059" value="Ridgeview Medical Center"/>
+                <entry key="OH008" value="Riverside Methodist Hospital"/>
+                <entry key="NJ067" value="Riverview Regional Cancer Center"/>
+                <entry key="RI007" value="Roger Williams Hospital"/>
+                <entry key="CO013" value="Rose Medical Center"/>
+                <entry key="03026" value="Royal Adelaide Hospital"/>
+                <entry key="IL031" value="Rush-Copley Medical Center"/>
+                <entry key="IL043" value="Rush University Medical Center"/>
+                <entry key="IN064" value="Saint John's Cancer Center"/>
+                <entry key="MI142" value="Saint Mary's of Michigan"/>
+                <entry key="CA229" value="Salinas Valley Memorial Hospital"/>
+                <entry key="SD004" value="Sanford Cancer Ctr-Oncology Clinic"/>
+                <entry key="SD003" value="Sanford Univ of So. Dakota Med Ctr"/>
+                <entry key="PR016" value="San Juan City Hospital"/>
+                <entry key="PR006" value="San Juan Minority Based CCOP"/>
+                <entry key="PR010" value="San Juan VA Med Ctr"/>
+                <entry key="TX027" value="Scott &amp; White CCOP (EAPP)"/>
+                <entry key="PA302" value="Scranton Hematology-Oncology"/>
+                <entry key="CA123" value="Seton Medical Center"/>
+                <entry key="IL015" value="Sherman Hospital"/>
+                <entry key="SD011" value="Sioux Community CA Consortium CCOP"/>
+                <entry key="IA034" value="Siouxland Hem-Onc Assoc"/>
+                <entry key="CO080" value="Sky Ridge Medical Center"/>
+                <entry key="39029" value="Sligo General Hospital"/>
+                <entry key="NJ110" value="Somerset Medical Center"/>
+                <entry key="39027" value="South Infirmary Victoria Univ Hosp"/>
+                <entry key="NJ031" value="South Jersey Reg Cancer Center"/>
+                <entry key="IL106" value="South Suburban Hospital"/>
+                <entry key="MI039" value="Sparrow Regional Cancer Center"/>
+                <entry key="CT033" value="Stamford Hospital"/>
+                <entry key="CA141" value="Stanford University"/>
+                <entry key="OH414" value="St Anne Mercy Hosp and Cancer Ctr"/>
+                <entry key="CO031" value="St Anthony's Central Hospital"/>
+                <entry key="IL186" value="St Anthony's Memorial-Effingham"/>
+                <entry key="IN101" value="St Anthony Memorial/Michiana Ca Ctr"/>
+                <entry key="IA051" value="St Anthony Regional Hospital - Iowa"/>
+                <entry key="OH134" value="St Charles Hospital"/>
+                <entry key="IL019" value="St Francis Hospital"/>
+                <entry key="CT008" value="St Francis Hospital"/>
+                <entry key="OK014" value="St Francis Hospital:Oklahoma CCOP"/>
+                <entry key="IL082" value="St Francis Med Center - Peoria"/>
+                <entry key="MN064" value="St Francis Regional Medical Center"/>
+                <entry key="39010" value="St James Hospital"/>
+                <entry key="MN041" value="St John's Hospital/HealthEast"/>
+                <entry key="MI032" value="St John Hospital &amp; Medical Center"/>
+                <entry key="MI139" value="St John Macomb Hospital"/>
+                <entry key="OK013" value="St John Medical Center"/>
+                <entry key="IN015" value="St Joseph's Regional - South Bend"/>
+                <entry key="IL065" value="St Joseph Hospital"/>
+                <entry key="NE008" value="St Joseph Hospital"/>
+                <entry key="IL084" value="St Joseph Medical Center"/>
+                <entry key="PA108" value="St Joseph Medical Center"/>
+                <entry key="MI013" value="St Joseph Mercy Hosp - Ann Arbor"/>
+                <entry key="MI002" value="St Joseph Mercy Oakland"/>
+                <entry key="IA033" value="St Luke's Hosp - Cedar Rapids"/>
+                <entry key="PA054" value="St Luke's Hospital"/>
+                <entry key="IA015" value="St Luke's Reg Med Ctr-Sioux City"/>
+                <entry key="OH151" value="St Lukes Hospital - Maumee"/>
+                <entry key="IL138" value="St Margaret's Hospital"/>
+                <entry key="CO025" value="St Mary's Hospital"/>
+                <entry key="PA117" value="St Mary's Hospital"/>
+                <entry key="MN023" value="St Mary's Medical Center-Duluth"/>
+                <entry key="CO023" value="St Mary Corwin Medical Center"/>
+                <entry key="MI017" value="St Mary Mercy Hospital"/>
+                <entry key="OH094" value="St Rita's Med Center"/>
+                <entry key="NY009" value="St Vincent's - (New York City)"/>
+                <entry key="WI027" value="St Vincent Hosp Reg Cancer Ctr CCOP"/>
+                <entry key="OH014" value="St Vincent Mercy Medical Center"/>
+                <entry key="39002" value="St Vincents University Hospital"/>
+                <entry key="MD007" value="Suburban Hospital (Bethesda)"/>
+                <entry key="NV004" value="Sunrise Hospital and Med Ctr"/>
+                <entry key="NY178" value="SUNY Downstate Medical Center"/>
+                <entry key="PA412" value="Susquehanna Cancer Center"/>
+                <entry key="IL072" value="SwedishAmerican Hosp"/>
+                <entry key="IL054" value="Swedish Covenant Hospital"/>
+                <entry key="CO035" value="Swedish Medical Center"/>
+                <entry key="03101" value="Sydney Cancer Centre"/>
+                <entry key="TN096" value="Tennessee Oncology"/>
+                <entry key="TX137" value="Texas Oncology - SW Regional Ca Ctr"/>
+                <entry key="OH071" value="The Christ Hospital"/>
+                <entry key="NY179" value="The No. Div. of Montefiore Med Ctr"/>
+                <entry key="PA121" value="Thomas Jefferson University"/>
+                <entry key="OH016" value="Toledo Clinic"/>
+                <entry key="OH095" value="Toledo Community Hosp Onc Prog CCOP"/>
+                <entry key="OH099" value="Toledo Hospital"/>
+                <entry key="IL143" value="Trinity Medical Center"/>
+                <entry key="MA033" value="Tufts Medical Center"/>
+                <entry key="MD047" value="Union Hospital of Cecil County"/>
+                <entry key="MN002" value="United Hospital - St Paul"/>
+                <entry key="MN018" value="Unity Hospital"/>
+                <entry key="CT002" value="Univ. of Conn."/>
+                <entry key="39025" value="University College Hospital Galway"/>
+                <entry key="OH029" value="University Hospitals of Cleveland"/>
+                <entry key="NE003" value="University of Nebraska Medical Ctr"/>
+                <entry key="63010" value="University of Pretoria"/>
+                <entry key="OH015" value="University of Toledo"/>
+                <entry key="VA009" value="University of Virginia"/>
+                <entry key="IL040" value="Univ of Illinois at Chicago MBCCOP"/>
+                <entry key="MN022" value="Univ of Minnesota Med Ctr-Fairview"/>
+                <entry key="NM004" value="Univ of New Mexico MBCCOP (EAPP)"/>
+                <entry key="AL068" value="Univ of So Alabama Mitchell Ca Inst"/>
+                <entry key="TX011" value="Univ of Texas Southwestern Med Ctr"/>
+                <entry key="NM039" value="UNM Cancer Center - Las Cruces"/>
+                <entry key="NM041" value="UNMCC at Lovelace Medical Center"/>
+                <entry key="WI093" value="UW Cancer Center - Riverview"/>
+                <entry key="WI151" value="UW Cancer Center Johnson Creek"/>
+                <entry key="WI018" value="VA Hosp Madison-Middleton Memorial"/>
+                <entry key="KS046" value="VA Med Ctr - Wichita"/>
+                <entry key="GA002" value="VA Medical Center - Decatur"/>
+                <entry key="MN015" value="VA Medical Center - Minneapolis"/>
+                <entry key="TN004" value="VA Medical Center - Nashville"/>
+                <entry key="NE002" value="VA Medical Center-Omaha"/>
+                <entry key="CA140" value="VA Medical Center - Palo Alto"/>
+                <entry key="PA022" value="VA Medical Center - Pittsburgh"/>
+                <entry key="TN008" value="Vanderbilt University"/>
+                <entry key="NJ001" value="VA New Jersey Health Care System"/>
+                <entry key="NY073" value="VA NY Harbor Healthcare System"/>
+                <entry key="NV025" value="VA Southern NV Healthcare System"/>
+                <entry key="KS055" value="Via Christi Regional Medical Center"/>
+                <entry key="MN042" value="Virginia Piper Cancer Institute"/>
+                <entry key="NJ032" value="Virtua Health"/>
+                <entry key="MI079" value="W.A. Foote Hospital"/>
+                <entry key="CA147" value="Washington Hospital"/>
+                <entry key="39023" value="Waterford Regional Hospital"/>
+                <entry key="WI051" value="Waukesha Memorial Hospital"/>
+                <entry key="KS010" value="Wesley Medical Center (EAPP)"/>
+                <entry key="MD031" value="Western Maryland Hlth Sys-Braddock"/>
+                <entry key="03029" value="Westmead Hospital / Sydney WAHS"/>
+                <entry key="MI080" value="West Michigan Cancer Center"/>
+                <entry key="WV025" value="West Virginia University"/>
+                <entry key="WI061" value="WFCC - All Saints"/>
+                <entry key="WI043" value="WFH - St Joseph"/>
+                <entry key="KS017" value="Wichita CCOP -(EAPP)"/>
+                <entry key="WI020" value="Wisconsin, University of"/>
+                <entry key="IN038" value="Wishard Hospital"/>
+                <entry key="ME017" value="York Hospital (ME)"/>
+                <entry key="PA047" value="York Hospital (PA)"/>
+            </map>
+        </property>
+    </bean>
 </beans>

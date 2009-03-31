@@ -205,8 +205,26 @@ define "psc" do
     end
   end
 
+  desc "External data-providing plugins" 
+  define "providers" do
+    desc "The interfaces under which data providers expose data"
+    define "api" do
+      compile.with project('domain').and_dependencies
+      package(:jar)
+    end
+    
+    desc "Mock data providers with static data"
+    define "mock" do
+      compile.with project('providers:api').and_dependencies, SPRING
+      test.with UNIT_TESTING
+      package(:jar)
+    end
+  end
+  
   desc "Core data access, serialization and non-substitutable business logic"
   define "core" do
+    project('providers') # Have to reference this before refing project('providers:mock') in buildr 1.3.3 for some reason.  Investigate later.  RMS20090331.
+    
     resources.filter.using(:ant, 
       'application-short-name'  => APPLICATION_SHORT_NAME,
       "buildInfo.versionNumber" => project.version,
@@ -218,6 +236,7 @@ define "psc" do
     compile.with project('domain').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:local-plugin').and_dependencies, # since it's the default
+      project('providers:mock').and_dependencies,
       project('database').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
       QUARTZ, 
