@@ -109,6 +109,19 @@ public class AmendmentDaoTest extends DaoTestCase {
         assertEquals(-222, (int) actual.getId());
     }
 
+    public void testGetByDateNameStudy () throws Exception {
+        Amendment actualAmendment = amendmentDao.getById(-100);
+        Amendment actual = amendmentDao.getByDateNameStudy(actualAmendment.getDate(), actualAmendment.getName(), study20);
+        assertNotNull("Could not find it", actual);
+        assertEquals(-100, (int) actual.getId());
+    }
+
+    public void testGetByDateNameStudyForDifferentStudy () throws Exception {
+        Amendment actualAmendment = amendmentDao.getById(-100);
+        Amendment actual = amendmentDao.getByDateNameStudy(actualAmendment.getDate(), actualAmendment.getName(), study21);
+        assertNull("Amendment for study exist", actual);
+    }
+
     public void testGetByKeyWhenStudyIsOnlyDisambiguatingFactor() throws Exception {
         Amendment actual = amendmentDao.getByNaturalKey("2008-11-23~turkey", study21);
         assertNotNull("Could not find it", actual);

@@ -33,7 +33,7 @@ public class CreateAmendmentController extends PscCancellableFormController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new CreateAmendmentCommand(studyService);
+        return new CreateAmendmentCommand(studyService, amendmentDao);
     }
 
     @Override

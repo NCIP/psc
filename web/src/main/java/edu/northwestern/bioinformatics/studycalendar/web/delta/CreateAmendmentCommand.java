@@ -3,8 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.springframework.validation.Errors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -15,9 +18,13 @@ public class CreateAmendmentCommand implements Validatable {
     private boolean mandatory;
 
     private StudyService studyService;
+    private AmendmentDao amendmentDao;
 
-    public CreateAmendmentCommand(StudyService studyService) {
+        protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    public CreateAmendmentCommand(StudyService studyService, AmendmentDao amendmentDao) {
         this.studyService = studyService;
+        this.amendmentDao = amendmentDao;
         mandatory = true;
     }
 
@@ -34,6 +41,8 @@ public class CreateAmendmentCommand implements Validatable {
     public void validate(Errors errors) {
         if (getDate() == null) {
             errors.rejectValue("date", "error.empty.amendment.date");
+        } else if (amendmentDao.getByDateNameStudy(getDate(), getName(), getStudy()) != null) {
+            errors.rejectValue("date", "error.unique.amendment.date.name");
         }
     }
 

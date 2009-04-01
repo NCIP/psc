@@ -9,8 +9,11 @@ import static org.easymock.EasyMock.expect;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 
 import java.util.List;
+import java.util.Date;
+import java.util.Calendar;
 
 /**
  * @author Saurabh Agrawal
@@ -45,6 +48,7 @@ public class CreateAmendmentControllerTest extends ControllerTestCase {
         request.addParameter("date", "01/01/2009");
         request.addParameter("study", "1");
         expect(studyDao.getById(1)).andReturn(study);
+        expect(amendmentDao.getByDateNameStudy(createDate(2009, Calendar.JANUARY, 01, 0, 0, 0), null, study)).andReturn(null);
         studyService.save(study);
         replayMocks();
         ModelAndView modelAndView = controller.handleRequest(request, response);
