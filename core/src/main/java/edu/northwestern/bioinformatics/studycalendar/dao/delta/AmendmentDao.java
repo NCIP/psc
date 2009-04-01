@@ -5,6 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDom
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -37,6 +41,16 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     @SuppressWarnings({ "unchecked" })
     public List<Amendment> getAll() {
         return getHibernateTemplate().find("from Amendment");
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public Amendment getByDateNameStudy(Date date, String name, Study study) {
+        Amendment a = (Amendment) CollectionUtils.firstElement(getHibernateTemplate().find(
+            "from Amendment a where a.date=? and a.name = ?", new Object[]{date, name}));
+        if (study.hasAmendment(a)) {
+            return a;
+        }
+        return null;
     }
 
     @SuppressWarnings({ "unchecked" })
