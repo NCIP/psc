@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
@@ -346,18 +347,18 @@ public class Amendment
             } else {
                 dateStr = keyStr;
             }
-            String[] dateValue = dateStr.split("\\-");
-            String dateNextStr = dateValue[0].concat("-").concat(dateValue[1]).concat("-").concat(String.valueOf(Integer.parseInt(dateValue[2])+1));
+//            String[] dateValue = dateStr.split("\\-");
+//            String dateNextStr = dateValue[0].concat("-").concat(dateValue[1]).concat("-").concat(String.valueOf(Integer.parseInt(dateValue[2])+1));
             Date date;
-            Date dateNext;
+//            Date dateNext;
             try {
                 date = createNaturalKeyDateFormat().parse(dateStr);
-                dateNext = createNaturalKeyDateFormat().parse(dateNextStr);                 
+//                dateNext = createNaturalKeyDateFormat().parse(dateNextStr);
             } catch (ParseException e) {
                 throw new StudyCalendarValidationException(
                         "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
             }
-            return new Key(date, name, dateNext);
+            return new Key(date, name);
         }
 
         public Date getDate() {
@@ -377,7 +378,10 @@ public class Amendment
         }
 
         public Date getDateNext() {
-            return dateNext;
+            Calendar c1 = Calendar.getInstance();
+            c1.setTime(getDate());
+            c1.add(Calendar.DATE, 1);
+            return c1.getTime();
         }
 
         public void setDateNext(Date dateNext) {

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
@@ -48,7 +49,8 @@ public class CreateAmendmentControllerTest extends ControllerTestCase {
         request.addParameter("date", "01/01/2009");
         request.addParameter("study", "1");
         expect(studyDao.getById(1)).andReturn(study);
-        expect(amendmentDao.getByDateNameStudy(createDate(2009, Calendar.JANUARY, 01, 0, 0, 0), null, study)).andReturn(null);
+        Amendment.Key key = new Amendment.Key(createDate(2009, Calendar.JANUARY, 01, 0, 0, 0), study.getName());
+        expect(amendmentDao.getByNaturalKey(key.toString(), study)).andReturn(null);
         studyService.save(study);
         replayMocks();
         ModelAndView modelAndView = controller.handleRequest(request, response);

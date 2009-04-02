@@ -116,6 +116,32 @@ public class AmendmentTest extends TestCase {
         assertEquals("Wrong name", "fred", actual.getName());
     }
 
+    public void testGetNextDate() throws Exception {
+        Amendment.Key actual = Amendment.decomposeNaturalKey("2003-08-11~fred");
+        assertDayOfDate(2003, Calendar.AUGUST, 11, actual.getDate());
+        Date nextDay = actual.getDateNext();
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(nextDay);
+        int day = c1.get(Calendar.DATE);
+        System.out.println("day " + day);
+        assertEquals("Day is not incremented", 12, day);
+        assertEquals("Wrong name", "fred", actual.getName());
+    }
+
+    public void testGetNextDateAtTheEndOfMonth() throws Exception {
+        Calendar c = Calendar.getInstance();
+        Amendment.Key actual = Amendment.decomposeNaturalKey("2003-08-31~fred");
+        assertDayOfDate(2003, Calendar.AUGUST, 31, actual.getDate());
+        c.setTime(actual.getDate());
+
+        Date nextDay = actual.getDateNext();
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(nextDay);
+        assertEquals("Day is not incremented", 1, c1.get(Calendar.DATE));
+        assertEquals("Month is not incremented", c.get(Calendar.MONTH)+1, c1.get(Calendar.MONTH));
+        assertEquals("Wrong name", "fred", actual.getName());
+    }
+
     public void testDecomposeNaturalKeyWithoutName() throws Exception {
         Amendment.Key actual = Amendment.decomposeNaturalKey("2001-01-12");
         assertDayOfDate(2001, Calendar.JANUARY, 12, actual.getDate());

@@ -44,16 +44,6 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     }
 
     @SuppressWarnings({ "unchecked" })
-    public Amendment getByDateNameStudy(Date date, String name, Study study) {
-        Amendment a = (Amendment) CollectionUtils.firstElement(getHibernateTemplate().find(
-            "from Amendment a where a.date=? and a.name = ?", new Object[]{date, name}));
-        if (study.hasAmendment(a)) {
-            return a;
-        }
-        return null;
-    }
-
-    @SuppressWarnings({ "unchecked" })
     public Amendment getByNaturalKey(String key, Study study) {
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {

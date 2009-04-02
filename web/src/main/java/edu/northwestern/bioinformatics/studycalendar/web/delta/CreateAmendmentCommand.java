@@ -41,8 +41,11 @@ public class CreateAmendmentCommand implements Validatable {
     public void validate(Errors errors) {
         if (getDate() == null) {
             errors.rejectValue("date", "error.empty.amendment.date");
-        } else if (amendmentDao.getByDateNameStudy(getDate(), getName(), getStudy()) != null) {
-            errors.rejectValue("date", "error.unique.amendment.date.name");
+        } else {
+            String keyString = new Amendment.Key(getDate(), getName()).toString();
+            if (amendmentDao.getByNaturalKey(keyString, getStudy()) !=null ) {
+                errors.rejectValue("date", "error.unique.amendment.date.name");
+            }
         }
     }
 
