@@ -28,6 +28,7 @@ public class DomainObjectTools {
         StudySegment.class,
         Period.class,
         PlannedActivity.class,
+        PlannedActivityLabel.class,
 
         Subject.class,
         StudySubjectAssignment.class,
@@ -35,6 +36,7 @@ public class DomainObjectTools {
         ScheduledStudySegment.class,
         ScheduledActivity.class
     );
+    public static final Comparator<? super Class> DETAIL_ORDER_COMPARATOR = new ByDetailOrder();
 
     public static <T extends DomainObject> Map<Integer, T> byId(List<T> objs) {
         Map<Integer, T> map = new LinkedHashMap<Integer, T>();
@@ -96,6 +98,13 @@ public class DomainObjectTools {
     public static class ById<T extends DomainObject> implements Comparator<T> {
         public int compare(T o1, T o2) {
             return ComparisonUtils.nullSafeCompare(o1.getId(), o2.getId());
+        }
+    }
+
+    private static class ByDetailOrder implements Comparator<Class> {
+        @SuppressWarnings({"unchecked"})
+        public int compare(Class o1, Class o2) {
+            return detailOf(o1) - detailOf(o2);
         }
     }
 }

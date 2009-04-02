@@ -5,10 +5,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.easymock.classextension.EasyMock;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -104,6 +101,7 @@ public class DomainObjectToolsTest extends DomainTestCase {
         assertIsMoreSpecific(Epoch.class, StudySegment.class);
         assertIsMoreSpecific(StudySegment.class, Period.class);
         assertIsMoreSpecific(Period.class, PlannedActivity.class);
+        assertIsMoreSpecific(PlannedActivity.class, PlannedActivityLabel.class);
     }
 
     public void testSpecificityWithDynamicSubclasses() {
@@ -138,6 +136,35 @@ public class DomainObjectToolsTest extends DomainTestCase {
         assertIsMoreSpecific(anon.getClass(), Site.class);
         assertIsMoreSpecific(anon.getClass(), Study.class);
         assertIsMoreSpecific(anon.getClass(), ScheduledActivity.class);
+    }
+    
+    @SuppressWarnings({"RedundantArrayCreation"})
+    public void testDetailOrdererComparator() {
+        List<Class> domainClasses = Arrays.asList(new Class[] { Epoch.class, PlannedActivity.class, Period.class, StudySegment.class });
+        Collections.sort(domainClasses, DomainObjectTools.DETAIL_ORDER_COMPARATOR);
+        assertSame(Epoch.class, domainClasses.get(0));
+        assertSame(StudySegment.class, domainClasses.get(1));
+        assertSame(Period.class, domainClasses.get(2));
+        assertSame(PlannedActivity.class, domainClasses.get(3));
+    }
+
+    public void testDetailOrderingComparatorForMap() {
+        Map<Class, String> map = new TreeMap<Class, String>(DomainObjectTools.DETAIL_ORDER_COMPARATOR);
+        map.put(PlannedActivity.class, "pa");
+        map.put(Epoch.class, "epoch");
+        map.put(Period.class, "period");
+        map.put(PlannedActivityLabel.class, "pal");
+        map.put(StudySegment.class, "studySegment");
+        map.put(Study.class, "study");
+
+        Iterator<String> iterator = map.values().iterator();
+        assertSame("Fist Element wrong ", "study", iterator.next());
+        assertSame("Second Element wrong ", "epoch", iterator.next());
+        assertSame("Third Element wrong ", "studySegment", iterator.next());
+        assertSame("Fourth Element wrong ", "period", iterator.next());
+        assertSame("Fifth Element wrong ", "pa", iterator.next());
+        assertSame("Six Element wrong ", "pal", iterator.next());
+
     }
 
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {
