@@ -1,4 +1,22 @@
-<project name="caBIG Study Calendar" default="compile">
+<!--
+    NOTE: FOR HISTORICAL REFERENCE ONLY
+    
+    This build script does not work with the new structure of the
+    sourcebase.  The project is currently built using buildr using
+    the script "buildfile".
+  -->
+
+<project name="caBIG Study Calendar" default="reference-only">
+    
+    <target name="reference-only">
+        <echo>
+NOTE: build.xml IS FOR HISTORICAL REFERENCE ONLY
+
+The ant script does not work with the new structure of the
+sourcebase.  The project is currently built using buildr using
+the script "buildfile".
+        </echo>
+    </target>
 
     <!-- PROPERTIES AND PATHS -->
     <property name="application-short-name" value="psc"/>
@@ -83,15 +101,17 @@
         <path refid="cp.main"/>
     </path>
 
-    <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
+    <target name="taskdefs">
+        <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
-    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.test"/>
-    <taskdef name="datasource-properties"
-             classname="gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask" classpathref="cp.main"/>
+        <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.test"/>
+        <taskdef name="datasource-properties"
+                 classname="gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask" classpathref="cp.main"/>
+     </target>
 
     <!-- TARGETS -->
 
-    <target name="init" depends="default-properties">
+    <target name="init" depends="taskdefs, default-properties">
         <mkdir dir="${build-dir.main}"/>
         <mkdir dir="${build-dir.test}"/>
         <mkdir dir="${metrics-dir}"/>
