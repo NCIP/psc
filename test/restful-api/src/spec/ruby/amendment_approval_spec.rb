@@ -23,24 +23,32 @@ describe "/amendment_approval" do
       response.status_code.should == 401
     end
     
-    it "approves an amendment for an authorized user" do
-      pending "#654"
-      post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :carla
-      response.status_code.should == 201
-      response.status_message.should == "Created"
-      response.meta['location'].should_not be_nil
-      response.meta['location'].should =~ %r{^http:}
-      response.meta['location'].should =~ %r{/studies/NU480/sites/site1/approvals}
+    describe "when authorized" do
+      before do
+        post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :carla
+      end
       
-      get response.meta['location'], :as => :carla
-      response.status_code.should == 200
-      response.content_type.should == 'text/xml'
-      response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
-      response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
-      response.xml_elements('//amendment-approval').should have(1).elements
+      it "approves an amendment for an authorized user" do
+        response.status_code.should == 201
+        response.status_message.should == "Created"
+      end
+      
+      it "includes the proper Location for the created resource" do
+        response.meta['location'].should_not be_nil
+        response.meta['location'].should =~ %r{^http:}
+        response.meta['location'].should =~ %r{api/v1/studies/NU480/sites/site1/approvals/2007-04-19$}
+      end
+      
+      it "provides a reachable Location for the created resource" do
+        pending "#655"
+        get response.meta['location'], :as => :carla
+        response.status_code.should == 200
+        response.content_type.should == 'text/xml'
+        response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
+        response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
+        response.xml_elements('//amendment-approval').should have(1).elements
+      end
     end
-    
-        
   end
   
   describe "GET" do
