@@ -2,24 +2,40 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.assertContains;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
-import org.springframework.context.ApplicationContext;
+import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.FilterChain;
+import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  */
 public class AuthenticationSystemConfigurationTest extends DaoTestCase {
     private AuthenticationSystemConfiguration configuration;
-    private ApplicationContext context;
+    private StaticWebApplicationContext context;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        context = getDeployedApplicationContext();
-        configuration = (AuthenticationSystemConfiguration) context.getBean("authenticationSystemConfiguration");
+        context = new StaticWebApplicationContext();
+        configuration = new AuthenticationSystemConfiguration();
         configuration.setApplicationContext(context);
+        configuration.setDelegate(new TransientConfiguration(AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES));
+
+        context.registerSingleton("dataSource", SingleConnectionDataSource.class);
+        context.registerSingleton("pscUserDetailsService", PscUserDetailsService.class);
+        context.registerSingleton("defaultLogoutFilter", DummyFilter.class);
+        context.refresh();
     }
 
     public void testDefaultAuthSystemIsLocal() throws Exception {
@@ -113,5 +129,19 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
     private void selectAuthenticationSystem(String requested) {
         configuration.set(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM, requested);
         interruptSession();
+    }
+
+    private static class DummyFilter implements Filter {
+        public void init(FilterConfig filterConfig) throws ServletException {
+            throw new UnsupportedOperationException("init not implemented");
+        }
+
+        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+            throw new UnsupportedOperationException("doFilter not implemented");
+        }
+
+        public void destroy() {
+            throw new UnsupportedOperationException("destroy not implemented");
+        }
     }
 }
