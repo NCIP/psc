@@ -1,23 +1,33 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
+import edu.northwestern.bioinformatics.studycalendar.configuration.RawDataConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.AbstractConfiguration;
+import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Provides the {@link Configuration} interface over a String-String {@link Dictionary}.
- * This takes advantage of {@link ConfigurationProperty}'s built-in to/from string
- * functionality to create a non-database, easily serializable configuration representation.
- * In particular, it is compatible with OSGi's Configuration Admin service.
+ * Provides the {@link gov.nih.nci.cabig.ctms.tools.configuration.Configuration} interface
+ * over a String-String {@link Dictionary}. This takes advantage of
+ * {@link ConfigurationProperty}'s built-in to/from string functionality to create a
+ * non-database, easily serializable configuration representation.
+ * In particular, the dictionaries it produces are compatible with OSGi's Configuration
+ * Admin service.
  *
  * @author Rhett Sutphin
  */
-public class DictionaryConfiguration extends AbstractConfiguration {
+public class DictionaryConfiguration extends AbstractConfiguration implements RawDataConfiguration {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private ConfigurationProperties configurationProperties;
     private Dictionary<String, String> storage;
 
@@ -28,6 +38,21 @@ public class DictionaryConfiguration extends AbstractConfiguration {
     public DictionaryConfiguration(ConfigurationProperties configurationProperties, Dictionary<String, String> storage) {
         this.configurationProperties = configurationProperties;
         this.storage = storage == null ?  new Hashtable<String, String>() : storage;
+    }
+
+    public DictionaryConfiguration(Configuration source) {
+        this(source, source.getProperties());
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
+    public DictionaryConfiguration(Configuration source, ConfigurationProperties properties) {
+        this(properties);
+        for (ConfigurationProperty property : getProperties().getAll()) {
+            if (source.isSet(property)) {
+                log.trace("Copying {}={} into dictionary", property, source.get(property));
+                this.set(property, source.get(property));
+            }
+        }
     }
 
     public Dictionary<String, String> getDictionary() {
@@ -72,8 +97,22 @@ public class DictionaryConfiguration extends AbstractConfiguration {
         return new Entry(property.getKey());
     }
 
+    public Map<String, String> getRawData() {
+        Map<String, String> data = new LinkedHashMap<String, String>();
+        Enumeration<String> keys = getDictionary().keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            data.put(key, getDictionary().get(key));
+        }
+        return data;
+    }
+
     public ConfigurationProperties getProperties() {
         return configurationProperties;
+    }
+
+    public void setConfigurationProperties(ConfigurationProperties configurationProperties) {
+        this.configurationProperties = configurationProperties;
     }
 
     private class Entry extends ConfigurationEntry {

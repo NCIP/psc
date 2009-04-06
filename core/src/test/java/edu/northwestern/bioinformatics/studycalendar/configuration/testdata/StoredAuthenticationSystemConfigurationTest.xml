@@ -1,0 +1,8 @@
+<dataset>
+    <authentication_system_conf
+        prop="authenticationSystem"
+        value="edu.northwestern.bioinformatics.psc.etc-system"/>
+    <authentication_system_conf
+        prop="unmapped"
+        value="something"/>
+</dataset>
