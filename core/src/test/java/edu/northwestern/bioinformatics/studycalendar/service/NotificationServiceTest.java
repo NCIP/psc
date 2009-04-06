@@ -61,7 +61,7 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
     }
 
     public void testNotifyUsersForNewScheduleNotifications() {
-       User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
+        User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
         String emailAddress = "user@email.com";
         EasyMock.expect(userService.getEmailAddresssForUser(user)).andReturn(emailAddress);
         ScheduleNotificationMailMessage notificationMailMessage = new ScheduleNotificationMailMessage();
