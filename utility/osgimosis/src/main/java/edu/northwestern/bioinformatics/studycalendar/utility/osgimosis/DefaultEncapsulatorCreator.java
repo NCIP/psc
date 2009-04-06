@@ -39,7 +39,9 @@ public class DefaultEncapsulatorCreator {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
             Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(
                 membrane, farClass.getComponentType(), nearClassLoader, proxyConstructorParams).create();
-            if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
+            if (componentEncapsulator == null) {
+                return null;
+            } else if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
                 return new ArrayEncapsulator((ArrayCapableEncapsulator) componentEncapsulator);
             } else {
                 throw new MembraneException("Cannot encapsulate array; component type is not array capable");

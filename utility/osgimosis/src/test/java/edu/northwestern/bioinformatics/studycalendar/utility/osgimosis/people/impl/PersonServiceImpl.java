@@ -21,9 +21,22 @@ public class PersonServiceImpl implements PersonService {
     }
 
     public Collection<Person> createSeveral() {
-        return Arrays.asList(
+        return Arrays.asList(createArray());
+    }
+
+    public Person[] createArray() {
+        return new Person[] {
             createPieMaker(), createPrivateInvestigator(), new PieMaker("Chuck")
-        );
+        };
+    }
+
+    public int[] createNameLengths() {
+        Person[] people = createArray();
+        int[] lengths = new int[people.length];
+        for (int i = 0; i < people.length; i++) {
+            lengths[i] = people[i].getName().length();
+        }
+        return lengths;
     }
 
     public Person setTitle(String title, Person person) {

@@ -140,6 +140,17 @@ public class MembraneTest extends OsgimosisTestCase {
         assertEquals(3, actual.size());
     }
 
+    public void testFarArrayContentsAreEncapsulated() throws Exception {
+        Person[] actual = bridgedPersonService().createArray();
+        assertEquals("Ned", actual[0].getName());
+        assertEquals(3, actual.length);
+    }
+    
+    public void testFarPrimitiveArrayIsAvailable() throws Exception {
+        int[] actual = bridgedPersonService().createNameLengths();
+        assertEquals(7, actual[1]);
+    }
+
     public void testFarArrayIsEncapsulated() throws Exception {
         Object farArray = Array.newInstance(classFromLoader(Person.class, loaderA), 2);
         Array.set(farArray, 0, classFromLoader(DefaultPerson.class, loaderA).newInstance());

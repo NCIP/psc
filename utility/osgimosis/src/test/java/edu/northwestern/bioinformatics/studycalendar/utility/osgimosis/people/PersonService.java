@@ -10,6 +10,8 @@ public interface PersonService {
     Person createPieMaker();
     Person createPrivateInvestigator();
     Collection<Person> createSeveral();
+    Person[] createArray();
+    int[] createNameLengths();
 
     Person setTitle(String title, Person person);
 
