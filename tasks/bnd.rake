@@ -36,7 +36,7 @@ module Bnd
     
     project.recursive_task('bnd:generate')
     if jar
-      bndfile = jar.to_s.sub /jar$/, 'bnd'
+      bndfile = jar.name.sub /jar$/, 'bnd'
       project.task('bnd:generate').enhance [bndfile]
       directory(File.dirname(bndfile))
       project.file(bndfile => [Buildr.application.buildfile, File.dirname(bndfile)]) do |task|
@@ -48,20 +48,23 @@ module Bnd
     
     if jar && project.bnd.wrap?
       bndfile = project.task('bnd:generate').prerequisites.first.to_s
-      bndjar = jar.to_s.sub(/jar$/, 'bndjar')
+      bndjar = jar.name.sub(/jar$/, 'bndjar')
       
-      project.task('bnd:wrap' => [jar, bndfile]) do |task|
-        project.ant('bnd') do |ant|
-          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
-          ant.bndwrap :jars => jar.to_s, 
-            :output => bndjar,
-            :definitions => File.dirname(bndfile)
+      jar.enhance [bndfile] do |task|
+        # No, I want to be last -- see Buildr::ArchiveTask#initialize
+        task.enhance do
+          project.ant('bnd') do |ant|
+            ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
+            ant.bndwrap :jars => jar.name, 
+              :output => bndjar,
+              :definitions => File.dirname(bndfile)
+          end
+          raise "bnd failed" unless File.exist?(bndjar)
+        
+          info "Replacing #{File.basename(jar.name)} with bnd wrapped version"
+          mv bndjar, jar.name
         end
-        info "Replacing #{File.basename(jar.to_s)} with bnd wrapped version"
-        mv bndjar, jar.to_s
       end
-      
-      project.task('package').enhance [project.task('bnd:wrap')]
     end
   end
   
