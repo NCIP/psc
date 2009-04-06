@@ -75,6 +75,8 @@ public interface AuthenticationSystem {
 
     /**
      * Acegi {@link AuthenticationManager} for this system.
+     * <p>
+     * This method may not return <code>null</code> after {@link #initialize} has been called.
      *
      * @see AuthenticationSystemTools#createProviderManager
      */
@@ -97,7 +99,8 @@ public interface AuthenticationSystem {
 
     /**
      * Acegi entry point for this system.
-     * @return
+     * <p>
+     * This method may not return <code>null</code> after {@link #initialize} has been called.
      */
     AuthenticationEntryPoint entryPoint();
 
@@ -108,6 +111,8 @@ public interface AuthenticationSystem {
      * <p>
      * Many implementations will find the filter defined as <code>defaultLogoutFilter</code>
      * in the application context passed to {@link #initialize} sufficient.
+     * <p>
+     * This method may not return <code>null</code> after {@link #initialize} has been called.
      */
     Filter logoutFilter();
 

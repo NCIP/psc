@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Template base class for implementors of {@link AuthenticationSystem}.
@@ -59,6 +61,31 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         } catch (RuntimeException re) {
             log.info("Initialization failed with runtime exception", re);
             throw new AuthenticationSystemInitializationFailure(re.getMessage(), re);
+        }
+        validateRequiredElementsCreated();
+    }
+
+    private void validateRequiredElementsCreated() throws AuthenticationSystemInitializationFailure {
+        List<String> missing = new ArrayList<String>(3);
+        if (authenticationManager() == null) {
+            missing.add("authenticationManager()");
+        }
+        if (entryPoint() == null) {
+            missing.add("entryPoint()");
+        }
+        if (logoutFilter() == null) {
+            missing.add("logoutFilter()");
+        }
+        if (!missing.isEmpty()) {
+            String list = missing.get(missing.size() - 1);
+            if (missing.size() >= 2) {
+                list = String.format(
+                    "%s or %s", 
+                    StringUtils.join(missing.subList(0, missing.size() - 1).iterator(), ", "),
+                    list);
+            }
+            throw new AuthenticationSystemInitializationFailure(
+                "%s must not return null from %s", getClass().getSimpleName(), list);
         }
     }
 

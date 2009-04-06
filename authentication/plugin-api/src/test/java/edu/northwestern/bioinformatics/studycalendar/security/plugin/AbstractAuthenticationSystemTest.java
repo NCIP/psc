@@ -17,40 +17,103 @@ import javax.servlet.Filter;
 public final class AbstractAuthenticationSystemTest extends AuthenticationTestCase {
     private ApplicationContext applicationContext;
     private TestAuthenticationSystem system;
+    private AuthenticationManager expectedAuthenticationManager;
+    private AuthenticationEntryPoint expectedEntryPoint;
+    private Filter expectedFilter;
+    private Filter expectedLogoutFilter;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         system = new TestAuthenticationSystem();
         applicationContext = registerNiceMockFor(ApplicationContext.class);
+
+        expectedAuthenticationManager = registerMockFor(AuthenticationManager.class);
+        expectedEntryPoint = registerMockFor(AuthenticationEntryPoint.class);
+        expectedFilter = registerMockFor(Filter.class);
+        expectedLogoutFilter = registerMockFor(Filter.class);
+
+        system.setCreatedAuthenticationManager(expectedAuthenticationManager);
+        system.setCreatedAuthenticationEntryPoint(expectedEntryPoint);
+        system.setCreatedFilter(expectedFilter);
+        system.setCreatedLogoutFilter(expectedLogoutFilter);
     }
 
     public void testReturnsCreatedAuthManager() throws Exception {
-        AuthenticationManager expected = registerMockFor(AuthenticationManager.class);
-        system.setCreatedAuthenticationManager(expected);
         doInitialize();
-        assertSame(expected, system.authenticationManager());
+        assertSame(expectedAuthenticationManager, system.authenticationManager());
+    }
+
+    public void testAuthenticationManagerIsRequired() throws Exception {
+        system.setCreatedAuthenticationManager(null);
+        try {
+            doInitialize();
+            fail("Exception not thrown");
+        } catch (AuthenticationSystemInitializationFailure actual) {
+            assertEquals("Wrong failure message",
+                "TestAuthenticationSystem must not return null from authenticationManager()",
+                actual.getMessage());
+        }
     }
 
     public void testReturnsCreatedEntryPoint() throws Exception {
-        AuthenticationEntryPoint expected = registerMockFor(AuthenticationEntryPoint.class);
-        system.setCreatedAuthenticationEntryPoint(expected);
         doInitialize();
-        assertSame(expected, system.entryPoint());
+        assertSame(expectedEntryPoint, system.entryPoint());
+    }
+
+    public void testEntryPointIsRequired() throws Exception {
+        system.setCreatedAuthenticationEntryPoint(null);
+        try {
+            doInitialize();
+            fail("Exception not thrown");
+        } catch (AuthenticationSystemInitializationFailure actual) {
+            assertEquals("Wrong failure message",
+                "TestAuthenticationSystem must not return null from entryPoint()",
+                actual.getMessage());
+        }
     }
 
     public void testReturnsCreatedFilter() throws Exception {
-        Filter expected = registerMockFor(Filter.class);
-        system.setCreatedFilter(expected);
         doInitialize();
-        assertSame(expected, system.filter());
+        assertSame(expectedFilter, system.filter());
+    }
+
+    public void testFilterIsNotRequired() throws Exception {
+        system.setCreatedFilter(null);
+        doInitialize();
+        assertNull(system.filter());
     }
 
     public void testReturnsCreatedLogoutFilter() throws Exception {
-        Filter expected = registerMockFor(Filter.class);
-        system.setCreatedLogoutFilter(expected);
         doInitialize();
-        assertSame(expected, system.logoutFilter());
+        assertSame(expectedLogoutFilter, system.logoutFilter());
+    }
+
+    public void testLogoutFilterIsRequired() throws Exception {
+        system.setCreatedLogoutFilter(null);
+        try {
+            doInitialize();
+            fail("Exception not thrown");
+        } catch (AuthenticationSystemInitializationFailure actual) {
+            assertEquals("Wrong failure message",
+                "TestAuthenticationSystem must not return null from logoutFilter()",
+                actual.getMessage());
+        }
+    }
+
+    public void testMultipleMissingElementsAreReported() throws Exception {
+        system.setCreatedAuthenticationManager(null);
+        system.setCreatedAuthenticationEntryPoint(null);
+        system.setCreatedLogoutFilter(null);
+
+        try {
+            doInitialize();
+            fail("Exception not thrown");
+        } catch (AuthenticationSystemInitializationFailure actual) {
+            assertEquals("Wrong failure message",
+                "TestAuthenticationSystem must not return null from authenticationManager(), entryPoint() or logoutFilter()",
+                actual.getMessage());
+        }
     }
 
     public void testDefaultNameIsClassNameWithoutAuthenticationSystemSuffix() throws Exception {
