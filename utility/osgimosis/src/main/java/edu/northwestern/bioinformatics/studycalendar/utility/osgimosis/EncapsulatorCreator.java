@@ -3,18 +3,20 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
-class EncapsulatorCreator {
+public class EncapsulatorCreator {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Membrane membrane;
@@ -67,13 +69,20 @@ class EncapsulatorCreator {
         Class base = null;
         Class sourceClass = farClass;
         while (sourceClass != null && base == null) {
-            if (isInSharedPackage(sourceClass) && hasDefaultConstructor(sourceClass)) {
+            if (isInSharedPackage(sourceClass) && hasDefaultConstructor(sourceClass) && !hasFinalMethods(sourceClass)) {
                 base = targetClass(sourceClass);
             }
             sourceClass = sourceClass.getSuperclass();
         }
         log.trace("Base class will be {}", base);
         return base;
+    }
+
+    private boolean hasFinalMethods(Class sourceClass) {
+        for (Method method : sourceClass.getDeclaredMethods()) {
+            if (Modifier.isFinal(method.getModifiers())) return true;
+        }
+        return false;
     }
 
     private boolean hasDefaultConstructor(Class<?> clazz) {

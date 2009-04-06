@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * @author Rhett Sutphin
  */
-class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
+public class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Object far;

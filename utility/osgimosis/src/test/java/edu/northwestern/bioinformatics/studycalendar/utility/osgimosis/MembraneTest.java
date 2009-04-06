@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.FinalPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
@@ -77,6 +78,15 @@ public class MembraneTest extends OsgimosisTestCase {
 
         Class<?> nearClass = membrane.farToNear(farChuck).getClass();
         assertFalse("Should not match concrete class", PieMaker.class.isAssignableFrom(nearClass));
+        assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
+    }
+    
+    public void testBridgedObjectDoesNotExtendClassIfFinal() throws Exception {
+        Class<?> farClass = loaderA.loadClass(FinalPerson.class.getName());
+        Object farInstance = farClass.newInstance();
+
+        Class<?> nearClass = membrane.farToNear(farInstance).getClass();
+        assertFalse("Should not match concrete class", FinalPerson.class.isAssignableFrom(nearClass));
         assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
     }
     
