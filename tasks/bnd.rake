@@ -81,6 +81,7 @@ module Bnd
       '-classpath' => :classpath,
       'Bundle-Version' => :version,
       'Bundle-SymbolicName' => :symbolic_name,
+      'Bundle-Name' => :name,
       'Bundle-Description' => :description,
       'Import-Package' => :import_packages_serialized,
       'Export-Package' => :export_packages_serialized
@@ -116,6 +117,7 @@ module Bnd
         end
         
         def #{attribute_ser}=(s)
+          # XXX: this does not account for quotes
           @#{attribute} = s.split(/\\s*,\\s*/)
         end
       RUBY

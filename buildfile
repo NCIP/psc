@@ -48,8 +48,8 @@ define "psc" do
   
   desc "Pure utility code"
   define "utility" do
-    project.bnd.wrap!
-    # project.bnd['-versionpolicy'] = '[${version;==;${@}},${version;=+;${@}})'
+    bnd.wrap!
+    bnd.name = "PSC Utility Module"
 
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
@@ -164,6 +164,7 @@ define "psc" do
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
+      bnd.name = "PSC Pluggable Auth API"
       compile.with project('utility'), SLF4J, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
@@ -184,6 +185,7 @@ define "psc" do
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
       bnd.wrap!
+      bnd.name = "PSC Local Auth Plugin"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
@@ -197,6 +199,7 @@ define "psc" do
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
       bnd.wrap!
+      bnd.name = "PSC CAS Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.cas
@@ -208,6 +211,7 @@ define "psc" do
     desc "Authentication via caGrid's customized version of CAS"
     define "websso-plugin" do
       bnd.wrap!
+      bnd.name = "PSC caGrid WebSSO Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
       compile.with project('plugin-api').and_dependencies,
@@ -222,6 +226,7 @@ define "psc" do
     desc "A completely insecure implementation for integrated tests and the like"
     define "insecure-plugin" do
       bnd.wrap!
+      bnd.name = "PSC Insecure Auth Plugin"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure.Activator"
       compile.with project('plugin-api').and_dependencies
