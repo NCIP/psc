@@ -84,7 +84,7 @@ JAKARTA_COMMONS = struct({
   :lang       => spring_osgi_apache_commons("lang", "2.1.0"),
   :pool       => spring_osgi_apache_commons("pool", "1.4.0"),
   :fileupload => spring_osgi_apache_commons("fileupload", "1.2.0"),
-  :collections_generic => "net.sourceforge.collections:collections-generic:jar:4.01",
+  :collections_generic => psc_osgi_artifact("net.sourceforge.collections:collections-generic:jar:4.01"),
   :validator  => spring_osgi_apache_commons("validator", "1.1.4")
 })
 
