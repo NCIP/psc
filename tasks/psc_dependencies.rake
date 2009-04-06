@@ -215,12 +215,6 @@ OSGI = struct(
   :compendium => 'org.osgi:osgi_R4_compendium:jar:1.0'
 )
 
-FELIX = struct(
-  :main => "org.apache.felix:org.apache.felix.main:jar:1.0.4",
-  :shell => "org.apache.felix:org.apache.felix.shell:jar:1.0.2",
-  :shell_remote => "org.apache.felix:org.apache.felix.shell.remote:jar:1.0.4"
-)
-
 KNOPFLERFISH = struct(
   Dir[static_lib('knopflerfish-2.2.0/**/*.jar')].inject({}) do |map, jar|
     group, name, version = jar.scan(%r{.*/(\w+)/(\w+)-([\d\.]+)\.jar$}).first

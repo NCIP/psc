@@ -296,8 +296,8 @@ define "psc" do
 
     task :da_launcher_artifacts do |task|
       class << task; attr_accessor :values; end
-      felix_main = artifact(FELIX.main)
       knopflerfish_main = artifact(KNOPFLERFISH.framework)
+
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
       application_bundles = bundle_projects.collect { |p| p.package(:jar) }
       application_libraries = bundle_projects.
@@ -305,12 +305,12 @@ define "psc" do
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
         LOGBACK.values.collect { |a| artifact(a) }
+
       system_optional = [KNOPFLERFISH.consoletelnet]
       system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
+
       task.values = {
-        # "osgi-framework/felix/#{felix_main.version}" => [felix_main],
         "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main],
-        # "bundles/system-bundles" => [FELIX.shell, FELIX.shell_remote].collect { |f| artifact(f) },
         "bundles/system-bundles" => system_bundles,
         "bundles/system-optional" => system_optional,
         "bundles/application-bundles" => application_bundles,
