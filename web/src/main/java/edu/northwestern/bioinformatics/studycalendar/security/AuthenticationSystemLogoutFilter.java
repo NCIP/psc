@@ -16,14 +16,19 @@ import java.io.IOException;
  */
 public class AuthenticationSystemLogoutFilter implements Filter {
     private AuthenticationSystemConfiguration configuration;
+    private Filter defaultLogoutFilter;
 
     public void init(FilterConfig filterConfig) throws ServletException { /* not invoked */ }
 
     public void doFilter(
         ServletRequest request, ServletResponse response, FilterChain filterChain
     ) throws IOException, ServletException {
-        configuration.getAuthenticationSystem().logoutFilter()
-            .doFilter(request, response, filterChain);
+        getEffectiveFilter().doFilter(request, response, filterChain);
+    }
+
+    private Filter getEffectiveFilter() {
+        Filter explicit = configuration.getAuthenticationSystem().logoutFilter();
+        return explicit == null ? defaultLogoutFilter : explicit;
     }
 
     public void destroy() { /* not invoked */ }
@@ -32,5 +37,9 @@ public class AuthenticationSystemLogoutFilter implements Filter {
 
     public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    public void setDefaultLogoutFilter(Filter defaultLogoutFilter) {
+        this.defaultLogoutFilter = defaultLogoutFilter;
     }
 }

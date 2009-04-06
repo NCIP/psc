@@ -20,7 +20,7 @@ public abstract class CasBasedAuthenticationSystemTestCase extends Authenticatio
     protected void doValidInitialize() {
         configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
         configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
-        getSystem().initialize(getMockApplicationContext(), configuration);
+        getSystem().initialize(configuration, userDetailsService, dataSource);
     }
 
     public abstract CasAuthenticationSystem getSystem();

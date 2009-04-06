@@ -19,9 +19,6 @@ public class AuthenticationSystemValidator {
         if (system.entryPoint() == null) {
             missing.add("entryPoint()");
         }
-        if (system.logoutFilter() == null) {
-            missing.add("logoutFilter()");
-        }
         if (!missing.isEmpty()) {
             String list = missing.get(missing.size() - 1);
             if (missing.size() >= 2) {

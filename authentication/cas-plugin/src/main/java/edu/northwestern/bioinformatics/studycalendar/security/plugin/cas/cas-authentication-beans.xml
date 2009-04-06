@@ -76,4 +76,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <value>ticketCache</value>
         </property>
     </bean>
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
 </beans>

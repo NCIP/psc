@@ -3,11 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.DummyFilter;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.classextension.EasyMock.expect;
-import org.springframework.context.ApplicationContext;
 
 /**
  * @author Rhett Sutphin
@@ -15,19 +13,11 @@ import org.springframework.context.ApplicationContext;
 public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     private InsecureAuthenticationSystem system;
 
-    private UserDetailsService userDetailsService;
-    private ApplicationContext applicationContext;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         system = new InsecureAuthenticationSystem();
-
-        applicationContext = registerNiceMockFor(ApplicationContext.class);
         userDetailsService = registerMockFor(UserDetailsService.class);
-
-        expect(applicationContext.getBean("pscUserDetailsService")).andReturn(userDetailsService).anyTimes();
-        expect(applicationContext.getBean("defaultLogoutFilter")).andReturn(new DummyFilter()).anyTimes();
     }
 
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {
@@ -73,6 +63,6 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
 
     private void doInitialize() {
-        system.initialize(applicationContext, blankConfiguration());
+        system.initialize(blankConfiguration(), userDetailsService, dataSource);
     }
 }

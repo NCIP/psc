@@ -6,9 +6,10 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.springframework.context.ApplicationContext;
+import org.acegisecurity.userdetails.UserDetailsService;
 
 import javax.servlet.Filter;
+import javax.sql.DataSource;
 
 /**
  * This interface defines a facade for pluggable authentication modules.
@@ -60,9 +61,11 @@ public interface AuthenticationSystem {
      * <p>
      * It is guaranteed that this method will only be called once per instance.
      *
-     * @param parent the system application context
      * @param configuration the object from which the configuration properties
      *      specified with {@link #configurationProperties()} may be read
+     * @param userDetailsService a service from which Acegi {@link org.acegisecurity.userdetails.UserDetails}
+     *      instances may be acquired
+     * @param dataSource a connection to the PSC's database
      * @throws StudyCalendarValidationException if any of the configuration properties
      *      have invalid values
      * @throws AuthenticationSystemInitializationFailure if initialization cannot complete for
@@ -70,7 +73,7 @@ public interface AuthenticationSystem {
      * @see org.springframework.context.support.ClassPathXmlApplicationContext
      */
     void initialize(
-        ApplicationContext parent, Configuration configuration
+        Configuration configuration, UserDetailsService userDetailsService, DataSource dataSource
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException;
 
     /**
@@ -109,10 +112,7 @@ public interface AuthenticationSystem {
      * actions are required to log out in this system.  At a minimum, this will include
      * the behavior implemented in {@link org.acegisecurity.ui.logout.SecurityContextLogoutHandler}.
      * <p>
-     * Many implementations will find the filter defined as <code>defaultLogoutFilter</code>
-     * in the application context passed to {@link #initialize} sufficient.
-     * <p>
-     * This method may not return <code>null</code> after {@link #initialize} has been called.
+     * If this method returns null, PSC will use a sensible default.
      */
     Filter logoutFilter();
 

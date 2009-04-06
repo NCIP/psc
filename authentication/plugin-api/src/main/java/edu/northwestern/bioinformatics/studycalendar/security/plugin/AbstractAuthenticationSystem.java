@@ -6,12 +6,17 @@ import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
+import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import javax.servlet.Filter;
+import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
@@ -28,13 +33,40 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     private AuthenticationManager authenticationManager;
     private AuthenticationEntryPoint entryPoint;
     private Filter filter, logoutFilter;
+    private UserDetailsService userDetailsService;
+    private DataSource dataSource;
 
+    /**
+     * Provides a base Spring {@link ApplicationContext} which contains
+     * singleton beans for the parameters passed to {@link #initialize}.
+     * This is intended to be used as a parent application context when a
+     * subclass configures its dependent beans outside of the <code>create*</code>
+     * and <code>init*</code> methods.
+     */
     protected ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 
+    private ApplicationContext createApplicationContext() {
+        StaticListableBeanFactory beans = new StaticListableBeanFactory();
+        beans.addBean("configuration", getConfiguration());
+        beans.addBean("dataSource", getDataSource());
+        beans.addBean("pscUserDetailsService", getUserDetailsService());
+        GenericApplicationContext newContext = new GenericApplicationContext(new DefaultListableBeanFactory(beans));
+        newContext.refresh();
+        return newContext;
+    }
+
     protected Configuration getConfiguration() {
         return configuration;
+    }
+
+    protected UserDetailsService getUserDetailsService() {
+        return userDetailsService;
+    }
+
+    protected DataSource getDataSource() {
+        return dataSource;
     }
 
     public String name() {
@@ -47,17 +79,17 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
      * When using this base class, you should generally <em>not</em> override this method, but
      * rather the individual template methods.
      *
-     * @param parent the system application context
-     * @param config
      * @throws AuthenticationSystemInitializationFailure
      * @throws StudyCalendarValidationException
      */
     public void initialize(
-        ApplicationContext parent, Configuration config
+        Configuration config, UserDetailsService uds, DataSource ds
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         try {
-            this.applicationContext = parent;
+            this.userDetailsService = uds;
+            this.dataSource = ds;
             this.configuration = config;
+            this.applicationContext = createApplicationContext();
             validateRequiredConfigurationProperties();
             initBeforeCreate();
             this.authenticationManager = createAuthenticationManager();
@@ -84,9 +116,10 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     }
 
     /**
-     * Template method for initialization.  {@link #getApplicationContext()} and
-     * {@link #getConfiguration()} will be available.  All the <code>create*</code>
-     * template methods will be called after this one.
+     * Template method for initialization. {@link #getConfiguration()},
+     * {@link #getUserDetailsService()}, {@link #getDataSource()}
+     * and {@link #getApplicationContext()} will be available.
+     * All the <code>create*</code> template methods will be called after this one.
      */
     protected void initBeforeCreate() { }
 
@@ -123,17 +156,13 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
      * Template method for initializing the value returned by {@link #filter()}.
      * Alternatively, you could use {@link #initAfterCreate()}.  If you take the latter
      * route, be sure to override {@link #logoutFilter()}, too.
-     * <p>
-     * Defaults to the bean <code>defaultLogoutFilter</code> from the application context
-     * provided to {@link #initialize}.
      */
     protected Filter createLogoutFilter() {
-        return (Filter) getApplicationContext().getBean("defaultLogoutFilter");
+        return null;
     }
 
     /**
-     * Template method for initialization.  {@link #getApplicationContext()} and
-     * {@link #getConfiguration()} will be available.  All the <code>create*</code>
+     * Template method for initialization.  All the <code>create*</code>
      * template methods will be called before this one.
      */
     protected void initAfterCreate() { }

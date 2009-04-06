@@ -28,11 +28,17 @@ public abstract class AuthenticationTestCase extends TestCase {
     private final Log log = LogFactory.getLog(getClass());
     private MockRegistry mocks;
     private StaticApplicationContext applicationContext;
+    protected UserDetailsService userDetailsService;
+    protected DataSource dataSource;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         mocks = new MockRegistry(log);
+
+        userDetailsService = new FakeUserDetailsService();
+        dataSource = new FakeDataSource();
+
         applicationContext = new StaticApplicationContext();
         applicationContext.registerSingleton("pscUserDetailsService", FakeUserDetailsService.class);
         applicationContext.registerSingleton("dataSource", FakeDataSource.class);

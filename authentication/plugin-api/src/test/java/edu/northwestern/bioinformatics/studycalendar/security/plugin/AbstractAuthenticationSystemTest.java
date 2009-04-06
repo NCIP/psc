@@ -89,29 +89,22 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         assertSame(expectedLogoutFilter, system.logoutFilter());
     }
 
-    public void testLogoutFilterIsRequired() throws Exception {
+    public void testLogoutFilterIsNotRequired() throws Exception {
         system.setCreatedLogoutFilter(null);
-        try {
-            doInitialize();
-            fail("Exception not thrown");
-        } catch (AuthenticationSystemInitializationFailure actual) {
-            assertEquals("Wrong failure message",
-                "TestAuthenticationSystem must not return null from logoutFilter()",
-                actual.getMessage());
-        }
+        doInitialize();
+        assertNull(system.logoutFilter());
     }
 
     public void testMultipleMissingElementsAreReported() throws Exception {
         system.setCreatedAuthenticationManager(null);
         system.setCreatedAuthenticationEntryPoint(null);
-        system.setCreatedLogoutFilter(null);
 
         try {
             doInitialize();
             fail("Exception not thrown");
         } catch (AuthenticationSystemInitializationFailure actual) {
             assertEquals("Wrong failure message",
-                "TestAuthenticationSystem must not return null from authenticationManager(), entryPoint() or logoutFilter()",
+                "TestAuthenticationSystem must not return null from authenticationManager() or entryPoint()",
                 actual.getMessage());
         }
     }
@@ -151,7 +144,7 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
     }
 
     private void doInitialize() {
-        system.initialize(applicationContext, blankConfiguration());
+        system.initialize(blankConfiguration(), userDetailsService, dataSource);
     }
 
     private static class TestAuthenticationSystem extends AbstractAuthenticationSystem {
