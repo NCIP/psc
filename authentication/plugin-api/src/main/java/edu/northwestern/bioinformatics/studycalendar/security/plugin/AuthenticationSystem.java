@@ -87,7 +87,9 @@ public interface AuthenticationSystem {
     /**
      * Return a {@link Filter} which implements a piece of the authentication
      * mechanism for this plugin (e.g., SSO).  The returned filter will be
-     * applied to all requests.  Its {@link Filter#init} method will not be called.
+     * applied to all requests which require authentication, plus any request
+     * that matches <code>/auth/*</code>.  Its {@link Filter#init} method will 
+     * not be called.
      * <p>
      * If you need more than one filter, consider {@link edu.northwestern.bioinformatics.studycalendar.tools.MultipleFilterFilter} or Acegi's
      * {@link org.acegisecurity.util.FilterChainProxy}.
