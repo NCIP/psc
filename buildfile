@@ -274,6 +274,21 @@ define "psc" do
     end
     package(:sources)
     
+    iml.add_component("FacetManager") do |component|
+      component.facet :type => 'web', :name => 'Web' do |facet|
+        facet.configuration do |conf|
+          conf.descriptors do |desc|
+            desc.deploymentDescriptor :name => 'web.xml', 
+              :url => "file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml", 
+              :optional => "false", :version => "2.4"
+          end
+          conf.webroots do |webroots|
+            webroots.root :url => "file://$MODULE_DIR$/src/main/webapp", :relative => "/"
+          end
+        end
+      end
+    end
+    
     directory(_('src/main/webapp/WEB-INF/lib'))
     
     task :explode => [compile, _('src/main/webapp/WEB-INF/lib')] do
