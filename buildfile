@@ -306,7 +306,7 @@ define "psc" do
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
         LOGBACK.values.collect { |a| artifact(a) }
       system_optional = [KNOPFLERFISH.consoletelnet]
-      system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /org.knopflerfish.framework/ } - system_optional
+      system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
       task.values = {
         # "osgi-framework/felix/#{felix_main.version}" => [felix_main],
         "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main],
