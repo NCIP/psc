@@ -15,10 +15,11 @@ public abstract class StudyCalendarRuntimeException extends RuntimeException {
 
     @SuppressWarnings({ "ThrowableResultOfMethodCallIgnored" })
     public StudyCalendarRuntimeException(String message, Object... messageParameters) {
-        super(format(message, withoutCause(messageParameters)), extractCause(messageParameters));
+        super(message == null ? null : format(message, withoutCause(messageParameters)), extractCause(messageParameters));
     }
 
     private static Object[] withoutCause(Object[] messageParameters) {
+        if (messageParameters == null) return new Object[0];
         Integer causeIndex = findCauseIndex(messageParameters);
         if (causeIndex == null) {
             return messageParameters;
@@ -38,6 +39,7 @@ public abstract class StudyCalendarRuntimeException extends RuntimeException {
     }
 
     private static Throwable extractCause(Object[] parameters) {
+        if (parameters == null) return null;
         Integer causeIndex = findCauseIndex(parameters);
         if (causeIndex == null) {
             return null;

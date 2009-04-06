@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar;
 
 import junit.framework.TestCase;
 
+import java.lang.reflect.Constructor;
+
 /**
  * @author Rhett Sutphin
  */
@@ -41,15 +43,27 @@ public class StudyCalendarRuntimeExceptionTest extends TestCase {
         assertSame(expectedCause, actual.getCause());
         assertEquals("Wrong message", "Relayed A", actual.getMessage());
     }
+    
+    public void testNullMessageIsAcceptedForProxying() throws Exception {
+        assertNull(new PscTestException(null).getMessage());
+    }
+    
+    @SuppressWarnings({ "ThrowableResultOfMethodCallIgnored" })
+    public void testNullMessageParametersAreAcceptedForProxying() throws Exception {
+        Constructor<PscTestException> cons = PscTestException.class.getConstructor(String.class, Object[].class);
+        assertNotNull("Expected constructor not found", cons);
+        PscTestException actual = cons.newInstance(null, null);
+        assertNull(actual.getMessage());
+    }
 
     private static class PscTestException extends StudyCalendarRuntimeException {
-        private PscTestException(String message, Object... messageParameters) {
+        public PscTestException(String message, Object... messageParameters) {
             super(message, messageParameters);
         }
     }
 
     private static class PscTestExceptionWithCauseConstructor extends StudyCalendarRuntimeException {
-        private PscTestExceptionWithCauseConstructor(
+        public PscTestExceptionWithCauseConstructor(
             String message, Throwable cause, Object... messageParameters
         ) {
             super(message, cause, messageParameters);
