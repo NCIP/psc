@@ -24,9 +24,16 @@ describe "/amendment_approval" do
     end
     
     it "approves an amendment for an authorized user" do
-      post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :juno
+      pending "#654"
+      post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :carla
       response.status_code.should == 201
       response.status_message.should == "Created"
+      response.meta['location'].should_not be_nil
+      response.meta['location'].should =~ %r{^http:}
+      response.meta['location'].should =~ %r{/studies/NU480/sites/site1/approvals}
+      
+      get response.meta['location'], :as => :carla
+      response.status_code.should == 200
       response.content_type.should == 'text/xml'
       response.xml_attributes("amendment-approval", "date").should include("2008-12-25")
       response.xml_attributes("amendment-approval", "amendment").should include("2007-04-19")
