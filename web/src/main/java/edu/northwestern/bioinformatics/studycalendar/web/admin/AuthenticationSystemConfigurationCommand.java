@@ -26,7 +26,6 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
     public AuthenticationSystemConfigurationCommand(String newAuthenticationSystem, AuthenticationSystemConfiguration liveConfiguration, ApplicationContext applicationContext) {
         this.liveConfiguration = liveConfiguration;
         workConfiguration = new AuthenticationSystemConfiguration();
-        workConfiguration.setApplicationContext(applicationContext);
         workConfiguration.setDelegate(
             TransientConfiguration.create(liveConfiguration));
 

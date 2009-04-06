@@ -6,13 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
+import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockServiceReference;
 
@@ -22,6 +21,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 
 /**
@@ -29,8 +29,9 @@ import java.io.IOException;
  */
 public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase {
     private AuthenticationSystemConfiguration configuration;
-    private StaticApplicationContext context;
     private BundleContext bundleContext;
+    private DataSource dataSource;
+    private UserDetailsService userDetailsService;
 
     private final MockPlugin localPlugin
         = new MockPlugin(
@@ -48,18 +49,15 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        context = new StaticApplicationContext();
-        context.registerSingleton("dataSource", SingleConnectionDataSource.class);
-        context.registerSingleton("pscUserDetailsService", PscUserDetailsService.class);
-        context.registerSingleton("defaultLogoutFilter", DummyFilter.class);
-        context.refresh();
-
+        dataSource = registerMockFor(DataSource.class);
+        userDetailsService = registerMockFor(UserDetailsService.class);
         bundleContext = registerMockFor(BundleContext.class);
 
         configuration = new AuthenticationSystemConfiguration();
-        configuration.setApplicationContext(context);
         configuration.setDelegate(new TransientConfiguration(AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES));
         configuration.setBundleContext(bundleContext);
+        configuration.setUserDetailsService(userDetailsService);
+        configuration.setDataSource(dataSource);
     }
 
     private void expectServiceReferences(MockPlugin... plugins) throws InvalidSyntaxException {
@@ -175,8 +173,10 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
         assertTrue("System is wrong class",
             configuration.getAuthenticationSystem() instanceof StubAuthenticationSystem);
         StubAuthenticationSystem system = (StubAuthenticationSystem) configuration.getAuthenticationSystem();
-        assertSame("Wrong application context used during initialization", context,
-            system.getInitialApplicationContext());
+        assertSame("Wrong dataSource used during initialization", dataSource,
+            system.getInitialDataSource());
+        assertSame("Wrong userDetailsService used during initialization", userDetailsService,
+            system.getInitialUserDetailsService());
         // can't compare the configuration objects themselves because one's a CGLIB proxy
         assertSame("Wrong configuration used during initialization", configuration.getProperties(),
             system.getInitialConfiguration().getProperties());

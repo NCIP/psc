@@ -11,27 +11,27 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationMap;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
+import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemConfiguration implements Configuration, ConfigurationListener, ApplicationContextAware {
+public class AuthenticationSystemConfiguration implements Configuration, ConfigurationListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Configuration delegate;
-    private ApplicationContext applicationContext;
+    private DataSource dataSource;
+    private UserDetailsService userDetailsService;
     private BundleContext bundleContext;
     private ConfigurationProperties currentProperties;
     private AuthenticationSystem currentSystem, newSystem;
@@ -87,7 +87,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
     private synchronized void initSystem() {
         if (systemReady) return;
         initProperties();
-        newSystem.initialize(applicationContext, this);
+        newSystem.initialize(this, userDetailsService, dataSource);
         log.debug("Successfully initialized new authentication system {}.  Replacing.", newSystem);
         // no errors, so:
         if (currentSystemReference != null) getBundleContext().ungetService(currentSystemReference);
@@ -173,10 +173,6 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
 
     ////// CONFIGURATION
 
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
     public void setDelegate(Configuration delegate) {
         this.delegate = delegate;
         delegate.addConfigurationListener(this);
@@ -192,5 +188,13 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
                 "No bundle context available.  Authentication system cannot be configured.");
         }
         return bundleContext;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }
