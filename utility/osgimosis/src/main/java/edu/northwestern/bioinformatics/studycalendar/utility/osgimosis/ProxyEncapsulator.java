@@ -82,18 +82,22 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
         }
     }
 
-    private Object proxyWithJdk(InvocationHandler handler) {
+    protected Object proxyWithJdk(InvocationHandler handler) {
         log.trace(" - In a JDK proxy");
         log.trace(" - With interfaces {}", Arrays.asList(nearInterfaces));
         return Proxy.newProxyInstance(nearClassLoader, nearInterfaces, handler);
     }
 
-    private Object proxyWithCglib(MethodInterceptor interceptor) {
+    protected Object proxyWithCglib(MethodInterceptor interceptor) {
+        return buildCglibEnhancer(interceptor).create();
+    }
+
+    protected Enhancer buildCglibEnhancer(MethodInterceptor interceptor) {
         log.trace(" - As a CGLIB proxy");
         log.trace(" - With superclass {}", nearSuperclass);
         log.trace(" - With interfaces {}", Arrays.asList(nearInterfaces));
         Enhancer enh = new Enhancer();
-        
+
         enh.setSuperclass(nearSuperclass);
         enh.setInterfaces(nearInterfaces);
         enh.setCallbacks(new Callback[] { interceptor, NoOp.INSTANCE });
@@ -102,8 +106,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
             public int accept(Method method) { return Modifier.isPublic(method.getModifiers()) ? 0 : 1; }
         });
         enh.setClassLoader(nearClassLoader);
-
-        return enh.create();
+        return enh;
     }
 
     public Membrane getMembrane() {

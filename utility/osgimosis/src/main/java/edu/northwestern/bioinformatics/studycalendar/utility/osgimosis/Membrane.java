@@ -76,10 +76,14 @@ public class Membrane {
         return result;
     }
 
+    public void registerEncapsulator(Class<?> clazz, Encapsulator encapsulator) {
+        encapsulators.put(clazz, encapsulator);
+    }
+
     private Encapsulator getEncapsulator(Object toEncapsulate, ClassLoader toEncapsulateFor) {
         if (!encapsulators.containsKey(toEncapsulate.getClass())) {
-            encapsulators.put(toEncapsulate.getClass(),
-                new EncapsulatorCreator(this, toEncapsulate.getClass(), toEncapsulateFor).create());
+            registerEncapsulator(toEncapsulate.getClass(),
+                new DefaultEncapsulatorCreator(this, toEncapsulate.getClass(), toEncapsulateFor).create());
         }
         return encapsulators.get(toEncapsulate.getClass());
     }

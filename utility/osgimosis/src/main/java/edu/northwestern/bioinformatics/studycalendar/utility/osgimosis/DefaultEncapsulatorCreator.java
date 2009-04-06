@@ -16,14 +16,14 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
-public class EncapsulatorCreator {
+public class DefaultEncapsulatorCreator {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Membrane membrane;
     private Class farClass;
     private ClassLoader nearClassLoader;
 
-    public EncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader) {
+    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader) {
         this.membrane = membrane;
         this.farClass = farClass;
         this.nearClassLoader = nearClassLoader;
@@ -34,7 +34,7 @@ public class EncapsulatorCreator {
             return new CollectionEncapsulator(membrane);
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
-            Encapsulator componentEncapsulator = new EncapsulatorCreator(
+            Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(
                 membrane, farClass.getComponentType(), nearClassLoader).create();
             if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
                 return new ArrayEncapsulator((ArrayCapableEncapsulator) componentEncapsulator);
