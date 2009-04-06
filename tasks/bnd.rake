@@ -69,15 +69,16 @@ module Bnd
   private
   
   class BndProperties
-    attr_writer :classpath, :symbolic_name, :version
-    
     BND_TO_ATTR = {
       '-classpath' => :classpath,
       'Bundle-Version' => :version,
       'Bundle-SymbolicName' => :symbolic_name,
+      'Bundle-Description' => :description,
       'Import-Package' => :import_packages_serialized,
       'Export-Package' => :export_packages_serialized
     }
+    
+    attr_writer(*BND_TO_ATTR.values)
     
     def initialize(project)
       @project = project
@@ -106,6 +107,10 @@ module Bnd
     
     def symbolic_name
       @symbolic_name || [project.group, project.id].join('.')
+    end
+    
+    def description
+      @description || project.full_comment
     end
     
     # These are deliberately memoized to since the default values
