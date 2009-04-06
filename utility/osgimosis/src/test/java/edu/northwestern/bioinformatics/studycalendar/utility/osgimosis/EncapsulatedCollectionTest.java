@@ -26,8 +26,7 @@ public class EncapsulatedCollectionTest extends OsgimosisTestCase {
             farPerson("Polo"),
             farPerson("Alexander")
         ));
-        membrane = Membrane.get(
-            Thread.currentThread().getContextClassLoader(),
+        membrane = new Membrane(Thread.currentThread().getContextClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
         encapsulated = new EncapsulatedCollection<Person>(farCollection, membrane);
         nearPolo = new DefaultPerson("Polo", "traveler");

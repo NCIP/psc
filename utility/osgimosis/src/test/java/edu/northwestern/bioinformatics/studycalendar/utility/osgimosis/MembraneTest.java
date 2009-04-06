@@ -22,8 +22,7 @@ public class MembraneTest extends OsgimosisTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        membrane = Membrane.get(
-            Thread.currentThread().getContextClassLoader(),
+        membrane = new Membrane(Thread.currentThread().getContextClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
     }
 

@@ -22,14 +22,9 @@ public class HostBeansInitializer implements ApplicationContextAware, Initializi
     public void afterPropertiesSet() throws Exception {
         ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
         if (ref != null) {
-            Membrane membrane = Membrane.get(
-                Thread.currentThread().getContextClassLoader(),
-                "org.springframework.context",
-                "org.acegisecurity.userdetails",
-                "org.acegisecurity",
-                "javax.sql",
-                "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices"
-            );
+            Membrane membrane = new Membrane(Thread.currentThread().getContextClassLoader(), 
+                "org.springframework.context", "org.acegisecurity.userdetails", "org.acegisecurity",
+                "javax.sql", "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices");
             HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
             beans.setHostApplicationContext(applicationContext);
         }

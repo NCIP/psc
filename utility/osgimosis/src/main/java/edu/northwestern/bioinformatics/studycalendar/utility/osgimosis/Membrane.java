@@ -30,16 +30,12 @@ public class Membrane {
     private ClassLoader nearClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
-    protected Membrane(ClassLoader nearClassLoader, String... packages) {
+    public Membrane(ClassLoader nearClassLoader, String... packages) {
         this.nearClassLoader = nearClassLoader;
         this.sharedPackages = Arrays.asList(packages);
         this.encapsulators = new IdentityHashMap<Class, Encapsulator>();
         this.cache = new Cache();
         this.proxyConstructorParams = new HashMap<String, Object[]>();
-    }
-
-    public static Membrane get(ClassLoader nearClassLoader, String... packages) {
-        return new Membrane(nearClassLoader, packages);
     }
 
     @SuppressWarnings({ "unchecked" })
