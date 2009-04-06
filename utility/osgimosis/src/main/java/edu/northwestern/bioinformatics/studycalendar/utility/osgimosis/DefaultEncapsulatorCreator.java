@@ -23,12 +23,14 @@ public class DefaultEncapsulatorCreator {
     private Membrane membrane;
     private Class farClass;
     private ClassLoader nearClassLoader;
+    private ClassLoader farClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
-    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader, Map<String, Object[]> proxyConstructorParams) {
+    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader, ClassLoader farClassLoader, Map<String, Object[]> proxyConstructorParams) {
         this.membrane = membrane;
         this.farClass = farClass;
         this.nearClassLoader = nearClassLoader;
+        this.farClassLoader = farClassLoader;
         this.proxyConstructorParams = proxyConstructorParams;
     }
 
@@ -38,7 +40,7 @@ public class DefaultEncapsulatorCreator {
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
             Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(
-                membrane, farClass.getComponentType(), nearClassLoader, proxyConstructorParams).create();
+                membrane, farClass.getComponentType(), nearClassLoader, farClassLoader, proxyConstructorParams).create();
             if (componentEncapsulator == null) {
                 return null;
             } else if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
@@ -56,7 +58,8 @@ public class DefaultEncapsulatorCreator {
                 return new ProxyEncapsulator(
                     membrane, nearClassLoader,
                     base, base == null ? null : proxyConstructorParams.get(base.getName()),
-                    interfaces
+                    interfaces,
+                    farClassLoader
                 );
             }
         }
@@ -69,8 +72,8 @@ public class DefaultEncapsulatorCreator {
             return nearClassLoader.loadClass(sourceClass.getName());
         } catch (ClassNotFoundException ex) {
             throw new MembraneException(ex,
-                "Was not able to find a matching class '%s' in the target class loader",
-                sourceClass.getName());
+                "Was not able to find a matching class '%s' in the target class loader %s",
+                sourceClass.getName(), nearClassLoader);
         }
     }
 

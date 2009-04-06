@@ -86,8 +86,12 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
     }
 
     private ClassLoader selectFarClassLoader(Class<?> parameterType) {
-        return parameterType.getClassLoader() == null
-            ? far.getClass().getClassLoader()
-            : parameterType.getClassLoader();
+        if (getEncapsulator().getFarClassLoader() != null) {
+            return getEncapsulator().getFarClassLoader();
+        } else if (parameterType.getClassLoader() != null) {
+            return parameterType.getClassLoader();
+        } else {
+            return far.getClass().getClassLoader();
+        }
     }
 }

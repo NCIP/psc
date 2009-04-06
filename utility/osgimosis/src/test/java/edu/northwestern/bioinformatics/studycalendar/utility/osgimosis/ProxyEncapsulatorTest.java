@@ -34,7 +34,7 @@ public class ProxyEncapsulatorTest extends OsgimosisTestCase {
 
     public void testProxyWithSuperclassIsCglibProxy() throws Exception {
         Encapsulator params = new ProxyEncapsulator(
-            aMembrane, loaderB, defaultPersonB, null, Arrays.asList(personB));
+            aMembrane, loaderB, defaultPersonB, null, Arrays.asList(personB), null);
         Object actual = params.encapsulate(aInstance);
         assertTrue("Class should contain Enhancer in name: " + actual.getClass().getName(),
             actual.getClass().getName().contains("Enhancer"));
@@ -44,7 +44,7 @@ public class ProxyEncapsulatorTest extends OsgimosisTestCase {
 
     public void testComponentTypeWithBaseClassIsBaseClass() throws Exception {
         assertEquals(defaultPersonB,
-            new ProxyEncapsulator(aMembrane, loaderB, defaultPersonB, null, Arrays.asList(personB)).componentType());
+            new ProxyEncapsulator(aMembrane, loaderB, defaultPersonB, null, Arrays.asList(personB), null).componentType());
     }
     
     public void testComponentTypeWithInterfacesIsFirstInterface() throws Exception {

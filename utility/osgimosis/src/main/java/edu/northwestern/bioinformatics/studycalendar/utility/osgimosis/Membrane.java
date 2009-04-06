@@ -52,6 +52,26 @@ public class Membrane {
 
     @SuppressWarnings({ "unchecked" })
     public Object traverse(Object object, ClassLoader newCounterpartClassLoader) {
+        return this.traverse(object, newCounterpartClassLoader,
+            // Pass along the near-side ClassLoader to use when proxying parameters & return values.
+            newCounterpartClassLoader == nearClassLoader ? null : nearClassLoader);
+    }
+
+    /**
+     * Traverse the membrane with the designated object.  If the object has previously traversed
+     * the membrane, the previously created encapsulated version will be returned.  If it has not,
+     * a new encapsulated version will be created using the two parameter class loaders.
+     *
+     * @param object
+     * @param newCounterpartClassLoader If necessary, specifies the class loader where the
+     *  encapsulated version of <code>object</code> will be created.
+     * @param newCounterpartReverseClassLoader If necessary, specifies the class loader
+     *  that will be used to encapsulate any parameters/return values of the encapsulated
+     *  object.  If null, this will be guessed.
+     * @return
+     */
+    @SuppressWarnings({ "unchecked" })
+    public Object traverse(Object object, ClassLoader newCounterpartClassLoader, ClassLoader newCounterpartReverseClassLoader) {
         pushMDC();
         try {
             log.debug("Traversing {} with {}", this, object);
@@ -61,6 +81,7 @@ public class Membrane {
             }
             log.trace(" - Identity: {}@{}", object.getClass().getName(),
                 Integer.toHexString(System.identityHashCode(object)));
+            log.trace(" - From {}", object.getClass().getClassLoader());
 
             if (newCounterpartClassLoader == null) {
                 log.debug(" - Not bridging object into bootstrap classloader");
@@ -69,13 +90,23 @@ public class Membrane {
 
             log.trace(" - Into {}", newCounterpartClassLoader);
             if (cache.get(object) == null) {
-                Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader);
-                if (encapsulator == null) {
-                    log.debug(" - Not encapsulatable; returning original object");
-                    return object;
-                } else {
-                    log.debug(" - Building new proxy");
-                    cache.put(encapsulator.encapsulate(object), object);
+                try {
+                    Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader, newCounterpartReverseClassLoader);
+                    if (encapsulator == null) {
+                        log.debug(" - Not encapsulatable; returning original object");
+                        return object;
+                    } else {
+                        log.debug(" - Building new proxy");
+                        cache.put(encapsulator.encapsulate(object), object);
+                    }
+                } catch (MembraneException e) {
+                    log.error(
+                        String.format("Encapsulating %s (%s@%s) for %s failed", 
+                            object, object.getClass().getName(),
+                            Integer.toHexString(System.identityHashCode(object)),
+                            newCounterpartClassLoader),
+                        e);
+                    throw e;
                 }
             } else {
                 log.debug(" - Reusing cached value");
@@ -110,10 +141,12 @@ public class Membrane {
         proxyConstructorParams.put(className, parameters);
     }
 
-    private Encapsulator getEncapsulator(Object toEncapsulate, ClassLoader toEncapsulateFor) {
+    private Encapsulator getEncapsulator(Object toEncapsulate, ClassLoader toEncapsulateFor, ClassLoader toEncapsulateBackTo) {
         if (!encapsulators.containsKey(toEncapsulate.getClass())) {
+            log.trace(" - Creating new Encapsulator",
+                toEncapsulate.getClass().getName(), toEncapsulateFor);
             encapsulators.put(toEncapsulate.getClass(), new DefaultEncapsulatorCreator(
-                this, toEncapsulate.getClass(), toEncapsulateFor, proxyConstructorParams).create());
+                this, toEncapsulate.getClass(), toEncapsulateFor, toEncapsulateBackTo, proxyConstructorParams).create());
         }
         return encapsulators.get(toEncapsulate.getClass());
     }
@@ -121,10 +154,12 @@ public class Membrane {
     ////// CONFIGURATION
 
     public void setNearClassLoader(ClassLoader nearClassLoader) {
+        log.debug("nearClassLoader={}", nearClassLoader);
         this.nearClassLoader = nearClassLoader;
     }
 
     public void setSharedPackages(Collection<String> sharedPackages) {
+        log.trace("sharedPackages={}", nearClassLoader);
         this.sharedPackages = sharedPackages;
     }
 

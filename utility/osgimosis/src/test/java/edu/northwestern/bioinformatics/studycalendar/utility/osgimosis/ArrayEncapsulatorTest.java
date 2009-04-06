@@ -45,7 +45,7 @@ public class ArrayEncapsulatorTest extends OsgimosisTestCase {
         Object personBs = createPeopleArray(defaultPersonB);
 
         Encapsulator enc = new ArrayEncapsulator(
-            new ProxyEncapsulator(aMembrane, loaderA, defaultPersonA, null, Arrays.asList(personA)));
+            new ProxyEncapsulator(aMembrane, loaderA, defaultPersonA, null, Arrays.asList(personA), null));
         Object personAs = enc.encapsulate(personBs);
         assertTrue("Encapsulated result is not array", personAs.getClass().isArray());
         assertEquals("Encapsulated result is not array of base class",

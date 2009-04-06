@@ -31,6 +31,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     private Class<?> nearSuperclass;
     private Class<?>[] nearInterfaces;
     private Object[] constructorParams;
+    private ClassLoader farClassLoader;
 
     // Map from near (proxy) methods to far (concrete) methods
     private Map<Method, Method> farMethodCache;
@@ -38,11 +39,13 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     public ProxyEncapsulator(
         Membrane membrane, ClassLoader nearClassLoader, List<Class> nearInterfaces
     ) {
-        this(membrane, nearClassLoader, null, null, nearInterfaces);
+        this(membrane, nearClassLoader, null, null, nearInterfaces, null);
     }
 
     public ProxyEncapsulator(
-        Membrane membrane, ClassLoader nearClassLoader, Class nearSuperclass, Object[] constructorParams, List<Class> nearInterfaces
+        Membrane membrane, ClassLoader nearClassLoader,
+        Class nearSuperclass, Object[] constructorParams, List<Class> nearInterfaces,
+        ClassLoader farClassLoader
     ) {
         if (nearInterfaces.size() == 0 && nearSuperclass == null) {
             throw new IllegalArgumentException(
@@ -53,6 +56,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
         this.nearInterfaces = nearInterfaces.toArray(new Class[nearInterfaces.size()]);
         this.nearSuperclass = nearSuperclass;
         this.constructorParams = constructorParams;
+        this.farClassLoader = farClassLoader;
 
         this.farMethodCache = new HashMap<Method, Method>();
     }
@@ -137,5 +141,9 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
 
     public Membrane getMembrane() {
         return membrane;
+    }
+
+    public ClassLoader getFarClassLoader() {
+        return farClassLoader;
     }
 }
