@@ -361,9 +361,6 @@ define "psc" do
         "bundles/application-bundles" => application_bundles,
         "bundles/application-libraries" => application_libraries
       )
-      (application_bundles + application_libraries).each do |art|
-        art.invoke
-      end
     end
     
     task :build_test_da_launcher => ["psc:osgi-layer:da_launcher_artifacts"] do |task|
