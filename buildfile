@@ -393,7 +393,6 @@ define "psc" do
   define "web" do
     compile.with LOGBACK, 
       project('core').and_dependencies,
-      # %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
       project('psc:authentication:plugin-api').and_dependencies,
       project('psc:authentication:socket').and_dependencies,
       SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
@@ -407,7 +406,7 @@ define "psc" do
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
       war.enhance ["psc:osgi-layer:da_launcher_artifacts"] do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
-          war.path("WEB-INF/da-launcher").path(path).include(artifacts)
+          war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
       end
     end
@@ -509,7 +508,7 @@ define "psc" do
       test.options[:properties]['psc.config.datasource'] = db_name
     end
     
-    compile.with(project('web'), project('web').compile.dependencies)
+    compile.with(project('web').and_dependencies)
     test.using(:integration, :rspec).
       with(
         project('test-infrastructure'), 
