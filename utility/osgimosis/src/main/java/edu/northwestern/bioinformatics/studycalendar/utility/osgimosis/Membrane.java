@@ -6,10 +6,9 @@ import org.slf4j.MDC;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * A membrane represents the boundary between the sets of classes loaded by
@@ -23,23 +22,30 @@ public class Membrane {
     private static final String DEPTH_MDC_KEY = "depth";
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<String> sharedPackages;
+    private Collection<String> sharedPackages;
     private Map<Class, Encapsulator> encapsulators;
 
     private Cache cache;
     private ClassLoader nearClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
-    public Membrane(ClassLoader nearClassLoader, String... packages) {
-        this.nearClassLoader = nearClassLoader;
-        this.sharedPackages = Arrays.asList(packages);
+    public Membrane() {
         this.encapsulators = new IdentityHashMap<Class, Encapsulator>();
         this.cache = new Cache();
         this.proxyConstructorParams = new HashMap<String, Object[]>();
     }
 
+    public Membrane(ClassLoader nearClassLoader, String... packages) {
+        this();
+        this.nearClassLoader = nearClassLoader;
+        this.sharedPackages = Arrays.asList(packages);
+    }
+
     @SuppressWarnings({ "unchecked" })
     public Object farToNear(Object farObject) {
+        if (nearClassLoader == null) {
+            throw new IllegalStateException("nearClassLoader must be set before calling farToNear");
+        }
         return traverse(farObject, nearClassLoader);
     }
 
@@ -111,9 +117,21 @@ public class Membrane {
         return encapsulators.get(toEncapsulate.getClass());
     }
 
+    ////// CONFIGURATION
+
+    public void setNearClassLoader(ClassLoader nearClassLoader) {
+        this.nearClassLoader = nearClassLoader;
+    }
+
+    public void setSharedPackages(Collection<String> sharedPackages) {
+        this.sharedPackages = sharedPackages;
+    }
+
     public Collection<String> getSharedPackages() {
         return sharedPackages;
     }
+
+    ////// OBJECT METHODS
 
     @Override
     public String toString() {
