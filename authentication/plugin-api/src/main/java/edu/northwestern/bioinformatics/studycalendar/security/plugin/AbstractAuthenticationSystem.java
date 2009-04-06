@@ -41,7 +41,18 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         return getClass().getSimpleName().replaceAll("AuthenticationSystem", "");
     }
 
-    public final void initialize(
+    /**
+     * Initializes this authentication system using the values provided by the template methods.
+     * <p>
+     * When using this base class, you should generally <em>not</em> override this method, but
+     * rather the individual template methods.
+     *
+     * @param parent the system application context
+     * @param config
+     * @throws AuthenticationSystemInitializationFailure
+     * @throws StudyCalendarValidationException
+     */
+    public void initialize(
         ApplicationContext parent, Configuration config
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         try {
