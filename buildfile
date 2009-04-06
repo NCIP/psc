@@ -433,7 +433,7 @@ define "psc" do
         project('test-infrastructure').test.compile.dependencies
       ).using(
         :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '1.1.3' },
-        :requires => %w(spec http static_data).collect { |help| _("src/spec/ruby/#{help}_helper.rb") }, # + [_('src/spec/ruby/buildr-252-patches.rb')],
+        :requires => %w(spec http static_data).collect { |help| _("src/spec/ruby/#{help}_helper.rb") },
         :properties => { 
           'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
         }
