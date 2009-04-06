@@ -67,9 +67,6 @@ public class OsgiBundleStateResource extends OsgiAdminResource {
     @Override
     public void storeRepresentation(Representation representation) throws ResourceException {
         if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
-            if (!isAvailable()) {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-            }
             try {
                 JSONObject entity = new JSONObject(representation.getText());
                 updateBundleState((String) entity.get("state"));
