@@ -1,22 +1,33 @@
 package org.dynamicjava.api_bridge;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.CallbackFilter;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.NoOp;
+import org.dynamicjava.api_bridge.exceptions.ApiBridgeException;
+import org.dynamicjava.api_bridge.exceptions.UntranslatableClassException;
+import org.dynamicjava.api_bridge.utilities.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.cglib.Enhancer;
-import net.sf.cglib.MethodInterceptor;
-import net.sf.cglib.MethodProxy;
-
-import org.dynamicjava.api_bridge.exceptions.ApiBridgeException;
-import org.dynamicjava.api_bridge.exceptions.UntranslatableClassException;
-import org.dynamicjava.api_bridge.utilities.ClassUtils;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ApiBridge {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	public Object bridge(Object apiObject) {
 		return bridge(apiObject, false);
@@ -24,9 +35,11 @@ public class ApiBridge {
 	
 	public Object bridge(Object apiObject, boolean returnSameObjectIfUnbridgable) {
 		if (apiObject == null) {
+            log.debug("Cannot bridge null value");
 			return null;
 		}
-		
+        log.debug("Bridging {} ({}@{})", new Object[] { apiObject, apiObject.getClass().getName(), Integer.toHexString(System.identityHashCode(apiObject)) });
+
 		if (apiObject.getClass().isArray()) {
 			if (isOfApiPackages(apiObject.getClass().getComponentType())) {
 				int arrayLength = Array.getLength(apiObject);
@@ -37,12 +50,8 @@ public class ApiBridge {
 				}
 				return matchingArray;
 			} else {
-				if (returnSameObjectIfUnbridgable) {
-					return apiObject;
-				} else {
-					throw new UntranslatableClassException(apiObject.getClass());
-				}
-			}
+                return handleUnbridgableObject(apiObject, returnSameObjectIfUnbridgable);
+            }
 		}
 		
 		Class<?> superClassMatch = findSuperClassMatch(apiObject.getClass());
@@ -53,17 +62,23 @@ public class ApiBridge {
 			if (interfacesMatch.size() > 0) {
 				return createProxyForInterfaces(apiObject, interfacesMatch.toArray(new Class<?>[0]));
 			} else {
-				if (returnSameObjectIfUnbridgable) {
-					return apiObject;
-				} else {
-					throw new UntranslatableClassException(apiObject.getClass());
-				}
-			}
+                return handleUnbridgableObject(apiObject, returnSameObjectIfUnbridgable);
+            }
 		}
 	}
-	
-	
-	protected Object createProxyForSuperClass(Object apiObject, Class<?> superClassMatch) {
+
+    private Object handleUnbridgableObject(Object apiObject, boolean returnSameObjectIfUnbridgable) {
+        if (apiObject instanceof Collection) {
+            return new DelegatorCollection((Collection) apiObject, this);
+        } else if (returnSameObjectIfUnbridgable) {
+            log.debug("Cannot bridge; returning original object");
+            return apiObject;
+        } else {
+            throw new UntranslatableClassException(apiObject.getClass());
+        }
+    }
+
+    protected Object createProxyForSuperClass(Object apiObject, Class<?> superClassMatch) {
 		final Delegator delegator = new Delegator(apiObject, this);
 		MethodInterceptor invocationHandler = new MethodInterceptor() {
 			//@Override
@@ -72,12 +87,40 @@ public class ApiBridge {
             }
         };
 
-        return Enhancer.enhance(superClassMatch,
-        		findIntefacesMatch(apiObject.getClass()).toArray(new Class<?>[0]),
-        		invocationHandler,
-        		getTargetApiClassLoader());
+        Set<Class<?>> interfaces = findIntefacesMatch(apiObject.getClass());
+
+        log.debug("Creating proxy for superclass {} of {}", superClassMatch, apiObject);
+        log.debug("Interfaces are {}", interfaces);
+
+        Enhancer enh = new Enhancer();
+        enh.setSuperclass(superClassMatch);
+        enh.setInterfaces(interfaces.toArray(new Class<?>[interfaces.size()]));
+        enh.setCallbacks(new Callback[] { invocationHandler, NoOp.INSTANCE });
+        enh.setCallbackFilter(new CallbackFilter() {
+            // delegate only public methods
+            public int accept(Method method) { return Modifier.isPublic(method.getModifiers()) ? 0 : 1; }
+        });
+        enh.setClassLoader(getTargetApiClassLoader());
+
+        Class<?>[] minConstructorParams = findMinConstructorParams(superClassMatch);
+        log.debug("Will attempt to proxy using the superclass constructor with params {}",
+            Arrays.asList(minConstructorParams));
+
+        return enh.create(minConstructorParams, new Object[minConstructorParams.length]);
 	}
-	
+
+    private Class<?>[] findMinConstructorParams(Class<?> klass) {
+        SortedSet<Class<?>[]> constructorParams = new TreeSet<Class<?>[]>(new Comparator<Class<?>[]>() {
+            public int compare(Class<?>[] o1, Class<?>[] o2) {
+                return o1.length - o2.length;
+            }
+        });
+        for (Constructor<?> constructor : klass.getDeclaredConstructors()) {
+            constructorParams.add(constructor.getParameterTypes());
+        }
+        return constructorParams.size() == 0 ? new Class[0] : constructorParams.first();
+    }
+
 	protected Object createProxyForInterfaces(Object apiObject, Class<?>[] interfacesMatch) {
 		return java.lang.reflect.Proxy.newProxyInstance(
 				getTargetApiClassLoader(),
@@ -105,7 +148,6 @@ public class ApiBridge {
 			return getCache().getSuperClassMap().get(clazz);
 		} else {
 			Class<?> superClassMatch = null;
-			clazz = clazz.getSuperclass();
 			while (clazz != null) {
 				if (isOfApiPackages(clazz)) {
 					superClassMatch = findClassMatch(clazz);
@@ -170,6 +212,13 @@ public class ApiBridge {
 		}
 		return apiBridge;
 	}
+
+    public ApiBridge getReverseApiBridge(ClassLoader sourceApiClassLoader) {
+        return ApiBridge.getApiBridge(
+                ApiBridgeClassLoader.getClassLoader(getTargetApiClassLoader(),
+                        sourceApiClassLoader, getApiPackageNamesArray()),
+                        getApiPackageNamesArray());
+    }
 	
 	private static Map<String, ApiBridge> apiBridges = new HashMap<String, ApiBridge>();
 	private static Map<String, ApiBridge> getApiBridges() {

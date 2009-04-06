@@ -30,8 +30,10 @@ public class ApiBridgeClassLoader extends ClassLoader {
 			ClassLoader child, String[] exceptionalPackages) {
 		StringBuffer result = new StringBuffer();
 		result.append(parent.hashCode());
-		result.append(':');
-		result.append(child.hashCode());
+        if (child != null) {
+            result.append(':');
+            result.append(child.hashCode());
+        }
 		result.append('-');
 		for (String packageName : exceptionalPackages) {
 			result.append(packageName.hashCode());
