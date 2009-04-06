@@ -51,6 +51,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
             </list>
         </constructor-arg>
+        <property name="filterProcessesUrl" value="/auth/logout"/>
     </bean>
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
