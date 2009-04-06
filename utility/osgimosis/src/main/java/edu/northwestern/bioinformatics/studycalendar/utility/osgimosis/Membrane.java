@@ -74,7 +74,7 @@ public class Membrane {
     public Object traverse(Object object, ClassLoader newCounterpartClassLoader, ClassLoader newCounterpartReverseClassLoader) {
         pushMDC();
         try {
-            log.debug("Traversing {} with {}", this, object);
+            log.trace("Traversing {} with {}", this, object);
             if (object == null) {
                 log.trace(" - Null is null no matter where you're from");
                 return null;
@@ -84,7 +84,7 @@ public class Membrane {
             log.trace(" - From {}", object.getClass().getClassLoader());
 
             if (newCounterpartClassLoader == null) {
-                log.debug(" - Not bridging object into bootstrap classloader");
+                log.trace(" - Not bridging object into bootstrap classloader");
                 return object;
             }
 
@@ -93,10 +93,10 @@ public class Membrane {
                 try {
                     Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader, newCounterpartReverseClassLoader);
                     if (encapsulator == null) {
-                        log.debug(" - Not encapsulatable; returning original object");
+                        log.trace(" - Not encapsulatable; returning original object");
                         return object;
                     } else {
-                        log.debug(" - Building new proxy");
+                        log.trace(" - Building new proxy");
                         cache.put(encapsulator.encapsulate(object), object);
                     }
                 } catch (MembraneException e) {
@@ -109,7 +109,7 @@ public class Membrane {
                     throw e;
                 }
             } else {
-                log.debug(" - Reusing cached value");
+                log.trace(" - Reusing cached value");
             }
             Object result = cache.get(object);
             log.trace(" - Complete with {}@{}", result.getClass().getName(),
