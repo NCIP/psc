@@ -1,3 +1,7 @@
+# Provides tasks to use bnd with buildr.  Of particular interest is 
+# bnd:wrap, which implements automatic bundling of buildr-packaged jars
+# if enabled for a project.
+
 module Bnd
   class << self
     def bnd_main(*args)
