@@ -12,16 +12,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
+import edu.northwestern.bioinformatics.studycalendar.service.delta.DeltaIterator;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -33,9 +27,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Provides methods for calculating deltas and for applying them to PlannedCalendars.
@@ -109,7 +101,9 @@ public class DeltaService {
      */
     public void apply(Study target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
-        for (Delta<?> delta : revision.getDeltas()) {
+        DeltaIterator di = new DeltaIterator(revision.getDeltas(), target, templateService);
+        while (di.hasNext()){
+            Delta<?> delta = di.next();
             Changeable affected = findNodeForDelta(target, delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
@@ -135,7 +129,9 @@ public class DeltaService {
 
     private void apply(ScheduledCalendar target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
-        for (Delta<?> delta : revision.getDeltas()) {
+        DeltaIterator di = new DeltaIterator(revision.getDeltas(),  target.getAssignment().getStudySite().getStudy(), templateService);
+        while (di.hasNext()){
+            Delta<?> delta = di.next();
             Changeable affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
