@@ -72,9 +72,9 @@ public class DefaultEncapsulatorCreator {
         try {
             return nearClassLoader.loadClass(sourceClass.getName());
         } catch (ClassNotFoundException ex) {
-            throw new MembraneException(ex,
-                "Was not able to find a matching class '%s' in the target class loader %s",
+            log.debug("Was not able to find a class matching {} in the target class loader {}",
                 sourceClass.getName(), nearClassLoader);
+            return null;
         }
     }
 
@@ -117,7 +117,8 @@ public class DefaultEncapsulatorCreator {
         log.trace("All interfaces are {}", Arrays.asList(allInterfaces));
         for (Class<?> interfac : allInterfaces) {
             if (isInSharedPackage(interfac) && isAvailableInTargetClassLoader(interfac)) {
-                result.add(targetClass(interfac));
+                Class target = targetClass(interfac);
+                if (target != null) result.add(target);
             }
         }
         log.trace("Selected interfaces are {}", result);
