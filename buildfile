@@ -265,13 +265,11 @@ define "psc" do
     )
     
     compile.with project('domain').and_dependencies,
-      project('authentication:plugin-api').and_dependencies,
-      project('authentication:local-plugin').and_dependencies, # since it's the default
       project('providers:mock').and_dependencies,
       project('database').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
       QUARTZ, SECURITY,
-      SPRING_WEB # tmp for mail
+      CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
       project('authentication:plugin-api').test_dependencies,
@@ -288,14 +286,23 @@ define "psc" do
     end
   end # core
   
+  desc "Fork of dynamicjava.org's api-bridge to work with CGLIB 2.1.3"
+  define "api-bridge" do
+    project.version = "1.0.1.PSC-00"
+    compile.with SLF4J, CGLIB
+    package(:jar)
+  end
+  
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
     compile.with LOGBACK, 
       project('core').and_dependencies,
-      %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
-      SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
+      # %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
+      project('psc:authentication:plugin-api').and_dependencies,
+      SPRING_WEB, RESTLET, WEB, CAGRID, project('api-bridge'), DYNAMIC_JAVA
 
     test.with project('test-infrastructure'), 
+      project('authentication:local-plugin'),
       project('test-infrastructure').compile.dependencies,
       project('test-infrastructure').test.compile.dependencies
 

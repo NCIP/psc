@@ -6,8 +6,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import java.util.Arrays;
@@ -17,8 +15,6 @@ import java.util.Collection;
  * @author Rhett Sutphin
  */
 public class TestableAuthenticationSystem extends AbstractAuthenticationSystem {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     private static final DefaultConfigurationProperties PROPERTIES
         = new DefaultConfigurationProperties(new ClassPathResource(
             "testable-details.properties", TestableAuthenticationSystem.class));

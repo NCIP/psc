@@ -13,6 +13,7 @@ import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
+import org.dynamicjava.api_bridge.ApiBridge;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -73,10 +74,10 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         systemReady = false;
 
         newSystemReference = retrieveAuthenticationSystemReference();
-        newSystem = (AuthenticationSystem) getBundleContext().getService(newSystemReference);
-        log.debug("Successfully instantiated retrieved plugin instance {} of class {}",
+        newSystem = acquireAuthenticationSystem();
+        log.debug("Successfully retrieved plugin instance {} of class {}",
             newSystem, newSystem.getClass().getName());
-        log.debug("Newly instantiated authentication system has these configuration properties: {}",
+        log.debug("Retrieved authentication system has these configuration properties: {}",
             newSystem.configurationProperties().getAll());
         currentProperties = DefaultConfigurationProperties.union(
             UNIVERSAL_PROPERTIES, newSystem.configurationProperties());
@@ -139,6 +140,27 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
             }
         }
         return null;
+    }
+
+    private AuthenticationSystem acquireAuthenticationSystem() {
+        log.info("Thread classloader: {} parent: {}", Thread.currentThread().getContextClassLoader(),
+            Thread.currentThread().getContextClassLoader().getParent());
+        log.info("Bundle classloader: {} parent: {}", getBundleContext().getClass().getClassLoader(),
+            getBundleContext().getClass().getClassLoader().getParent());
+        ApiBridge bridge = ApiBridge.getApiBridge(
+            Thread.currentThread().getContextClassLoader(),
+            "edu.northwestern.bioinformatics.studycalendar",
+            "edu.northwestern.bioinformatics.studycalendar.security.plugin",
+            "org.acegisecurity",
+            "org.acegisecurity.userdetails",
+            "gov.nih.nci.cabig.ctms.tools.configuration",
+            "javax.servlet",
+            "javax.servlet.http"
+        );
+        Object rawSystem = getBundleContext().getService(newSystemReference);
+        log.info("System instance classloader: {} parent: {}", rawSystem.getClass().getClassLoader(),
+            rawSystem.getClass().getClassLoader().getParent());
+        return (AuthenticationSystem) bridge.bridge(rawSystem);
     }
 
     public void configurationUpdated(ConfigurationEvent update) {

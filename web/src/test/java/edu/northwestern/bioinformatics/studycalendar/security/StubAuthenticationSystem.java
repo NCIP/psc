@@ -27,42 +27,44 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
     public static final ConfigurationProperty<String> EXPECTED_INITIALIZATION_ERROR_MESSAGE
         = new DefaultConfigurationProperty.Text("expectedError");
 
-    private Configuration initialConfiguration;
-    private DataSource initialDataSource;
-    private UserDetailsService initialUserDetailsService;
+    private static Configuration lastConfiguration;
+    private static DataSource lastDataSource;
+    private static UserDetailsService lastUserDetailsService;
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
     }
 
     public String name() {
-        throw new UnsupportedOperationException("name not implemented");
+        return "stub";
     }
 
     public String behaviorDescription() {
         throw new UnsupportedOperationException("behaviorDescription not implemented");
     }
 
-    public void initialize(Configuration configuration, UserDetailsService userDetailsService, DataSource dataSource) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
+    public void initialize(
+        Configuration configuration, UserDetailsService userDetailsService, DataSource dataSource
+    ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         if (configuration.isSet(EXPECTED_INITIALIZATION_ERROR_MESSAGE)) {
             throw new StudyCalendarValidationException(configuration.get(EXPECTED_INITIALIZATION_ERROR_MESSAGE));
         } else {
-            initialConfiguration = configuration;
-            initialUserDetailsService = userDetailsService;
-            initialDataSource = dataSource;
+            lastConfiguration = configuration;
+            lastUserDetailsService = userDetailsService;
+            lastDataSource = dataSource;
         }
     }
 
-    public Configuration getInitialConfiguration() {
-        return initialConfiguration;
+    public static Configuration getLastConfiguration() {
+        return lastConfiguration;
     }
 
-    public DataSource getInitialDataSource() {
-        return initialDataSource;
+    public static DataSource getLastDataSource() {
+        return lastDataSource;
     }
 
-    public UserDetailsService getInitialUserDetailsService() {
-        return initialUserDetailsService;
+    public static UserDetailsService getLastUserDetailsService() {
+        return lastUserDetailsService;
     }
     
     //////
