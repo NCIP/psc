@@ -9,10 +9,10 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplate
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -109,15 +109,8 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request");
             } else {
                 String target = acceptValue(value);
-                // TODO: the URL construction here seems bogus -- see if there's another way
-                /*
-                getResponse().redirectSeeOther(
-                        new Reference(
-                                new Reference(getRequest().getRootRef().toString() + '/'), target));
-                 */
                 getResponse().setStatus(Status.SUCCESS_CREATED);
-                getResponse().setLocationRef(new Reference(
-                    new Reference(getRequest().getRootRef().toString() + '/'), target));
+                getResponse().setLocationRef(new Reference(getRequest().getRootRef() + "/" + target));
             }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
