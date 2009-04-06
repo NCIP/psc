@@ -111,16 +111,6 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
         }
     }
     
-    public void testIsCustomWhenCustom() throws Exception {
-        selectAuthenticationSystem("java.lang.String");
-        assertTrue(configuration.isCustomAuthenticationSystem());
-    }
-
-    public void testIsCustomWhenNotCustom() throws Exception {
-        selectAuthenticationSystem("CAS");
-        assertFalse(configuration.isCustomAuthenticationSystem());
-    }
-
     private void setMinimumTestSystemParameters() {
         configuration.set(TestableAuthenticationSystem.SERVICE_URL, "not-null");
         configuration.set(TestableAuthenticationSystem.APPLICATION_URL, "not-null");

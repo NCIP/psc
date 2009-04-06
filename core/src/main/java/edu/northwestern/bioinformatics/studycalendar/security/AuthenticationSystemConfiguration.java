@@ -49,9 +49,9 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         return currentSystem;
     }
 
+    @Deprecated
     public boolean isCustomAuthenticationSystem() {
-        String systemName = get(AUTHENTICATION_SYSTEM);
-        return (KnownAuthenticationSystem.safeValueOf(systemName) == null);
+        return false;
     }
 
     private synchronized void signalRebuildNeeded() {
