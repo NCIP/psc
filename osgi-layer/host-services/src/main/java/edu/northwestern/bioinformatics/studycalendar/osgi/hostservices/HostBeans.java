@@ -1,10 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices;
 
-import org.springframework.context.ApplicationContext;
+import org.acegisecurity.userdetails.UserDetailsService;
+
+import javax.sql.DataSource;
 
 /**
  * @author Rhett Sutphin
  */
 public interface HostBeans {
-    void setHostApplicationContext(ApplicationContext hostContext);
+    void setDataSource(DataSource dataSource);
+    void setUserDetailsService(UserDetailsService userDetailsService);
 }

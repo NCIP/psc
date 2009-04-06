@@ -435,7 +435,8 @@ define "psc" do
       test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
-        project('core').test_dependencies,
+        project('web').and_dependencies,
+        project('web').test_dependencies,
         project('authentication:plugin-api').test_dependencies
       test.enhance([:build_test_da_launcher])
     end

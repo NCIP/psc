@@ -2,8 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UserDetails;
@@ -11,7 +9,6 @@ import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.osgi.mock.MockBundleContext;
 
 import javax.sql.DataSource;
@@ -28,7 +25,6 @@ public class HostBeansImplTest extends TestCase {
     private BundleContext bundleContext;
     private Map<String, Object> registeredServices;
     private HostBeansImpl impl;
-    private ApplicationContext applicationContext;
     private DataSource dataSource;
     private UserDetailsService pscUserDetailsService;
 
@@ -50,13 +46,6 @@ public class HostBeansImplTest extends TestCase {
         impl.registerServices(bundleContext);
         dataSource = mockRegistry.registerMockFor(DataSource.class);
         pscUserDetailsService = mockRegistry.registerMockFor(UserDetailsService.class);
-
-        applicationContext = ConcreteStaticApplicationContext.create(
-            new MapBuilder<String, Object>().
-                put("dataSource", dataSource).
-                put("pscUserDetailsService", pscUserDetailsService).
-                toMap()
-        );
     }
 
     public void testProxyServiceRegisteredForDataSource() throws Exception {
@@ -81,14 +70,14 @@ public class HostBeansImplTest extends TestCase {
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException expected) {
             assertEquals(
-                "Cannot invoke method on host bean dataSource because it is not available yet",
+                "Cannot invoke method on host bean javax.sql.DataSource because it is not available yet",
                 expected.getMessage());
         }
     }
 
     public void testDataSourceDelegatesToDataSourceBean() throws Exception {
         DataSource actual = (DataSource) registeredServices.get("javax.sql.DataSource");
-        impl.setHostApplicationContext(applicationContext);
+        impl.setDataSource(dataSource);
 
         expect(dataSource.getLoginTimeout()).andReturn(923);
         mockRegistry.replayMocks();
@@ -98,7 +87,7 @@ public class HostBeansImplTest extends TestCase {
 
     public void testUserDetailsServiceDelegatesToPscUserDetailsServiceBean() throws Exception {
         UserDetailsService actual = (UserDetailsService) registeredServices.get(UserDetailsService.class.getName());
-        impl.setHostApplicationContext(applicationContext);
+        impl.setUserDetailsService(pscUserDetailsService);
 
         UserDetails expectedUser = Fixtures.createUser("Joe");
         expect(pscUserDetailsService.loadUserByUsername("joe")).andReturn(expectedUser);

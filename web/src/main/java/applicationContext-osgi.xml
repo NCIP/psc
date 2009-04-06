@@ -13,6 +13,8 @@
     <bean id="hostBeansInitializer" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.HostBeansInitializer">
         <property name="bundleContext" ref="bundleContext"/>
         <property name="membrane" ref="membrane"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
     </bean>
 
     <bean id="membrane" class="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane">
@@ -28,7 +30,6 @@
                 <value>org.acegisecurity</value>
                 <value>org.acegisecurity.userdetails</value>
                 <value>org.osgi.service.cm</value>
-                <value>org.springframework.context</value>
 
                 <value>javax.sql</value>
                 <value>javax.servlet</value>

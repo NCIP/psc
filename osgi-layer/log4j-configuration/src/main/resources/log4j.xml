@@ -28,6 +28,14 @@
         </layout> 
     </appender>
 
+    <logger name="edu.northwestern.bioinformatics.studycalendar">
+        <level value="trace"/>
+    </logger>
+
+    <logger name="org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap">
+        <level value="info"/>
+    </logger>
+    
     <root>
         <priority value ="debug"/>
         <appender-ref ref="DEBUGFILE"/>
