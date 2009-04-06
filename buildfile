@@ -162,6 +162,7 @@ define "psc" do
   define "authentication" do
     desc "Interfaces and base classes for the pluggable authentication system"
     define "plugin-api" do
+      bnd.wrap!
       compile.with project('utility'), SLF4J, 
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
@@ -171,7 +172,8 @@ define "psc" do
     
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
-      compile.with project('plugin-api').and_dependencies, SECURITY.csm, SECURITY.clm
+      bnd.wrap!
+      compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
         project('database').and_dependencies, project('database').test_dependencies, DB
@@ -181,6 +183,7 @@ define "psc" do
     
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
+      bnd.wrap!
       compile.with project('plugin-api').and_dependencies, SECURITY.cas
       test.with project('plugin-api').test_dependencies, 
         project('core').and_dependencies
@@ -189,6 +192,7 @@ define "psc" do
     
     desc "Authentication via caGrid's customized version of CAS"
     define "websso-plugin" do
+      bnd.wrap!
       compile.with project('plugin-api').and_dependencies,
         project('cas-plugin').and_dependencies, SECURITY.caaers_cas
       test.with project('plugin-api').test_dependencies,
@@ -200,6 +204,7 @@ define "psc" do
     
     desc "A completely insecure implementation for integrated tests and the like"
     define "insecure-plugin" do
+      bnd.wrap!
       compile.with project('plugin-api').and_dependencies
       test.with project('plugin-api').test_dependencies, 
         project('domain').and_dependencies, project('domain').test_dependencies
