@@ -1,0 +1,14 @@
+This module is a reimplementation of dynamicjava.org's api-bridge.  Differences:
+
+- Optimized for passing the same objects back and forth across the membrane
+  between the primary classloader and the OSGi environment.  Will create at
+  most one proxy per object.
+- Uses cglib 2.1.3 instead of 1.0 for compatibility with Hibernate & Spring.
+- Better handling of classes from the bootstrap classloader.
+- Bridging of thrown exceptions.
+- More robust selection of superclasses for proxying (e.g., only select
+  superclasses with a default constructor).
+- More robust invocation of delegate methods -- invokes the method from the
+  implemented interface instead of from the class directly where possible.
+  This allows compatibility with, e.g., private inner classes.
+- Some unit tests.
