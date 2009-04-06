@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.No
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PrivatePerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.ProtectedPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
@@ -94,7 +96,7 @@ public class MembraneTest extends OsgimosisTestCase {
 
         Class<?> nearClass = membrane.farToNear(farInstance).getClass();
         assertFalse("Should not match concrete class", FinalPerson.class.isAssignableFrom(nearClass));
-        assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
+        assertTrue("Should match interface", Person.class.isAssignableFrom(nearClass));
     }
     
     public void testBridgedObjectIsOfConcreteTypeWhenConstructorParametersAreProvided() throws Exception {
@@ -107,6 +109,24 @@ public class MembraneTest extends OsgimosisTestCase {
         assertTrue("Should match concrete class", NonDefaultPerson.class.isAssignableFrom(nearClass));
         assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
         assertEquals("Value should be proxied", "Expected", ((Person) near).getName());
+    }
+
+    public void testBridgedObjectExtendsClassWithProtectedDefaultConstructor() throws Exception {
+        Class<?> farClass = loaderA.loadClass(ProtectedPerson.class.getName());
+        Object far = farClass.getMethod("create").invoke(null);
+
+        Class<?> nearClass = membrane.farToNear(far).getClass();
+        assertTrue("Should match concrete class", ProtectedPerson.class.isAssignableFrom(nearClass));
+        assertTrue("Should match interface", Person.class.isAssignableFrom(nearClass));
+    }
+
+    public void testBridgedObjectDoesNotExtendClassWithPrivateDefaultConstructor() throws Exception {
+        Class<?> farClass = loaderA.loadClass(PrivatePerson.class.getName());
+        Object far = farClass.getMethod("create").invoke(null);
+
+        Class<?> nearClass = membrane.farToNear(far).getClass();
+        assertFalse("Should not match concrete class", PrivatePerson.class.isAssignableFrom(nearClass));
+        assertTrue("Should match interface", Person.class.isAssignableFrom(nearClass));
     }
 
     public void testBridgedObjectAccessedFromBridgedObjectIsProxiedInCorrectClassLoader() throws Exception {

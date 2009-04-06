@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -100,8 +101,8 @@ public class DefaultEncapsulatorCreator {
     private boolean proxyConstructable(Class<?> clazz) {
         if (proxyConstructorParams == null || proxyConstructorParams.get(clazz.getName()) == null) {
             try {
-                clazz.getConstructor();
-                return true;
+                Constructor<?> defaultConstructor = clazz.getDeclaredConstructor();
+                return !Modifier.isPrivate(defaultConstructor.getModifiers());
             } catch (NoSuchMethodException e) {
                 return false;
             }
