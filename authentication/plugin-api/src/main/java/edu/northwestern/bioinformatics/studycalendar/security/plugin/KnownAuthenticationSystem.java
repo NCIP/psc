@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Rhett Sutphin
  */
+@Deprecated // use bundle metadata instead
 public enum KnownAuthenticationSystem {
     LOCAL("local",
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem",
