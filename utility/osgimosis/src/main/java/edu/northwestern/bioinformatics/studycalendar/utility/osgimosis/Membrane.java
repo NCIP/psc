@@ -26,13 +26,13 @@ public class Membrane {
     private Collection<String> sharedPackages;
     private Map<Class, Encapsulator> encapsulators;
 
-    private Cache cache;
+    private BidirectionalObjectStore cache;
     private ClassLoader nearClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
     public Membrane() {
         this.encapsulators = new IdentityHashMap<Class, Encapsulator>();
-        this.cache = new Cache();
+        this.cache = new BidirectionalObjectStore();
         this.proxyConstructorParams = new HashMap<String, Object[]>();
     }
 
@@ -181,22 +181,5 @@ public class Membrane {
             append('@').
             append(Integer.toHexString(System.identityHashCode(this))).
             toString();
-    }
-
-    private static class Cache {
-        private Map<Object, Object> pairs;
-
-        private Cache() {
-            pairs = new IdentityHashMap<Object, Object>();
-        }
-
-        public Object get(Object oneValue) {
-            return pairs.get(oneValue);
-        }
-
-        public synchronized void put(Object one, Object two) {
-            pairs.put(one, two);
-            pairs.put(two, one);
-        }
     }
 }
