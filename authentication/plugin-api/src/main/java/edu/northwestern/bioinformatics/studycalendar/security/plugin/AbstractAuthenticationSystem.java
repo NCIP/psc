@@ -37,6 +37,15 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         return configuration;
     }
 
+    public String name() {
+        return getClass().getSimpleName().replaceAll("AuthenticationSystem", "");
+    }
+
+    // TODO: this should eventually just be abstract
+    public String behaviorDescription() {
+        throw new UnsupportedOperationException("behaviorDescription not implemented");
+    }
+
     public final void initialize(
         ApplicationContext parent, Configuration config
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {

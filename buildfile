@@ -160,10 +160,10 @@ define "psc" do
   
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
-    desc "Interfaces and base classes for the pluggable authentication system"
+    desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
-      compile.with project('utility'), SLF4J, 
+      compile.with project('utility'), SLF4J, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
       test.with(UNIT_TESTING)
@@ -205,6 +205,8 @@ define "psc" do
     desc "A completely insecure implementation for integrated tests and the like"
     define "insecure-plugin" do
       bnd.wrap!
+      bnd['Bundle-Activator'] = 
+        "edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure.Activator"
       compile.with project('plugin-api').and_dependencies
       test.with project('plugin-api').test_dependencies, 
         project('domain').and_dependencies, project('domain').test_dependencies

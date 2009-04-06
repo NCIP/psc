@@ -37,8 +37,20 @@ public interface AuthenticationSystem {
     ConfigurationProperties configurationProperties();
 
     /**
+     * The short name for this authentication scheme.
+     */
+    String name();
+
+    /**
+     * A phrase describing the behavior of this scheme.
+     * E.g., "delegates authentication decisions to an enterprise-wide CAS server".
+     */
+    String behaviorDescription();
+
+    /**
      * Initialize any internal objects needed to perform authentication.
-     * This method will be called before this object is used for any other purpose.
+     * This method will be called before this object is used for any other purpose, except for
+     * {@link #configurationProperties}, {@link #name}, and {@link #behaviorDescription}.
      * <p>
      * A simple authenticator might directly create any required objects in this method;
      * a more complex one might prefer to load an
@@ -125,4 +137,10 @@ public interface AuthenticationSystem {
      * the system administrators will not be prompted to set them.
      */
     boolean usesLocalPasswords();
+
+    interface ServiceKeys {
+        String NAME = "name";
+        String BEHAVIOR_DESCRIPTION = "behaviorDescription";
+        String CONFIGURATION_PROPERTIES = "configurationProperties";
+    }
 }

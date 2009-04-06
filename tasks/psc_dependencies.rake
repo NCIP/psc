@@ -210,6 +210,11 @@ CONTAINER_PROVIDED = [
   "javax.servlet:com.springsource.javax.servlet.jsp:jar:2.0.0"
 ]
 
+OSGI = struct(
+  :core => 'org.osgi:osgi_R4_core:jar:1.0',
+  :compendium => 'org.osgi:osgi_R4_compendium:jar:1.0'
+)
+
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",

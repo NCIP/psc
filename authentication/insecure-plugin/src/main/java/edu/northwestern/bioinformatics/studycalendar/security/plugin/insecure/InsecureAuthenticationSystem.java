@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
@@ -8,8 +10,9 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * This authentication system allows both GUI-interactive and token-based authentication
@@ -24,6 +27,11 @@ public class InsecureAuthenticationSystem extends UsernameAndPasswordAuthenticat
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
+    }
+
+    @Override
+    public String behaviorDescription() {
+        return "allows passwordless authentication for testing (not for production)";
     }
 
     @Override
@@ -55,6 +63,16 @@ public class InsecureAuthenticationSystem extends UsernameAndPasswordAuthenticat
         @SuppressWarnings({ "RawUseOfParameterizedType" })
         public boolean supports(Class authentication) {
             return Authentication.class.isAssignableFrom(authentication);
+        }
+    }
+
+    public static class Factory implements ServiceFactory {
+        public Object getService(Bundle bundle, ServiceRegistration serviceRegistration) {
+            return new InsecureAuthenticationSystem();
+        }
+
+        public void ungetService(Bundle bundle, ServiceRegistration serviceRegistration, Object system) {
+            // nothing to clean up
         }
     }
 }

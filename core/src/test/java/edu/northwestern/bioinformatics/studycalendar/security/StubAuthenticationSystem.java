@@ -30,6 +30,14 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
         return PROPERTIES;
     }
 
+    public String name() {
+        throw new UnsupportedOperationException("name not implemented");
+    }
+
+    public String behaviorDescription() {
+        throw new UnsupportedOperationException("behaviorDescription not implemented");
+    }
+
     public void initialize(ApplicationContext parent, Configuration configuration) {
         if (configuration.isSet(EXPECTED_INITIALIZATION_ERROR_MESSAGE)) {
             throw new StudyCalendarValidationException(configuration.get(EXPECTED_INITIALIZATION_ERROR_MESSAGE));

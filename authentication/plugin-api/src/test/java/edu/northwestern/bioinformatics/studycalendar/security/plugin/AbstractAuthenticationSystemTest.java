@@ -53,6 +53,10 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         assertSame(expected, system.logoutFilter());
     }
 
+    public void testDefaultNameIsClassNameWithoutAuthenticationSystemSuffix() throws Exception {
+        assertEquals("Test", system.name());
+    }
+
     public void testRaisesAuthenticationSystemInitializationFailureForRandomInitErrors() throws Exception {
         system.setInitBefore(new Runnable() {
             public void run() {
