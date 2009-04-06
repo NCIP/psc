@@ -19,7 +19,6 @@ describe "/blackout-date" do
     
     it "allows access to blackout-dates for authorized user" do      
       get '/sites/site1/blackout-dates', :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -38,7 +37,6 @@ describe "/blackout-date" do
   
       it "creates a specific blackout date for a site" do
           post '/sites/siteId/blackout-dates', @blackoutdate_xml, :as => :juno
-          puts response.entity
           response.status_code.should == 201
           response.status_message.should == "Created"
           #check after post
@@ -62,7 +60,6 @@ describe "/blackout-date" do
     
     it "allows deletion of a blackout-date for authorized user" do
       delete '/sites/siteId/blackout-dates/1111', :as => :juno
-      puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
     end

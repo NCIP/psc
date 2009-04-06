@@ -16,7 +16,6 @@ describe "/activity" do
     end
  
     it "forbids creation of a specific activity to an authorized user when source has not yet existed" do
-        puts @activity_xml
         put '/activities/NewSoure/Code1', @activity_xml, :as => :juno
         response.status_code.should == 400
         response.status_message.should == "Bad Request"
@@ -72,7 +71,6 @@ describe "/activity" do
 
       it "allows access to a specific activity for an authorized user" do
         get '/activities/Malaria/diag1', :as => :juno
-        # puts response.entity
         response.status_code.should == 200
         response.status_message.should == "OK"
         response.content_type.should == 'text/xml'
@@ -101,7 +99,6 @@ describe "/activity" do
         response.xml_elements('//activity').should have(1).elements
         #Delete the Activity
         delete '/activities/Malaria/diag1', :as => :juno
-        puts response.entity
         response.status_code.should == 200
         response.status_message.should == "OK"
         #Check after delete

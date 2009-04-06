@@ -54,7 +54,6 @@ describe "/planned-activity" do
     it "shows a study snapshot" do
       # code below display a study-snapshot
       get "/studies/NU480/template/2008-11-10~am", :as => :juno
-      puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -63,7 +62,6 @@ describe "/planned-activity" do
     
     it "allows access to planned activity" do
       get "/studies/NU480/template/2008-11-10~am/epochs/Treatment/study-segments/A/periods/10001/planned-activities/301", :as => :juno
-      puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'application/x-www-form-urlencoded'
@@ -76,7 +74,6 @@ describe "/planned-activity" do
     it "shows a study snapshot" do
       #VERIFY BEFORE DELETE: 
       get "/studies/NU480/template/development", :as => :juno
-      # puts response.entity #code displaying a study-snapshot before delete
       response.xml_attributes("planned-activity", "id").should include("301")
       response.xml_elements('//planned-activity').should have(1).elements      
       
@@ -89,7 +86,6 @@ describe "/planned-activity" do
       
       #VERIFY AFTER DELETE: 
       get "/studies/NU480/template/development", :as => :juno
-      # puts response.entity
       response.xml_elements('//planned-activity').should have(0).elements          
     end
         
@@ -107,7 +103,6 @@ describe "/planned-activity" do
       it "modifies an existing planned activity" do       
         #VERIFY BEFORE PUT: 
         get "/studies/NU480/template/development", :as => :juno
-        # puts response.entity #code displaying a study-snapshot before put
         response.xml_elements('//activity').should have(1).elements
         response.xml_attributes("activity", "name").should include("Initial Diagnosis")
                
@@ -118,7 +113,6 @@ describe "/planned-activity" do
         
         #VERIFY AFTER PUT: 
         get "/studies/NU480/template/development", :as => :juno
-        # puts response.entity #code displaying a study-snapshot after put
         response.xml_elements('//activity').should have(1).elements  
         response.xml_attributes("activity", "name").should include("Immunization")
         
@@ -131,8 +125,6 @@ describe "/planned-activity" do
       before do
         @data = 'day=4&activity=Initial+Diagnosis&activity-code=diag1&activity-source=Malaria&weight=9&condition=&details=%20detail&label='
         get "/studies/NU480/template/development", :as => :juno
-
-        #puts response.entity #code displaying a study-snapshot before delete
 
         response.xml_attributes("planned-activity", "id").should include("301")
         response.xml_attributes("planned-activity", "weight").should include("6")
@@ -148,7 +140,6 @@ describe "/planned-activity" do
 
         #VERIFY AFTER PUT:
         get "/studies/NU480/template/development", :as => :juno
-        #puts response.entity #code displaying a study-snapshot after put
         response.xml_elements('//planned-activity').should have(1).elements
         response.xml_attributes("planned-activity", "weight").should include("9")
 

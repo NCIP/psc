@@ -57,7 +57,6 @@ describe "/schedule" do
     
     it "allows access to scheduled study segment of a given assignment to an authorized user" do
       get "/studies/NU480/schedules/assignment1", :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -81,7 +80,6 @@ describe "/schedule" do
         
     it "allows scheduling a new study segment for an authorized user" do
       post "/studies/NU480/schedules/assignment1", @next_assignment1_xml, :as => :juno
-      # puts response.entity
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'

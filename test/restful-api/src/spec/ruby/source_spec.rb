@@ -27,7 +27,6 @@ describe "/source" do
     
     it "allows access to activities under a specific source for an authorized user" do
       get '/activities/Cancer', :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -38,7 +37,6 @@ describe "/source" do
     
     it "allows access to a specific group of activity(s) under a particular source by specifying a query parameter" do
       get '/activities/Cancer?q=emergency', :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -62,7 +60,6 @@ describe "/source" do
     
     it "allows creation of a non-existing source with zero activity" do
       put '/activities/Dental', @source_xml, :as => :juno 
-      # puts response.entity
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'

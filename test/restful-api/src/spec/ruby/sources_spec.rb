@@ -20,7 +20,7 @@ describe "/sources" do
     
     it "allows access to sources for an authorized user" do
       get '/activities/', :as => :juno
-      # puts response.entity
+
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -29,7 +29,7 @@ describe "/sources" do
     
     it "allows access to a specific group of activity(s) by specifying a query parameter" do
       get '/activities/?q=Diabetes', :as => :juno
-      # puts response.entity
+
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'

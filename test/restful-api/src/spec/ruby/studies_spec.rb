@@ -124,7 +124,6 @@ describe "/studies" do
       post '/studies', @nu328_xml, :as => :alice
       #response.should be_success
       get '/studies', :as => :alice
-      #puts response.entity#
       response.xml_elements('//study').should have(4).elements
       study_names.should include("NU328")
     end

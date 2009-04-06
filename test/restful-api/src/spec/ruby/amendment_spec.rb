@@ -12,7 +12,6 @@ describe "/amendment" do
     
     it "creates a new amendment for an authorized user" do
       put '/studies/NU480/template/amendments/2008-11-10~%5BOriginal%5D', @amend1_xml, :as => :juno
-      puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -34,7 +33,6 @@ describe "/amendment" do
 
       it "allows access to a specific amendment for an authorized user by specifying date" do
         get '/studies/NU480/template/amendments/2008-12-10', :as => :juno
-        # puts response.entity
         response.status_code.should == 200
         response.status_message.should == "OK"
         response.content_type.should == 'text/xml'
@@ -59,7 +57,6 @@ describe "/amendment" do
 
     it "allows deletion of a specific amendment for an authorized user by specifying date" do
       delete '/studies/NU480/template/amendments/2008-12-10~Amendment', :as => :juno
-      puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
     end

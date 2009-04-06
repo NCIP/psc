@@ -25,7 +25,6 @@ describe "/study-site-link" do
     
     it "allows creating a study-site-link for an authorized user" do
       put "/studies/NU480/sites/IL036", @study_site_link_xml, :as => :juno
-      # puts response.entity
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
@@ -65,7 +64,6 @@ describe "/study-site-link" do
     it "allows access to an existing study-site-link to an authorized user" do
       put "/studies/NU480/sites/IL036", @study_site_link_xml, :as => :juno
       get "/studies/NU480/sites/IL036", :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'      

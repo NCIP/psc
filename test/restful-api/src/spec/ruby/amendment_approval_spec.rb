@@ -24,9 +24,7 @@ describe "/amendment_approval" do
     end
     
     it "approves an amendment for an authorized user" do
-      puts @approve_xml
       post "/studies/NU480/sites/site1/approvals", @approve_xml, :as => :juno
-      puts response.entity
       response.status_code.should == 201
       response.status_message.should == "Created"
       response.content_type.should == 'text/xml'
@@ -63,7 +61,6 @@ describe "/amendment_approval" do
     
     it "allows access to amendment approvals to an authorized user" do
       get "/studies/NU480/sites/site1/approvals", :as => :juno
-      # puts response.entity
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'

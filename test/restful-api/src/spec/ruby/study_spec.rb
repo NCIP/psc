@@ -18,8 +18,7 @@ describe "/study" do
 
     it "shows a specific template to a study admin given the study-identifier" do
       get "/studies/NU481/template", :as => :barbara
-      #puts response.entity
-      #puts @nu481
+
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -141,11 +140,10 @@ describe "/study" do
     end
     
     it "it accepts a study from a study coordinator" do
-      # puts @nu482_xml
       put '/studies/NU482/template', @nu482_xml, :as => :juno
       response.status_code.should == 201 #created
       get '/studies/', :as => :alice
-      # puts response.entity
+
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU482")
     end

@@ -39,7 +39,6 @@ describe "/site" do
     end
     
     it "forbid site creation for unauthorized user" do
-      # puts @newsite_xml
       put '/sites/DB026', @newsite_xml, :as => nil
       response.status_code.should == 401
     end

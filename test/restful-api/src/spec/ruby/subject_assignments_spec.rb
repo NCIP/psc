@@ -61,7 +61,7 @@ describe "/subject_assignments" do
     
     it "does not allow the subject coordinator to assign patients when the template has not been made available" do
       post "/studies/NU480/sites/PA015/subject-assignments", @subject_registration_xml, :as => :erin
-      puts response.entity
+
       response.status_code.should == 403
     end
     

@@ -18,7 +18,7 @@ describe "/study_snapshot" do
 
   it "shows a study template to a study admin" do
     get "/studies/NU152/template/development", :as => :barbara
-    # puts response.entity
+
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.content_type.should == 'text/xml'
@@ -29,7 +29,7 @@ describe "/study_snapshot" do
     
   it "shows a study template to a study coordinator" do
     get "/studies/NU562/template/development", :as => :alice
-    #puts response.entity
+
     response.status_code.should == 200
     response.status_message.should == "OK"
     response.content_type.should == 'text/xml'
