@@ -76,6 +76,10 @@ public class MembraneTest extends OsgimosisTestCase {
         assertFalse("Should not match concrete class", PieMaker.class.isAssignableFrom(nearClass));
         assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
     }
+    
+    public void testBridgedNullIsNull() throws Exception {
+        assertNull(membrane.farToNear(null));
+    }
 
     public void testThrownExceptionsAreWrapped() throws Exception {
         try {

@@ -50,6 +50,10 @@ public class Membrane {
 
     private Object traverse(Side targetSide, Object object, ClassLoader targetSideClassLoader) {
         log.debug("Traversing {} with {}", this, object);
+        if (object == null) {
+            log.trace(" - Null is null no matter where you're from");
+            return null;
+        }
         log.trace(" - Identity: {}@{}", object.getClass().getName(),
             Integer.toHexString(System.identityHashCode(object)));
         log.trace(" - Into {}", targetSideClassLoader);
