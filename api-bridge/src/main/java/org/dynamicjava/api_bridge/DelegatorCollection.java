@@ -6,30 +6,30 @@ import java.util.Iterator;
 /**
  * @author Rhett Sutphin
  */
-public class DelegatorCollection<T> implements Collection<T> {
-    private ApiBridge apiBridge, delegateApiBridge;
-    private Collection<T> apiObject;
-
+@SuppressWarnings({ "unchecked" })
+public class DelegatorCollection<T> extends AbstractDelegator implements Collection<T> {
     public DelegatorCollection(Collection<T> apiCollection, ApiBridge apiBridge) {
-        this.apiObject = apiCollection;
-        this.apiBridge = apiBridge;
-        this.delegateApiBridge = apiBridge.getReverseApiBridge(apiObject.getClass().getClassLoader());
+        super(apiCollection, apiBridge);
     }
 
     public int size() {
-        return apiObject.size();
+        return getDelegateCollection().size();
+    }
+
+    private Collection<T> getDelegateCollection() {
+        return (Collection<T>) getDelegate();
     }
 
     public boolean isEmpty() {
-        return apiObject.isEmpty();
+        return getDelegateCollection().isEmpty();
     }
 
     public boolean contains(Object o) {
-        return apiObject.contains(delegateApiBridge.bridge(o, true));
+        return getDelegateCollection().contains(reverseBridge(o));
     }
 
     public Iterator<T> iterator() {
-        return new DelegatorIterator<T>(apiObject.iterator(), apiBridge);
+        return new DelegatorIterator<T>(getDelegateCollection().iterator(), getApiBridge());
     }
 
     public Object[] toArray() {
@@ -56,37 +56,37 @@ public class DelegatorCollection<T> implements Collection<T> {
     }
 
     public boolean add(T o) {
-        return apiObject.add((T) delegateApiBridge.bridge(o, true));
+        return getDelegateCollection().add((T) reverseBridge(o));
     }
 
     public boolean remove(Object o) {
-        return apiObject.remove(delegateApiBridge.bridge(o, true));
+        return getDelegateCollection().remove(reverseBridge(o));
     }
 
     public boolean containsAll(Collection<?> c) {
-        return apiObject.containsAll(new DelegatorCollection(c, delegateApiBridge));
+        return getDelegateCollection().containsAll(new DelegatorCollection(c, getDelegateApiBridge()));
     }
 
     public boolean addAll(Collection<? extends T> c) {
-        return apiObject.addAll(new DelegatorCollection(c, delegateApiBridge));
+        return getDelegateCollection().addAll(new DelegatorCollection(c, getDelegateApiBridge()));
     }
 
     public boolean removeAll(Collection<?> c) {
-        return apiObject.removeAll(new DelegatorCollection(c, delegateApiBridge));
+        return getDelegateCollection().removeAll(new DelegatorCollection(c, getDelegateApiBridge()));
     }
 
     public boolean retainAll(Collection<?> c) {
-        return apiObject.retainAll(new DelegatorCollection(c, delegateApiBridge));
+        return getDelegateCollection().retainAll(new DelegatorCollection(c, getDelegateApiBridge()));
     }
 
     public void clear() {
-        apiObject.clear();
+        getDelegateCollection().clear();
     }
 
     @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).
-            append("[delegate=").append(apiObject).append(']').
+            append("[delegate=").append(getDelegateCollection()).append(']').
             toString();
     }
 }
