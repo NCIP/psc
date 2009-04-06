@@ -12,7 +12,6 @@ module CheckNonOsgiDependencies
   
   before_define do |p|
     Rake::Task.define_task 'osgi:check' do
-      
       trouble = p.compile.dependencies.reject do |art|
         if art.type == :jar
           puts "Checking #{art} manifest for OSGiness" if Buildr.application.options.trace
@@ -27,6 +26,8 @@ module CheckNonOsgiDependencies
       
       unless trouble.empty?
         error "The following artifacts are not OSGi bundles:\n - #{trouble.collect(&:to_spec).join("\n - ")}"
+      else
+        info "#{p.name} has no deps without Bundle-SymbolicName\n  manifest entries.  Woo hoo!"
       end
     end
   end
