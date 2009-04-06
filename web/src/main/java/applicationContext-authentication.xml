@@ -15,5 +15,6 @@
             <bean class="edu.northwestern.bioinformatics.studycalendar.security.StoredAuthenticationSystemConfiguration"
                   autowire="byName"/>
         </property>
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
     </bean>
 </beans>

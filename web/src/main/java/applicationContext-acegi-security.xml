@@ -22,6 +22,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <bean id="authenticationSystemLogoutFilter"
           class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemLogoutFilter">
         <property name="authenticationSystemConfiguration" ref="authenticationSystemConfiguration"/>
+        <property name="defaultLogoutFilter" ref="defaultLogoutFilter"/>
     </bean>
 
     <bean id="defaultLogoutFilter"
@@ -94,9 +95,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                               ref="authorizationSwitch"/>
                 </bean>
                 <bean class="org.acegisecurity.vote.RoleVoter">
-                    <property name="rolePrefix">
-                        <value></value>
-                    </property>
+                    <property name="rolePrefix" value=""/>
                 </bean>
             </list>
         </property>
