@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
@@ -18,7 +19,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.osgi.context.BundleContextAware;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
 
 /**
  * @author Rhett Sutphin
@@ -42,7 +42,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
     private static final String SERVICE_NAME = AuthenticationSystem.class.getName();
 
     public AuthenticationSystemConfiguration() {
-        configurationPropertyValues = new Hashtable<String, String>();
+        configurationPropertyValues = new MapBasedDictionary<String, String>();
     }
 
     public synchronized ConfigurationProperties getProperties() {

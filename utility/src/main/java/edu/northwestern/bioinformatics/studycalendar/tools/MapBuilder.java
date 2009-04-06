@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.tools;
 import org.springframework.util.Assert;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,6 +55,6 @@ public class MapBuilder<K, V> {
 
     @SuppressWarnings({ "unchecked" })
     public Dictionary<K, V> toDictionary() {
-        return map instanceof Dictionary ? (Dictionary<K,V>) map : new Hashtable(map);
+        return map instanceof Dictionary ? (Dictionary<K,V>) map : new MapBasedDictionary(map);
     }
 }

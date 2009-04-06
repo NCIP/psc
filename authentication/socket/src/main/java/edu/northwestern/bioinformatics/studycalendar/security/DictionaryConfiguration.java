@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.configuration.RawDataConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import gov.nih.nci.cabig.ctms.tools.configuration.AbstractConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,7 +37,7 @@ public class DictionaryConfiguration extends AbstractConfiguration implements Ra
 
     public DictionaryConfiguration(ConfigurationProperties configurationProperties, Dictionary<String, String> storage) {
         this.configurationProperties = configurationProperties;
-        this.storage = storage == null ?  new Hashtable<String, String>() : storage;
+        this.storage = storage == null ?  new MapBasedDictionary<String, String>() : storage;
     }
 
     public DictionaryConfiguration(Configuration source) {
