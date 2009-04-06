@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.impl.HostBeansImpl;
+import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.HostBeansImpl;
 
 /**
  * @author Rhett Sutphin

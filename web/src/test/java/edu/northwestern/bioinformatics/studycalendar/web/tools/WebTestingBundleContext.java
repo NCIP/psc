@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
-import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.impl.HostBeansImpl;
+import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.HostBeansImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.StubAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;

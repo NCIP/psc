@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.impl;
+package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
