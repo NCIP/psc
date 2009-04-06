@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi;
 import org.dynamicjava.osgi.da_launcher.Launcher;
 import org.dynamicjava.osgi.da_launcher.LauncherFactory;
 import org.dynamicjava.osgi.da_launcher.LauncherSettings;
+import org.dynamicjava.osgi.da_launcher.internal.exceptions.LauncherException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
@@ -22,7 +23,12 @@ public class DaLauncherConsole {
 
         LauncherSettings settings = new LauncherSettings(daLauncherHome);
         Launcher launcher = new LauncherFactory(settings).createLauncher();
-        launcher.launch();
+        try {
+            launcher.launch();
+        } catch (LauncherException le) {
+            System.err.println("Launch interrupted by exception");
+            le.printStackTrace();
+        }
 
         int startCount = 0;
         for (Bundle bundle : launcher.getOsgiFramework().getBundleContext().getBundles()) {
