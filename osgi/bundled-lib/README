@@ -1,0 +1,3 @@
+This directory contains standard external libraries which were wrapped using 
+bnd to make them compatible with PSC's OSGi layer.  See 
+tasks/psc-osgi-artifact.rake for the mechanism.

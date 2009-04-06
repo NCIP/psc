@@ -125,7 +125,7 @@ SECURITY = struct(
   :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:#{CTMS_COMMONS_VERSION}",
   :clm => "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
   :csm => "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
-  :acegi => "org.acegisecurity:acegi-security:jar:1.0.3",
+  :acegi => psc_osgi_artifact("org.acegisecurity:acegi-security:jar:1.0.3"),
   :cas => "cas:casclient:jar:2.0.11",
   :caaers_cas => artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar'))
 )
