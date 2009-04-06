@@ -3,11 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import static edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
@@ -15,8 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -56,6 +53,7 @@ public class AuthenticationSystemConfigurationController extends PscAbstractComm
         AuthenticationSystemConfigurationCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
+        /*
         boolean isCustom = command.getWorkConfiguration().isCustomAuthenticationSystem();
         String system = command.getWorkConfiguration().get(AUTHENTICATION_SYSTEM);
 
@@ -74,6 +72,8 @@ public class AuthenticationSystemConfigurationController extends PscAbstractComm
         } else {
             return new ModelAndView("admin/configureAuthenticationSystem", model);
         }
+        */
+        throw new UnsupportedOperationException("Temporarily disabled");
     }
 
     ////// CONFIGURATION

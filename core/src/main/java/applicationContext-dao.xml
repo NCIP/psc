@@ -208,6 +208,8 @@
 
     <bean id="configuration" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
+    <bean id="storedAuthenticationSystemConfiguration" parent="daoTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.configuration.StoredAuthenticationSystemConfiguration"/>
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 

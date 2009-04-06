@@ -18,8 +18,6 @@ public class StudyCalendarTestWebApplicationContextBuilder {
         context.setParent(parent);
         context.setServletContext(servletContext);
         context.setConfigLocations(new String[] {
-            "classpath:applicationContext-acegi-security.xml",
-            "classpath:applicationContext-authentication.xml",
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
             "classpath:applicationContext-osgi.xml",

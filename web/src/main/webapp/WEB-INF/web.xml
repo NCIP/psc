@@ -21,8 +21,6 @@
             classpath:applicationContext-setup.xml
             classpath:applicationContext-spring.xml
             <!-- web -->
-            classpath:applicationContext-acegi-security.xml
-            classpath:applicationContext-authentication.xml
             classpath:applicationContext-command.xml
             classpath:applicationContext-osgi.xml
             classpath:applicationContext-webflow.xml

@@ -11,6 +11,7 @@ import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
+import org.springframework.core.io.ByteArrayResource;
 
 import javax.servlet.Filter;
 
@@ -18,10 +19,10 @@ import javax.servlet.Filter;
  * @author Rhett Sutphin
  */
 public class StubAuthenticationSystem implements AuthenticationSystem {
-    private static final ConfigurationProperties PROPERTIES
-        = DefaultConfigurationProperties.empty();
+    private static final DefaultConfigurationProperties PROPERTIES
+        = new DefaultConfigurationProperties(new ByteArrayResource(new byte[0]));
     public static final ConfigurationProperty<String> EXPECTED_INITIALIZATION_ERROR_MESSAGE
-        = new DefaultConfigurationProperty.Text("expectedError");
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text("expectedError"));
 
     private static Configuration lastConfiguration, lastValidationConfiguration;
 

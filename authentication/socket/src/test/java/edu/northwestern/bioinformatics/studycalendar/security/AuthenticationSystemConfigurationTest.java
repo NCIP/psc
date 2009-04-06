@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
-import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
 import org.acegisecurity.userdetails.memory.UserMap;
@@ -56,7 +56,6 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
         expectSingleService(UserDetailsService.class, userDetailsService);
 
         configuration = new AuthenticationSystemConfiguration();
-        configuration.setDelegate(new TransientConfiguration(AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES));
         configuration.setBundleContext(bundleContext);
     }
 
@@ -143,7 +142,6 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
         expectSelectedService(localPlugin);
         replayMocks();
 
-        configuration.reset(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM);
         AuthenticationSystem system = configuration.getAuthenticationSystem();
         assertNotNull("No system created", system);
         assertEquals("Wrong system created", localPlugin.getSystem().name(), system.name());
@@ -187,7 +185,9 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
         replayMocks();
 
         selectAuthenticationSystem(stubPlugin.getSymbolicName());
-        configuration.set(StubAuthenticationSystem.EXPECTED_INITIALIZATION_ERROR_MESSAGE, "Bad news");
+        configuration.updated(new MapBuilder<String, Object>().
+            put(StubAuthenticationSystem.EXPECTED_INITIALIZATION_ERROR_MESSAGE.getKey(), "Bad news").
+            toDictionary());
 
         try {
             configuration.getAuthenticationSystem();
@@ -198,12 +198,18 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
     
     private void setMinimumTestSystemParameters() {
-        configuration.set(TestableAuthenticationSystem.SERVICE_URL, "not-null");
-        configuration.set(TestableAuthenticationSystem.APPLICATION_URL, "not-null");
+        configuration.updated(
+            new MapBuilder<String, Object>().
+                put(TestableAuthenticationSystem.SERVICE_URL.getKey(), "not-null").
+                put(TestableAuthenticationSystem.APPLICATION_URL.getKey(), "not-null").
+                toDictionary()
+        );
     }
 
     private void selectAuthenticationSystem(String requested) {
-        configuration.set(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM, requested);
+        configuration.updated(new MapBuilder<String, Object>().
+            put(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey(), requested).
+            toDictionary());
     }
 
     private class MockPlugin {

@@ -250,6 +250,12 @@ DYNAMIC_JAVA = struct(
   :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
 )
 
+SPRING_OSGI = struct(
+  :core => "org.springframework.osgi:org.springframework.osgi.core:jar:1.1.3.RELEASE",
+  :io => "org.springframework.osgi:org.springframework.osgi.io:jar:1.1.3.RELEASE",
+  :extender => "org.springframework.osgi:org.springframework.osgi.extender:jar:1.1.3.RELEASE"
+)
+
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",

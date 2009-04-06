@@ -171,9 +171,18 @@ define "psc" do
   define "authentication" do
     desc "PSC's framework for using the authentication plugins"
     define "socket" do
-      compile.with project('plugin-api').and_dependencies, 
-        project('psc:utility:osgimosis').and_dependencies,
-        project('core').and_dependencies
+      bnd.wrap!
+      bnd.name = "PSC Pluggable Auth Socket"
+      bnd.import_packages <<
+        "org.acegisecurity.context" <<
+        "org.acegisecurity.providers.anonymous" <<
+        "org.acegisecurity.providers.dao.cache" <<
+        "org.acegisecurity.intercept.web" <<
+        "org.acegisecurity.ui.logout" <<
+        "org.acegisecurity.wrapper" <<
+        "org.acegisecurity.vote" <<
+        "org.springframework.cache.ehcache"
+      compile.with project('plugin-api').and_dependencies, SPRING_OSGI
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
         project('plugin-api').test_dependencies,
@@ -201,8 +210,6 @@ define "psc" do
       bnd.name = "PSC Local Auth Plugin"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
-      bnd.import_packages << 
-        "org.acegisecurity.ui.savedrequest"
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
@@ -336,12 +343,13 @@ define "psc" do
       equinox_main = artifact(EQUINOX.osgi)
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_bundles = bundle_projects.collect { |p| p.package(:jar) }
+      application_bundles = bundle_projects.collect { |p| p.package(:jar) } + 
+        [ SPRING_OSGI.extender ].collect { |a| artifact(a) }
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
-        LOGBACK.values.collect { |a| artifact(a) }
+        LOGBACK.values.collect { |a| artifact(a) } - application_bundles
 
       if true # knopflerfish?
         system_optional = [KNOPFLERFISH.consoletelnet]
@@ -415,6 +423,7 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
+      project('utility:osgimosis').and_dependencies,
       SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
 
     test.with project('test-infrastructure').and_dependencies, 

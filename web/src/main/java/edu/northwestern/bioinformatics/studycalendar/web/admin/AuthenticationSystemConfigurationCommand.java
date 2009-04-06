@@ -1,17 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import edu.nwu.bioinformatics.commons.spring.Validatable;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
-import static edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import org.springframework.validation.Errors;
-import org.springframework.context.ApplicationContext;
-import org.apache.commons.lang.StringUtils;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.validation.Errors;
 
 /**
  * @author Rhett Sutphin
@@ -24,6 +19,7 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
     private BindableConfiguration conf;
 
     public AuthenticationSystemConfigurationCommand(String newAuthenticationSystem, AuthenticationSystemConfiguration liveConfiguration, ApplicationContext applicationContext) {
+        /*
         this.liveConfiguration = liveConfiguration;
         workConfiguration = new AuthenticationSystemConfiguration();
         workConfiguration.setDelegate(
@@ -48,6 +44,7 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
         }
 
         conf = new BindableConfiguration(workConfiguration, true);
+        */
     }
 
     public void validate(Errors errors) {
@@ -59,6 +56,7 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
     }
 
     public void apply() {
+        /*
         for (ConfigurationProperty<?> property : workConfiguration.getProperties().getAll()) {
             if (workConfiguration.isSet(property)) {
                 liveConfiguration.set(
@@ -67,6 +65,7 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
                 liveConfiguration.reset(property);
             }
         }
+        */
     }
 
     public AuthenticationSystemConfiguration getWorkConfiguration() {
@@ -78,7 +77,7 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
     public BindableConfiguration getConf() {
         return conf;
     }
-
+/*
     public String getCustomAuthenticationSystemClass() {
         if (workConfiguration.isCustomAuthenticationSystem()) {
             return workConfiguration.get(AUTHENTICATION_SYSTEM);
@@ -102,4 +101,5 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
             .append(getCustomAuthenticationSystemClass())
             .append(']').toString();
     }
+*/
 }
