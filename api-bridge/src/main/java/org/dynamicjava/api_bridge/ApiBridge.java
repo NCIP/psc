@@ -214,11 +214,13 @@ public class ApiBridge {
 	}
 
     public ApiBridge getReverseApiBridge(ClassLoader sourceApiClassLoader) {
-        log.debug("Creating reverse bridge back from {} to {}", getTargetApiClassLoader(), sourceApiClassLoader);
-        return ApiBridge.getApiBridge(
-                ApiBridgeClassLoader.getClassLoader(getTargetApiClassLoader(),
-                        sourceApiClassLoader, getApiPackageNamesArray()),
-                        getApiPackageNamesArray());
+        if (sourceApiClassLoader == null) {
+            log.debug("Target classloader for reverse bridge is bootstrap, so will not bridge");
+            return null;
+        } else {
+            log.debug("Creating reverse bridge back from {} to {}", getTargetApiClassLoader(), sourceApiClassLoader);
+            return ApiBridge.getApiBridge(sourceApiClassLoader, getApiPackageNamesArray());
+        }
     }
 	
 	private static Map<String, ApiBridge> apiBridges = new HashMap<String, ApiBridge>();
