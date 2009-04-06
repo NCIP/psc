@@ -14,8 +14,8 @@ import java.util.Map;
  * @author vladrin 
  */
 public class ApiBridgeClassLoader extends ClassLoader {
-	
-	public static ClassLoader getClassLoader(ClassLoader parent,
+
+    public static ClassLoader getClassLoader(ClassLoader parent,
 			ClassLoader child, String... exceptionalPackages) {
 		String classLoaderKey = formClassLoaderKey(parent, child, exceptionalPackages);
 		ClassLoader result = getClassLoaderMap().get(classLoaderKey);
@@ -54,9 +54,9 @@ public class ApiBridgeClassLoader extends ClassLoader {
 		this.child = child;
 		
 		if (exceptionalPackages != null) {
-			this.exceptoinalPackages = Arrays.asList(exceptionalPackages);
+			this.exceptionalPackages = Arrays.asList(exceptionalPackages);
 		} else {
-			this.exceptoinalPackages = new ArrayList<String>();
+			this.exceptionalPackages = new ArrayList<String>();
 		}
 	}
 	
@@ -65,9 +65,9 @@ public class ApiBridgeClassLoader extends ClassLoader {
 		return child;
 	}
 	
-	private List<String> exceptoinalPackages;
-	protected List<String> getExceptoinalPackages() {
-		return exceptoinalPackages;
+	private List<String> exceptionalPackages;
+	protected List<String> getExceptionalPackages() {
+		return exceptionalPackages;
 	}
 	
 	
@@ -97,12 +97,12 @@ public class ApiBridgeClassLoader extends ClassLoader {
 	}
 	
 	protected boolean isExceptionalClass(String className) {
-		for (String exceptionalPackage : getExceptoinalPackages()) {
+		for (String exceptionalPackage : getExceptionalPackages()) {
 			if (className.startsWith(exceptionalPackage)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 }
