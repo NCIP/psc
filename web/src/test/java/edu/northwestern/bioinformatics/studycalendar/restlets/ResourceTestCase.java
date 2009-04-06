@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import static org.easymock.EasyMock.expect;
@@ -10,7 +11,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -149,10 +149,9 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         assertContains("Missing content from entity", entity.getText(), expected);
     }
 
-    protected static ApplicationContext getApiServletApplicationContext() {
-        ApplicationContext parent = getDeployedApplicationContext();
-        return new FileSystemXmlApplicationContext(
-            new String[] { "src/main/webapp/WEB-INF/restful-api-servlet.xml" }, parent);
+    protected ApplicationContext getApiServletApplicationContext() {
+        return StudyCalendarTestWebApplicationContextBuilder.
+            createWebApplicationContextForServlet("restful-api", servletContext);
     }
 
     private static class MockXmlRepresentation extends StringRepresentation {

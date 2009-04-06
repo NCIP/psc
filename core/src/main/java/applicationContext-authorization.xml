@@ -111,17 +111,4 @@
           factory-method="getInstance">
         <property name="on" value="true"/>
     </bean>
-
-    <bean id="authenticationSystemSocket"
-          class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemSocket">
-        <property name="configuration" ref="authenticationSystemConfiguration"/>
-    </bean>
-
-    <bean id="authenticationSystemConfiguration" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration">
-        <property name="delegate">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.security.StoredAuthenticationSystemConfiguration"
-                  autowire="byName"/>
-        </property>
-    </bean>
 </beans>

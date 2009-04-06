@@ -15,6 +15,7 @@ import org.restlet.data.Status;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.core.io.FileSystemResourceLoader;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -41,7 +42,7 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        servletContext = new MockServletContext();
+        servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
         servletRequest = new MockHttpServletRequest(servletContext);
         servletRequest.addHeader("Host", HOST);
         servletResponse = new MockHttpServletResponse();

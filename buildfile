@@ -168,7 +168,7 @@ define "psc" do
       compile.with project('utility'), SLF4J, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
-      test.with(UNIT_TESTING)
+      test.with(UNIT_TESTING, HIBERNATE.ehcache, HIBERNATE.backport)
       package(:jar)
     end
     
@@ -204,8 +204,7 @@ define "psc" do
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.cas
-      test.with project('plugin-api').test_dependencies, 
-        project('core').and_dependencies
+      test.with project('plugin-api').test_dependencies
       package(:jar)
     end
     

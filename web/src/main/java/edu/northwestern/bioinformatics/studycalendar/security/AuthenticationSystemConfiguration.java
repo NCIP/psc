@@ -71,7 +71,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         systemReady = false;
 
         newSystemReference = retrieveAuthenticationSystemReference();
-        newSystem = (AuthenticationSystem) bundleContext.getService(newSystemReference);
+        newSystem = (AuthenticationSystem) getBundleContext().getService(newSystemReference);
         log.debug("Successfully instantiated retrieved plugin instance {} of class {}",
             newSystem, newSystem.getClass().getName());
         log.debug("Newly instantiated authentication system has these configuration properties: {}",
@@ -87,7 +87,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         newSystem.initialize(applicationContext, this);
         log.debug("Successfully initialized new authentication system {}.  Replacing.", newSystem);
         // no errors, so:
-        if (currentSystemReference != null) bundleContext.ungetService(currentSystemReference);
+        if (currentSystemReference != null) getBundleContext().ungetService(currentSystemReference);
         currentSystemReference = newSystemReference;
         currentSystem = newSystem;
         systemReady = true;
@@ -109,7 +109,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         if (ref == null) {
             // Get the default, either because nothing is explicitly configured or because
             // the explicitly configured plugin is not available.
-            ref = bundleContext.getServiceReference(SERVICE_NAME);
+            ref = getBundleContext().getServiceReference(SERVICE_NAME);
         }
         if (ref == null) {
             // Still null?  No auth systems available.
@@ -124,7 +124,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
         log.debug("Searching for selected authentication system bundle \"{}\"", desiredBundle);
         ServiceReference[] refs;
         try {
-            refs = bundleContext.getServiceReferences(SERVICE_NAME, null);
+            refs = getBundleContext().getServiceReferences(SERVICE_NAME, null);
         } catch (InvalidSyntaxException e) {
             throw new StudyCalendarSystemException("Unexpected exception when retrieving list of authentication systems", e);
         }
@@ -181,5 +181,13 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    private BundleContext getBundleContext() {
+        if (bundleContext == null) {
+            throw new StudyCalendarSystemException(
+                "No bundle context available.  Authentication system cannot be configured.");
+        }
+        return bundleContext;
     }
 }

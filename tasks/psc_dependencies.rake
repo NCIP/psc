@@ -104,21 +104,21 @@ SPRING_WEB = [
 
 CGLIB = "net.sourceforge.cglib:com.springsource.net.sf.cglib:jar:2.1.3"
 
-HIBERNATE = [
-  "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
-  "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
-  "org.hibernate:com.springsource.org.hibernate.annotations.common:jar:3.3.0.ga",
-  "org.hibernate:com.springsource.org.hibernate.validator:jar:3.1.0.GA",
-  "org.antlr:com.springsource.antlr:jar:2.7.7",
-  "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
-  CGLIB,
-  "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
-  "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
-  "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
-  "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
-  "edu.emory.mathcs.backport:com.springsource.edu.emory.mathcs.backport:jar:3.0.0",
-  "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
-]
+HIBERNATE = struct(
+  :main => "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
+  :annotations => "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
+  :annotations_common => "org.hibernate:com.springsource.org.hibernate.annotations.common:jar:3.3.0.ga",
+  :validator => "org.hibernate:com.springsource.org.hibernate.validator:jar:3.1.0.GA",
+  :antlr => "org.antlr:com.springsource.antlr:jar:2.7.7",
+  :c3p0 => "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
+  :cglib => CGLIB,
+  :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
+  :jsr107 => "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
+  :javax_transaction => "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
+  :javax_persistence => "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
+  :backport => "edu.emory.mathcs.backport:com.springsource.edu.emory.mathcs.backport:jar:3.0.0",
+  :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
+)
 
 SECURITY = struct(
   :acegi_csm  => "gov.nih.nci.security.acegi:acegi-csm:jar:#{CTMS_COMMONS_VERSION}",

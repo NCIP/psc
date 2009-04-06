@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import edu.northwestern.bioinformatics.studycalendar.configuration.AuthenticationSystemConfigurationEntry;
 
 /**
  * @author Rhett Sutphin

@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.security;
+package edu.northwestern.bioinformatics.studycalendar.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
 

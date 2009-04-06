@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder.*;
 import junit.framework.TestCase;
 import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
  * @author Rhett Sutphin
@@ -38,7 +37,7 @@ public class DispatcherServletInitializationTest extends TestCase {
     }
 
     public void testAllResourcesArePrototypeScope() throws Exception {
-        ApplicationContext ctxt = createWebApplicationContextForServlet("restful-api");
+        ApplicationContext ctxt = createWebApplicationContextForServlet("restful-api", servletContext);
 
         String[] beanNames = ctxt.getBeanNamesForType(Resource.class);
         assertTrue("Should have found at least one resource", beanNames.length > 0);
@@ -52,25 +51,10 @@ public class DispatcherServletInitializationTest extends TestCase {
 
     private void assertDispatcherServletConfigLoads(String servletName) throws Exception {
         try {
-            createWebApplicationContextForServlet(servletName);
+            createWebApplicationContextForServlet(servletName, servletContext);
         } catch (Exception e) {
             throw new StudyCalendarError("Loading the configuration for MVC servlet '" + servletName
                 + "' failed:  " + e.getMessage(), e);
         }
-    }
-
-    private XmlWebApplicationContext createWebApplicationContextForServlet(String servletName) {
-        ApplicationContext parent = StudyCalendarTestCase.getDeployedApplicationContext();
-        XmlWebApplicationContext context = new XmlWebApplicationContext();
-        context.setParent(parent);
-        context.setServletContext(servletContext);
-        context.setConfigLocations(new String[] { 
-            "classpath:applicationContext-command.xml",
-            "classpath:applicationContext-webflow.xml",
-            "classpath:applicationContext-osgi.xml",
-            "WEB-INF/" + servletName + "-servlet.xml"
-        });
-        context.refresh();
-        return context;
     }
 }
