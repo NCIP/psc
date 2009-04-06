@@ -47,6 +47,9 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
                     } else {
                         return getMembrane().traverse(farResult, proxy.getClass().getClassLoader());
                     }
+                } catch (IllegalAccessException iae) {
+                    log.error(String.format("Bridging method %s to %s failed due to illegal access", nearMethod, farMethod), iae);
+                    throw iae;
                 } catch (InvocationTargetException ite) {
                     throw (Throwable) getMembrane().traverse(ite.getTargetException(),
                         proxy.getClass().getClassLoader());

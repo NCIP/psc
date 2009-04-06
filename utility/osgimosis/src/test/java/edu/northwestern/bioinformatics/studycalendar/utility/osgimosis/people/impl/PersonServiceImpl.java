@@ -55,10 +55,17 @@ public class PersonServiceImpl implements PersonService {
             super(name, "PI");
         }
 
-        // Define this here so that the declaring class is private
+        // Define these here so that the declaring class is private
+
         @Override
         public String getKind() {
             return super.getKind();
+        }
+
+        @Override
+        public String toString() {
+            return new StringBuilder(getClass().getSimpleName()).
+                append('[').append(getName()).append(']').toString();
         }
     }
 }

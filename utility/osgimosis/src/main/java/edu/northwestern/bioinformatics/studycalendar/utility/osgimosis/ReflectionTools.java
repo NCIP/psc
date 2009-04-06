@@ -56,6 +56,7 @@ public class ReflectionTools {
 
         List<Class> toSearch = new ArrayList<Class>();
         toSearch.addAll(Arrays.asList(getAllInterfaces(clazz)));
+        toSearch.add(Object.class);
         toSearch.add(clazz);
         for (Class interfac : toSearch) {
             for (Method method : interfac.getMethods()) {

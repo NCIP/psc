@@ -44,10 +44,16 @@ public class MembraneTest extends OsgimosisTestCase {
         assertEquals("pie maker", result.getKind());
     }
 
-    public void testMembraneAllowsAccessToMethodsOnInaccessibleClasses() throws Exception {
+    public void testMembraneAllowsAccessToInterfaceMethodsOnInaccessibleClasses() throws Exception {
         PersonService near = bridgedPersonService();
         Person result = near.createPrivateInvestigator();
         assertEquals("PI", result.getKind());
+    }
+
+    public void testMembraneAllowsAccessToObjectMethodsOnInaccessibleClasses() throws Exception {
+        PersonService near = bridgedPersonService();
+        Person result = near.createPrivateInvestigator();
+        assertEquals("PrivateInvestigator[Emerson]", result.toString());
     }
 
     public void testMembraneFiltersMethodParameters() throws Exception {
