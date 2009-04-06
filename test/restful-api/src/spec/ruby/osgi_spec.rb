@@ -34,7 +34,6 @@ describe "/osgi/bundles" do
   
   describe "/{bundle-id}/state" do
     before do
-      pending
       get "/osgi/bundles", :as => :zelda
       response.status_code.should == 200
       @bundles = response.json
@@ -65,7 +64,7 @@ describe "/osgi/bundles" do
         put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }", 
           :as => :zelda, 'Content-Type' => 'application/json'
         response.status_code.should == 200
-        response.json['status'].should == 'ACTIVE'
+        response.json['state'].should == 'ACTIVE'
       end
       
       it "stops a started bundle" do
@@ -74,7 +73,7 @@ describe "/osgi/bundles" do
         put "/osgi/bundles/#{active['id']}/state", "{ state: STOPPING }", 
           :as => :zelda, 'Content-Type' => 'application/json'
         response.status_code.should == 200
-        %w(INSTALLED RESOLVED).should include(response.json['status'])
+        %w(INSTALLED RESOLVED).should include(response.json['state'])
       end
       
       %w(UNINSTALLED INSTALLED RESOLVED ACTIVE).each do |unputtable_state|
@@ -94,7 +93,7 @@ describe "/osgi/bundles" do
             put "/osgi/bundles/#{active['id']}/state", "{ state: #{unputtable_state} }", 
               :as => :zelda, 'Content-Type' => 'application/json'
             response.status_code.should == 200
-            response.json['status'].should == unputtable_state
+            response.json['state'].should == unputtable_state
           end
         end
       end

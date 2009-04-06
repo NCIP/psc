@@ -180,8 +180,11 @@
         <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
     </bean>
 
-    <bean name="/osgi/bundles" id="osgiBundlesResource" scope="prototype" autowire="byName"
+    <bean name="/osgi/bundles" id="osgiBundleListResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleListResource"/>
+
+    <bean name="/osgi/bundles/{bundle-id}/state" id="osgiBundleStateResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleStateResource"/>
 
     <!-- AUXILIARIES -->
 
