@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,11 @@ public class Delegator implements InvocationHandler {
 		if (delegateMethod != null) {
             log.debug("Bridging method {} with args {}", method, args == null ? "<none>" : Arrays.asList(args));
             log.debug("Delegate method is {} from {}", delegateMethod, delegateMethod.getDeclaringClass());
-			return getApiBridge().bridge(delegateMethod.invoke(getDelegate(), bridgeObjects(args)), true);
+            try {
+                return getApiBridge().bridge(delegateMethod.invoke(getDelegate(), bridgeObjects(args)), true);
+            } catch (InvocationTargetException ite) {
+                throw (Throwable) getApiBridge().bridge(ite.getTargetException(), true);
+            }
 		} else {
 			throw new ApiBridgeException(String.format(
 					"Method '%s' was not found in the delegate object", method.getName()));
