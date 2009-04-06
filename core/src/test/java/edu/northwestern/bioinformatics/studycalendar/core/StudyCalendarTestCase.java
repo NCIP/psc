@@ -7,7 +7,7 @@ import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+// import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,9 +27,9 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected Set<Object> mocks = new HashSet<Object>();
     protected ApplicationSecurityManager applicationSecurityManager;
 
-    static {
-        SLF4JBridgeHandler.install();
-    }
+    // static {
+    //     SLF4JBridgeHandler.install();
+    // }
 
     public static ApplicationContext getDeployedApplicationContext() {
         return StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
