@@ -30,8 +30,6 @@ public class ReflectionToolsTest extends TestCase {
     }
     
     public void testGetAllInterfacesGetsInterfacesOfSuperclasses() throws Exception {
-        System.out.println(Arrays.asList(Collection.class.getInterfaces()));
-
         List<Class> actual = Arrays.asList(ReflectionTools.getAllInterfaces(HashSet.class));
         List<Class<?>> expected = Arrays.asList(
             Set.class, Collection.class, Iterable.class, Serializable.class, Cloneable.class
