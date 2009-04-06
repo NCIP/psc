@@ -117,7 +117,6 @@ public class UserService implements Serializable {
      * Returns the user, fully initialized.
      * @param username
      */
-    @Transactional(readOnly = true)
     public User getUserByName(String username) {
         User user = userDao.getByName(username);
         if (user != null) {
