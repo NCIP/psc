@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import org.springframework.util.Assert;
 
@@ -24,7 +24,7 @@ public class MapBuilder<K, V> {
         this.map = map == null ? createDefaultMap() : map;
     }
 
-    private LinkedHashMap<K, V> createDefaultMap() {
+    private Map<K, V> createDefaultMap() {
         return new LinkedHashMap<K, V>();
     }
 
