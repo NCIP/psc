@@ -14,6 +14,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -34,12 +35,14 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     
     protected MockHttpServletRequest servletRequest;
     protected MockHttpServletResponse servletResponse;
+    protected MockServletContext servletContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        servletRequest = new MockHttpServletRequest();
+        servletContext = new MockServletContext();
+        servletRequest = new MockHttpServletRequest(servletContext);
         servletRequest.addHeader("Host", HOST);
         servletResponse = new MockHttpServletResponse();
 

@@ -180,6 +180,9 @@
         <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
     </bean>
 
+    <bean name="/osgi/bundles" id="osgiBundlesResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleListResource"/>
+
     <!-- AUXILIARIES -->
 
     <bean id="resourceFreemarkerConfiguration"

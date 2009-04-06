@@ -705,6 +705,67 @@
                 </method>
             </resource>
         </resource>
+        
+        <resource path="osgi/bundles">
+            <resource path="{bundle-id}/state">
+                <doc>
+                    <html:p>
+                        The state of the given bundle in PSC's OSGi layer.
+                    </html:p>
+                </doc>
+                <param style="template" name="bundle-id">
+                    <doc>
+                        <html:p>
+                            The deployed ID for the bundle in question.  
+                            The <html:code>osgi/bundles</html:code>
+                            resource may be used to look up these IDs.
+                        </html:p>
+                    </doc>
+                </param>
+                <method name="GET">
+                    <response>
+                        <doc>
+                            <html:p>
+                                An object with the key <html:code>state</html:code>
+                                and the value matching one of the six bundle
+                                state constant names defined by the OSGi 
+                                <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                            </html:p>
+                        </doc>
+                        <representation mediaType="application/json"/>
+                    </response>
+                </method>
+                <method name="PUT">
+                    <request>
+                        <doc>
+                            <html:p>
+                                An object with the key <html:code>state</html:code>
+                                and the value matching one of the six bundle
+                                state constant names defined by the OSGi 
+                                <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                            </html:p>
+                            <html:p>
+                                Currently, only setting a bundle to 
+                                <html:code>STARTING</html:code> or
+                                <html:code>STOPPING</html:code> is supported.
+                            </html:p>
+                        </doc>
+                        <representation mediaType="application/json"/>
+                    </request>
+                </method>
+            </resource>
+            <method name="GET">
+                <doc>
+                    <html:p>
+                        Returns an array of objects describing all the 
+                        installed bundles.
+                    </html:p>
+                </doc>
+                <response>
+                    <representation mediaType="application/json"/>
+                </response>
+            </method>
+        </resource>
     </resources>
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>

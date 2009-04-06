@@ -186,6 +186,7 @@ WEB = [
   "opensymphony:sitemesh:jar:2.2.1",
   "poi:poi-2.5.1-final:jar:20040804",
   "taglibs:standard:jar:1.1.2",
+  "org.json:json:jar:20080701",
   eponym("jstl", "1.1.2"),
   "net.fortuna:ical4j:jar:1.0-beta4",
   artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
@@ -200,6 +201,7 @@ RESTLET = struct({
   :framework        => "org.restlet:org.restlet:jar:#{RESTLET_VERSION}",
   :spring_ext       => "org.restlet:org.restlet.ext.spring:jar:#{RESTLET_VERSION}",
   :freemarker_ext   => "org.restlet:org.restlet.ext.freemarker:jar:#{RESTLET_VERSION}",
+  :json_ext         => "org.restlet:org.restlet.ext.json:jar:#{RESTLET_VERSION}",
   :nre              => "com.noelios.restlet:com.noelios.restlet:jar:#{RESTLET_VERSION}",
   :servlet_nre_ext  => "com.noelios.restlet:com.noelios.restlet.ext.servlet:jar:#{RESTLET_VERSION}",
   :spring_nre_ext   => "com.noelios.restlet:com.noelios.restlet.ext.spring:jar:#{RESTLET_VERSION}"
