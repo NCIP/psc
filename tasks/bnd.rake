@@ -63,12 +63,10 @@ module Bnd
   end
   
   def bnd
-    @bnd ||= BndProperties.new(self)
+    @bnd ||= ProjectBndProperties.new(self)
   end
   
-  private
-  
-  class BndProperties
+  module BndProperties
     BND_TO_ATTR = {
       '-classpath' => :classpath,
       'Bundle-Version' => :version,
@@ -77,12 +75,78 @@ module Bnd
       'Import-Package' => :import_packages_serialized,
       'Export-Package' => :export_packages_serialized
     }
+    LIST_ATTR = BND_TO_ATTR.values.select { |a| a.to_s =~ /_serialized$/ }
+    SCALAR_ATTR = BND_TO_ATTR.values - LIST_ATTR
     
-    attr_writer(*BND_TO_ATTR.values)
+    # Scalar properties are deliberately not memoized to allow
+    # the default values to be evaluated as late as possible.
+    
+    SCALAR_ATTR.each do |attribute|
+      class_eval <<-RUBY
+        def #{attribute}
+          @#{attribute} || (default_#{attribute} if respond_to? :default_#{attribute})
+        end
+      RUBY
+    end
+    
+    attr_writer(*SCALAR_ATTR)
+    
+    # List properties are memoized to allow for concatenation via the 
+    # read accessor.
+    
+    LIST_ATTR.each do |attribute_ser|
+      attribute = attribute_ser.to_s.sub(/_serialized$/, '')
+      class_eval <<-RUBY
+        def #{attribute}
+          @#{attribute} ||= (self.respond_to?(:default_#{attribute}) ? default_#{attribute} : [])
+        end
+        
+        def #{attribute_ser}
+          #{attribute}.join(', ')
+        end
+        
+        def #{attribute_ser}=(s)
+          @#{attribute} = s.split(/\\s*,\\s*/)
+        end
+      RUBY
+    end
+    
+    def write(f)
+      f.print self.to_hash.collect { |k, v| "#{k}=#{v}" }.join("\n")
+    end
+    
+    def to_hash
+      Hash[ *BND_TO_ATTR.collect { |k, v| [ k, self[k] ] }.flatten ].merge(other)
+    end
+    
+    def [](k)
+      if BND_TO_ATTR.keys.include?(k)
+        self.send BND_TO_ATTR[k]
+      else
+        other[k]
+      end
+    end
+    
+    def []=(k, v)
+      if BND_TO_ATTR.keys.include?(k)
+        self.send :"#{BND_TO_ATTR[k]}=", v
+      else
+        other[k] = v
+      end
+    end
+    
+    protected
+    
+    def other
+      @other ||= { }
+    end
+  end
+  
+  class ProjectBndProperties
+    include BndProperties
     
     def initialize(project)
       @project = project
-      @other = { }
       @wrap = false # eventually, change this to default true
     end
     
@@ -94,83 +158,34 @@ module Bnd
       @wrap
     end
     
-    # These properties are deliberately not memoized to allow
-    # the default values to be evaluated as late as possible.
-    
-    def version
-      @version || project.version
+    def default_version
+      project.version
     end
     
-    def classpath
-      @classpath || project.compile.dependencies.collect(&:to_s).join(", ")
+    def default_classpath
+      project.compile.dependencies.collect(&:to_s).join(", ")
     end
     
-    def symbolic_name
-      @symbolic_name || [project.group, project.id].join('.')
+    def default_symbolic_name
+      [project.group, project.id].join('.')
     end
     
-    def description
-      @description || project.full_comment
+    def default_description
+      project.full_comment
     end
     
-    # These are deliberately memoized to since the default values
-    # are static and to allow concatenation.
-    
-    def import_packages
-      @import_packages ||= ['*']
+    def default_import_packages
+      ['*']
     end
     
-    def export_packages
-      @export_packages ||= ['*']
-    end
-    
-    def write(f)
-      f.print self.to_hash.collect { |k, v| "#{k}=#{v}" }.join("\n")
-    end
-    
-    def to_hash
-      Hash[ *BND_TO_ATTR.collect { |k, v| [ k, self[k] ] }.flatten ].merge(@other)
-    end
-    
-    def [](k)
-      if BND_TO_ATTR.keys.include?(k)
-        case BND_TO_ATTR[k]
-        when Symbol
-          self.send BND_TO_ATTR[k]
-        when Proc
-          BND_TO_ATTR[k].call
-        else
-          raise "Unexpected value in BND_TO_ATTR for #{k}"
-        end
-      else
-        @other[k]
-      end
-    end
-    
-    def []=(k, v)
-      if BND_TO_ATTR.keys.include?(k)
-        self.send :"#{BND_TO_ATTR[k]}=", v
-      else
-        @other[k] = v
-      end
+    def default_export_packages
+      ['*']
     end
     
     protected
     
     def project
       @project
-    end
-    
-    %w(import_packages export_packages).each do |kind|
-      class_eval <<-RUBY
-        def #{kind}_serialized
-          #{kind}.join(', ')
-        end
-        
-        def #{kind}_serialized=(s)
-          @#{kind} = s.split(/\\s*,\\s*/)
-        end
-      RUBY
     end
   end
 end
