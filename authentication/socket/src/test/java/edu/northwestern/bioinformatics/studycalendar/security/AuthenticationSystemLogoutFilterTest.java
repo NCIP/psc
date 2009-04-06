@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import static org.easymock.classextension.EasyMock.expect;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,16 +14,21 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemLogoutFilterTest extends WebTestCase {
+public class AuthenticationSystemLogoutFilterTest extends StudyCalendarTestCase {
     private AuthenticationSystemLogoutFilter filter;
 
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
     private FilterChain filterChain;
+
     private AuthenticationSystem authenticationSystem;
     private Filter defaultFilter;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
         filterChain = registerMockFor(FilterChain.class);
         defaultFilter = registerMockFor(Filter.class);
 

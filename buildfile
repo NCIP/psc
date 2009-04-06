@@ -161,6 +161,18 @@ define "psc" do
   
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
+    desc "PSC's framework for using the authentication plugins"
+    define "socket" do
+      compile.with project('plugin-api').and_dependencies, 
+        project('api-bridge').and_dependencies,
+        project('core').and_dependencies
+      test.with UNIT_TESTING,
+        project('authentication:local-plugin'),
+        project('test-infrastructure').and_dependencies, 
+        project('test-infrastructure').test_dependencies
+      package(:jar)
+    end
+    
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
@@ -171,17 +183,6 @@ define "psc" do
       test.with(UNIT_TESTING, HIBERNATE.ehcache, HIBERNATE.backport)
       package(:jar)
     end
-    
-    # This will probably be removed completely before #597 is complete
-    # desc "PSC's framework for using the authentication plugins"
-    # define "socket" do
-    #   bnd.wrap!
-    #   bnd['Bundle-Activator'] = 
-    #     "edu.northwestern.bioinformatics.studycalendar.security.socket.Activator"
-    #   compile.with project('plugin-api').and_dependencies
-    #   test.with(UNIT_TESTING)
-    #   package(:jar)
-    # end
     
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
@@ -292,20 +293,9 @@ define "psc" do
     compile.with SLF4J, CGLIB
     package(:jar)
   end
-  
-  desc "Web interfaces, including the GUI and the RESTful API"
-  define "web" do
-    compile.with LOGBACK, 
-      project('core').and_dependencies,
-      # %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
-      project('psc:authentication:plugin-api').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, CAGRID, project('api-bridge'), DYNAMIC_JAVA
 
-    test.with project('test-infrastructure'), 
-      project('authentication:local-plugin'),
-      project('test-infrastructure').compile.dependencies,
-      project('test-infrastructure').test.compile.dependencies
-
+  desc "Submodules related to building and deploying PSC's embedded plugin layer"
+  define "osgi-layer" do
     task :da_launcher_artifacts do |task|
       class << task; attr_accessor :values; end
       knopflerfish_main = artifact(KNOPFLERFISH.framework)
@@ -341,12 +331,41 @@ define "psc" do
         "bundles/application-libraries" => application_libraries
       )
     end
+    
+    # task :build_test_da_launcher => [:da_launcher_artifacts] do |task|
+    #   mkdir_p _('target', 'test')
+    #   rm_rf _('target', 'test', 'da-launcher')
+    #   cp_r project('psc:web')._('src', 'main', 'webapp', 'WEB-INF', 'da-launcher'), _('target', 'test')
+    #   task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
+    #     dadir = _("target/test/da-launcher/#{path}")
+    #     mkdir_p dadir
+    #     artifacts.each { |a| a.invoke; cp a.to_s, dadir }
+    #   end
+    # end
+    # 
+    # test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
+    #   project('psc:authentication:socket').and_dependencies
+    # test.enhance([:test_da_launcher])
+  end
+  
+  desc "Web interfaces, including the GUI and the RESTful API"
+  define "web" do
+    compile.with LOGBACK, 
+      project('core').and_dependencies,
+      # %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
+      project('psc:authentication:plugin-api').and_dependencies,
+      project('psc:authentication:socket').and_dependencies,
+      SPRING_WEB, RESTLET, WEB, CAGRID, project('api-bridge'), DYNAMIC_JAVA
+
+    test.with project('test-infrastructure').and_dependencies, 
+      project('test-infrastructure').test_dependencies,
+      project('authentication:socket').test_dependencies
 
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      war.enhance [:da_launcher_artifacts] do
-        task("psc:web:da_launcher_artifacts").values.each do |path, artifacts|
+      war.enhance ["psc:osgi-layer:da_launcher_artifacts"] do
+        task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts)
         end
       end
@@ -368,7 +387,7 @@ define "psc" do
       end
     end
     
-    task :explode => [compile, :da_launcher_artifacts] do
+    task :explode => [compile, "psc:osgi-layer:da_launcher_artifacts"] do
       packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
         war_package.classes.each do |clz_src|
           filter.from(clz_src).into(_('src/main/webapp/WEB-INF/classes')).run
@@ -378,7 +397,7 @@ define "psc" do
         war_package.libs.each do |lib|
           cp lib.to_s, libdir
         end
-        task('psc:web:da_launcher_artifacts').values.each do |path, artifacts|
+        task('psc:osgi-layer:da_launcher_artifacts').values.each do |path, artifacts|
           dadir = _("src/main/webapp/WEB-INF/da-launcher/#{path}")
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
@@ -422,8 +441,8 @@ define "psc" do
     iml.excluded_directories << _('src/main/webapp/WEB-INF/lib') << _('src/main/webapp/WEB-INF/classes')
     
     # clean exploded files, too
-    clean([:da_launcher_artifacts]) {
-      dal_paths = [task('psc:web:da_launcher_artifacts').values.keys + %w(logs runtime osgi-framework/felix osgi-framework/knopflerfish)].
+    clean(["psc:osgi-layer:da_launcher_artifacts"]) {
+      dal_paths = [task('psc:osgi-layer:da_launcher_artifacts').values.keys + %w(logs runtime osgi-framework/felix osgi-framework/knopflerfish osgi-framework/equinox)].
         flatten.collect { |path| "da-launcher/#{path}" }
       (%w(lib classes) + dal_paths).each do |exploded_path|
         rm_rf _("src/main/webapp/WEB-INF/#{exploded_path}")
