@@ -12,5 +12,22 @@
 
     <bean id="hostBeansInitializer" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.HostBeansInitializer">
         <property name="bundleContext" ref="bundleContext"/>
+        <property name="membrane" ref="membrane"/>
+    </bean>
+
+    <bean id="membrane" class="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane">
+        <property name="nearClassLoader"
+                  value="edu.northwestern.bioinformatics.studycalendar.web.osgi.ContextClassLoaderFactoryBean" />
+        <property name="sharedPackages">
+            <list>
+                <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
+
+                <value>org.acegisecurity</value>
+                <value>org.acegisecurity.userdetails</value>
+                <value>org.springframework.context</value>
+
+                <value>javax.sql</value>
+            </list>
+        </property>
     </bean>
 </beans>

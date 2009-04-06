@@ -18,13 +18,11 @@ import org.springframework.context.ApplicationContextAware;
 public class HostBeansInitializer implements ApplicationContextAware, InitializingBean {
     private ApplicationContext applicationContext;
     private BundleContext bundleContext;
+    private Membrane membrane;
 
     public void afterPropertiesSet() throws Exception {
         ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
         if (ref != null) {
-            Membrane membrane = new Membrane(Thread.currentThread().getContextClassLoader(), 
-                "org.springframework.context", "org.acegisecurity.userdetails", "org.acegisecurity",
-                "javax.sql", "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices");
             HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
             beans.setHostApplicationContext(applicationContext);
         }
@@ -40,5 +38,10 @@ public class HostBeansInitializer implements ApplicationContextAware, Initializi
     @Required
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    @Required
+    public void setMembrane(Membrane membrane) {
+        this.membrane = membrane;
     }
 }
