@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -27,13 +28,20 @@ class EncapsulatorCreator {
     }
 
     public Encapsulator create() {
-        Class base = sharedBaseClass();
-        List<Class> interfaces = sharedInterfaces();
-        if (base == null && interfaces.isEmpty()) {
+        if (Collection.class.isAssignableFrom(farClass)) {
+            return new CollectionEncapsulator(membrane);
+        } else if (nearClassLoader == null) {
+            log.trace(" - Not proxying object from bootstrap classloader");
             return null;
         } else {
-            return new Encapsulator(membrane, nearClassLoader, base, interfaces);
+            Class base = sharedBaseClass();
+            List<Class> interfaces = sharedInterfaces();
+            if (base != null || !interfaces.isEmpty()) {
+                return new ProxyEncapsulator(membrane, nearClassLoader, base, interfaces);
+            }
         }
+
+        return null;
     }
 
     private Class targetClass(Class sourceClass) {

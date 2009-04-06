@@ -52,30 +52,20 @@ public class Membrane {
         log.trace(" - Identity: {}@{}", object.getClass().getName(),
             Integer.toHexString(System.identityHashCode(object)));
 
+        if (newCounterpartClassLoader == null) {
+            log.debug(" - Not bridging object into bootstrap classloader");
+            return object;
+        }
+
         log.trace(" - Into {}", newCounterpartClassLoader);
         if (cache.get(object) == null) {
-            if (newCounterpartClassLoader == null) {
-                log.debug(" - Not bridging object into bootstrap classloader");
-                return object;
-            }
-
             Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader);
             if (encapsulator == null) {
-                if (object instanceof Collection) {
-                    log.debug(" - Encapsulating collection");
-                    cache.put(new EncapsulatedCollection((Collection) object, this), object);
-                } else {
-                    log.debug(" - Not encapsulatable; returning original object");
-                    return object;
-                }
+                log.debug(" - Not encapsulatable; returning original object");
+                return object;
             } else {
-                if (object.getClass().getClassLoader() == null) {
-                    log.debug(" - Not bridging object from bootstrap classloader");
-                    return object;
-                } else {
-                    log.debug(" - Building new proxy");
-                    cache.put(encapsulator.proxy(object), object);
-                }
+                log.debug(" - Building new proxy");
+                cache.put(encapsulator.encapsulate(object), object);
             }
         } else {
             log.debug(" - Reusing cached value");

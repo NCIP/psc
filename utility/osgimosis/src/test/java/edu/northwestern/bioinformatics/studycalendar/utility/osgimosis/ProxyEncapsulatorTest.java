@@ -9,9 +9,9 @@ import java.util.Arrays;
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
-public class EncapsulatorTest extends OsgimosisTestCase {
+public class ProxyEncapsulatorTest extends OsgimosisTestCase {
     private Membrane aMembrane;
-    private Object aInstance, bInstance;
+    private Object aInstance;
     private Class personB, defaultPersonB;
 
     @Override
@@ -25,17 +25,17 @@ public class EncapsulatorTest extends OsgimosisTestCase {
     }
 
     public void testProxyWithoutSuperclassIsJdkProxy() throws Exception {
-        Encapsulator params = new Encapsulator(
+        Encapsulator params = new ProxyEncapsulator(
             aMembrane, loaderB, Arrays.asList(personB));
-        Object actual = params.proxy(aInstance);
+        Object actual = params.encapsulate(aInstance);
         assertTrue("Class should contain $Proxy in name: " + actual.getClass().getName(),
             actual.getClass().getName().contains("$Proxy"));
     }
 
     public void testProxyWithSuperclassIsCglibProxy() throws Exception {
-        Encapsulator params = new Encapsulator(
+        Encapsulator params = new ProxyEncapsulator(
             aMembrane, loaderB, defaultPersonB, Arrays.asList(personB));
-        Object actual = params.proxy(aInstance);
+        Object actual = params.encapsulate(aInstance);
         assertTrue("Class should contain Enhancer in name: " + actual.getClass().getName(),
             actual.getClass().getName().contains("Enhancer"));
         assertTrue("Class should contain superclass in name: " + actual.getClass().getName(),

@@ -17,9 +17,9 @@ class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Object far;
-    private Encapsulator encapsulator;
+    private ProxyEncapsulator encapsulator;
 
-    public EncapsulationInterceptor(Object far, Encapsulator encapsulator) {
+    public EncapsulationInterceptor(Object far, ProxyEncapsulator encapsulator) {
         this.far = far;
         this.encapsulator = encapsulator;
     }
@@ -54,7 +54,7 @@ class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
         }
     }
 
-    private Encapsulator getEncapsulator() {
+    private ProxyEncapsulator getEncapsulator() {
         return encapsulator;
     }
 
