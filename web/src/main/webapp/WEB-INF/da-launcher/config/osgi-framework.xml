@@ -20,6 +20,8 @@
 		<property name="felix.embedded.execution">true</property>-->
 		<property name="org.knopflerfish.consoletelnet.port">7223</property>
 		<property name="osgi.shell.telnet.port">7224</property>
+        
+        <!-- net.sf.cglib is included because the Membrane needs to be able to create proxies in any OSGi bundle -->
         <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.*,net.sf.cglib.*</property>
 	</framework-properties>
 	

@@ -35,8 +35,8 @@ public class InstalledAuthenticationSystem extends FilterAdapter {
 
         system.doFilter(servletRequest, servletResponse, new FilterChain() {
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-                SecurityContextHolder.setContext(system.getCurrentSecurityContext());
                 final SecurityContext original = SecurityContextHolder.getContext();
+                SecurityContextHolder.setContext(system.getCurrentSecurityContext());
 
                 filterChain.doFilter(servletRequest, servletResponse);
 

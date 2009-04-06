@@ -28,6 +28,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
 
                 <value>org.acegisecurity</value>
+                <value>org.acegisecurity.context</value>
                 <value>org.acegisecurity.userdetails</value>
                 <value>org.osgi.service.cm</value>
 
@@ -48,7 +49,7 @@
         </property>
     </bean>
 
-    <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem">
+    <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem">
         <property name="bundleContext" ref="bundleContext"/>
         <property name="membrane" ref="membrane"/>
     </bean>

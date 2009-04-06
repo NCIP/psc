@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.TransparentMembrane;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 import static org.easymock.EasyMock.*;
 import org.easymock.classextension.EasyMock;
@@ -211,15 +211,4 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
 
     public static class NoGroupController extends TestingController { }
 
-    private class TransparentMembrane extends Membrane {
-        @Override
-        public Object farToNear(Object farObject) {
-            return farObject;
-        }
-
-        @Override
-        public Object traverse(Object object, ClassLoader newCounterpartClassLoader) {
-            return object;
-        }
-    }
 }

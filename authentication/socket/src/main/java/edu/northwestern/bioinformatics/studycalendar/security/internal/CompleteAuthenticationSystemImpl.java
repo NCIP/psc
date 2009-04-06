@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.security.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import edu.northwestern.bioinformatics.studycalendar.tools.MultipleFilterFilter;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.tools.MultipleFilterFilter;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.springframework.beans.factory.annotation.Required;
@@ -30,6 +32,10 @@ public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter imple
 
     public AuthenticationSystem getCurrentAuthenticationSystem() {
         return authenticationSystemConfiguration.getAuthenticationSystem();
+    }
+
+    public SecurityContext getCurrentSecurityContext() {
+        return SecurityContextHolder.getContext();
     }
 
     ////// CONFIGURATION
