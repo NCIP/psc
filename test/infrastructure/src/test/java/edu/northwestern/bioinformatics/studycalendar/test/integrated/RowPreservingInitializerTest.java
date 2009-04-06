@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.integrated;
 
-import edu.northwestern.bioinformatics.studycalendar.test.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.ArrayList;

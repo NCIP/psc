@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
-import edu.northwestern.bioinformatics.studycalendar.test.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.IntegratedTestDatabaseInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
