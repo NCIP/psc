@@ -20,7 +20,7 @@
 		<property name="felix.embedded.execution">true</property>-->
 		<property name="org.knopflerfish.consoletelnet.port">7223</property>
 		<property name="osgi.shell.telnet.port">7224</property>
-        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.*</property>
+        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.*,net.sf.cglib.*</property>
 	</framework-properties>
 	
 </osgi-framework-settings>
