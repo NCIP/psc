@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextBuilder;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemSocket;
+import edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemSocket;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem;
