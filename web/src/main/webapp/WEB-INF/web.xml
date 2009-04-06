@@ -62,12 +62,12 @@
 
     <filter-mapping>
         <filter-name>setup-or-not</filter-name>
-        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>setup-or-not</filter-name>
-        <servlet-name>public</servlet-name>
+        <url-pattern>/public/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -88,12 +88,12 @@
 
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
-        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
-        <servlet-name>restful-api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -117,22 +117,22 @@
 
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>public</servlet-name>
+        <url-pattern>/public/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>restful-api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>setup</servlet-name>
+        <url-pattern>/setup/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -146,22 +146,22 @@
 
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>public</servlet-name>
+        <url-pattern>/public/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>restful-api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
-        <servlet-name>setup</servlet-name>
+        <url-pattern>/setup/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -185,7 +185,7 @@
 
     <filter-mapping>
         <filter-name>UserInRequestFilter</filter-name>
-        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter>
