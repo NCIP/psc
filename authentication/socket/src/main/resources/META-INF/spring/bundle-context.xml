@@ -98,11 +98,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             objectDefinitionSource is overridden by ControllerSecureUrlCreator
             (ref'd in spring-servlet.xml). This value stays because Acegi complains if
             there's no value when the bean is initialized.
+
+            Rejects everything by default so that if objectDefinitionSource isn't
+            updated, the application will be locked down.
         -->
         <property name="objectDefinitionSource">
             <value>
                 CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
                 PATTERN_TYPE_APACHE_ANT
+                /**=INVALID
             </value>
         </property>
     </bean>
