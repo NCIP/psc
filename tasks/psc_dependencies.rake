@@ -240,7 +240,6 @@ EQUINOX = struct(
     map
   end
 )
-puts EQUINOX.inspect
 
 DYNAMIC_JAVA = struct(
   # TODO: there's a dynamicjava.org maven repo now
