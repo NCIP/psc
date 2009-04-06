@@ -112,12 +112,15 @@ HIBERNATE = struct(
   :antlr => "org.antlr:com.springsource.antlr:jar:2.7.7",
   :c3p0 => "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
   :cglib => CGLIB,
-  :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
-  :jsr107 => "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
   :javax_transaction => "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
   :javax_persistence => "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
-  :backport => "edu.emory.mathcs.backport:com.springsource.edu.emory.mathcs.backport:jar:3.0.0",
   :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
+)
+
+EHCACHE = struct(
+  :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
+  :jsr107 => "net.sourceforge.jsr107cache:com.springsource.net.sf.jsr107cache:jar:1.0.0",
+  :backport => "edu.emory.mathcs.backport:com.springsource.edu.emory.mathcs.backport:jar:3.0.0"
 )
 
 SECURITY = struct(

@@ -76,7 +76,7 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end    
     compile.with BERING, SLF4J, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
-      JAKARTA_COMMONS, DB, HIBERNATE
+      JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
@@ -180,7 +180,7 @@ define "psc" do
       compile.with project('utility'), SLF4J, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
-      test.with(UNIT_TESTING, HIBERNATE.ehcache, HIBERNATE.backport)
+      test.with(UNIT_TESTING, EHCACHE)
       package(:jar)
     end
     
@@ -204,7 +204,17 @@ define "psc" do
       bnd.name = "PSC CAS Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
-      compile.with project('plugin-api').and_dependencies, SECURITY.cas
+      bnd.import_packages << 
+        "org.springframework.beans.factory.config;version=2.5" <<
+        "org.springframework.cache.ehcache;version=2.5" <<
+        "org.acegisecurity.providers.cas" <<
+        "org.acegisecurity.providers.cas.cache" <<
+        "org.acegisecurity.providers.cas.populator" <<
+        "org.acegisecurity.providers.cas.proxy" <<
+        "org.acegisecurity.providers.cas.ticketvalidator" <<
+        "org.acegisecurity.ui.cas" <<
+        "org.acegisecurity.ui.logout"
+      compile.with project('plugin-api').and_dependencies, SECURITY.cas, EHCACHE
       test.with project('plugin-api').test_dependencies
       package(:jar)
     end
@@ -330,22 +340,35 @@ define "psc" do
         "bundles/application-bundles" => application_bundles,
         "bundles/application-libraries" => application_libraries
       )
+      (application_bundles + application_libraries).each do |art|
+        art.invoke
+      end
     end
     
-    # task :build_test_da_launcher => [:da_launcher_artifacts] do |task|
-    #   mkdir_p _('target', 'test')
-    #   rm_rf _('target', 'test', 'da-launcher')
-    #   cp_r project('psc:web')._('src', 'main', 'webapp', 'WEB-INF', 'da-launcher'), _('target', 'test')
-    #   task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
-    #     dadir = _("target/test/da-launcher/#{path}")
-    #     mkdir_p dadir
-    #     artifacts.each { |a| a.invoke; cp a.to_s, dadir }
-    #   end
-    # end
-    # 
-    # test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
-    #   project('psc:authentication:socket').and_dependencies
-    # test.enhance([:test_da_launcher])
+    task :build_test_da_launcher => ["psc:osgi-layer:da_launcher_artifacts"] do |task|
+      mkdir_p _('target', 'test')
+      rm_rf _('target', 'test', 'da-launcher')
+      cp_r project('web')._('src', 'main', 'webapp', 'WEB-INF', 'da-launcher'), _('target', 'test')
+      task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
+        dadir = _("target/test/da-launcher/#{path}")
+        mkdir_p dadir
+        artifacts.each { |a| a.invoke; cp a.to_s, dadir }
+      end
+    end
+    
+    task :examine => [:build_test_da_launcher, 'psc:osgi-layer:test:compile'] do
+      cd _("target/test/classes") do
+        classpath = project.test.dependencies.collect { |p| p.to_s }.join(':')
+        system("java -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
+      end
+    end
+    
+    test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
+      project('authentication:socket').and_dependencies,
+      project('authentication:cas-plugin').and_dependencies,
+      project('core').test_dependencies,
+      project('authentication:plugin-api').test_dependencies
+    test.enhance([:build_test_da_launcher])
   end
   
   desc "Web interfaces, including the GUI and the RESTful API"
@@ -518,7 +541,7 @@ end
 ###### Shared configuration
 
 projects.each do |p|
-  if File.exist?(p._("src/main/java"))
+  if File.exist?(p._("src/test/java"))
     # Use same logback test config for all modules
     logback_test_src = project("psc")._("src/test/resources/logback-test.xml")
     logback_test_dst = File.join(p.test.resources.target.to_s, "logback-test.xml")
