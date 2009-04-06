@@ -44,7 +44,7 @@ public abstract class PluginActivator implements BundleActivator {
         };
     }
 
-    private Dictionary<String, Object> serviceProperties(ServiceFactory factory, Bundle bundle) {
+    protected Dictionary<String, Object> serviceProperties(ServiceFactory factory, Bundle bundle) {
         AuthenticationSystem system =
             (AuthenticationSystem) factory.getService(bundle, null);
         Dictionary<String, Object> props = new MapBuilder<String, Object>().
