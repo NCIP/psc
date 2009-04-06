@@ -13,18 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class ApiBridge {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -103,24 +99,8 @@ public class ApiBridge {
         });
         enh.setClassLoader(getTargetApiClassLoader());
 
-        Class<?>[] minConstructorParams = findMinConstructorParams(superClassMatch);
-        log.debug("Will attempt to proxy using the superclass constructor with params {}",
-            Arrays.asList(minConstructorParams));
-
-        return enh.create(minConstructorParams, new Object[minConstructorParams.length]);
+        return enh.create();
 	}
-
-    private Class<?>[] findMinConstructorParams(Class<?> klass) {
-        SortedSet<Class<?>[]> constructorParams = new TreeSet<Class<?>[]>(new Comparator<Class<?>[]>() {
-            public int compare(Class<?>[] o1, Class<?>[] o2) {
-                return o1.length - o2.length;
-            }
-        });
-        for (Constructor<?> constructor : klass.getDeclaredConstructors()) {
-            constructorParams.add(constructor.getParameterTypes());
-        }
-        return constructorParams.size() == 0 ? new Class[0] : constructorParams.first();
-    }
 
 	protected Object createProxyForInterfaces(Object apiObject, Class<?>[] interfacesMatch) {
         log.debug("Proxying by interfaces only: {}", Arrays.asList(interfacesMatch));
@@ -151,7 +131,7 @@ public class ApiBridge {
 		} else {
 			Class<?> superClassMatch = null;
 			while (clazz != null) {
-				if (isOfApiPackages(clazz)) {
+				if (isOfApiPackages(clazz) && hasDefaultConstructor(clazz)) {
 					superClassMatch = findClassMatch(clazz);
 					break;
 				}
@@ -162,7 +142,7 @@ public class ApiBridge {
 			return superClassMatch;
 		}
 	}
-	
+
 	protected Class<?> findClassMatch(Class<?> clazz) {
 		try {
 			return getTargetApiClassLoader().loadClass(clazz.getName());
@@ -172,13 +152,20 @@ public class ApiBridge {
 					clazz.getName()), ex);
 		}
 	}
-	
-	
+
 	protected boolean isOfApiPackages(Class<?> clazz) {
 		return getApiPackageNames().contains(ClassUtils.getPackageName(clazz));
 	}
-	
-	
+
+    protected boolean hasDefaultConstructor(Class<?> clazz) {
+        try {
+            clazz.getConstructor();
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
 	protected ApiBridge(ClassLoader targetApiClassLoader, String... packageNames) {
 		this.targetApiClassLoader = targetApiClassLoader;
 		this.apiPackageNames = new HashSet<String>(Arrays.asList(packageNames));
@@ -216,6 +203,7 @@ public class ApiBridge {
 	}
 
     public ApiBridge getReverseApiBridge(ClassLoader sourceApiClassLoader) {
+        log.debug("Creating reverse bridge back from {} to {}", getTargetApiClassLoader(), sourceApiClassLoader);
         return ApiBridge.getApiBridge(
                 ApiBridgeClassLoader.getClassLoader(getTargetApiClassLoader(),
                         sourceApiClassLoader, getApiPackageNamesArray()),
