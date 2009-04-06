@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
-import static edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane.Side.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,40 +39,39 @@ public class Membrane {
 
     @SuppressWarnings({ "unchecked" })
     public Object farToNear(Object farObject) {
-        return traverse(NEAR, farObject, nearClassLoader);
+        return traverse(farObject, nearClassLoader);
     }
 
     @SuppressWarnings({ "unchecked" })
-    public Object nearToFar(Object nearObject, Class farType) {
-        return traverse(FAR, nearObject, farType.getClassLoader());
-    }
-
-    private Object traverse(Side targetSide, Object object, ClassLoader targetSideClassLoader) {
+    public Object traverse(Object object, ClassLoader newCounterpartClassLoader) {
         log.debug("Traversing {} with {}", this, object);
         if (object == null) {
             log.trace(" - Null is null no matter where you're from");
             return null;
+        } else if (object.getClass().getClassLoader() == null) {
+            log.debug(" - Not bridging object from bootstrap classloader");
+            return object;
+        } else if (newCounterpartClassLoader == null) {
+            log.debug(" - Not bridging object into bootstrap classloader");
+            return object;
         }
+
         log.trace(" - Identity: {}@{}", object.getClass().getName(),
             Integer.toHexString(System.identityHashCode(object)));
-        log.trace(" - Into {}", targetSideClassLoader);
-        log.trace(" - {} to {}", targetSide.other(), targetSide);
-        if (targetSideClassLoader == null) {
-            log.trace(" - Not bridging object from bootstrap classloader");
-            return object;
-        } else if (cache.get(targetSide, object) == null) {
-            Encapsulator encapsulator = getEncapsulator(object, targetSideClassLoader);
+        log.trace(" - Into {}", newCounterpartClassLoader);
+        if (cache.get(object) == null) {
+            Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader);
             if (encapsulator == null) {
                 log.debug(" - Not encapsulatable; returning original object");
-                cache.put(targetSide, object, object);
+                return object;
             } else {
                 log.debug(" - Building new proxy");
-                cache.put(targetSide, encapsulator.proxy(object), object);
+                cache.put(encapsulator.proxy(object), object);
             }
         } else {
             log.debug(" - Reusing cached value");
         }
-        Object result = cache.get(targetSide, object);
+        Object result = cache.get(object);
         log.trace(" - Complete with {}@{}", result.getClass().getName(),
             Integer.toHexString(System.identityHashCode(result)));
         return result;
@@ -99,38 +97,20 @@ public class Membrane {
             toString();
     }
 
-    public static enum Side {
-        NEAR, FAR;
-
-        public Side other() {
-            return this == NEAR ? FAR : NEAR;
-        }
-    }
-
     private static class Cache {
-        private Map<Object, Object> nearToFar, farToNear;
+        private Map<Object, Object> pairs;
 
         private Cache() {
-            nearToFar = new IdentityHashMap<Object, Object>();
-            farToNear = new IdentityHashMap<Object, Object>();
+            pairs = new IdentityHashMap<Object, Object>();
         }
 
-        public Object get(Side side, Object otherSideValue) {
-            return getMapForValueSide(side).get(otherSideValue);
+        public Object get(Object oneValue) {
+            return pairs.get(oneValue);
         }
 
-        private Map<Object, Object> getMapForValueSide(Side side) {
-            return NEAR == side ? farToNear : nearToFar;
-        }
-
-        public synchronized void put(Side first, Object one, Object two) {
-            if (NEAR == first) {
-                nearToFar.put(one, two);
-                farToNear.put(two, one);
-            } else {
-                nearToFar.put(two, one);
-                farToNear.put(one, two);
-            }
+        public synchronized void put(Object one, Object two) {
+            pairs.put(one, two);
+            pairs.put(two, one);
         }
     }
 }

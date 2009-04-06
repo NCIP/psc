@@ -68,9 +68,15 @@ class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
         } else {
             Object[] farArgs = new Object[nearArgs.length];
             for (int i = 0; i < nearArgs.length; i++) {
-                farArgs[i] = getMembrane().nearToFar(nearArgs[i], farTypes[i]);
+                farArgs[i] = getMembrane().traverse(nearArgs[i], selectFarClassLoader(farTypes[i]));
             }
             return farArgs;
         }
+    }
+
+    private ClassLoader selectFarClassLoader(Class<?> parameterType) {
+        return parameterType.getClassLoader() == null
+            ? far.getClass().getClassLoader()
+            : parameterType.getClassLoader();
     }
 }
