@@ -22,6 +22,7 @@
             params[authSystemFieldName] = selectedSystem
             $("auth-enum-indicator").reveal()
             new Ajax.Request("<c:url value="/pages/admin/configureAuthentication"/>", {
+                method: 'get',
                 parameters: params,
                 onComplete: function() {
                     $("auth-enum-indicator").conceal()
@@ -33,6 +34,7 @@
             $(authSystemField).observe("change", updateSystemOptions)
         })
     </script>
+    <title>Select authentication system</title>
 </head>
 <body>
 <laf:box title="Configure authentication">
