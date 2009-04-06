@@ -37,7 +37,7 @@ end
 new_state = ARGV.first
 
 bundles = JSON.parse(http(:get, 'osgi/bundles'))
-telnet_bundle = bundles.detect { |b| b['symbolic-name'] =~ /consoletelnet/ }
+telnet_bundle = bundles.detect { |b| (b['symbolic-name'] =~ /consoletelnet/) || (b['symbolic-name'] =~ /shell.remote/) }
 raise "Telnet bundle not present: #{bundles.collect { |b| b['symbolic-name'] }.inspect}" unless telnet_bundle
 method, entity = 
   if new_state

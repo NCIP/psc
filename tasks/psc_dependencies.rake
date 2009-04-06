@@ -225,6 +225,23 @@ KNOPFLERFISH = struct(
   end
 )
 
+FELIX = struct(
+  Dir[static_lib('felix-1.4.1/*.jar')].inject({}) do |map, jar|
+    group, name, version = jar.scan(%r{.*/(org.apache.felix)\.([\w\.]+)-([\d\.]+)\.jar$}).first
+    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+
+EQUINOX = struct(
+  Dir[static_lib('equinox-3.4.0/*.jar')].inject({}) do |map, jar|
+    group, _, name, version = jar.scan(%r{.*/(org\.eclipse(\.equinox)?)\.([\w\.]+)_([\w\d\.-]+)\.jar$}).first
+    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+puts EQUINOX.inspect
+
 DYNAMIC_JAVA = struct(
   # TODO: there's a dynamicjava.org maven repo now
   :da_launcher => artifact("org.dynamicjava:da-launcher:jar:1.1.1").from(static_lib('da-launcher-1.1.1.jar')),

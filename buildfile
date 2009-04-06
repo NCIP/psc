@@ -302,6 +302,8 @@ define "psc" do
     task :da_launcher_artifacts do |task|
       class << task; attr_accessor :values; end
       knopflerfish_main = artifact(KNOPFLERFISH.framework)
+      felix_main = artifact(FELIX.main)
+      equinox_main = artifact(EQUINOX.osgi)
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
       application_bundles = bundle_projects.collect { |p| p.package(:jar) }
@@ -311,16 +313,26 @@ define "psc" do
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
         LOGBACK.values.collect { |a| artifact(a) }
 
-      system_optional = [KNOPFLERFISH.consoletelnet]
-      system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
+      if false # knopflerfish?
+        system_optional = [KNOPFLERFISH.consoletelnet]
+        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
+        osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
+      elsif false # felix?
+        system_optional = [FELIX.shell_remote]
+        system_bundles = FELIX.values - [FELIX.main] - system_optional
+        osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
+      else
+        system_optional = [FELIX.shell, FELIX.shell_remote]
+        system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional
+        osgi_framework = { "osgi-framework/equinox/#{equinox_main.version.split('.')[0 .. 2].join('.')}" => [equinox_main] }
+      end
 
-      task.values = {
-        "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main],
+      task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
         "bundles/system-optional" => system_optional,
         "bundles/application-bundles" => application_bundles,
         "bundles/application-libraries" => application_libraries
-      }
+      )
     end
 
     package(:war, :file => _('target/psc.war')).tap do |war|
