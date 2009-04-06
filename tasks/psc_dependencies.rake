@@ -225,6 +225,7 @@ UNIT_TESTING = [
   CGLIB,
   "org.springframework:spring-test:jar:#{SPRING_VERSION}",
   eponym("xmlunit", "1.1"),
+  "org.springframework.osgi:org.springframework.osgi.mock:jar:1.1.3.RELEASE",
   LOGBACK
 ].flatten
 
