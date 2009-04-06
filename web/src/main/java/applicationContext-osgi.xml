@@ -34,6 +34,16 @@
                 <value>javax.servlet.http</value>
             </list>
         </property>
+        <property name="proxyConstructorParameters">
+            <map>
+                <entry key="javax.servlet.http.Cookie">
+                    <list>
+                        <value>proxy-cookie</value>
+                        <value>no-value</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
     </bean>
 
     <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem">

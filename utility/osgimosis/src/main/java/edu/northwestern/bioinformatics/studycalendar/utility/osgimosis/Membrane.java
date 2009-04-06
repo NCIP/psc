@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -129,6 +130,12 @@ public class Membrane {
 
     public Collection<String> getSharedPackages() {
         return sharedPackages;
+    }
+
+    public void setProxyConstructorParameters(Map<String, List<Object>> params) {
+        for (String classname : params.keySet()) {
+            registerProxyConstructorParameters(classname, params.get(classname).toArray());
+        }
     }
 
     ////// OBJECT METHODS
