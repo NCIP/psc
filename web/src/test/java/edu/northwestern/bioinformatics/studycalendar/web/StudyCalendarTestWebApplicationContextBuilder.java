@@ -22,6 +22,7 @@ public class StudyCalendarTestWebApplicationContextBuilder {
             "classpath:applicationContext-authentication.xml",
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
+            "classpath:applicationContext-osgi.xml",
             "classpath:applicationContext-testing-osgi.xml",
             "WEB-INF/" + servletName + "-servlet.xml"
         });

@@ -383,6 +383,18 @@ define "psc" do
     
     compile.with OSGI, DYNAMIC_JAVA
     
+    desc "Provides host-configured services to the OSGi layer"
+    define "host-services" do
+      bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.Activator"
+      
+      compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
+      test.using(:junit).with UNIT_TESTING, project('domain').test_dependencies
+      
+      package(:jar)
+    end
+    
     define "integrated-tests" do
       test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
         project('authentication:socket').and_dependencies,
@@ -397,8 +409,9 @@ define "psc" do
   define "web" do
     compile.with LOGBACK, 
       project('core').and_dependencies,
-      project('psc:authentication:plugin-api').and_dependencies,
-      project('psc:authentication:socket').and_dependencies,
+      project('authentication:plugin-api').and_dependencies,
+      project('authentication:socket').and_dependencies,
+      project('osgi-layer:host-services').and_dependencies,
       SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
 
     test.with project('test-infrastructure').and_dependencies, 

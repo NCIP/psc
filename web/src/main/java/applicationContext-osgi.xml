@@ -9,4 +9,8 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
     >
     <bean id="bundleContext" class="edu.northwestern.bioinformatics.studycalendar.web.tools.BundleContextLocator"/>
+
+    <bean id="hostBeansInitializer" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.HostBeansInitializer">
+        <property name="bundleContext" ref="bundleContext"/>
+    </bean>
 </beans>

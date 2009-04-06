@@ -1,12 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import static edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder.*;
+import static edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder.createWebApplicationContextForServlet;
 import junit.framework.TestCase;
 import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
+
+import java.io.File;
 
 /**
  * @author Rhett Sutphin
@@ -17,7 +19,19 @@ public class DispatcherServletInitializationTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
+        servletContext = new MockServletContext(findWebappDirectory(), new FileSystemResourceLoader());
+    }
+
+    private String findWebappDirectory() {
+        File dir = new File("src/main/webapp");
+        if (dir.exists()) {
+            return dir.getPath();
+        }
+        dir = new File("web", dir.toString());
+        if (dir.exists()) {
+            return dir.getPath();
+        }
+        throw new IllegalStateException("Could not find webapp path");
     }
 
     public void testSpringServletContext() throws Exception {
