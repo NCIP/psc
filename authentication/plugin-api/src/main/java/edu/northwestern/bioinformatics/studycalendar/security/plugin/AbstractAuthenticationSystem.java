@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
@@ -113,29 +112,36 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     }
 
     /**
+     * Validates using the result of the template method {@link #requiredConfigurationProperties()}.
+     * Override to provide more elaborate checks if required.
+     *
+     * @param config The candidate configuration
+     * @throws StudyCalendarValidationException
+     */
+    public void validate(Configuration config) throws StudyCalendarValidationException {
+        validateRequiredConfigurationProperties(config);
+    }
+
+    /**
      * Initializes this authentication system using the values provided by the template methods.
      * <p>
      * When using this base class, you should generally <em>not</em> override this method, but
      * rather the individual template methods.
      *
      * @throws AuthenticationSystemInitializationFailure
-     * @throws StudyCalendarValidationException
      */
-    public void initialize(
-        Configuration config
-    ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
+    public void initialize(Configuration config) throws AuthenticationSystemInitializationFailure {
         try {
             this.configuration = config;
             this.applicationContext = createApplicationContext();
-            validateRequiredConfigurationProperties();
             initBeforeCreate();
             this.authenticationManager = createAuthenticationManager();
             this.entryPoint = createEntryPoint();
             this.filter = createFilter();
             this.logoutFilter = createLogoutFilter();
             initAfterCreate();
-        } catch (StudyCalendarUserException scue) {
-            throw scue; // don't wrap properly typed exceptions
+        } catch (AuthenticationSystemInitializationFailure asif) {
+            throw asif; // don't wrap properly typed exceptions
         } catch (RuntimeException re) {
             log.info("Initialization failed with runtime exception", re);
             throw new AuthenticationSystemInitializationFailure(re.getMessage(), re);
@@ -213,10 +219,10 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         return false;
     }
 
-    private void validateRequiredConfigurationProperties() {
+    private void validateRequiredConfigurationProperties(Configuration config) {
         if (requiredConfigurationProperties() != null) {
             for (ConfigurationProperty<?> prop : requiredConfigurationProperties()) {
-                Object value = getConfiguration().get(prop);
+                Object value = config.get(prop);
                 boolean isNull = value == null;
                 boolean isBlank = (value instanceof String) && StringUtils.isBlank((String) value);
                 if (isNull || isBlank) {

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
@@ -127,17 +126,17 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         }
     }
     
-    public void testDoesNotWrapSCUserException() throws Exception {
+    public void testDoesNotWrapAuthenticationSystemInitializationFailures() throws Exception {
         system.setInitBefore(new Runnable() {
             public void run() {
-                throw new StudyCalendarValidationException("I'm afraid I can't do that");
+                throw new AuthenticationSystemInitializationFailure("I'm afraid I can't do that");
             }
         });
 
         try {
             doInitialize();
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("I'm afraid I can't do that", scve.getMessage());
+        } catch (AuthenticationSystemInitializationFailure asif) {
+            assertEquals("I'm afraid I can't do that", asif.getMessage());
         }
     }
 

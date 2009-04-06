@@ -15,7 +15,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.ui.savedrequest.SavedRequest;
-import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.util.PortResolverImpl;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
@@ -30,7 +29,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -46,8 +44,6 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Configuration delegate;
-    private DataSource dataSource;
-    private UserDetailsService userDetailsService;
     private BundleContext bundleContext;
     private ConfigurationProperties currentProperties;
     private AuthenticationSystem currentSystem, newSystem;

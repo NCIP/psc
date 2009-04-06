@@ -11,10 +11,8 @@ import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.acegisecurity.userdetails.UserDetailsService;
 
 import javax.servlet.Filter;
-import javax.sql.DataSource;
 
 /**
  * @author Rhett Sutphin
@@ -25,9 +23,7 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
     public static final ConfigurationProperty<String> EXPECTED_INITIALIZATION_ERROR_MESSAGE
         = new DefaultConfigurationProperty.Text("expectedError");
 
-    private static Configuration lastConfiguration;
-    private static DataSource lastDataSource;
-    private static UserDetailsService lastUserDetailsService;
+    private static Configuration lastConfiguration, lastValidationConfiguration;
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
@@ -41,18 +37,25 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
         throw new UnsupportedOperationException("behaviorDescription not implemented");
     }
 
-    public void initialize(
-        Configuration configuration
-    ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
+    public void validate(Configuration configuration) throws StudyCalendarValidationException {
+        lastValidationConfiguration = configuration;
+    }
+
+    public void initialize(Configuration configuration) throws AuthenticationSystemInitializationFailure {
         if (configuration.isSet(EXPECTED_INITIALIZATION_ERROR_MESSAGE)) {
-            throw new StudyCalendarValidationException(configuration.get(EXPECTED_INITIALIZATION_ERROR_MESSAGE));
+            throw new AuthenticationSystemInitializationFailure(
+                configuration.get(EXPECTED_INITIALIZATION_ERROR_MESSAGE));
         } else {
             lastConfiguration = configuration;
         }
     }
 
-    public static Configuration getLastConfiguration() {
+    public static Configuration getLastInitializationConfiguration() {
         return lastConfiguration;
+    }
+
+    public static Configuration getLastValidationConfiguration() {
+        return lastValidationConfiguration;
     }
 
     //////

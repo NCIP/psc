@@ -49,6 +49,14 @@ public interface AuthenticationSystem {
     String behaviorDescription();
 
     /**
+     * Validate that the provided configuration is sufficent to initialize this system.  Should
+     * not have any side effects.
+     * @throws StudyCalendarValidationException if any of the configuration properties
+     *      have invalid values
+     */
+    void validate(Configuration configuration) throws StudyCalendarValidationException;
+
+    /**
      * Initialize any internal objects needed to perform authentication.
      * This method will be called before this object is used for any other purpose, except for
      * {@link #configurationProperties}, {@link #name}, and {@link #behaviorDescription}.
@@ -61,15 +69,11 @@ public interface AuthenticationSystem {
      *
      * @param configuration the object from which the configuration properties
      *      specified with {@link #configurationProperties()} may be read
-     * @throws StudyCalendarValidationException if any of the configuration properties
-     *      have invalid values
      * @throws AuthenticationSystemInitializationFailure if initialization cannot complete for
-     *      any other reason
+     *      an unexpected reason
      * @see org.springframework.context.support.ClassPathXmlApplicationContext
      */
-    void initialize(
-        Configuration configuration
-    ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException;
+    void initialize(Configuration configuration) throws AuthenticationSystemInitializationFailure;
 
     /**
      * Acegi {@link AuthenticationManager} for this system.

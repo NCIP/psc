@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemInitializationFailure;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
@@ -192,8 +192,8 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
         try {
             configuration.getAuthenticationSystem();
             fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Bad news", scve.getMessage());
+        } catch (AuthenticationSystemInitializationFailure asif) {
+            assertEquals("Bad news", asif.getMessage());
         }
     }
     

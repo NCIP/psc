@@ -190,7 +190,7 @@ define "psc" do
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
       test.with UNIT_TESTING, EHCACHE,
-        project('test-infrastructure').and_dependencies
+        project('test-infrastructure').and_dependencies,
         project('test-infrastructure').test_dependencies
       package(:jar)
     end

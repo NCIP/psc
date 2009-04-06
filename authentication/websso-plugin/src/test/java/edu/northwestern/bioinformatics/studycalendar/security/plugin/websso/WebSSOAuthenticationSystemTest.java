@@ -21,6 +21,7 @@ public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystem
     public void setUp() throws Exception {
         super.setUp();
         system = new WebSSOAuthenticationSystem();
+        system.setBundleContext(bundleContext);
     }
 
     public void testInitializeAuthManager() throws Exception {
