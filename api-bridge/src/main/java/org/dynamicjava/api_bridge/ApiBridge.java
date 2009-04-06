@@ -67,6 +67,7 @@ public class ApiBridge {
 		}
 	}
 
+    @SuppressWarnings({ "unchecked" })
     private Object handleUnbridgableObject(Object apiObject, boolean returnSameObjectIfUnbridgable) {
         if (apiObject instanceof Collection) {
             return new DelegatorCollection((Collection) apiObject, this);
@@ -89,7 +90,7 @@ public class ApiBridge {
 
         Set<Class<?>> interfaces = findIntefacesMatch(apiObject.getClass());
 
-        log.debug("Creating proxy for superclass {} of {}", superClassMatch, apiObject);
+        log.debug("Creating proxy for superclass {}", superClassMatch);
         log.debug("Interfaces are {}", interfaces);
 
         Enhancer enh = new Enhancer();
@@ -122,6 +123,7 @@ public class ApiBridge {
     }
 
 	protected Object createProxyForInterfaces(Object apiObject, Class<?>[] interfacesMatch) {
+        log.debug("Proxying by interfaces only: {}", Arrays.asList(interfacesMatch));
 		return java.lang.reflect.Proxy.newProxyInstance(
 				getTargetApiClassLoader(),
 				interfacesMatch,
