@@ -49,6 +49,7 @@ define "psc" do
   desc "Pure utility code"
   define "utility" do
     project.bnd.wrap!
+    # project.bnd['-versionpolicy'] = '[${version;==;${@}},${version;=+;${@}})'
 
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
@@ -287,15 +288,44 @@ define "psc" do
     compile.with LOGBACK, 
       project('core').and_dependencies,
       %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
-      SPRING_WEB, RESTLET, WEB, CAGRID
+      SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
 
     test.with project('test-infrastructure'), 
       project('test-infrastructure').compile.dependencies,
       project('test-infrastructure').test.compile.dependencies
 
+    task :da_launcher_artifacts do |task|
+      class << task; attr_accessor :values; end
+      felix_main = artifact(FELIX.main)
+      knopflerfish_main = artifact(KNOPFLERFISH.framework)
+      bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
+      application_bundles = bundle_projects.collect { |p| p.package(:jar) }
+      application_libraries = bundle_projects.
+        collect { |p| p.and_dependencies }.flatten.uniq.
+        select { |a| Buildr::Artifact === a }.
+        reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
+        LOGBACK.values.collect { |a| artifact(a) }
+      system_optional = [KNOPFLERFISH.consoletelnet]
+      system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /org.knopflerfish.framework/ } - system_optional
+      task.values = {
+        # "osgi-framework/felix/#{felix_main.version}" => [felix_main],
+        "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main],
+        # "bundles/system-bundles" => [FELIX.shell, FELIX.shell_remote].collect { |f| artifact(f) },
+        "bundles/system-bundles" => system_bundles,
+        "bundles/system-optional" => system_optional,
+        "bundles/application-bundles" => application_bundles,
+        "bundles/application-libraries" => application_libraries
+      }
+    end
+
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
+      war.enhance [:da_launcher_artifacts] do
+        task("psc:web:da_launcher_artifacts").values.each do |path, artifacts|
+          war.path("WEB-INF/da-launcher").path(path).include(artifacts)
+        end
+      end
     end
     package(:sources)
     
@@ -314,15 +344,20 @@ define "psc" do
       end
     end
     
-    directory(_('src/main/webapp/WEB-INF/lib'))
-    
-    task :explode => [compile, _('src/main/webapp/WEB-INF/lib')] do
+    task :explode => [compile, :da_launcher_artifacts] do
       packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
         war_package.classes.each do |clz_src|
           filter.from(clz_src).into(_('src/main/webapp/WEB-INF/classes')).run
         end
+        libdir = _('src/main/webapp/WEB-INF/lib')
+        mkdir_p libdir
         war_package.libs.each do |lib|
-          cp lib.to_s, _('src/main/webapp/WEB-INF/lib')
+          cp lib.to_s, libdir
+        end
+        task('psc:web:da_launcher_artifacts').values.each do |path, artifacts|
+          dadir = _("src/main/webapp/WEB-INF/da-launcher/#{path}")
+          mkdir_p dadir
+          artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
       end
     end
@@ -363,9 +398,12 @@ define "psc" do
     iml.excluded_directories << _('src/main/webapp/WEB-INF/lib') << _('src/main/webapp/WEB-INF/classes')
     
     # clean exploded files, too
-    clean { 
-      rm_rf _('src/main/webapp/WEB-INF/lib')
-      rm_rf _('src/main/webapp/WEB-INF/classes') 
+    clean([:da_launcher_artifacts]) {
+      dal_paths = [task('psc:web:da_launcher_artifacts').values.keys + %w(logs runtime osgi-framework/felix osgi-framework/knopflerfish)].
+        flatten.collect { |path| "da-launcher/#{path}" }
+      (%w(lib classes) + dal_paths).each do |exploded_path|
+        rm_rf _("src/main/webapp/WEB-INF/#{exploded_path}")
+      end
     }
   end
   

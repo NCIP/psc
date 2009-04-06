@@ -36,6 +36,10 @@
     </context-param>
 
     <listener>
+        <listener-class>org.dynamicjava.osgi.da_launcher.web.servlet.DaLauncherContextListener</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>edu.northwestern.bioinformatics.studycalendar.web.CsmStaticConfigurator</listener-class>
     </listener>
 
