@@ -42,14 +42,12 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
     }
 
     public void initialize(
-        Configuration configuration, UserDetailsService userDetailsService, DataSource dataSource
+        Configuration configuration
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         if (configuration.isSet(EXPECTED_INITIALIZATION_ERROR_MESSAGE)) {
             throw new StudyCalendarValidationException(configuration.get(EXPECTED_INITIALIZATION_ERROR_MESSAGE));
         } else {
             lastConfiguration = configuration;
-            lastUserDetailsService = userDetailsService;
-            lastDataSource = dataSource;
         }
     }
 
@@ -57,14 +55,6 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
         return lastConfiguration;
     }
 
-    public static DataSource getLastDataSource() {
-        return lastDataSource;
-    }
-
-    public static UserDetailsService getLastUserDetailsService() {
-        return lastUserDetailsService;
-    }
-    
     //////
 
     public AuthenticationManager authenticationManager() {

@@ -24,7 +24,6 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -53,8 +52,6 @@ public class AuthenticationPluginsIntegratedTest extends AuthenticationTestCase 
         asConfiguration = new AuthenticationSystemConfiguration();
         asConfiguration.setBundleContext(getBundleContext());
         asConfiguration.setDelegate(new TransientConfiguration(DefaultConfigurationProperties.empty()));
-        asConfiguration.setUserDetailsService(userDetails);
-        asConfiguration.setDataSource((DataSource) applicationContext.getBean("dataSource"));
 
         socket = new AuthenticationSystemSocket();
         socket.setConfiguration(asConfiguration);

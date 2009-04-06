@@ -1,19 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
+import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
-import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.dao.DataAccessException;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -27,28 +23,21 @@ import java.sql.SQLException;
 public abstract class AuthenticationTestCase extends TestCase {
     private final Log log = LogFactory.getLog(getClass());
     private MockRegistry mocks;
-    private StaticApplicationContext applicationContext;
     protected UserDetailsService userDetailsService;
     protected DataSource dataSource;
+    protected PscTestingBundleContext bundleContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         mocks = new MockRegistry(log);
 
-        userDetailsService = new FakeUserDetailsService();
+        userDetailsService = new InMemoryDaoImpl();
         dataSource = new FakeDataSource();
 
-        applicationContext = new StaticApplicationContext();
-        applicationContext.registerSingleton("pscUserDetailsService", FakeUserDetailsService.class);
-        applicationContext.registerSingleton("dataSource", FakeDataSource.class);
-        applicationContext.registerSingleton("defaultLogoutFilter", DummyFilter.class);
-        applicationContext.registerSingleton("cacheManager", CacheManager.class);
-        applicationContext.refresh();
-    }
-
-    protected ApplicationContext getMockApplicationContext() {
-        return applicationContext;
+        bundleContext = new PscTestingBundleContext();
+        bundleContext.addService(DataSource.class, dataSource);
+        bundleContext.addService(UserDetailsService.class, userDetailsService);
     }
 
     protected <T> T registerMockFor(Class<T> clazz, Method... methods) {
@@ -77,12 +66,6 @@ public abstract class AuthenticationTestCase extends TestCase {
 
     public static Configuration blankConfiguration() {
         return new TransientConfiguration(DefaultConfigurationProperties.empty());
-    }
-
-    private static class FakeUserDetailsService implements UserDetailsService {
-        public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException, DataAccessException {
-            throw new UnsupportedOperationException("loadUserByUsername not implemented");
-        }
     }
 
     private static class FakeDataSource implements DataSource {

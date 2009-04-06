@@ -6,10 +6,8 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.acegisecurity.userdetails.UserDetailsService;
 
 import javax.servlet.Filter;
-import javax.sql.DataSource;
 
 /**
  * This interface defines a facade for pluggable authentication modules.
@@ -63,9 +61,6 @@ public interface AuthenticationSystem {
      *
      * @param configuration the object from which the configuration properties
      *      specified with {@link #configurationProperties()} may be read
-     * @param userDetailsService a service from which Acegi {@link org.acegisecurity.userdetails.UserDetails}
-     *      instances may be acquired
-     * @param dataSource a connection to the PSC's database
      * @throws StudyCalendarValidationException if any of the configuration properties
      *      have invalid values
      * @throws AuthenticationSystemInitializationFailure if initialization cannot complete for
@@ -73,7 +68,7 @@ public interface AuthenticationSystem {
      * @see org.springframework.context.support.ClassPathXmlApplicationContext
      */
     void initialize(
-        Configuration configuration, UserDetailsService userDetailsService, DataSource dataSource
+        Configuration configuration
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException;
 
     /**

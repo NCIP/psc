@@ -17,7 +17,9 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         system = new InsecureAuthenticationSystem();
+        system.setBundleContext(bundleContext);
         userDetailsService = registerMockFor(UserDetailsService.class);
+        bundleContext.addService(UserDetailsService.class, userDetailsService);
     }
 
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {
@@ -63,6 +65,6 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
 
     private void doInitialize() {
-        system.initialize(blankConfiguration(), userDetailsService, dataSource);
+        system.initialize(blankConfiguration());
     }
 }

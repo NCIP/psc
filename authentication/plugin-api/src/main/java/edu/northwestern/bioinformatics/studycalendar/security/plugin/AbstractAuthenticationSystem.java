@@ -10,6 +10,8 @@ import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -35,12 +37,13 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     private AuthenticationManager authenticationManager;
     private AuthenticationEntryPoint entryPoint;
     private Filter filter, logoutFilter;
-    private UserDetailsService userDetailsService;
-    private DataSource dataSource;
+    private BundleContext bundleContext;
 
     /**
      * Provides a base Spring {@link ApplicationContext} which contains
-     * singleton beans for the parameters passed to {@link #initialize}.
+     * singleton beans for a {@link DataSource} and an {@link UserDetailsService}
+     * sourced from the OSGi {@link BundleContext}.
+     * <p>
      * This is intended to be used as a parent application context when a
      * subclass configures its dependent beans outside of the <code>create*</code>
      * and <code>init*</code> methods.
@@ -79,12 +82,30 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         return configuration;
     }
 
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
     protected UserDetailsService getUserDetailsService() {
-        return userDetailsService;
+        return getServiceInstance(UserDetailsService.class);
     }
 
     protected DataSource getDataSource() {
-        return dataSource;
+        return getServiceInstance(DataSource.class);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private <T> T getServiceInstance(Class<T> klass) {
+        if (bundleContext == null) {
+            log.debug("No bundle context is available; therefore no {}", klass.getName());
+            return null;
+        }
+        ServiceReference ref = bundleContext.getServiceReference(klass.getName());
+        if (ref == null) {
+            log.debug("No {} available in bundle context", klass.getName());
+            return null;
+        }
+        return (T) bundleContext.getService(ref);
     }
 
     public String name() {
@@ -101,11 +122,9 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
      * @throws StudyCalendarValidationException
      */
     public void initialize(
-        Configuration config, UserDetailsService uds, DataSource ds
+        Configuration config
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         try {
-            this.userDetailsService = uds;
-            this.dataSource = ds;
             this.configuration = config;
             this.applicationContext = createApplicationContext();
             validateRequiredConfigurationProperties();

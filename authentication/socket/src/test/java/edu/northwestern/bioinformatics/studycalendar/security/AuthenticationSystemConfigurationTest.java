@@ -2,10 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
@@ -23,11 +25,9 @@ import javax.sql.DataSource;
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase {
+public class AuthenticationSystemConfigurationTest extends AuthenticationTestCase {
     private AuthenticationSystemConfiguration configuration;
     private BundleContext bundleContext;
-    private DataSource dataSource;
-    private UserDetailsService userDetailsService;
 
     private final MockPlugin localPlugin
         = new MockPlugin(
@@ -45,7 +45,6 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        dataSource = registerMockFor(DataSource.class);
         InMemoryDaoImpl dao = new InMemoryDaoImpl();
         dao.setUserMap(new UserMap());
         dao.getUserMap().addUser(Fixtures.createUser("alice"));
@@ -53,11 +52,18 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
         userDetailsService = dao;
         bundleContext = registerMockFor(BundleContext.class);
 
+        expectSingleService(DataSource.class, dataSource);
+        expectSingleService(UserDetailsService.class, userDetailsService);
+
         configuration = new AuthenticationSystemConfiguration();
         configuration.setDelegate(new TransientConfiguration(AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES));
         configuration.setBundleContext(bundleContext);
-        configuration.setUserDetailsService(userDetailsService);
-        configuration.setDataSource(dataSource);
+    }
+
+    private void expectSingleService(Class<?> serviceClass, Object instance) {
+        ServiceReference dsRef = new MockServiceReference(new String[] { serviceClass.getName() });
+        expect(bundleContext.getServiceReference(serviceClass.getName())).andReturn(dsRef);
+        expect(bundleContext.getService(dsRef)).andReturn(instance);
     }
 
     private void expectServiceReferences(MockPlugin... plugins) throws InvalidSyntaxException {
@@ -173,11 +179,6 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
         selectAuthenticationSystem(stubPlugin.getSymbolicName());
 
         assertEquals("System is wrong kind", "stub", configuration.getAuthenticationSystem().name());
-        assertSame("Wrong dataSource used during initialization", dataSource,
-            StubAuthenticationSystem.getLastDataSource());
-        // Can't directly compare the objects because they are proxied across the api bridge
-        assertNotNull("Wrong userDetailsService used during initialization",
-            StubAuthenticationSystem.getLastUserDetailsService().loadUserByUsername("alice"));
     }
     
     public void testInitializationExceptionIsPropagated() throws Exception {
@@ -242,6 +243,9 @@ public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase
         }
 
         public AuthenticationSystem getSystem() {
+            if (system instanceof AbstractAuthenticationSystem) {
+                ((AbstractAuthenticationSystem) system).setBundleContext(bundleContext);
+            }
             return system;
         }
     }

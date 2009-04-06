@@ -5,7 +5,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
 
@@ -15,7 +14,6 @@ import javax.servlet.Filter;
  * @author Rhett Sutphin
  */
 public final class AbstractAuthenticationSystemTest extends AuthenticationTestCase {
-    private ApplicationContext applicationContext;
     private TestAuthenticationSystem system;
     private AuthenticationManager expectedAuthenticationManager;
     private AuthenticationEntryPoint expectedEntryPoint;
@@ -26,7 +24,6 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
     protected void setUp() throws Exception {
         super.setUp();
         system = new TestAuthenticationSystem();
-        applicationContext = registerNiceMockFor(ApplicationContext.class);
 
         expectedAuthenticationManager = registerMockFor(AuthenticationManager.class);
         expectedEntryPoint = registerMockFor(AuthenticationEntryPoint.class);
@@ -37,6 +34,7 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         system.setCreatedAuthenticationEntryPoint(expectedEntryPoint);
         system.setCreatedFilter(expectedFilter);
         system.setCreatedLogoutFilter(expectedLogoutFilter);
+        system.setBundleContext(bundleContext);
     }
 
     public void testReturnsCreatedAuthManager() throws Exception {
@@ -143,8 +141,16 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
         }
     }
 
+    public void testDataSourceIsExtractedFromBundleContext() throws Exception {
+        assertSame(dataSource, system.getDataSource());
+    }
+
+    public void testUserDetailsServiceIsExtractedFromBundleContext() throws Exception {
+        assertSame(userDetailsService, system.getUserDetailsService());
+    }
+
     private void doInitialize() {
-        system.initialize(blankConfiguration(), userDetailsService, dataSource);
+        system.initialize(blankConfiguration());
     }
 
     private static class TestAuthenticationSystem extends AbstractAuthenticationSystem {

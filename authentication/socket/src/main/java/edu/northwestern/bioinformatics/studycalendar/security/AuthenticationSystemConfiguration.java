@@ -103,7 +103,7 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
     private synchronized void initSystem() {
         if (systemReady) return;
         initProperties();
-        newSystem.initialize(this, userDetailsService, dataSource);
+        newSystem.initialize(this);
         log.debug("Successfully initialized new authentication system {}.  Replacing.", newSystem);
         // no errors, so:
         if (currentSystemReference != null) getBundleContext().ungetService(currentSystemReference);
@@ -240,14 +240,6 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
                 "No bundle context available.  Authentication system cannot be configured.");
         }
         return bundleContext;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
     }
 
     ////// PROXIABLE CONSTRUCTOR PARAMS

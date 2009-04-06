@@ -16,7 +16,7 @@ public abstract class PluginActivator implements BundleActivator {
     private ServiceRegistration systemFactoryRegistration;
 
     public void start(BundleContext context) throws Exception {
-        ServiceFactory factory = createAuthenticationSystemFactory();
+        ServiceFactory factory = createAuthenticationSystemFactory(context);
         systemFactoryRegistration = context.registerService(
             AuthenticationSystem.class.getName(),
             factory,
@@ -26,11 +26,15 @@ public abstract class PluginActivator implements BundleActivator {
 
     protected abstract Class<? extends AuthenticationSystem> authenticationSystemClass();
 
-    protected ServiceFactory createAuthenticationSystemFactory() {
+    protected ServiceFactory createAuthenticationSystemFactory(final BundleContext context) {
         return new ServiceFactory() {
             public Object getService(Bundle bundle, ServiceRegistration serviceRegistration) {
                 try {
-                    return authenticationSystemClass().newInstance();
+                    AuthenticationSystem authenticationSystem = authenticationSystemClass().newInstance();
+                    if (authenticationSystem instanceof AbstractAuthenticationSystem) {
+                        ((AbstractAuthenticationSystem) authenticationSystem).setBundleContext(context);
+                    }
+                    return authenticationSystem;
                 } catch (InstantiationException e) {
                     throw new IllegalStateException(e);
                 } catch (IllegalAccessException e) {

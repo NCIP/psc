@@ -176,6 +176,7 @@ define "psc" do
         project('core').and_dependencies
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
+        project('plugin-api').test_dependencies,
         project('test-infrastructure').and_dependencies, 
         project('test-infrastructure').test_dependencies
       package(:jar)
@@ -188,7 +189,9 @@ define "psc" do
       compile.with project('utility'), SLF4J, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
-      test.with(UNIT_TESTING, EHCACHE)
+      test.with UNIT_TESTING, EHCACHE,
+        project('test-infrastructure').and_dependencies
+        project('test-infrastructure').test_dependencies
       package(:jar)
     end
     
@@ -304,7 +307,6 @@ define "psc" do
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
-      project('authentication:plugin-api').test_dependencies,
       project('database').test_dependencies
 
     package(:jar)
@@ -388,6 +390,7 @@ define "psc" do
       bnd.wrap!
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.Activator"
+      bnd.name = "PSC host to OSGi bridged services"
       
       compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
       test.using(:junit).with UNIT_TESTING, project('domain').test_dependencies
@@ -509,10 +512,9 @@ define "psc" do
   
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
-    compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB,
-      project('core'), project('core').compile.dependencies
-    test.with project('core').test.compile.target, 
-      project('core').test.compile.dependencies
+    compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
+      project('core').and_dependencies
+    test.with project('core').test_dependencies
     package(:jar)
     package(:sources)
   end

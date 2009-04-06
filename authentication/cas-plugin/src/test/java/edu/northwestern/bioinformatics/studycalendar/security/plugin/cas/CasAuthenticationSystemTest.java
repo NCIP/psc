@@ -24,12 +24,13 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
     protected void setUp() throws Exception {
         super.setUp();
         system = new CasAuthenticationSystem();
+        system.setBundleContext(bundleContext);
     }
 
     public void testServiceUrlRequired() throws Exception {
         configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
         try {
-            getSystem().initialize(configuration, userDetailsService, dataSource);
+            getSystem().initialize(configuration);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("Service URL is required for the selected authentication system",
@@ -40,7 +41,7 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
     public void testApplicationUrlRequired() throws Exception {
         configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
         try {
-            getSystem().initialize(configuration, userDetailsService, dataSource);
+            getSystem().initialize(configuration);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("PSC base URL is required for the selected authentication system",

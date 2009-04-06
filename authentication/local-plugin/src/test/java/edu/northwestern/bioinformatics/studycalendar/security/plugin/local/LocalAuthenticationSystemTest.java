@@ -15,13 +15,13 @@ public class LocalAuthenticationSystemTest extends AuthenticationTestCase {
     public void setUp() throws Exception {
         super.setUp();
         configuration = blankConfiguration();
-
         system = new LocalAuthenticationSystem();
+        system.setBundleContext(bundleContext);
     }
 
     public void testInitializeAuthManager() throws Exception {
         replayMocks();
-        system.initialize(configuration, userDetailsService, dataSource);
+        system.initialize(configuration);
         assertTrue("Wrong type", system.authenticationManager() instanceof ProviderManager);
         ProviderManager manager = (ProviderManager) system.authenticationManager();
         assertEquals("Wrong number of providers", 2, manager.getProviders().size());
