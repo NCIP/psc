@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase.assertContains;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.KnownAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
@@ -10,17 +9,17 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.FilterChain;
 import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemConfigurationTest extends DaoTestCase {
+public class AuthenticationSystemConfigurationTest extends StudyCalendarTestCase {
     private AuthenticationSystemConfiguration configuration;
     private StaticWebApplicationContext context;
 
@@ -118,7 +117,6 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
 
     private void selectAuthenticationSystem(String requested) {
         configuration.set(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM, requested);
-        interruptSession();
     }
 
     private static class DummyFilter implements Filter {
