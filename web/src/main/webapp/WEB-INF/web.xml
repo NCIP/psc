@@ -71,20 +71,18 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <filter-name>Installed authentication system</filter-name>
         <filter-class>
             org.acegisecurity.util.FilterToBeanProxy
         </filter-class>
         <init-param>
-            <param-name>targetClass</param-name>
-            <param-value>
-                org.acegisecurity.util.FilterChainProxy
-            </param-value>
+            <param-name>targetBean</param-name>
+            <param-value>installedAuthenticationSystem</param-value>
         </init-param>
     </filter>
 
     <filter-mapping>
-        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <filter-name>Installed authentication system</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

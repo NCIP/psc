@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.MultipleFilterFilter;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Dictionary;
@@ -12,7 +14,7 @@ import java.util.Dictionary;
 /**
  * @author Rhett Sutphin
  */
-public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter implements CompleteAuthenticationSystem {
+public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter implements CompleteAuthenticationSystem, ManagedService {
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
@@ -24,6 +26,10 @@ public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter imple
             throw new ConfigurationException("Unknown", 
                 "Problem initializing authentication system: " + scue.getMessage(), scue);
         }
+    }
+
+    public AuthenticationSystem getCurrentAuthenticationSystem() {
+        return authenticationSystemConfiguration.getAuthenticationSystem();
     }
 
     ////// CONFIGURATION

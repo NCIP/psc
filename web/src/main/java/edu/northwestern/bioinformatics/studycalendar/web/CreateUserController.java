@@ -1,19 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static java.lang.String.valueOf;
-
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
@@ -37,7 +34,7 @@ public class CreateUserController extends PscCancellableFormController {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
-    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -59,7 +56,7 @@ public class CreateUserController extends PscCancellableFormController {
         refdata.put("actionText", actionText);
 
         refdata.put("user", command.getUser());
-        refdata.put("usingLocalAuthenticationSystem", authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords());
+        refdata.put("usingLocalAuthenticationSystem", installedAuthenticationSystem.getAuthenticationSystem().usesLocalPasswords());
 
         return refdata;
     }
@@ -86,7 +83,7 @@ public class CreateUserController extends PscCancellableFormController {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
         User user = (editId != null) ? userDao.getById(editId) : new User();
 
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, installedAuthenticationSystem);
     }
 
     @Override
@@ -118,8 +115,8 @@ public class CreateUserController extends PscCancellableFormController {
     }
 
     @Required
-    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
-        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
+    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 
     private static class Crumb extends DefaultCrumb {

@@ -1,17 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.web.CreateUserCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.webflow.action.FormAction;
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.ScopeType;
-import org.springframework.beans.factory.annotation.Required;
-import edu.northwestern.bioinformatics.studycalendar.web.CreateUserCommand;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
-import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class FirstAdministratorFormAction extends FormAction {
     private UserDao userDao;
     private UserService userService;
     private UserRoleService userRoleService;
-    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     public FirstAdministratorFormAction() {
         super(CreateUserCommand.class);
@@ -34,7 +34,7 @@ public class FirstAdministratorFormAction extends FormAction {
 
     protected Object createFormObject(RequestContext context) throws Exception {
         CreateUserCommand command = new CreateUserCommand(
-            null, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration
+            null, siteDao, userService, userDao, userRoleService, installedAuthenticationSystem
         );
         command.setUserActiveFlag(true);
         command.setPasswordModified(true);
@@ -68,7 +68,7 @@ public class FirstAdministratorFormAction extends FormAction {
     }
 
     @Required
-    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
-        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
+    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 }

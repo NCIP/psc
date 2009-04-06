@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.authentication.AuthenticationHelper;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
@@ -43,7 +43,7 @@ public class PscGuard extends Guard {
     public static final String AUTH_TOKEN_ATTRIBUTE_KEY = "pscAuthenticationToken";
 
     private Pattern except;
-    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     public PscGuard() {
         super(null, ChallengeScheme.HTTP_BASIC, "PSC");
@@ -171,12 +171,12 @@ public class PscGuard extends Guard {
     }
 
     protected AuthenticationSystem getAuthenticationSystem() {
-        return authenticationSystemConfiguration.getAuthenticationSystem();
+        return installedAuthenticationSystem.getAuthenticationSystem();
     }
 
     @Required
-    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
-        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
+    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 
     ///// INNER

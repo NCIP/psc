@@ -16,10 +16,13 @@
     </bean>
 
     <bean id="membrane" class="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane">
-        <property name="nearClassLoader"
-                  value="edu.northwestern.bioinformatics.studycalendar.web.osgi.ContextClassLoaderFactoryBean" />
+        <property name="nearClassLoader">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.web.osgi.ContextClassLoaderFactoryBean"/>
+        </property>
         <property name="sharedPackages">
             <list>
+                <value>edu.northwestern.bioinformatics.studycalendar.security</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.security.plugin</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
 
                 <value>org.acegisecurity</value>
@@ -27,7 +30,14 @@
                 <value>org.springframework.context</value>
 
                 <value>javax.sql</value>
+                <value>javax.servlet</value>
+                <value>javax.servlet.http</value>
             </list>
         </property>
+    </bean>
+
+    <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem">
+        <property name="bundleContext" ref="bundleContext"/>
+        <property name="membrane" ref="membrane"/>
     </bean>
 </beans>

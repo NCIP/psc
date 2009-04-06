@@ -401,7 +401,8 @@ define "psc" do
       bnd.name = "PSC host to OSGi bridged services"
       
       compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
-      test.using(:junit).with UNIT_TESTING, project('domain').test_dependencies
+      test.using(:junit).with UNIT_TESTING, 
+        project('domain').and_dependencies, project('domain').test_dependencies
       
       package(:jar)
     end

@@ -2,14 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.web.InstalledAuthenticationSystem;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.acegisecurity.providers.TestingAuthenticationToken;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
@@ -40,7 +40,7 @@ public class PscGuardTest extends RestletTestCase {
 
     private MockRestlet nextRestlet;
     private AuthenticationManager authenticationManager;
-    private AuthenticationSystemConfiguration configuration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthenticationSystem authenticationSystem;
     private SecurityContext securityContext;
 
@@ -52,9 +52,9 @@ public class PscGuardTest extends RestletTestCase {
             user, PASSWORD, new GrantedAuthority[0]);
 
         authenticationManager = registerMockFor(AuthenticationManager.class);
-        configuration = registerMockFor(AuthenticationSystemConfiguration.class);
+        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
-        expect(configuration.getAuthenticationSystem())
+        expect(installedAuthenticationSystem.getAuthenticationSystem())
             .andReturn(authenticationSystem).anyTimes();
         expect(authenticationSystem.authenticationManager())
             .andReturn(authenticationManager).anyTimes();
@@ -65,7 +65,7 @@ public class PscGuardTest extends RestletTestCase {
         nextRestlet = new MockRestlet();
         guard = new PscGuard();
         guard.setNext(nextRestlet);
-        guard.setAuthenticationSystemConfiguration(configuration);
+        guard.setInstalledAuthenticationSystem(installedAuthenticationSystem);
 
         request.setResourceRef(BASE_URI);
 

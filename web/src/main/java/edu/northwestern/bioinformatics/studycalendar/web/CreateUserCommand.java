@@ -7,7 +7,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -16,7 +15,11 @@ import org.apache.commons.validator.GenericValidator;
 import org.springframework.validation.Errors;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CreateUserCommand implements Validatable, Serializable {
     private String password;
@@ -32,19 +35,19 @@ public class CreateUserCommand implements Validatable, Serializable {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
-    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     public CreateUserCommand(
             User user, SiteDao siteDao, UserService userService, UserDao userDao,
             UserRoleService userRoleService,
-            AuthenticationSystemConfiguration authenticationSystemConfiguration
+            InstalledAuthenticationSystem installedAuthenticationSystem
     ) {
         this.user = user == null ? new User() : user;
         this.siteDao = siteDao;
         this.userService = userService;
         this.userDao = userDao;
         this.userRoleService = userRoleService;
-        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
         this.passwordModified = false;
 
         this.emailAddress = this.user.getId() == null ? null : userService.getEmailAddresssForUser(user);
@@ -93,7 +96,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                 }
             }
 
-            if (updatePassword() && authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords()) {
+            if (updatePassword() && installedAuthenticationSystem.getAuthenticationSystem().usesLocalPasswords()) {
                 if (password == null || StringUtils.isBlank(password)) {
                     errors.rejectValue("password", "error.user.password.not.specified");
                 } else {
@@ -154,7 +157,7 @@ public class CreateUserCommand implements Validatable, Serializable {
 
     // generate a random password when creating a new user in a regime that doesn't use the internal passwords
     private String getOrCreatePassword() {
-        if (authenticationSystemConfiguration.getAuthenticationSystem().usesLocalPasswords()) {
+        if (installedAuthenticationSystem.getAuthenticationSystem().usesLocalPasswords()) {
             return getPassword();
         } else {
             int length = 16 + (int) Math.round(16 * Math.random());

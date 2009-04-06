@@ -22,6 +22,7 @@
         <property name="maxUploadSize" value="500000"/>
     </bean>
 
+    <!--
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerSecureUrlCreator"
           lazy-init="true">
         <property name="filterInvocationInterceptor" ref="filterInvocationInterceptor"/>
@@ -29,6 +30,7 @@
             <ref local="urlResolver"/>
         </property>
     </bean>
+    -->
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass"
@@ -177,11 +179,9 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
     </bean>
 
-
     <bean name="/activities/addNewActivityType" id="activityTypeControllerAdd" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">
     </bean>
-
 
     <bean name="/activities/deleteActivityType" id="activityTypeControllerDelete" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddEditActivityTypeController">

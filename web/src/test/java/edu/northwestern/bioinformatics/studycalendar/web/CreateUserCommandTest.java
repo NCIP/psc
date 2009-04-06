@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
@@ -44,7 +43,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     private UserRoleService userRoleService;
     private UserDao userDao;
     private Errors errors;
-    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthenticationSystem authenticationSystem;
 
     @Override
@@ -61,9 +60,9 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userDao = registerDaoMockFor(UserDao.class);
         userService = registerMockFor(UserService.class);
         userRoleService = registerMockFor(UserRoleService.class);
-        authenticationSystemConfiguration = registerMockFor(AuthenticationSystemConfiguration.class);
+        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
         authenticationSystem = registerMockFor(AuthenticationSystem.class);
-        expect(authenticationSystemConfiguration.getAuthenticationSystem()).andReturn(authenticationSystem).anyTimes();
+        expect(installedAuthenticationSystem.getAuthenticationSystem()).andReturn(authenticationSystem).anyTimes();
         expect(authenticationSystem.usesLocalPasswords()).andReturn(true).anyTimes();
 
         errors = new MapBindingResult(new HashMap(), "?");
@@ -353,7 +352,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     private CreateUserCommand createCommand(User user) {
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, installedAuthenticationSystem);
     }
 
     private static class SiteDaoStub extends SiteDao {
