@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
@@ -12,6 +12,9 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.util.Collections;
 import java.util.Map;
+
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 
 /**
  * @author Rhett Sutphin

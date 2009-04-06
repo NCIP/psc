@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.tools.DictionaryConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;

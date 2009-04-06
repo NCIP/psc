@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.tools;
+package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.AbstractConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
@@ -12,6 +12,9 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 
 /**
  * Provides the {@link gov.nih.nci.cabig.ctms.tools.configuration.Configuration} interface

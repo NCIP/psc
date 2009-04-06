@@ -34,17 +34,20 @@ public class AuthenticationSystemSelectorController
     }
 
     @Override
-    protected Object getCommand(HttpServletRequest httpServletRequest) throws Exception {
+    protected Object getCommand(HttpServletRequest request) throws Exception {
         return new AuthenticationSystemSelectorCommand(
+            request.getParameter(String.format(
+                "conf[%s].value", AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey())),
             storedAuthenticationSystemConfiguration,
             new AuthenticationSystemDirectory(bundleContext, membrane),
             installedAuthenticationSystem);
     }
 
-    @Override
-    protected boolean suppressBinding(HttpServletRequest request) {
-        return !isSubmit(request);
-    }
+    // TODO: ?
+//    @Override
+//    protected boolean suppressBinding(HttpServletRequest request) {
+//        return !isSubmit(request);
+//    }
 
     private boolean isSubmit(HttpServletRequest request) {
         return !"GET".equals(request.getMethod());

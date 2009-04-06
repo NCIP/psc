@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import edu.northwestern.bioinformatics.studycalendar.tools.DictionaryConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -9,27 +9,44 @@ import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.springframework.validation.Errors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
  */
 public class AuthenticationSystemSelectorCommand implements Validatable {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private InstalledAuthenticationSystem installedAuthenticationSystem;
     private AuthenticationSystemDirectory directory;
     private DictionaryConfiguration workConfiguration;
     private BindableConfiguration conf;
 
     public AuthenticationSystemSelectorCommand(
-        Configuration liveConfiguration, AuthenticationSystemDirectory directory,
+        String newAuthenticationSystem,
+        Configuration liveConfiguration,
+        AuthenticationSystemDirectory directory,
         InstalledAuthenticationSystem installedAuthenticationSystem
     ) {
         this.directory = directory;
         this.installedAuthenticationSystem = installedAuthenticationSystem;
 
-        ConfigurationProperties liveProperties = DefaultConfigurationProperties.union(AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES,
+        ConfigurationProperties liveProperties = combinedConfigurationProperties(
             installedAuthenticationSystem.getAuthenticationSystem().configurationProperties());
         this.workConfiguration = new DictionaryConfiguration(liveConfiguration, liveProperties);
+        if (newAuthenticationSystem != null) {
+            ConfigurationProperties newProps = directory.get(newAuthenticationSystem).getConfigurationProperties();
+            workConfiguration.setConfigurationProperties(combinedConfigurationProperties(newProps));
+        }
         conf = new BindableConfiguration(workConfiguration, true);
+        log.debug("Working with configuration {}", workConfiguration);
+    }
+
+    private ConfigurationProperties combinedConfigurationProperties(ConfigurationProperties systemProps) {
+        return DefaultConfigurationProperties.union(
+            AuthenticationSystemConfiguration.UNIVERSAL_PROPERTIES,
+            systemProps);
     }
 
     public void validate(Errors errors) {

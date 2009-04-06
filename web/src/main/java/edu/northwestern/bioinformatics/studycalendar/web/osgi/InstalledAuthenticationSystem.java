@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.tools.DictionaryConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.tools.RawDataConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;

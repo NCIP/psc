@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.RawDataConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
 
 /**
  * @author Rhett Sutphin
