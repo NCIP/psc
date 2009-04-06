@@ -52,8 +52,7 @@ module Bnd
       
       project.task('bnd:wrap' => [jar, bndfile]) do |task|
         project.ant('bnd') do |ant|
-          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties',
-            :classpath => Java.classpath.flatten.join(':')
+          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
           ant.bndwrap :jars => jar.to_s, 
             :output => bndjar,
             :definitions => File.dirname(bndfile)

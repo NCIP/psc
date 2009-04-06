@@ -64,8 +64,7 @@ module Osgi
           }
           trace "Invoking bndwrap with #{bndargs.inspect}"
           
-          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties',
-            :classpath => Bnd.libraries.join(':')
+          ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
           info "Wrapping #{File.basename src_artifact.to_s} into #{File.basename bundled_file}"
           ant.bndwrap bndargs
         end
