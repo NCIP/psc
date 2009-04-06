@@ -2,13 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.FinalPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.NonDefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.NonDefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
@@ -101,6 +102,10 @@ public class MembraneTest extends OsgimosisTestCase {
         assertTrue("Should match concrete class", NonDefaultPerson.class.isAssignableFrom(nearClass));
         assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
         assertEquals("Value should be proxied", "Expected", ((Person) near).getName());
+    }
+
+    public void testBridgedObjectAccessedFromBridgedObjectIsProxiedInCorrectClassLoader() throws Exception {
+        assertEquals(Color.BLACK, bridgedPersonService().hatColor(new FinalPerson()));
     }
 
     public void testBridgedNullIsNull() throws Exception {

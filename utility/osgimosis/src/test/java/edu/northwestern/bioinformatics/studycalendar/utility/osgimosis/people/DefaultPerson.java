@@ -5,6 +5,7 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people;
  */
 public class DefaultPerson implements Person {
     private String name, kind;
+    private Hat hat;
 
     public DefaultPerson() { }
 
@@ -29,6 +30,14 @@ public class DefaultPerson implements Person {
         this.kind = kind;
     }
 
+    public Hat getHat() {
+        return hat;
+    }
+
+    public void setHat(Hat hat) {
+        this.hat = hat;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -38,6 +47,7 @@ public class DefaultPerson implements Person {
 
         if (kind != null ? !kind.equals(that.getKind()) : that.getKind() != null) return false;
         if (name != null ? !name.equals(that.getName()) : that.getName() != null) return false;
+        if (hat != null ? !hat.equals(that.getHat()) : that.getHat() != null) return false;
 
         return true;
     }

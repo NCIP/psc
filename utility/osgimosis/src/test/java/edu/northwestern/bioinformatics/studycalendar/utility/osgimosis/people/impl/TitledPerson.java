@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Hat;
 
 /**
  * @author Rhett Sutphin
@@ -20,5 +21,9 @@ public class TitledPerson implements Person {
 
     public String getKind() {
         return person.getKind();
+    }
+
+    public Hat getHat() {
+        return person.getHat();
     }
 }

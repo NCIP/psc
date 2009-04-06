@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl;
 
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Hat;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 
 /**
@@ -7,10 +8,12 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
  */
 public class AbstractPerson implements Person {
     private String name, kind;
+    private Hat hat;
 
     public AbstractPerson(String name, String kind) {
         this.name = name;
         this.kind = kind;
+        this.hat = null;
     }
 
     public String getName() {
@@ -19,6 +22,10 @@ public class AbstractPerson implements Person {
 
     public String getKind() {
         return kind;
+    }
+
+    public Hat getHat() {
+        return hat;
     }
 
     @Override

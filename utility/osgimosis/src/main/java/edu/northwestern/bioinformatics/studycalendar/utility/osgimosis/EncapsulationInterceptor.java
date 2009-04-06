@@ -45,10 +45,11 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
                         // constructor invokes a method that returns itself.
                         return proxy;
                     } else {
-                        return getMembrane().farToNear(farResult);
+                        return getMembrane().traverse(farResult, proxy.getClass().getClassLoader());
                     }
                 } catch (InvocationTargetException ite) {
-                    throw (Throwable) getMembrane().farToNear(ite.getTargetException());
+                    throw (Throwable) getMembrane().traverse(ite.getTargetException(),
+                        proxy.getClass().getClassLoader());
                 }
             } finally {
                 Membrane.popMDC();

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people;
 
+import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -17,6 +18,7 @@ public interface PersonService {
     void problem() throws PersonProblem;
 
     String capsKind(Person person);
+    Color hatColor(Person person);
 
     boolean equals(Person p1, Person p2);
 }

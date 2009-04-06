@@ -20,4 +20,8 @@ public class NonDefaultPerson implements Person {
     public String getKind() {
         return "non-default";
     }
+
+    public Hat getHat() {
+         return null;
+    }
 }

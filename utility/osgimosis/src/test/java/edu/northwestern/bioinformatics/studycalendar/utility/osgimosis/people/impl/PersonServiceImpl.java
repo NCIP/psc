@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.awt.*;
 
 /**
  * @author Rhett Sutphin
@@ -39,6 +40,10 @@ public class PersonServiceImpl implements PersonService {
 
     public String capsKind(Person person) {
         return person.getKind().toUpperCase();
+    }
+
+    public Color hatColor(Person person) {
+        return person.getHat() == null ? null : person.getHat().getColor();
     }
 
     public boolean equals(Person p1, Person p2) {

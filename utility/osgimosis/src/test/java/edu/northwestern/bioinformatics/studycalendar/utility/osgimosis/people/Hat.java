@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people;
 
+import java.awt.*;
+
 /**
  * @author Rhett Sutphin
  */
-public interface Person {
-    String getName();
-    String getKind();
-    Hat getHat();
+public interface Hat {
+    Color getColor();
 }
