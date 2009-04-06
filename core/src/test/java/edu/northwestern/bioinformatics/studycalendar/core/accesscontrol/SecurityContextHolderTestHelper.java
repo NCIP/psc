@@ -4,8 +4,8 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.context.SecurityContextHolder;
 
 public class SecurityContextHolderTestHelper {
-    public static void setSecurityContext(String username, String password) {
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+    public static void setSecurityContext(Object principal, String password) {
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(principal, password);
         SecurityContextHolder.getContext().setAuthentication(authRequest);
     }
 }

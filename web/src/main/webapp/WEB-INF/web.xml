@@ -185,7 +185,7 @@
 
     <filter-mapping>
         <filter-name>UserInRequestFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>spring</servlet-name>
     </filter-mapping>
 
     <filter>

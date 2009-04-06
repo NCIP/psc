@@ -34,10 +34,7 @@ public class UserInRequestFilterTest extends ContextRetainingFilterTestCase {
 
     public void testAttributeSetWhenLoggedIn() throws Exception {
         User cab = Fixtures.createUser("cab");
-        SecurityContextHolderTestHelper.setSecurityContext("cab", "pass");
-
-        expect(mockApplicationContext.getBean("userDao")).andReturn(userDao);
-        expect(userDao.getByName("cab")).andReturn(cab);
+        SecurityContextHolderTestHelper.setSecurityContext(cab, "pass");
 
         replayMocks();
         filter.doFilter(request, response, filterChain);

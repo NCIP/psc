@@ -3,16 +3,20 @@ package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
 public class ApplicationSecurityManager {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public String getUserName() {
         String user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.trace("getUserName(): Retrieved authentication {}", authentication);
         if (authentication != null) {
             user = authentication.getName();
         }
@@ -21,6 +25,7 @@ public class ApplicationSecurityManager {
 
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.trace("getUser(): Retrieved authentication {}", authentication);
         if (authentication == null) {
             return null;
         } else {
@@ -29,6 +34,7 @@ public class ApplicationSecurityManager {
     }
 
     public void removeUserSession() {
+        log.debug("Removing authentication from {}", SecurityContextHolder.getContext());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

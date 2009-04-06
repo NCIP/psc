@@ -28,7 +28,6 @@ public class UserService implements Serializable {
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
     public User saveUser(User user, String password, final String emailAddress) {
         if (user == null)
             return null;
@@ -105,7 +104,6 @@ public class UserService implements Serializable {
     }
 
     public String getEmailAddresssForUser(final User user) {
-
         gov.nih.nci.security.authorization.domainobjects.User csmUser = null;
         try {
             csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
@@ -113,13 +111,13 @@ public class UserService implements Serializable {
             log.error("No csm user found for given csm user id:" + user.getCsmUserId());
         }
         return csmUser != null ? csmUser.getEmailId() : null;
-
     }
 
     /**
      * Returns the user, fully initialized.
      * @param username
      */
+    @Transactional(readOnly = true)
     public User getUserByName(String username) {
         User user = userDao.getByName(username);
         if (user != null) {

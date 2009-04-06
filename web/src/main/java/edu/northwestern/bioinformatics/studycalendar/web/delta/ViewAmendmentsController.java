@@ -43,6 +43,7 @@ public class ViewAmendmentsController extends PscAbstractController {
 
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
         model.put("study", study);
+        log.trace("Displaying amendments of {} for {}", study, user);
 
         if (exposeDevelopmentAmendment(request, study)) {
             model.put("dev", new AmendmentView(user, study, study.getDevelopmentAmendment(), daoFinder));

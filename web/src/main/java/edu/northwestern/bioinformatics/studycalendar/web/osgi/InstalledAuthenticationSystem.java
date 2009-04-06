@@ -10,6 +10,8 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.annotation.Required;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,6 +26,8 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class InstalledAuthenticationSystem extends FilterAdapter {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final String SERVICE_NAME = CompleteAuthenticationSystem.class.getName();
 
     private BundleContext bundleContext;
@@ -37,9 +41,11 @@ public class InstalledAuthenticationSystem extends FilterAdapter {
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
                 final SecurityContext original = SecurityContextHolder.getContext();
                 SecurityContextHolder.setContext(system.getCurrentSecurityContext());
+                log.debug("SecurityContext bridged from OSGi layer.  Now: {}", SecurityContextHolder.getContext());
 
                 filterChain.doFilter(servletRequest, servletResponse);
 
+                log.debug("Filter processing complete.  Resetting SecurityContext to {}", original);
                 SecurityContextHolder.setContext(original);
             }
         });
