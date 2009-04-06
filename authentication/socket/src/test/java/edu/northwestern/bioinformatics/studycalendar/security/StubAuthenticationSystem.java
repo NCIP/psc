@@ -12,7 +12,6 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.userdetails.UserDetailsService;
-import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
@@ -22,8 +21,7 @@ import javax.sql.DataSource;
  */
 public class StubAuthenticationSystem implements AuthenticationSystem {
     private static final ConfigurationProperties PROPERTIES
-        = new DefaultConfigurationProperties(new ClassPathResource(
-            "stub-details.properties", StubAuthenticationSystem.class));
+        = DefaultConfigurationProperties.empty();
     public static final ConfigurationProperty<String> EXPECTED_INITIALIZATION_ERROR_MESSAGE
         = new DefaultConfigurationProperty.Text("expectedError");
 
