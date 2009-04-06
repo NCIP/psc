@@ -30,6 +30,15 @@ class EncapsulatorCreator {
     public Encapsulator create() {
         if (Collection.class.isAssignableFrom(farClass)) {
             return new CollectionEncapsulator(membrane);
+        } else if (farClass.isArray()) {
+            log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
+            Encapsulator componentEncapsulator = new EncapsulatorCreator(
+                membrane, farClass.getComponentType(), nearClassLoader).create();
+            if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
+                return new ArrayEncapsulator((ArrayCapableEncapsulator) componentEncapsulator);
+            } else {
+                throw new MembraneException("Cannot encapsulate array; component type is not array capable");
+            }
         } else if (nearClassLoader == null) {
             log.trace(" - Not proxying object from bootstrap classloader");
             return null;

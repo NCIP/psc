@@ -41,4 +41,14 @@ public class ProxyEncapsulatorTest extends OsgimosisTestCase {
         assertTrue("Class should contain superclass in name: " + actual.getClass().getName(),
             actual.getClass().getName().contains("DefaultPerson"));
     }
+
+    public void testComponentTypeWithBaseClassIsBaseClass() throws Exception {
+        assertEquals(defaultPersonB,
+            new ProxyEncapsulator(aMembrane, loaderB, defaultPersonB, Arrays.asList(personB)).componentType());
+    }
+    
+    public void testComponentTypeWithInterfacesIsFirstInterface() throws Exception {
+        assertEquals(personB,
+            new ProxyEncapsulator(aMembrane, loaderB, Arrays.asList(personB)).componentType());
+    }
 }

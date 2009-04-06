@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 
 /**
@@ -104,6 +105,25 @@ public class MembraneTest extends OsgimosisTestCase {
         Collection<Person> actual = bridgedPersonService().createSeveral();
         assertEquals("Ned", actual.iterator().next().getName());
         assertEquals(3, actual.size());
+    }
+
+    public void testFarArrayIsEncapsulated() throws Exception {
+        Object farArray = Array.newInstance(classFromLoader(Person.class, loaderA), 2);
+        Array.set(farArray, 0, classFromLoader(DefaultPerson.class, loaderA).newInstance());
+        Array.set(farArray, 1, classFromLoader(DefaultPerson.class, loaderA).newInstance());
+
+        Object near = membrane.farToNear(farArray);
+        assertTrue("Wrapped object should be an array: " + near.getClass().getName(),
+            near.getClass().isArray());
+        assertEquals("Wrapped object should be from context loader",
+            Thread.currentThread().getContextClassLoader(),
+            near.getClass().getClassLoader());
+        assertTrue("Wrapped object should an array of Person: " + near.getClass().getName(),
+            near instanceof Person[]);
+
+        Person[] nearArray = (Person[]) near;
+        assertEquals("Wrong length", 2, nearArray.length);
+        assertTrue("Contents are wrong type", nearArray[0] instanceof Person);
     }
 
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

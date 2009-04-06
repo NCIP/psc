@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
-class ProxyEncapsulator implements Encapsulator {
+class ProxyEncapsulator implements ArrayCapableEncapsulator {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Membrane membrane;
@@ -71,6 +71,14 @@ class ProxyEncapsulator implements Encapsulator {
             return proxyWithJdk(interceptor);
         } else {
             return proxyWithCglib(interceptor);
+        }
+    }
+
+    public Class<?> componentType() {
+        if (nearSuperclass == null) {
+            return nearInterfaces[0];
+        } else {
+            return nearSuperclass;
         }
     }
 
