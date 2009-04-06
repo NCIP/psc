@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  */
 public class AuthenticationSystemConfigurationTest extends AuthenticationTestCase {
     private AuthenticationSystemConfiguration configuration;
-    private BundleContext bundleContext;
+    private BundleContext mockBundleContext;
 
     private final MockPlugin localPlugin
         = new MockPlugin(
@@ -50,38 +50,38 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
         dao.getUserMap().addUser(Fixtures.createUser("alice"));
         dao.getUserMap().addUser(Fixtures.createUser("barbara"));
         userDetailsService = dao;
-        bundleContext = registerMockFor(BundleContext.class);
+        mockBundleContext = registerMockFor(BundleContext.class);
 
         expectSingleService(DataSource.class, dataSource);
         expectSingleService(UserDetailsService.class, userDetailsService);
 
         configuration = new AuthenticationSystemConfiguration();
-        configuration.setBundleContext(bundleContext);
+        configuration.setBundleContext(mockBundleContext);
     }
 
     private void expectSingleService(Class<?> serviceClass, Object instance) {
         ServiceReference dsRef = new MockServiceReference(new String[] { serviceClass.getName() });
-        expect(bundleContext.getServiceReference(serviceClass.getName())).andReturn(dsRef);
-        expect(bundleContext.getService(dsRef)).andReturn(instance);
+        expect(mockBundleContext.getServiceReference(serviceClass.getName())).andReturn(dsRef);
+        expect(mockBundleContext.getService(dsRef)).andReturn(instance);
     }
 
     private void expectServiceReferences(MockPlugin... plugins) throws InvalidSyntaxException {
         ServiceReference[] refs = new ServiceReference[plugins.length];
         for (int i = 0; i < plugins.length; i++) refs[i] = plugins[i].getServiceReference();
-        expect(bundleContext.getServiceReferences(AuthenticationSystem.class.getName(), null)).andStubReturn(refs);
+        expect(mockBundleContext.getServiceReferences(AuthenticationSystem.class.getName(), null)).andStubReturn(refs);
     }
 
     private void expectOsgiSelectedServiceReferenceIs(MockPlugin plugin) {
-        expect(bundleContext.getServiceReference(AuthenticationSystem.class.getName())).
+        expect(mockBundleContext.getServiceReference(AuthenticationSystem.class.getName())).
             andStubReturn(plugin.getServiceReference());
     }
 
     private void expectSelectedService(MockPlugin plugin) {
-        expect(bundleContext.getService(plugin.getServiceReference())).andReturn(plugin.getSystem());
+        expect(mockBundleContext.getService(plugin.getServiceReference())).andReturn(plugin.getSystem());
     }
 
     private void expectUngetService(MockPlugin plugin) {
-        expect(bundleContext.ungetService(plugin.getServiceReference())).andReturn(true);
+        expect(mockBundleContext.ungetService(plugin.getServiceReference())).andReturn(true);
     }
 
     public void testUnknownSelectedSystemSelectsDefault() throws Exception {
@@ -96,7 +96,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     }
 
     public void testFailureIfNoAuthenticationSystemsAvailable() throws Exception {
-        expect(bundleContext.getServiceReference(AuthenticationSystem.class.getName())).andReturn(null);
+        expect(mockBundleContext.getServiceReference(AuthenticationSystem.class.getName())).andReturn(null);
         replayMocks();
 
         try {
@@ -186,6 +186,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
 
         selectAuthenticationSystem(stubPlugin.getSymbolicName());
         configuration.updated(new MapBuilder<String, Object>().
+            put(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey(), stubPlugin.getSymbolicName()).
             put(StubAuthenticationSystem.EXPECTED_INITIALIZATION_ERROR_MESSAGE.getKey(), "Bad news").
             toDictionary());
 
@@ -250,7 +251,7 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
 
         public AuthenticationSystem getSystem() {
             if (system instanceof AbstractAuthenticationSystem) {
-                ((AbstractAuthenticationSystem) system).setBundleContext(bundleContext);
+                ((AbstractAuthenticationSystem) system).setBundleContext(mockBundleContext);
             }
             return system;
         }

@@ -8,7 +8,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
-import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -19,9 +18,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.osgi.context.BundleContextAware;
 
 import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * @author Rhett Sutphin
@@ -31,7 +28,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
 
     private BundleContext bundleContext;
     private ConfigurationProperties currentConfigurationProperties;
-    private Map<String, Object> propertyValues;
+    private Dictionary<String, String> configurationPropertyValues;
     private Configuration newConfiguration;
     private AuthenticationSystem currentSystem, newSystem;
     private ServiceReference currentSystemReference, newSystemReference;
@@ -45,7 +42,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
     private static final String SERVICE_NAME = AuthenticationSystem.class.getName();
 
     public AuthenticationSystemConfiguration() {
-        propertyValues = new HashMap<String, Object>();
+        configurationPropertyValues = new Hashtable<String, String>();
     }
 
     public synchronized ConfigurationProperties getProperties() {
@@ -60,17 +57,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     public synchronized void updated(Dictionary properties) {
-        Enumeration keys = properties.keys();
-        while (keys.hasMoreElements()) {
-            String key = (String) keys.nextElement();
-            propertyValues.put(key, properties.get(key));
-        }
-        signalRebuildNeeded();
-    }
-
-    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
-    public synchronized void updated(Map properties) {
-        propertyValues.putAll(properties);
+        configurationPropertyValues = properties;
         signalRebuildNeeded();
     }
 
@@ -120,19 +107,13 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
     @SuppressWarnings({ "unchecked" })
     private synchronized Configuration getConfiguration() {
         if (newConfiguration == null) {
-            newConfiguration = new TransientConfiguration(getProperties());
-            for (ConfigurationProperty<?> property : newConfiguration.getProperties().getAll()) {
-                Object value = propertyValues.get(property.getKey());
-                if (value != null) {
-                    newConfiguration.set((ConfigurationProperty<Object>) property, value);
-                }
-            }
+            newConfiguration = new DictionaryConfiguration(getProperties(), configurationPropertyValues);
         }
         return newConfiguration;
     }
 
     private ServiceReference retrieveAuthenticationSystemReference() {
-        String desired = (String) propertyValues.get(AUTHENTICATION_SYSTEM.getKey());
+        String desired = configurationPropertyValues.get(AUTHENTICATION_SYSTEM.getKey());
         ServiceReference ref = null;
         if (!StringUtils.isBlank(desired)) {
             ref = findServiceFromBundle(desired);
