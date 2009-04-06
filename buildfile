@@ -5,7 +5,7 @@ require "buildr/emma" if emma?
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
-VERSION_NUMBER="2.5.1-SNAPSHOT"
+VERSION_NUMBER="2.5.1.DEV"
 APPLICATION_SHORT_NAME = 'psc'
 
 ###### Jetty config
@@ -22,7 +22,7 @@ jetty.url = "http://localhost:7200"
 desc "Patient Study Calendar"
 define "psc" do
   project.version = VERSION_NUMBER
-  project.group = "edu.northwestern.bioinformatics.studycalendar"
+  project.group = "edu.northwestern.bioinformatics"
 
   compile.options.target = "1.5"
   compile.options.source = "1.5"
@@ -48,6 +48,9 @@ define "psc" do
   
   desc "Pure utility code"
   define "utility" do
+    project.bnd.wrap!
+    project.bnd['Import-Package'] = '*'
+
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
     

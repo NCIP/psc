@@ -216,6 +216,8 @@ INTEGRATED_TESTING = [
   "net.java.dev:jvyaml:jar:0.2.1"
 ]
 
+BND = artifact("biz.aQute:bnd:jar:0.0.249").from(static_lib('bnd-0.0.249.jar'))
+
 DB = struct(
   :hsqldb => "org.hsqldb:com.springsource.org.hsqldb:jar:1.8.0.9",
   :postgresql => eponym("postgresql", "8.2-504.jdbc3"),
