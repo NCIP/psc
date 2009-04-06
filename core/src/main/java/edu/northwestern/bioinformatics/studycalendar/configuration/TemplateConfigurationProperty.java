@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.configuration;
 
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.restlet.util.Template;
 
-public class TemplateConfigurationProperty extends ConfigurationProperty<Template> {
+public class TemplateConfigurationProperty extends DefaultConfigurationProperty<Template> {
     public TemplateConfigurationProperty(String propertyName) {
         super(propertyName);
     }

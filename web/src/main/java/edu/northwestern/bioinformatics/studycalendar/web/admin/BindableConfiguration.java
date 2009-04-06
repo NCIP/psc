@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 
 import java.util.TreeMap;
 
@@ -12,7 +13,7 @@ public class BindableConfiguration extends TreeMap<String, BindableConfiguration
     private boolean ignoreMissingProperties;
     private Configuration targetConfiguration;
     private static final ConfigurationProperty<String> IGNORED_PROPERTY 
-        = new ConfigurationProperty.Text("__ignored__");
+        = new DefaultConfigurationProperty.Text("__ignored__");
 
     @SuppressWarnings({ "unchecked" })
     public BindableConfiguration(Configuration targetConfig, boolean ignoreMissingProperties) {

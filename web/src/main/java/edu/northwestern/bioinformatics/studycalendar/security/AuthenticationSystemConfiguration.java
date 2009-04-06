@@ -9,6 +9,8 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationListener;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationMap;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -37,11 +39,11 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
     private boolean propertiesReady;
     private boolean systemReady;
 
-    public static final ConfigurationProperties UNIVERSAL_PROPERTIES
-        = new ConfigurationProperties(new ClassPathResource(
+    public static final DefaultConfigurationProperties UNIVERSAL_PROPERTIES
+        = new DefaultConfigurationProperties(new ClassPathResource(
             "authentication-system-universal.properties", AuthenticationSystemConfiguration.class));
     public static final ConfigurationProperty<String> AUTHENTICATION_SYSTEM
-        = UNIVERSAL_PROPERTIES.add(new ConfigurationProperty.Text("authenticationSystem"));
+        = UNIVERSAL_PROPERTIES.add(new DefaultConfigurationProperty.Text("authenticationSystem"));
     private static final String SERVICE_NAME = AuthenticationSystem.class.getName();
 
     public synchronized ConfigurationProperties getProperties() {
@@ -76,7 +78,8 @@ public class AuthenticationSystemConfiguration implements Configuration, Configu
             newSystem, newSystem.getClass().getName());
         log.debug("Newly instantiated authentication system has these configuration properties: {}",
             newSystem.configurationProperties().getAll());
-        currentProperties = ConfigurationProperties.union(UNIVERSAL_PROPERTIES, newSystem.configurationProperties());
+        currentProperties = DefaultConfigurationProperties.union(
+            UNIVERSAL_PROPERTIES, newSystem.configurationProperties());
         propertiesReady = true;
     }
 

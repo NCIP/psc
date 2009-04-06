@@ -28,7 +28,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "0.9-SNAPSHOT"
+CTMS_COMMONS_VERSION = "1.0.0-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
@@ -226,6 +226,7 @@ KNOPFLERFISH = struct(
 )
 
 DYNAMIC_JAVA = struct(
+  # TODO: there's a dynamicjava.org maven repo now
   :da_launcher => artifact("org.dynamicjava:da-launcher:jar:1.1.1").from(static_lib('da-launcher-1.1.1.jar')),
   :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
 )

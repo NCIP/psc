@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.security;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +19,13 @@ import java.util.Collection;
 public class TestableAuthenticationSystem extends AbstractAuthenticationSystem {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final ConfigurationProperties PROPERTIES
-        = new ConfigurationProperties(new ClassPathResource(
+    private static final DefaultConfigurationProperties PROPERTIES
+        = new DefaultConfigurationProperties(new ClassPathResource(
             "testable-details.properties", TestableAuthenticationSystem.class));
     public static final ConfigurationProperty<String> SERVICE_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text("serviceUrl"));
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text("serviceUrl"));
     public static final ConfigurationProperty<String> APPLICATION_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;

@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
@@ -18,10 +20,10 @@ import javax.servlet.Filter;
  */
 public class StubAuthenticationSystem implements AuthenticationSystem {
     private static final ConfigurationProperties PROPERTIES
-        = new ConfigurationProperties(new ClassPathResource(
+        = new DefaultConfigurationProperties(new ClassPathResource(
             "stub-details.properties", StubAuthenticationSystem.class));
     public static final ConfigurationProperty<String> EXPECTED_INITIALIZATION_ERROR_MESSAGE
-        = new ConfigurationProperty.Text("expectedError");
+        = new DefaultConfigurationProperty.Text("expectedError");
 
     private ApplicationContext initialApplicationContext;
     private Configuration initialConfiguration;

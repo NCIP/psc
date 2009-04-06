@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.local;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import org.acegisecurity.AuthenticationManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -11,7 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Rhett Sutphin
  */
 public class LocalAuthenticationSystem extends UsernameAndPasswordAuthenticationSystem {
-    private static final ConfigurationProperties PROPERTIES = ConfigurationProperties.empty();
+    private static final ConfigurationProperties PROPERTIES = DefaultConfigurationProperties.empty();
     private ApplicationContext localSystemContext;
 
     public ConfigurationProperties configurationProperties() {

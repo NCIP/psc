@@ -31,8 +31,10 @@ public interface AuthenticationSystem {
      * These properties will probably be statically defined in implementing
      * classes.
      * 
-     * @see gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration
-     * @see {@link ConfigurationProperties#empty} if you don't need any
+     * @see gov.nih.nci.cabig.ctms.tools.configuration.Configuration
+     * @see gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties
+     * @see {@link gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties#empty}
+     *      if you don't need any
      */
     ConfigurationProperties configurationProperties();
 

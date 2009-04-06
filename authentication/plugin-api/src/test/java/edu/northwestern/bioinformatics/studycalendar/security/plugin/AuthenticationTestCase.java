@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
-import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
@@ -77,7 +77,7 @@ public abstract class AuthenticationTestCase extends TestCase {
     }
 
     public static Configuration blankConfiguration() {
-        return new TransientConfiguration(ConfigurationProperties.empty());
+        return new TransientConfiguration(DefaultConfigurationProperties.empty());
     }
 
     private static class FakeUserDetailsService implements UserDetailsService {

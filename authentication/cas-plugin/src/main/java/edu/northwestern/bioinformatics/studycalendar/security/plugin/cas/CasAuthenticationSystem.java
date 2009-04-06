@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.providers.AuthenticationProvider;
@@ -29,15 +31,15 @@ import java.util.Properties;
 public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final ConfigurationProperties PROPERTIES
-        = new ConfigurationProperties(
+    private static final DefaultConfigurationProperties PROPERTIES
+        = new DefaultConfigurationProperties(
             new ClassPathResource(absoluteClasspathResourceNameFor("cas-details.properties"), CasAuthenticationSystem.class));
     public static final ConfigurationProperty<String> SERVICE_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text("cas.serviceUrl"));
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text("cas.serviceUrl"));
     public static final ConfigurationProperty<String> TRUST_STORE
-        = PROPERTIES.add(new ConfigurationProperty.Text("cas.trustStore"));
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text("cas.trustStore"));
     public static final ConfigurationProperty<String> APPLICATION_URL
-        = PROPERTIES.add(new ConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
+        = PROPERTIES.add(new DefaultConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
 
     private static final String CAS_FILTER_PATH = "/j_acegi_cas_security_check";
 

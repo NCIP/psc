@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
@@ -20,7 +21,7 @@ import org.acegisecurity.userdetails.UserDetailsService;
  * @author Rhett Sutphin
  */
 public class InsecureAuthenticationSystem extends UsernameAndPasswordAuthenticationSystem {
-    private static final ConfigurationProperties PROPERTIES = ConfigurationProperties.empty();
+    private static final ConfigurationProperties PROPERTIES = DefaultConfigurationProperties.empty();
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
