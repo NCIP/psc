@@ -29,7 +29,7 @@ public class DelegatorCollection<T> implements Collection<T> {
     }
 
     public Iterator<T> iterator() {
-        return new DelegatorIterator(apiObject.iterator(), apiBridge);
+        return new DelegatorIterator<T>(apiObject.iterator(), apiBridge);
     }
 
     public Object[] toArray() {
@@ -44,7 +44,7 @@ public class DelegatorCollection<T> implements Collection<T> {
 
     public <K> K[] toArray(K[] a) {
         if (a.length == 0) {
-            a = (K[])java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size());
+            a = (K[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size());
         }
         int i = 0;
         Object[] out = a;
