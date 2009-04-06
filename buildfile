@@ -172,15 +172,16 @@ define "psc" do
       package(:jar)
     end
     
-    desc "PSC's framework for using the authentication plugins"
-    define "socket" do
-      bnd.wrap!
-      bnd['Bundle-Activator'] = 
-        "edu.northwestern.bioinformatics.studycalendar.security.socket.Activator"
-      compile.with project('plugin-api').and_dependencies
-      test.with(UNIT_TESTING)
-      package(:jar)
-    end
+    # This will probably be removed completely before #597 is complete
+    # desc "PSC's framework for using the authentication plugins"
+    # define "socket" do
+    #   bnd.wrap!
+    #   bnd['Bundle-Activator'] = 
+    #     "edu.northwestern.bioinformatics.studycalendar.security.socket.Activator"
+    #   compile.with project('plugin-api').and_dependencies
+    #   test.with(UNIT_TESTING)
+    #   package(:jar)
+    # end
     
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
