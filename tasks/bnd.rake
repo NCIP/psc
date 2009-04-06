@@ -12,7 +12,7 @@ module Bnd
   include Buildr::Extension
   
   def self.libraries
-    ["biz.aQute:bnd:jar:0.0.249"]
+    ["biz.aQute:bnd:jar:0.0.313"]
   end
   
   first_time do
@@ -36,7 +36,8 @@ module Bnd
     
     project.recursive_task('bnd:generate')
     if jar
-      bndfile = jar.name.sub /jar$/, 'bnd'
+      # This replicates the logic in bnd 0.0.313's WrapTask
+      bndfile = jar.name.sub /(\.jar)?$/, '.bnd'
       project.task('bnd:generate').enhance [bndfile]
       directory(File.dirname(bndfile))
       project.file(bndfile => [Buildr.application.buildfile, File.dirname(bndfile)]) do |task|
@@ -55,9 +56,12 @@ module Bnd
         task.enhance do
           project.ant('bnd') do |ant|
             ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties'
+            trace "Wrapping #{jar.name} into #{bndjar}"
+            definitions_dir = File.dirname(bndfile)
+            trace "Telling bnd to look in #{definitions_dir} for directions."
             ant.bndwrap :jars => jar.name, 
               :output => bndjar,
-              :definitions => File.dirname(bndfile)
+              :definitions => definitions_dir
           end
           raise "bnd failed" unless File.exist?(bndjar)
         
@@ -192,7 +196,7 @@ module Bnd
     end
     
     def default_export_packages
-      ['*']
+      ["*"]
     end
     
     protected

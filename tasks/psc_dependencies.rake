@@ -215,6 +215,25 @@ OSGI = struct(
   :compendium => 'org.osgi:osgi_R4_compendium:jar:1.0'
 )
 
+FELIX = struct(
+  :main => "org.apache.felix:org.apache.felix.main:jar:1.0.4",
+  :shell => "org.apache.felix:org.apache.felix.shell:jar:1.0.2",
+  :shell_remote => "org.apache.felix:org.apache.felix.shell.remote:jar:1.0.4"
+)
+
+KNOPFLERFISH = struct(
+  Dir[static_lib('knopflerfish-2.2.0/**/*.jar')].inject({}) do |map, jar|
+    group, name, version = jar.scan(%r{.*/(\w+)/(\w+)-([\d\.]+)\.jar$}).first
+    map[name.to_sym] = artifact("org.knopflerfish.#{group}:knopflerfish-#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+
+DYNAMIC_JAVA = struct(
+  :da_launcher => artifact("org.dynamicjava:da-launcher:jar:1.1.1").from(static_lib('da-launcher-1.1.1.jar')),
+  :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
+)
+
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
@@ -234,7 +253,7 @@ INTEGRATED_TESTING = [
   "net.java.dev:jvyaml:jar:0.2.1"
 ]
 
-BND = artifact("biz.aQute:bnd:jar:0.0.249").from(static_lib('bnd-0.0.249.jar'))
+BND = artifact("biz.aQute:bnd:jar:0.0.313").from(static_lib('bnd-0.0.313.jar'))
 
 DB = struct(
   :hsqldb => "org.hsqldb:com.springsource.org.hsqldb:jar:1.8.0.9",
