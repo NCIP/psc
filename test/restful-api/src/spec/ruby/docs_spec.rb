@@ -5,9 +5,16 @@ describe "/docs" do
     response.content_type.should == 'text/html'
   end
   
+  describe "human-readable" do
+    it "returns contains the full URIs for resources" do
+      get "/docs"
+      response.status_code.should == 200
+      response.entity.should =~ %r{http://localhost:7200/psc/api/v1/studies}
+    end
+  end
+  
   describe "/psc.wadl" do
     before do
-      pending '#628'
       get "/docs/psc.wadl"
       response.status_code.should == 200
     end
@@ -17,13 +24,12 @@ describe "/docs" do
     end
     
     it "contains the actual URI for the application in the resources" do
-      response.entity.should =~ 'http://localhost:7200/psc/api/v1/studies'
+      response.entity.should =~ %r{http://localhost:7200/psc/api/v1}
     end
   end
   
   describe "/psc.xsd" do
     before do
-      pending '#628'
       get "/docs/psc.xsd"
       response.status_code.should == 200
     end
