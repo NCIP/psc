@@ -76,6 +76,9 @@ public class OsgiBundleStateResource extends OsgiAdminResource {
             } catch (IOException e) {
                 throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not read entity", e);
             }
+        } else {
+            throw new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
     }
 

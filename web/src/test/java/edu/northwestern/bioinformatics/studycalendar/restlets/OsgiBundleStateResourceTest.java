@@ -84,6 +84,12 @@ public class OsgiBundleStateResourceTest extends AuthorizedResourceTestCase<Osgi
         putToState("STARING");
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
+    
+    public void test400ForUnsupportedEntityContentType() throws Exception {
+        request.setEntity("state=STARTING", MediaType.TEXT_PLAIN);
+        doPut();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
 
     ////// PUT to STARTING
 
