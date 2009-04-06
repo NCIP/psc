@@ -12,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -21,6 +23,7 @@ public class MultipleFilterFilterTest extends TestCase {
     private MockHttpServletResponse response;
     private MockFilterChain chain;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         request = new MockHttpServletRequest();
@@ -35,8 +38,22 @@ public class MultipleFilterFilterTest extends TestCase {
 
         doFilter(filters);
         for (int i = 0; i < filters.length; i++) {
-            InvocationRecordingFilter filter = filters[i];
-            assertTrue("Filter " + i + " not invoked", filter.isInvoked());
+            assertTrue("Filter " + i + " not invoked", filters[i].isInvoked());
+        }
+        assertChainContinued();
+    }
+
+    public void testSetFiltersWorks() throws Exception {
+        List<ContinuingFilter> filters = Arrays.asList(
+            new ContinuingFilter(), new ContinuingFilter(), new ContinuingFilter()
+        );
+
+        MultipleFilterFilter filter = new MultipleFilterFilter();
+        filter.setFilters(filters);
+        filter.doFilter(request, response, chain);
+
+        for (int i = 0; i < filters.size(); i++) {
+            assertTrue("Filter " + i + " not invoked", filters.get(i).isInvoked());
         }
         assertChainContinued();
     }
@@ -51,6 +68,15 @@ public class MultipleFilterFilterTest extends TestCase {
         assertTrue("Second not invoked", filters[1].isInvoked());
         assertFalse("Third incorrectly invoked", filters[2].isInvoked());
         assertChainNotContinued();
+    }
+
+    public void testExceptionIfNoFiltersProvided() throws Exception {
+        try {
+            new MultipleFilterFilter().afterPropertiesSet();
+            fail("Exception not thrown");
+        } catch (IllegalStateException ise) {
+            assertEquals("No filters configured", ise.getMessage());
+        }
     }
 
     private void doFilter(Filter[] filters) throws IOException, ServletException {
@@ -81,6 +107,7 @@ public class MultipleFilterFilterTest extends TestCase {
     }
 
     private static class ContinuingFilter extends InvocationRecordingFilter {
+        @Override
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
             super.doFilter(servletRequest, servletResponse, filterChain);
             filterChain.doFilter(servletRequest, servletResponse);
