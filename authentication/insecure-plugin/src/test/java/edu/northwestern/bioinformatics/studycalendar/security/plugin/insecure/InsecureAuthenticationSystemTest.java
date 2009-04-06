@@ -3,10 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
-import gov.nih.nci.security.acegi.csm.authentication.CSMAuthenticationProvider;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetailsService;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -17,7 +16,6 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
 
     private UserDetailsService userDetailsService;
     private ApplicationContext applicationContext;
-    private CSMAuthenticationProvider csmAuthenticationProvider;
 
     @Override
     protected void setUp() throws Exception {
