@@ -24,8 +24,9 @@ import java.util.Set;
 
 public class ApiBridge {
     private final Logger log = LoggerFactory.getLogger(getClass());
-	
-	public Object bridge(Object apiObject) {
+    private static final Logger slog = LoggerFactory.getLogger(ApiBridge.class);
+
+    public Object bridge(Object apiObject) {
 		return bridge(apiObject, false);
 	}
 	
@@ -86,8 +87,8 @@ public class ApiBridge {
 
         Set<Class<?>> interfaces = findIntefacesMatch(apiObject.getClass());
 
-        log.debug("Creating proxy for superclass {}", superClassMatch);
-        log.debug("Interfaces are {}", interfaces);
+        log.debug("Proxying by superclass {} in {}", superClassMatch, getTargetApiClassLoader());
+        log.debug("Implementing interfaces {}", interfaces);
 
         Enhancer enh = new Enhancer();
         enh.setSuperclass(superClassMatch);
@@ -103,8 +104,8 @@ public class ApiBridge {
 	}
 
 	protected Object createProxyForInterfaces(Object apiObject, Class<?>[] interfacesMatch) {
-        log.debug("Proxying by interfaces only: {}", Arrays.asList(interfacesMatch));
-		return java.lang.reflect.Proxy.newProxyInstance(
+        log.debug("Proxying by interfaces {} in {}", Arrays.asList(interfacesMatch), getTargetApiClassLoader());
+        return java.lang.reflect.Proxy.newProxyInstance(
 				getTargetApiClassLoader(),
 				interfacesMatch,
 				new Delegator(apiObject, this));
