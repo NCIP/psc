@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.security.util.ObjectSetUtil;
+import org.apache.commons.collections15.CollectionUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -138,10 +138,10 @@ public class StudySite extends AbstractMutableDomainObject implements Serializab
     }
 
     @Transient
-    @SuppressWarnings({ "unchecked" })
     public static StudySite findStudySite(Study study, Site site) {
         if (study != null && site != null) {
-            Collection<StudySite> studySite = ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites());
+            Collection<StudySite> studySite
+                = CollectionUtils.intersection(study.getStudySites(), site.getStudySites());
             if (studySite != null && studySite.size() > 0) {
                 return studySite.iterator().next();
             }

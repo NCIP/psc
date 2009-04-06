@@ -3,22 +3,35 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.util.ObjectSetUtil;
+import org.apache.commons.collections15.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -209,7 +222,6 @@ public class TemplateService {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     public Map<String, List<Site>> getSiteLists(Study studyTemplate) throws Exception {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
@@ -227,7 +239,7 @@ public class TemplateService {
         for (StudySite ss : studyTemplate.getStudySites()) {
             assignedSites.add(ss.getSite());
         }
-        availableSites = (List<Site>) ObjectSetUtil.minus(availableSites, assignedSites);
+        availableSites = ListUtils.subtract(availableSites, assignedSites);
         siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
         siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
 
