@@ -1,16 +1,13 @@
-package edu.northwestern.bioinformatics.studycalendar.security;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.acegisecurity.userdetails.UserDetailsService;
-import org.springframework.dao.DataAccessException;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import org.acegisecurity.userdetails.UserDetails;
+import org.acegisecurity.userdetails.UserDetailsService;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.springframework.dao.DataAccessException;
 
 /**
- * Implementation of {@UserDetailsService} for PSC.  An instance of this class is
- * available as <code>pscUserDetailsService</code> in the application context
- * available to security plugins.
+ * Implementation of Acegi's {@UserDetailsService} for PSC.
  */
 public class PscUserDetailsService implements UserDetailsService {
     private UserService userService;

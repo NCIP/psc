@@ -38,11 +38,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
 
-    <bean id="pscUserDetailsService"
-          class="edu.northwestern.bioinformatics.studycalendar.security.PscUserDetailsService">
-        <property name="userService" ref="userService"/>
-    </bean>
-
     <bean id="userCache"
           class="org.acegisecurity.providers.dao.cache.EhCacheBasedUserCache">
         <property name="cache">

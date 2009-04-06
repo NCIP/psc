@@ -1,12 +1,11 @@
-package edu.northwestern.bioinformatics.studycalendar.security;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
     private User user;

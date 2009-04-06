@@ -91,8 +91,15 @@
     <bean id="plannedActivityLabelService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.LabelService"/>
 
+    <!-- Services that bridge between the Acegi security code and the core logic -->
+
     <bean id="applicationSecurityManager" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager"/>
+
+    <bean id="pscUserDetailsService"
+        class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsService">
+        <property name="userService" ref="userService"/>
+    </bean>
 
     <!-- Temporary mock service -->
 
