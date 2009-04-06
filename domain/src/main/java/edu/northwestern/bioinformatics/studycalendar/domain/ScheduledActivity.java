@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.CollectionOfElements;
@@ -97,7 +97,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             if (typeDiff != 0) return typeDiff;
         }
         // then by name
-        return ComparisonUtils.nullSafeCompare(getActivity().getName(),o.getActivity().getName());
+        return ComparisonTools.nullSafeCompare(getActivity().getName(),o.getActivity().getName());
     }
 
     @Transient

@@ -1,24 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import org.hibernate.usertype.CompositeUserType;
-import org.hibernate.type.Type;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionImplementor;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.type.Type;
+import org.hibernate.usertype.CompositeUserType;
 import org.slf4j.Logger;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.util.Date;
-import java.io.Serializable;
 
 /**
  * Hibernate {@link org.hibernate.usertype.UserType} that loads
@@ -80,7 +84,7 @@ public class ScheduledActivityStateType implements CompositeUserType {
     }
 
     public boolean equals(Object x, Object y) throws HibernateException {
-        return ComparisonUtils.nullSafeEquals(x, y);
+        return ComparisonTools.nullSafeEquals(x, y);
     }
 
     public int hashCode(Object x) throws HibernateException {

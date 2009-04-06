@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -45,7 +45,7 @@ public class ActivityType extends AbstractMutableDomainObject
     }
 
     public int compareTo(ActivityType o) {
-        return ComparisonUtils.nullSafeCompare(toLower(getName()), toLower(o.getName()));
+        return ComparisonTools.nullSafeCompare(toLower(getName()), toLower(o.getName()));
     }
 
     private String toLower(String name) {

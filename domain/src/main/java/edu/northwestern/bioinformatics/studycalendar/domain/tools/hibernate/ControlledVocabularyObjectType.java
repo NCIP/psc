@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.tools.hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
@@ -172,7 +172,7 @@ public class ControlledVocabularyObjectType implements UserType, ParameterizedTy
     }
 
     public boolean equals(Object x, Object y) throws HibernateException {
-        return ComparisonUtils.nullSafeEquals(x, y);
+        return ComparisonTools.nullSafeEquals(x, y);
     }
 
     public int hashCode(Object x) throws HibernateException {

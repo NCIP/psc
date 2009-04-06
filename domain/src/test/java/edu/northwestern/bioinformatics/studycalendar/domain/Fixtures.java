@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -282,8 +281,8 @@ public class Fixtures {
         ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(planned);
         event.setActivity(planned.getActivity());
-        event.setIdealDate(DateUtils.createDate(year, month, day - 2));
-        event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
+        event.setIdealDate(DateTools.createDate(year, month, day - 2));
+        event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
         return event;
     }
 
@@ -293,8 +292,8 @@ public class Fixtures {
         event.setActivity(planned.getActivity());
         event.setRepetitionNumber(0);
         event.setLabels(planned.getLabels());
-        event.setIdealDate(DateUtils.createDate(year, month, day - 2));
-        event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
+        event.setIdealDate(DateTools.createDate(year, month, day - 2));
+        event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
         return event;
     }
 

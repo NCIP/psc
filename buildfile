@@ -68,8 +68,14 @@ define "psc" do
   
   desc "The domain classes for PSC"
   define "domain" do
-    compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
-      JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY.acegi, SECURITY.csm
+    bnd.wrap!
+    bnd.name = "PSC Domain Model"
+    
+    compile.with project('utility'), SLF4J, 
+      CTMS_COMMONS.lang, CTMS_COMMONS.core,
+      JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
+      JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
+      SPRING, HIBERNATE, SECURITY.acegi, SECURITY.csm
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -419,7 +425,7 @@ define "psc" do
   
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
-    compile.with LOGBACK, 
+    compile.with LOGBACK, CTMS_COMMONS.web,
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,

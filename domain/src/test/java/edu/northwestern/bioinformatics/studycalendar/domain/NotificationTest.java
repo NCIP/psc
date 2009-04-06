@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -32,7 +32,7 @@ public class NotificationTest extends TestCase {
         super.setUp();
         adverseEvent = new AdverseEvent();
         adverseEvent.setDescription("desc");
-        detectionDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 2);
+        detectionDate = DateTools.createDate(2007, Calendar.SEPTEMBER, 2);
         adverseEvent.setDetectionDate(detectionDate);
         scheduledActivity = Fixtures.createScheduledActivity("sch activity", 2008, 2, 3);
 

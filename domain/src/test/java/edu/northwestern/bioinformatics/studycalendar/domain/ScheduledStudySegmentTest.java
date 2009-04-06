@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.tools.Range;
-import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertDayOfDate;
 import junit.framework.TestCase;
@@ -180,7 +179,7 @@ public class ScheduledStudySegmentTest extends TestCase {
     public void testUnscheduleAllOutstandingEvents() throws Exception {
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 2,
-            new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 4))));
+            new Occurred(null, DateTools.createDate(2005, Calendar.AUGUST, 4))));
         scheduledStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 3,
             new Canceled()));
         scheduledStudySegment.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 4,

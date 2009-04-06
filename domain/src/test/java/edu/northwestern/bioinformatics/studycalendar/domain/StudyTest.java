@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
 
@@ -220,41 +220,41 @@ public class StudyTest extends TestCase {
     public void testLastModifiedDate() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
-        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 19));
         study.pushAmendment(a);
 
         Amendment b = new Amendment();
-        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
+        b.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 21));
         study.pushAmendment(b);
 
         Amendment c = new Amendment();
-        c.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 24));
+        c.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 24));
         study.pushAmendment(c);
-        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 24), study.getLastModifiedDate());
+        assertEquals(DateTools.createDate(2007, Calendar.OCTOBER, 24), study.getLastModifiedDate());
     }
 
     public void testLastModifiedDateWhenStudyIsAmended() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
-        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 19));
         study.pushAmendment(a);
 
         Amendment b = new Amendment();
-        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
+        b.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 23));
         study.setDevelopmentAmendment(b);
 
-        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 23), study.getLastModifiedDate());
+        assertEquals(DateTools.createDate(2007, Calendar.OCTOBER, 23), study.getLastModifiedDate());
     }
 
     public void testLastModifiedDateForNewlyCreatedStudy() throws Exception {
         assertNull(study.getAmendment());
         Amendment a = new Amendment();
-        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setReleasedDate(DateTools.createDate(2007, Calendar.OCTOBER, 19));
 
         study.setDevelopmentAmendment(a);
         assertSame(a, study.getDevelopmentAmendment());
 
-        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
+        assertEquals(DateTools.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
     }
 
    public void testIsDetached() throws Exception {

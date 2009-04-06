@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -122,19 +122,19 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
     }
 
     public int compareTo(Period other) {
-        int startCompare = ComparisonUtils.nullSafeCompare(getStartDay(), other.getStartDay());
+        int startCompare = ComparisonTools.nullSafeCompare(getStartDay(), other.getStartDay());
         if (startCompare != 0) return startCompare;
 
-        int lengthCompare = ComparisonUtils.nullSafeCompare(getTotalDuration(), other.getTotalDuration());
+        int lengthCompare = ComparisonTools.nullSafeCompare(getTotalDuration(), other.getTotalDuration());
         if (lengthCompare != 0) return lengthCompare;
 
-        int repCompare = ComparisonUtils.nullSafeCompare(getRepetitions(), other.getRepetitions());
+        int repCompare = ComparisonTools.nullSafeCompare(getRepetitions(), other.getRepetitions());
         if (repCompare != 0) return -1 * repCompare;
 
-        int idCompare = ComparisonUtils.nullSafeCompare(getId(), other.getId());
+        int idCompare = ComparisonTools.nullSafeCompare(getId(), other.getId());
         if (idCompare != 0) return -1 * idCompare;
 
-        return ComparisonUtils.nullSafeCompare(getName(), other.getName());
+        return ComparisonTools.nullSafeCompare(getName(), other.getName());
     }
 
     ////// BEAN PROPERTIES

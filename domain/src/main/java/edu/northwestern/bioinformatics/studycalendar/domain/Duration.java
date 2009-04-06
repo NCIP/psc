@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Embeddable;
@@ -47,7 +46,7 @@ public class Duration implements Comparable<Duration>, Cloneable {
     }
 
     public int compareTo(Duration o) {
-        return ComparisonUtils.nullSafeCompare(this.getDays(), o.getDays()); 
+        return ComparisonTools.nullSafeCompare(this.getDays(), o.getDays()); 
     }
 
     // Bean methods

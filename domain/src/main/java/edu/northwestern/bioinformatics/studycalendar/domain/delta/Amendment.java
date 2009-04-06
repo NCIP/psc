@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import static edu.northwestern.bioinformatics.studycalendar.tools.FormatTools.formatDate;
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -175,7 +175,7 @@ public class Amendment
             for (Change change : delta.getChanges()) {
                 if (updated == null) {
                     updated = change.getUpdatedDate();
-                } else if (ComparisonUtils.nullSafeCompare(updated, change.getUpdatedDate()) < 0) {
+                } else if (ComparisonTools.nullSafeCompare(updated, change.getUpdatedDate()) < 0) {
                     updated = change.getUpdatedDate();
                 }
             }

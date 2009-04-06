@@ -9,8 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.classextension.EasyMock.*;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static org.easymock.classextension.EasyMock.expect;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +23,7 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class ScheduledActivityStateTypeTest extends DomainTestCase {
-    private static final Date DATE = DateUtils.createDate(2003, Calendar.APRIL, 6);
+    private static final Date DATE = DateTools.createDate(2003, Calendar.APRIL, 6);
     private static final String REASON = "reason";
     private static final String[] COLUMN_NAMES = new String[] { "current_state_mode_id", "current_state_reason", "current_state_date" };
 
@@ -38,7 +38,7 @@ public class ScheduledActivityStateTypeTest extends DomainTestCase {
     }
 
     public void testDeepCopy() throws Exception {
-        Scheduled state = new Scheduled("Because", DateUtils.createDate(2004, Calendar.JANUARY, 4));
+        Scheduled state = new Scheduled("Because", DateTools.createDate(2004, Calendar.JANUARY, 4));
         Object copy = type.deepCopy(state);
         assertNotSame(state, copy);
 

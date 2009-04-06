@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
@@ -49,7 +48,7 @@ public class Activity extends AbstractMutableDomainObject
         int typeDiff = getType().compareTo(o.getType());
         if (typeDiff != 0) return typeDiff;
         // then by name
-        return ComparisonUtils.nullSafeCompare(toLower(getName()), toLower(o.getName()));
+        return ComparisonTools.nullSafeCompare(toLower(getName()), toLower(o.getName()));
     }
 
     private String toLower(String name) {

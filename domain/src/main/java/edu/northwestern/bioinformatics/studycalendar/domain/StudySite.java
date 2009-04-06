@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.apache.commons.collections15.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;

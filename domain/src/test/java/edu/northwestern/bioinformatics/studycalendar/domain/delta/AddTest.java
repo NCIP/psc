@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class AddTest extends TestCase {
-    private static final Date NOW = DateUtils.createDate(2009, Calendar.MARCH, 15);
+    private static final Date NOW = DateTools.createDate(2009, Calendar.MARCH, 15);
 
     private static final int EPOCH_ID = 5;
     private Delta<?> delta;
