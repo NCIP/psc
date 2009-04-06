@@ -57,22 +57,10 @@ public class OsgiBundleListResource extends AbstractPscResource implements Appli
         return new JSONObject(new MapBuilder<String, Object>().
             put("id", bundle.getBundleId()).
             put("symbolic-name", bundle.getSymbolicName()).
-            put("state", stateString(bundle.getState())).
+            put("state", OsgiBundleState.valueOfConstant(bundle.getState()).name()).
             put("version", bundle.getHeaders().get("Bundle-Version")).
             toMap()
         );
-    }
-
-    private String stateString(int state) {
-        switch(state) {
-            case Bundle.UNINSTALLED: return "UNINSTALLED";
-            case Bundle.INSTALLED:   return "INSTALLED";
-            case Bundle.STARTING:    return "STARTING";
-            case Bundle.STOPPING:    return "STOPPING";
-            case Bundle.ACTIVE:      return "ACTIVE";
-            case Bundle.RESOLVED:    return "RESOLVED";
-        }
-        throw new IllegalArgumentException("Unexpected state 0x" + Integer.toHexString(state));
     }
 
     private Bundle[] getBundles() {
