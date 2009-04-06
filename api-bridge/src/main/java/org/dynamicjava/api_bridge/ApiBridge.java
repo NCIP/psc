@@ -117,7 +117,7 @@ public class ApiBridge {
 		if (result == null) {
 			result = new HashSet<Class<?>>();
 			for (Class<?> interfac : ClassUtils.getAllInterfaces(clazz)) {
-				if (isOfApiPackages(interfac)) {
+				if (isOfApiPackages(interfac) && isAvailableInTargetClassLoader(interfac)) {
 					result.add(findClassMatch(interfac));
 				}
 			}
@@ -125,8 +125,18 @@ public class ApiBridge {
 		}
 		return result;
 	}
-	
-	protected Class<?> findSuperClassMatch(Class<?> clazz) {
+
+    private boolean isAvailableInTargetClassLoader(Class<?> clazz) {
+        try {
+            getTargetApiClassLoader().loadClass(clazz.getName());
+            return true;
+        } catch (ClassNotFoundException e) {
+            log.debug("{} is in an API package, but is not available from {}.  Skipping.", clazz, getTargetApiClassLoader());
+            return false;
+        }
+    }
+
+    protected Class<?> findSuperClassMatch(Class<?> clazz) {
 		if (getCache().getSuperClassMap().containsKey(clazz)) {
 			return getCache().getSuperClassMap().get(clazz);
 		} else {
