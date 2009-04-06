@@ -120,11 +120,8 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
     @SuppressWarnings({ "unchecked" })
     private synchronized Configuration getConfiguration() {
         if (newConfiguration == null) {
-            System.out.println("Properties: " + getProperties().getAll());
-            System.out.println("Property values: " + propertyValues);
             newConfiguration = new TransientConfiguration(getProperties());
             for (ConfigurationProperty<?> property : newConfiguration.getProperties().getAll()) {
-                System.out.println("Copying property " + property);
                 Object value = propertyValues.get(property.getKey());
                 if (value != null) {
                     newConfiguration.set((ConfigurationProperty<Object>) property, value);
