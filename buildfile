@@ -374,19 +374,23 @@ define "psc" do
       end
     end
     
-    task :examine => [:build_test_da_launcher, 'psc:osgi-layer:test:compile'] do
-      cd _("target/test/classes") do
+    task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
+      cd _("target/classes") do
         classpath = project.test.dependencies.collect { |p| p.to_s }.join(':')
         system("java -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
       end
     end
     
-    test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
-      project('authentication:socket').and_dependencies,
-      project('authentication:cas-plugin').and_dependencies,
-      project('core').test_dependencies,
-      project('authentication:plugin-api').test_dependencies
-    test.enhance([:build_test_da_launcher])
+    compile.with OSGI, DYNAMIC_JAVA
+    
+    define "integrated-tests" do
+      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
+        project('authentication:socket').and_dependencies,
+        project('authentication:cas-plugin').and_dependencies,
+        project('core').test_dependencies,
+        project('authentication:plugin-api').test_dependencies
+      test.enhance([:build_test_da_launcher])
+    end
   end
   
   desc "Web interfaces, including the GUI and the RESTful API"
