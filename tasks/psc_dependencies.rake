@@ -120,15 +120,15 @@ HIBERNATE = [
   "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
 ]
 
-SECURITY = [
-  group('acegi-csm', 'acegi-grid',
-    :under => "gov.nih.nci.security.acegi", :version => CTMS_COMMONS_VERSION),
-  "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
-  "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
-  "org.acegisecurity:acegi-security:jar:1.0.3",
-  "cas:casclient:jar:2.0.11",
-  artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar'))
-]
+SECURITY = struct(
+  :acegi_csm  => "gov.nih.nci.security.acegi:acegi-csm:jar:#{CTMS_COMMONS_VERSION}",
+  :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:#{CTMS_COMMONS_VERSION}",
+  :clm => "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
+  :csm => "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
+  :acegi => "org.acegisecurity:acegi-security:jar:1.0.3",
+  :cas => "cas:casclient:jar:2.0.11",
+  :caaers_cas => artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar'))
+)
 
 # This is out of date, probably
 CAGRID = [
@@ -203,8 +203,8 @@ RESTLET = struct({
 })
 
 CONTAINER_PROVIDED = [
-  "javax.servlet:servlet-api:jar:2.5",
-  "javax.servlet:jsp-api:jar:2.0"
+  "javax.servlet:com.springsource.javax.servlet:jar:2.5.0",
+  "javax.servlet:com.springsource.javax.servlet.jsp:jar:2.0.0"
 ]
 
 UNIT_TESTING = [

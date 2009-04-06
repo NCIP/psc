@@ -60,7 +60,7 @@ define "psc" do
   desc "The domain classes for PSC"
   define "domain" do
     compile.with project('utility'), SLF4J, CTMS_COMMONS, CORE_COMMONS, 
-      JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY
+      JAKARTA_COMMONS, SPRING, HIBERNATE, SECURITY.acegi, SECURITY.csm
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -163,7 +163,7 @@ define "psc" do
     desc "Interfaces and base classes for the pluggable authentication system"
     define "plugin-api" do
       compile.with project('utility'), SLF4J, 
-        CONTAINER_PROVIDED, SPRING, SECURITY, CTMS_COMMONS.core, 
+        CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
       test.with(UNIT_TESTING)
       package(:jar)
@@ -171,7 +171,7 @@ define "psc" do
     
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
-      compile.with project('plugin-api').and_dependencies
+      compile.with project('plugin-api').and_dependencies, SECURITY.csm, SECURITY.clm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
         project('database').and_dependencies, project('database').test_dependencies, DB
@@ -181,7 +181,7 @@ define "psc" do
     
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
-      compile.with project('plugin-api').and_dependencies
+      compile.with project('plugin-api').and_dependencies, SECURITY.cas
       test.with project('plugin-api').test_dependencies, 
         project('core').and_dependencies
       package(:jar)
@@ -190,7 +190,7 @@ define "psc" do
     desc "Authentication via caGrid's customized version of CAS"
     define "websso-plugin" do
       compile.with project('plugin-api').and_dependencies,
-        project('cas-plugin').and_dependencies
+        project('cas-plugin').and_dependencies, SECURITY.caaers_cas
       test.with project('plugin-api').test_dependencies,
         project('cas-plugin').test_dependencies, 
         project('domain').and_dependencies, 
@@ -241,7 +241,7 @@ define "psc" do
       project('providers:mock').and_dependencies,
       project('database').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
-      QUARTZ, 
+      QUARTZ, SECURITY,
       SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
