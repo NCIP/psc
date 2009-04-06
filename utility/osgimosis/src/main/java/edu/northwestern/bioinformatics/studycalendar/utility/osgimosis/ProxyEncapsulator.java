@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     private ClassLoader nearClassLoader;
     private Class<?> nearSuperclass;
     private Class<?>[] nearInterfaces;
+    private Object[] constructorParams;
 
     // Map from near (proxy) methods to far (concrete) methods
     private Map<Method, Method> farMethodCache;
@@ -36,11 +38,11 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     public ProxyEncapsulator(
         Membrane membrane, ClassLoader nearClassLoader, List<Class> nearInterfaces
     ) {
-        this(membrane, nearClassLoader, null, nearInterfaces);
+        this(membrane, nearClassLoader, null, null, nearInterfaces);
     }
 
     public ProxyEncapsulator(
-        Membrane membrane, ClassLoader nearClassLoader, Class nearSuperclass, List<Class> nearInterfaces
+        Membrane membrane, ClassLoader nearClassLoader, Class nearSuperclass, Object[] constructorParams, List<Class> nearInterfaces
     ) {
         if (nearInterfaces.size() == 0 && nearSuperclass == null) {
             throw new IllegalArgumentException(
@@ -50,6 +52,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
         this.nearClassLoader = nearClassLoader;
         this.nearInterfaces = nearInterfaces.toArray(new Class[nearInterfaces.size()]);
         this.nearSuperclass = nearSuperclass;
+        this.constructorParams = constructorParams;
 
         this.farMethodCache = new HashMap<Method, Method>();
     }
@@ -65,7 +68,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
 
     public Object encapsulate(Object far) {
         log.trace("Proxying {} in {}", far, nearClassLoader);
-        log.trace(" - Identity: {}@{}", far.getClass().getName(), System.identityHashCode(far));
+        log.trace(" - Identity: {}@{}", far.getClass().getName(), Integer.toHexString(System.identityHashCode(far)));
         EncapsulationInterceptor interceptor = new EncapsulationInterceptor(far, this);
         if (nearSuperclass == null) {
             return proxyWithJdk(interceptor);
@@ -89,7 +92,29 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     }
 
     protected Object proxyWithCglib(MethodInterceptor interceptor) {
-        return buildCglibEnhancer(interceptor).create();
+        Enhancer enhancer = buildCglibEnhancer(interceptor);
+        if (constructorParams == null) {
+            return enhancer.create();
+        } else {
+            return enhancer.create(matchingConstructorParamTypes(), constructorParams);
+        }
+    }
+
+    private Class[] matchingConstructorParamTypes() {
+        for (Constructor constructor : nearSuperclass.getConstructors()) {
+            Class[] types = constructor.getParameterTypes();
+            if (types.length == constructorParams.length) {
+                boolean mismatch = false;
+                for (int i = 0; i < types.length && !mismatch; i++) {
+                    if (!types[i].isAssignableFrom(constructorParams[i].getClass())) {
+                        mismatch = true;
+                    }
+                }
+                if (!mismatch) return types;
+            }
+        }
+        throw new MembraneException("No constructor in %s which can accept %s",
+            nearSuperclass.getName(), Arrays.asList(constructorParams));
     }
 
     protected Enhancer buildCglibEnhancer(MethodInterceptor interceptor) {
@@ -105,6 +130,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
             // delegate only public methods
             public int accept(Method method) { return Modifier.isPublic(method.getModifiers()) ? 0 : 1; }
         });
+        enh.setUseFactory(false);
         enh.setClassLoader(nearClassLoader);
         return enh;
     }

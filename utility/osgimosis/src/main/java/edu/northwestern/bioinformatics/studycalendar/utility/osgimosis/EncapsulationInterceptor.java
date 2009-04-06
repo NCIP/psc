@@ -31,22 +31,27 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
     public Object invoke(Object proxy, Method nearMethod, Object[] nearArgs) throws Throwable {
         Method farMethod = getEncapsulator().findFarMethod(nearMethod, far.getClass());
         if (farMethod != null) {
-            log.trace("Bridging method {} with args {} in {}",
-                new Object[] { nearMethod, nearArgs == null ? "<none>" : Arrays.asList(nearArgs), proxy.getClass() });
-            log.trace(" - Far method is {} from {}", farMethod, farMethod.getDeclaringClass());
+            Membrane.pushMDC();
             try {
-                Object farResult = farMethod.invoke(
-                    far, encapsulateArgs(nearArgs, farMethod.getParameterTypes()));
-                log.trace(" - invocation complete");
-                if (farResult == far) {
-                    // Prevent infinite recursion when a proxied class's
-                    // constructor invokes a method that returns itself.
-                    return proxy;
-                } else {
-                    return getMembrane().farToNear(farResult);
+                log.trace("Bridging method {} with args {} in {}",
+                    new Object[] { nearMethod, nearArgs == null ? "<none>" : Arrays.asList(nearArgs), proxy.getClass() });
+                log.trace(" - Far method is {} from {}", farMethod, farMethod.getDeclaringClass());
+                try {
+                    Object farResult = farMethod.invoke(
+                        far, encapsulateArgs(nearArgs, farMethod.getParameterTypes()));
+                    log.trace(" - invocation complete");
+                    if (farResult == far) {
+                        // Prevent infinite recursion when a proxied class's
+                        // constructor invokes a method that returns itself.
+                        return proxy;
+                    } else {
+                        return getMembrane().farToNear(farResult);
+                    }
+                } catch (InvocationTargetException ite) {
+                    throw (Throwable) getMembrane().farToNear(ite.getTargetException());
                 }
-            } catch (InvocationTargetException ite) {
-                throw (Throwable) getMembrane().farToNear(ite.getTargetException());
+            } finally {
+                Membrane.popMDC();
             }
         } else {
             throw new MembraneException(
@@ -64,12 +69,14 @@ public class EncapsulationInterceptor implements MethodInterceptor, InvocationHa
 
     private Object[] encapsulateArgs(Object[] nearArgs, Class<?>[] farTypes) {
         if (nearArgs == null) {
+            log.trace(" - no args");
             return new Object[0];
         } else {
             Object[] farArgs = new Object[nearArgs.length];
             for (int i = 0; i < nearArgs.length; i++) {
                 farArgs[i] = getMembrane().traverse(nearArgs[i], selectFarClassLoader(farTypes[i]));
             }
+            log.trace(" - {} arg(s) encapsulated: {}", farArgs.length, Arrays.asList(farArgs));
             return farArgs;
         }
     }

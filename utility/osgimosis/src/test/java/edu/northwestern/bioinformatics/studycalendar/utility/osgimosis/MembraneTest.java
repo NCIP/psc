@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Fi
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.NonDefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
@@ -90,6 +91,18 @@ public class MembraneTest extends OsgimosisTestCase {
         assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
     }
     
+    public void testBridgedObjectIsOfConcreteTypeWhenConstructorParametersAreProvided() throws Exception {
+        Class<?> farClass = loaderA.loadClass(NonDefaultPerson.class.getName());
+        Object farInstance = farClass.getConstructor(String.class).newInstance("Expected");
+        membrane.registerProxyConstructorParameters(NonDefaultPerson.class.getName(), new Object[] { "proxy" });
+
+        Object near = membrane.farToNear(farInstance);
+        Class<?> nearClass = near.getClass();
+        assertTrue("Should match concrete class", NonDefaultPerson.class.isAssignableFrom(nearClass));
+        assertTrue("Should match inteface", Person.class.isAssignableFrom(nearClass));
+        assertEquals("Value should be proxied", "Expected", ((Person) near).getName());
+    }
+
     public void testBridgedNullIsNull() throws Exception {
         assertNull(membrane.farToNear(null));
     }

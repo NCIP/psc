@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -22,11 +23,13 @@ public class DefaultEncapsulatorCreator {
     private Membrane membrane;
     private Class farClass;
     private ClassLoader nearClassLoader;
+    private Map<String, Object[]> proxyConstructorParams;
 
-    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader) {
+    public DefaultEncapsulatorCreator(Membrane membrane, Class farClass, ClassLoader nearClassLoader, Map<String, Object[]> proxyConstructorParams) {
         this.membrane = membrane;
         this.farClass = farClass;
         this.nearClassLoader = nearClassLoader;
+        this.proxyConstructorParams = proxyConstructorParams;
     }
 
     public Encapsulator create() {
@@ -35,7 +38,7 @@ public class DefaultEncapsulatorCreator {
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
             Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(
-                membrane, farClass.getComponentType(), nearClassLoader).create();
+                membrane, farClass.getComponentType(), nearClassLoader, proxyConstructorParams).create();
             if (componentEncapsulator instanceof ArrayCapableEncapsulator) {
                 return new ArrayEncapsulator((ArrayCapableEncapsulator) componentEncapsulator);
             } else {
@@ -48,7 +51,11 @@ public class DefaultEncapsulatorCreator {
             Class base = sharedBaseClass();
             List<Class> interfaces = sharedInterfaces();
             if (base != null || !interfaces.isEmpty()) {
-                return new ProxyEncapsulator(membrane, nearClassLoader, base, interfaces);
+                return new ProxyEncapsulator(
+                    membrane, nearClassLoader,
+                    base, base == null ? null : proxyConstructorParams.get(base.getName()),
+                    interfaces
+                );
             }
         }
 
@@ -69,7 +76,7 @@ public class DefaultEncapsulatorCreator {
         Class base = null;
         Class sourceClass = farClass;
         while (sourceClass != null && base == null) {
-            if (isInSharedPackage(sourceClass) && hasDefaultConstructor(sourceClass) && !hasFinalMethods(sourceClass)) {
+            if (isInSharedPackage(sourceClass) && proxyConstructable(sourceClass) && !hasFinalMethods(sourceClass)) {
                 base = targetClass(sourceClass);
             }
             sourceClass = sourceClass.getSuperclass();
@@ -85,12 +92,16 @@ public class DefaultEncapsulatorCreator {
         return false;
     }
 
-    private boolean hasDefaultConstructor(Class<?> clazz) {
-        try {
-            clazz.getConstructor();
+    private boolean proxyConstructable(Class<?> clazz) {
+        if (proxyConstructorParams == null || proxyConstructorParams.get(clazz.getName()) == null) {
+            try {
+                clazz.getConstructor();
+                return true;
+            } catch (NoSuchMethodException e) {
+                return false;
+            }
+        } else {
             return true;
-        } catch (NoSuchMethodException e) {
-            return false;
         }
     }
 
