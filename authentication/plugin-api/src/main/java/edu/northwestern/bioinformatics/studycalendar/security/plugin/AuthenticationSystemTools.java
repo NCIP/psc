@@ -40,7 +40,7 @@ public class AuthenticationSystemTools {
     }
 
     public static ApplicationContext createApplicationContextWithPropertiesBean(
-        ApplicationContext parent, String beanName, Properties properties
+        ApplicationContext parent, String beanName, Properties properties, ClassLoader beanClassLoader
     ) {
         StringBuilder propString = new StringBuilder();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -51,7 +51,7 @@ public class AuthenticationSystemTools {
             "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd\"\n" +
             "       >\n<bean id=\"%s\" class=\"%s\">\n<property name=\"properties\">\n<props>\n%s</props>\n</property>\n</bean>\n</beans>",
             beanName, PropertiesFactoryBean.class.getName(), propString);
-        return new StringXmlApplicationContext(xml, parent);
+        return new StringXmlApplicationContext(parent, xml, beanClassLoader);
     }
 
     private static AnonymousAuthenticationProvider createAnonymousAuthenticationProvider(ApplicationContext parent) {

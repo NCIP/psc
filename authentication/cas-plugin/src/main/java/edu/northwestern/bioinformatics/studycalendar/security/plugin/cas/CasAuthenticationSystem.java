@@ -13,8 +13,6 @@ import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.ui.cas.CasProcessingFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
@@ -63,7 +61,8 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     protected void initBeforeCreate() {
         ApplicationContext configParametersContext
             = AuthenticationSystemTools.createApplicationContextWithPropertiesBean(
-                getApplicationContext(), "casConfiguration", createContextProperties());
+                getApplicationContext(), "casConfiguration",
+                createContextProperties(), getClass().getClassLoader());
         casContext = loadClassRelativeXmlApplicationContext(
             configParametersContext, applicationContextResourceNames());
     }
