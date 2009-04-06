@@ -85,4 +85,5 @@
     <logger name="org.apache.catalina">        <level value="info"/></logger>
     <logger name="org.apache.jasper">          <level value="info"/></logger>
     <logger name="org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap"><level value="info"/></logger>
+    <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory">  <level value="info"/></logger>
 </configuration>
