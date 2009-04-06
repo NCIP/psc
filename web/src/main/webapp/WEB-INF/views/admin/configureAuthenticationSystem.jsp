@@ -4,32 +4,20 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="admin" tagdir="/WEB-INF/tags/admin"%>
+
+<jsp:useBean id="command" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemSelectorCommand"/>
+<jsp:useBean id="authenticationSystemKey" scope="request" type="java.lang.String"/>
+
 <html>
 <head>
     <tags:stylesheetLink name="admin"/>
     <script type="text/javascript">
         var authSystemField = 'auth-system-selector';
         var authSystemFieldName = 'conf[${authenticationSystemKey}].value';
-        var customClassCache = '${command.customAuthenticationSystemClass}';
-
-        function selectCustomClass() {
-            if ($F(authSystemField) == '') {
-                $('custom-classname').show()
-                $('customAuthenticationSystemClass').value = customClassCache;
-            } else {
-                customClassCache = $F('customAuthenticationSystemClass');
-                $('customAuthenticationSystemClass').value = '';
-                $('custom-classname').hide()
-            }
-        }
 
         function updateSystemOptions() {
-            var selectedSystem;
-            if ($F(authSystemField) == '') {
-                selectedSystem = $F('customAuthenticationSystemClass')
-            } else {
-                selectedSystem = $F(authSystemField)
-            }
+            var selectedSystem = $F(authSystemField)
             var params = { }
             params[authSystemFieldName] = selectedSystem
             $("auth-enum-indicator").reveal()
@@ -42,10 +30,7 @@
         }
 
         document.observe("dom:loaded", function() {
-            selectCustomClass()
-            $(authSystemField).observe("change", selectCustomClass)
             $(authSystemField).observe("change", updateSystemOptions)
-            $('custom-classname').observe("change", updateSystemOptions)
         })
     </script>
 </head>
@@ -59,23 +44,16 @@
             <p id="system-select">
                 <tags:activityIndicator id="auth-enum-indicator"/>
                 <form:select path="conf[${authenticationSystemKey}].value" id="auth-system-selector">
-                    <form:options items="${knownAuthenticationSystems}" itemLabel="displayName"/>
-                    <option value="" <c:if test="${isCustomAuthenticationSystem}">selected="selected"</c:if>>custom</option>
+                    <form:options items="${command.directory.entries}" itemLabel="name" itemValue="key"/>
                 </form:select>
-                <span id="custom-classname">
-                    AuthenticationSystem implementation class:
-                    <form:textarea path="customAuthenticationSystemClass" cols="60" rows="2" cssStyle="vertical-align: top"/>
-                </span>
             </p>
             <ul id="system-descriptions">
-                <c:forEach items="${knownAuthenticationSystems}" var="known">
-                    <li><strong>${known.displayName}</strong> &mdash; ${known.description}</li>
+                <c:forEach items="${command.directory.entries}" var="entry">
+                    <li>
+                        <strong>${entry.name}</strong> &mdash; ${entry.behaviorDescription}
+                        <c:if test="${entry.default}">(default)</c:if>
+                    </li>
                 </c:forEach>
-                <li><strong>custom</strong> &mdash; uses a custom implementation of the
-                    AuthenticationSystem interface.
-                    To use this option, you need to ensure that the custom implementation is on your
-                    servlet container's classpath, along with any of its dependencies.
-                </li>
             </ul>
             <div id="errors">
                 <tags:errors path="*"/>

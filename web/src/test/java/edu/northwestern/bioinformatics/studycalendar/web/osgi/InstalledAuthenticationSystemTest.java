@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.tools.DictionaryConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.RawDataConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.web.filters.FilterAdapter;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
@@ -10,10 +14,8 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.context.SecurityContextImpl;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import static org.easymock.EasyMock.*;
-import org.osgi.framework.BundleContext;
+import static org.easymock.EasyMock.expect;
 import org.springframework.mock.web.MockFilterChain;
-import org.springframework.osgi.mock.MockServiceReference;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,10 +27,11 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class InstalledAuthenticationSystemTest extends WebTestCase {
-    private InstalledAuthenticationSystem filter;
+    private InstalledAuthenticationSystem installedSystem;
     private MockCompleteAuthenticationSystem completeAuthenticationSystem;
     private SecurityContextImpl securityContext;
-    private BundleContext bundleContext;
+    private OsgiLayerTools osgiLayerTools;
+    private RawDataConfiguration storedAuthenticationSystemConfiguration;
 
     @Override
     protected void setUp() throws Exception {
@@ -38,12 +41,14 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
             "Walter", "S", new GrantedAuthority[] { new GrantedAuthorityImpl("FOO") }));
 
-        bundleContext = registerNiceMockFor(BundleContext.class);
+        osgiLayerTools = registerNiceMockFor(OsgiLayerTools.class);
         expectCompleteAuthenticationSystemRetrieved();
+        storedAuthenticationSystemConfiguration
+            = new DictionaryConfiguration(DefaultConfigurationProperties.empty());
 
-        filter = new InstalledAuthenticationSystem();
-        filter.setBundleContext(bundleContext);
-        filter.setMembrane(new TransparentMembrane());
+        installedSystem = new InstalledAuthenticationSystem();
+        installedSystem.setOsgiLayerTools(osgiLayerTools);
+        installedSystem.setStoredAuthenticationSystemConfiguration(storedAuthenticationSystemConfiguration);
 
         SecurityContextHolder.clearContext();
     }
@@ -53,7 +58,7 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
 
         replayMocks();
 
-        filter.doFilter(request, response, new FilterChain() {
+        installedSystem.doFilter(request, response, new FilterChain() {
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
                 assertTrue("Chain continued before the authentication system was run",
                     completeAuthenticationSystem.wasDone());
@@ -71,7 +76,7 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
         SecurityContextHolder.setContext(oldContext);
 
         replayMocks();
-        filter.doFilter(request, response, new MockFilterChain());
+        installedSystem.doFilter(request, response, new MockFilterChain());
 
         verifyMocks();
         assertNotSame("Embedded security context still available", securityContext, SecurityContextHolder.getContext());
@@ -79,9 +84,8 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
     }
 
     private void expectCompleteAuthenticationSystemRetrieved() {
-        MockServiceReference sr = new MockServiceReference();
-        expect(bundleContext.getServiceReference(CompleteAuthenticationSystem.class.getName())).andReturn(sr);
-        expect(bundleContext.getService(sr)).andReturn(completeAuthenticationSystem);
+        expect(osgiLayerTools.getRequiredService(CompleteAuthenticationSystem.class.getName())).
+            andReturn(completeAuthenticationSystem);
     }
 
     private class MockCompleteAuthenticationSystem extends FilterAdapter implements CompleteAuthenticationSystem {
@@ -103,6 +107,10 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
 
         public SecurityContext getCurrentSecurityContext() {
             return done ? securityContext : null;
+        }
+
+        public StudyCalendarUserException getLastAuthenticationUpdateError() {
+            throw new UnsupportedOperationException("getLastAuthenticationUpdateError not implemented");
         }
     }
 }

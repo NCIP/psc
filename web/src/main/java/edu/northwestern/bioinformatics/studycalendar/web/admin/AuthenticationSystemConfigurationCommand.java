@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 /**
  * @author Rhett Sutphin
  */
+@Deprecated
 public class AuthenticationSystemConfigurationCommand implements Validatable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 

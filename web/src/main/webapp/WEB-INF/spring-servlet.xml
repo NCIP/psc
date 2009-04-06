@@ -27,8 +27,7 @@
         <property name="urlResolver">
             <ref local="urlResolver"/>
         </property>
-        <property name="bundleContext" ref="bundleContext"/>
-        <property name="membrane" ref="membrane"/>
+        <property name="osgiLayerTools" ref="osgiLayerTools"/>
     </bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -480,7 +479,7 @@
         <property name="configuration" ref="configuration"/>
     </bean>
     <bean name="/admin/configureAuthentication" id="authConfigurationController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemConfigurationController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemSelectorController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name" value="Authentication configuration"/>

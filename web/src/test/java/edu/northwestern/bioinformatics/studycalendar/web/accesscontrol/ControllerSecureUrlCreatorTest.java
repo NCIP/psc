@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.TransparentMembrane;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.TransparentMembrane;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 import static org.easymock.EasyMock.*;
 import org.easymock.classextension.EasyMock;
@@ -26,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -40,6 +41,8 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
     private BundleContext bundleContext;
     private ConfigurationAdmin configurationAdmin;
     private Configuration osgiConfiguration;
+    private OsgiLayerTools osgiLayerTools;
+
     private static final MockBundle SOCKET_BUNDLE = new MockBundle("edu.northwestern.bioinformatics.psc-authentication-socket") {
             @Override
             public String getLocation() {
@@ -58,14 +61,16 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
             andStubReturn(osgiConfiguration);
         osgiConfiguration.update((Dictionary) notNull());
         expectLastCall().asStub();
+        osgiLayerTools = new OsgiLayerTools();
+        osgiLayerTools.setBundleContext(bundleContext);
+        osgiLayerTools.setMembrane(new TransparentMembrane());
 
         resolver = new BeanNameControllerUrlResolver();
         resolver.setServletName(PREFIX);
 
         creator = new ControllerSecureUrlCreator();
         creator.setUrlResolver(resolver);
-        creator.setBundleContext(bundleContext);
-        creator.setMembrane(new TransparentMembrane());
+        creator.setOsgiLayerTools(osgiLayerTools);
 
         beanFactory = new DefaultListableBeanFactory();
     }
@@ -148,7 +153,8 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
             doProcess(null);
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
-            assertEquals("OSGi CM service not available.  Unable to update secure URL map.", scse.getMessage());
+            assertEquals("OSGi CM service not available.  Unable to update edu.northwestern.bioinformatics.studycalendar.security.filter-security-configurer.",
+                scse.getMessage());
         }
     }
 
@@ -156,7 +162,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("pear", SingleGroupController.class);
         registerControllerBean("pome", MultiGroupController.class);
         EasyMock.reset(osgiConfiguration);
-        osgiConfiguration.update(new Hashtable(Collections.singletonMap(
+        osgiConfiguration.update(new MapBasedDictionary(Collections.singletonMap(
             FilterSecurityInterceptorConfigurer.PATH_ROLE_MAP_KEY,
             new Vector(Arrays.asList(
                 "/prefix/pome/**|STUDY_COORDINATOR SUBJECT_COORDINATOR",

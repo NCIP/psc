@@ -1,16 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerTools;
 import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -21,11 +16,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.mvc.Controller;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -37,8 +30,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     private static Logger log = LoggerFactory.getLogger(ControllerSecureUrlCreator.class);
     private ControllerUrlResolver urlResolver;
     private Map<String, Role[]> pathRoleMap;
-    private BundleContext bundleContext;
-    private Membrane membrane;
+    private OsgiLayerTools osgiLayerTools;
 
     // Must occur after BeanNameControllerUrlResolver
     public int getOrder() { return 3; }
@@ -59,24 +51,11 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
             pathRoleMap.put(new ApacheAntPattern(url).toString(), groupNames);
         }
 
-        ServiceReference cmRef = bundleContext.getServiceReference(ConfigurationAdmin.class.getName());
-        if (cmRef == null) {
-            throw new StudyCalendarSystemException("OSGi CM service not available.  Unable to update secure URL map.");
-        } else {
-            Bundle fsicBundle = bundleContext.getServiceReference(
-                FilterSecurityInterceptorConfigurer.class.getName()).getBundle();
-            log.debug("Updating configuration for bundle {} at {}", fsicBundle, fsicBundle.getLocation());
-            ConfigurationAdmin cm = (ConfigurationAdmin) membrane.farToNear(bundleContext.getService(cmRef));
-            try {
-                Configuration fsicConfig = cm.getConfiguration(
-                    FilterSecurityInterceptorConfigurer.SERVICE_PID, fsicBundle.getLocation());
-                Dictionary upd = createOsgiDictionary();
-                log.trace("Updating {} with {}", FilterSecurityInterceptorConfigurer.SERVICE_PID, upd);
-                fsicConfig.update(upd);
-            } catch (IOException e) {
-                throw new StudyCalendarSystemException("IO problem while acquiring configuration to update", e);
-            }
-        }
+        Dictionary upd = createOsgiDictionary();
+        String serviceInTargetBundle = FilterSecurityInterceptorConfigurer.class.getName();
+        String servicePid = FilterSecurityInterceptorConfigurer.SERVICE_PID;
+
+        osgiLayerTools.updateConfiguration(upd, servicePid, serviceInTargetBundle);
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
@@ -91,7 +70,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
             serializedMap.add(v.toString());
         }
 
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
+        Dictionary<String, Object> props = new MapBasedDictionary<String, Object>();
         props.put(FilterSecurityInterceptorConfigurer.PATH_ROLE_MAP_KEY, serializedMap);
         return props;
     }
@@ -131,13 +110,8 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     }
 
     @Required
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    @Required
-    public void setMembrane(Membrane membrane) {
-        this.membrane = membrane;
+    public void setOsgiLayerTools(OsgiLayerTools osgiLayerTools) {
+        this.osgiLayerTools = osgiLayerTools;
     }
 
     private class ApacheAntPattern {

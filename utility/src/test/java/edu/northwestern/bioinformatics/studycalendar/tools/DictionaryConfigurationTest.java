@@ -1,14 +1,16 @@
-package edu.northwestern.bioinformatics.studycalendar.security;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import junit.framework.TestCase;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.*;
 import org.springframework.core.io.ClassPathResource;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -25,7 +27,7 @@ public class DictionaryConfigurationTest extends TestCase {
 
     public void testFromDictionaryDeserializesStrings() throws Exception {
         Configuration fromDict = create(mapBuilder().put("answer", "42"));
-        assertEquals(42, (int) fromDict.get(ANSWER));
+        assertEquals((Integer) 42, fromDict.get(ANSWER));
     }
 
     public void testSetSerializesStrings() throws Exception {
@@ -62,6 +64,26 @@ public class DictionaryConfigurationTest extends TestCase {
 
         DictionaryConfiguration actual = new DictionaryConfiguration(src);
         assertFalse("Should not be set", actual.isSet(FINE_STRUCTURE_INV));
+    }
+    
+    public void testFromConfigUsesRawDataIfAvailable() throws Exception {
+        RawDataConfiguration src = EasyMock.createMock(RawDataConfiguration.class);
+        expect(src.getRawData()).andReturn(Collections.singletonMap("answer", "24"));
+
+        replay(src);
+        DictionaryConfiguration actual = new DictionaryConfiguration(src, PROPERTIES);
+        assertEquals("Raw data not used", (Integer) 24, actual.get(ANSWER));
+        verify(src);
+    }
+
+    public void testFromConfigFromRawDataHandlesNullValues() throws Exception {
+        RawDataConfiguration src = EasyMock.createMock(RawDataConfiguration.class);
+        expect(src.getRawData()).andReturn(Collections.<String, String>singletonMap("answer", null));
+
+        replay(src);
+        DictionaryConfiguration actual = new DictionaryConfiguration(src, PROPERTIES);
+        assertEquals(1, actual.getDictionary().size());
+        verify(src);
     }
 
     public void testRawDataIsAvailable() throws Exception {

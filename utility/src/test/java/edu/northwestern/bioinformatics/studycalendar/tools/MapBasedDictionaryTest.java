@@ -105,8 +105,28 @@ public class MapBasedDictionaryTest extends TestCase {
     }
     
     public void testDefaultConstructorCreatesUsableDictionary() throws Exception {
-        Dictionary<Integer, String> dict = new MapBasedDictionary<Integer, String>();
-        dict.put(1, "unus, una, unum");
-        assertEquals("unus, una, unum", dict.get(1));
+        Dictionary<Integer, String> def = new MapBasedDictionary<Integer, String>();
+        def.put(1, "unus, una, unum");
+        assertEquals("unus, una, unum", def.get(1));
+    }
+    
+    public void testCopiedDictDoesNotWriteThroughToSource() throws Exception {
+        Dictionary<String, Number> copy = MapBasedDictionary.copy(map);
+        assertEquals("Original value not in copy", 42, copy.get("answer"));
+        copy.put("answer", 43);
+        assertEquals("Value not written to dict", 43, copy.get("answer"));
+        assertEquals("Value modified in original map", 42, map.get("answer"));
+    }
+
+    public void testCopiedDictIncludesNullValues() throws Exception {
+        Dictionary<String, Object> copy = MapBasedDictionary.copy(Collections.singletonMap("unknown", null));
+        assertEquals(1, copy.size());
+        assertNull(copy.get("unknown"));
+    }
+    
+    public void testEqualsWhenMapsEqual() throws Exception {
+        Dictionary<String, Double> one = MapBasedDictionary.copy(Collections.singletonMap("fine", 1.0 / 137));
+        Dictionary<String, Double> two = MapBasedDictionary.copy(Collections.singletonMap("fine", 1.0 / 137));
+        assertEquals(one, two);
     }
 }

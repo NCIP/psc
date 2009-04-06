@@ -1,7 +1,5 @@
-package edu.northwestern.bioinformatics.studycalendar.security;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import edu.northwestern.bioinformatics.studycalendar.configuration.RawDataConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import gov.nih.nci.cabig.ctms.tools.configuration.AbstractConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
@@ -47,10 +45,14 @@ public class DictionaryConfiguration extends AbstractConfiguration implements Ra
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     public DictionaryConfiguration(Configuration source, ConfigurationProperties properties) {
         this(properties);
-        for (ConfigurationProperty property : getProperties().getAll()) {
-            if (source.isSet(property)) {
-                log.trace("Copying {}={} into dictionary", property, source.get(property));
-                this.set(property, source.get(property));
+        if (source instanceof RawDataConfiguration) {
+            this.storage = MapBasedDictionary.copy(((RawDataConfiguration) source).getRawData());
+        } else {
+            for (ConfigurationProperty property : getProperties().getAll()) {
+                if (source.isSet(property)) {
+                    log.trace("Copying {}={} into dictionary", property, source.get(property));
+                    this.set(property, source.get(property));
+                }
             }
         }
     }

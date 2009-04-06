@@ -27,6 +27,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.security.plugin</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
 
+                <value>gov.nih.nci.cabig.ctms.tools.configuration</value>
                 <value>org.acegisecurity</value>
                 <value>org.acegisecurity.context</value>
                 <value>org.acegisecurity.userdetails</value>
@@ -50,6 +51,11 @@
     </bean>
 
     <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem">
+        <property name="osgiLayerTools" ref="osgiLayerTools"/>
+        <property name="storedAuthenticationSystemConfiguration" ref="storedAuthenticationSystemConfiguration"/>
+    </bean>
+
+    <bean id="osgiLayerTools" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerTools">
         <property name="bundleContext" ref="bundleContext"/>
         <property name="membrane" ref="membrane"/>
     </bean>

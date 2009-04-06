@@ -3,6 +3,10 @@
 <%@ taglib prefix="admin" tagdir="/WEB-INF/tags/admin" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
+
+<jsp:useBean id="command" scope="request" type="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemSelectorCommand"/>
+<jsp:useBean id="authenticationSystemKey" scope="request" type="java.lang.String"/>
+
 <c:if test="${fn:length(command.conf) > 1}">
     <h3>Configuration options for ${currentAuthenticationSystemDisplayName}</h3>
     <c:forEach items="${command.conf}" var="entry" varStatus="status">

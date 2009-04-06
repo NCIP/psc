@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.HostBeansImpl;
+import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.security.StubAuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
 import org.acegisecurity.userdetails.UserDetailsService;
@@ -30,6 +32,7 @@ public class WebTestingBundleContext extends PscTestingBundleContext {
         addService(UserDetailsService.class, new InMemoryDaoImpl());
         addService(ConfigurationAdmin.class, new MockConfigurationAdmin());
         addService(FilterSecurityInterceptorConfigurer.class, new FilterSecurityInterceptorConfigurer());
+        addService(CompleteAuthenticationSystem.class, new CompleteAuthenticationSystemImpl());
     }
 
     private static class MockConfigurationAdmin implements ConfigurationAdmin {

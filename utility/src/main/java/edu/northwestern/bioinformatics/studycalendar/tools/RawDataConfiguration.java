@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.configuration;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import java.util.Map;
 

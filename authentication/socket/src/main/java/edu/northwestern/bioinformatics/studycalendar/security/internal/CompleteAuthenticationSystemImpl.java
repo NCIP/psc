@@ -10,6 +10,8 @@ import org.acegisecurity.context.SecurityContextHolder;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.springframework.beans.factory.annotation.Required;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
 
@@ -17,12 +19,16 @@ import java.util.Dictionary;
  * @author Rhett Sutphin
  */
 public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter implements CompleteAuthenticationSystem, ManagedService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void updated(Dictionary dictionary) throws ConfigurationException {
+        log.debug("Updating authentication system with {}", dictionary);
         authenticationSystemConfiguration.updated(dictionary);
         try {
+            log.info("Initializing authentication system plugin from bundle {}",
+                dictionary.get(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey()));
             authenticationSystemConfiguration.getAuthenticationSystem();
         } catch (StudyCalendarUserException scue) {
             throw new ConfigurationException("Unknown", 

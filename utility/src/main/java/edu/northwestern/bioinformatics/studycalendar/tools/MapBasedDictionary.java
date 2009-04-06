@@ -24,6 +24,10 @@ public class MapBasedDictionary<K, V> extends Dictionary<K, V> {
         this.map = map;
     }
 
+    public static <K, V> Dictionary<K, V> copy(Map<K, V> src) {
+        return new MapBasedDictionary<K,V>(new LinkedHashMap<K, V>(src));
+    }
+
     @Override
     public int size() {
         return map.size();
@@ -59,5 +63,29 @@ public class MapBasedDictionary<K, V> extends Dictionary<K, V> {
     @Override
     public V remove(Object key) {
         return map.remove(key);
+    }
+
+    @Override
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MapBasedDictionary)) return false;
+
+        MapBasedDictionary that = (MapBasedDictionary) o;
+
+        if (map != null ? !map.equals(that.map) : that.map != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return map != null ? map.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[map=").append(map).append(']').toString();
     }
 }

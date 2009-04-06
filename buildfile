@@ -52,7 +52,7 @@ define "psc" do
     bnd.name = "PSC Utility Module"
 
     compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections, 
-      CTMS_COMMONS.lang, CONTAINER_PROVIDED
+      CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
     
     package(:jar)

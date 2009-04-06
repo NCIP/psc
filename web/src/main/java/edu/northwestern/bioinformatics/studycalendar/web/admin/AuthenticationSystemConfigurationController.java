@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Rhett Sutphin
  */
+@Deprecated
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class AuthenticationSystemConfigurationController extends PscAbstractCommandController<AuthenticationSystemConfigurationCommand> {
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;

@@ -11,8 +11,11 @@
         http://www.springframework.org/schema/util/spring-util-2.5.xsd
         ">
 
-    <osgi:service id="completeAuthenticationSystemRegistration" ref="completeAuthenticationSystem"
-        interface="edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem">
+    <osgi:service id="completeAuthenticationSystemRegistration" ref="completeAuthenticationSystem">
+        <osgi:interfaces>
+            <value>org.osgi.service.cm.ManagedService</value>
+            <value>edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem</value>
+        </osgi:interfaces>
         <osgi:service-properties>
             <entry key="service.pid">
                 <util:constant static-field="edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem.SERVICE_PID"/>

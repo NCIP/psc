@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.tools.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemLoadingFailure;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
@@ -57,7 +58,7 @@ public class AuthenticationSystemConfiguration implements BundleContextAware {
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     public synchronized void updated(Dictionary properties) {
-        configurationPropertyValues = properties;
+        configurationPropertyValues = properties == null ? new MapBasedDictionary<String, String>() : properties;
         signalRebuildNeeded();
     }
 
