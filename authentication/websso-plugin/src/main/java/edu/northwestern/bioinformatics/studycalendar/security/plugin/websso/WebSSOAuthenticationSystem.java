@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,11 +21,11 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     }
 
     @Override
-    protected List<String> applicationContextResourceNames() {
+    protected String[] applicationContextResourceNames() {
         List<String> names = new ArrayList<String>();
         names.add("websso-authentication-beans.xml");
-        names.addAll(super.applicationContextResourceNames());
-        return names;
+        names.addAll(Arrays.asList(super.applicationContextResourceNames()));
+        return names.toArray(new String[names.size()]);
     }
 
     @Override

@@ -6,7 +6,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import org.acegisecurity.AuthenticationManager;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author Rhett Sutphin
@@ -25,9 +24,8 @@ public class LocalAuthenticationSystem extends UsernameAndPasswordAuthentication
 
     @Override
     protected void initBeforeCreate() {
-        localSystemContext = new ClassPathXmlApplicationContext(
-            new String[] { "local-authentication-beans.xml" },
-            getClass(), getApplicationContext());
+        localSystemContext = loadClassRelativeXmlApplicationContext(
+            getApplicationContext(), "local-authentication-beans.xml");
     }
 
     @Override

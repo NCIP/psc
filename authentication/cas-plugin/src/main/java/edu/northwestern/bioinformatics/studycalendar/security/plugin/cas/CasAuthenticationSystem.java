@@ -16,21 +16,17 @@ import org.acegisecurity.ui.cas.CasProcessingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.Filter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 
 /**
  * @author Rhett Sutphin
  */
 public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     private static final DefaultConfigurationProperties PROPERTIES
         = new DefaultConfigurationProperties(
             new ClassPathResource(absoluteClasspathResourceNameFor("cas-details.properties"), CasAuthenticationSystem.class));
@@ -68,13 +64,12 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         ApplicationContext configParametersContext
             = AuthenticationSystemTools.createApplicationContextWithPropertiesBean(
                 getApplicationContext(), "casConfiguration", createContextProperties());
-        casContext = new ClassPathXmlApplicationContext(
-            applicationContextResourceNames().toArray(new String[0]),
-            getClass(), configParametersContext);
+        casContext = loadClassRelativeXmlApplicationContext(
+            configParametersContext, applicationContextResourceNames());
     }
 
-    protected List<String> applicationContextResourceNames() {
-        return Arrays.asList(absoluteClasspathResourceNameFor("cas-authentication-beans.xml"));
+    protected String[] applicationContextResourceNames() {
+        return new String[] { absoluteClasspathResourceNameFor("cas-authentication-beans.xml") };
     }
 
     private Properties createContextProperties() {

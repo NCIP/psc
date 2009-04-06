@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
@@ -55,6 +57,23 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         GenericApplicationContext newContext = new GenericApplicationContext(new DefaultListableBeanFactory(beans));
         newContext.refresh();
         return newContext;
+    }
+
+    /**
+     * Utility method for implementors for loading an application context relative to the
+     * implementing class.  Handles using the proper ClassLoader so that the beans in the
+     * context are visible to Spring as it instantiates them.
+     */
+    protected ApplicationContext loadClassRelativeXmlApplicationContext(ApplicationContext parent, String... contextResourcePaths) {
+        GenericApplicationContext ctx = new GenericApplicationContext(parent);
+        XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
+        for (String path : contextResourcePaths) {
+            xmlReader.loadBeanDefinitions(new ClassPathResource(path, getClass()));
+        }
+        xmlReader.setBeanClassLoader(getClass().getClassLoader());
+        ctx.setClassLoader(getClass().getClassLoader());
+        ctx.refresh();
+        return ctx;
     }
 
     protected Configuration getConfiguration() {
