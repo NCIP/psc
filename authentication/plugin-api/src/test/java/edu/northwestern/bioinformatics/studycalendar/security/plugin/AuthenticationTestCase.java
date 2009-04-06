@@ -15,14 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.dao.DataAccessException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -43,7 +36,7 @@ public abstract class AuthenticationTestCase extends TestCase {
         applicationContext = new StaticApplicationContext();
         applicationContext.registerSingleton("pscUserDetailsService", FakeUserDetailsService.class);
         applicationContext.registerSingleton("dataSource", FakeDataSource.class);
-        applicationContext.registerSingleton("defaultLogoutFilter", FakeFilter.class);
+        applicationContext.registerSingleton("defaultLogoutFilter", DummyFilter.class);
         applicationContext.registerSingleton("cacheManager", CacheManager.class);
         applicationContext.refresh();
     }
@@ -109,20 +102,6 @@ public abstract class AuthenticationTestCase extends TestCase {
 
         public int getLoginTimeout() throws SQLException {
             throw new UnsupportedOperationException("getLoginTimeout not implemented");
-        }
-    }
-
-    private static class FakeFilter implements Filter {
-        public void init(FilterConfig filterConfig) throws ServletException {
-            throw new UnsupportedOperationException("init not implemented");
-        }
-
-        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-            throw new UnsupportedOperationException("doFilter not implemented");
-        }
-
-        public void destroy() {
-            throw new UnsupportedOperationException("destroy not implemented");
         }
     }
 }

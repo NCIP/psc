@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.DummyFilter;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.classextension.EasyMock.expect;
@@ -26,6 +27,7 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
         userDetailsService = registerMockFor(UserDetailsService.class);
 
         expect(applicationContext.getBean("pscUserDetailsService")).andReturn(userDetailsService).anyTimes();
+        expect(applicationContext.getBean("defaultLogoutFilter")).andReturn(new DummyFilter()).anyTimes();
     }
 
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {
