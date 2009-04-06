@@ -51,7 +51,7 @@ define "psc" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
 
-    compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
+    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -59,7 +59,7 @@ define "psc" do
 
     desc "Bidirectional object bridge for sharing object instances across the membrane between the OSGi classloader and the main application classloader"
     define "osgimosis" do
-      compile.with SLF4J, CGLIB
+      compile.with SLF4J.api, CGLIB
       test.using(:junit).with(UNIT_TESTING, JAKARTA_COMMONS.io)
       package(:jar)
       package(:sources)
@@ -71,11 +71,13 @@ define "psc" do
     bnd.wrap!
     bnd.name = "PSC Domain Model"
     
-    compile.with project('utility'), SLF4J, 
+    compile.with project('utility'), SLF4J.api, 
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
-      SPRING, HIBERNATE, SECURITY.acegi, SECURITY.csm
+      SPRING, SECURITY.acegi, SECURITY.csm,
+      HIBERNATE.main, HIBERNATE.annotations, HIBERNATE.javax_persistence,
+      HIBERNATE.validator, HIBERNATE.annotations_common
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -89,7 +91,7 @@ define "psc" do
       filter.from(_("src/main/db/migrate")).
         into(resources.target.to_s + "/db/migrate").run
     end    
-    compile.with BERING, SLF4J, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
+    compile.with BERING, SLF4J.api, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
       JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE
     test.with UNIT_TESTING
     
@@ -201,7 +203,7 @@ define "psc" do
     define "plugin-api" do
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
-      compile.with project('utility'), SLF4J, OSGI,
+      compile.with project('utility'), SLF4J.api, OSGI,
         CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
         JAKARTA_COMMONS.lang
       test.with UNIT_TESTING, EHCACHE,
@@ -336,7 +338,7 @@ define "psc" do
   desc "Fork of dynamicjava.org's api-bridge to work with CGLIB 2.1.3"
   define "api-bridge" do
     project.version = "1.0.1.PSC-00"
-    compile.with SLF4J, CGLIB
+    compile.with SLF4J.api, CGLIB
     package(:jar)
   end
 
@@ -355,7 +357,7 @@ define "psc" do
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
-        LOGBACK.values.collect { |a| artifact(a) } - application_bundles
+        [LOG4J, SLF4J.jcl].collect { |a| artifact(a) } - application_bundles
 
       if true # knopflerfish?
         system_optional = [KNOPFLERFISH.consoletelnet]
@@ -425,7 +427,7 @@ define "psc" do
   
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
-    compile.with LOGBACK, CTMS_COMMONS.web,
+    compile.with SLF4J, LOGBACK, CTMS_COMMONS.web,
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,

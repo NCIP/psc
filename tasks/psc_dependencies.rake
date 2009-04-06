@@ -32,7 +32,7 @@ CTMS_COMMONS_VERSION = "1.0.0-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
-SLF4J_VERSION = "1.5.0"
+SLF4J_VERSION = "1.5.6"
 
 CTMS_COMMONS = struct(
   %w{base core laf lang web}.inject({}) do |h, a|
@@ -54,6 +54,8 @@ CSV = [
   "net.sourceforge.javacsv:javacsv:jar:2.0"
 ]
 
+# Note that this bundle of logback-0.9.9 is not compatible, OSGi-wise, with 
+# slf4j-1.5.6 below.
 LOGBACK = struct(
   :core    => "ch.qos.logback:com.springsource.ch.qos.logback.core:jar:0.9.9",
   :classic => "ch.qos.logback:com.springsource.ch.qos.logback.classic:jar:0.9.9",
@@ -64,11 +66,13 @@ LOGBACK = struct(
 SLF4J = struct(
   :api   => "org.slf4j:com.springsource.slf4j.api:jar:#{SLF4J_VERSION}",
   :jcl   => "org.slf4j:com.springsource.slf4j.org.apache.commons.logging:jar:#{SLF4J_VERSION}",
-  :log4j => "org.slf4j:com.springsource.slf4j.org.apache.log4j:jar:#{SLF4J_VERSION}"
-  # SpringSource doesn't have this package for SLF4J 1.5.0, so it is disabled until
-  # they release a version of logback for SLF4J 1.5.6
-  # :jul   => "org.slf4j:com.springsource.slf4j.bridge:jar:#{SLF4J_VERSION}"
+  :log4j => "org.slf4j:com.springsource.slf4j.org.apache.log4j:jar:#{SLF4J_VERSION}",
+  :jul   => "org.slf4j:com.springsource.slf4j.bridge:jar:#{SLF4J_VERSION}"
 )
+
+# For use inside the osgi layer until SpringSource releases a bundle of logback
+# that's compatible with slf4j-1.5.6
+LOG4J = "org.apache.log4j:com.springsource.org.apache.log4j:jar:1.2.15"
 
 def spring_osgi_apache_commons(name, version)
   "org.apache.commons:com.springsource.org.apache.commons.#{name}:jar:#{version}"
@@ -267,7 +271,10 @@ UNIT_TESTING = [
   "org.springframework:spring-test:jar:#{SPRING_VERSION}",
   eponym("xmlunit", "1.1"),
   "org.springframework.osgi:org.springframework.osgi.mock:jar:1.1.3.RELEASE",
-  LOGBACK
+  LOGBACK,
+  SLF4J.jcl,
+  SLF4J.jul,
+  SLF4J.log4j
 ].flatten
 
 INTEGRATED_TESTING = [

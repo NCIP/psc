@@ -2,14 +2,20 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PopulationDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudyDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.logging.Log;
 
 public class DeltaXmlSerializerFactory implements BeanFactoryAware {
     private final String PLANNED_CALENDAR_DELTA_SERIALIZER = "plannedCalendarDeltaXmlSerializer";

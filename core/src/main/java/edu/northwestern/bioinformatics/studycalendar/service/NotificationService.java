@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -27,8 +27,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 
 public class NotificationService {
-
-    private static final Log logger = LogFactory.getLog(NotificationService.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private Integer numberOfDays;

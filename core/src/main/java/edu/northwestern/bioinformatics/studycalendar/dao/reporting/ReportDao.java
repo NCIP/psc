@@ -21,7 +21,7 @@ public abstract class ReportDao<F extends ReportFilters, R extends DomainObject>
             @SuppressWarnings("unchecked")
             public Object doInHibernate(Session session) throws HibernateException {
                 if (filters.isEmpty()) {
-                    logger.debug("No filters selected, skipping search: " + filters);
+                    log.debug("No filters selected, skipping search: " + filters);
                     return Collections.emptyList();
                 } else {
                     Criteria criteria = session.createCriteria(domainClass()).addOrder(Order.asc("id"));

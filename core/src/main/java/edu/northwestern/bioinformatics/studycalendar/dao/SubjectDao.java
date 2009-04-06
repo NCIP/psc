@@ -6,12 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
 
 @Transactional(readOnly = true)
 public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> implements DeletableDomainObjectDao<Subject> {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @Override
     public Class<Subject> domainClass() {
         return Subject.class;
@@ -54,7 +58,7 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
             return subject;
         }
         String message = "No subject exist with the given mrn :" + mrn;
-        logger.info(message);
+        log.info(message);
 
         return null;
     }
@@ -74,7 +78,7 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
             return results;
         }
         String message = "No subject exist with the given firstName : " + firstName + " , lastName : " + lastName + " ,dateOfBirth : " + dateOfBirth;
-        logger.info(message);
+        log.info(message);
 
         return null;
     }

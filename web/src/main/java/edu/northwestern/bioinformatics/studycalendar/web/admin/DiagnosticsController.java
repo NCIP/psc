@@ -1,25 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.restlet.util.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.SimpleMailMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class DiagnosticsController extends PscSimpleFormController {
 
     private Configuration configuration;
-    protected final Log log = LogFactory.getLog(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyCalendarJavaMailSender mailSender;
 

@@ -1,18 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.api.PlannedCalendarService;
+import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * @author Saurabh Agrawal
@@ -21,7 +23,7 @@ public class PlannedCalendarServiceIntegrationTest extends DaoTestCase {
     private PlannedCalendarService plannedCalendarService = (DefaultPlannedCalendarService) getApplicationContext().getBean("plannedCalendarService");
 
     private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
-    public final Log logger = LogFactory.getLog(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Study parameterStudy;
     private Study loadedStudy;
