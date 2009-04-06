@@ -1,93 +1,100 @@
 describe "/site" do
+  before do
+    @massgeneral = PscTest::Fixtures.createSite("Massachussets General Hospital", "MA034")
+    application_context['siteDao'].save(@massgeneral)
+  end
 
   describe "GET" do
-    before do
-      @site1 = PscTest::Fixtures.createSite("My Site", "site1")
-      application_context['siteDao'].save(@site1)
-    end
-      
     it "forbids site access for unauthenticated users" do
-      get "/sites/site1", :as => nil
+      get "/sites/MA034", :as => nil
       response.status_code.should == 401
     end
-
-    it "shows a specific site to the user" do
-      get "/sites/site1", :as => :juno
-      response.status_code.should == 200
-      response.status_message.should == "OK"
-      response.xml_attributes("site", "assigned-identifier").should include("site1")
+    
+    it "includes site attributes in XML response" do
+      get "/sites/MA034", :as => :zelda
+      response.xml_attributes("site", "assigned-identifier").should include("MA034")
+      response.xml_attributes("site", "site-name").should include("Massachussets General Hospital")
       response.xml_elements('//site').should have(1).elements
     end
-  
+    
+    it "shows all sites to sysadmins" do
+      get "/sites/MA034", :as => :zelda
+      response.status_code.should == 200
+    end
+    
     it "does not show an invalid site" do
       get "/sites/MN009", :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
     end
-  
-    it "does not show a site of a user to the other users" do
-      get "/sites/MN026", :as => :carla #carla is only authorized for IL036
+    
+    it "shows sites to affiliated users" do
+      get "/sites/IL036", :as => :carla # carla is authorized for IL036
+      response.status_code.should == 200
+    end
+    
+    it "limits site visibility to associated users" do
+      get "/sites/MN026", :as => :carla # carla is only authorized for IL036
       response.status_code.should == 403
     end   
   end
   
   describe "PUT" do
+    describe "new" do
+      before do
+        @tju_xml = psc_xml("site", 
+          'assigned-identifier' => "PA121", 'site-name' => "Thomas Jefferson University")
+      end
     
-    before do
-      @newsite_xml = psc_xml("site", 'assigned-identifier' => "DB026", 'site-name' => "DB026")
-      @updatesite_xml = psc_xml("site", 'assigned-identifier' => "MN026", 'site-name' => "NewSiteName")
+      it "is forbidden for unauthorized users" do
+        put '/sites/PA121', @tju_xml, :as => :gertrude
+        response.status_code.should == 403
+      end
+    
+      it "works for authorized user" do
+        put '/sites/PA121', @tju_xml, :as => :zelda
+        response.status_code.should == 201
+        response.xml_attributes("site", "assigned-identifier").should include("PA121")
+        response.xml_attributes("site", "site-name").should include("Thomas Jefferson University")
+        response.xml_elements('//site').should have(1).elements
+      end
     end
     
-    it "forbid site creation for unauthorized user" do
-      put '/sites/DB026', @newsite_xml, :as => nil
-      response.status_code.should == 401
-    end
-    
-    it "updates an existing site for an authorized user" do
-      put '/sites/MN026', @updatesite_xml, :as => :juno
-      response.status_code.should == 200
-      response.xml_attributes("site", "assigned-identifier").should include("MN026")
-      response.xml_attributes("site", "site-name").should include("NewSiteName")
-      response.xml_elements('//site').should have(1).elements
+    describe "update" do
+      before do
+        @update_mass = psc_xml("site", 
+          'assigned-identifier' => @massgeneral.assigned_identifier, 
+          'site-name' => "Massive Dynamic Cancer Center")
+      end
       
+      it "is forbidden for unauthorized users" do
+        put '/sites/PA121', @update_mass, :as => :hannah
+        response.status_code.should == 403
+      end
+    
+      it "updates an existing site for an authorized sysadmin" do
+        put '/sites/MA034', @update_mass, :as => :zelda
+        response.status_code.should == 200
+        response.xml_attributes("site", "assigned-identifier").should include("MA034")
+        response.xml_attributes("site", "site-name").should include("Massive Dynamic Cancer Center")
+        response.xml_elements('//site').should have(1).elements
+      end
     end
-            
-    it "creates a new site for authorized user" do
-      put '/sites/DB026', @newsite_xml, :as => :juno
-      response.status_code.should == 201
-      response.xml_attributes("site", "assigned-identifier").should include("DB026")
-      response.xml_attributes("site", "site-name").should include("DB026")
-      response.xml_elements('//site').should have(1).elements
-    end
-              
   end
   
   describe "DELETE" do
-    
-    before do
-      @site2 = PscTest::Fixtures.createSite("My Site", "site2")
-      application_context['siteDao'].save(@site2)
-    end
-    
-    it "delete a site for an authorized user" do
-      #Verify before Delete
-      get '/sites/site2', :as => :juno
-      response.status_code.should == 200 
-      response.xml_attributes("site", "site-name").should include("My Site")
-      response.xml_attributes("site", "assigned-identifier").should include("site2")
-      response.xml_elements('//site').should have(1).elements
-      #Delete the Site
-      delete '/sites/site2', :as => :juno
+    it "deletes a site for an authorized user" do
+      delete '/sites/MA034', :as => :juno
       response.status_code.should == 200
       response.status_message.should == "OK"
-      #Check after delete
-      get '/sites/site2', :as => :juno
+
+      get '/sites/MA034', :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
-    end 
+    end
     
     it "gets 404 if site with given assigned identifier doesn't exist" do 
-      delete '/sites/My%20Site', :as => :juno
+      delete '/sites/IL000', :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
     end
