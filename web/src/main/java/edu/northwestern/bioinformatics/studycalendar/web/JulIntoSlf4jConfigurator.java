@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+// import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -17,8 +17,8 @@ public class JulIntoSlf4jConfigurator implements ServletContextListener {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        log.debug("Redirected java.util.logging into SLF4J");
-        SLF4JBridgeHandler.install();
+        // log.debug("Redirected java.util.logging into SLF4J");
+        // SLF4JBridgeHandler.install();
         /*  // For future investigation
             java.util.logging.Logger jul = java.util.logging.Logger.getLogger(getClass().getName());
             jul.finest("java.util.logging: finest");
