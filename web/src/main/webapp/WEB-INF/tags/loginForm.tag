@@ -5,9 +5,7 @@
 <%@attribute name="failed" type="java.lang.Boolean"%>
 <%@attribute name="ajax" type="java.lang.Boolean"%>
 
-
-
-<form method="post" id="login" action="<c:url value="/j_acegi_security_check"/>">
+<form method="post" id="login" action="<c:url value="/auth/login_form_security_check"/>">
     <c:if test="${not empty param.login_error}">
         <p class="error"> Incorrect username and/or password.  Please try again. </p>
     </c:if>

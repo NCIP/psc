@@ -33,6 +33,7 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
         filter.setAuthenticationManager(authenticationManager());
         filter.setDefaultTargetUrl(DEFAULT_TARGET_PATH);
         filter.setAuthenticationFailureUrl(LOGIN_ERROR_URL);
+        filter.setFilterProcessesUrl("/auth/login_form_security_check");
         return prepareBean(getApplicationContext(), filter);
     }
 

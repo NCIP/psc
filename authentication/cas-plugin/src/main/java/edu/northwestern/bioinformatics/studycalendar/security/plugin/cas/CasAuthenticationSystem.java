@@ -35,7 +35,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     public static final ConfigurationProperty<String> APPLICATION_URL
         = PROPERTIES.add(new DefaultConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
 
-    private static final String CAS_FILTER_PATH = "/j_acegi_cas_security_check";
+    private static final String CAS_FILTER_PATH = "/auth/cas_security_check";
 
     private ApplicationContext casContext;
 

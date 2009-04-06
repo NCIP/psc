@@ -59,7 +59,7 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
     }
 
     private void assertCorrectServiceProperties(ServiceProperties serviceProps) {
-        assertEquals("Wrong return URL", EXPECTED_APP_URL + "j_acegi_cas_security_check",
+        assertEquals("Wrong return URL", EXPECTED_APP_URL + "auth/cas_security_check",
                 serviceProps.getService());
         assertFalse("Should not send renews", serviceProps.isSendRenew());
     }

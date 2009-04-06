@@ -83,7 +83,17 @@
 
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/auth/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Installed authentication system</filter-name>
+        <url-pattern>/pages/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Installed authentication system</filter-name>
+        <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
     <filter>

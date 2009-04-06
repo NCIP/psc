@@ -90,8 +90,8 @@ define "psc" do
       filter.from(_("src/main/db/migrate")).
         into(resources.target.to_s + "/db/migrate").run
     end    
-    compile.with BERING, SLF4J.api, SPRING, CORE_COMMONS, CTMS_COMMONS.core,
-      JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE
+    compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS, 
+      CTMS_COMMONS.core, JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
@@ -318,7 +318,7 @@ define "psc" do
       project('providers:mock').and_dependencies,
       project('database').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
-      QUARTZ, SECURITY,
+      QUARTZ, SECURITY, SLF4J.jcl,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
