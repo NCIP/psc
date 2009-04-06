@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextBuilder;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
 import junit.framework.TestCase;
 import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
@@ -69,7 +67,8 @@ public class DispatcherServletInitializationTest extends TestCase {
         context.setConfigLocations(new String[] { 
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
-            "WEB-INF/" + servletName + "-servlet.xml" 
+            "classpath:applicationContext-osgi.xml",
+            "WEB-INF/" + servletName + "-servlet.xml"
         });
         context.refresh();
         return context;

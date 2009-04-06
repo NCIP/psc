@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import org.dynamicjava.osgi.da_launcher.web.DaLauncherWebConstants;
 import static org.easymock.EasyMock.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -9,7 +8,6 @@ import org.osgi.framework.BundleException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.springframework.web.context.support.StaticWebApplicationContext;
 
 /**
  * @author Rhett Sutphin
@@ -23,20 +21,15 @@ public class OsgiBundleStateResourceTest extends AuthorizedResourceTestCase<Osgi
     @Override
     protected OsgiBundleStateResource createAuthorizedResource() {
         OsgiBundleStateResource resource = new OsgiBundleStateResource();
-        StaticWebApplicationContext webApplicationContext = new StaticWebApplicationContext();
-        webApplicationContext.setServletContext(servletContext);
-        resource.setApplicationContext(webApplicationContext);
+        resource.setBundleContext(bundleContext);
         return resource;
     }
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
         bundle = registerMockFor(Bundle.class);
         bundleContext = registerMockFor(BundleContext.class);
-
-        servletContext.setAttribute(
-            DaLauncherWebConstants.ServletContextAttributes.BUNDLE_CONTEXT_KEY, bundleContext);
+        super.setUp();
         request.getAttributes().put("bundle-id", Long.toString(BUNDLE_ID));
     }
 

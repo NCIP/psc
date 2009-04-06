@@ -11,7 +11,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockBundleContext;
-import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import java.io.IOException;
 
@@ -41,25 +40,19 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
     @Override
     protected OsgiBundleListResource createAuthorizedResource() {
         OsgiBundleListResource resource = new OsgiBundleListResource();
-        StaticWebApplicationContext webApplicationContext = new StaticWebApplicationContext();
-        webApplicationContext.setServletContext(servletContext);
-        resource.setApplicationContext(webApplicationContext);
+        resource.setBundleContext(bundleContext);
         return resource;
     }
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
-        useHttpRequest();
-
         bundleContext = new MockBundleContext() {
             @Override
             public Bundle[] getBundles() {
                 return BUNDLES;
             }
         };
-        servletContext.setAttribute(
-            DaLauncherWebConstants.ServletContextAttributes.BUNDLE_CONTEXT_KEY, bundleContext);
+        super.setUp();
     }
 
     public void testGetOnly() throws Exception {

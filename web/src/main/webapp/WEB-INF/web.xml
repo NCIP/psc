@@ -24,6 +24,7 @@
             <!-- web -->
             classpath:applicationContext-command.xml
             classpath:applicationContext-webflow.xml
+            classpath:applicationContext-osgi.xml
         </param-value>
     </context-param>
 
