@@ -89,7 +89,9 @@ module Bnd
       @wrap
     end
     
-    # These properties are deliberately not memoized
+    # These properties are deliberately not memoized to allow
+    # the default values to be evaluated as late as possible.
+    
     def version
       @version || project.version
     end
@@ -102,12 +104,15 @@ module Bnd
       @symbolic_name || [project.group, project.id].join('.')
     end
     
+    # These are deliberately memoized to since the default values
+    # are static and to allow concatenation.
+    
     def import_packages
-      @import_packages || ['*']
+      @import_packages ||= ['*']
     end
     
     def export_packages
-      @export_packages || ['*']
+      @export_packages ||= ['*']
     end
     
     def write(f)
