@@ -11,8 +11,12 @@ module Bnd
   
   include Buildr::Extension
   
+  def self.libraries
+    ["biz.aQute:bnd:jar:0.0.249"]
+  end
+  
   first_time do
-    Java.classpath << "biz.aQute:bnd:jar:0.0.249"
+    Java.classpath << Bnd.libraries
     desc "Does `bnd print` on the packaged jar and stdouts the output for inspection"
     Project.local_task("bnd:print")
     desc "Generates a bnd properties file from the project metadata"
@@ -116,7 +120,7 @@ module Bnd
     end
     
     def to_hash
-      Hash[ *BND_TO_ATTR.collect { |k, v| [ k, self[k] ] }.flatten ].merge(other)
+      Hash[ *BND_TO_ATTR.keys.collect { |k| [ k, self[k] ] }.reject { |k, v| v.nil? || v.empty? }.flatten ].merge(other)
     end
     
     def [](k)
@@ -133,6 +137,13 @@ module Bnd
       else
         other[k] = v
       end
+    end
+    
+    def merge!(other)
+      other.each do |k, v|
+        self[k] = v
+      end
+      self
     end
     
     protected

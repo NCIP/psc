@@ -1,11 +1,9 @@
 # Provides extensions to Buildr's Artifact task to use locally-stored,
 # bnd-wrapped versions of some libraries.
 #
-# The libs are stored in osgi/bundled-lib.  A bnd file to use can be placed
-# in osgi/instructions.  The bnd file may be named, in order of preference,
-# "#{group}-#{id}-#{type}-#{version}.bnd" or "#{group}-#{id}-#{type}.bnd"
+# The libs are stored in osgi/bundled-lib.
 
-def psc_osgi_artifact(spec)
+def psc_osgi_artifact(spec, bnd_props = { })
   src_spec = Artifact.to_hash(spec)
   # wrapped id per SpringSource repo model
   dst_spec = src_spec.merge( :id => "edu.northwestern.bioinformatics.osgi.#{src_spec[:id]}" )
@@ -13,7 +11,7 @@ def psc_osgi_artifact(spec)
     src = artifact(src_spec)
     task = Osgi::BundledArtifact.define_task(repositories.locate(dst_spec))
     task.send :apply_spec, dst_spec
-    task.init(src)
+    task.init(src, bnd_props)
     task.enhance [src]
     Rake::Task['rake:artifacts'].enhance [task]
     Artifact.register(task)
@@ -22,25 +20,26 @@ end
 
 module Osgi
   class BundledArtifact < Buildr::Artifact
-    def init(src_artifact)
-      @src_artifact = src_artifact
-      @bnd_task = create_bnd_task
-      if bnd_file
-        trace "Using bnd instructions from #{bnd_file}."
-        @bnd_task.enhance [bnd_file]
-      else
-        trace "No wrapping instructions.  Looked for one of #{bnd_file_possibilities.inspect}."
-      end
-      self.from(bundled_file)
-    end
+    attr_reader :src_artifact
     
+    def init(src_artifact, bnd_props)
+      @src_artifact = src_artifact
+      @bnd_props = ArtifactBndProperties.new(self).merge!(bnd_props)
+      self.from(bnd_task.name)
+    end
     
     def bundled_file
       "#{basedir}/osgi/bundled-lib/#{group_path}/#{id}/#{version}/#{Artifact.hash_to_file_name(self.to_spec_hash)}"
     end
     
     def bnd_file
-      bnd_file_possibilities.detect { |f| File.exist? f }
+      @bnd_file_task ||= Rake::FileTask.define_task("#{basedir}/osgi/bnd-tmp/#{Artifact.hash_to_file_name(src_artifact.to_spec_hash.merge(:type => 'bnd'))}") do |task|
+        trace "Generating bnd instructions in #{task}"
+        mkdir_p File.dirname(task.name)
+        File.open(task.name, 'w') do |f|
+          @bnd_props.write f
+        end
+      end
     end
     
     protected
@@ -49,25 +48,51 @@ module Osgi
       File.expand_path("..", File.dirname(__FILE__))
     end
     
-    def bnd_file_possibilities
-      basename = "#{basedir}/osgi/instructions/#{group}-#{id}-#{type}"
-      ["#{basename}-#{version}.bnd", "#{basename}.bnd"]
-    end
-    
-    def create_bnd_task
-      Rake::FileTask.define_task(bundled_file => [@src_artifact]) do |task|
+    def bnd_task
+      # this deliberately does not depend on bnd_file.  This is so that
+      # the bnd files don't have to be kept alongside the jars to
+      # prevent them from being constantly rebuilt.
+      Rake::FileTask.define_task(bundled_file => [src_artifact]) do |task|
+        bnd_file.invoke
+        
         mkdir_p File.dirname(bundled_file)
         Buildr::ant("bnd") do |ant|
           bndargs = {
             :jars => @src_artifact.to_s, 
-            :output => bundled_file
+            :output => task.name,
+            :definitions => File.dirname(bnd_file.name)
           }
-          bndargs[:definitions] = bnd_file if bnd_file
+          trace "Invoking bndwrap with #{bndargs.inspect}"
+          
           ant.taskdef :resource => 'aQute/bnd/ant/taskdef.properties',
-            :classpath => Java.classpath.flatten.join(':')
-          trace "Wrapping #{File.basename(@to_wrap.to_s)} into #{bundled_file}"
+            :classpath => Bnd.libraries.join(':')
+          info "Wrapping #{File.basename src_artifact.to_s} into #{File.basename bundled_file}"
           ant.bndwrap bndargs
         end
+        
+        unless Buildr.application.options.trace
+          rm_rf File.dirname(bnd_file.name)
+        else
+          trace "Leaving behind #{bnd_file} for inspection"
+        end
+      end
+    end
+    
+    class ArtifactBndProperties
+      include Bnd::BndProperties
+      
+      attr_reader :artifact
+      
+      def initialize(artifact)
+        @artifact = artifact
+      end
+      
+      def default_version
+        artifact.version
+      end
+      
+      def default_symbolic_name
+        [artifact.group, artifact.id].join('.')
       end
     end
   end

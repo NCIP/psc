@@ -1,3 +1,12 @@
 This directory contains standard external libraries which were wrapped using 
-bnd to make them compatible with PSC's OSGi layer.  See 
-tasks/psc-osgi-artifact.rake for the mechanism.
+bnd to make them compatible with PSC's OSGi layer.  If you need to change the
+way one is wrapped:
+
+- Change the bnd properties passed to psc_osgi_artifact for the artifact
+  in question.
+- Delete the relevant jar file in this directory.
+- Run `buildr artifacts` (or anything that depends on the artifact in question).
+- If the new jar is as you expect it, add the new jar to the 
+  VCS and commit.
+
+See tasks/psc-osgi-artifact.rake for the mechanism.

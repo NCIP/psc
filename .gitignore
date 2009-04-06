@@ -13,3 +13,4 @@ web/src/main/webapp/WEB-INF/lib
 tmp
 out
 .DS_Store
+osgi/bnd-tmp
