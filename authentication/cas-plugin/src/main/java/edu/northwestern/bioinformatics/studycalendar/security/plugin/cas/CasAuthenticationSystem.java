@@ -48,6 +48,15 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     }
 
     @Override
+    public String name() {
+        return "CAS";
+    }
+
+    public String behaviorDescription() {
+        return "delegates authentication decisions to an enterprise-wide CAS server";
+    }
+
+    @Override
     protected Collection<ConfigurationProperty<?>> requiredConfigurationProperties() {
         return Arrays.asList((ConfigurationProperty<?>) SERVICE_URL, APPLICATION_URL);
     }

@@ -29,6 +29,11 @@ public class TestableAuthenticationSystem extends AbstractAuthenticationSystem {
         return PROPERTIES;
     }
 
+    public String behaviorDescription() {
+        throw new UnsupportedOperationException("behaviorDescription not implemented");
+        // return null;
+    }
+
     @Override
     protected Collection<ConfigurationProperty<?>> requiredConfigurationProperties() {
         return Arrays.asList((ConfigurationProperty<?>) SERVICE_URL, APPLICATION_URL);

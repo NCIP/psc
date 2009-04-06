@@ -133,6 +133,11 @@ public final class AbstractAuthenticationSystemTest extends AuthenticationTestCa
             // return null;
         }
 
+        public String behaviorDescription() {
+            throw new UnsupportedOperationException("behaviorDescription not implemented");
+            // return null;
+        }
+
         public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
             throw new UnsupportedOperationException("createUsernamePasswordAuthenticationRequest not implemented");
             // return null;

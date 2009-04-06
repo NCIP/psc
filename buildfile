@@ -173,6 +173,8 @@ define "psc" do
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
       bnd.wrap!
+      bnd['Bundle-Activator'] = 
+        "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
@@ -184,6 +186,8 @@ define "psc" do
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
       bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.cas
       test.with project('plugin-api').test_dependencies, 
         project('core').and_dependencies
@@ -193,6 +197,8 @@ define "psc" do
     desc "Authentication via caGrid's customized version of CAS"
     define "websso-plugin" do
       bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
       compile.with project('plugin-api').and_dependencies,
         project('cas-plugin').and_dependencies, SECURITY.caaers_cas
       test.with project('plugin-api').test_dependencies,

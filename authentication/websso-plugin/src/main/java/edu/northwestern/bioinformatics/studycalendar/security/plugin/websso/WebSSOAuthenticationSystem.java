@@ -10,6 +10,16 @@ import java.util.List;
  */
 public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     @Override
+    public String name() {
+        return "caGrid WebSSO";
+    }
+
+    @Override
+    public String behaviorDescription() {
+        return "delegates authentication to a caGrid WebSSO server (use this option for CCTS)";
+    }
+
+    @Override
     protected List<String> applicationContextResourceNames() {
         List<String> names = new ArrayList<String>();
         names.add("websso-authentication-beans.xml");

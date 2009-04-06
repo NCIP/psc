@@ -24,7 +24,25 @@ public abstract class PluginActivator implements BundleActivator {
         );
     }
 
-    protected abstract ServiceFactory createAuthenticationSystemFactory();
+    protected abstract Class<? extends AuthenticationSystem> authenticationSystemClass();
+
+    protected ServiceFactory createAuthenticationSystemFactory() {
+        return new ServiceFactory() {
+            public Object getService(Bundle bundle, ServiceRegistration serviceRegistration) {
+                try {
+                    return authenticationSystemClass().newInstance();
+                } catch (InstantiationException e) {
+                    throw new IllegalStateException(e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            public void ungetService(Bundle bundle, ServiceRegistration serviceRegistration, Object o) {
+                // Nothing to clean up
+            }
+        };
+    }
 
     private Dictionary<String, Object> serviceProperties(ServiceFactory factory, Bundle bundle) {
         AuthenticationSystem system =

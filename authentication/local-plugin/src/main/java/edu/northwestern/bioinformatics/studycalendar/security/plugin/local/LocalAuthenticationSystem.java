@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.local;
 
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import org.acegisecurity.AuthenticationManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.UsernameAndPasswordAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
 
 /**
  * @author Rhett Sutphin
@@ -16,6 +16,10 @@ public class LocalAuthenticationSystem extends UsernameAndPasswordAuthentication
 
     public ConfigurationProperties configurationProperties() {
         return PROPERTIES;
+    }
+
+    public String behaviorDescription() {
+        return "uses passwords stored in PSC's own database";
     }
 
     @Override
