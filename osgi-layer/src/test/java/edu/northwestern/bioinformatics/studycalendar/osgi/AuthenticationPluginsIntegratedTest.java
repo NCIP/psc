@@ -9,8 +9,11 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.ui.cas.CasProcessingFilter;
 import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
 import org.acegisecurity.userdetails.memory.UserMap;
+import org.acegisecurity.Authentication;
 import org.dynamicjava.osgi.da_launcher.Launcher;
 import org.dynamicjava.osgi.da_launcher.LauncherFactory;
 import org.dynamicjava.osgi.da_launcher.LauncherSettings;
@@ -88,16 +91,46 @@ public class AuthenticationPluginsIntegratedTest extends AuthenticationTestCase 
         assertEquals("Wrong system configured", "Insecure", actual.name());
     }
 
+    public void testCasFilterApplies() throws Exception {
+        switchToCas();
+        socket.doFilter(request, response, filterChain);
+        assertEquals("Filter chain not continued", request, filterChain.getRequest());
+        assertEquals("Filter chain not continued", response, filterChain.getResponse());
+    }
+
+    public void testCasAuthenticationManagerApplies() throws Exception {
+        switchToCas();
+        Authentication result = socket.authenticate(
+            new UsernamePasswordAuthenticationToken(CasProcessingFilter.CAS_STATELESS_IDENTIFIER, "foo"));
+        assertFalse(result.isAuthenticated());
+    }
+
     public void testCasLogoutFilterApplies() throws Exception {
         AuthenticationSystem system = switchToCas();
         system.logoutFilter().doFilter(request, response, filterChain);
-        // expect no exceptions
+        assertEquals("Filter chain not continued", request, filterChain.getRequest());
+        assertEquals("Filter chain not continued", response, filterChain.getResponse());
+    }
+
+    public void testWebSSOLogoutFilterApplies() throws Exception {
+        AuthenticationSystem system = switchToWebSSO();
+        system.logoutFilter().doFilter(request, response, filterChain);
+        assertEquals("Filter chain not continued", request, filterChain.getRequest());
+        assertEquals("Filter chain not continued", response, filterChain.getResponse());
     }
 
     private AuthenticationSystem switchToCas() {
+        return switchToCasBasedSystem("cas-plugin");
+    }
+
+    private AuthenticationSystem switchToWebSSO() {
+        return switchToCasBasedSystem("websso-plugin");
+    }
+
+    private AuthenticationSystem switchToCasBasedSystem(String pluginName) {
         asConfiguration.set(
             AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM,
-            "edu.northwestern.bioinformatics.psc-authentication-cas-plugin"
+            "edu.northwestern.bioinformatics.psc-authentication-" + pluginName
         );
         asConfiguration.set(CasAuthenticationSystem.APPLICATION_URL, "http://localhost:5600/psc");
         asConfiguration.set(CasAuthenticationSystem.SERVICE_URL, "https://cas");

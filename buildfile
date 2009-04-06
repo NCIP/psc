@@ -225,6 +225,17 @@ define "psc" do
       bnd.name = "PSC caGrid WebSSO Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
+      bnd.import_packages << 
+        "org.springframework.beans.factory.config;version=2.5" <<
+        "org.springframework.cache.ehcache;version=2.5" <<
+        "org.acegisecurity.providers.cas" <<
+        "org.acegisecurity.providers.cas.cache" <<
+        "org.acegisecurity.providers.cas.populator" <<
+        "org.acegisecurity.providers.cas.proxy" <<
+        "org.acegisecurity.providers.cas.ticketvalidator" <<
+        "org.acegisecurity.ui.cas" <<
+        "org.acegisecurity.ui.logout" <<
+        "gov.nih.nci.cabig.caaers.web.security.cas"
       compile.with project('plugin-api').and_dependencies,
         project('cas-plugin').and_dependencies, SECURITY.caaers_cas
       test.with project('plugin-api').test_dependencies,
