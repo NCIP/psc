@@ -13,14 +13,12 @@ module Bnd
     Project.local_task("bnd:print")
     desc "Generates a bnd properties file from the project metadata"
     Project.local_task("bnd:generate")
-    # desc "Wrap the each package's jar (if any) for use with OSGi"
-    # Project.local_task("bnd:wrap")
   end
   
   after_define do |project|
     jar = project.packages.detect { |pkg| pkg.type == :jar }
     
-    project.task('bnd:print' => project.package) do
+    project.task('bnd:print' => project.task('package')) do
       if jar
         Bnd.bnd_main(jar.to_s)
       else
