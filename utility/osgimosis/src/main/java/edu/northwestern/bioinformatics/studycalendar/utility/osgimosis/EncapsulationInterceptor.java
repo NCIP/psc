@@ -34,13 +34,6 @@ class EncapsulationInterceptor implements MethodInterceptor, InvocationHandler {
             log.trace("Bridging method {} with args {} in {}",
                 new Object[] { nearMethod, nearArgs == null ? "<none>" : Arrays.asList(nearArgs), proxy.getClass() });
             log.trace(" - Far method is {} from {}", farMethod, farMethod.getDeclaringClass());
-            if (log.isTraceEnabled()) {
-                try {
-                    throw new Exception("Location");
-                } catch (Exception e) {
-                    log.trace("At", e);
-                }
-            }
             try {
                 Object farResult = farMethod.invoke(
                     far, encapsulateArgs(nearArgs, farMethod.getParameterTypes()));
