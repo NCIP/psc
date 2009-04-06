@@ -70,6 +70,40 @@ public class MultipleFilterFilterTest extends TestCase {
         assertChainNotContinued();
     }
 
+    public void testFiltersStopOnException() throws Exception {
+        InvocationRecordingFilter[] filters = new InvocationRecordingFilter[] {
+            new ContinuingFilter(), new ErroringFilter(), new ContinuingFilter()
+        };
+
+        try {
+            doFilter(filters);
+            fail("Exception not propagated");
+        } catch (ServletException se) {
+            assertEquals(se.getMessage(), ErroringFilter.MESSAGE);
+            assertTrue("First not invoked", filters[0].isInvoked());
+            assertTrue("Second not invoked", filters[1].isInvoked());
+            assertFalse("Third incorrectly invoked", filters[2].isInvoked());
+            assertChainNotContinued();
+        }
+    }
+
+    public void testFiltersStopOnRuntimeException() throws Exception {
+        InvocationRecordingFilter[] filters = new InvocationRecordingFilter[] {
+            new ContinuingFilter(), new RuntimeErroringFilter(), new ContinuingFilter()
+        };
+
+        try {
+            doFilter(filters);
+            fail("Exception not propagated");
+        } catch (IllegalStateException ise) {
+            assertEquals(ise.getMessage(), RuntimeErroringFilter.MESSAGE);
+            assertTrue("First not invoked", filters[0].isInvoked());
+            assertTrue("Second not invoked", filters[1].isInvoked());
+            assertFalse("Third incorrectly invoked", filters[2].isInvoked());
+            assertChainNotContinued();
+        }
+    }
+
     public void testExceptionIfNoFiltersProvided() throws Exception {
         try {
             new MultipleFilterFilter().afterPropertiesSet();
@@ -115,4 +149,24 @@ public class MultipleFilterFilterTest extends TestCase {
     }
 
     private static class StoppingFilter extends InvocationRecordingFilter { }
+
+    private static class ErroringFilter extends InvocationRecordingFilter {
+        public static final String MESSAGE = "This is the end";
+
+        @Override
+        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+            super.doFilter(servletRequest, servletResponse, filterChain);
+            throw new ServletException(MESSAGE);
+        }
+    }
+
+    private static class RuntimeErroringFilter extends InvocationRecordingFilter {
+        public static final String MESSAGE = "This is the unexpected end";
+
+        @Override
+        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+            super.doFilter(servletRequest, servletResponse, filterChain);
+            throw new IllegalStateException(MESSAGE);
+        }
+    }
 }
