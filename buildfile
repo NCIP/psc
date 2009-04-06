@@ -335,13 +335,6 @@ define "psc" do
     end
   end # core
   
-  desc "Fork of dynamicjava.org's api-bridge to work with CGLIB 2.1.3"
-  define "api-bridge" do
-    project.version = "1.0.1.PSC-00"
-    compile.with SLF4J.api, CGLIB
-    package(:jar)
-  end
-
   desc "Submodules related to building and deploying PSC's embedded plugin layer"
   define "osgi-layer" do
     task :da_launcher_artifacts do |task|
@@ -432,7 +425,7 @@ define "psc" do
     end
     
     define "integrated-tests" do
-      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, project('api-bridge'), 
+      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, 
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
