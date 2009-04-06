@@ -1,18 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.impl.HostBeansImpl;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
-import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UserDetails;
+import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.StaticListableBeanFactory;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.osgi.mock.MockBundleContext;
 
 import javax.sql.DataSource;
@@ -29,7 +28,7 @@ public class HostBeansImplTest extends TestCase {
     private BundleContext bundleContext;
     private Map<String, Object> registeredServices;
     private HostBeansImpl impl;
-    private GenericApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
     private DataSource dataSource;
     private UserDetailsService pscUserDetailsService;
 
@@ -52,11 +51,12 @@ public class HostBeansImplTest extends TestCase {
         dataSource = mockRegistry.registerMockFor(DataSource.class);
         pscUserDetailsService = mockRegistry.registerMockFor(UserDetailsService.class);
 
-        StaticListableBeanFactory beans = new StaticListableBeanFactory();
-        beans.addBean("dataSource", dataSource);
-        beans.addBean("pscUserDetailsService", pscUserDetailsService);
-        applicationContext = new GenericApplicationContext(new DefaultListableBeanFactory(beans));
-        applicationContext.refresh();
+        applicationContext = ConcreteStaticApplicationContext.create(
+            new MapBuilder<String, Object>().
+                put("dataSource", dataSource).
+                put("pscUserDetailsService", pscUserDetailsService).
+                toMap()
+        );
     }
 
     public void testProxyServiceRegisteredForDataSource() throws Exception {

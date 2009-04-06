@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import org.acegisecurity.AuthenticationManager;
@@ -10,8 +12,6 @@ import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
@@ -50,13 +50,12 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     }
 
     private ApplicationContext createApplicationContext() {
-        StaticListableBeanFactory beans = new StaticListableBeanFactory();
-        beans.addBean("configuration", getConfiguration());
-        beans.addBean("dataSource", getDataSource());
-        beans.addBean("pscUserDetailsService", getUserDetailsService());
-        GenericApplicationContext newContext = new GenericApplicationContext(new DefaultListableBeanFactory(beans));
-        newContext.refresh();
-        return newContext;
+        return ConcreteStaticApplicationContext.create(
+            new MapBuilder<String, Object>().
+                put("dataSource", getDataSource()).
+                put("pscUserDetailsService", getUserDetailsService()).
+                toMap()
+        );
     }
 
     /**
