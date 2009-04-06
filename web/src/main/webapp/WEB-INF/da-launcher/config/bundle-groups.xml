@@ -1,0 +1,19 @@
+<bundle-groups>
+	
+	<bundles-directory name="application-bundles">
+		<directory-settings dir="${da-launcher:home}/bundles/application-bundles" />
+		<common-settings install-order="2" start-order="2" auto-start-bundles="true" ignore-install-errors="true" ignore-start-errors="true" />
+	</bundles-directory>
+	
+	<bundles-directory name="system-bundles">
+		<directory-settings dir="${da-launcher:home}/bundles/system-bundles" />
+		<common-settings install-order="0" start-order="0" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
+	</bundles-directory>
+	
+	<bundles-directory name="osgi-incompliant-libraries">
+		<directory-settings dir="${da-launcher:home}/bundles/osgi-incompliant-libraries" />
+		<common-settings install-order="1" start-order="1" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
+		<bundle-generation handle="ALL" cache-dir="${da-launcher:home}/runtime/cache/generated-bundles/osgi-incompliant-libraries" />
+	</bundles-directory>
+	
+</bundle-groups>

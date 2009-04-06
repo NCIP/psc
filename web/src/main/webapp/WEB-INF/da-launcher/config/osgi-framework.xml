@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- Settings of the used OSGi Framework -->
+<osgi-framework-settings>
+	<!--
+	Specifies the OSGi Framework to be used. Required attrubutes:
+	name - The name of the OSGi Framework (supported values are: 'equinox' , 'felix', 'knopflerfish')
+	version - The version of the Framework.
+	It's important to note that based on this element DA-Launcher decides upon the OSGi Framework it should use to run the OSGi Environment and where to look for it's class files.
+	If you specify the name 'equinox' and version '3.3.0' then the directory '/osgi-framework/equinox/3.3.0' should exist and contain the JAR files of Equinox. More details can be found
+	in the '/osgi-framework/about.txt' file.
+	-->
+	<framework name="equinox" version="3.4.0" />
+	<!--<framework name="felix" version="1.0.4" />-->
+	<!--<framework name="knopflerfish" version="2.1.0" />-->
+	
+	<!-- Defines Framework specific properties that will be passed to the Framework when starting it. (e.g., 'felix.log.level', 'osgi.context.bootdelegation', etc.) -->
+	<framework-properties>
+		<!--<property name="felix.log.level" value="0" />
+		<property name="felix.embedded.execution">true</property>-->
+	</framework-properties>
+	
+</osgi-framework-settings>
