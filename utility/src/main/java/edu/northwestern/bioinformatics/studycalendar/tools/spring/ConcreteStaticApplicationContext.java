@@ -4,7 +4,10 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
 
+import javax.servlet.ServletContext;
 import java.util.Map;
 
 /**
@@ -24,5 +27,15 @@ public class ConcreteStaticApplicationContext extends GenericApplicationContext 
             new DefaultListableBeanFactory(factory));
         context.refresh();
         return context;
+    }
+
+    public static WebApplicationContext createWebApplicationContext(
+        Map<String, Object> beans, ServletContext servletContext
+    ) {
+        StaticWebApplicationContext ctx = new StaticWebApplicationContext();
+        ctx.setServletContext(servletContext);
+        ctx.setParent(create(beans));
+        ctx.refresh();
+        return ctx;
     }
 }

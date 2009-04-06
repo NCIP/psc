@@ -23,7 +23,7 @@
     </bean>
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerSecureUrlCreator"
-          lazy-init="true">
+          lazy-init="true" id="secureUrls">
         <property name="urlResolver">
             <ref local="urlResolver"/>
         </property>

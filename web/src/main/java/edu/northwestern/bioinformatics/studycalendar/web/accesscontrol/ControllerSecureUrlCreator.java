@@ -14,6 +14,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -32,7 +33,7 @@ import java.util.Vector;
 /**
  * @author John Dzak
  */
-public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ordered {
+public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ordered, FactoryBean {
     private static Logger log = LoggerFactory.getLogger(ControllerSecureUrlCreator.class);
     private ControllerUrlResolver urlResolver;
     private Map<String, Role[]> pathRoleMap;
@@ -44,13 +45,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        pathRoleMap = new TreeMap<String, Role[]>(new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                int lengthDiff = o2.length() - o1.length();
-                if (lengthDiff != 0) return lengthDiff;
-                return o2.compareTo(o1);
-            }
-        });
+        pathRoleMap = new TreeMap<String, Role[]>(new PathComparator());
         String[] controllerNames = beanFactory.getBeanNamesForType(Controller.class, false, false);
         for (String controllerName : controllerNames) {
             ResolvedControllerReference controller = urlResolver.resolve(controllerName);
@@ -115,6 +110,19 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         return pathRoleMap;
     }
 
+    public Object getObject() throws Exception {
+        return getPathRoleMap();
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public Class getObjectType() {
+        return Map.class;
+    }
+
+    public boolean isSingleton() {
+        return true;
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -143,6 +151,18 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         @Override
         public String toString() {
             return url + ANT_SUFFIX;
+        }
+    }
+
+    /**
+     * Orders strings in descending order by length, then descending by content.  Used to
+     * put the longest paths first for comparisons.
+     */
+    public static class PathComparator implements Comparator<String> {
+        public int compare(String o1, String o2) {
+            int lengthDiff = o2.length() - o1.length();
+            if (lengthDiff != 0) return lengthDiff;
+            return o2.compareTo(o1);
         }
     }
 }

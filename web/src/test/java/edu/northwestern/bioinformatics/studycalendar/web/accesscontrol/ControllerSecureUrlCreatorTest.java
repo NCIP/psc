@@ -166,6 +166,27 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         doProcess();
     }
 
+    public void testMapExposedAsFactoryBeanResult() throws Exception {
+        registerControllerBean("pear", SingleGroupController.class);
+        registerControllerBean("pome", MultiGroupController.class);
+        doProcess();
+
+        assertNotNull(creator.getObject());
+        Map<String, Role[]> actual = (Map<String, Role[]>) creator.getObject();
+        assertSame(actual, actualPathMap());
+        assertEquals(2, actual.size());
+    }
+
+    public void testFactoryBeanForSingleton() throws Exception {
+        doProcess();
+        assertTrue(creator.isSingleton());
+    }
+
+    public void testFactoryBeanForMap() throws Exception {
+        doProcess();
+        assertEquals(Map.class, creator.getObjectType());
+    }
+
     private Role[] actualRolesForPath(String path) {
         assertNotNull("Map is null", actualPathMap());
         Role[] roles = actualPathMap().get(path);
