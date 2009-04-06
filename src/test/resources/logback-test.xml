@@ -23,10 +23,10 @@
     </root>
 
     <logger name="edu.northwestern.bioinformatics.studycalendar">
+        <level value="trace"/>
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="edu.northwestern.bioinformatics.studycalendar"><level value="trace"/></logger>
     <logger name="gov.nih.nci.cabig.ctms"><level value="trace"/></logger>
 
     <logger name="org.hibernate.type">         <level value="trace"/></logger>
