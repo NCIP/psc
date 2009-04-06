@@ -23,7 +23,9 @@ public enum UriTemplateParameters {
     DAY,
     SCHEDULED_ACTIVITY_IDENTIFIER,
     USERNAME,
-    ROLENAME;
+    ROLENAME,
+    BUNDLE_ID
+    ;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
