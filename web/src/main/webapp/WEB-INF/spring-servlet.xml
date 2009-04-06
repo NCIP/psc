@@ -22,15 +22,14 @@
         <property name="maxUploadSize" value="500000"/>
     </bean>
 
-    <!--
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerSecureUrlCreator"
           lazy-init="true">
-        <property name="filterInvocationInterceptor" ref="filterInvocationInterceptor"/>
         <property name="urlResolver">
             <ref local="urlResolver"/>
         </property>
+        <property name="bundleContext" ref="bundleContext"/>
+        <property name="membrane" ref="membrane"/>
     </bean>
-    -->
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass"

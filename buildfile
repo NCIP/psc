@@ -51,7 +51,8 @@ define "psc" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
 
-    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
+    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections, 
+      CTMS_COMMONS.lang, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -75,9 +76,7 @@ define "psc" do
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
-      SPRING, SECURITY.acegi, SECURITY.csm,
-      HIBERNATE.main, HIBERNATE.annotations, HIBERNATE.javax_persistence,
-      HIBERNATE.validator, HIBERNATE.annotations_common
+      SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE
     test.with(UNIT_TESTING)
     
     package(:jar)
@@ -190,7 +189,8 @@ define "psc" do
         "org.acegisecurity.wrapper" <<
         "org.acegisecurity.vote" <<
         "org.springframework.cache.ehcache"
-      compile.with project('plugin-api').and_dependencies, SPRING_OSGI
+      compile.with project('plugin-api').and_dependencies, SPRING_OSGI,
+        project('domain').and_dependencies, EHCACHE
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
         project('plugin-api').test_dependencies,
@@ -350,15 +350,6 @@ define "psc" do
       felix_main = artifact(FELIX.main)
       equinox_main = artifact(EQUINOX.osgi)
 
-      bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_bundles = bundle_projects.collect { |p| p.package(:jar) } + 
-        [ SPRING_OSGI.extender ].collect { |a| artifact(a) }
-      application_libraries = bundle_projects.
-        collect { |p| p.and_dependencies }.flatten.uniq.
-        select { |a| Buildr::Artifact === a }.
-        reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } +
-        [LOG4J, SLF4J.jcl].collect { |a| artifact(a) } - application_bundles
-
       if true # knopflerfish?
         system_optional = [KNOPFLERFISH.consoletelnet]
         system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
@@ -372,6 +363,18 @@ define "psc" do
         system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional
         osgi_framework = { "osgi-framework/equinox/#{equinox_main.version.split('.')[0 .. 2].join('.')}" => [equinox_main] }
       end
+      
+      system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } + 
+        [ project('osgi-layer:log4j-configuration').packages.first ]
+
+      bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
+      application_bundles = bundle_projects.collect { |p| p.package(:jar) } + 
+        [ SPRING_OSGI.extender ].collect { |a| artifact(a) } - system_bundles
+      application_libraries = bundle_projects.
+        collect { |p| p.and_dependencies }.flatten.uniq.
+        select { |a| Buildr::Artifact === a }.
+        reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } -
+        system_bundles - application_bundles
 
       task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
@@ -388,29 +391,42 @@ define "psc" do
       task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
         dadir = _("target/test/da-launcher/#{path}")
         mkdir_p dadir
-        artifacts.each { |a| a.invoke; cp a.to_s, dadir }
+        artifacts.each { |a| 
+          trace "Putting #{a} in #{path}"
+          a.invoke; 
+          cp a.to_s, dadir 
+        }
       end
     end
     
     task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
       cd _("target/classes") do
+        mkdir_p _('tmp/logs')
         classpath = project.test.dependencies.collect { |p| p.to_s }.join(':')
-        system("java -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
+        system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
       end
     end
     
     compile.with OSGI, DYNAMIC_JAVA
     
-    desc "Provides host-configured services to the OSGi layer"
+    desc "Advertises host-configured services to the OSGi layer"
     define "host-services" do
       bnd.wrap!
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.Activator"
-      bnd.name = "PSC host to OSGi bridged services"
+      bnd.name = "PSC OSGi layer access to host services"
       
       compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
       test.using(:junit).with UNIT_TESTING, 
         project('domain').and_dependencies, project('domain').test_dependencies
+      
+      package(:jar)
+    end
+    
+    define "log4j-configuration" do
+      bnd.wrap!
+      bnd.name = "PSC OSGi layer log4j configuration"
+      bnd['Fragment-Host'] = 'com.springsource.org.apache.log4j'
       
       package(:jar)
     end
@@ -511,6 +527,7 @@ define "psc" do
         into(File.dirname(logconfig)).
         run
       Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
+      Java.java.lang.System.setProperty("catalina.home", _('tmp').to_s)
 
       jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
     end

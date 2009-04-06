@@ -27,6 +27,7 @@
 
                 <value>org.acegisecurity</value>
                 <value>org.acegisecurity.userdetails</value>
+                <value>org.osgi.service.cm</value>
                 <value>org.springframework.context</value>
 
                 <value>javax.sql</value>

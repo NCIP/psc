@@ -1,44 +1,71 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerSecureUrlCreator;
+import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
+import static org.easymock.EasyMock.*;
+import org.easymock.classextension.EasyMock;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.osgi.mock.MockBundle;
+import org.springframework.osgi.mock.MockServiceReference;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.acegisecurity.intercept.web.FilterSecurityInterceptor;
-import org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap;
-import org.acegisecurity.ConfigAttributeDefinition;
-import org.acegisecurity.ConfigAttribute;
-import org.acegisecurity.SecurityConfig;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 
+@SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
 public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
     private static final String PREFIX = "prefix";
 
     private ControllerSecureUrlCreator creator;
     private DefaultListableBeanFactory beanFactory;
     private BeanNameControllerUrlResolver resolver;
-    private FilterSecurityInterceptor filterInvocationInterceptor;
+    private BundleContext bundleContext;
+    private ConfigurationAdmin configurationAdmin;
+    private Configuration osgiConfiguration;
+    private static final MockBundle SOCKET_BUNDLE = new MockBundle("edu.northwestern.bioinformatics.psc-authentication-socket") {
+            @Override
+            public String getLocation() {
+                return "somewhere";
+            }
+        };
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        bundleContext = registerMockFor(BundleContext.class);
+        configurationAdmin = registerMockFor(ConfigurationAdmin.class);
+        osgiConfiguration = registerMockFor(Configuration.class);
+        expect(configurationAdmin.getConfiguration(FilterSecurityInterceptorConfigurer.SERVICE_PID, SOCKET_BUNDLE.getLocation())).
+            andStubReturn(osgiConfiguration);
+        osgiConfiguration.update((Dictionary) notNull());
+        expectLastCall().asStub();
 
         resolver = new BeanNameControllerUrlResolver();
         resolver.setServletName(PREFIX);
 
-        filterInvocationInterceptor = new FilterSecurityInterceptor();
-
         creator = new ControllerSecureUrlCreator();
         creator.setUrlResolver(resolver);
-        creator.setfilterInvocationInterceptor(filterInvocationInterceptor);
+        creator.setBundleContext(bundleContext);
+        creator.setMembrane(new TransparentMembrane());
 
         beanFactory = new DefaultListableBeanFactory();
     }
@@ -57,36 +84,34 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("single", SingleGroupController.class);
         doProcess();
 
-        ConfigAttributeDefinition defs = lookupConfigAttributeDefinitions("single");
-        assertEquals("Wrong Protection Group Size", 1, defs.size());
-        assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)defs.getConfigAttributes().next()).getAttribute());
+        Role[] defs = actualRolesForPath("/prefix/single/**");
+        assertEquals("Wrong number of roles", 1, defs.length);
+        assertEquals("Wrong Role", STUDY_COORDINATOR, defs[0]);
     }
 
     public void testMultiGroupRegistered() throws Exception {
         registerControllerBean("multi", MultiGroupController.class);
         doProcess();
 
-        ConfigAttributeDefinition defs = lookupConfigAttributeDefinitions("multi");
-        assertEquals("Wrong Protection Group Size", 2, defs.size());
+        Role[] defs = actualRolesForPath("/prefix/multi/**");
+        assertEquals("Wrong Protection Group Size", 2, defs.length);
 
-        Iterator configAttribIter = defs.getConfigAttributes();
-        assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "SUBJECT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
+        assertEquals("Wrong Role", STUDY_COORDINATOR, defs[0]);
+        assertEquals("Wrong Role", SUBJECT_COORDINATOR, defs[1]);
     }
 
     public void testNoGroupAllowsAll() throws Exception {
         registerControllerBean("zero", NoGroupController.class);
         doProcess();
 
-        ConfigAttributeDefinition defs = lookupConfigAttributeDefinitions("zero");
-        assertEquals("Wrong Protection Group Size", 5, defs.size());
+        Role[] roles = actualRolesForPath("/prefix/zero/**");
+        assertEquals("Wrong number of roles", 5, roles.length);
 
-        Iterator configAttribIter = defs.getConfigAttributes();
-        assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "STUDY_ADMIN", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "SYSTEM_ADMINISTRATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "SUBJECT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "SITE_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
+        assertEquals("Wrong role 0", STUDY_COORDINATOR,    roles[0]);
+        assertEquals("Wrong role 1", STUDY_ADMIN,          roles[1]);
+        assertEquals("Wrong role 2", SYSTEM_ADMINISTRATOR, roles[2]);
+        assertEquals("Wrong role 3", SUBJECT_COORDINATOR,  roles[3]);
+        assertEquals("Wrong role 4", SITE_COORDINATOR,     roles[4]);
     }
 
     public void testMapResolvesPathsLongestFirst() throws Exception {
@@ -95,13 +120,13 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("long/plus/more", NoGroupController.class);
         doProcess();
 
-        PathBasedFilterInvocationDefinitionMap actual = extractActualPathMap();
-        ConfigAttributeDefinition noGroup = actual.lookupAttributes("/prefix/long/plus/more");
-        assertEquals("Wrong number of groups: " + noGroup, 5, noGroup.size());
-        ConfigAttributeDefinition singleGroup = actual.lookupAttributes("/prefix/long/plus");
-        assertEquals("Wrong number of groups: " + singleGroup, 1, singleGroup.size());
-        ConfigAttributeDefinition multiGroup = actual.lookupAttributes("/prefix/long");
-        assertEquals("Wrong number of groups: " + multiGroup, 2, multiGroup.size());
+        Map<String, Role[]> actual = actualPathMap();
+        Role[] noGroup = actual.get("/prefix/long/plus/more/**");
+        assertEquals("Wrong number of groups: " + Arrays.asList(noGroup), 5, noGroup.length);
+        Role[] singleGroup = actual.get("/prefix/long/plus/**");
+        assertEquals("Wrong number of groups: " + Arrays.asList(singleGroup), 1, singleGroup.length);
+        Role[] multiGroup = actual.get("/prefix/long/**");
+        assertEquals("Wrong number of groups: " + Arrays.asList(multiGroup), 2, multiGroup.length);
     }
 
     public void testMapResolvesSeparatePathsWithSameLength() throws Exception {
@@ -109,47 +134,63 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("pome", MultiGroupController.class);
         doProcess();
 
-        PathBasedFilterInvocationDefinitionMap actual = extractActualPathMap();
-        ConfigAttributeDefinition singleGroup = actual.lookupAttributes("/prefix/pear");
+        Role[] singleGroup = actualRolesForPath("/prefix/pear/**");
         assertNotNull("Could not resolve pear", singleGroup);
-        assertEquals("Wrong number of groups: " + singleGroup, 1, singleGroup.size());
+        assertEquals("Wrong number of groups: " + Arrays.asList(singleGroup), 1, singleGroup.length);
 
-        ConfigAttributeDefinition multiGroup = actual.lookupAttributes("/prefix/pome");
+        Role[] multiGroup = actualRolesForPath("/prefix/pome/**");
         assertNotNull("Could not resolve pome", multiGroup);
-        assertEquals("Wrong number of groups: " + multiGroup, 2, multiGroup.size());
+        assertEquals("Wrong number of groups: " + Arrays.asList(multiGroup), 2, multiGroup.length);
     }
 
-    public ConfigAttributeDefinition lookupConfigAttributeDefinitions(String controllerName) {
-        assertNotNull("Secure Url List is null", filterInvocationInterceptor.getObjectDefinitionSource());
-        ConfigAttributeDefinition defs = extractActualPathMap()
-                .lookupAttributes(new StringBuilder().append('/').append(PREFIX).append('/').append(controllerName).toString());
-        assertNotNull("Configuration Attribute Definitions are null", defs);
-        return defs;
+    public void testProcessingFailsIfConfigurationAdminServiceNotAvailable() throws Exception {
+        try {
+            doProcess(null);
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("OSGi CM service not available.  Unable to update secure URL map.", scse.getMessage());
+        }
     }
 
-    private PathBasedFilterInvocationDefinitionMap extractActualPathMap() {
-        return (PathBasedFilterInvocationDefinitionMap)filterInvocationInterceptor
-                .getObjectDefinitionSource();
+    public void testProcessingUpdatesConfigurationAtEnd() throws Exception {
+        registerControllerBean("pear", SingleGroupController.class);
+        registerControllerBean("pome", MultiGroupController.class);
+        EasyMock.reset(osgiConfiguration);
+        osgiConfiguration.update(new Hashtable(Collections.singletonMap(
+            FilterSecurityInterceptorConfigurer.PATH_ROLE_MAP_KEY,
+            new Vector(Arrays.asList(
+                "/prefix/pome/**|STUDY_COORDINATOR SUBJECT_COORDINATOR",
+                "/prefix/pear/**|STUDY_COORDINATOR"
+            )
+        ))));
+        doProcess();
     }
 
-    public void testPathBasedFilterDefinitionMap() {
-        ConfigAttributeDefinition def = new ConfigAttributeDefinition();
-        def.addConfigAttribute(new SecurityConfig("CreateStudyAccess"));
-
-        PathBasedFilterInvocationDefinitionMap map = new PathBasedFilterInvocationDefinitionMap();
-        map.addSecureUrl("/path", def);
-
-        FilterSecurityInterceptor filter = new FilterSecurityInterceptor();
-        filter.setObjectDefinitionSource(map);
-
-        ConfigAttributeDefinition actualDef = map.lookupAttributes("/path");
-
-        assertEquals("Wrong Definition Size", 1, actualDef.size());
-        assertEquals("Wrong Attribute", "CreateStudyAccess", ((ConfigAttribute)actualDef.getConfigAttributes().next()).getAttribute());
-        assertNotNull("Filter Object Definition Source is Null", filter.getObjectDefinitionSource());
+    private Role[] actualRolesForPath(String path) {
+        assertNotNull("Map is null", actualPathMap());
+        Role[] roles = actualPathMap().get(path);
+        assertNotNull("No roles for " + path, roles);
+        return roles;
     }
-    
+
+    private Map<String, Role[]> actualPathMap() {
+        return creator.getPathRoleMap();
+    }
+
     private void doProcess() {
+        doProcess(configurationAdmin);
+    }
+
+    private void doProcess(Object expectedCMService) {
+        ServiceReference cmSR = expectedCMService == null ? null : new MockServiceReference();
+        expect(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).
+            andReturn(expectedCMService == null ? null : cmSR);
+        if (cmSR != null) {
+            expect(bundleContext.getServiceReference(FilterSecurityInterceptorConfigurer.class.getName())).
+                andReturn(new MockServiceReference(SOCKET_BUNDLE));
+            expect(bundleContext.getService(cmSR)).andReturn(expectedCMService);
+        }
+
         replayMocks();
         resolver.postProcessBeanFactory(beanFactory);
         creator.postProcessBeanFactory(beanFactory);
@@ -161,6 +202,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
             throw new UnsupportedOperationException("handleRequest not implemented");
         }
     }
+
     @AccessControl(roles = STUDY_COORDINATOR)
     public static class SingleGroupController extends TestingController { }
 
@@ -169,5 +211,15 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
 
     public static class NoGroupController extends TestingController { }
 
+    private class TransparentMembrane extends Membrane {
+        @Override
+        public Object farToNear(Object farObject) {
+            return farObject;
+        }
 
+        @Override
+        public Object traverse(Object object, ClassLoader newCounterpartClassLoader) {
+            return object;
+        }
+    }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="DEBUGFILE" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${catalina.home}/logs/studycalendar-plugins-debug.log" />
+        <param name="Append" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] %c{2} %-5p: %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="MAINFILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${catalina.home}/logs/studycalendar-plugins.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true" />
+        <param name="Threshold" value="WARN"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%t] %c{2} %-5p: %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <param name="Threshold" value="ERROR"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %c{1} - %m%n"/>
+        </layout> 
+    </appender>
+
+    <root>
+        <priority value ="debug"/>
+        <appender-ref ref="DEBUGFILE"/>
+        <appender-ref ref="MAINFILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</log4j:configuration>

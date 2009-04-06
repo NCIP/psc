@@ -72,7 +72,10 @@ SLF4J = struct(
 
 # For use inside the osgi layer until SpringSource releases a bundle of logback
 # that's compatible with slf4j-1.5.6
-LOG4J = "org.apache.log4j:com.springsource.org.apache.log4j:jar:1.2.15"
+LOG4J = struct(
+  :main  => "org.apache.log4j:com.springsource.org.apache.log4j:jar:1.2.15",
+  :slf4j => "org.slf4j:com.springsource.slf4j.log4j:jar:1.5.6"
+)
 
 def spring_osgi_apache_commons(name, version)
   "org.apache.commons:com.springsource.org.apache.commons.#{name}:jar:#{version}"
@@ -112,13 +115,15 @@ HIBERNATE = struct(
   :main => "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
   :annotations => "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
   :annotations_common => "org.hibernate:com.springsource.org.hibernate.annotations.common:jar:3.3.0.ga",
-  :validator => "org.hibernate:com.springsource.org.hibernate.validator:jar:3.1.0.GA",
   :antlr => "org.antlr:com.springsource.antlr:jar:2.7.7",
   :c3p0 => "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
   :cglib => CGLIB,
   :javax_transaction => "javax.transaction:com.springsource.javax.transaction:jar:1.1.0",
   :javax_persistence => "javax.persistence:com.springsource.javax.persistence:jar:1.0.0",
-  :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga"
+  :javassist => "org.jboss.javassist:com.springsource.javassist:jar:3.3.0.ga",
+  :dom4j => "org.dom4j:com.springsource.org.dom4j:jar:1.6.1",
+  :xstream => "javax.xml.stream:com.springsource.javax.xml.stream:jar:1.0.1",
+  :jgroups => "org.jgroups:com.springsource.org.jgroups:jar:2.5.1"
 )
 
 EHCACHE = struct(

@@ -28,6 +28,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="configuration" ref="authenticationSystemConfiguration"/>
     </bean>
 
+    <bean id="filterSecurityInterceptorConfigurer"
+          class="edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer">
+        <property name="filterSecurityInterceptor" ref="filterInvocationInterceptor"/>
+    </bean>
+
     <bean id="httpSessionContextIntegrationFilter"
           class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
 

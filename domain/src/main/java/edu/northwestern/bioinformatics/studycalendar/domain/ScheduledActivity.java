@@ -14,7 +14,6 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.NotNull;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -230,7 +229,6 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     @JoinColumn(name = "scheduled_activity_id", insertable = true, updatable = true, nullable = false)
     @Cascade({CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     @IndexColumn(name = "list_index")
-    @NotNull
     public List<ScheduledActivityState> getPreviousStates() {
         return previousStates;
     }

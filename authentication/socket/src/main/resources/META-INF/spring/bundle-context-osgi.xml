@@ -2,16 +2,33 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/osgi
-        http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+        http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        ">
 
     <osgi:service id="completeAuthenticationSystemRegistration" ref="completeAuthenticationSystem"
         interface="edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem">
         <osgi:service-properties>
-            <entry key="service.pid"
-                   value="edu.northwestern.bioinformatics.studycalendar.security.psc-authentication-socket"/>
+            <entry key="service.pid">
+                <util:constant static-field="edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem.SERVICE_PID"/>
+            </entry>
+        </osgi:service-properties>
+    </osgi:service>
+
+    <osgi:service id="filterSecurityInterceptorConfigurerRegistration" ref="filterSecurityInterceptorConfigurer">
+        <osgi:interfaces>
+            <value>org.osgi.service.cm.ManagedService</value>
+            <value>edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="service.pid">
+                <util:constant static-field="edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer.SERVICE_PID"/>
+            </entry>
         </osgi:service-properties>
     </osgi:service>
 </beans>

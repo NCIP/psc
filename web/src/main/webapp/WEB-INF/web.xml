@@ -240,6 +240,7 @@
         <url-pattern>/api/v1/*</url-pattern>
     </servlet-mapping>
 
+    <!--
     <servlet>
         <servlet-name>ctms-assets</servlet-name>
         <servlet-class>gov.nih.nci.cabig.ctms.lookandfeel.AssetServlet</servlet-class>
@@ -249,6 +250,7 @@
         <servlet-name>ctms-assets</servlet-name>
         <url-pattern>/ctms-laf/*</url-pattern>
     </servlet-mapping>
+    -->
 
     <servlet>
         <servlet-name>sass</servlet-name>

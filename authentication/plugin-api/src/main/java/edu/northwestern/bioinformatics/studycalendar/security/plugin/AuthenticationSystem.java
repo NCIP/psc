@@ -89,7 +89,7 @@ public interface AuthenticationSystem {
      * mechanism for this plugin (e.g., SSO).  The returned filter will be
      * applied to all requests.  Its {@link Filter#init} method will not be called.
      * <p>
-     * If you need more than one filter, consider {@link MultipleFilterFilter} or Acegi's
+     * If you need more than one filter, consider {@link edu.northwestern.bioinformatics.studycalendar.tools.MultipleFilterFilter} or Acegi's
      * {@link org.acegisecurity.util.FilterChainProxy}.
      * <p>
      * If you don't need a filter, return <code>null</code>.

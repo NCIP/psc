@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.security.plugin;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

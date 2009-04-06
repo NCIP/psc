@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.security.plugin;
+package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import junit.framework.TestCase;
 import org.springframework.mock.web.MockFilterChain;
