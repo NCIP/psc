@@ -70,7 +70,9 @@ module Bnd
     BND_TO_ATTR = {
       '-classpath' => :classpath,
       'Bundle-Version' => :version,
-      'Bundle-SymbolicName' => :symbolic_name
+      'Bundle-SymbolicName' => :symbolic_name,
+      'Import-Package' => :import_packages_serialized,
+      'Export-Package' => :export_packages_serialized
     }
     
     def initialize(project)
@@ -100,17 +102,32 @@ module Bnd
       @symbolic_name || [project.group, project.id].join('.')
     end
     
+    def import_packages
+      @import_packages || ['*']
+    end
+    
+    def export_packages
+      @export_packages || ['*']
+    end
+    
     def write(f)
       f.print self.to_hash.collect { |k, v| "#{k}=#{v}" }.join("\n")
     end
     
     def to_hash
-      Hash[ *BND_TO_ATTR.collect { |k, v| [ k, self.send(v) ] }.flatten ].merge(@other)
+      Hash[ *BND_TO_ATTR.collect { |k, v| [ k, self[k] ] }.flatten ].merge(@other)
     end
     
     def [](k)
       if BND_TO_ATTR.keys.include?(k)
-        self.send BND_TO_ATTR[k]
+        case BND_TO_ATTR[k]
+        when Symbol
+          self.send BND_TO_ATTR[k]
+        when Proc
+          BND_TO_ATTR[k].call
+        else
+          raise "Unexpected value in BND_TO_ATTR for #{k}"
+        end
       else
         @other[k]
       end
@@ -128,6 +145,18 @@ module Bnd
     
     def project
       @project
+    end
+    
+    %w(import_packages export_packages).each do |kind|
+      class_eval <<-RUBY
+        def #{kind}_serialized
+          #{kind}.join(', ')
+        end
+        
+        def #{kind}_serialized=(s)
+          @#{kind} = s.split(/\\s*,\\s*/)
+        end
+      RUBY
     end
   end
 end

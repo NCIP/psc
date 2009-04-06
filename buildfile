@@ -49,7 +49,6 @@ define "psc" do
   desc "Pure utility code"
   define "utility" do
     project.bnd.wrap!
-    project.bnd['Import-Package'] = '*'
 
     compile.with SLF4J, SPRING, JAKARTA_COMMONS.collections, CTMS_COMMONS.lang
     test.with(UNIT_TESTING)
