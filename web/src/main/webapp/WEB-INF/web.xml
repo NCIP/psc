@@ -62,12 +62,12 @@
 
     <filter-mapping>
         <filter-name>setup-or-not</filter-name>
-        <url-pattern>/pages/*</url-pattern>
+        <servlet-name>spring</servlet-name>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>setup-or-not</filter-name>
-        <url-pattern>/public/*</url-pattern>
+        <servlet-name>public</servlet-name>
     </filter-mapping>
 
     <filter>
@@ -88,12 +88,12 @@
 
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
-        <url-pattern>/pages/*</url-pattern>
+        <servlet-name>spring</servlet-name>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>Installed authentication system</filter-name>
-        <url-pattern>/api/*</url-pattern>
+        <servlet-name>restful-api</servlet-name>
     </filter-mapping>
 
     <filter>
@@ -117,7 +117,22 @@
 
     <filter-mapping>
         <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>public</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>spring</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>restful-api</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>setup</servlet-name>
     </filter-mapping>
 
     <filter>
@@ -131,7 +146,22 @@
 
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>public</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>spring</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>restful-api</servlet-name>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
+        <servlet-name>setup</servlet-name>
     </filter-mapping>
 
     <filter>

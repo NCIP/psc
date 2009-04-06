@@ -1,10 +1,12 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
+import gov.nih.nci.cabig.ctms.web.filters.FilterAdapter;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.annotation.Required;
@@ -21,14 +23,26 @@ import java.io.IOException;
  *
  * @author Rhett Sutphin
  */
-public class InstalledAuthenticationSystem extends ContextRetainingFilterAdapter {
-    private BundleContext bundleContext;
-    private Membrane membrane;
+public class InstalledAuthenticationSystem extends FilterAdapter {
     private static final String SERVICE_NAME = CompleteAuthenticationSystem.class.getName();
 
+    private BundleContext bundleContext;
+    private Membrane membrane;
+
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        getCompleteAuthenticationSystem().doFilter(servletRequest, servletResponse, filterChain);
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
+        final CompleteAuthenticationSystem system = getCompleteAuthenticationSystem();
+
+        system.doFilter(servletRequest, servletResponse, new FilterChain() {
+            public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
+                SecurityContextHolder.setContext(system.getCurrentSecurityContext());
+                final SecurityContext original = SecurityContextHolder.getContext();
+
+                filterChain.doFilter(servletRequest, servletResponse);
+
+                SecurityContextHolder.setContext(original);
+            }
+        });
     }
 
     public CompleteAuthenticationSystem getCompleteAuthenticationSystem() {
