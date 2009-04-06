@@ -56,6 +56,14 @@ define "psc" do
     
     package(:jar)
     package(:sources)
+
+    desc "Bidirectional object bridge for sharing object instances across the membrane between the OSGi classloader and the main application classloader"
+    define "osgimosis" do
+      compile.with SLF4J, CGLIB
+      test.using(:junit).with(UNIT_TESTING, JAKARTA_COMMONS.io)
+      package(:jar)
+      package(:sources)
+    end
   end
   
   desc "The domain classes for PSC"
@@ -164,7 +172,7 @@ define "psc" do
     desc "PSC's framework for using the authentication plugins"
     define "socket" do
       compile.with project('plugin-api').and_dependencies, 
-        project('api-bridge').and_dependencies,
+        project('psc:utility:osgimosis').and_dependencies,
         project('core').and_dependencies
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
@@ -190,6 +198,8 @@ define "psc" do
       bnd.name = "PSC Local Auth Plugin"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
+      bnd.import_packages << 
+        "org.acegisecurity.ui.savedrequest"
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
@@ -389,7 +399,7 @@ define "psc" do
       # %w(cas websso local insecure).collect { |p| project("psc:authentication:#{p}-plugin").and_dependencies },
       project('psc:authentication:plugin-api').and_dependencies,
       project('psc:authentication:socket').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, CAGRID, project('api-bridge'), DYNAMIC_JAVA
+      SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,

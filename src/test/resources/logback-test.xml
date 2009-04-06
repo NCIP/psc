@@ -3,7 +3,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %logger{36} %5level | %msg%n
+                %40logger{40} %5level | %1X{depth} | %msg%n
             </Pattern>
         </layout>
     </appender>
