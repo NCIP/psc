@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl;
 
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -14,6 +17,12 @@ public class PersonServiceImpl implements PersonService {
 
     public Person createPrivateInvestigator() {
         return new PrivateInvestigator("Emerson");
+    }
+
+    public Collection<Person> createSeveral() {
+        return Arrays.asList(
+            createPieMaker(), createPrivateInvestigator(), new PieMaker("Chuck")
+        );
     }
 
     public Person setTitle(String title, Person person) {

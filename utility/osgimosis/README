@@ -11,4 +11,5 @@ This module is a reimplementation of dynamicjava.org's api-bridge.  Differences:
 - More robust invocation of delegate methods -- invokes the method from the
   implemented interface instead of from the class directly where possible.
   This allows compatibility with, e.g., private inner classes.
+- Support for proxying the contents of java.util.Collections.
 - Some unit tests.

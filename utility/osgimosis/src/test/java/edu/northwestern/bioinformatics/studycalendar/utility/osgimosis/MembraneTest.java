@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
+import java.util.Collection;
+
 /**
  * @author Rhett Sutphin
  */
@@ -96,6 +98,12 @@ public class MembraneTest extends OsgimosisTestCase {
         Person p2 = new DefaultPerson("A", "B");
         Person p1 = service.createPieMaker();
         assertFalse(service.equals(p1, p2));
+    }
+
+    public void testFarCollectionContentsAreEncapsulated() throws Exception {
+        Collection<Person> actual = bridgedPersonService().createSeveral();
+        assertEquals("Ned", actual.iterator().next().getName());
+        assertEquals(3, actual.size());
     }
 
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

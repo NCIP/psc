@@ -48,25 +48,34 @@ public class Membrane {
         if (object == null) {
             log.trace(" - Null is null no matter where you're from");
             return null;
-        } else if (object.getClass().getClassLoader() == null) {
-            log.debug(" - Not bridging object from bootstrap classloader");
-            return object;
-        } else if (newCounterpartClassLoader == null) {
-            log.debug(" - Not bridging object into bootstrap classloader");
-            return object;
         }
-
         log.trace(" - Identity: {}@{}", object.getClass().getName(),
             Integer.toHexString(System.identityHashCode(object)));
+
         log.trace(" - Into {}", newCounterpartClassLoader);
         if (cache.get(object) == null) {
+            if (newCounterpartClassLoader == null) {
+                log.debug(" - Not bridging object into bootstrap classloader");
+                return object;
+            }
+
             Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader);
             if (encapsulator == null) {
-                log.debug(" - Not encapsulatable; returning original object");
-                return object;
+                if (object instanceof Collection) {
+                    log.debug(" - Encapsulating collection");
+                    cache.put(new EncapsulatedCollection((Collection) object, this), object);
+                } else {
+                    log.debug(" - Not encapsulatable; returning original object");
+                    return object;
+                }
             } else {
-                log.debug(" - Building new proxy");
-                cache.put(encapsulator.proxy(object), object);
+                if (object.getClass().getClassLoader() == null) {
+                    log.debug(" - Not bridging object from bootstrap classloader");
+                    return object;
+                } else {
+                    log.debug(" - Building new proxy");
+                    cache.put(encapsulator.proxy(object), object);
+                }
             }
         } else {
             log.debug(" - Reusing cached value");
