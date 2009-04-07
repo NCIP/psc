@@ -71,6 +71,10 @@ define "psc" do
   define "domain" do
     bnd.wrap!
     bnd.name = "PSC Domain Model"
+    bnd.import_packages <<
+      "org.hibernate;version=3.3" <<
+      "org.hibernate.type;version=3.3" <<
+      "org.hibernate.cfg;version=3.3"
     
     compile.with project('utility'), SLF4J.api, 
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
