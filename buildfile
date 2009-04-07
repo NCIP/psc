@@ -531,7 +531,13 @@ define "psc" do
     end
     
     # exclude exploded files from IDEA
-    iml.excluded_directories << _('src/main/webapp/WEB-INF/lib') << _('src/main/webapp/WEB-INF/classes')
+    iml.excluded_directories << 
+      _('src/main/webapp/WEB-INF/da-launcher/bundles') << 
+      _('src/main/webapp/WEB-INF/da-launcher/runtime') << 
+      _('src/main/webapp/WEB-INF/da-launcher/logs') << 
+      _('src/main/webapp/WEB-INF/da-launcher/osgi-framework') << 
+      _('src/main/webapp/WEB-INF/lib') << 
+      _('src/main/webapp/WEB-INF/classes')
     
     # clean exploded files, too
     clean(["psc:osgi-layer:da_launcher_artifacts"]) {
