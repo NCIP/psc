@@ -11,16 +11,16 @@
 	in the '/osgi-framework/about.txt' file.
 	-->
     <!-- <framework name="equinox" version="3.4.0" /> -->
-	<!--<framework name="felix" version="1.4.1" />-->
+    <!-- <framework name="felix" version="1.4.1" /> -->
     <framework name="knopflerfish" version="2.2.0" />
 	
 	<!-- Defines Framework specific properties that will be passed to the Framework when starting it. (e.g., 'felix.log.level', 'osgi.context.bootdelegation', etc.) -->
 	<framework-properties>
 		<!--<property name="felix.log.level" value="0" />
 		<property name="felix.embedded.execution">true</property>-->
-		<property name="org.knopflerfish.consoletelnet.port">7223</property>
-		<property name="osgi.shell.telnet.port">7224</property>
-        
+		<property name="org.knopflerfish.consoletelnet.port">7224</property>
+		<property name="osgi.shell.telnet.port">7223</property>
+
         <!-- net.sf.cglib is included because the Membrane needs to be able to create proxies in any OSGi bundle -->
         <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.*,net.sf.cglib.*</property>
 	</framework-properties>

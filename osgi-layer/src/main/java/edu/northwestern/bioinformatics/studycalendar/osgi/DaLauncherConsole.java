@@ -47,6 +47,7 @@ public class DaLauncherConsole {
         }
         if (startCount == 0) {
             System.out.println("No telnet bundles were startable.");
+            System.exit(1);
         } else {
             System.out.println("Telnet console now available.  Press ^C to end.");
         }

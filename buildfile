@@ -348,16 +348,16 @@ define "psc" do
       equinox_main = artifact(EQUINOX.osgi)
 
       if true # knopflerfish?
-        system_optional = [KNOPFLERFISH.consoletelnet]
-        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional
+        system_optional = [FELIX.shell_remote]
+        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
         osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
       elsif false # felix?
         system_optional = [FELIX.shell_remote]
         system_bundles = FELIX.values - [FELIX.main] - system_optional
         osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
       else
-        system_optional = [FELIX.shell, FELIX.shell_remote]
-        system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional
+        system_optional = [FELIX.shell_remote]
+        system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional + [FELIX.shell]
         osgi_framework = { "osgi-framework/equinox/#{equinox_main.version.split('.')[0 .. 2].join('.')}" => [equinox_main] }
       end
       
