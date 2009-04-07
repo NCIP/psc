@@ -54,7 +54,7 @@ public class DeltaIteratorTest extends DomainTestCase {
         expect(templateService.findEquivalentChild(s, plannedActivityDelta.getNode())).andReturn(null);
         expect(templateService.findEquivalentChild(s, plannedActivityLabelDelta.getNode())).andReturn(plannedActivityLabelDelta.getNode());
         replayMocks();
-        DeltaIterator di = new DeltaIterator(listOfDeltas, s, templateService);
+        DeltaIterator di = new DeltaIterator(listOfDeltas, s, templateService, false);
 
         assertSame("studyDelta is not the first element", studyDelta, di.next());
         assertSame("epochDelta is not the second element", epochDelta, di.next());
@@ -64,8 +64,56 @@ public class DeltaIteratorTest extends DomainTestCase {
         verifyMocks();
     }
 
+    public void testDetailOrderReversed(){
+        Study s = Fixtures.createReleasedTemplate();
+        Period period = Fixtures.createPeriod("period1", 1, 10, 2);
+        PlannedActivity plannedActivity = Fixtures.createPlannedActivity("activity", 3);
+        PlannedActivityLabel plannedActivityLabel = Fixtures.createPlannedActivityLabel("label");
+        period.addPlannedActivity(plannedActivity);
+        plannedActivity.addPlannedActivityLabel(plannedActivityLabel);
+        s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).getPeriods().add(period);
+
+        Delta studyDelta = Delta.createDeltaFor(s.getPlannedCalendar().getStudy());
+        Delta epochDelta = Delta.createDeltaFor(s.getPlannedCalendar().getEpochs().get(0));
+        Delta studySegmentDelta = Delta.createDeltaFor(s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1));
+        Delta periodDelta = Delta.createDeltaFor(s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).
+                getPeriods().last());
+        Delta plannedActivityDelta = Delta.createDeltaFor(s.getPlannedCalendar().getEpochs().get(0).
+                getStudySegments().get(0).getPeriods().first().getPlannedActivities().get(0));
+        Delta plannedActivityLabelDelta = Delta.createDeltaFor(s.getPlannedCalendar().getEpochs().get(0).
+                getStudySegments().get(0).getPeriods().first().getPlannedActivities().get(0).getPlannedActivityLabels().first());
+
+        List<Delta<?>> listOfDeltas = new ArrayList<Delta<?>>();
+        listOfDeltas.add(plannedActivityDelta);
+        listOfDeltas.add(periodDelta);
+        listOfDeltas.add(epochDelta);
+        listOfDeltas.add(studyDelta);
+        listOfDeltas.add(studySegmentDelta);
+        listOfDeltas.add(plannedActivityLabelDelta);
+
+        expect(templateService.findEquivalentChild(s, studyDelta.getNode())).andReturn(s);
+        expect(templateService.findEquivalentChild(s, periodDelta.getNode())).andReturn(null);
+        expect(templateService.findEquivalentChild(s, epochDelta.getNode())).andReturn(epochDelta.getNode());
+        expect(templateService.findEquivalentChild(s, studySegmentDelta.getNode())).andReturn(studySegmentDelta.getNode());
+        expect(templateService.findEquivalentChild(s, plannedActivityDelta.getNode())).andReturn(null);
+        expect(templateService.findEquivalentChild(s, plannedActivityLabelDelta.getNode())).andReturn(plannedActivityLabelDelta.getNode());
+
+        replayMocks();
+
+        DeltaIterator di = new DeltaIterator(listOfDeltas, s, templateService, true);
+
+        assertSame("studyDelta is not the first element", plannedActivityLabelDelta, di.next());
+        assertSame("epochDelta is not the second element", studySegmentDelta, di.next());
+        assertSame("studySegmentDelta is not the third element", epochDelta, di.next());
+        assertSame("periodDelta is not the forth element", studyDelta, di.next());
+        assertFalse("deltaIterator has more elements ", di.hasNext());
+        verifyMocks();
+    }
+
+
+
     public void testDetailOrderWithEmptyList(){
-        assertFalse(new DeltaIterator(Collections.<Delta<?>>emptyList()).hasNext());
+        assertFalse(new DeltaIterator(Collections.<Delta<?>>emptyList(), null, null, false).hasNext());
     }
 
     public void testRemoveDetachedNodesWhileIterating() {
@@ -87,9 +135,8 @@ public class DeltaIteratorTest extends DomainTestCase {
         expect(templateService.findEquivalentChild(s, ss2.getNode())).andReturn(ss2.getNode());
 
         replayMocks();
-        DeltaIterator di = new DeltaIterator(deltaList, s, templateService);
+        DeltaIterator di = new DeltaIterator(deltaList, s, templateService, false);
         List<Delta> encountered = new LinkedList<Delta>();
-
         while (di.hasNext()) {
             Delta delta = di.next();
             encountered.add(delta);

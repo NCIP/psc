@@ -101,7 +101,7 @@ public class DeltaService {
      */
     public void apply(Study target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
-        DeltaIterator di = new DeltaIterator(revision.getDeltas(), target, templateService);
+        DeltaIterator di = new DeltaIterator(revision.getDeltas(), target, templateService, false);
         while (di.hasNext()){
             Delta<?> delta = di.next();
             Changeable affected = findNodeForDelta(target, delta);
@@ -114,9 +114,9 @@ public class DeltaService {
 
     public void revert(Study target, Revision revision) {
         log.debug("Reverting {} from {}", revision, target);
-        List<Delta<?>> reverseDeltas = new ArrayList<Delta<?>>(revision.getDeltas());
-        Collections.reverse(reverseDeltas);
-        for (Delta<?> delta : reverseDeltas) {
+        DeltaIterator di = new DeltaIterator(revision.getDeltas(), target, templateService, true);
+        while (di.hasNext()) {
+            Delta<?> delta = di.next();
             Changeable affected = findNodeForDelta(target, delta);
             List<Change> reverseChanges = new ArrayList<Change>(delta.getChanges());
             Collections.reverse(reverseChanges);
@@ -129,7 +129,7 @@ public class DeltaService {
 
     private void apply(ScheduledCalendar target, Revision revision) {
         log.debug("Applying {} to {}", revision, target);
-        DeltaIterator di = new DeltaIterator(revision.getDeltas(),  target.getAssignment().getStudySite().getStudy(), templateService);
+        DeltaIterator di = new DeltaIterator(revision.getDeltas(),  target.getAssignment().getStudySite().getStudy(), templateService, false);
         while (di.hasNext()){
             Delta<?> delta = di.next();
             Changeable affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);

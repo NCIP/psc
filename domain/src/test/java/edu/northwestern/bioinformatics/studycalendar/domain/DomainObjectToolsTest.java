@@ -148,6 +148,16 @@ public class DomainObjectToolsTest extends DomainTestCase {
         assertSame(PlannedActivity.class, domainClasses.get(3));
     }
 
+    @SuppressWarnings({"RedundantArrayCreation"})
+    public void testDetailOrdererComparatorReversed() {
+        List<Class> domainClasses = Arrays.asList(new Class[] { Epoch.class, PlannedActivity.class, Period.class, StudySegment.class });
+        Collections.sort(domainClasses, DomainObjectTools.DETAIL_ORDER_REVERSED_COMPARATOR);
+        assertSame(PlannedActivity.class, domainClasses.get(0));
+        assertSame(Period.class, domainClasses.get(1));
+        assertSame(StudySegment.class, domainClasses.get(2));
+        assertSame(Epoch.class, domainClasses.get(3));
+    }
+
     public void testDetailOrderingComparatorForMap() {
         Map<Class, String> map = new TreeMap<Class, String>(DomainObjectTools.DETAIL_ORDER_COMPARATOR);
         map.put(PlannedActivity.class, "pa");
@@ -167,6 +177,27 @@ public class DomainObjectToolsTest extends DomainTestCase {
 
     }
 
+
+   public void testDetailOrderingComparatorReversedForMap() {
+        Map<Class, String> map = new TreeMap<Class, String>(DomainObjectTools.DETAIL_ORDER_REVERSED_COMPARATOR);
+        map.put(PlannedActivity.class, "pa");
+        map.put(Epoch.class, "epoch");
+        map.put(Period.class, "period");
+        map.put(PlannedActivityLabel.class, "pal");
+        map.put(StudySegment.class, "studySegment");
+        map.put(Study.class, "study");
+
+        Iterator<String> iterator = map.values().iterator();
+        assertSame("Fist Element wrong ", "pal", iterator.next());
+        assertSame("Second Element wrong ", "pa", iterator.next());
+        assertSame("Third Element wrong ", "period", iterator.next());
+        assertSame("Fourth Element wrong ", "studySegment", iterator.next());
+        assertSame("Fifth Element wrong ", "epoch", iterator.next());
+        assertSame("Six Element wrong ", "study", iterator.next());
+
+    }
+
+    
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {
         assertTrue(moreSpecific.getName() + " should be more specific than " + lessSpecific.getName(), DomainObjectTools.isMoreSpecific(moreSpecific, lessSpecific));
         assertFalse(lessSpecific.getName() + " should be less specific than " + moreSpecific.getName(), DomainObjectTools.isMoreSpecific(lessSpecific, moreSpecific));

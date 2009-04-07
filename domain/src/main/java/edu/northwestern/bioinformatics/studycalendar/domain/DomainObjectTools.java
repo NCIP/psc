@@ -36,6 +36,7 @@ public class DomainObjectTools {
         ScheduledActivity.class
     );
     public static final Comparator<? super Class> DETAIL_ORDER_COMPARATOR = new ByDetailOrder();
+    public static final Comparator<? super Class> DETAIL_ORDER_REVERSED_COMPARATOR = new ByDetailOrderReversed();
 
     public static <T extends DomainObject> Map<Integer, T> byId(List<T> objs) {
         Map<Integer, T> map = new LinkedHashMap<Integer, T>();
@@ -104,6 +105,13 @@ public class DomainObjectTools {
         @SuppressWarnings({"unchecked"})
         public int compare(Class o1, Class o2) {
             return detailOf(o1) - detailOf(o2);
+        }
+    }
+
+    private static class ByDetailOrderReversed implements Comparator<Class> {
+        @SuppressWarnings({"unchecked"})
+        public int compare(Class o1, Class o2) {
+            return detailOf(o2) - detailOf(o1);
         }
     }
 }

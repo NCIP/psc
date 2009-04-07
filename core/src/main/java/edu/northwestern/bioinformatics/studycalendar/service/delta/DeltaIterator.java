@@ -20,15 +20,12 @@ public class DeltaIterator implements Iterator<Delta> {
     private Iterator<Delta<?>> currentList;
     private Study study;
     private TemplateService templateService;
-
-    public DeltaIterator(List<Delta<?>> deltas) {
-        this.lists = getDeltaLists(deltas).iterator();
-        this.currentList = null;
-    }
+    private Boolean forRevert;
 
 
-    public DeltaIterator(List<Delta<?>> deltas, Study study, TemplateService templateService) {
-        this.lists = getDeltaLists(deltas).iterator();
+    public DeltaIterator(List<Delta<?>> deltas, Study study, TemplateService templateService, Boolean forRevert) {
+        this.forRevert = forRevert;
+        this.lists = getDeltaLists(deltas, forRevert).iterator();
         this.currentList = null;
         this.study = study;
         this.templateService = templateService;
@@ -49,8 +46,13 @@ public class DeltaIterator implements Iterator<Delta> {
         return currentList != null && currentList.hasNext();
     }
 
-    private Collection<List<Delta<?>>> getDeltaLists(List<Delta<?>> deltas) {
-        Map<Class, List<Delta<?>>> map = new TreeMap<Class, List<Delta<?>>>(DomainObjectTools.DETAIL_ORDER_COMPARATOR);
+    private Collection<List<Delta<?>>> getDeltaLists(List<Delta<?>> deltas, Boolean forRevert) {
+        Map<Class, List<Delta<?>>> map;
+        if (forRevert) {
+            map = new TreeMap<Class, List<Delta<?>>>(DomainObjectTools.DETAIL_ORDER_REVERSED_COMPARATOR);
+        } else {
+            map = new TreeMap<Class, List<Delta<?>>>(DomainObjectTools.DETAIL_ORDER_COMPARATOR);
+        }
 
         for (Delta<?> delta : deltas) {
             addToMap(delta, map);
