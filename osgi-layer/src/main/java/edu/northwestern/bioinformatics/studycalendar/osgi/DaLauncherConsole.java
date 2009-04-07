@@ -15,7 +15,8 @@ import java.util.Collection;
  */
 public class DaLauncherConsole {
     private static final Collection<String> TELNET_BUNDLES = Arrays.asList(
-        "org.knopflerfish.bundle.consoletelnet-IMPL"
+        "org.knopflerfish.bundle.consoletelnet-IMPL",
+        "org.apache.felix.org.apache.felix.shell.remote"
     );
 
     public static void main(String[] args) {
