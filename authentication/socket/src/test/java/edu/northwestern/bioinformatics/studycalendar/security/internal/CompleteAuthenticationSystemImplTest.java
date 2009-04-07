@@ -52,4 +52,10 @@ public class CompleteAuthenticationSystemImplTest extends AuthenticationTestCase
             assertEquals("Wrong cause", expectedCause, ce.getCause());
         }
     }
+
+    public void testNullUpdatesNotPropagated() throws Exception {
+        replayMocks();
+        impl.updated(null);
+        verifyMocks();
+    }
 }

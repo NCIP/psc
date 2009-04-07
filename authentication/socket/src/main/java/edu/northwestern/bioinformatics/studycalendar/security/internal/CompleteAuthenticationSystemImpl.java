@@ -25,14 +25,16 @@ public class CompleteAuthenticationSystemImpl extends MultipleFilterFilter imple
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void updated(Dictionary dictionary) throws ConfigurationException {
         log.debug("Updating authentication system with {}", dictionary);
-        authenticationSystemConfiguration.updated(dictionary);
-        try {
-            log.info("Initializing authentication system plugin from bundle {}",
-                dictionary.get(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey()));
-            authenticationSystemConfiguration.getAuthenticationSystem();
-        } catch (StudyCalendarUserException scue) {
-            throw new ConfigurationException("Unknown", 
-                "Problem initializing authentication system: " + scue.getMessage(), scue);
+        if (dictionary != null) {
+            authenticationSystemConfiguration.updated(dictionary);
+            try {
+                log.info("Initializing authentication system plugin from bundle {}",
+                    dictionary.get(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM.getKey()));
+                authenticationSystemConfiguration.getAuthenticationSystem();
+            } catch (StudyCalendarUserException scue) {
+                throw new ConfigurationException("Unknown",
+                    "Problem initializing authentication system: " + scue.getMessage(), scue);
+            }
         }
     }
 
