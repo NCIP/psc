@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarApplicationContextBuilder;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import javax.servlet.ServletContext;
 
@@ -43,11 +43,16 @@ public class StudyCalendarTestWebApplicationContextBuilder {
     }
 
     private static XmlWebApplicationContext createPscWebApplicationContext(ServletContext servletContext, String[] configLocations) {
-        ApplicationContext parent = StudyCalendarTestCase.getDeployedApplicationContext();
+        int coreCount = StudyCalendarApplicationContextBuilder.DEPLOYED_CONFIG_LOCATIONS.length;
+        String[] loc = new String[coreCount + configLocations.length];
+        System.arraycopy(
+            StudyCalendarApplicationContextBuilder.DEPLOYED_CONFIG_LOCATIONS, 0,
+            loc, 0, coreCount);
+        System.arraycopy(
+            configLocations, 0, loc, coreCount, configLocations.length);
         XmlWebApplicationContext context = new XmlWebApplicationContext();
-        context.setParent(parent);
         context.setServletContext(servletContext);
-        context.setConfigLocations(configLocations);
+        context.setConfigLocations(loc);
         context.refresh();
         return context;
     }
