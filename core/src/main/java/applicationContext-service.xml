@@ -103,5 +103,5 @@
 
     <!-- DATA PROVIDERS -->
 
-    <bean id="siteProvider" class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteProviderAdapter"/>
+    <bean id="siteProvider" class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteProviderAdapter" autowire="byName"/>
 </beans>

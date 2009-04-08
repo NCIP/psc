@@ -17,6 +17,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.security</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.security.plugin</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.dataproviders.api</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain</value>
 
                 <value>gov.nih.nci.cabig.ctms.tools.configuration</value>
                 <value>org.acegisecurity</value>
