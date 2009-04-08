@@ -29,7 +29,7 @@ public class MailMessageFactory implements ServletContextAware {
     public ExceptionMailMessage createExceptionMailMessage(Throwable exception, HttpServletRequest request) {
         List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
         if (to == null) {
-            log.error("Uncaught exception encountered, but report e-mail messages not configured.  To turn them on, set at least one address for the mailExceptionsTo property.");
+            log.error("Uncaught exception encountered, but report e-mail messages not configured.  To turn them on, set at least one address for the mailExceptionsTo property.", exception);
             return null;
         } else {
             ExceptionMailMessage message = configureMessage(new ExceptionMailMessage());
