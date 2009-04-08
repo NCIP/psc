@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;

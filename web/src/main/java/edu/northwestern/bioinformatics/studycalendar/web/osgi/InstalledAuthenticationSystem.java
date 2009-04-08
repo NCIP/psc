@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.web.filters.FilterAdapter;

@@ -22,6 +22,7 @@ public class StudyCalendarApplicationContextBuilder {
         "classpath:applicationContext-service.xml"        ,
         "classpath:applicationContext-setup.xml"          ,
         "classpath:applicationContext-spring.xml"         ,
+        "classpath:applicationContext-core-osgi.xml"
     };
 
     private static ApplicationContext applicationContext = null;

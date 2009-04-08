@@ -321,8 +321,9 @@ define "psc" do
     compile.with project('domain').and_dependencies,
       project('providers:mock').and_dependencies,
       project('database').and_dependencies,
+      project('utility:osgimosis').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
-      QUARTZ, SECURITY, SLF4J.jcl,
+      QUARTZ, SECURITY, OSGI, SLF4J.jcl,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target, 
@@ -446,7 +447,6 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      project('utility:osgimosis').and_dependencies,
       SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
 
     test.with project('test-infrastructure').and_dependencies, 

@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerTools;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
 import org.slf4j.Logger;

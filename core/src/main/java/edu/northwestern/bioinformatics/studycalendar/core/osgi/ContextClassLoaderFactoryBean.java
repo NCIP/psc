@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.osgi;
+package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import org.springframework.beans.factory.FactoryBean;
 

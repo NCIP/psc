@@ -12,6 +12,7 @@
         <param-value>
             <!-- core -->
             classpath:applicationContext-api.xml
+            classpath:applicationContext-core-osgi.xml
             classpath:applicationContext-dao.xml
             classpath:applicationContext-db.xml
             classpath:applicationContext-mail.xml
@@ -22,7 +23,7 @@
             classpath:applicationContext-spring.xml
             <!-- web -->
             classpath:applicationContext-command.xml
-            classpath:applicationContext-osgi.xml
+            classpath:applicationContext-web-osgi.xml
             classpath:applicationContext-webflow.xml
         </param-value>
     </context-param>

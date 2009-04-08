@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.osgi;
+package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;

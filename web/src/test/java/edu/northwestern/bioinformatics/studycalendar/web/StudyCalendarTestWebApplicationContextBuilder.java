@@ -17,8 +17,8 @@ public class StudyCalendarTestWebApplicationContextBuilder {
         return createPscWebApplicationContext(servletContext, new String[] {
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
-            "classpath:applicationContext-osgi.xml",
-            "classpath:applicationContext-testing-osgi.xml",
+            "classpath:applicationContext-web-osgi.xml",
+            "classpath:applicationContext-web-testing-osgi.xml",
         });
     }
 
@@ -26,7 +26,7 @@ public class StudyCalendarTestWebApplicationContextBuilder {
         return createPscWebApplicationContext(servletContext, new String[] {
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
-            "classpath:applicationContext-osgi.xml"
+            "classpath:applicationContext-web-osgi.xml"
         });
     }
 

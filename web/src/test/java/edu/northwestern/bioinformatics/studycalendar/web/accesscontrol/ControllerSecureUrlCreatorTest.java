@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.OsgiLayerTools;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.TransparentMembrane;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 import static org.easymock.EasyMock.*;

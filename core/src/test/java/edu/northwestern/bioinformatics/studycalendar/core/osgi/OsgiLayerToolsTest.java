@@ -1,12 +1,12 @@
-package edu.northwestern.bioinformatics.studycalendar.web.osgi;
+package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.mock.MockServiceReference;
-import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
