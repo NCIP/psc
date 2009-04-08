@@ -308,6 +308,19 @@ define "psc" do
       test.with UNIT_TESTING
       package(:jar)
     end
+    
+    desc "Commands for interacting with the providers from the felix console"
+    define "felix-commands" do
+      compile.with FELIX.shell, OSGI.core,
+        project('providers:api').and_dependencies
+      test.with UNIT_TESTING, project('domain').test_dependencies
+
+      bnd.wrap!
+      bnd.name = "PSC data provider commands"
+      bnd['Bundle-Activator'] = 
+        "edu.northwestern.bioinformatics.studycalendar.dataproviders.commands.Activator"
+      package(:jar)
+    end
   end
   
   desc "Core data access, serialization and non-substitutable business logic"
