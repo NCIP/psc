@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:osgi="http://www.springframework.org/schema/osgi"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/osgi
+        http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-2.5.xsd
+        ">
+
+    <osgi:service id="mockSiteProviderRegistration" ref="mockSiteProvider">
+        <osgi:interfaces>
+            <value>edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="service.ranking">
+                <util:constant static-field="java.lang.Integer.MIN_VALUE"/>
+            </entry>
+        </osgi:service-properties>
+    </osgi:service>
+
+</beans>

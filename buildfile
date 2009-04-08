@@ -294,12 +294,16 @@ define "psc" do
   define "providers" do
     desc "The interfaces under which data providers expose data"
     define "api" do
+      bnd.wrap!
+      bnd.name = "PSC data providers API"
       compile.with project('domain').and_dependencies
       package(:jar)
     end
     
     desc "Mock data providers with static data"
     define "mock" do
+      bnd.wrap!
+      bnd.name = "PSC mock data providers"
       compile.with project('providers:api').and_dependencies, SPRING
       test.with UNIT_TESTING
       package(:jar)
@@ -319,7 +323,7 @@ define "psc" do
     )
     
     compile.with project('domain').and_dependencies,
-      project('providers:mock').and_dependencies,
+      project('providers:api').and_dependencies,
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
