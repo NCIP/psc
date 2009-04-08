@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Pe
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
+import java.util.List;
 import java.awt.*;
 
 /**
@@ -22,6 +22,10 @@ public class PersonServiceImpl implements PersonService {
 
     public Collection<Person> createSeveral() {
         return Arrays.asList(createArray());
+    }
+
+    public List<Person> createList() {
+        return new LinkedList<Person>(createSeveral());
     }
 
     public Person[] createArray() {

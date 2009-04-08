@@ -20,10 +20,18 @@ public class EncapsulatedIterator<T> implements Iterator<T> {
 
     @SuppressWarnings({ "unchecked" })
     public T next() {
-        return (T) membrane.farToNear(farIterator.next());
+        return (T) getMembrane().farToNear(farIterator.next());
     }
 
     public void remove() {
         farIterator.remove();
+    }
+    
+    protected Iterator<?> getFarIterator() {
+        return farIterator;
+    }
+
+    protected Membrane getMembrane() {
+        return membrane;
     }
 }

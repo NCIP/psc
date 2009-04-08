@@ -116,11 +116,15 @@ public class EncapsulatedCollection<E> implements Collection<E> {
 
     //////
 
-    private Object nearToFar(Object element) {
+    protected Membrane getMembrane() {
+        return membrane;
+    }
+
+    protected Object nearToFar(Object element) {
         return membrane.traverse(element, guessFarLoader());
     }
 
-    private ClassLoader guessFarLoader() {
+    protected ClassLoader guessFarLoader() {
         if (farCollection.isEmpty()) {
             // TODO: this is probably insufficient
             return Object.class.getClassLoader();

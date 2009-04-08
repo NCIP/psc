@@ -13,31 +13,22 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class EncapsulatedCollectionTest extends OsgimosisTestCase {
-    private Membrane membrane;
+public class EncapsulatedCollectionTest extends EncapsulatedCollectionTestCase {
     private List<Object> farCollection;
     private EncapsulatedCollection<Person> encapsulated;
     private DefaultPerson nearPolo, nearAlexander, nearVespucci;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         farCollection = new LinkedList<Object>(Arrays.asList(
             farPerson("Polo"),
             farPerson("Alexander")
         ));
-        membrane = new Membrane(Thread.currentThread().getContextClassLoader(),
-            "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
         encapsulated = new EncapsulatedCollection<Person>(farCollection, membrane);
         nearPolo = new DefaultPerson("Polo", "traveler");
         nearAlexander = new DefaultPerson("Alexander", "traveler");
         nearVespucci = new DefaultPerson("Vespucci", "traveler");
-    }
-
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
-    private Object farPerson(String name) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor cons = classFromLoader(DefaultPerson.class, loaderA).getConstructor(String.class, String.class);
-        return cons.newInstance(name, "traveler");
     }
 
     public void testSizeIsCorrect() throws Exception {

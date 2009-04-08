@@ -36,7 +36,9 @@ public class DefaultEncapsulatorCreator {
     }
 
     public Encapsulator create() {
-        if (Collection.class.isAssignableFrom(farClass)) {
+        if (List.class.isAssignableFrom(farClass)) {
+            return new ListEncapsulator(membrane);
+        } else if (Collection.class.isAssignableFrom(farClass)) {
             return new CollectionEncapsulator(membrane);
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
