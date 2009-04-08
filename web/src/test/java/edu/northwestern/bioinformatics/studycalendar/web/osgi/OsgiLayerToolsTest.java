@@ -53,4 +53,24 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
                 scse.getMessage());
         }
     }
+    
+    public void testGetNonRequiredServiceWhenAvailable() throws Exception {
+        ServiceReference expectedRef = new MockServiceReference();
+        Object expectedFarService = new Object(), expectedNearService = new Object();
+        expect(bundleContext.getServiceReference(SERVICE_NAME)).andReturn(expectedRef);
+        expect(bundleContext.getService(expectedRef)).andReturn(expectedFarService);
+        expect(membrane.farToNear(expectedFarService)).andReturn(expectedNearService);
+        replayMocks();
+
+        assertSame(expectedNearService, tools.getOptionalService(SERVICE_NAME));
+        verifyMocks();
+    }
+
+    public void testGetNonRequiredServiceNotAvailable() throws Exception {
+        expect(bundleContext.getServiceReference(SERVICE_NAME)).andReturn(null);
+        replayMocks();
+
+        assertNull(tools.getOptionalService(SERVICE_NAME));
+        verifyMocks();
+    }
 }

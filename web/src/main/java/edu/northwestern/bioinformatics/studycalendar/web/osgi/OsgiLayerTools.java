@@ -43,10 +43,22 @@ public class OsgiLayerTools {
     }
 
     public Object getRequiredService(String serviceName) {
+        return getService(serviceName, true);
+    }
+
+    public Object getOptionalService(String serviceName) {
+        return getService(serviceName, false);
+    }
+
+    private Object getService(String serviceName, boolean required) {
         ServiceReference ref = bundleContext.getServiceReference(serviceName);
         if (ref == null) {
-            throw new StudyCalendarSystemException(
-                "Service %s not available in the OSGi layer", serviceName);
+            if (required) {
+                throw new StudyCalendarSystemException(
+                    "Service %s not available in the OSGi layer", serviceName);
+            } else {
+                return null;
+            }
         }
         return membrane.farToNear(bundleContext.getService(ref));
     }
