@@ -1,8 +1,40 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
+    <style type="text/css">
+        table.siteTable {
+            width: 100%; border: 1px; background-color:#ddd ;
+        }
+        table.siteTable td, table.siteTable th {
+            white-space: nowrap; padding: 1px; height:16pt;
+        }
+        div.sites {
+            overflow: auto;
+            width :40em; height: 30em;
+            position :relative; margin-left: 11em;
+        }
+        table.siteTable  thead{ font-weight: bold; color: white; background-color: navy; }
+    </style>
+    <tags:javascriptLink name="sites/providedSites" />
+    <tags:javascriptLink name="resig-templates" />
+    <tags:resigTemplate id="new_site_data_row">
+        <tr class="site row [#= identifier #]">
+            <td title="[#= name #]" class="siteName[#= identifier #]" id="siteName[#= identifier #]" >
+                [#= name #]
+            </td>
+            <td title="[#= identifier #]" class="assignedIdentifier[#= identifier #]" id="assignedIdentifier[#= identifier #]">
+                [#= identifier #]
+            </td>
+        </tr>
+    </tags:resigTemplate>
+    <tags:resigTemplate id="new_site_control">
+            <td id="control [#= identifier #]">
+                <input id="Add[#= identifier #]" type="button" name="AddButton" value="Add" onclick="SC.PS.addNewSiteSetup('[#= identifier #]')"/>
+            </td>
+    </tags:resigTemplate>
     <title>Create the first site</title>
 </head>
 <body>
@@ -30,14 +62,20 @@
             <input type="hidden" name="_eventId" value="save"/>
             <div class="row">
                 <div class="label"><form:label path="name">Site name</form:label></div>
-                <div class="value"><form:input path="name" size="40"/></div>
+                <div class="value"><form:input path="name" size="40" id="site-name"/></div>
                 <div Class="label"><form:label path="assignedIdentifier">Assigned Identifier</form:label></div>
-                <div class="value"><form:input path="assignedIdentifier" size="40"/></div>
+                <div class="value"><form:input path="assignedIdentifier" size="40" id="assigned-Identifier"/></div>
             </div>
             <div class="row submit">
                 <input type="submit" value="Save"/>
             </div>
         </form:form>
+        <div class="row">
+            <div class="sites">
+                <table id="providedSitesTable" class="siteTable" cellspacing="0" cellpadding="0" border="1">
+                </table>
+           </div>
+        </div>
     </laf:division>
 </laf:box>
 

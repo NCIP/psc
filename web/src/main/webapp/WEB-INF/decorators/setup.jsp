@@ -25,6 +25,9 @@
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
     </style>
+    <script type="text/javascript">
+      var INTERNAL_URI_BASE_PATH = '<c:url value="/"/>'
+    </script>
     <decorator:head/>
   </head>
   <body>
