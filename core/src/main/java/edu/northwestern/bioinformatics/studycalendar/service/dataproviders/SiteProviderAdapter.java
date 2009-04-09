@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvi
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,7 @@ public class SiteProviderAdapter implements SiteProvider {
     }
 
     /////// CONFIGURATION
-
+    @Required
     public void setOsgiLayerTools(OsgiLayerTools tools) {
         this.osgiLayerTools = tools;
     }
