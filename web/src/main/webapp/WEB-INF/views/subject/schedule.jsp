@@ -4,6 +4,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sched" tagdir="/WEB-INF/tags/schedule" %>
+
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<tags:escapedUrl var="collectionResource" value="api~v1~scheduling~subject~${subject.gridId}~partial"/>
+
 <html>
 <head>
     <title>Comprehensive Subject Schedule</title>
@@ -15,6 +21,12 @@
     <tags:javascriptLink name="jquery/ui.accordion"/>
     <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
     <script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.core.js"></script>
+
+
+
+<tags:stylesheetLink name="main"/>
+<tags:javascriptLink name="scheduled-activity"/>
+<tags:javascriptLink name="scheduled-activity-batch"/>
 
      <style type="text/css">
          .myaccordion {
@@ -41,7 +53,22 @@
         .myaccordion .accordionDiv .accordionA{
             padding: 0px;
             border: 0px;
-        }         
+        }
+
+        .myaccordion .value .delayAdvanceSelector {
+            color:#000000;
+            font-family:'Helvetica Neue',Arial,Helvetica,sans-serif;
+            font-size:10pt;
+            margin-bottom:1em;
+        }
+
+        .submitDelayOrAdvance {
+            margin-top: 2em;
+        }
+
+        .delayAdvanceHeader {
+            line-height: 2em;
+        }
 
     </style>
 
@@ -50,6 +77,36 @@
             jQuery("#accordion").accordion();
         });
 
+    function createDelayAdvanceForm(state) {
+        var shiftOption = $('delayAdvanceSelector').value
+        return Object.extend({
+            "reason": $('reason').value,
+            "toDate": shiftOption*$('toDate').value,
+            "currentDate": $(document.getElementById('currentDate')).value,
+            "state" : state
+        })
+    }
+
+    function postDelayAdvance(arrayOfActivities, state) {
+        SC.asyncRequest('${collectionResource}'+ arrayOfActivities, Object.extend({
+            method: 'POST',
+            parameters: createDelayAdvanceForm(state)
+        }))
+    }
+
+    function executeDelayAdvancePost() {
+        var arrayOfActivities='~';
+        <c:forEach items="${schedule.days}" var="day">
+            <c:if test="${not day['empty']}">
+                <c:if test="${not empty day.activities}">
+                    <c:forEach items="${day.activities}" var="sa">
+                        arrayOfActivities = arrayOfActivities+${sa.id}+';';
+                    </c:forEach>
+                </c:if>
+            </c:if>
+        </c:forEach>
+        postDelayAdvance(arrayOfActivities, 'scheduled')
+    }
     </script>
 
 </head>
@@ -135,17 +192,73 @@
     </div>
 </laf:box>
 <laf:box autopad="true" title="Scheduled activities" id="scheduled-activities-box">
-
     <%--TODO - move css to display.jsp, make accordion fit in the box--%>
     <div id="accordion" class="myaccordion">
       <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Legend </a></h3>
       </div>
       <div><sched:legend/> </div>
+
+      <%--Delay Or Advance Portion--%>
       <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Delay or Advance</a></h3>
       </div>
-      <div>slsdfskflsdfj </div>
+
+      <div class="content" style="display: none">
+            <laf:division>
+                <div class="value">
+                    <h4>Study:
+                    <c:if test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
+                        <select id="studySelector" class="delayAdvanceSelector">
+                            <option value="all" selected="true">All Studies </option>
+                            <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
+                                <option value="${row.id}">${row.name}</option>
+                            </c:forEach>
+                         </select>
+                     </c:if>
+                     <c:if test="${fn:length(schedule.studies) eq 1}">
+                        <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
+                            <input id="studyId" type="hidden" value="${row.id}"/>${row.name}
+                        </c:forEach>
+                     </c:if>
+                        
+
+
+                        <%--if we decide to delayOrAdvance study segment--%>
+                        <%--<c:if test="${not empty schedule.segmentRows}">--%>
+                            <%--<option value="all" selected="true"> Full Study </option>--%>
+                        <%--</c:if>--%>
+                        <%--<c:forEach items="${schedule.segmentRows}" var="row" varStatus="rowStatus">--%>
+                            <%--<c:forEach items="${row.segments}" var="segment" varStatus="segmentStatus">--%>
+                                <%--<option value="${segment.id}" <c:if test="${segment.id == selectedId}">selected</c:if>>${segment.name}</option>--%>
+                            <%--</c:forEach>--%>
+                        <%--</c:forEach>--%>
+
+
+                        <%--if we keep the perProtocol functionality, then the code is below--%>
+                         <%--<input id="toDate" size="5" path="toDate" value="7"/>--%>
+                            <%--day(s) as of date:  <input id="currentDate" path="currentDate" size="15"--%>
+                            <%--value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>" class="date"/>--%>
+                    <%--</select> --%>
+                    </h4>
+                </div>
+                <h4 class="delayAdvanceHeader">
+                    <select id="delayAdvanceSelector" name="delayAdvanceSelector">
+                        <option value="1" selected="true" >Delay</option>
+                        <option value="-1">Advance</option>
+                    </select> scheduled or conditional activities by <input id="toDate" size="5" path="toDate" value="7"/> day(s) as
+                    of date:  <input id="currentDate" path="currentDate" size="15" value="" class="date"/>
+                    <a href="#" id="currentDate-calbutton">
+                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                    </a>
+                    Reason: <input id="reason" class="reason" path="reason" value=""/>
+                    
+                </h4>
+                <h4><input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/><tags:activityIndicator id="indicator"/></h4>
+            </laf:division>
+       </div>
+
+      <%--Mark Portion  --%>
       <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Mark</a></h3>
       </div>
