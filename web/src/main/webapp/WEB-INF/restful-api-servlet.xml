@@ -18,7 +18,7 @@
     </bean>
 
     <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
-        <property name="except" value="docs.*"/>
+        <property name="except" value="docs.*|providedSites.*"/>
         <property name="next" ref="router"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
@@ -154,6 +154,13 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SitesResource"
             >
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
+    </bean>
+    <bean name="/providedSites"
+          id="providedSitesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedSitesResource"
+            >
+        <property name="xmlSerializer" ref="siteXmlSerializer"/>
+        <property name="siteProvider"  ref="siteProvider" />
     </bean>
     <bean name="/sites/{site-identifier}/blackout-dates"
           id="blackoutDatesResource" autowire="byName" scope="prototype"
