@@ -539,6 +539,10 @@
         </property>
     </bean>
 
+    <bean name="/admin/manage/newProvidedSite" id="newProvidedSiteController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewProvidedSiteController">
+    </bean>
+
     <bean name="/admin/manage/deleteSite" id="deleteSiteController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.DeleteSiteController">
     </bean>

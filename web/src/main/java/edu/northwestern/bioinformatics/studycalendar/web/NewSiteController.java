@@ -51,8 +51,9 @@ public class NewSiteController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest, Object oCommand, Errors errors) throws Exception {
            NewSiteCommand command = (NewSiteCommand) oCommand;
            Map<String, Object> refdata = new HashMap<String, Object>();
+           refdata.put("sites",siteDao.getAll());
            refdata.put("action", "Create / Edit");
-           refdata.put("name",command.getSite());
+           refdata.put("name",command.getSite().getName());
            refdata.put("assignIdentifier",command.getSite().getAssignedIdentifier());
            return refdata;
        }
