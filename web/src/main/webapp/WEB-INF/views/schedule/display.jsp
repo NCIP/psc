@@ -13,7 +13,8 @@
 <tags:sassLink name="schedule"/>
 <tags:javascriptLink name="main"/>
 <tags:javascriptLink name="scheduled-activity"/>
-<tags:javascriptLink name="scheduled-activity-batch"/>
+<tags:javascriptLink name="scheduled-activity-batch-days-subheader"/>
+<tags:javascriptLink name="scheduled-activity-batch-modes"/>
 <style type="text/css">
     .epochs-and-studySegments, #next-studySegment-form {
         margin: 1em;
@@ -191,12 +192,6 @@
 
     #schedule-controls li {
         display: inline
-    }
-
-    .batch-schedule-link {
-        color: #0000cc;
-        cursor: pointer;
-        white-space: nowrap;
     }
 
     .box {

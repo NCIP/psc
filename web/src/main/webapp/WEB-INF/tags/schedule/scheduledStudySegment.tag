@@ -9,6 +9,7 @@
 <%@attribute name="modes" type="java.util.Collection" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
 
 
 <laf:box title="${studySegment.name}">
@@ -20,30 +21,7 @@
                 <h3>Modify selected activities</h3>
                 <div class="content">
                     <laf:division>
-                        <div class="links-row">
-                            Select Activities:
-                            <!-- TODO: why are these spans? (vs. anchors) -->
-                            <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
-                            <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
-                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>,
-                            <span id="check-all-past-due-events"  class="batch-schedule-link" href="#">Past due</span>
-                        </div>
-                        <br>
-                        <label id="new-mode-selector-group">
-                            <select name="newMode" id="new-mode-selector">
-                                <option value="-1">Select an action...</option>
-                                <option value="">Move the date</option>
-                                <option value="1">Mark/Keep as scheduled</option>
-                                <option value="2">Mark as occurred</option>
-                                <option value="3">Mark as canceled or NA</option>
-                                <option value="6">Mark as missed</option>
-                            </select>
-                        </label>
-                        <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="0" size="4"/> days.</label>
-                        <label id="move_date_by_new-date-input-group"> by <input type="text" name="moveDateOffset" value="0" size="4"/> days.</label>
-                        <label id="new-reason-input-group">
-                            Why? <input type="text" name="newReason"/>
-                        </label>
+                        <markTag:markActivity/>
                         <tags:activityIndicator id="batch-indicator"/>
                         <input type="submit" value="Submit" id="new-mode-submit"/>
                     </laf:division>
