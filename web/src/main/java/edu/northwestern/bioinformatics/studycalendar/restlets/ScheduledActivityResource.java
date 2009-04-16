@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -13,9 +14,15 @@ import org.restlet.Context;
 import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Saurabh Agrawal
@@ -23,9 +30,9 @@ import java.io.IOException;
 public class ScheduledActivityResource extends AbstractDomainObjectResource<ScheduledActivity> {
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private ScheduleService scheduleService;
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
-
-    private String badRequestBecause;
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override public boolean allowPost() { return true; }
 
@@ -34,6 +41,7 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     @Override
@@ -65,32 +73,51 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
     /**
      * Accepts a new scheduled activity state (date, status, and reason) to update the scheduled activity.
      *
-     * @param entity
+     * @param representation
      * @throws ResourceException
      */
     @Override
-    public void acceptRepresentation(final Representation entity) throws ResourceException {
-        if (entity.getMediaType() == MediaType.TEXT_XML) {
-            final ScheduledActivityState scheduledActivityState;
+    public void acceptRepresentation(final Representation representation) throws ResourceException {
+        ScheduledActivityState scheduledActivityState;
+        if (representation.getMediaType() == MediaType.TEXT_XML) {
             try {
-                scheduledActivityState = currentScheduledActivityStateXmlSerializer.readDocument(entity.getStream());
+                scheduledActivityState = currentScheduledActivityStateXmlSerializer.readDocument(representation.getStream());
             } catch (IOException e) {
                 log.warn("POST failed with IOException", e);
                 throw new ResourceException(e);
             } catch (StudyCalendarValidationException exp) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
-
-            if (scheduledActivityState == null) {
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request entity");
-            } else {
-                getRequestedObject().changeState(scheduledActivityState);
-                scheduledActivityDao.save(getRequestedObject());
-                getResponse().setStatus(Status.SUCCESS_CREATED);
-                getResponse().setLocationRef(getRequest().getOriginalRef());
+        } else if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
+            try {
+                JSONObject entity = new JSONObject(representation.getText());
+                JSONObject activityState = (JSONObject)(entity.get(getRequestedObject().getGridId()));
+                String state = activityState.get("state").toString();
+                String reason = activityState.get("reason").toString();
+                String dateString = activityState.get("date").toString();
+                try {
+                    Date date = formatter.parse(dateString);
+                    scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
+                } catch (ParseException pe) {
+                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Problem parsing date " +dateString);
+                }
+            } catch (JSONException e) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable entity", e);
+            } catch (IOException e) {
+                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not read entity", e);
             }
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
+            throw new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
+        }
+
+        if (scheduledActivityState == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request entity");
+        } else {
+            getRequestedObject().changeState(scheduledActivityState);
+            scheduledActivityDao.save(getRequestedObject());
+            getResponse().setStatus(Status.SUCCESS_CREATED);
+            getResponse().setLocationRef(getRequest().getOriginalRef());
         }
     }
 
@@ -104,6 +131,11 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
     @Required
     public void setScheduledActivityDao(final ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
+    }
+
+    @Required
+    public void setScheduleService(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 
     @Required

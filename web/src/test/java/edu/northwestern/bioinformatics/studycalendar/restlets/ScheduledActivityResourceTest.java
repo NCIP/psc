@@ -11,14 +11,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractScheduledActivityStateXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
+import org.restlet.ext.json.JsonRepresentation;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +35,7 @@ import java.util.List;
 public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledActivityResource> {
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private ScheduleService scheduleService;
 
     private StudySubjectAssignment assignment;
     private ScheduledActivity scheduledActivity;
@@ -38,10 +43,13 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        scheduleService = registerMockFor(ScheduleService.class);
         scheduledActivity = Fixtures.setId(12, Fixtures.createScheduledActivity("A", 2007, Calendar.MARCH, 4));
         scheduledActivity.setGridId("SA-GRID");
 
@@ -71,6 +79,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
         resource.setScheduledActivityDao(scheduledActivityDao);
         resource.setXmlSerializer(xmlSerializer);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
+        resource.setScheduleService(scheduleService);
         resource.setCurrentScheduledActivityStateXmlSerializer(currentScheduledActivityStateXmlSerializer);
         return resource;
     }
@@ -157,6 +166,55 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
         doPost();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void test400ForUnsupportedEntityContentType() throws Exception {
+        expectGetScheduledActivity();
+        request.setEntity("id = 1111", MediaType.TEXT_PLAIN);
+        doPost();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void testPostValidJSONRepresentation() throws Exception {
+        expectGetScheduledActivity();
+        JSONObject activityState = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
+        expectUpdateScheduledActivityState(activityState, new Canceled());
+        scheduledActivityDao.save(scheduledActivity);
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_CREATED);
+    }
+
+    public void testPostInvalidDateJSONRepresentation() throws Exception {
+        expectGetScheduledActivity();
+        createJSONFormatForRequest("canceled", "2008", "Just Canceled");
+        doPost();
+
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void testPostInvalidState() throws Exception {
+        expectGetScheduledActivity();
+        JSONObject activityState = createJSONFormatForRequest("canceledd", "2008-03-02", "Just Canceled");
+        expectUpdateScheduledActivityState(activityState,null);
+        doPost();
+
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+    private void expectUpdateScheduledActivityState(JSONObject object, ScheduledActivityState state) throws Exception {
+        expect(scheduleService.createScheduledActivityState(object.get("state").toString(), formatter.parse(object.get("date").toString()) ,object.get("reason").toString()))
+                .andReturn(state);
+    }
+
+    private JSONObject createJSONFormatForRequest(String state, String date, String reason) throws Exception {
+        JSONObject entity  = new JSONObject();
+        JSONObject activityState = new JSONObject();
+        activityState.put("reason", reason);
+        activityState.put("state", state);
+        activityState.put("date", date);
+        entity.put(scheduledActivity.getGridId(),activityState);
+        request.setEntity(new JsonRepresentation(entity));
+        return activityState;
     }
 
     private void expectGetScheduledActivity() {
