@@ -173,6 +173,20 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDateResource"
             >
     </bean>
+
+    <!-- Subject Centric Schedule -->
+    <bean name="/schedules/{subject-identifier}"
+          id="subjectCentricScheduleResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCentricScheduleResource">
+          <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
+    </bean>
+
+    <bean name="/schedules/{subject-identifier}/partial/{update-list}"
+          id="batchUpdatesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
+          <property name="xmlSerializer" ref="scheduledActivityXmlSerializer"/>
+    </bean>
+    
     <!--Users Role -->
     <bean name="/users/{username}/roles"
           id="userRolesResource" autowire="byName" scope="prototype"
