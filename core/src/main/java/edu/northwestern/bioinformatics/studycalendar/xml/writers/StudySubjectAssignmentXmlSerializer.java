@@ -15,7 +15,8 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<StudySubjectAssignment> {
     private AbstractStudyCalendarXmlSerializer<Subject> subjectXmlSerializer;
-
+    private ScheduledCalendarXmlSerializer scheduledCalendarXmlSerializer;
+    private Boolean subjectCentric = false;
     protected XsdElement rootElement() { return XsdElement.SUBJECT_ASSIGNMENT; }
     protected XsdElement collectionRootElement() { return XsdElement.SUBJECT_ASSIGNMENTS; }
 
@@ -29,9 +30,12 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
         ASSIGNMENT_SUBJECT_COORD.addTo(elt,  assignment.getSubjectCoordinator().getName());
         ASSIGNMENT_CURRENT_AMENDMENT.addTo(elt, assignment.getCurrentAmendment().getNaturalKey());
         ASSIGNMENT_ID.addTo(elt, assignment.getGridId());
-
-        elt.add(subjectXmlSerializer.createElement(assignment.getSubject()));
-
+        if (!subjectCentric) {
+            elt.add(subjectXmlSerializer.createElement(assignment.getSubject()));
+        }
+        if (subjectCentric) {
+            elt.add(scheduledCalendarXmlSerializer.createElement(assignment.getScheduledCalendar()));
+        }
         return elt;
     }
 
@@ -44,5 +48,13 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
     @Required
     public void setSubjectXmlSerializer(AbstractStudyCalendarXmlSerializer<Subject> subjectXmlSerializer) {
         this.subjectXmlSerializer = subjectXmlSerializer;
+    }
+
+    public void setSubjectCentric(Boolean subjectCentric) {
+        this.subjectCentric = subjectCentric;
+    }
+
+    public void setScheduledCalendarXmlSerializer(ScheduledCalendarXmlSerializer scheduledCalendarXmlSerializer) {
+        this.scheduledCalendarXmlSerializer = scheduledCalendarXmlSerializer;
     }
 }
