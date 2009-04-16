@@ -13,6 +13,11 @@ import org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint;
 import org.acegisecurity.ui.cas.ServiceProperties;
 import org.acegisecurity.ui.logout.LogoutFilter;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 
 /**
  * @author Rhett Sutphin
@@ -87,8 +92,15 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
 
     public void testInitializeLogoutFilter() throws Exception {
         doValidInitialize();
-        assertTrue("Wrong filter type", getSystem().logoutFilter() instanceof LogoutFilter);
-        // can't really test anything else because no properties are exposed.
+        Filter actual = getSystem().logoutFilter();
+        assertTrue("Wrong filter type", actual instanceof LogoutFilter);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/auth/logout");
+        // Expect filter chain not continued
+        FilterChain filterChain = registerMockFor(FilterChain.class);
+        replayMocks();
+        actual.doFilter(request, new MockHttpServletResponse(), filterChain);
+        verifyMocks();
     }
 
     public void testTokenAuthRequestReturnsTheWeirdThingThatCasProcessingFilterExpects() throws Exception {

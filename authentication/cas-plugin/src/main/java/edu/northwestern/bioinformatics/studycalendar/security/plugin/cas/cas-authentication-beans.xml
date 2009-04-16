@@ -50,6 +50,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
             </list>
         </constructor-arg>
+        <property name="filterProcessesUrl" value="/auth/logout"/>
     </bean>
 
     <bean id="serviceProperties" class="org.acegisecurity.ui.cas.ServiceProperties">
