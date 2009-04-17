@@ -200,8 +200,22 @@ Object.extend(Object.extend(Ajax.ResetableAutocompleter.prototype, Ajax.Autocomp
  */
 SC.FunctionalAutocompleter = Class.create(Autocompleter.Base, {
   initialize: function(element, update, fn, options) {
+    options.onHide = function(element, update){
+        if(! this.hasFocus) {
+            new Effect.Fade(update,{duration:0.15})
+        }
+    }.bind(this)
+
     this.baseInitialize(element, update, options);
     this.dataFunction = fn.bind(this);
+
+    Event.observe(this.update, 'focus', this.keepFocus.bindAsEventListener(this));
+    Event.observe(this.update, 'blur', this.onBlur.bindAsEventListener(this));
+  },
+
+  keepFocus: function() {
+    this.hasFocus = true;
+    this.active = true;
   },
 
   getUpdatedChoices: function() {
