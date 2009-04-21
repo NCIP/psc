@@ -31,8 +31,9 @@
          .myaccordion {
             position: absolute;
             right: 1em;
-            width: 20%;
-            height: 30em;
+            width: 21%;
+            height: 91%;
+
             font-size: 11pt;
             border: 1px solid #444;
             background-color: white;
@@ -67,6 +68,23 @@
 
         .delayAdvanceHeader {
             line-height: 2em;
+        }
+
+        .title-card {
+            position:relative;
+            width:70%;
+            border: 0pt;
+            padding: 0pt;
+        }
+
+        .card .value ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .card .value ul li {
+            list-style-type: none;
+            padding-bottom: 0.25em;
         }
 
     </style>
@@ -316,10 +334,10 @@
         <div class="accordionDiv">
           <h3><a class="accordionA" href="#">Population</a></h3>
         </div>
-        <div> </div>
+        <div class="content card title-card">
+            <markTag:population/>
+        </div>
     </div>
-
-
 
     <%--<sched:legend/>--%>
     <form id="batch-form">
