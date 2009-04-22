@@ -64,6 +64,8 @@ public class DefaultEncapsulatorCreator {
                     interfaces,
                     farClassLoader
                 );
+            } else {
+                log.trace(" - No shared base class or interfaces; not encapsulatable");
             }
         }
 
