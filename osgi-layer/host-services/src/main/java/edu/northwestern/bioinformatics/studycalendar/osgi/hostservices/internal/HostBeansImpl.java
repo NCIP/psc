@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,7 +81,11 @@ public class HostBeansImpl implements HostBeans {
                     "Cannot invoke method on host bean %s because it is not available yet", className);
             } else {
                 log.trace("Invoking {} on {}@{}", new Object[] { method, bean.getClass(), System.identityHashCode(bean) });
-                return method.invoke(bean, args);
+                try {
+                    return method.invoke(bean, args);
+                } catch (InvocationTargetException ite) {
+                    throw ite.getCause();
+                }
             }
         }
 
