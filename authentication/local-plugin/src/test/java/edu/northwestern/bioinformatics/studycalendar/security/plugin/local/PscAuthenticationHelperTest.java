@@ -37,9 +37,4 @@ public class PscAuthenticationHelperTest extends StudyCalendarDbTestCase {
        Authentication authentication = new UsernamePasswordAuthenticationToken("superuser","user");
        assertFalse("Valid Password",pscAuthenticationHelper.authenticate(authentication));
     }
-
-    public void testAuthenticateWithDisableUser() throws Exception {
-       Authentication authentication = new UsernamePasswordAuthenticationToken("study_admin","study_admin1");
-       assertFalse("Enable User",pscAuthenticationHelper.authenticate(authentication));
-    }
 }
