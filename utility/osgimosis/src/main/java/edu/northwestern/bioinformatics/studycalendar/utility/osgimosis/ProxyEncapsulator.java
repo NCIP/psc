@@ -110,7 +110,7 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
             if (types.length == constructorParams.length) {
                 boolean mismatch = false;
                 for (int i = 0; i < types.length && !mismatch; i++) {
-                    if (!types[i].isAssignableFrom(constructorParams[i].getClass())) {
+                    if (constructorParams[i] != null && !types[i].isAssignableFrom(constructorParams[i].getClass())) {
                         mismatch = true;
                     }
                 }

@@ -39,6 +39,11 @@
                         <value>no-value</value>
                     </list>
                 </entry>
+                <entry key="org.acegisecurity.AuthenticationException">
+                    <list>
+                        <null/>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>

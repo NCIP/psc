@@ -51,4 +51,11 @@ public class ProxyEncapsulatorTest extends OsgimosisTestCase {
         assertEquals(personB,
             new ProxyEncapsulator(aMembrane, loaderB, Arrays.asList(personB)).componentType());
     }
+    
+    public void testProxyConstructorParametersMayBeNull() throws Exception {
+        Encapsulator encapsulator = new ProxyEncapsulator(
+           aMembrane, loaderB, defaultPersonB, new Object[] { "Joe", null }, Arrays.asList(personB), null);
+        Object actual = encapsulator.encapsulate(aInstance);
+        assertNotNull(actual);
+    }
 }
