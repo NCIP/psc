@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.acegisecurity.DisabledException;
 import static org.easymock.EasyMock.expect;
 
 public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
@@ -42,6 +43,20 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
             service.loadUserByUsername(user.getName());
             fail("Exception not thrown");
         } catch (UsernameNotFoundException unfe) {
+            // good
+        }
+        verifyMocks();
+    }
+
+    public void testLoadDisabledUserThrowsException() throws Exception {
+        user.setActiveFlag(false);
+        expect(userService.getUserByName(user.getName())).andReturn(user);
+        replayMocks();
+
+        try {
+            service.loadUserByUsername(user.getName());
+            fail("Exception not thrown");
+        } catch (DisabledException de) {
             // good
         }
         verifyMocks();
