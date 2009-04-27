@@ -114,6 +114,12 @@ public class SiteCommandTest extends TestCase {
         doCommand("site get");
     }
 
+    public void testErrorForNoProviders() throws Exception {
+        expectFoundProviders();
+        err.println("No site providers active");
+        doCommand("site get arb");
+    }
+
     private void doCommand(String cmd) {
         mockRegistry.replayMocks();
         command.execute(cmd, out, err);
@@ -132,6 +138,8 @@ public class SiteCommandTest extends TestCase {
             sr[i] = new MockServiceReference(new MockBundle("bundle" + i));
             expect(bundleContext.getService(sr[i])).andReturn(providers[i]);
         }
-        expect(bundleContext.getAllServiceReferences(SiteProvider.class.getName(), null)).andReturn(sr);
+
+        expect(bundleContext.getAllServiceReferences(SiteProvider.class.getName(), null)).
+            andReturn(sr.length == 0 ? null : sr);
     }
 }

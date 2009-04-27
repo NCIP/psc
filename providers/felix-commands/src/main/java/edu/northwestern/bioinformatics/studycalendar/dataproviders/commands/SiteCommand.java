@@ -50,7 +50,7 @@ public class SiteCommand implements Command {
     private void doGet(String arg, PrintStream out, PrintStream err) {
         if (arg == null) { err.println("Please specify an argument for get"); return; }
 
-        for (Map.Entry<String, SiteProvider> provider : getSiteProviders().entrySet()) {
+        for (Map.Entry<String, SiteProvider> provider : getSiteProviders(err).entrySet()) {
             out.println(provider.getKey());
             Site match = provider.getValue().getSite(arg);
             if (match == null) {
@@ -64,7 +64,7 @@ public class SiteCommand implements Command {
     private void doSearch(String arg, PrintStream out, PrintStream err) {
         if (arg == null) { err.println("Please specify an argument for search"); return; }
 
-        for (Map.Entry<String, SiteProvider> provider : getSiteProviders().entrySet()) {
+        for (Map.Entry<String, SiteProvider> provider : getSiteProviders(err).entrySet()) {
             out.println(provider.getKey());
             Collection<Site> matches = provider.getValue().search(arg);
             if (matches == null || matches.isEmpty()) {
@@ -82,12 +82,17 @@ public class SiteCommand implements Command {
             match.getAssignedIdentifier(), match.getName()));
     }
 
-    private Map<String, SiteProvider> getSiteProviders() {
+    private Map<String, SiteProvider> getSiteProviders(PrintStream err) {
         Map<String, SiteProvider> providers = new LinkedHashMap<String, SiteProvider>();
         ServiceReference[] providerRefs = getProviderReferences();
-        for (ServiceReference ref : providerRefs) {
-            SiteProvider provider = (SiteProvider) bundleContext.getService(ref);
-            providers.put(ref.getBundle().getSymbolicName(), provider);
+        if (providerRefs != null) {
+            for (ServiceReference ref : providerRefs) {
+                SiteProvider provider = (SiteProvider) bundleContext.getService(ref);
+                providers.put(ref.getBundle().getSymbolicName(), provider);
+            }
+        }
+        if (providers.isEmpty()) {
+            err.println("No site providers active");
         }
         return providers;
     }
