@@ -304,6 +304,7 @@ define "psc" do
     define "mock" do
       bnd.wrap!
       bnd.name = "PSC Mock Data Providers"
+      bnd.autostart = false
       compile.with project('providers:api').and_dependencies, SPRING
       test.with UNIT_TESTING
       package(:jar)
@@ -313,6 +314,7 @@ define "psc" do
     define "coppa-direct" do
       bnd.wrap!
       bnd.name = "PSC COPPA-based Data Providers"
+      bnd.autostart = false
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
       bnd.import_packages <<
@@ -400,7 +402,9 @@ define "psc" do
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
       application_bundles = 
-        bundle_projects.collect { |p| p.package(:jar) } - system_bundles
+        bundle_projects.select { |p| p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
+      application_optional = 
+        bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
       application_infrastructure = 
         [ SPRING_OSGI.extender, GLOBUS.core, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
       application_libraries = bundle_projects.
@@ -413,6 +417,7 @@ define "psc" do
         "bundles/system-bundles" => system_bundles,
         "bundles/system-optional" => system_optional,
         "bundles/application-bundles" => application_bundles,
+        "bundles/application-optional" => application_optional,
         "bundles/application-infrastructure" => application_infrastructure,
         "bundles/application-libraries" => application_libraries
       )

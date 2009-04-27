@@ -101,6 +101,11 @@ module Bnd
     end
     
     attr_writer(*SCALAR_ATTR)
+    attr_writer :autostart
+    
+    def autostart?
+      @autostart.nil? ? true : @autostart
+    end
     
     # List properties are memoized to allow for concatenation via the 
     # read accessor.

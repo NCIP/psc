@@ -1,9 +1,15 @@
 <bundle-groups>
-	<!-- Application bundles which are automatically started -->
-	<bundles-directory name="application-bundles">
-		<directory-settings dir="${da-launcher:home}/bundles/application-bundles" />
-		<common-settings install-order="3" start-order="3" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
-	</bundles-directory>
+    <!-- Application bundles which are automatically started -->
+    <bundles-directory name="application-bundles">
+        <directory-settings dir="${da-launcher:home}/bundles/application-bundles" />
+        <common-settings install-order="3" start-order="3" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
+    </bundles-directory>
+    
+    <!-- Application bundles which are not automatically started -->
+    <bundles-directory name="application-optional">
+        <directory-settings dir="${da-launcher:home}/bundles/application-optional" />
+        <common-settings install-order="3" start-order="3" auto-start-bundles="false" ignore-install-errors="false" ignore-start-errors="false" />
+    </bundles-directory>
     
     <!-- Application-specific autostarted infrastructure -->
     <bundles-directory name="application-infrastructure">
