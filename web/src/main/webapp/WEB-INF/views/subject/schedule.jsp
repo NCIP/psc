@@ -8,6 +8,7 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <tags:escapedUrl var="collectionResource" value="api~v1~scheduling~subject~${subject.gridId}~partial"/>
 
@@ -28,7 +29,7 @@
     <tags:javascriptLink name="scheduled-activity-batch-modes"/>
 
      <style type="text/css">
-         .myaccordion {
+        .myaccordion {
             position: absolute;
             right: 1em;
             width: 21%;
@@ -86,6 +87,42 @@
             list-style-type: none;
             padding-bottom: 0.25em;
         }
+
+        div.row, .studySegmentSelector{
+            line-height:1em;
+            font-size:0.9em;
+            font-family:Verdana,Arial,sans-serif;
+            text-decoration:none;
+            margin:0;
+            padding:0;
+        }
+
+        div.row div.label {
+            width: 25%;
+            color: #666;
+        }
+
+        div.row div.value {
+            margin-left: 30%;
+            line-height:1em;
+        }
+
+        .row even {
+            margin-top: 0;
+            float: right;
+            width: 20%;
+            padding: 4px;
+            border: 1px solid #666;
+        }
+
+        .studySegmentSelector {
+              width:inherit;
+        }
+
+        .studySegmentSelectLabel {
+             width:95%
+        }
+
 
     </style>
 
@@ -163,6 +200,40 @@
                 method: 'POST',
                 parameters: parameters
             }))
+        }
+
+        //todo - this will have to be properly adjusted for the resource
+        function putScheduleNextSegment() {
+            var parameters = gatherDataFromScheduleStudySegment()
+            var studySegmentSelector = $$('#studySegmentSelector')[0].value //gives us ids for study, epoch, study_segment
+            studySegmentSelector = studySegmentSelector.split("_")
+            var studyId = studySegmentSelector[0];
+
+            var href = "api~v1~studies~"+studyId+ "~sites~${site.name}"
+            SC.asyncRequest(href, Object.extend({
+                method: 'PUT',
+                parameters: parameters
+            }))
+        }
+
+        function gatherDataFromScheduleStudySegment() {
+            var studySegmentSelector = $$('#studySegmentSelector')[0].value //gives us ids for study, epoch, study_segment
+            studySegmentSelector = studySegmentSelector.split("_")
+            var epochId = studySegmentSelector[1];
+            var studySegmentId = studySegmentSelector[2];
+            var immediateOrPerProtocol = $$('#mode-row input');
+            for (var i= 0; i < 2; i++){
+                if (immediateOrPerProtocol[i].checked) {
+                    immediateOrPerProtocol = immediateOrPerProtocol[i].value
+                }
+            }
+            var date = $('start-date-input').value;
+            return Object.extend({
+                "study-segment": studySegmentId,
+                "date": date,
+                "epoch": epochId,
+                "immediateOrPerProtocol": immediateOrPerProtocol
+            })
         }
 
     </script>
@@ -330,7 +401,9 @@
         <div class="accordionDiv">
           <h3><a class="accordionA" href="#">Next Segment</a></h3>
         </div>
-        <div> </div>
+        <div>
+            <markTag:scheduleStudySegment/>
+        </div>
         <div class="accordionDiv">
           <h3><a class="accordionA" href="#">Population</a></h3>
         </div>
@@ -340,7 +413,7 @@
     </div>
 
     <%--<sched:legend/>--%>
-    <form id="batch-form">
+    <form id="batch-form" style="font-weight:normal;">
         <div id="scheduled-activities">
             <c:forEach items="${schedule.days}" var="day">
                 <c:if test="${day.today}">
