@@ -2,9 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.tools.Range;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
@@ -18,6 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Presenter for a subject's complete schedule across all studies.
  *
@@ -29,6 +30,10 @@ public class SubjectCentricSchedule {
     private List<StudySubjectAssignment> hiddenAssignments;
     private List<ScheduleDay> days;
     private MutableRange<Date> dateRange;
+    private Map<String, Date> datesImmediatePerProtocol;
+    private List<Study> studies;
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private NowFactory nowFactory;
     private final SimpleDateFormat dayMapKeyFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -40,6 +45,9 @@ public class SubjectCentricSchedule {
         List<StudySubjectAssignment> allAssignments = new ArrayList<StudySubjectAssignment>(visibleAssignments.size() + hiddenAssignments.size());
         allAssignments.addAll(visibleAssignments); allAssignments.addAll(hiddenAssignments);
         this.dateRange = new MutableRange<Date>();
+        this.datesImmediatePerProtocol = new HashMap<String, Date>();
+        this.studies = new ArrayList<Study>();
+        
         for (StudySubjectAssignment assignment : allAssignments) {
             for (ScheduledStudySegment segment : assignment.getScheduledCalendar().getScheduledStudySegments()) {
                 if (dateRange.getStop() == null) {
@@ -48,6 +56,8 @@ public class SubjectCentricSchedule {
                     dateRange.add(segment.getDateRange());
                 }
             }
+            studies.add(assignment.getStudySite().getStudy());
+            datesImmediatePerProtocol = createDates(assignment.getScheduledCalendar());
         }
         buildSegmentRows();
         collectActivitiesByDay();
@@ -130,6 +140,23 @@ public class SubjectCentricSchedule {
         }
     }
 
+    //Keeping the method for the case if we'd later decide to reschedule the studySegment and not the full study
+    private Map<String, Date> createDates(ScheduledCalendar scheduledCalendar) {
+         Map<String, Date> dates = new HashMap<String, Date>();
+
+         Date perProtocolDate = null;
+         List<ScheduledStudySegment> existingStudySegments = scheduledCalendar.getScheduledStudySegments();
+         if (existingStudySegments.size() > 0) {
+             ScheduledStudySegment lastStudySegment = existingStudySegments.get(existingStudySegments.size() - 1);
+             log.debug("Building PER_PROTOCOL start date from " + lastStudySegment);
+             perProtocolDate = lastStudySegment.getNextStudySegmentPerProtocolStartDate();
+         }
+         dates.put(NextStudySegmentMode.PER_PROTOCOL.name(), perProtocolDate);
+         dates.put(NextStudySegmentMode.IMMEDIATE.name(), new Date());
+         return dates;
+     }
+    
+
     ////// LOGIC
 
     public boolean getIncludesToday() {
@@ -142,8 +169,24 @@ public class SubjectCentricSchedule {
         return segmentRows;
     }
 
+    public List<StudySubjectAssignment> getVisibleAssignments() {
+        return visibleAssignments;
+    }
+
+    public List<StudySubjectAssignment> getHiddenAssignments() {
+        return hiddenAssignments;
+    }
+
     public Range<Date> getDateRange() {
         return dateRange;
+    }
+
+    public List<Study> getStudies() {
+        return studies;
+    }
+
+    public Map<String, Date> getDatesImmediatePerProtocol() {
+        return datesImmediatePerProtocol;
     }
 
     public List<ScheduleDay> getDays() {

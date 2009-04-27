@@ -38,7 +38,6 @@
             font-size: 11pt;
             border: 1px solid #444;
             background-color: white;
-            overflow: auto;
         }
 
         .legendSetup {
@@ -350,7 +349,7 @@
                             <input id="studyId" type="hidden" value="${row.id}"/>${row.name}
                         </c:forEach>
                     </c:if>
-                        
+
                         <%--if we decide to delayOrAdvance study segment--%>
                         <%--<c:if test="${not empty schedule.segmentRows}">--%>
                             <%--<option value="all" selected="true"> Full Study </option>--%>
@@ -393,11 +392,6 @@
             <markTag:markActivity/>
             <input type="submit" value="Submit" class="submitDelayOrAdvance"  id="new-mode-submit" onclick="executeMarkPost()"/>
         </div>
-
-        <div class="accordionDiv">
-          <h3><a class="accordionA" href="#">Filter</a></h3>
-        </div>
-        <div> </div>
         <div class="accordionDiv">
           <h3><a class="accordionA" href="#">Next Segment</a></h3>
         </div>
