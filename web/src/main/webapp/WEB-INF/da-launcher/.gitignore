@@ -2,6 +2,7 @@ bundles/system-bundles
 bundles/system-optional
 bundles/application-bundles
 bundles/application-libraries
+bundles/application-infrastructure
 osgi-framework/equinox
 osgi-framework/felix
 osgi-framework/knopflerfish

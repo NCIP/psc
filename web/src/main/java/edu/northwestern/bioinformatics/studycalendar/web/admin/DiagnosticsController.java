@@ -6,8 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient;
-import org.restlet.util.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -38,12 +36,18 @@ public class DiagnosticsController extends PscSimpleFormController {
         return diagnosticsCommand;
     }
 
+    /*
+     * TODO: push the smoke service invocation into an OSGi plugin so that it can use the OSGi-layer grid libraries
+     */
 
     public void checkIfGridServicesIsConnecting(DiagnosticsCommand diagnosticsCommand) {
+        diagnosticsCommand.setSmokeTestServiceException("Grid service smoke test temporarily disabled");
+        /*
         try {
             Template template = configuration.get(Configuration.SMOKE_SERVICE_BASE_URL);
             if (template != null) {
-                SmokeTestServiceClient client = new SmokeTestServiceClient(template.getPattern());
+                gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient client
+                    = new gov.nih.nci.ccts.grid.smoketest.client.SmokeTestServiceClient(template.getPattern());
                 client.ping();
             }
         } catch (Exception e) {
@@ -51,7 +55,7 @@ public class DiagnosticsController extends PscSimpleFormController {
             diagnosticsCommand.setSmokeTestServiceException(e.getMessage());
 
         }
-
+        */
     }
 
     private void testSmtp(DiagnosticsCommand diagnosticsCommand, HttpServletRequest request) {

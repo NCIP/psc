@@ -21,8 +21,12 @@
 		<property name="org.knopflerfish.consoletelnet.port">7224</property>
 		<property name="osgi.shell.telnet.port">7223</property>
 
+        <!-- The com.sun packages to include are the ones that come with the JRE (taken from 1.5).
+                Need to be more specific than just com.sun.* because some actual bundles (e.g., JAXB RI)
+                are under com.sun -->
         <!-- net.sf.cglib is included because the Membrane needs to be able to create proxies in any OSGi bundle -->
-        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.*,net.sf.cglib.*</property>
+        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.corba.*,com.sun.image.*,com.sun.imageio.*,com.sun.java.*,com.sun.naming.*,com.sun.security.*,net.sf.cglib.*</property>
+        <!-- <property name="org.knopflerfish.framework.debug.classloader">true</property> -->
 	</framework-properties>
 	
 </osgi-framework-settings>

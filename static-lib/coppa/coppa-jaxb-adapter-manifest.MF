@@ -1,0 +1,5 @@
+Bundle-Name: COPPA/JAXB adapter package
+Import-Package: gov.nih.nci.coppa.po
+Fragment-Host: org.dynamicjava.jsr.jaxb_api
+Bundle-SymbolicName: edu.bioinformatics.northwestern.osgi.coppa.jaxb
+Bundle-Version: 0.0.0

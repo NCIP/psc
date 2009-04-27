@@ -4,12 +4,18 @@
 		<directory-settings dir="${da-launcher:home}/bundles/application-bundles" />
 		<common-settings install-order="3" start-order="3" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
 	</bundles-directory>
-	
-	<!-- Application dependencies which are for resolving only -->
-	<bundles-directory name="application-libraries">
-		<directory-settings dir="${da-launcher:home}/bundles/application-libraries" />
-		<common-settings install-order="2" start-order="2" auto-start-bundles="false" ignore-install-errors="false" ignore-start-errors="false" />
-	</bundles-directory>
+    
+    <!-- Application-specific autostarted infrastructure -->
+    <bundles-directory name="application-infrastructure">
+        <directory-settings dir="${da-launcher:home}/bundles/application-infrastructure" />
+        <common-settings install-order="2" start-order="2" auto-start-bundles="true" ignore-install-errors="false" ignore-start-errors="false" />
+    </bundles-directory>
+    
+    <!-- Application dependencies which are for resolving only -->
+    <bundles-directory name="application-libraries">
+        <directory-settings dir="${da-launcher:home}/bundles/application-libraries" />
+        <common-settings install-order="2" start-order="2" auto-start-bundles="false" ignore-install-errors="false" ignore-start-errors="false" />
+    </bundles-directory>
 	
 	<!-- System-level bundles which are not automatically started -->
 	<bundles-directory name="system-optional">

@@ -66,7 +66,7 @@ define "psc" do
       package(:sources)
     end
   end
-  
+
   desc "The domain classes for PSC"
   define "domain" do
     bnd.wrap!
@@ -75,14 +75,14 @@ define "psc" do
       "org.hibernate;version=3.3" <<
       "org.hibernate.type;version=3.3" <<
       "org.hibernate.cfg;version=3.3"
-    
+
     compile.with project('utility'), SLF4J.api, 
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
       SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE
     test.with(UNIT_TESTING)
-    
+
     package(:jar)
     package(:sources)
   end
@@ -309,6 +309,22 @@ define "psc" do
       package(:jar)
     end
     
+    desc "Data providers which talk directly to COPPA"
+    define "coppa-direct" do
+      bnd.wrap!
+      bnd.name = "PSC COPPA-based data providers"
+      bnd['Bundle-Activator'] = 
+        "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
+      bnd.import_packages <<
+        "org.apache.axis.types" <<
+        "org.apache.axis.message.addressing"
+      
+      compile.with project('providers:api').and_dependencies, SPRING, OSGI, 
+        GLOBUS, COPPA
+      test.using(:junit).with UNIT_TESTING
+      package(:jar)
+    end
+    
     desc "Commands for interacting with the providers from the felix console"
     define "felix-commands" do
       compile.with FELIX.shell, OSGI.core,
@@ -366,7 +382,7 @@ define "psc" do
       equinox_main = artifact(EQUINOX.osgi)
 
       if true # knopflerfish?
-        system_optional = [FELIX.shell_remote]
+        system_optional = [FELIX.shell_remote, KNOPFLERFISH.consoletelnet]
         system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
         osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
       elsif false # felix?
@@ -383,18 +399,21 @@ define "psc" do
         [ project('osgi-layer:log4j-configuration').packages.first ]
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_bundles = bundle_projects.collect { |p| p.package(:jar) } + 
-        [ SPRING_OSGI.extender ].collect { |a| artifact(a) } - system_bundles
+      application_bundles = 
+        bundle_projects.collect { |p| p.package(:jar) } - system_bundles
+      application_infrastructure = 
+        [ SPRING_OSGI.extender, GLOBUS.core, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - application_bundles
+        system_bundles - application_bundles - application_infrastructure
 
       task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
         "bundles/system-optional" => system_optional,
         "bundles/application-bundles" => application_bundles,
+        "bundles/application-infrastructure" => application_infrastructure,
         "bundles/application-libraries" => application_libraries
       )
     end
@@ -417,7 +436,12 @@ define "psc" do
     task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
       cd _("target/classes") do
         mkdir_p _('tmp/logs')
-        classpath = project.test.dependencies.collect { |p| p.to_s }.join(':')
+        deps = project.test.dependencies.collect { |p| p.to_s }.join(':')
+        if ENV['WEBAPP_SIM']
+          deps = [deps, project('psc:web').and_dependencies].flatten.uniq
+        end
+        classpath = deps.collect { |d| d.to_s }.join(':')
+        puts "Classpath:\n- #{deps.join("\n- ")}"
         system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
       end
     end
@@ -464,7 +488,7 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, CAGRID, DYNAMIC_JAVA
+      SPRING_WEB, RESTLET, WEB, DYNAMIC_JAVA
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,

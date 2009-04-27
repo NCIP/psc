@@ -3,12 +3,15 @@
 #
 # The libs are stored in osgi/bundled-lib.
 
-def psc_osgi_artifact(spec, bnd_props = { })
+def psc_osgi_artifact(spec, bnd_props = { }, &src_mod)
   src_spec = Artifact.to_hash(spec)
   # wrapped id per SpringSource repo model
   dst_spec = src_spec.merge( :id => "edu.northwestern.bioinformatics.osgi.#{src_spec[:id]}" )
   unless task = Artifact.lookup(dst_spec)
     src = artifact(src_spec)
+    if block_given?
+      yield src
+    end
     task = Osgi::BundledArtifact.define_task(repositories.locate(dst_spec))
     task.send :apply_spec, dst_spec
     task.init(src, bnd_props)
@@ -16,6 +19,7 @@ def psc_osgi_artifact(spec, bnd_props = { })
     Rake::Task['rake:artifacts'].enhance [task]
     Artifact.register(task)
   end
+  task
 end
 
 module Osgi
