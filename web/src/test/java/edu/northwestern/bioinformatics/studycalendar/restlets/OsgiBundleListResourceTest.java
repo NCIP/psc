@@ -20,11 +20,11 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
     private MockBundleContext bundleContext;
     private static final Bundle[] BUNDLES = {
         mockBundle(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0", null, null),
+        mockBundle(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility",
+            Bundle.ACTIVE, "2.5.1", null, null),
         mockBundle(3, "org.slf4j.org.apache.commons.logging", Bundle.INSTALLED, "1.5.0", null, null),
         mockBundle(4, "org.slf4j.org.apache.log4j", Bundle.INSTALLED, "1.5.0",
-            "Apache Log4j", "One of those loggers"),
-        mockBundle(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility",
-            Bundle.ACTIVE, "2.5.1", null, null)
+            "Apache Log4j", "One of those loggers")
     };
 
     private static Bundle mockBundle(int id, final String symbolicName, final int mockState, String version, String name, String description) {
@@ -82,6 +82,14 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
         assertEquals("Missing state", "INSTALLED", bundle2.get("state"));
         assertEquals("Missing name", "Apache Log4j", bundle2.get("name"));
         assertEquals("Missing description", "One of those loggers", bundle2.get("description"));
+    }
+    
+    public void testReturnedArrayIsOrderedByBundleId() throws Exception {
+        JSONArray actual = getAndReturnEntityArray();
+        assertEquals("Bundle 0 out of order", 1, ((JSONObject) actual.get(0)).get("id"));
+        assertEquals("Bundle 1 out of order", 3, ((JSONObject) actual.get(1)).get("id"));
+        assertEquals("Bundle 2 out of order", 4, ((JSONObject) actual.get(2)).get("id"));
+        assertEquals("Bundle 3 out of order", 6, ((JSONObject) actual.get(3)).get("id"));
     }
     
     public void testNoObjectPropertiesForMissingManifestHeaders() throws Exception {

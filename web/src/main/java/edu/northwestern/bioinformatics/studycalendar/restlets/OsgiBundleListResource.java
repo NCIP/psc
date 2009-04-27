@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.osgi.framework.Bundle;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -14,8 +14,10 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Comparator;
 
 /**
  * @author Rhett Sutphin
@@ -69,7 +71,13 @@ public class OsgiBundleListResource extends OsgiAdminResource {
     }
 
     private Bundle[] getBundles() {
-        return getBundleContext().getBundles();
+        Bundle[] bundles = getBundleContext().getBundles();
+        Arrays.sort(bundles, new Comparator<Bundle>() {
+            public int compare(Bundle b1, Bundle b2) {
+                return (int) (b1.getBundleId() - b2.getBundleId());
+            }
+        });
+        return bundles;
     }
 
 }
