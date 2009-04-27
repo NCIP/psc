@@ -9,20 +9,23 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Comparator;
 
 /**
  * @author Rhett Sutphin
  */
-public class OsgiBundleListResource extends OsgiAdminResource {
+public class OsgiBundleResource extends OsgiAdminResource {
+    private Integer bundleId;
+
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
@@ -31,6 +34,15 @@ public class OsgiBundleListResource extends OsgiAdminResource {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
+        String idStr = UriTemplateParameters.BUNDLE_ID.extractFrom(getRequest());
+        if (idStr != null) {
+            try {
+                bundleId = new Integer(idStr);
+            } catch (NumberFormatException nfe) {
+                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+            }
+        }
+
         if (MediaType.APPLICATION_JSON.includes(variant.getMediaType())) {
             return new JsonRepresentation(bundlesJson().toString());
         } else {
@@ -38,12 +50,19 @@ public class OsgiBundleListResource extends OsgiAdminResource {
         }
     }
 
-    private JSONArray bundlesJson() {
-        JSONArray bundles = new JSONArray();
-        for (Bundle bundle : getBundles()) {
-            bundles.put(toJsonObject(bundle));
+    private Object bundlesJson() throws ResourceException {
+        if (bundleId == null) {
+            JSONArray bundles = new JSONArray();
+            for (Bundle bundle : getBundles()) {
+                bundles.put(toJsonObject(bundle));
+            }
+            return bundles;
+        } else {
+            for (Bundle b : getBundles()) {
+                if (b.getBundleId() == bundleId) return toJsonObject(b);
+            }
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
         }
-        return bundles;
     }
 
     @SuppressWarnings({"unchecked"})

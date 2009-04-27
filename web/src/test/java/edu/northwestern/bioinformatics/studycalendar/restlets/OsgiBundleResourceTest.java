@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiBundleListResource> {
+public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundleResource> {
     private MockBundleContext bundleContext;
     private static final Bundle[] BUNDLES = {
         mockBundle(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0", null, null),
@@ -43,8 +43,8 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
     }
 
     @Override
-    protected OsgiBundleListResource createAuthorizedResource() {
-        OsgiBundleListResource resource = new OsgiBundleListResource();
+    protected OsgiBundleResource createAuthorizedResource() {
+        OsgiBundleResource resource = new OsgiBundleResource();
         resource.setBundleContext(bundleContext);
         return resource;
     }
@@ -105,16 +105,48 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
         assertEquals("Wrong state for INSTALLED", "INSTALLED", ((JSONObject) actual.get(1)).get("state"));
         assertEquals("Wrong state for ACTIVE",    "ACTIVE",    ((JSONObject) actual.get(3)).get("state"));
     }
+    
+    public void testReturnsASingleBundleByIdIfBundleIdSpecified() throws Exception {
+        UriTemplateParameters.BUNDLE_ID.putIn(request, "6");
+        JSONObject actual = getAndReturnSingleEntity();
+        assertEquals("Metadata is for wrong bundle", actual.get("id"), 6);
+        assertEquals("Metadata is for wrong bundle", actual.get("state"), "ACTIVE");
+    }
+    
+    public void test404sForUnmatchedBundleId() throws Exception {
+        UriTemplateParameters.BUNDLE_ID.putIn(request, "11");
+        doGet();
+        assertEquals("Should be not found", 404, response.getStatus().getCode());
+    }
+
+    public void test404sForNonNumericBundleId() throws Exception {
+        UriTemplateParameters.BUNDLE_ID.putIn(request, "alef");
+        doGet();
+        assertEquals("Should be not found", 404, response.getStatus().getCode());
+    }
+
+    private JSONObject getAndReturnSingleEntity() throws IOException {
+        try {
+            return new JSONObject(getAndReturnText());
+        } catch (JSONException je) {
+            fail("Response is not parseable as a JSON object: " + je.getMessage());
+            return null; // not reached
+        }
+    }
 
     private JSONArray getAndReturnEntityArray() throws IOException {
-        doGet();
-        assertResponseStatus(Status.SUCCESS_OK);
-        String text = response.getEntity().getText();
         try {
-            return new JSONArray(text);
+            return new JSONArray(getAndReturnText());
         } catch (JSONException je) {
             fail("Response is not parseable as a JSON array: " + je.getMessage());
             return null; // not reached
         }
+    }
+
+    private String getAndReturnText() throws IOException {
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        String text = response.getEntity().getText();
+        return text;
     }
 }

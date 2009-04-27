@@ -745,7 +745,7 @@
         </resource>
         
         <resource path="osgi/bundles">
-            <resource path="{bundle-id}/state">
+            <resource path="{bundle-id}">
                 <doc>
                     <html:p>
                         The state of the given bundle in PSC's OSGi layer.
@@ -764,33 +764,46 @@
                     <response>
                         <doc>
                             <html:p>
-                                An object with the key <html:code>state</html:code>
-                                and the value matching one of the six bundle
-                                state constant names defined by the OSGi 
-                                <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                                A single JSON object describing the bundle
+                                with the given ID.
                             </html:p>
                         </doc>
                         <representation mediaType="application/json"/>
                     </response>
                 </method>
-                <method name="PUT">
-                    <request>
-                        <doc>
-                            <html:p>
-                                An object with the key <html:code>state</html:code>
-                                and the value matching one of the six bundle
-                                state constant names defined by the OSGi 
-                                <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
-                            </html:p>
-                            <html:p>
-                                Currently, only setting a bundle to 
-                                <html:code>STARTING</html:code> or
-                                <html:code>STOPPING</html:code> is supported.
-                            </html:p>
-                        </doc>
-                        <representation mediaType="application/json"/>
-                    </request>
-                </method>
+                <resource path="state">
+                    <method name="GET">
+                        <response>
+                            <doc>
+                                <html:p>
+                                    An object with the key <html:code>state</html:code>
+                                    and the value matching one of the six bundle
+                                    state constant names defined by the OSGi 
+                                    <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                                </html:p>
+                            </doc>
+                            <representation mediaType="application/json"/>
+                        </response>
+                    </method>
+                    <method name="PUT">
+                        <request>
+                            <doc>
+                                <html:p>
+                                    An object with the key <html:code>state</html:code>
+                                    and the value matching one of the six bundle
+                                    state constant names defined by the OSGi 
+                                    <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                                </html:p>
+                                <html:p>
+                                    Currently, only setting a bundle to 
+                                    <html:code>STARTING</html:code> or
+                                    <html:code>STOPPING</html:code> is supported.
+                                </html:p>
+                            </doc>
+                            <representation mediaType="application/json"/>
+                        </request>
+                    </method>
+                </resource>
             </resource>
             <method name="GET">
                 <doc>

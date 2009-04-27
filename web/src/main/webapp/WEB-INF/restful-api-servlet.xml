@@ -201,8 +201,11 @@
         <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
     </bean>
 
+    <!-- bundle-id is optional -->
     <bean name="/osgi/bundles" id="osgiBundleListResource" scope="prototype" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleListResource"/>
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleResource"/>
+    <bean name="/osgi/bundles/{bundle-id}" id="osgiSingleBundleResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleResource"/>
 
     <bean name="/osgi/bundles/{bundle-id}/state" id="osgiBundleStateResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleStateResource"/>
