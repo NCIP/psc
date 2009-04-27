@@ -15,20 +15,32 @@ describe "/osgi/bundles" do
       response.json.first.should be_kind_of(Hash)
     end
     
+    def slf4j_bundle
+      response.json.find { |b| b['symbolic-name'] == 'com.springsource.slf4j.api' }
+    end
+    
     it "has a symbolic name in the bundle description" do
       response.json.first['symbolic-name'].should_not be_nil
     end
     
     it "has an ID in the bundle description" do
-      response.json.first['id'].should_not be_nil
+      slf4j_bundle['id'].should_not be_nil
     end
     
     it "has a version in the bundle description" do
-      response.json.first['version'].should_not be_nil
+      slf4j_bundle['version'].should_not be_nil
     end
     
     it "has a state in the bundle description" do
-      response.json.first['state'].should_not be_nil
+      slf4j_bundle['state'].should_not be_nil
+    end
+    
+    it "has a name in the bundle description" do
+      slf4j_bundle['name'].should == "SLF4J API"
+    end
+    
+    it "has a description in the bundle description" do
+      slf4j_bundle['description'].should == "The slf4j API"
     end
   end
   

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import org.dynamicjava.osgi.da_launcher.web.DaLauncherWebConstants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,15 +19,21 @@ import java.io.IOException;
 public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiBundleListResource> {
     private MockBundleContext bundleContext;
     private static final Bundle[] BUNDLES = {
-        mockBundle(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0"),
-        mockBundle(3, "org.slf4j.org.apache.commons.logging", Bundle.INSTALLED, "1.5.0"),
-        mockBundle(4, "org.slf4j.org.apache.log4j", Bundle.INSTALLED, "1.5.0"),
-        mockBundle(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility", Bundle.ACTIVE, "2.5.1")
+        mockBundle(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0", null, null),
+        mockBundle(3, "org.slf4j.org.apache.commons.logging", Bundle.INSTALLED, "1.5.0", null, null),
+        mockBundle(4, "org.slf4j.org.apache.log4j", Bundle.INSTALLED, "1.5.0",
+            "Apache Log4j", "One of those loggers"),
+        mockBundle(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility",
+            Bundle.ACTIVE, "2.5.1", null, null)
     };
 
-    private static Bundle mockBundle(int id, final String symbolicName, final int mockState, String version) {
+    private static Bundle mockBundle(int id, final String symbolicName, final int mockState, String version, String name, String description) {
         MockBundle bundle = new MockBundle(
-            new MapBuilder<String, Object>().put("Bundle-Version", version).toDictionary()
+            new MapBuilder<String, Object>().
+                put("Bundle-Version", version).
+                put("Bundle-Name", name).
+                put("Bundle-Description", description).
+                toDictionary()
         ) {
             @Override public int getState() { return mockState; }
             @Override public String getSymbolicName() { return symbolicName; }
@@ -75,6 +80,15 @@ public class OsgiBundleListResourceTest extends AuthorizedResourceTestCase<OsgiB
         assertEquals("Missing symbolic name", "org.slf4j.org.apache.log4j", bundle2.get("symbolic-name"));
         assertEquals("Missing version", "1.5.0", bundle2.get("version"));
         assertEquals("Missing state", "INSTALLED", bundle2.get("state"));
+        assertEquals("Missing name", "Apache Log4j", bundle2.get("name"));
+        assertEquals("Missing description", "One of those loggers", bundle2.get("description"));
+    }
+    
+    public void testNoObjectPropertiesForMissingManifestHeaders() throws Exception {
+        JSONArray actual = getAndReturnEntityArray();
+        assertTrue("Array does not contain JSON objects", actual.get(1) instanceof JSONObject);
+        JSONObject bundle1 = (JSONObject) actual.get(1);
+        assertFalse("JSON not missing name", bundle1.has("name"));
     }
 
     public void testReturnedBundleDescriptionsConvertStateNames() throws Exception {

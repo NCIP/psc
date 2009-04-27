@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 import org.osgi.framework.Bundle;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -12,6 +13,9 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+
+import java.util.Dictionary;
+import java.util.Enumeration;
 
 /**
  * @author Rhett Sutphin
@@ -40,14 +44,28 @@ public class OsgiBundleListResource extends OsgiAdminResource {
         return bundles;
     }
 
+    @SuppressWarnings({"unchecked"})
     private JSONObject toJsonObject(Bundle bundle) {
-        return new JSONObject(new MapBuilder<String, Object>().
+        JSONObject obj = new JSONObject(new MapBuilder<String, Object>().
             put("id", bundle.getBundleId()).
             put("symbolic-name", bundle.getSymbolicName()).
             put("state", OsgiBundleState.valueOfConstant(bundle.getState()).name()).
-            put("version", bundle.getHeaders().get("Bundle-Version")).
             toMap()
         );
+        Dictionary<String, Object> headers = bundle.getHeaders();
+        Enumeration<String> headerNames = headers.keys();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            if (name.startsWith("Bundle-")) {
+                String key = name.substring(7).toLowerCase();
+                try {
+                    obj.put(key, headers.get(name));
+                } catch (JSONException e) {
+                    log.debug("Unexpected exception in OSGi metadata JSONification", e);
+                }
+            }
+        }
+        return obj;
     }
 
     private Bundle[] getBundles() {
