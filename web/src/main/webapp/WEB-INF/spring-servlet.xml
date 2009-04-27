@@ -559,6 +559,19 @@
         </property>
     </bean>
 
+    <bean name="/admin/manage/plugins" id="pluginsListController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.ParameterizableViewController">
+        <property name="viewName" value="admin/plugins"/>
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Manage Plugins"/>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages"/>
     </bean>
@@ -701,6 +714,11 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Configure authentication"/>
                                 <property name="linkName" value="authConfigurationController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Manage plugins"/>
+                                <property name="linkName" value="pluginsListController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

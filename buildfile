@@ -295,7 +295,7 @@ define "psc" do
     desc "The interfaces under which data providers expose data"
     define "api" do
       bnd.wrap!
-      bnd.name = "PSC data providers API"
+      bnd.name = "PSC Data Providers API"
       compile.with project('domain').and_dependencies
       package(:jar)
     end
@@ -303,7 +303,7 @@ define "psc" do
     desc "Mock data providers with static data"
     define "mock" do
       bnd.wrap!
-      bnd.name = "PSC mock data providers"
+      bnd.name = "PSC Mock Data Providers"
       compile.with project('providers:api').and_dependencies, SPRING
       test.with UNIT_TESTING
       package(:jar)
@@ -312,7 +312,7 @@ define "psc" do
     desc "Data providers which talk directly to COPPA"
     define "coppa-direct" do
       bnd.wrap!
-      bnd.name = "PSC COPPA-based data providers"
+      bnd.name = "PSC COPPA-based Data Providers"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
       bnd.import_packages <<
@@ -332,7 +332,7 @@ define "psc" do
       test.with UNIT_TESTING, project('domain').test_dependencies
 
       bnd.wrap!
-      bnd.name = "PSC data provider commands"
+      bnd.name = "PSC Data Provider Felix Shell Commands"
       bnd['Bundle-Activator'] = 
         "edu.northwestern.bioinformatics.studycalendar.dataproviders.commands.Activator"
       package(:jar)
@@ -453,7 +453,7 @@ define "psc" do
       bnd.wrap!
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.Activator"
-      bnd.name = "PSC OSGi layer access to host services"
+      bnd.name = "PSC OSGi Layer Access to Host Services"
       
       compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
       test.using(:junit).with UNIT_TESTING, 
@@ -464,7 +464,7 @@ define "psc" do
     
     define "log4j-configuration" do
       bnd.wrap!
-      bnd.name = "PSC OSGi layer log4j configuration"
+      bnd.name = "PSC OSGi Layer log4j Configuration"
       bnd['Fragment-Host'] = 'com.springsource.org.apache.log4j'
       
       package(:jar)

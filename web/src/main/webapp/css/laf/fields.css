@@ -7,10 +7,6 @@ input[type=text], input[type=password], select, textarea {
   border: 1px inset #ccc;
   padding: 2px;
 }
-input[disabled], select[disabled], textarea[disabled] {
-  border-color: #ddc;
-  background-color: #ddc;
-}
 input[type=button], input[type=submit], input[type=reset] {
   color: white;
   background-color: #3876C1;
@@ -18,6 +14,14 @@ input[type=button], input[type=submit], input[type=reset] {
 }
 input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
   border-style: inset;
+}
+input[disabled], select[disabled], textarea[disabled] {
+  border-color: #ddc;
+  background-color: #ddc;
+  color: #999;
+}
+input[disabled]:active, select[disabled]:active, textarea[disabled]:active {
+  border-style: outset;
 }
 
 .error input {
