@@ -10,7 +10,7 @@
 <%@taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<tags:escapedUrl var="collectionResource" value="api~v1~scheduling~subject~${subject.gridId}~partial"/>
+<tags:escapedUrl var="collectionResource" value="api~v1~schedules~${subject.gridId}~partial"/>
 
 <html>
 <head>
@@ -130,36 +130,73 @@
             jQuery("#accordion").accordion();
         });
 
-        function createDelayAdvanceForm() {
-            var shiftOption = $('delayAdvanceSelector').value
-            return Object.extend({
-                "reason": $('reason').value,
-                "toDate": shiftOption*$('toDate').value,
-                "currentDate": $(document.getElementById('currentDate')).value,
-                "state" : ""
-            })
+
+        function incrementDecrementDate(date, shiftByDate){
+            var d = new Date();
+            var time = date
+            var time2 =  time + (parseInt(toDate, 10)*24*60*60*1000)
+            d.setTime(time2)
+            return d
+        }
+
+        function convertStringToDate(dateString){
+            var day = dateString.substring(3, 5)
+            var month = dateString.substring(0, 2)
+            month = parseInt(month) -1
+            var year = dateString.substring(6, dateString.length)
+
+            return new Date(year, month.toString(), day);
+        }
+
+        function shiftDateByNumberOfDays(dateToShift, numberOfDaysToShift) {
+            var shiftedDate = new Date();
+            var timeShifted =  dateToShift + (parseInt(numberOfDaysToShift, 10)*24*60*60*1000)
+            shiftedDate.setTime(timeShifted)
+            return shiftedDate.toString();
         }
 
         function executeDelayAdvancePost() {
-            var arrayOfActivities='~';
+            var arrayOfActivities='';
+            var mapOfParameters='';
+            var shiftOptionForwardOrBackward = $('delayAdvanceSelector').value
+            var reason = $('reason').value
+            var toDate = shiftOptionForwardOrBackward*$('toDate').value
+            var asOfDate = $(document.getElementById('currentDate')).value
+
+            var asOfDateInDateFormat = convertStringToDate(asOfDate)
+
             <c:forEach items="${schedule.days}" var="day">
-                <c:if test="${not day['empty']}">
-                    <c:if test="${not empty day.activities}">
-                        <c:forEach items="${day.activities}" var="sa">
-                            arrayOfActivities = arrayOfActivities+${sa.id}+';';
-                        </c:forEach>
+                var actualDayInDateRepresentation =  new Date(${day.date.year + 1900}, ${day.date.month}, ${day.date.date});
+                var shiftedDate = shiftDateByNumberOfDays(${day.date.time}, toDate)
+
+                if (actualDayInDateRepresentation >= asOfDateInDateFormat) {
+                    <c:if test="${not day['empty']}">
+                        <c:if test="${not empty day.activities}">
+                            <c:forEach items="${day.activities}" var="sa">
+                                arrayOfActivities = arrayOfActivities+'${sa.gridId}'+';';
+                                var mapOfParametersForOne={
+                                    '${sa.gridId}': {
+                                        "reason": reason,
+                                        "date": shiftedDate,
+                                        "state" : '${sa.currentState}'
+                                    }
+                                };
+                                mapOfParameters = mapOfParameters + mapOfParametersForOne
+                            </c:forEach>
+                        </c:if>
                     </c:if>
-                </c:if>
+                }
             </c:forEach>
-            post(arrayOfActivities, createDelayAdvanceForm())
+            post(arrayOfActivities, Object.toJSON(mapOfParameters) );
         }
+
 
         function gatherDataFromMarkForm() {
             var newModeSelector = $$("#new-mode-selector")[0].value
             var state=""; //default for current state is empty
             var reason="";
             var toDate=""
-            if (newModeSelector == "") {
+            if (newModeSelector == "") {                                     
                 reason = $$('#new-reason-input-group input')[0].value
                 toDate = $$("#move_date_by_new-date-input-group input")[0].value
             } if (newModeSelector == 1) {
@@ -175,16 +212,17 @@
                 reason = $$('#new-reason-input-group input')[0].value
             }
 
-            return Object.extend({
+            var params= {
                 "reason": reason,
-                "toDate": toDate,
+                "date": toDate,
                 "currentDate": "",
                 "state" : state
-            })
+            }
+            return Object.toJSON(params)
         }
 
         function executeMarkPost() {
-            var arrayOfActivities='~';
+            var arrayOfActivities='';
             var events = $$('.event')
             for(var i = 0; i< events.length; i++ ){
                 if (events[i].checked){
@@ -195,8 +233,9 @@
         }
 
         function post(arrayOfActivities, parameters) {
-            SC.asyncRequest('${collectionResource}'+ arrayOfActivities, Object.extend({
+            SC.asyncRequest('${collectionResource}'+'/' + arrayOfActivities, Object.extend({
                 method: 'POST',
+                contentType: 'application/json',
                 parameters: parameters
             }))
         }
@@ -422,7 +461,7 @@
                                     <c:forEach items="${day.activities}" var="sa">
                                         <c:set var="study" value="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study}"/>
                                         <li>
-                                            <input type="checkbox" value="${sa.id}" name="events" class="event <c:if test="${sa.conditionalState}">conditional-event</c:if>
+                                            <input type="checkbox" value="${sa.gridId}" name="events" class="event <c:if test="${sa.conditionalState}">conditional-event</c:if>
                                             <c:if test="${(sa.conditionalState || sa.scheduledState) && day.date < sa.scheduledStudySegment.todayDate}">past-due-event</c:if>"/>
                                             <img src="<c:url value="/images/${sa.currentState.mode.name}.png"/>" alt="Status: ${sa.currentState.mode.name}"/>
                                             <span title="Study" class="study <tags:studyClass study="${study}"/>">${study.assignedIdentifier}</span>
