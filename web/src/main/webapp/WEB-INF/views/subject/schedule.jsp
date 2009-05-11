@@ -148,9 +148,9 @@
             return new Date(year, month.toString(), day);
         }
 
-        function shiftDateByNumberOfDays(dateToShift, numberOfDaysToShift) {
+        function shiftDateByNumberOfDays(dateToShiftInMilliseconds, numberOfDaysToShift) {
             var shiftedDate = new Date();
-            var timeShifted =  dateToShift + (parseInt(numberOfDaysToShift, 10)*24*60*60*1000)
+            var timeShifted =  dateToShiftInMilliseconds + (parseInt(numberOfDaysToShift, 10)*24*60*60*1000)
             shiftedDate.setTime(timeShifted)
             return shiftedDate.toString();
         }
@@ -191,12 +191,12 @@
         }
 
 
-        function gatherDataFromMarkForm() {
-            var newModeSelector = $$("#new-mode-selector")[0].value
+        function executeMarkPost() {
+           var newModeSelector = $$("#new-mode-selector")[0].value
             var state=""; //default for current state is empty
             var reason="";
-            var toDate=""
-            if (newModeSelector == "") {                                     
+            var toDate=0;
+            if (newModeSelector == "") {
                 reason = $$('#new-reason-input-group input')[0].value
                 toDate = $$("#move_date_by_new-date-input-group input")[0].value
             } if (newModeSelector == 1) {
@@ -212,24 +212,29 @@
                 reason = $$('#new-reason-input-group input')[0].value
             }
 
-            var params= {
-                "reason": reason,
-                "date": toDate,
-                "currentDate": "",
-                "state" : state
-            }
-            return Object.toJSON(params)
-        }
-
-        function executeMarkPost() {
             var arrayOfActivities='';
+            var mapOfParameters='';
             var events = $$('.event')
             for(var i = 0; i< events.length; i++ ){
                 if (events[i].checked){
+                    if (state == "") {
+                        state = $$('.event')[2].up('li').className.toLowerCase()
+                    }
+                    var date = events[i].up('.day').down('h3').innerHTML
+                    var dateInDateFormat = convertStringToDate(date)
+                    var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
+                    var mapOfParametersForOne={
+                        'events[i].value': {
+                            "reason": reason,
+                            "date": shiftedDate,
+                            "state" : state
+                        }
+                    };
+                    mapOfParameters = mapOfParameters + mapOfParametersForOne
                     arrayOfActivities = arrayOfActivities+events[i].value+';'
                 }
             }
-            post(arrayOfActivities, gatherDataFromMarkForm())
+            post(arrayOfActivities, Object.toJSON(mapOfParameters) );
         }
 
         function post(arrayOfActivities, parameters) {
@@ -460,7 +465,7 @@
                                 <ul>
                                     <c:forEach items="${day.activities}" var="sa">
                                         <c:set var="study" value="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study}"/>
-                                        <li>
+                                        <li class="${sa.currentState.mode.displayName}">
                                             <input type="checkbox" value="${sa.gridId}" name="events" class="event <c:if test="${sa.conditionalState}">conditional-event</c:if>
                                             <c:if test="${(sa.conditionalState || sa.scheduledState) && day.date < sa.scheduledStudySegment.todayDate}">past-due-event</c:if>"/>
                                             <img src="<c:url value="/images/${sa.currentState.mode.name}.png"/>" alt="Status: ${sa.currentState.mode.name}"/>
