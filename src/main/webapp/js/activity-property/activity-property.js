@@ -7,62 +7,34 @@ Object.extend(SC.AP, {
   },
 
  clickEditButton: function(evt) {
-       Event.stop(evt)
-       var editButton = Event.element(evt)
-       SC.AP.editProperty(editButton.up("tr"))
-   },
+    Event.stop(evt)
+    var editButton = Event.element(evt)
+    SC.AP.editProperty(editButton.up("tr"))
+  },
 
  clickNewButton: function(evt) {
-     Event.stop(evt)
-     var tbl =  $('propertyTable');
-     var lastRow = tbl.rows.length;
-     var row = tbl.insertRow(lastRow);
-     var cell1 = row.insertCell(0);
-     if(lastRow%2==0) {
-        var newListIndex = "odd property list-" + lastRow;
-     } else {
-        var newListIndex = "even property list-" + lastRow;
-     }
-     row.setAttribute('class',newListIndex)
-     row.setAttribute('id','newUri')
-     row.setAttribute('width','100%')
-     var tableDiv = new Element('div', { 'class':'property-content'})
-     var templateSpan = new Element('span',{'class':'templateValue'})
-     var textSpan = new Element('span',{'class':'textValue'})
-     var textNameSpan = new Element('span',{'class':'textName'})
-     var templateNameSpan = new Element('span',{'class':'templateName'})
-     var a = new Element('a', { 'class': 'property-edit', 'id': 'property-edit', href: '#property-edit', 'style':'display: none' }).update("Edit");
-     var br = new Element('br')
-     Element.observe(a, "click", SC.AP.clickEditButton)
-     tableDiv.appendChild(textNameSpan)
-     tableDiv.appendChild(textSpan)
-     tableDiv.appendChild(br)
-     tableDiv.appendChild(templateNameSpan)
-     tableDiv.appendChild(templateSpan)
-     tableDiv.appendChild(a)
-     cell1.appendChild(tableDiv)
-     SC.AP.editProperty(row)
-   },
+    Event.stop(evt)
+    var row = SC.AP.addNewRowToUriTable()
+    SC.AP.editProperty(row)
+  },
 
  editProperty: function(property) {
     var rowClass = SC.AP.findSelectIndexClass(property)
     SC.AP.PROPERTY_OBSERVERS = { }
-    $w("templateValue textValue").each(function(propertyType) {
-      var propertySpan = property.select(".property-content ." + propertyType).first();
-      var propertyInput = $('edit-property-' + propertyType);
-      propertyInput.value = propertySpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
-      SC.applyInputHint(propertyInput)
-      SC.AP.PROPERTY_OBSERVERS[propertyType] = new Form.Element.Observer(
-        propertyInput,
-        0.4,
-        function(e, value) {
-          if (propertyInput.hasClassName("input-hint")) {
-            propertySpan.innerHTML = ""
-           } else {
-            propertySpan.innerHTML = value.strip()
-          }
-        }
-      )
+    $w ("templateValue textValue").each(function(propertyType) {
+        var propertySpan = $(property).select("." + propertyType).first();
+        var propertyInput = $('edit-property-' + propertyType);
+        propertyInput.value = propertySpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
+        SC.applyInputHint(propertyInput)
+        SC.AP.PROPERTY_OBSERVERS[propertyType] = new Form.Element.Observer(propertyInput, 0.4,
+            function(e, value) {
+                if (propertyInput.hasClassName("input-hint")) {
+                    propertySpan.update("")
+                } else {
+                    propertySpan.update(value.strip())
+                }
+            }
+        )
     })
     $('edit-property-lightbox').addClassName(rowClass)
     $('edit-property-lightbox').show()
@@ -77,84 +49,70 @@ Object.extend(SC.AP, {
     var rowClass = SC.AP.findSelectIndexClass($('edit-property-lightbox'))
     $('edit-property-lightbox').removeClassName(rowClass)
 
-     var rowIndex = rowClass.substring(5)
-     LB.Lightbox.deactivate()
-     var classValue = "property".concat(" ").concat(rowClass)
-     $$('#oldUri').each(function(oldId){
-            if(oldId.className.match(classValue)) {
-                $$('#listKey').each(function(keyId) {
-                     if(keyId.parentNode.parentNode.className.match(classValue)) {
-                         SC.AP.addValues(keyId.value)
-                     }
-                })
-           }
-     })
-     $$('#newUri').each(function(newId) {
-            if(newId.className.match(classValue)) {
-                var spanChild = new Array()
-                var spanIndex = 0;
-                $w("templateValue textValue").each(function(spanValue) {
-                       spanChild[spanIndex++] = newId.select(".property-content ." + spanValue).first().innerHTML.empty();
-                })
-                var emptyFlag = "true"
-                for (var i=0;i<spanChild.length;i++) {
-                      if(!spanChild[i]) {
-                            emptyFlag = "false";
-                            break;
-                      }
-                }
-                if(emptyFlag.match("false")) {
-                        newId.select(".property-content .textName").first().innerHTML = 'Text: '
-                        newId.select(".property-content .templateName").first().innerHTML = 'Template: '
-                        newId.select(".property-content .property-edit").first().style.display = 'inline'
-                        SC.AP.addNewValues(rowIndex)
-                } else {
-                        $('propertyTable').deleteRow(rowIndex);
-                }
-            }
-      })
-    },
+    var rowIndex = rowClass.substring(5)
+    LB.Lightbox.deactivate()
 
-  addValues: function(inputIndex) {
-    $w("templateValue textValue").each(function(propertyValue) {
+    var oldUri = $('oldUri ' +rowClass);
+    if (oldUri != null) {
+       var keyValue = $(oldUri).select('.listKey').first().value
+       SC.AP.addValues(keyValue, "existingUri")
+    }
+
+    var newId = $('newUri ' +rowClass);
+    if (newId != null) {
+       if (!$(newId).select('.textValue').first().innerHTML.empty()
+           && !$(newId).select('.templateValue').first().innerHTML.empty()) {
+           $(newId).select(".textName").first().update("Text: ")
+           $(newId).select(".templateName").first().update("Template: ")
+           newId.select(".property-edit").first().style.display = 'inline'
+           SC.AP.addValues(rowIndex, "newUri")
+       } else {
+           $('propertyTable').deleteRow(rowIndex);
+       }
+    }
+  },
+
+  addValues: function(inputIndex, mapName) {
+    $w ("templateValue textValue").each(function(propertyValue) {
         var propertyInput = $('edit-property-' + propertyValue)
         if(!propertyInput.value.match("None")) {
-            var hName ="existingUri["+inputIndex+"]."+propertyValue
+            var hName =mapName +"["+inputIndex+"]."+propertyValue
             if ($(hName) != null ) {
-                if($(hName).identify() == hName) {
+                if ($(hName).identify() == hName) {
                     $(hName).remove()
                 }
             }
-            var hInput = document.createElement('input')
-            hInput.type = 'hidden'
-            hInput.name = hName
-            hInput.id = hName
-            hInput.value = propertyInput.value
+            var hInput = new Element('input', { 'type':'hidden', 'id': hName,
+                            'name': hName, 'value' : propertyInput.value})
             $('uriProperties').appendChild(hInput)
         }
-   })
+    })
   },
 
-  addNewValues: function(inputIndex) {
-    $w("templateValue textValue").each(function(propertyValue) {
-        var propertyInput = $('edit-property-' + propertyValue)
-        if(!propertyInput.value.match("None")) {
-            var hName ="newUri["+inputIndex+"]."+propertyValue
-            if ($(hName) != null ) {
-                if($(hName).identify() == hName) {
-                    $(hName).remove()
-                }
-            }
-            var hInput = document.createElement('input')
-            hInput.type = 'hidden'
-            hInput.name = hName
-            hInput.id = hName
-            hInput.value = propertyInput.value
-            $('uriProperties').appendChild(hInput)
-        }
-   })
+  addNewRowToUriTable : function() {
+    var tbl =  $('propertyTable');
+    var lastRow = tbl.rows.length;
+    var row = tbl.insertRow(lastRow);
+    var col = row.insertCell(0);
+    if (lastRow%2==0) {
+        row.className = "odd property list-" +lastRow
+    } else {
+        row.className = "even property list-" +lastRow
+    }
+    row.setAttribute('id','newUri list-' +lastRow)
+    row.setAttribute('width','100%')
+    var a = new Element('a', { 'class': 'property-edit', 'id': 'property-edit',
+                        href: '#property-edit', 'style':'display: none' }).update("Edit")
+    Element.observe(a, "click", SC.AP.clickEditButton)
+    col.appendChild(new Element('span',{'class':'textName'}))
+    col.appendChild(new Element('span',{'class':'textValue'}))
+    col.appendChild(new Element('br'))
+    col.appendChild(new Element('span',{'class':'templateName'}))
+    col.appendChild(new Element('span',{'class':'templateValue'}))
+    col.appendChild(a)
+    return row;
   },
-    
+
   applyActivityPropertyIndex :  function(container) {
     var rows = $(container).select("tr.property")
     for (var i = 0 ; i < rows.length ; i++) {

@@ -20,18 +20,27 @@
         form {
             width: 35em;
         }
-        div.uriProperties {
-            margin-left: 22%;
-            width:100%;
-        }
-        .property-edit {
+        a.property-edit {
             float:right;
         }
+        a.property-edit:hover, a.newUriBtn:hover {
+            background-color:#DDDDDD;
+            border-color:#444444;
+        }
+        a.property-edit, a.newUriBtn {
+            background-color:#CCCCCC;
+            border:1px solid #999999;
+            color:#444444 !important;
+            margin:0 2px;
+            padding:2px;
+            font-weight:bold;
+            text-decoration:none;
+}
     </style>
     <script type="text/javascript">
         function updateActivityError() {
             if (isCorrectInput()){
-               $('activityError').innerHTML = "";
+               $('activityError').update("");
             }
         }
         function isCorrectInput() {
@@ -40,7 +49,7 @@
             var isCorrectData = true;
             if (activityCode == "" || activityName =="") {
                isCorrectData  = false;
-               $('activityError').innerHTML = "Activity name or code can not be empty.";
+               $('activityError').update("Activity name or code can not be empty.");
             }
             return isCorrectData;
         }
@@ -97,37 +106,29 @@
                 </div>
             </div>
             <div class="row">
-            <div class="label">URI</div>
-            <div class="uriProperties" id="uriProperties">
-                <table width="100%" id="propertyTable" class="propertyTable">
-                    <c:forEach items="${existingList}" var="list" varStatus="status">
-                           <tr class=" ${commons:parity(status.count)} property" id="oldUri" width="100%">
-                               <td>
-                                   <input name="listKey" class="listKey" id="listKey" type="hidden" value="${list.key}" />
-                                 <div class='property-content'>
+                <div class="label">URI</div>
+                <div class="value" id="uriProperties">
+                    <table width="100%" id="propertyTable" class="propertyTable">
+                        <c:forEach items="${existingList}" var="list" varStatus="status">
+                            <tr class="${commons:parity(status.count)} property" id="oldUri list-${status.count-1}" width="100%">
+                                <td>
+                                    <input name="listKey" class="listKey" id="listKey" type="hidden" value="${list.key}" />
                                     <span class="textName">Text: </span>
-                                    <span class='textValue'>
-                                        ${list.value.textValue}
-                                    </span>
+                                    <span class="textValue">${list.value.textValue}</span>
                                     <br />
-                                    <span class="templateName">Template:</span>
-                                    <span class='templateValue'>
-                                        ${list.value.templateValue}
-                                    </span>
-                                    <a class="property-edit" id="property-edit" href="#property-edit">
-                                    Edit
-                                    </a>
-                                  </div>
+                                    <span class="templateName">Template: </span>
+                                    <span class="templateValue">${list.value.templateValue}</span>
+                                    <a class="property-edit" id="property-edit" href="#property-edit">Edit</a>
                                  </td>
-                        </tr>
-                    </c:forEach>
-                </table>
-           </div>
-           <div class="value"><a class="newUriBtn" id="newUriBtn" href='#newUriBtn'>New Uri</a> </div>
-           </div>
-         <div class="row submit">
+                            </tr>
+                        </c:forEach>
+                    </table>
+                </div>
+                <div class="value"><a class="newUriBtn" id="newUriBtn" href='#newUriBtn'>New Uri</a></div>
+            </div>
+            <div class="row submit">
                 <input type="submit" value="Save"/>
-        </div>
+            </div>
         </form:form>
     </laf:division>
 </laf:box>
