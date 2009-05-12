@@ -152,12 +152,19 @@
             var shiftedDate = new Date();
             var timeShifted =  dateToShiftInMilliseconds + (parseInt(numberOfDaysToShift, 10)*24*60*60*1000)
             shiftedDate.setTime(timeShifted)
-            return shiftedDate.toString();
+
+            var year = shiftedDate.getFullYear()
+            var day = shiftedDate.getDate()
+            var month = shiftedDate.getMonth()+1
+
+            day = (day < 10 ) ? ("0" + day) : day
+            month = (month < 10) ? ("0" + month): month
+            return year+"-" + month+ "-" + day;
         }
 
         function executeDelayAdvancePost() {
             var arrayOfActivities='';
-            var mapOfParameters='';
+            var mapOfParameters={};
             var shiftOptionForwardOrBackward = $('delayAdvanceSelector').value
             var reason = $('reason').value
             var toDate = shiftOptionForwardOrBackward*$('toDate').value
@@ -174,14 +181,11 @@
                         <c:if test="${not empty day.activities}">
                             <c:forEach items="${day.activities}" var="sa">
                                 arrayOfActivities = arrayOfActivities+'${sa.gridId}'+';';
-                                var mapOfParametersForOne={
-                                    '${sa.gridId}': {
-                                        "reason": reason,
-                                        "date": shiftedDate,
-                                        "state" : '${sa.currentState}'
-                                    }
+                                mapOfParameters['${sa.gridId}']={
+                                    "reason": reason,
+                                    "date": shiftedDate,
+                                    "state" : '${sa.currentState}'
                                 };
-                                mapOfParameters = mapOfParameters + mapOfParametersForOne
                             </c:forEach>
                         </c:if>
                     </c:if>
@@ -212,28 +216,26 @@
                 reason = $$('#new-reason-input-group input')[0].value
             }
 
-            var arrayOfActivities='';
-            var mapOfParameters='';
+            var mapOfParameters = {};
             var events = $$('.event')
-            for(var i = 0; i< events.length; i++ ){
-                if (events[i].checked){
-                    if (state == "") {
-                        state = $$('.event')[2].up('li').className.toLowerCase()
-                    }
-                    var date = events[i].up('.day').down('h3').innerHTML
-                    var dateInDateFormat = convertStringToDate(date)
-                    var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
-                    var mapOfParametersForOne={
-                        'events[i].value': {
-                            "reason": reason,
-                            "date": shiftedDate,
-                            "state" : state
-                        }
-                    };
-                    mapOfParameters = mapOfParameters + mapOfParametersForOne
-                    arrayOfActivities = arrayOfActivities+events[i].value+';'
+            var checkedEvents = events.select(function(e) { return e.checked })
+
+            var isStateEmpty= (state == "");
+            for (var i = 0; i< checkedEvents.length; i++ ){
+                if (isStateEmpty) {
+                    state = $$('.event')[2].up('li').className.toLowerCase()
                 }
+                var date = checkedEvents[i].up('.day').down('h3').innerHTML
+                var activityKey = checkedEvents[i].value
+                var dateInDateFormat = convertStringToDate(date)
+                var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
+                mapOfParameters[activityKey] = {
+                        "reason": reason,
+                        "date": shiftedDate,
+                        "state" : state
+                };
             }
+            var arrayOfActivities = events.select(function(e) { return e.checked }).collect(function(e) { return e.value }).join(';')
             post(arrayOfActivities, Object.toJSON(mapOfParameters) );
         }
 
@@ -241,7 +243,7 @@
             SC.asyncRequest('${collectionResource}'+'/' + arrayOfActivities, Object.extend({
                 method: 'POST',
                 contentType: 'application/json',
-                parameters: parameters
+                postBody: parameters
             }))
         }
 
