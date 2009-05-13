@@ -69,8 +69,10 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
     }
 
     public void testIsEdit() throws Exception {
+        originalPopulation.setId(null);
         assertFalse("Population is not in edit state", command.isEdit());
     }
+
 
 
     public void testIsEditTrue() throws Exception {

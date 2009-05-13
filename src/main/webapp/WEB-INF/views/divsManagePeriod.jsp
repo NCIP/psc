@@ -239,9 +239,31 @@
                                             &nbsp;
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="marker <c:if test="${not empty pa.population}">population-${pa.population.abbreviation}</c:if>" resource-href="${collectionResource}/${pa.gridId}">
-                                                ${empty pa.population ? '&times;' : pa.population.abbreviation}
-                                            </div>
+                                            <c:if test="${not study.inAmendmentDevelopment}">
+                                                <div class="marker <c:if test="${not empty pa.population}">population-${pa.population.abbreviation}</c:if>" resource-href="${collectionResource}/${pa.gridId}">
+                                                    ${empty pa.population ? '&times;' : pa.population.abbreviation}
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${study.inAmendmentDevelopment}">
+                                                <c:if test="${not empty pa.population}">
+                                                    <c:set var="populationId" value="${pa.population.gridId}"/>
+                                                    <c:set var="popName" value=""/>
+                                                    <c:set var="popAbbr" value=""/>
+
+                                                    <c:forEach items="${study.populations}" var="pop">
+                                                        <c:if test="${pop.gridId == populationId}">
+                                                           <c:set var="popName" value="${pop.name}"/>
+                                                           <c:set var="popAbbr" value="${pop.abbreviation}"/>
+                                                        </c:if>
+
+                                                    </c:forEach>
+                                                </c:if>
+
+
+                                                <div class="marker <c:if test="${not empty pa.population}">population-${popAbbr}</c:if>" resource-href="${collectionResource}/${pa.gridId}">
+                                                    ${empty pa.population ? '&times;' : popAbbr}
+                                                </div>
+                                            </c:if>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
