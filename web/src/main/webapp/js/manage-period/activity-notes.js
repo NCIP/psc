@@ -83,10 +83,7 @@ Object.extend(SC.MP, {
     })
     
     // reposition box
-    var boxHeight = box.getDimensions().height
     box.style.top = ($('notes').scrollTop + 18) + "px"
-    box.style.height = boxHeight + "px"
-    
     box.show()
   },
 
