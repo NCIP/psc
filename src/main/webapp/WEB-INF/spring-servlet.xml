@@ -293,11 +293,7 @@
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
-       <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Activities/New Activity"/>
-            </bean>
-      </property>
+       <property name="crumb.parent"><ref local="managePeriodActivitiesController"/></property>
     </bean>
 
     <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
