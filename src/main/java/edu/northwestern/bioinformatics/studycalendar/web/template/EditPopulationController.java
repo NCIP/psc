@@ -11,7 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.nwu.bioinformatics.commons.spring.ValidatableValidator
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import javax.servlet.http.HttpServletRequest;
