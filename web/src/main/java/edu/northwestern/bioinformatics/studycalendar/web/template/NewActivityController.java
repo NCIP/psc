@@ -12,12 +12,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * @author Jaron Sampson
@@ -30,6 +34,7 @@ public class NewActivityController extends PscSimpleFormController {
     private ActivityDao activityDao;
     Activity activity;
     private SourceDao sourceDao;
+    private PeriodDao periodDao;
     private ActivityTypeDao activityTypeDao;
     private ActivityPropertyDao activityPropertyDao;
 
@@ -39,11 +44,16 @@ public class NewActivityController extends PscSimpleFormController {
         setBindOnNewForm(true);
         setFormView("advancedEditActivity");
         setSuccessView("viewActivity");
+        setCrumb(new Crumb());
     }
 
     @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
+        Integer periodId = ServletRequestUtils.getIntParameter(request, "returnToPeriod");
+        if (periodId != null) {
+            getControllerTools().addHierarchyToModel(periodDao.getById(periodId), refdata);
+        }
         refdata.put("activityTypes", activityTypeDao.getAll());
         refdata.put("action", "New");
         return refdata;
@@ -76,6 +86,17 @@ public class NewActivityController extends PscSimpleFormController {
         return new AdvancedEditActivityCommand(activity, activityDao, activityPropertyDao);
     }
 
+    private static class Crumb extends DefaultCrumb {
+        public Crumb() {
+            super("New Activity");
+        }
+
+        @Override
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            return Collections.singletonMap("returnToPeriod", context.getPeriod().getId().toString());
+        }
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -96,6 +117,11 @@ public class NewActivityController extends PscSimpleFormController {
     @Required
     public void setActivityPropertyDao(ActivityPropertyDao activityPropertyDao) {
         this.activityPropertyDao = activityPropertyDao;
+    }
+
+    @Required
+    public void setPeriodDao(final PeriodDao periodDao) {
+        this.periodDao = periodDao;
     }
 
 }
