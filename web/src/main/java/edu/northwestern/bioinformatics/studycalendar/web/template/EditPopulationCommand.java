@@ -50,7 +50,7 @@ public class EditPopulationCommand implements Validatable {
     }
 
     public boolean isEdit() {
-        return population.getId() != null;
+        return originalPopulation.getId() != null;
     }
 
     public void apply() {

@@ -3,11 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
@@ -38,6 +40,7 @@ public class EditPopulationController extends PscSimpleFormController {
     private AmendmentService amendmentService;
     private StudyDao studyDao;
     private DeltaService deltaService;
+    private TemplateService templateService;
 
     protected EditPopulationController() {
         setValidator(new ValidatableValidator());
@@ -55,7 +58,15 @@ public class EditPopulationController extends PscSimpleFormController {
         } else {
             pop = populationDao.getById(popId);
         }
+
         Study study = studyDao.getById(studyId);
+        if (study.isInAmendmentDevelopment()){
+            //applying the dev amendmnets to the cloned study to get the new population, that's in the deltas
+            if (study.getDevelopmentAmendment().getDeltas() != null && study.getDevelopmentAmendment().getDeltas().size() >0) {
+                Study amStudy1 = deltaService.revise(study, study.getDevelopmentAmendment().getDeltas().get(0).getRevision());
+                pop = templateService.findEquivalentChild(amStudy1, pop);
+            }
+        }
         return new EditPopulationCommand(pop, populationService, amendmentService, populationDao, study);
     }
 
@@ -115,6 +126,11 @@ public class EditPopulationController extends PscSimpleFormController {
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
     @Required
