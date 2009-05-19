@@ -40,8 +40,10 @@ public class ProvidedSitesResource extends Resource {
                }
             }
         }
-        availableSites.removeAll(duplicateSites);
-        providedSites.addAll(availableSites);
+        List<Site> all = new ArrayList<Site>(availableSites.size() + providedSites.size());
+        all.addAll(availableSites);
+        all.removeAll(duplicateSites);
+        all.addAll(providedSites);
         return providedSites;
     }
 

@@ -1,16 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
-
-import java.util.List;
-import java.util.ArrayList;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Jalpa Patel
@@ -44,8 +43,8 @@ public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesRes
         List<Site> sites = new ArrayList<Site>();
         Site site = Fixtures.createSite("site");
         sites.add(site);
-        expect(siteDao.searchSitesBySearchText(searchString)).andReturn(sites);
-        expect(siteProvider.search(searchString)).andReturn(sites);
+        expect(siteDao.searchSitesBySearchText(searchString)).andReturn(Collections.unmodifiableList(sites));
+        expect(siteProvider.search(searchString)).andReturn(Collections.unmodifiableList(sites));
         expect(xmlSerializer.createDocumentString(sites)).andReturn(MOCK_XML);
 
         doGet();
