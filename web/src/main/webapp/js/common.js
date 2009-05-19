@@ -360,5 +360,6 @@ SC.applyInputHint = function(input) {
 }
 
 $(document).observe("dom:loaded", function() {
+  $$("input[clearValueOnLoad]").each(function(input){input.value=""})
   $$("input[hint]").each(SC.addInputHintBehavior)
 })

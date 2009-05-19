@@ -385,8 +385,8 @@
                 <option>${activityType.name}</option>
             </c:forEach>
         </select>
-        <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
-               hint="With this name or code"/>
+        <input id="activities-autocompleter-input" type="text" autocomplete="OFF" class="autocomplete"
+               hint="With this name or code" clearValueOnLoad/>
 
         <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}"/>">Create new activity</a>
 
