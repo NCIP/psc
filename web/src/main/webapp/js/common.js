@@ -351,7 +351,7 @@ SC.inputHintBlur = function(evt) {
 }
 
 SC.applyInputHint = function(input) {
-  if (input.value.blank()) {
+  if (input.value.blank() || input.value == input.getAttribute("hint")) {
     input.addClassName("input-hint")
     input.value = input.getAttribute("hint")
   } else {
@@ -360,6 +360,5 @@ SC.applyInputHint = function(input) {
 }
 
 $(document).observe("dom:loaded", function() {
-  $$("input[clearValueOnLoad]").each(function(input){input.value=""})
   $$("input[hint]").each(SC.addInputHintBehavior)
 })
