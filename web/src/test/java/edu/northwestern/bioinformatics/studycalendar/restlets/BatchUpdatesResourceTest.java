@@ -30,20 +30,18 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
     private JSONObject entity = new JSONObject();
     private JSONObject responseEntity = new JSONObject();
     private JSONObject activityState1,activityState2;
-
-    private static final String UPDATE_LIST = "1111;2222";
+    private static final String GridId1 = "1111";
+    private static final String GridId2 = "2222";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public void setUp() throws Exception {
         super.setUp();
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         scheduleService = registerMockFor(ScheduleService.class);
-        request.getAttributes().put(UriTemplateParameters.UPDATE_LIST.attributeName(),UPDATE_LIST);
-
         scheduledActivity1 = Fixtures.setId(12, Fixtures.createScheduledActivity("A", 2008, Calendar.MARCH, 4));
-        scheduledActivity1.setGridId("1111");
+        scheduledActivity1.setGridId(GridId1);
         scheduledActivity2 = Fixtures.setId(13, Fixtures.createScheduledActivity("B", 2008, Calendar.MARCH, 10));
-        scheduledActivity2.setGridId("2222");
+        scheduledActivity2.setGridId(GridId2);
 
         Subject subject = createSubject("Perry", "Duglas");
         Study study = createBasicTemplate("Study");
@@ -58,8 +56,8 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
 
         activityState1 = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
         activityState2 = createJSONFormatForRequest("scheduled", "2008-03-11", "Move by 1 day");
-        entity.put("1111", activityState1);
-        entity.put("2222", activityState2);
+        entity.put(GridId1, activityState1);
+        entity.put(GridId2, activityState2);
         request.setEntity(new JsonRepresentation(entity));
     }
 
@@ -75,16 +73,21 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
         assertAllowedMethods("POST", "GET");
     }
 
-    public void testGet400WhenNoActivitiesForUpdate() throws Exception {
-        request.getAttributes().put(UriTemplateParameters.UPDATE_LIST.attributeName(),null);
-        doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-    }
-
-    public void testGet404WhenNoActivityWithGivenGridId() throws Exception {
-        expect(scheduledActivityDao.getByGridId("1111")).andReturn(null);
-        doGet();
-        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
+    public void testPostWithInvalidActivityId() throws Exception {
+        expect(scheduledActivityDao.getByGridId(GridId1)).andReturn(null);
+        expect(scheduledActivityDao.getByGridId(GridId2)).andReturn(scheduledActivity2);
+        createResponseMessage(GridId1,Status.CLIENT_ERROR_NOT_FOUND.getCode());
+        expectUpdateScheduledActivityState(activityState2, new Scheduled());
+        scheduledActivityDao.save(scheduledActivity2);
+        createResponseMessage(GridId2,Status.SUCCESS_CREATED.getCode());
+        response.setEntity(new JsonRepresentation(responseEntity));
+        doPost();
+        assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
+        JSONObject responseText = new JSONObject(response.getEntity().getText());
+        assertEquals("Wrong Status code for activity with Invalid gridid",
+                Status.CLIENT_ERROR_NOT_FOUND.getCode(), ((JSONObject)responseText.get(GridId1)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity",
+                Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(GridId2)).get("Status"));
     }
 
     public void test400ForUnsupportedEntityContentType() throws Exception {
@@ -97,58 +100,58 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
         expectGetActivities();
         expectUpdateScheduledActivityState(activityState1, new Canceled());
         scheduledActivityDao.save(scheduledActivity1);
-        createResponseMessage("1111",Status.SUCCESS_CREATED.getCode());
+        createResponseMessage(GridId1,Status.SUCCESS_CREATED.getCode());
         expectUpdateScheduledActivityState(activityState2, new Scheduled());
         scheduledActivityDao.save(scheduledActivity2);
-        createResponseMessage("2222",Status.SUCCESS_CREATED.getCode());
+        createResponseMessage(GridId2,Status.SUCCESS_CREATED.getCode());
         response.setEntity(new JsonRepresentation(responseEntity));
         doPost();
 
         assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
         JSONObject responseText = new JSONObject(response.getEntity().getText());
-        assertEquals("Wrong Status code for first activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get("1111")).get("Status"));
-        assertEquals("Wrong Status code for secaond activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get("2222")).get("Status"));
+        assertEquals("Wrong Status code for first activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(GridId1)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(GridId2)).get("Status"));
     }
 
     public void testPostInvalidStateForOneActivity() throws Exception {
         expectGetActivities();
         activityState1 = createJSONFormatForRequest("canceledup", "2008-03-02", "Just Canceled");
         activityState2 = createJSONFormatForRequest("scheduled", "2008-03-11", "Move by 1 day");
-        entity.put("1111", activityState1);
-        entity.put("2222", activityState2);
+        entity.put(GridId1, activityState1);
+        entity.put(GridId2, activityState2);
         request.setEntity(new JsonRepresentation(entity));
         expectUpdateScheduledActivityState(activityState1, null);
-        createResponseMessage("1111",Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        createResponseMessage(GridId1,Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         expectUpdateScheduledActivityState(activityState2, new Scheduled());
         scheduledActivityDao.save(scheduledActivity2);
-        createResponseMessage("2222",Status.SUCCESS_CREATED.getCode());
+        createResponseMessage(GridId2,Status.SUCCESS_CREATED.getCode());
         response.setEntity(new JsonRepresentation(responseEntity));
 
         doPost();
         assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
         JSONObject responseText = new JSONObject(response.getEntity().getText());
-        assertEquals("Wrong Status code for first activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get("1111")).get("Status"));
-        assertEquals("Wrong Status code for secaond activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get("2222")).get("Status"));
+        assertEquals("Wrong Status code for first activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(GridId1)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(GridId2)).get("Status"));
     }
 
     public void testPostInvalidDateForOneActivity() throws Exception {
         expectGetActivities();
         activityState1 = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
         activityState2 = createJSONFormatForRequest("scheduled", "2008", "Move by 1 day");
-        entity.put("1111", activityState1);
-        entity.put("2222", activityState2);
+        entity.put(GridId1, activityState1);
+        entity.put(GridId2, activityState2);
         request.setEntity(new JsonRepresentation(entity));
         expectUpdateScheduledActivityState(activityState1, new Canceled());
-        createResponseMessage("1111",Status.SUCCESS_CREATED.getCode());
+        createResponseMessage(GridId1,Status.SUCCESS_CREATED.getCode());
         scheduledActivityDao.save(scheduledActivity1);
-        createResponseMessage("2222",Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        createResponseMessage(GridId2,Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         response.setEntity(new JsonRepresentation(responseEntity));
 
         doPost();
         assertResponseStatus(Status.SUCCESS_MULTI_STATUS);
         JSONObject responseText = new JSONObject(response.getEntity().getText());
-        assertEquals("Wrong Status code for first activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get("1111")).get("Status"));
-        assertEquals("Wrong Status code for secaond activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get("2222")).get("Status"));
+        assertEquals("Wrong Status code for first activity", Status.SUCCESS_CREATED.getCode(), ((JSONObject)responseText.get(GridId1)).get("Status"));
+        assertEquals("Wrong Status code for secaond activity", Status.CLIENT_ERROR_BAD_REQUEST.getCode(), ((JSONObject)responseText.get(GridId2)).get("Status"));
 
     }
 
@@ -159,8 +162,8 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
     }
 
     private void expectGetActivities() {
-        expect(scheduledActivityDao.getByGridId("1111")).andReturn(scheduledActivity1);
-        expect(scheduledActivityDao.getByGridId("2222")).andReturn(scheduledActivity2);
+        expect(scheduledActivityDao.getByGridId(GridId1)).andReturn(scheduledActivity1);
+        expect(scheduledActivityDao.getByGridId(GridId2)).andReturn(scheduledActivity2);
     }
 
     //Test Helper Methods

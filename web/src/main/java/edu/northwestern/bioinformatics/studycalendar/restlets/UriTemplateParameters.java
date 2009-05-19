@@ -19,7 +19,6 @@ public enum UriTemplateParameters {
     BLACKOUT_DATE_IDENTIFIER,
     AMENDMENT_IDENTIFIER,
     SUBJECT_IDENTIFIER,
-    UPDATE_LIST,
     YEAR,
     MONTH,
     DAY,

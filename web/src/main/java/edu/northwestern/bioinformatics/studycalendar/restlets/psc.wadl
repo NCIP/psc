@@ -504,13 +504,10 @@
                     <representation mediaType="application/json"/>
                 </response>
             </method>
-            <resource path="partial/{update-list}">
+            <resource path="batchUpdate">
                 <doc>
                     <html:p>The batch update for the list of scheduled activities for single subject</html:p>
                 </doc>
-                <param style="template" name="update-list">
-                    <doc>list of generated identifier of scheduled activities for batch update separated by ' ; '</doc>
-                </param>
                 <method name="POST">
                     <doc>
                          Accepts new scheduled activity state (date, status, and reason) to

@@ -127,7 +127,7 @@ describe "/subject_centric_schedule" do
     it "updates the scheduled activity states for batch activities" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceled, reason : Just canceled , date : 2009-12-29 }}"
-      post "/schedules/ID001/partial/#{@scheduled_activity1.gridId};#{@scheduled_activity2.gridId}", @JSONentity, 
+      post "/schedules/ID001/batchUpdate", @JSONentity, 
         :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201
@@ -139,7 +139,7 @@ describe "/subject_centric_schedule" do
     it "updates scheduled activity state for one activity and send 400 - Bad Request for another activity with incorrect state in request" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceledd, reason : Just canceled , date : 2009-12-29 }}"
-      post "/schedules/ID001/partial/#{@scheduled_activity1.gridId};#{@scheduled_activity2.gridId}", @JSONentity, 
+      post "/schedules/ID001/batchUpdate", @JSONentity,
             :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201
@@ -150,7 +150,7 @@ describe "/subject_centric_schedule" do
     it "updates scheduled activity state for one activity and send 400 - Bad Request for another activity with incorrect date in request" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceled, reason : Just canceled , date : 2009 }}"
-      post "/schedules/ID001/partial/#{@scheduled_activity1.gridId};#{@scheduled_activity2.gridId}", @JSONentity, 
+      post "/schedules/ID001/batchUpdate", @JSONentity,
             :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201

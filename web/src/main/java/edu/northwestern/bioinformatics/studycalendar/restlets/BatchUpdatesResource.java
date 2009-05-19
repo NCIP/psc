@@ -24,13 +24,10 @@ import java.text.ParseException;
 /**
  * @author Jalpa Patel
  */
-public class BatchUpdatesResource extends AbstractStorableCollectionResource<ScheduledActivity>{
+public class BatchUpdatesResource extends AbstractPscResource{
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    private List<ScheduledActivity> scheduledActivities = new LinkedList<ScheduledActivity>();
-    private StudyCalendarXmlCollectionSerializer<ScheduledActivity> xmlSerializer;
-
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -40,21 +37,8 @@ public class BatchUpdatesResource extends AbstractStorableCollectionResource<Sch
     }
 
     @Override
-    public Collection<ScheduledActivity> getAllObjects() throws ResourceException {
-        String updateList = UriTemplateParameters.UPDATE_LIST.extractFrom(getRequest());
-        if (updateList == null) {
-           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,"No Activities in request");
-        }
-        List<String> gridIds = new LinkedList(Arrays.asList(updateList.split(";")));
-        ScheduledActivity scheduledActivity;
-        for (String gridId : gridIds) {
-            scheduledActivity = scheduledActivityDao.getByGridId(gridId);
-            if (scheduledActivity == null) {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Activity does not exist with grid id " +gridId);
-            }
-            scheduledActivities.add(scheduledActivity);
-        }
-        return scheduledActivities;
+    public boolean allowPost() {
+        return true;
     }
 
     @Override
@@ -65,28 +49,35 @@ public class BatchUpdatesResource extends AbstractStorableCollectionResource<Sch
                 JSONObject entity = new JSONObject(representation.getText());
                 JSONObject responseEntity = new JSONObject();
                 JSONObject statusMessage;
-                List<ScheduledActivity> activities =  new ArrayList<ScheduledActivity>(getAllObjects());
-                for (ScheduledActivity scheduledActivity : activities) {
-                   JSONObject activityState = (JSONObject)(entity.get(scheduledActivity.getGridId()));
-                   String state = activityState.get("state").toString();
-                   String reason = activityState.get("reason").toString();
-                   String dateString = activityState.get("date").toString();
-                   try {
-                       Date date = formatter.parse(dateString);
-                       ScheduledActivityState scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
-                       if (scheduledActivityState == null) {
-                          statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
-                       } else {
-                          scheduledActivity.changeState(scheduledActivityState);
-                          String target = store(scheduledActivity);
-                          statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
-                          statusMessage.put("Location",getRequest().getRootRef()+target);
-                       }
-                       responseEntity.put(scheduledActivity.getGridId(), statusMessage);
-                   } catch (ParseException pe) {
-                       responseEntity.put(scheduledActivity.getGridId(),
+                Iterator activityIds = entity.keys();
+                while (activityIds.hasNext()) {
+                    String activityId = activityIds.next().toString();
+                    ScheduledActivity scheduledActivity = scheduledActivityDao.getByGridId(activityId);
+                    if (scheduledActivity == null) {
+                        statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_NOT_FOUND, "Activity does not exist with grid id " + activityId);
+                        responseEntity.put(activityId, statusMessage);
+                    } else {
+                        JSONObject activityState = (JSONObject)(entity.get(activityId));
+                        String state = activityState.get("state").toString();
+                        String reason = activityState.get("reason").toString();
+                        String dateString = activityState.get("date").toString();
+                        try {
+                            Date date = formatter.parse(dateString);
+                            ScheduledActivityState scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
+                            if (scheduledActivityState == null) {
+                                statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
+                            } else {
+                                scheduledActivity.changeState(scheduledActivityState);
+                                String target = store(scheduledActivity);
+                                statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
+                                statusMessage.put("Location",getRequest().getRootRef()+target);
+                            }
+                            responseEntity.put(activityId, statusMessage);
+                        } catch (ParseException pe) {
+                            responseEntity.put(activityId,
                                createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date "+dateString));
-                   }
+                        }
+                    }
                 }
                 getResponse().setEntity(new JsonRepresentation(responseEntity));
                 getResponse().setStatus(Status.SUCCESS_MULTI_STATUS);
@@ -101,7 +92,6 @@ public class BatchUpdatesResource extends AbstractStorableCollectionResource<Sch
         }
     }
 
-    @Override
     public String store(ScheduledActivity scheduledActivity){
         scheduledActivityDao.save(scheduledActivity);
         return String.format( "/studies/%s/schedules/%s/activities/%s",
@@ -116,14 +106,6 @@ public class BatchUpdatesResource extends AbstractStorableCollectionResource<Sch
         object.put("Status", status.getCode());
         object.put("Message", message);
         return object;
-    }
-    @Override
-    public StudyCalendarXmlCollectionSerializer<ScheduledActivity> getXmlSerializer() {
-        return xmlSerializer;
-    }
-
-    public void setXmlSerializer(StudyCalendarXmlCollectionSerializer<ScheduledActivity> xmlSerializer) {
-        this.xmlSerializer = xmlSerializer;
     }
 
     @Required

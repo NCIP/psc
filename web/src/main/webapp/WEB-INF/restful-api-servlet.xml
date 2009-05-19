@@ -181,10 +181,9 @@
           <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
     </bean>
 
-    <bean name="/schedules/{subject-identifier}/partial/{update-list}"
+    <bean name="/schedules/{subject-identifier}/batchUpdate"
           id="batchUpdatesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
-          <property name="xmlSerializer" ref="scheduledActivityXmlSerializer"/>
     </bean>
     
     <!--Users Role -->
