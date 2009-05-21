@@ -31,6 +31,7 @@
             padding: 0.5em;
             list-style-type: none;
             margin: 0.5em;
+            height:1% /* For IE */
         }
         ul.menu li .primary {
             display: block;
