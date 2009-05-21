@@ -351,7 +351,7 @@ SC.inputHintBlur = function(evt) {
 }
 
 SC.applyInputHint = function(input) {
-  if (input.value.blank()) {
+  if (input.value.blank() || input.value == input.getAttribute("hint")) {
     input.addClassName("input-hint")
     input.value = input.getAttribute("hint")
   } else {
