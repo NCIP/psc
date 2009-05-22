@@ -11,7 +11,7 @@
             <c:forEach items="${schedule.studies}" var="study">
                 <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
                     <c:forEach items="${epoch.studySegments}" var="studySegment">
-                        <option value="${study.id}_${epoch.id}_${studySegment.id}">${study.name}:${epoch.name}:${studySegment.name}</option>
+                        <option value="${study.gridId}_${epoch.id}_${studySegment.gridId}">${study.name}:${epoch.name}:${studySegment.name}</option>
                     </c:forEach>
                 </c:forEach>
             </c:forEach>

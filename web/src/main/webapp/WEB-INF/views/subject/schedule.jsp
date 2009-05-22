@@ -10,7 +10,7 @@
 <%@taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<tags:escapedUrl var="collectionResource" value="api~v1~schedules~${subject.gridId}~partial"/>
+<tags:escapedUrl var="collectionResource" value="api~v1~schedules~${subject.gridId}~batchUpdate"/>
 
 <html>
 <head>
@@ -27,6 +27,7 @@
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="scheduled-activity"/>
     <tags:javascriptLink name="scheduled-activity-batch-modes"/>
+    <tags:javascriptLink name="resig-templates" />
 
      <style type="text/css">
         .myaccordion {
@@ -163,7 +164,6 @@
         }
 
         function executeDelayAdvancePost() {
-            var arrayOfActivities='';
             var mapOfParameters={};
             var shiftOptionForwardOrBackward = $('delayAdvanceSelector').value
             var reason = $('reason').value
@@ -180,18 +180,17 @@
                     <c:if test="${not day['empty']}">
                         <c:if test="${not empty day.activities}">
                             <c:forEach items="${day.activities}" var="sa">
-                                arrayOfActivities = arrayOfActivities+'${sa.gridId}'+';';
                                 mapOfParameters['${sa.gridId}']={
                                     "reason": reason,
                                     "date": shiftedDate,
-                                    "state" : '${sa.currentState}'
+                                    "state" : '${sa.currentState.mode}'
                                 };
                             </c:forEach>
                         </c:if>
                     </c:if>
                 }
             </c:forEach>
-            post(arrayOfActivities, Object.toJSON(mapOfParameters) );
+            post(Object.toJSON(mapOfParameters) );
         }
 
 
@@ -235,50 +234,60 @@
                         "state" : state
                 };
             }
-            var arrayOfActivities = events.select(function(e) { return e.checked }).collect(function(e) { return e.value }).join(';')
-            post(arrayOfActivities, Object.toJSON(mapOfParameters) );
+            post(Object.toJSON(mapOfParameters) );
         }
 
-        function post(arrayOfActivities, parameters) {
-            SC.asyncRequest('${collectionResource}'+'/' + arrayOfActivities, Object.extend({
+        function post(parameters) {
+            SC.asyncRequest('${collectionResource}'+'/', Object.extend({
                 method: 'POST',
                 contentType: 'application/json',
                 postBody: parameters
             }))
         }
 
-        //todo - this will have to be properly adjusted for the resource
+        //todo - need to figure out the submect.assignments.gridId for study.
         function putScheduleNextSegment() {
             var parameters = gatherDataFromScheduleStudySegment()
-            var studySegmentSelector = $$('#studySegmentSelector')[0].value //gives us ids for study, epoch, study_segment
+            var studySegmentSelector = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex].value //gives us ids for study, epoch, study_segment
             studySegmentSelector = studySegmentSelector.split("_")
             var studyId = studySegmentSelector[0];
+            var studyIdentifierName = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex].text.split(":")[0] //gives us names for study, epoch, study_segment
 
-            var href = "api~v1~studies~"+studyId+ "~sites~${site.name}"
+//            TODO - need to figure out assignment part
+            var href = '/psc/api/v1/studies/'+studyIdentifierName+'/schedules/${subject.assignments[0].gridId}'
             SC.asyncRequest(href, Object.extend({
-                method: 'PUT',
-                parameters: parameters
+                method: 'POST',
+                contentType: 'text/xml',
+                postBody: parameters
             }))
         }
 
         function gatherDataFromScheduleStudySegment() {
-            var studySegmentSelector = $$('#studySegmentSelector')[0].value //gives us ids for study, epoch, study_segment
-            studySegmentSelector = studySegmentSelector.split("_")
-            var epochId = studySegmentSelector[1];
-            var studySegmentId = studySegmentSelector[2];
+            var selectedElt = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex]
+            var studySegmentSelectorIds = selectedElt.value //gives us ids for study, epoch, study_segment
+            var studySegmentSelectorNames = selectedElt.text //gives us names for study, epoch, study_segment
+            studySegmentSelectorIds = studySegmentSelectorIds.split("_")
+            var epochId = studySegmentSelectorIds[1];
+            var studySegmentId = studySegmentSelectorIds[2];
+
+            studySegmentSelectorNames = studySegmentSelectorNames.split(":")
+            var epochName = studySegmentSelectorNames [1]
+            var studySegmentName = studySegmentSelectorNames [2]
+
             var immediateOrPerProtocol = $$('#mode-row input');
             for (var i= 0; i < 2; i++){
                 if (immediateOrPerProtocol[i].checked) {
                     immediateOrPerProtocol = immediateOrPerProtocol[i].value
                 }
             }
+            immediateOrPerProtocol = immediateOrPerProtocol.replace("_", "-");
             var date = $('start-date-input').value;
-            return Object.extend({
-                "study-segment": studySegmentId,
-                "date": date,
-                "epoch": epochId,
-                "immediateOrPerProtocol": immediateOrPerProtocol
-            })
+            date = date.split("/")
+
+            date = date[2] + '-'+date[0]+'-'+date[1]
+
+            var paramsInXML = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
+            return paramsInXML;
         }
 
     </script>

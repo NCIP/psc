@@ -90,7 +90,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     public void acceptRepresentation(final Representation entity) throws ResourceException {
-        if (entity.getMediaType() == MediaType.TEXT_XML) {
+        if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
 
             NextScheduledStudySegment scheduled;
             try {

@@ -61,10 +61,9 @@
             var errorsElt = $('errors')
             var errorMessage
             if (checkCorrectSelection()) {
-                console.log("==== here? ");
                 if (errorsElt.hasChildNodes()) {
                     errorsElt.remove($('errorMessage'))
-                    console.log("==== no messages")
+
                 }
                 performReconcile()
             } else {
@@ -99,19 +98,16 @@
             if (isDefaultToCheckboxChecked && howManyOfReconcileCheckboxesChecked>2){
                 result = true;
             }
-            console.log("===== result = " + result);
             return result;
         }
 
 
         function performReconcile() {
-            console.log("===== are we here?")
             var data='activityIds='
             var lengthOfCheckboxes = $$('input[name*=reconcileCheckbox]').length
             for (var i =0; i< lengthOfCheckboxes; i++) {
                 if ($$('input[name*=reconcileCheckbox]')[i].checked) {
                     var id = $$('input[name*=reconcileCheckbox]')[i].id
-                    console.log("===== id " + id)
                     data=data+id+","
                 }
             }
@@ -126,7 +122,6 @@
                 }
             }
 
-            console.log("====== data " + data)
             var href = '<c:url value="/pages/activity/reconcile"/>'
             href = href+"?"+data
             var request = new Ajax.Request(href,
@@ -134,7 +129,6 @@
                 method: 'post'
 
             })
-            console.log("=== here?")
 
         }
 
