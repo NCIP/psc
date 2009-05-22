@@ -34,7 +34,6 @@
             position: absolute;
             right: 1em;
             width: 21%;
-            height: 91%;
 
             font-size: 11pt;
             border: 1px solid #444;
@@ -49,6 +48,8 @@
         .myaccordion #schedule-legend  {
             width: 70%;
             position: inherit;
+            right: 0;
+            top: 0;
         }
 
         .myaccordion .accordionDiv .accordionA{
@@ -103,8 +104,7 @@
         }
 
         div.row div.value {
-            margin-left: 30%;
-            line-height:1em;
+            margin-left: 45%;
         }
 
         .row even {
@@ -128,7 +128,7 @@
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery("#accordion").accordion();
+            jQuery("#accordion").accordion({ autoHeight: false, collapsible: true });
         });
 
 
