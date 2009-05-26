@@ -5,7 +5,7 @@ if(arguments.length == 0) {
   quit(1);
 }
 
-print("test_runner.js " + arguments.join(" "))
+print("test_runner.js '" + arguments.join("' '") + "'")
 
 var BUILDR_RIDGE = arguments[0]
 var MAIN_PATH = arguments[1]
