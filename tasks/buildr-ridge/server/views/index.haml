@@ -9,4 +9,4 @@
       %ul
         - tests.each do |test|
           %li
-            %a{ :href => "spec/#{test}" }= test
+            %a{ :href => "spec/#{section}/#{test}" }= test.sub(/.html$/, '')

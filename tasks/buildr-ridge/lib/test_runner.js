@@ -36,7 +36,7 @@ function debug(message){
 // Mock up the Firebug API for convenience.
 var console = {debug:debug};
 
-var fixture = "fixtures/" + SPEC_FILE.replace(/^(.*?)_spec\.js$/, "$1.html");
+var fixture = SPEC_FILE.replace(/^(.*?)_spec\.js$/, "$1.html");
 print("Running " + SPEC_FILE + " with fixture '" + fixture + "'...");
 
 load(BUILDR_RIDGE + "/lib/env.rhino.js");

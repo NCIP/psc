@@ -8,7 +8,7 @@
   print(" To exit type 'exit', 'quit', or 'quit()'.");
   print("=================================================");
 
-  var fixture_file = "target/ridge/fixtures/shell.html";
+  var fixture_file = "target/ridge/shell.html";
 
   load("${buildr_ridge_root}/lib/env.rhino.js");
   print(" - loaded env.js");

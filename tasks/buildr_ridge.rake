@@ -76,11 +76,15 @@ module Buildr
 
       def self.define_shell_tasks(project)
         shell_js = project._(:target, :ridge, "shell.js")
-        shell_html = project._(:target, :ridge, "fixtures", "shell.html")
+        shell_html = project._(:target, :ridge, "shell.html")
 
         file shell_html do |t|
           mkdir_p File.dirname(t.to_s)
-          cp Ridge.path_to('lib/shell.html'), t.to_s
+          Filter.new.clear.from(Ridge.path_to('lib')).
+            include("shell.html").
+            into(File.dirname(shell_html)).
+            using(:buildr_ridge_root => Ridge.path_to[0..-2]).
+            run
         end
 
         file shell_js => shell_html do
@@ -111,7 +115,7 @@ module Buildr
         get '/' do
           section_map = options.tests.
             collect { |t| t.sub(%r{^#{options.spec_path}/?}, '') }.
-            collect { |t| [File.dirname(t), 'fixtures/' + File.basename(t).sub(/_spec.js$/, '.html')] }.
+            collect { |t| [File.dirname(t), File.basename(t).sub(/_spec.js$/, '.html')] }.
             inject({}) { |h, (dir, file)| h[dir] ||= []; h[dir] << file; h }
           @sections = section_map.collect { |dir, files| [dir, files.sort] }.sort
           

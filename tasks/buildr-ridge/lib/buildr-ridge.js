@@ -8,7 +8,6 @@ function require_main(url, options) {
 }
 
 function require_absolute(url, options) {
-  console.log("Attempting to load %o", url)
   var head = document.getElementsByTagName("head")[0];
   var script = document.createElement("script");
   script.src = url;
@@ -28,7 +27,7 @@ function debug(message) {
 }
 
 function derive_spec_name_from_current_file() {
-  var file_prefix = new String(window.location).match(/.*\/(.*?)\.html/)[1];
+  var file_prefix = new String(window.location).match(/spec\/(.*?)\.html/)[1];
   return file_prefix + "_spec.js";
 }
 
