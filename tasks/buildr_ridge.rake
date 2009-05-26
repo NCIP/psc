@@ -39,33 +39,54 @@ module Buildr
     
     module RidgeTasks
       include Buildr::Extension
-      
+
       after_define do |project|
         if project.test.framework == :ridge
-          shell_js = project._(:target, :ridge, "shell.js")
-          shell_html = project._(:target, :ridge, "fixtures", "shell.html")
+          RidgeTasks.define_shell_tasks(project)
+          RidgeTasks.define_fixture_tasks(project)
+        end
+      end
 
-          file shell_html do |t|
-            mkdir_p File.dirname(t.to_s)
-            cp Ridge.path_to('lib/shell.html'), t.to_s
-          end
+      private
 
-          file shell_js => shell_html do
-            Filter.new.clear.from(Ridge.path_to('lib')).
-              include("shell.js").
-              into(File.dirname(shell_js)).
-              using(:buildr_ridge_root => Ridge.path_to[0..-2]).
-              run
+      def self.define_fixture_tasks(project)
+        task "ridge:fixtures" do
+          fixture_dir = project._(:source, :spec, :javascript, "fixtures")
+
+          if PLATFORM[/darwin/]
+            system("open #{fixture_dir}")
+          elsif PLATFORM[/linux/]
+            system("firefox #{fixture_dir}")
+          else
+            puts "You can run your in-browser fixtures from #{fixture_dir}."
           end
-          
-          desc "JavaScript shell for #{project}"
-          project.task("ridge:shell" => shell_js) do |t|
-            cd project._ do
-              rlwrap = `which rlwrap`.chomp
-              cmd = "#{rlwrap} #{Ridge.rhino_command('-f', t.prerequisites.first.to_s, '-f', '-')}"
-              trace "Starting shell with #{cmd}"
-              system(cmd)
-            end
+        end
+      end
+
+      def self.define_shell_tasks(project)
+        shell_js = project._(:target, :ridge, "shell.js")
+        shell_html = project._(:target, :ridge, "fixtures", "shell.html")
+
+        file shell_html do |t|
+          mkdir_p File.dirname(t.to_s)
+          cp Ridge.path_to('lib/shell.html'), t.to_s
+        end
+
+        file shell_js => shell_html do
+          Filter.new.clear.from(Ridge.path_to('lib')).
+            include("shell.js").
+            into(File.dirname(shell_js)).
+            using(:buildr_ridge_root => Ridge.path_to[0..-2]).
+            run
+        end
+
+        desc "JavaScript shell for #{project}"
+        project.task("ridge:shell" => shell_js) do |t|
+          cd project._ do
+            rlwrap = `which rlwrap`.chomp
+            cmd = "#{rlwrap} #{Ridge.rhino_command('-f', t.prerequisites.first.to_s, '-f', '-')}"
+            trace "Starting shell with #{cmd}"
+            system(cmd)
           end
         end
       end
