@@ -8,19 +8,18 @@
   print(" To exit type 'exit', 'quit', or 'quit()'.");
   print("=================================================");
 
-  var plugin_prefix = "vendor/plugins/blue-ridge/";
-  var fixture_file = plugin_prefix + "generators/blue_ridge/templates/application.html";
+  var fixture_file = "target/ridge/fixtures/shell.html";
 
-  load(plugin_prefix + "lib/env.rhino.js");
+  load("${buildr_ridge_root}/lib/env.rhino.js");
   print(" - loaded env.js");
 
   window.location = fixture_file;
   print(" - sample DOM loaded");
 
-  // load(plugin_prefix + "lib/jquery-1.3.2.js");
-  // print (" jQuery-1.3.2 loaded");
-  load(plugin_prefix + "lib/jquery-1.2.6.js");
-  print(" - jQuery-1.2.6 loaded");
+  load("${buildr_ridge_root}/lib/jquery-1.3.2.js");
+  print (" jQuery-1.3.2 loaded");
+  // load(PLUGIN_PREFIX + "lib/jquery-1.2.6.js");
+  // print(" - jQuery-1.2.6 loaded");
 
   print("=================================================");
 })();
