@@ -595,6 +595,11 @@ define "psc" do
         rm_rf _("src/main/webapp/WEB-INF/#{exploded_path}")
       end
     }
+    
+    desc "Specs for client-side javascript"
+    define "js-spec" do
+      test.using :ridge
+    end
   end
   
   desc "Common test code for both the module unit tests and the integrated tests"
