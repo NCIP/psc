@@ -7,7 +7,7 @@
         <laf:stylesheetLink name="debug"/>
         <laf:stylesheetLink name="common"/>
         <tags:stylesheetLink name="common"/>
-        <laf:javascriptLink name="prototype"/>
+        <tags:javascriptLink name="prototype"/>
         <style type="text/css">
             body {
                 margin: 1em ;
