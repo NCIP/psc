@@ -1,2 +1,4 @@
 gems:
 - facets ~>2.4.0
+- sinatra =0.9.2
+- haml =2.0.9

@@ -598,7 +598,9 @@ define "psc" do
     
     desc "Specs for client-side javascript"
     define "js-spec" do
-      test.using :ridge
+      # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
+      # circular dependency failure
+      test.using :ridge, :main_path => _("../src/main/webapp/js")
     end
   end
   

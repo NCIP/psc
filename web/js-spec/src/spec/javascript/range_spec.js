@@ -1,5 +1,5 @@
-require("spec_helper.js");
-require("../../../../src/main/webapp/js/psc-tools/range.js");
+require_spec("spec_helper.js");
+require_main("psc-tools/range.js");
 
 Screw.Unit(function() {
   describe("Range", function() {

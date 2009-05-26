@@ -1,3 +1,3 @@
 jQuery.noConflict();
 
-require("../../../../src/main/webapp/js/prototype.js")
+require_main("prototype.js")
