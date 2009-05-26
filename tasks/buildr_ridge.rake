@@ -22,7 +22,7 @@ module Buildr
         end
 
         def rhino_command(*args)
-          "java -jar '#{path_to 'lib/js.jar'}' -w -debug #{args.join(' ')}"
+          "java -jar '#{path_to 'lib/js.jar'}' -w -debug '#{args.join("' '")}'"
         end
         
         def main_path(project)
