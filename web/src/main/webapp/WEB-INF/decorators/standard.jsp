@@ -24,7 +24,7 @@
     <tags:stylesheetLink name="common"/>
     <tags:javascriptLink name="jquery/jquery"/><script type="text/javascript">var jQuery = jQuery.noConflict(); </script>
 
-    <laf:javascriptLink name="prototype"/>
+    <tags:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
     <laf:javascriptLink name="ccts-hotlinks"/>

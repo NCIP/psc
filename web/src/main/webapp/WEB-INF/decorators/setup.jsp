@@ -16,7 +16,7 @@
     <tags:stylesheetLink name="common"/>
     <tags:stylesheetLink name="setup"/>
 
-    <laf:javascriptLink name="prototype"/>
+    <tags:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
     <tags:javascriptLink name="lightbox"/>
