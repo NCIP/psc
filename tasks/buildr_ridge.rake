@@ -109,8 +109,9 @@ module Buildr
       class Server < Sinatra::Base
         set :port, 2702
         set :root, File.dirname(__FILE__) + "/buildr-ridge/server"
-        set :static, true
+        enable :static
         set :public, File.dirname(__FILE__) + "/buildr-ridge"
+        enable :logging
         
         get '/' do
           section_map = options.tests.
@@ -129,27 +130,47 @@ module Buildr
         get '/main/*' do
           map_file(options.main_path, params[:splat].first, "Main")
         end
-        
+
         get '/screw.css' do
           screw_css = File.join(options.spec_path, 'screw.css')
           unless File.exist?(screw_css)
             screw_css = File.join(options.public, 'lib', 'screw.css')
           end
 
-          content_type 'text/css'
-          File.read screw_css
+          send_file screw_css
+        end
+
+        get '/ridge-runner.js' do
+          all = %w(
+            jquery-1.3.2
+            jquery.fn
+            jquery.print
+            screw.builder
+            screw.matchers
+            screw.events
+            screw.behaviors
+            smoke.core
+            smoke.mock
+            smoke.stub
+            screw.mocking
+            buildr-ridge
+          ).inject({ :bodies => [], :mtime => Time.at(0) }) do |everything, filename|
+            path = File.dirname(__FILE__) + "/buildr-ridge/lib/#{filename}.js"
+            everything[:bodies] << "\n//////\n////// #{filename}\n//////\n\n" << File.read(path)
+            everything[:mtime] = [File.stat(path).mtime, everything[:mtime]].max
+            everything
+          end
+          
+          content_type 'text/javascript'
+          last_modified all[:mtime]
+          all[:bodies].join('')
         end
 
         def map_file(path, name, desc)
           file = File.join(path, name)
           if File.exist?(file)
-            case file
-            when /.js$/
-              content_type 'text/javascript'
-            when /.css$/
-              content_type 'text/css'
-            end
-            File.read(file)
+            headers['Cache-Control'] = 'no-cache'
+            send_file file
           else
             halt 404, "#{desc} file not found: #{file}"
           end

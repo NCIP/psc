@@ -8,18 +8,14 @@ function require_main(url, options) {
 }
 
 function require_absolute(url, options) {
-  var head = document.getElementsByTagName("head")[0];
-  var script = document.createElement("script");
-  script.src = url;
-  
-  options = options || {};
-  
-  if (options['onload']) {
-    // Attach handlers for all browsers
-    script.onload = script.onreadystatechange = options['onload'];
-  }
-  
-  head.appendChild(script);
+  // Use synchronous XmlHttpRequests instead of dynamically
+  // appended <SCRIPT> tags for IE compatibility.  
+  // (IE doesn't guarantee that the tags will be evaluated in order.)
+  jQuery.ajax({
+    dataType: 'script',
+    async: false,
+    url: url
+  })
 }
 
 function debug(message) {
@@ -31,16 +27,5 @@ function derive_spec_name_from_current_file() {
   return file_prefix + "_spec.js";
 }
 
-require_absolute("/lib/jquery-1.3.2.js");
-require_absolute("/lib/jquery.fn.js");
-require_absolute("/lib/jquery.print.js");
-require_absolute("/lib/screw.builder.js");
-require_absolute("/lib/screw.matchers.js");
-require_absolute("/lib/screw.events.js");
-require_absolute("/lib/screw.behaviors.js");
-require_absolute("/lib/smoke.core.js");
-require_absolute("/lib/smoke.mock.js");
-require_absolute("/lib/smoke.stub.js");
-require_absolute("/lib/screw.mocking.js");
-
 require_spec(derive_spec_name_from_current_file());
+
