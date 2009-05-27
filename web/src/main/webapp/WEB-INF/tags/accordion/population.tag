@@ -16,7 +16,7 @@
     </div>
 </div>
 <c:if test="${not empty schedule.segmentRows[0].assignment.studySite.study.populations}">
-    <div class="row even">
+    <div class="row even" style="clear:both;">
         <div class="label">Populations</div>
         <div class="value">
             <ul>

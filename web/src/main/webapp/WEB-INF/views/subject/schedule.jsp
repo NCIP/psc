@@ -22,7 +22,6 @@
     <tags:javascriptLink name="jquery/ui.core"/>
     <tags:javascriptLink name="jquery/ui.accordion"/>
     <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
-    <script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.core.js"></script>
 
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="scheduled-activity"/>
@@ -34,8 +33,7 @@
             position: absolute;
             right: 1em;
             width: 21%;
-
-            font-size: 11pt;
+            font-size: 10pt;
             border: 1px solid #444;
             background-color: white;
         }
@@ -47,7 +45,7 @@
 
         .myaccordion #schedule-legend  {
             width: 70%;
-            position: inherit;
+            position: static;
             right: 0;
             top: 0;
         }
@@ -72,11 +70,8 @@
             line-height: 2em;
         }
 
-        .title-card {
-            position:relative;
-            width:70%;
+        .card {
             border: 0pt;
-            padding: 0pt;
         }
 
         .card .value ul {
@@ -89,30 +84,13 @@
             padding-bottom: 0.25em;
         }
 
-        div.row, .studySegmentSelector{
+        div.studySegmentSelector {
             line-height:1em;
-            font-size:0.9em;
+            font-size:10pt;
             font-family:Verdana,Arial,sans-serif;
             text-decoration:none;
             margin:0;
             padding:0;
-        }
-
-        div.row div.label {
-            width: 25%;
-            color: #666;
-        }
-
-        div.row div.value {
-            margin-left: 45%;
-        }
-
-        .row even {
-            margin-top: 0;
-            float: right;
-            width: 20%;
-            padding: 4px;
-            border: 1px solid #666;
         }
 
         .studySegmentSelector {
@@ -128,7 +106,7 @@
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery("#accordion").accordion({ autoHeight: false, collapsible: true });
+            jQuery("#accordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
         });
 
 
@@ -456,7 +434,7 @@
         <div class="accordionDiv">
           <h3><a class="accordionA" href="#">Population</a></h3>
         </div>
-        <div class="content card title-card">
+        <div class="card">
             <markTag:population/>
         </div>
     </div>

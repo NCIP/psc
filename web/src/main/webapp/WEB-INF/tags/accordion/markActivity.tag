@@ -29,10 +29,9 @@
 <div class="links-row">
     <h4>
         Select Activities:
-        <!-- TODO: why are these spans? (vs. anchors) -->
-        <a id="check-all-events"     class="batch-schedule-link" href="#">All</a>,
-        <a id="uncheck-all-events"   class="batch-schedule-link" href="#">None</a>,
-        <a id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</a>,
+        <a id="check-all-events"     class="batch-schedule-link" href="#">All,</a>
+        <a id="uncheck-all-events"   class="batch-schedule-link" href="#">None,</a>
+        <a id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional,</a>
         <a id="check-all-past-due-events"  class="batch-schedule-link" href="#">Past due</a>
     </h4>
 </div>
