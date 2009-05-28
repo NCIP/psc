@@ -144,10 +144,9 @@ public class SubjectCoordinatorDashboardService {
             ScheduledCalendar calendar = studySubjectAssignment.getScheduledCalendar();
 
             //start Date is giving back an epoch beginning date, but since the activities can be rescheduled,
-            // the search should be made by "ideal_date" = "start_epoch_date"
-            Date startDate = studySubjectAssignment.getStartDateEpoch();
-            Collection<ScheduledActivity> collectionOfEvents = getScheduledActivityDao().getEventsByIdealDate(calendar, startDate, endDate);
-
+            // the search should not be taking startDateOf the epoch into consideration.
+//            Date startDate = studySubjectAssignment.getStartDateEpoch();
+            Collection<ScheduledActivity> collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, null, endDate);
             Subject subject = studySubjectAssignment.getSubject();
 
             for (ScheduledActivity event : collectionOfEvents) {
