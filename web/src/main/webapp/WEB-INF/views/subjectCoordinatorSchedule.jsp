@@ -161,11 +161,22 @@
                                                 <c:choose>
                                                     <c:when test="${not empty listOfSubjects}">
                                                      <li class="subject">
-                                                         <a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">
-                                                            ${listOfSubjects.subject.firstName}
-                                                            ${listOfSubjects.subject.lastName}
-                                                         </a>
 
+                                                         <%--should display only subjects that are on the study, for that using all those checkings (if subject has any scheduled or conditional activities)--%>
+                                                         <c:set var="isAnyActivityAssigned" value="false"/>
+                                                         <c:forEach items="${listOfSubjects.scheduledCalendar.scheduledStudySegments}" var="studySegmentsAssignment">
+                                                            <c:forEach items="${studySegmentsAssignment.activities}" var="activity">
+                                                                <c:if test="${activity.currentState.mode eq 'scheduled' or activity.currentState.mode eq 'conditional'}">
+                                                                    <c:set var="isAnyActivityAssigned" value="true"/>
+                                                                </c:if>
+                                                             </c:forEach>
+                                                           </c:forEach>
+                                                         <c:if test="${isAnyActivityAssigned}">
+                                                             <a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">
+                                                                ${listOfSubjects.subject.firstName}
+                                                                ${listOfSubjects.subject.lastName}
+                                                             </a>
+                                                         </c:if>
                                                      </li>
                                                 </c:when>
                                                 <c:otherwise>
