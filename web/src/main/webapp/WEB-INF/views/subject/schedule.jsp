@@ -74,6 +74,12 @@
             border: 0pt;
         }
 
+        div.row {
+            float:left;
+            vertical-align:middle;
+            width:80%;
+        }
+
         .card .value ul {
             margin: 0;
             padding: 0;
