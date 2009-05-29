@@ -116,6 +116,28 @@ public class SubjectService {
     }
 
     /**
+     * Derives Scheduled StudySegment for the preview.
+     */
+    public ScheduledStudySegment scheduleStudySegmentPreview(ScheduledCalendar calendar,StudySegment studySegment, Date startDate) {
+        
+        Integer studySegmentStartDay = studySegment.getDayRange().getStartDay();
+
+        ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
+        scheduledStudySegment.setStudySegment(studySegment);
+        scheduledStudySegment.setStartDate(startDate);
+        scheduledStudySegment.setStartDay(studySegmentStartDay);
+        calendar.addStudySegment(scheduledStudySegment);
+
+        for (Period period : studySegment.getPeriods()) {
+            schedulePeriod(period, null, "Initialized from template", scheduledStudySegment);
+        }
+
+        // Sort in the same order they'll be coming out of the database (for consistency)
+        Collections.sort(scheduledStudySegment.getActivities(), DatabaseEventOrderComparator.INSTANCE);
+        return scheduledStudySegment;
+    }
+
+    /**
      * Derives scheduled events from the given period and applies them to the given scheduled studySegment.
      * <p>
      * The input period should already match the provided sourceAmendment.
@@ -190,10 +212,12 @@ public class SubjectService {
         PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, String reason,
         Population restrictToPopulation, ScheduledStudySegment targetStudySegment, int repetitionNumber
     ) {
-        Set<Population> subjectPopulations = targetStudySegment.getScheduledCalendar().getAssignment().getPopulations();
-        if (plannedActivity.getPopulation() != null && !subjectPopulations.contains(plannedActivity.getPopulation())) {
-            log.debug("Skipping {} since the subject is not in population {}", plannedActivity, plannedActivity.getPopulation().getAbbreviation());
-            return;
+        if (targetStudySegment.getScheduledCalendar().getAssignment() != null) {
+            Set<Population> subjectPopulations = targetStudySegment.getScheduledCalendar().getAssignment().getPopulations();
+            if (plannedActivity.getPopulation() != null && !subjectPopulations.contains(plannedActivity.getPopulation())) {
+                log.debug("Skipping {} since the subject is not in population {}", plannedActivity, plannedActivity.getPopulation().getAbbreviation());
+                return;
+            }
         }
         if (restrictToPopulation != null && !restrictToPopulation.equals(plannedActivity.getPopulation())) {
             log.debug("Only adding planned activities for the {} population", restrictToPopulation);
