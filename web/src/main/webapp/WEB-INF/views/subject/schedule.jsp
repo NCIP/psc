@@ -1,5 +1,3 @@
-<jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
-<jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -24,10 +22,19 @@
     <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
 
     <tags:stylesheetLink name="main"/>
-    <tags:javascriptLink name="scheduled-activity"/>
-    <tags:javascriptLink name="scheduled-activity-batch-modes"/>
     <tags:javascriptLink name="resig-templates" />
-
+    <c:choose>
+        <c:when test="${schedulePreview}">
+            <tags:javascriptLink name="schedule-preview/schedule-preview"/>
+            <tags:escapedUrl var="previewResource" value="api~v1~studies~${study.assignedIdentifier}~template~${amendmentIdentifier}~schedulePreview.json" />
+        </c:when>
+        <c:otherwise>
+            <tags:javascriptLink name="scheduled-activity"/>
+            <tags:javascriptLink name="scheduled-activity-batch-modes"/>
+            <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
+            <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
+        </c:otherwise>
+    </c:choose>
      <style type="text/css">
         .myaccordion {
             position: absolute;
@@ -121,7 +128,14 @@
             padding:0;
         }
 
-study
+        div.previewRow{
+            float:left;
+            vertical-align:middle;
+            width:100%;
+            padding: 2px;
+            margin: 1px 0;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -287,7 +301,16 @@ study
             var paramsInXML = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
             return paramsInXML;
         }
-
+        <c:if test="${schedulePreview}">
+            Event.observe(window, 'load', function() {
+                SC.SP.generateIntialSchedulePreview('${previewResource}')
+                Event.observe('generateSchedulePreview', 'click', function(){
+                    SC.SP.generateSchedulePreview('${previewResource}')
+                })
+                Event.observe('addToSelectedStudySegments', 'click', SC.SP.selectStudySegmentsForPreview)
+                Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
+                })
+        </c:if>
     </script>
 
 </head>
@@ -379,7 +402,7 @@ study
             <h3><a class="accordionA" href="#">Legend </a></h3>
         </div>
         <div><sched:legend/> </div>
-
+     <c:if test="${not schedulePreview}">
           <%--************ Delay Or Advance Portion**********--%>
         <div class="accordionDiv">
             <h3><a class="accordionA" href="#">Delay or Advance</a></h3>
@@ -457,7 +480,43 @@ study
         <div class="card">
             <markTag:population/>
         </div>
-    </div>
+     </c:if>
+     <c:if test="${schedulePreview}">
+        <div class="accordionDiv" id="accordianHeader-5">
+        <h3><a class="accordionA" href="#">Reschedule Preview</a></h3>
+        </div>
+        <div class="schedulePreview">
+            <div class="previewRow">
+                <label class="label">Start date</label>
+                <input id="previewStartDate" size="10" class="date"/>
+                <a href="#" id="previewStartDate-calbutton">
+                    <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0"/>
+                </a>
+            </div>
+            <div class="previewRow">
+                <select id="studySegmentPreviewSelector" class="studySegmentPreviewSelector">
+                    <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
+                        <c:forEach items="${epoch.studySegments}" var="studySegment">
+                            <option value="${studySegment.gridId}_${epoch.name}:${studySegment.name}_${studySegment.lengthInDays}">${epoch.name}:${studySegment.name}</option>
+                        </c:forEach>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="previewRow">
+                <input id="addToSelectedStudySegments" class = "control" type="button"
+                               name="addToSelectedStudySegments" value="Add" />
+                 <input id="removeSelectedStudySegments" class = "control" type="button" value="Remove"/>
+            </div>
+            <div class="previewRow">
+                <select class="selectedStudySegments" id="selectedStudySegments" size="5" style="width:100%"></select>
+            </div>
+            <div class="previewRow">
+                <input id="generateSchedulePreview" class = "control" type="button"
+                               name="generateSchedulePreview" value="Schedule Preview"/>
+            </div>
+        </div>
+     </c:if>
+     </div>
 
     <%--<sched:legend/>--%>
     <form id="batch-form" style="font-weight:normal;">
