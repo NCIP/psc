@@ -35,17 +35,18 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
 
-    private final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
-    private final String ID = "id";
-    private final String ACTIVITY = "activity";
-    private final String STATE = "state";
-    private final String IDEAL_DATE = "ideal-date";
-    private final String DETAILS = "details";
-    private final String STUDY = "study";
-    private final String SEGMENT = "studySegment";
-    private final String PLANNEDDAY = "planned-day";
-    private final String HISTORY = "history";
-    private final String CONDITION = "condition";
+    private static final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String ID = "id";
+    private static final String ASSIGNMENTID = "assignment-id";
+    private static final String ACTIVITY = "activity";
+    private static final String STATE = "state";
+    private static final String IDEAL_DATE = "ideal-date";
+    private static final String DETAILS = "details";
+    private static final String STUDY = "study";
+    private static final String SEGMENT = "studySegment";
+    private static final String PLANNEDDAY = "planned-day";
+    private static final String HISTORY = "history";
+    private static final String CONDITION = "condition";
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -100,7 +101,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         try {
             for (ScheduleDay scheduleDay : schedule.getDays()) {
                 if (!scheduleDay.getActivities().isEmpty()) {
-                   dayWiseActivities.put(new String(dayFormatter.format(scheduleDay.getDate())),createActivityList(scheduleDay.getActivities())); 
+                   dayWiseActivities.put(new String(dayFormatter.format(scheduleDay.getDate())),createActivityListInJSONFormat(scheduleDay.getActivities()));
                 }
             }
         } catch (JSONException e) {
@@ -110,7 +111,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
 	    return jr;
     }
 
-    private JSONArray createActivityList(List<ScheduledActivity> scheduledActivities) throws ResourceException {
+    public static JSONArray createActivityListInJSONFormat(List<ScheduledActivity> scheduledActivities) throws ResourceException {
         JSONArray activityList =  new JSONArray();
         try {
             for (ScheduledActivity scheduledActivity: scheduledActivities) {
@@ -120,16 +121,26 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
                 activity.put(STATE,scheduledActivity.getCurrentState().getMode());
                 activity.put(IDEAL_DATE,dayFormatter.format(scheduledActivity.getIdealDate()));
                 activity.put(DETAILS, scheduledActivity.getDetails());
-                activity.put(STUDY,scheduledActivity.getScheduledStudySegment().getScheduledCalendar()
-                       .getAssignment().getStudySite().getStudy().getAssignedIdentifier());
+                if (scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment()!= null) {
+                    activity.put(STUDY, scheduledActivity.getScheduledStudySegment().getScheduledCalendar()
+                         .getAssignment().getStudySite().getStudy().getAssignedIdentifier());
+                    activity.put(ASSIGNMENTID,
+                         scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getGridId());
+                }
                 activity.put(SEGMENT,scheduledActivity.getScheduledStudySegment().getName());
                 activity.put(CONDITION,scheduledActivity.getPlannedActivity().getCondition());
                 activity.put(PLANNEDDAY,scheduledActivity.getPlannedActivity().getDay());
-                List<String> history = new ArrayList<String>();
+                JSONArray history = new JSONArray();
                 for (ScheduledActivityState state : scheduledActivity.getPreviousStates()) {
-                    history.add(state.getTextSummary());
+                    JSONObject stateInfo = new JSONObject();
+                    stateInfo.put("state", state.getMode());
+                    stateInfo.put("date", state.getDate());
+                    stateInfo.put("reason", state.getReason());
+                    history.put(stateInfo);
                 }
-                activity.put(HISTORY,history);
+                if (history.length() != 0) {
+                    activity.put(HISTORY,history);
+                }
                 activityList.put(activity);
             }
         }  catch (JSONException e) {
