@@ -23,8 +23,10 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlSeri
     @Override
     public Element createElement(ScheduledCalendar scheduledCalendar) {
         Element elt = SCHEDULED_CALENDAR.create();
-        SCHEDULED_CALENDAR_ID.addTo(elt, scheduledCalendar.getGridId());
-        SCHEDULED_CALENDAR_ASSIGNMENT_ID.addTo(elt, scheduledCalendar.getAssignment().getGridId());
+        if (scheduledCalendar.getGridId() != null)
+            SCHEDULED_CALENDAR_ID.addTo(elt, scheduledCalendar.getGridId());
+        if (scheduledCalendar.getAssignment() != null)
+            SCHEDULED_CALENDAR_ASSIGNMENT_ID.addTo(elt, scheduledCalendar.getAssignment().getGridId());
 
         for (ScheduledStudySegment segment :  scheduledCalendar.getScheduledStudySegments()) {
             elt.add(segmentSerialzier.createElement(segment));
