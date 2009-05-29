@@ -74,10 +74,32 @@
             border: 0pt;
         }
 
-        div.row {
+        div.studySegmentRow div.value {
+            font-weight:normal;
+            margin-left:7em;
+            font-size:10pt;
+        }
+
+        div.studySegmentRow div.label {
+            font-weight:bold;
+            text-align:right;
             float:left;
-            vertical-align:middle;
-            width:80%;
+            font-size:10pt;
+            line-height:1em;
+        }
+
+        div.row div.label{
+            float:left;
+            font-weight:bold;
+            font-size:10pt;
+            margin-left:0.5em;
+            text-align:right;
+            width:7em;
+        }
+
+        div.row div.value {
+            font-weight:normal;
+            margin-left:8em;
         }
 
         .card .value ul {
@@ -99,15 +121,7 @@
             padding:0;
         }
 
-        .studySegmentSelector {
-              width:inherit;
-        }
-
-        .studySegmentSelectLabel {
-             width:95%
-        }
-
-
+study
     </style>
 
     <script type="text/javascript">
