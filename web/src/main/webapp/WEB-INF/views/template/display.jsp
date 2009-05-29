@@ -705,6 +705,18 @@
                 arrowsHideShowSetup();
             }
 
+            function generateSchedulePreviewRequest() {
+                var date = new Date();
+                var year = date.getFullYear()
+                var day = date.getDate()
+                var month = date.getMonth()+1
+                day = (day < 10 ) ? ("0" + day) : day
+                month = (month < 10) ? ("0" + month): month
+                var start_date =  year+"-" + month+ "-" + day;
+                var data = "?study=" +${study.id}+ "&amendment=" + ${amendment.id}
+                        +"#segment[0]=" +"${studySegment.base.gridId}" +"&start_date[0]=" +start_date;
+                window.location = SC.relativeUri("/pages/cal/template/schedulePreview") + data
+            }
 
             <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", loadFunctionsForDevelopmentRevision)
@@ -871,7 +883,13 @@
 
                     </c:if>
                 </div>
-
+            <div id="schedule-preview" style="margin-left:8px;">
+                <div class="row">
+                    <div class="value" style="margin:3px;">
+                        <a class="control" id="schedulePreview" href="#" onclick="generateSchedulePreviewRequest()">Schedule Preview</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
