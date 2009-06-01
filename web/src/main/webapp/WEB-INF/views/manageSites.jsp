@@ -14,6 +14,17 @@
             width: 20em;
         }
     </style>
+    <script type="text/javascript">
+        function deleteSite(siteIdentifier) {
+            var uri = SC.relativeUri("/api/v1/sites/") + siteIdentifier
+            SC.asyncRequest(uri, {
+                method: 'DELETE',
+                onSuccess : function() {
+                    window.location = SC.relativeUri("/pages/admin/manage/sites")
+                }
+            })
+       }
+    </script>
 </head>
 <body>
 <laf:box title="Manage Sites">
@@ -31,7 +42,7 @@
                         <c:if test="${site.id == enableDelete.key}">
                             <c:if test="${enableDelete.value==true}">
                                <td></td>
-                               <td><a href="<c:url value="/pages/admin/manage/deleteSite?site=${site.id}"/>">Delete</a></td>
+                               <td><a id="deleteSite" href="#deleteSite?site=${site.id}" onclick="deleteSite('${site.assignedIdentifier}')">Delete</a></td>
                             </c:if>
                        </c:if>
                      </c:forEach>

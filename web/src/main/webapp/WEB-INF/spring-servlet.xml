@@ -549,10 +549,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.NewProvidedSiteController">
     </bean>
 
-    <bean name="/admin/manage/deleteSite" id="deleteSiteController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.DeleteSiteController">
-    </bean>
-
     <bean name="/admin/manage/blackoutDates" id="holidaysController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.BlackoutDatesController">
         <property name="crumb">
