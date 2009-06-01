@@ -5,7 +5,7 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<div class="studySegmentRow">
+<div class="accordionRow">
     <label id="new-mode-selector-group" class="studySegmentSelectLabel">
         <select id="studySegmentSelector" class="studySegmentSelector">
             <c:forEach items="${schedule.studies}" var="study">
@@ -19,7 +19,7 @@
     </label>
 </div>
 
-<div class="studySegmentRow" style="margin-top:1em;">
+<div class="accordionRow" style="margin-top:1em;">
     <div class="label">Start date</div>
     <div class="value"><input type="text" name="startDate" id="start-date-input"
                               value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>"
@@ -30,7 +30,7 @@
     </div>
 </div>
 
-<div class="studySegmentRow" style="margin-top:1em;" id="mode-row">
+<div class="accordionRow" style="margin-top:1em;" id="mode-row">
     <div class="label">When?</div>
     <div class="value">
         <input type="radio" class="mode-radio" id="mode-radio-immediate"
@@ -41,7 +41,7 @@
  </div>
 
 
-<div class="alignStudySegmentButtonInTheMiddle" style="margin-top:1em;">
+<div class="alignStudySegmentButtonInTheMiddle">
     <tags:activityIndicator id="next-studySegment-indicator"/>
     <input type="submit" style="margin:auto;" value="Schedule next study segment" id="next-studySegment-button" onclick="putScheduleNextSegment();"/>
 </div>

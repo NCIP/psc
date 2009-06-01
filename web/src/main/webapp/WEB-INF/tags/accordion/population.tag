@@ -1,11 +1,11 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="row odd">
+<div class="populationRow odd">
     <div class="label">Study</div>
     <div class="value">${schedule.segmentRows[0].assignment.studySite.study.name}</div>
 </div>
-<div class="row even">
+<div class="populationRow even">
     <div class="label">Site</div>
     <div class="value">${schedule.segmentRows[0].assignment.studySite.site.name}</div>
 </div>
@@ -16,7 +16,7 @@
     </div>
 </div>
 <c:if test="${not empty schedule.segmentRows[0].assignment.studySite.study.populations}">
-    <div class="row even" style="clear:both;">
+    <div class="populationRow even" style="clear:both;">
         <div class="label">Populations</div>
         <div class="value">
             <ul>

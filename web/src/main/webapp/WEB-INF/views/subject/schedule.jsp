@@ -55,9 +55,10 @@
             position: static;
             right: 0;
             top: 0;
+            font-size:9pt;
         }
 
-        .myaccordion .accordionDiv .accordionA{
+        .myaccordion .accordionDiv .accordionHeader{
             padding: 0px;
             border: 0px;
         }
@@ -65,7 +66,7 @@
         .myaccordion .value .delayAdvanceSelector {
             color:#000000;
             font-family:'Helvetica Neue',Arial,Helvetica,sans-serif;
-            font-size:10pt;
+            font-size:9pt;
             margin-bottom:1em;
         }
 
@@ -81,24 +82,54 @@
             border: 0pt;
         }
 
-        div.studySegmentRow div.value {
+        div.accordionRow div.value{
             font-weight:normal;
             margin-left:7em;
-            font-size:10pt;
+            font-size:9pt;
         }
 
-        div.studySegmentRow div.label {
+        div.accordionRow div.label{
             font-weight:bold;
             text-align:right;
             float:left;
-            font-size:10pt;
+            font-size:9pt;
             line-height:1em;
+        }
+
+        div.delayOrAdvanceBlock{
+            font-size:9pt;
+            line-height:1.5em;
+        }
+
+        div.accordionRow{
+            font-size:9pt;
+            margin:1px 0;
+            padding:2px;
+        }
+
+        div.populationRow div.label{
+            font-size:9pt;
+            float:left;
+            font-weight:bold;
+            font-size:9pt;
+            margin-left:0.5em;
+            text-align:right;
+            width:7em;
+            line-height:1.5em;
+
+        }
+
+        div.populationRow div.value{
+            font-weight:normal;
+            margin-left:8em;
+            line-height:1.5em;
+            font-size:9pt;
         }
 
         div.row div.label{
             float:left;
             font-weight:bold;
-            font-size:10pt;
+            font-size:9pt;
             margin-left:0.5em;
             text-align:right;
             width:7em;
@@ -107,6 +138,7 @@
         div.row div.value {
             font-weight:normal;
             margin-left:8em;
+            font-size:9pt;
         }
 
         .card .value ul {
@@ -121,11 +153,16 @@
 
         div.studySegmentSelector {
             line-height:1em;
-            font-size:10pt;
+            font-size:9pt;
             font-family:Verdana,Arial,sans-serif;
             text-decoration:none;
             margin:0;
             padding:0;
+        }
+
+       .alignStudySegmentButtonInTheMiddle {
+            font-size:9pt;
+            margin-top:1em;"
         }
 
         div.previewRow{
@@ -176,6 +213,7 @@
         }
 
         function executeDelayAdvancePost() {
+            $('delayOrAdvance-indicator').reveal()
             var mapOfParameters={};
             var shiftOptionForwardOrBackward = $('delayAdvanceSelector').value
             var reason = $('reason').value
@@ -207,7 +245,8 @@
 
 
         function executeMarkPost() {
-           var newModeSelector = $$("#new-mode-selector")[0].value
+            $('mark-indicator').reveal()
+            var newModeSelector = $$("#new-mode-selector")[0].value
             var state=""; //default for current state is empty
             var reason="";
             var toDate=0;
@@ -253,12 +292,17 @@
             SC.asyncRequest('${collectionResource}'+'/', Object.extend({
                 method: 'POST',
                 contentType: 'application/json',
-                postBody: parameters
+                postBody: parameters,
+                onComplete: function() {
+                    $('delayOrAdvance-indicator').conceal();
+                    $('mark-indicator').conceal();
+                }
             }))
         }
 
         //todo - need to figure out the submect.assignments.gridId for study.
         function putScheduleNextSegment() {
+            $('next-studySegment-indicator').reveal()
             var parameters = gatherDataFromScheduleStudySegment()
             var studySegmentSelector = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex].value //gives us ids for study, epoch, study_segment
             studySegmentSelector = studySegmentSelector.split("_")
@@ -270,7 +314,10 @@
             SC.asyncRequest(href, Object.extend({
                 method: 'POST',
                 contentType: 'text/xml',
-                postBody: parameters
+                postBody: parameters,
+                onComplete: function(){
+                    $('next-studySegment-indicator').conceal()
+                }
             }))
         }
 
@@ -399,19 +446,19 @@
     <%--TODO - move css to display.jsp, make accordion fit in the box--%>
     <div id="accordion" class="myaccordion">
         <div class="accordionDiv">
-            <h3><a class="accordionA" href="#">Legend </a></h3>
+            <h3><a class="accordionHeader" href="#">Legend </a></h3>
         </div>
         <div><sched:legend/> </div>
      <c:if test="${not schedulePreview}">
           <%--************ Delay Or Advance Portion**********--%>
         <div class="accordionDiv">
-            <h3><a class="accordionA" href="#">Delay or Advance</a></h3>
+            <h3><a class="accordionHeader" href="#">Delay or Advance</a></h3>
         </div>
 
-        <div class="content" style="display: none">
-            <laf:division>
+        <div style="display: none">
+            <div class="accordionRow">
+                <div class="label">Study: </div>
                 <div class="value">
-                    <h4>Study:
                     <c:if test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
                         <select id="studySelector" class="delayAdvanceSelector">
                             <option value="all" selected="true">All Studies </option>
@@ -442,40 +489,47 @@
                             <%--day(s) as of date:  <input id="currentDate" path="currentDate" size="15"--%>
                             <%--value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>" class="date"/>--%>
                     <%--</select> --%>
-                    </h4>
+                    </div>
+                    
                 </div>
-                <h4 class="delayAdvanceHeader">
+                <div class="delayOrAdvanceBlock">
                     <select id="delayAdvanceSelector" name="delayAdvanceSelector">
                         <option value="1" selected="true" >Delay</option>
                         <option value="-1">Advance</option>
                     </select> scheduled or conditional activities by <input id="toDate" size="5" path="toDate" value="7"/> day(s) as
-                    of date:  <input id="currentDate" path="currentDate" size="15" value="" class="date"/>
+                    of date:  <input id="currentDate" path="currentDate" size="10" value="" class="date"/>
                     <a href="#" id="currentDate-calbutton">
                         <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
                     </a>
                     Reason: <input id="reason" class="reason" path="reason" value=""/>
                     
-                </h4>
-                <h4><input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/><tags:activityIndicator id="indicator"/></h4>
-            </laf:division>
+                </div>
+                <div class="delayOrAdvanceBlock">
+                    <tags:activityIndicator id="delayOrAdvance-indicator"/>
+                    <input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/>
+                </div>
+            <%--</laf:division>--%>
         </div>
 
         <%--*********** Mark Portion****************--%>
         <div class="accordionDiv">
-        <h3><a class="accordionA" href="#">Mark</a></h3>
+        <h3><a class="accordionHeader" href="#">Mark</a></h3>
         </div>
         <div class="content">
             <markTag:markActivity/>
-            <input type="submit" value="Submit" class="submitDelayOrAdvance"  id="new-mode-submit" onclick="executeMarkPost()"/>
+            <div class="delayOrAdvanceBlock">
+                <tags:activityIndicator id="mark-indicator"/>
+                <input class="submitDelayOrAdvance" type="submit" value="Submit" id="new-mode-submit" onclick="executeMarkPost()"/>
+            </div>
         </div>
         <div class="accordionDiv">
-          <h3><a class="accordionA" href="#">Next Segment</a></h3>
+          <h3><a class="accordionHeader" href="#">Next Segment</a></h3>
         </div>
         <div>
             <markTag:scheduleStudySegment/>
         </div>
         <div class="accordionDiv">
-          <h3><a class="accordionA" href="#">Population</a></h3>
+          <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
         <div class="card">
             <markTag:population/>
