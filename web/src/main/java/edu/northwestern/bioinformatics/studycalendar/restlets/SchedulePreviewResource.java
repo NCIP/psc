@@ -103,7 +103,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
                 try {
                     for (Date date : activities.keySet()) {
                         dayWiseActivities.put(new String(formatter.format(date)),
-                                SubjectCentricScheduleResource.createActivityListInJSONFormat(activities.get(date)));
+                                ScheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
                     }
                 } catch (JSONException e) {
 	                throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
