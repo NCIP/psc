@@ -3,8 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
@@ -36,17 +35,6 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private NowFactory nowFactory;
 
     private static final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
-    private static final String ID = "id";
-    private static final String ASSIGNMENTID = "assignment-id";
-    private static final String ACTIVITY = "activity";
-    private static final String STATE = "state";
-    private static final String IDEAL_DATE = "ideal-date";
-    private static final String DETAILS = "details";
-    private static final String STUDY = "study";
-    private static final String SEGMENT = "studySegment";
-    private static final String PLANNEDDAY = "planned-day";
-    private static final String HISTORY = "history";
-    private static final String CONDITION = "condition";
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -97,56 +85,27 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         }
         SubjectCentricSchedule schedule = new SubjectCentricSchedule(
             visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
-        JSONObject dayWiseActivities = new JSONObject();
+        JSONObject jsonData = new JSONObject();
         try {
+            JSONObject dayWiseActivities = new JSONObject();
             for (ScheduleDay scheduleDay : schedule.getDays()) {
                 if (!scheduleDay.getActivities().isEmpty()) {
-                   dayWiseActivities.put(new String(dayFormatter.format(scheduleDay.getDate())),createActivityListInJSONFormat(scheduleDay.getActivities()));
+                    dayWiseActivities.put(new String(dayFormatter.format(scheduleDay.getDate())),
+                           ScheduleRepresentationHelper.createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
                 }
             }
+            JSONArray studySegments = new JSONArray();
+            for (StudySubjectAssignment studySubjectAssignment: visibleAssignments) {
+                for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
+                    studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
+                }
+            }
+            jsonData.put("days", dayWiseActivities);
+            jsonData.put("study_segments", studySegments);
         } catch (JSONException e) {
 	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 	    }
-        JsonRepresentation jr = new JsonRepresentation(dayWiseActivities);
-	    return jr;
-    }
-
-    public static JSONArray createActivityListInJSONFormat(List<ScheduledActivity> scheduledActivities) throws ResourceException {
-        JSONArray activityList =  new JSONArray();
-        try {
-            for (ScheduledActivity scheduledActivity: scheduledActivities) {
-                JSONObject activity = new JSONObject();
-                activity.put(ID,scheduledActivity.getGridId());
-                activity.put(ACTIVITY,scheduledActivity.getActivity().getName());
-                activity.put(STATE,scheduledActivity.getCurrentState().getMode());
-                activity.put(IDEAL_DATE,dayFormatter.format(scheduledActivity.getIdealDate()));
-                activity.put(DETAILS, scheduledActivity.getDetails());
-                if (scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment()!= null) {
-                    activity.put(STUDY, scheduledActivity.getScheduledStudySegment().getScheduledCalendar()
-                         .getAssignment().getStudySite().getStudy().getAssignedIdentifier());
-                    activity.put(ASSIGNMENTID,
-                         scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getGridId());
-                }
-                activity.put(SEGMENT,scheduledActivity.getScheduledStudySegment().getName());
-                activity.put(CONDITION,scheduledActivity.getPlannedActivity().getCondition());
-                activity.put(PLANNEDDAY,scheduledActivity.getPlannedActivity().getDay());
-                JSONArray history = new JSONArray();
-                for (ScheduledActivityState state : scheduledActivity.getPreviousStates()) {
-                    JSONObject stateInfo = new JSONObject();
-                    stateInfo.put("state", state.getMode());
-                    stateInfo.put("date", state.getDate());
-                    stateInfo.put("reason", state.getReason());
-                    history.put(stateInfo);
-                }
-                if (history.length() != 0) {
-                    activity.put(HISTORY,history);
-                }
-                activityList.put(activity);
-            }
-        }  catch (JSONException e) {
-	          throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-	    }
-        return activityList;
+        return new JsonRepresentation(jsonData);
     }
 
     public StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> getXmlSerializer() {

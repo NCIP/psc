@@ -19,7 +19,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 
 /**
@@ -43,8 +42,14 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         Study study = createBasicTemplate();
         Site site = createSite("NU");
         StudySubjectAssignment studySubjectAssignment = createAssignment(study,site,subject);
-        studySubjectAssignment.getScheduledCalendar().addStudySegment(
-            createScheduledStudySegment(DateTools.createDate(2006, Calendar.APRIL, 1), 365));
+        study = Fixtures.createSingleEpochStudy("S", "Treatment");
+        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
+        epoch.setId(11);
+        StudySegment studySegment = epoch.getStudySegments().get(0);
+        studySegment.setName("Segment1");
+        studySegment.setId(21);
+        ScheduledStudySegment scheduledStudySegment = Fixtures.createScheduledStudySegment(studySegment);
+        studySubjectAssignment.getScheduledCalendar().addStudySegment(scheduledStudySegment);
         studySubjectAssignments.add(studySubjectAssignment);
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setSubjectCentric(true);
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName(), SUBJECT_IDENTIFIER);
