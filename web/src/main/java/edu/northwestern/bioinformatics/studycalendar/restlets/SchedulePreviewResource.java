@@ -16,6 +16,7 @@ import org.restlet.data.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONArray;
 
 /**
  * @author Jalpa Patel
@@ -95,26 +96,35 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     public Representation represent(Variant variant) throws ResourceException {
         if (getRequestedObject() != null ) {
             if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-                JSONObject dayWiseActivities = new JSONObject();
-                Map<Date,List<ScheduledActivity>> activities =  new TreeMap<Date,List<ScheduledActivity>>();
-                for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
-                    activities.putAll(scheduledStudySegment.getActivitiesByDate());
-                }
-                try {
-                    for (Date date : activities.keySet()) {
-                        dayWiseActivities.put(new String(formatter.format(date)),
-                                ScheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
-                    }
-                } catch (JSONException e) {
-	                throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-	            }
-                return new JsonRepresentation(dayWiseActivities);
+                return createJSONRepresentation(getRequestedObject());
             } else {
                 return super.represent(variant);
             }
         } else {
             return null;
         }
+    }
+
+    private Representation createJSONRepresentation(ScheduledCalendar scheduledCalendar) throws ResourceException {
+        try {
+            JSONObject jsonData = new JSONObject();
+            JSONObject dayWiseActivities = new JSONObject();
+            JSONArray studySegments = new JSONArray();
+            SortedMap<Date,List<ScheduledActivity>> activities =  new TreeMap<Date,List<ScheduledActivity>>();
+            for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
+                activities.putAll(scheduledStudySegment.getActivitiesByDate());
+                studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
+            }
+            for (Date date : activities.keySet()) {
+                 dayWiseActivities.put(new String(formatter.format(date)),
+                                ScheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
+            }
+            jsonData.put("days", dayWiseActivities);
+            jsonData.put("study_segments", studySegments);
+            return new JsonRepresentation(jsonData);
+        } catch (JSONException e) {
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	    }
     }
 
     @Required
