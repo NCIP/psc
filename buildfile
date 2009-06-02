@@ -90,7 +90,7 @@ define "psc" do
   desc "Database configuration and testing"
   define "database" do
     # Migrations are resources, too
-    resources.enhance do
+    resources.enhance([_("src/main/db/migrate")]) do
       filter.from(_("src/main/db/migrate")).
         into(resources.target.to_s + "/db/migrate").run
     end    
