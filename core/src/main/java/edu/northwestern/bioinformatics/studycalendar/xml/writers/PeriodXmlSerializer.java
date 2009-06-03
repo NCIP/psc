@@ -56,6 +56,8 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
         String durationUnitAttr = element.attributeValue(DURATION_UNIT);
         if (durationUnitAttr.equals("week")) {
             durationUnit =  Duration.Unit.week;
+        } else if (durationUnitAttr.equals("fortnight")) {
+            durationUnit =  Duration.Unit.fortnight;
         } else if (durationUnitAttr.equals("quarter")) {
             durationUnit =  Duration.Unit.quarter;
         } else if (durationUnitAttr.equals("month")) {

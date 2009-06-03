@@ -163,7 +163,9 @@ describe "/study" do
                   period.tag!('period', 'id' => "period3", 'name' => "With Quarter", 'repetitions' => "1",
                    'start-day' => "1", 'duration-quantity' => "3",  'duration-unit' => "quarter" )
                   period.tag!('period', 'id' => "period4", 'name' => "With Month", 'repetitions' => "1",
-                   'start-day' => "1", 'duration-quantity' => "2",  'duration-unit' => "month" )  
+                   'start-day' => "1", 'duration-quantity' => "2",  'duration-unit' => "month" )
+                  period.tag!('period', 'id' => "period5", 'name' => "With Fortnight", 'repetitions' => "1",
+                    'start-day' => "1", 'duration-quantity' => "2",  'duration-unit' => "fortnight" )  
                 }
               }
             }
@@ -176,15 +178,17 @@ describe "/study" do
       puts response.entity
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU483")
-      response.xml_elements('//period').size.should == 4
+      response.xml_elements('//period').size.should == 5
       response.xml_attributes("period", "name").should include("With Day")
       response.xml_attributes("period", "name").should include("With Week")
       response.xml_attributes("period", "name").should include("With Quarter")
       response.xml_attributes("period", "name").should include("With Month")
+      response.xml_attributes("period", "name").should include("With Fortnight")
       response.xml_attributes("period", "duration-unit").should include("day")
       response.xml_attributes("period", "duration-unit").should include("week")
       response.xml_attributes("period", "duration-unit").should include("quarter")
       response.xml_attributes("period", "duration-unit").should include("month")
+      response.xml_attributes("period", "duration-unit").should include("fortnight")
     end  
   end
   
