@@ -35,16 +35,22 @@ describe "/schedulePreview" do
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
       response.xml_elements('//scheduled-activity').size.should == 4
-      puts response.entity
     end
     it "returns scheduled calednar in json format" do
       get "/studies/NU480/template/current/schedulePreview.json?segment%5B0%5D=#{@studySegment.gridId}&start_date%5B0%5D=2009-05-04", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'application/json'
-      puts response.entity
-      response.json["2009-05-07"][0]["activity"].should include("Initial Diagnosis")
-      response.json["2009-05-07"][0]["studySegment"].should include("Treatment: segment_A")
+      response.json["days"]["2009-05-07"]["activities"][0]["study"].should include("NU480")
+      response.json["days"]["2009-05-07"]["activities"][0]["study_segment"].should include("Treatment: segment_A")
+      response.json["days"]["2009-05-07"]["activities"][0]["plan_day"].should == 4
+      response.json["days"]["2009-05-07"]["activities"][0]["current_state"]["name"].should include("scheduled")
+      response.json["days"]["2009-05-07"]["activities"][0]["activity"]["name"].should include("Initial Diagnosis")
+      response.json["days"]["2009-05-07"]["activities"][0]["activity"]["type"].should include("Malaria Treatment")
+      response.json["study_segments"][0]["name"].should include("Treatment: segment_A")
+      response.json["study_segments"][0]["planned"]["segment"]["name"].should include("segment_A")
+      response.json["study_segments"][0]["planned"]["epoch"]["name"].should include("Treatment")
+      response.json["study_segments"][0]["planned"]["study"]["assigned_identifier"].should include("NU480")
     end
     it "returns 400 for unparsable date" do
       get "/studies/NU480/template/current/schedulePreview.json?segment%5B0%5D=#{@studySegment.gridId}&start_date%5B0%5D=200905-04", :as => :erin

@@ -106,11 +106,22 @@ describe "/subject_centric_schedule" do
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'application/json'
-      response.json["2008-12-29"][0]["activity"].should include("Initial Diagnosis")
-      response.json["2008-12-29"][0]["study"].should include("NU480")
-      response.json["2008-12-29"][1]["study"].should include("ECOG170")
-      response.json["2008-12-29"][0]["studySegment"].should include("Treatment: segment_A")
-      response.json["2008-12-29"][1]["studySegment"].should include("FollowUp: segment_A")
+      response.json["days"]["2008-12-29"]["activities"][0]["study"].should include("NU480")
+      response.json["days"]["2008-12-29"]["activities"][0]["study_segment"].should include("Treatment: segment_A")
+      response.json["days"]["2008-12-29"]["activities"][1]["study"].should include("ECOG170")
+      response.json["days"]["2008-12-29"]["activities"][1]["study_segment"].should include("FollowUp: segment_A")
+      response.json["days"]["2008-12-29"]["activities"][0]["plan_day"].should == 4
+      response.json["days"]["2008-12-29"]["activities"][0]["current_state"]["name"].should include("scheduled")
+      response.json["days"]["2008-12-29"]["activities"][0]["activity"]["name"].should include("Initial Diagnosis")
+      response.json["days"]["2008-12-29"]["activities"][0]["activity"]["type"].should include("Malaria Treatment")
+      response.json["study_segments"][0]["name"].should include("Treatment: segment_A")
+      response.json["study_segments"][0]["planned"]["segment"]["name"].should include("segment_A")
+      response.json["study_segments"][0]["planned"]["epoch"]["name"].should include("Treatment")
+      response.json["study_segments"][0]["planned"]["study"]["assigned_identifier"].should include("NU480")
+      response.json["study_segments"][1]["name"].should include("FollowUp: segment_A")
+      response.json["study_segments"][1]["planned"]["segment"]["name"].should include("segment_A")
+      response.json["study_segments"][1]["planned"]["epoch"]["name"].should include("FollowUp")
+      response.json["study_segments"][1]["planned"]["study"]["assigned_identifier"].should include("ECOG170")
       
     end
     
