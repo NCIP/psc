@@ -129,7 +129,7 @@
                     <select id="selector">
                         <c:forEach items="${users}" var="user">
                             <option value="${user.id}"
-                                    <c:if test="${user.id == selected.id}">selected</c:if>>${user.name}</option>
+                                    <c:if test="${user.id == selected.id}">selected</c:if>>${user.displayName}</option>
                         </c:forEach>
                     </select>
                 </c:if>

@@ -127,7 +127,7 @@
 </head>
 <body>
     <div class="main">
-        <h1>Welcome, ${userName.name}</h1>
+        <h1>Welcome, ${userName.displayName}</h1>
     </div>
     <dash:pastDueActivities activities="${pastDueActivities}"/>
     <dash:notifications notifications="${notifications}" />
@@ -199,7 +199,7 @@
             <ul class="menu">
                 <c:forEach items="${colleguesStudies}" var="mapOfUsersAndStudies" varStatus="status">
                     <li class="autoclear ">
-                        <a href="<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${mapOfUsersAndStudies.key.id}"/>"> ${mapOfUsersAndStudies.key.name} </a>
+                        <a href="<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${mapOfUsersAndStudies.key.id}"/>"> ${mapOfUsersAndStudies.key.displayName} </a>
                     </li>
                 </c:forEach>
             </ul>

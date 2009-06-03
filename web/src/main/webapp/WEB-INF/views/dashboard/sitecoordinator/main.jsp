@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<h1>Welcome, ${user.name}</h1>
+<h1>Welcome, ${user.displayName}</h1>
 
 <c:if test="${not empty notices['approvals']}">
     <laf:box title="Please note" autopad="true">

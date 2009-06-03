@@ -168,7 +168,7 @@
                      <div class="value">
                         <select id="selector">
                             <c:forEach items="${assignableUsers}" var="user">
-                                <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.name}</option>
+                                <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.displayName}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -199,7 +199,7 @@
                                                   <select name="subjectCoordinator">
                                                       <option></option>
                                                       <c:forEach items="${subjectCoordinatorStudySites[study.key][site.key]}" var="user">
-                                                          <option value="${user.id}">${user.name}</option>
+                                                          <option value="${user.id}">${user.displayName}</option>
                                                       </c:forEach>
                                                   </select>
                                                   <input type="button" value="Assign to Subject Coordinator" onclick="assignmentButtonClicked(this.form)"/>

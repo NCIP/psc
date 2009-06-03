@@ -64,6 +64,30 @@ public class UserTest extends TestCase {
             user.getName(), user.toString());
     }
 
+    public void testUserDisplayNameWithUsernameOnly() throws Exception {
+        assertEquals("In order to be used as a Principal, user.displayName must match the username",
+            user.getDisplayName(), user.getName());
+    }
+
+    public void testUserDisplayNameWithFirstMiddleLastName() throws Exception {
+        String firstName = "First";
+        String middleName = "M";
+        String lastName = "Last";
+        user.setFirstName(firstName);
+        user.setMiddleName(middleName);
+        user.setLastName(lastName);
+        String expectedDisplayName = firstName + " " + middleName+ " " + lastName;
+
+        assertEquals("In order to be used as a Principal, user.displayName must match the first, last, and middle name",
+            user.getDisplayName(), expectedDisplayName);
+    }
+
+    public void testUserDisplayNameWithFirstAndUserName() throws Exception {
+        user.setFirstName("First");
+        assertEquals("In order to be used as a Principal, user.displayName must match the first name",
+            user.getDisplayName(), user.getFirstName()+" ");
+    }
+
     public void testEqualityConsidersRoles() throws Exception {
         assertNotEquals(
             Fixtures.createUser("joe", Role.STUDY_ADMIN),

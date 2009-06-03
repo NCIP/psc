@@ -28,6 +28,9 @@ import java.util.Set;
 )
 public class User extends AbstractMutableDomainObject implements Named, Serializable, UserDetails {
     private String name;
+    private String firstName;
+    private String middleName;
+    private String lastName;
     private Long csmUserId;
     private Set<UserRole> userRoles;
     private Boolean activeFlag;
@@ -43,7 +46,25 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
 
     @Transient
     public String getDisplayName() {
-        return name;
+        StringBuffer sb = new StringBuffer();
+        if (firstName != null) {
+            sb.append(firstName);
+            sb.append(" ");
+        }
+        if (middleName != null) {
+            sb.append(middleName);
+            sb.append(" ");
+        }
+        if (lastName != null) {
+            sb.append(lastName);
+        }
+
+        String displayName = sb.toString();
+        if (displayName != null && displayName.length() > 0) {
+            return displayName;
+        } else {
+            return name;
+        }
     }
 
     public boolean hasRole(Role role) {
@@ -154,6 +175,30 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
 
     public void setActiveFlag(Boolean activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @OneToMany (mappedBy = "user")

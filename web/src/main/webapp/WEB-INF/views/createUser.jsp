@@ -192,7 +192,47 @@
                         ${command.user.name}
                     </c:if>
                 </div>
+             </div>
+            <div class="row">
+               <div class="label" >
+                    <form:label path="user.firstName" >First Name:</form:label>
+                </div>
+                <div class="value">
+                    <c:if test="${actionText=='Create'}">
+                        <form:input path="user.firstName"/>
+                    </c:if>
+                    <c:if test="${actionText=='Edit'}">
+                        ${command.user.firstName}
+                    </c:if>
+                </div>
             </div>
+            <div class="row">
+               <div class="label" >
+                    <form:label path="user.middleName" >Middle Name:</form:label>
+                </div>
+                <div class="value">
+                    <c:if test="${actionText=='Create'}">
+                        <form:input path="user.middleName"/>
+                    </c:if>
+                    <c:if test="${actionText=='Edit'}">
+                        ${command.user.middleName}
+                    </c:if>
+                </div>
+            </div>
+            <div class="row">
+               <div class="label" >
+                    <form:label path="user.lastName" >Last Name:</form:label>
+                </div>
+                <div class="value">
+                    <c:if test="${actionText=='Create'}">
+                        <form:input path="user.lastName"/>
+                    </c:if>
+                    <c:if test="${actionText=='Edit'}">
+                        ${command.user.lastName}
+                    </c:if>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="label">
                     <form:label path="emailAddress">Email Address:</form:label>
