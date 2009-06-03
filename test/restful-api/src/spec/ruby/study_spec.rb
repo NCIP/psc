@@ -147,6 +147,45 @@ describe "/study" do
       response.status_code.should == 200 #OK
       response.xml_attributes("study", "assigned-identifier").should include("NU482")
     end
+    
+    it "creates new template with all the type of duration for the period" do
+      @nu483_xml = psc_xml("study", 'assigned-identifier' => "NU483") { |ss|
+        ss.tag!('planned-calendar', 'id' =>'pc') 
+        ss.tag!('development-amendment', 'name' => 'am', 'date' => "2008-11-13", 'mandatory' => "true"){ |da|
+          da.tag!('planned-calendar-delta', 'id' => 'd', 'node-id' => 'pc') { |pcd| 
+            pcd.tag!('add', 'id' => 'add') { |add|
+              add.tag!('epoch','id' => 'epoch', 'name' => 'Treatment2') {|seg|
+                seg.tag!('study-segment', 'id' => "segment", 'name' => 'initial study'){|period|
+                  period.tag!('period', 'id' => "period1", 'name' => "With Day", 'repetitions' => "1",
+                   'start-day' => "1", 'duration-quantity' => "28",  'duration-unit' => "day" )
+                  period.tag!('period', 'id' => "period2", 'name' => "With Week", 'repetitions' => "1",
+                   'start-day' => "1", 'duration-quantity' => "4",  'duration-unit' => "week" )
+                  period.tag!('period', 'id' => "period3", 'name' => "With Quarter", 'repetitions' => "1",
+                   'start-day' => "1", 'duration-quantity' => "3",  'duration-unit' => "quarter" )
+                  period.tag!('period', 'id' => "period4", 'name' => "With Month", 'repetitions' => "1",
+                   'start-day' => "1", 'duration-quantity' => "2",  'duration-unit' => "month" )  
+                }
+              }
+            }
+          }
+        }
+      }
+      put '/studies/NU483/template', @nu483_xml, :as => :juno
+      response.status_code.should == 201 #created
+      get '/studies/NU483/template', :as => :juno
+      puts response.entity
+      response.status_code.should == 200 #OK
+      response.xml_attributes("study", "assigned-identifier").should include("NU483")
+      response.xml_elements('//period').size.should == 4
+      response.xml_attributes("period", "name").should include("With Day")
+      response.xml_attributes("period", "name").should include("With Week")
+      response.xml_attributes("period", "name").should include("With Quarter")
+      response.xml_attributes("period", "name").should include("With Month")
+      response.xml_attributes("period", "duration-unit").should include("day")
+      response.xml_attributes("period", "duration-unit").should include("week")
+      response.xml_attributes("period", "duration-unit").should include("quarter")
+      response.xml_attributes("period", "duration-unit").should include("month")
+    end  
   end
   
 end

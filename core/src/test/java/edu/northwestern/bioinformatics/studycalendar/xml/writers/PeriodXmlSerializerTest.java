@@ -83,6 +83,29 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong period repetitions", 3, actual.getRepetitions());
     }
 
+    public void testReadElementWithDurationUnitAsMonth() throws Exception {
+        expect(element.getName()).andReturn("period");
+        expect(element.attributeValue("id")).andReturn("grid0");
+        expect(periodDao.getByGridId("grid0")).andReturn(null);
+        expect(element.attributeValue("name")).andReturn("Period A");
+        expect(element.attributeValue("duration-unit")).andReturn("month");
+        expect(element.attributeValue("duration-quantity")).andReturn("7");
+        expect(element.attributeValue("start-day")).andReturn("1");
+        expect(element.attributeValue("repetitions")).andReturn("3");
+        expect(element.elements()).andReturn(emptyList());
+        replayMocks();
+
+        Period actual = (Period) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong grid id", "grid0", actual.getGridId());
+        assertEquals("Wrong period name", "Period A", actual.getName());
+        assertEquals("Wrong period duration unit", "month", actual.getDuration().getUnit().toString());
+        assertEquals("Wrong period duration quantity", new Integer(7), actual.getDuration().getQuantity());
+        assertEquals("Wrong period start day", new Integer(1), actual.getStartDay());
+        assertEquals("Wrong period repetitions", 3, actual.getRepetitions());
+    }
+
     public void testReadElementExistsEpoch() {
         expect(element.getName()).andReturn("period");
         expect(element.attributeValue("id")).andReturn("grid0");

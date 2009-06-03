@@ -52,7 +52,17 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
         ((Period) node).setStartDay(new Integer(element.attributeValue(START_DAY)));
 
         Integer durationQuantity = new Integer(element.attributeValue(DURATION_QUANTITY));
-        Duration.Unit durationUnit = (element.attributeValue(DURATION_UNIT).equals("day")) ? Duration.Unit.day : Duration.Unit.week;
+        Duration.Unit durationUnit;
+        String durationUnitAttr = element.attributeValue(DURATION_UNIT);
+        if (durationUnitAttr.equals("week")) {
+            durationUnit =  Duration.Unit.week;
+        } else if (durationUnitAttr.equals("quarter")) {
+            durationUnit =  Duration.Unit.quarter;
+        } else if (durationUnitAttr.equals("month")) {
+            durationUnit =  Duration.Unit.month;
+        } else {
+            durationUnit =  Duration.Unit.day;
+        }
         ((Period) node).setDuration(new Duration(durationQuantity, durationUnit));
     }
 
