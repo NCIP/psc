@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.StringTools;
+import edu.northwestern.bioinformatics.studycalendar.StudyImportException;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -52,7 +53,12 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
         ((Period) node).setStartDay(new Integer(element.attributeValue(START_DAY)));
 
         Integer durationQuantity = new Integer(element.attributeValue(DURATION_QUANTITY));
-        Duration.Unit durationUnit = (element.attributeValue(DURATION_UNIT).equals("day")) ? Duration.Unit.day : Duration.Unit.week;
+        Duration.Unit durationUnit;
+        try {
+            durationUnit = Duration.Unit.valueOf(element.attributeValue(DURATION_UNIT));
+        } catch(Exception e) {
+            throw new StudyImportException("Unknown Duration Unit %s",element.attributeValue(DURATION_UNIT));
+        }
         ((Period) node).setDuration(new Duration(durationQuantity, durationUnit));
     }
 
