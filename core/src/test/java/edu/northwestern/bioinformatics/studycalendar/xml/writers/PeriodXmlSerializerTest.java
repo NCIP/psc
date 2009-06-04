@@ -8,11 +8,11 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGri
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
-import static java.util.Collections.emptyList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -47,7 +47,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         periods = new TreeSet<Period>();
     }
 
-    public void testCreateElementEpoch() {
+    public void testCreateElementPeriod() {
         Element actual = serializer.createElement(period);
 
         assertEquals("Wrong attribute size", 6, actual.attributeCount());
@@ -60,20 +60,10 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    public void testReadElementEpoch() {
-        expect(element.getName()).andReturn("period");
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(periodDao.getByGridId("grid0")).andReturn(null);
-        expect(element.attributeValue("name")).andReturn("Period A");
-        expect(element.attributeValue("duration-unit")).andReturn("day");
-        expect(element.attributeValue("duration-quantity")).andReturn("7");
-        expect(element.attributeValue("start-day")).andReturn("1");
-        expect(element.attributeValue("repetitions")).andReturn("3");
-        expect(element.elements()).andReturn(emptyList());
-        replayMocks();
-
-        Period actual = (Period) serializer.readElement(element);
-        verifyMocks();
+    public void testReadElementPeriod() {
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "day");
+        Period actual = (Period) serializer.readElement(elt);
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
         assertEquals("Wrong period name", "Period A", actual.getName());
@@ -84,29 +74,58 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWithDurationUnitAsMonth() throws Exception {
-        expect(element.getName()).andReturn("period");
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(periodDao.getByGridId("grid0")).andReturn(null);
-        expect(element.attributeValue("name")).andReturn("Period A");
-        expect(element.attributeValue("duration-unit")).andReturn("month");
-        expect(element.attributeValue("duration-quantity")).andReturn("7");
-        expect(element.attributeValue("start-day")).andReturn("1");
-        expect(element.attributeValue("repetitions")).andReturn("3");
-        expect(element.elements()).andReturn(emptyList());
-        replayMocks();
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "month");
 
-        Period actual = (Period) serializer.readElement(element);
-        verifyMocks();
-
-        assertEquals("Wrong grid id", "grid0", actual.getGridId());
-        assertEquals("Wrong period name", "Period A", actual.getName());
+        Period actual = (Period) serializer.readElement(elt);
         assertEquals("Wrong period duration unit", "month", actual.getDuration().getUnit().toString());
-        assertEquals("Wrong period duration quantity", new Integer(7), actual.getDuration().getQuantity());
-        assertEquals("Wrong period start day", new Integer(1), actual.getStartDay());
-        assertEquals("Wrong period repetitions", 3, actual.getRepetitions());
     }
 
-    public void testReadElementExistsEpoch() {
+    public void testReadElementWithDurationUnitAsDay() throws Exception {
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "day");
+
+        Period actual = (Period) serializer.readElement(elt);
+        assertEquals("Wrong period duration unit", "day", actual.getDuration().getUnit().toString());
+    }
+
+    public void testReadElementWithDurationUnitAsWeek() throws Exception {
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "week");
+
+        Period actual = (Period) serializer.readElement(elt);
+        assertEquals("Wrong period duration unit", "week", actual.getDuration().getUnit().toString());
+    }
+
+    public void testReadElementWithDurationUnitAsFortnight() throws Exception {
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "fortnight");
+
+        Period actual = (Period) serializer.readElement(elt);
+        assertEquals("Wrong period duration unit", "fortnight", actual.getDuration().getUnit().toString());
+    }
+
+    public void testReadElementWithDurationUnitAsQuarter() throws Exception {
+        Element elt = createPeriodElement();
+        elt.addAttribute("duration-unit", "quarter");
+
+        Period actual = (Period) serializer.readElement(elt);
+        assertEquals("Wrong period duration unit", "quarter", actual.getDuration().getUnit().toString());
+    }
+
+    public void testThrowValidationExceptionForUnreginizedDurationUnit() throws Exception {
+        Element invalidElt = createPeriodElement();
+        invalidElt.addAttribute("duration-unit", "unknown");
+        try {
+            serializer.readElement(invalidElt);
+            fail("Exception not thrown");
+        } catch (StudyImportException sie) {
+            assertEquals("Unknown Duration Unit unknown",
+                sie.getMessage());
+        }
+    }
+
+    public void testReadElementExistsPeriod() {
         expect(element.getName()).andReturn("period");
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(periodDao.getByGridId("grid0")).andReturn(period);
@@ -181,5 +200,16 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         periods.clear();
         periods.add(period);
         return period;
+    }
+
+    // Test Helper Method
+    private Element createPeriodElement() {
+        Element elt = XsdElement.PERIOD.create();;
+        elt.addAttribute("id", "grid0");
+        elt.addAttribute("name", "Period A");
+        elt.addAttribute("duration-quantity", "7");
+        elt.addAttribute("start-day", "1");
+        elt.addAttribute("repetitions", "3");
+        return elt;
     }
 }
