@@ -40,6 +40,10 @@ public class SiteService {
         return siteDao.getById(id);
     }
 
+    public List<Site> getAll() {
+        return siteDao.getAll();
+    }
+    
     public Site createOrUpdateSite(Site site) {
         siteDao.save(site);
         if (site.getId() == null || authorizationManager.getPGByName(createExternalObjectId(site)) == null) {
@@ -147,7 +151,7 @@ public class SiteService {
         if (existingSite == null) {
             return createOrUpdateSite(newSite);
         } else {
-            Site site = siteDao.getById(existingSite.getId());
+            Site site = getById(existingSite.getId());
             site.setName(newSite.getName());
             if (newSite.getAssignedIdentifier() != null) site.setAssignedIdentifier(newSite.getAssignedIdentifier());
             return createOrUpdateSite(site);

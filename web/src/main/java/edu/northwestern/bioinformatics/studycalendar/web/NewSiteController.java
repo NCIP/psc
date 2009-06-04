@@ -42,7 +42,7 @@ public class NewSiteController extends PscSimpleFormController {
             site = new Site();
         }
         else {
-           site = siteDao.getById(siteId);
+           site = siteService.getById(siteId);
         }
 
         return new NewSiteCommand(site, siteService);

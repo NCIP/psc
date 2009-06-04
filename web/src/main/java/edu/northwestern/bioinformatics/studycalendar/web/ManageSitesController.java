@@ -21,11 +21,10 @@ import java.util.HashMap;
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class ManageSitesController extends PscAbstractController {
-    private SiteDao siteDao;
-    private SiteService siteService = new SiteService();
+    private SiteService siteService;
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Collection<Site> sites = siteDao.getAll();
+        Collection<Site> sites = siteService.getAll();
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("sites", sites);
         Map<Integer, Boolean> enableDeletes = new HashMap<Integer, Boolean>();
@@ -44,7 +43,7 @@ public class ManageSitesController extends PscAbstractController {
     ////// CONFIGURATION
 
     @Required
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }

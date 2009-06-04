@@ -41,6 +41,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private UserRole siteCoordinatorRole;
     private UserRole subjectCoordinatorRole;
     private DeletableDomainObjectDao domainObjectDao;
+    private SiteService siteService;
 
     @Override
     protected void setUp() throws Exception {
@@ -55,6 +56,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
+        siteService = registerMockFor(SiteService.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
@@ -65,6 +67,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setAuthorizationService(authorizationService);
+        service.setSiteService(siteService);
 
         user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
@@ -473,13 +476,10 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         List<ProtectionGroup> exptectedAvailableSitePGs = asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
         expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
-
         Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
         Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
-        expect(DomainObjectTools.loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.0", siteDao))
-                .andReturn(expectedAvailableSite0);
-        expect(DomainObjectTools.loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", siteDao))
-                .andReturn(expectedAvailableSite1);
+        expect(siteService.getById(0)).andReturn(expectedAvailableSite0);
+        expect(siteService.getById(1)).andReturn(expectedAvailableSite1);
         replayMocks();
 
         Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);

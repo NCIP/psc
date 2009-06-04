@@ -74,6 +74,7 @@ public class TemplateService {
     private UserRoleDao userRoleDao;
     private AuthorizationService authorizationService;
     private DaoFinder daoFinder;
+    private SiteService siteService;
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
@@ -232,7 +233,8 @@ public class TemplateService {
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
         for (ProtectionGroup sitePG : allSitePGs) {
             String pgName = sitePG.getProtectionGroupName();
-            Site site = DomainObjectTools.loadFromExternalObjectId(pgName, siteDao);
+            Integer id = DomainObjectTools.parseExternalObjectId(pgName);
+            Site site = siteService.getById(id);
             if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
             availableSites.add(site);
         }
@@ -656,5 +658,10 @@ public class TemplateService {
     @Required
     public void setAuthorizationService(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
+    }
+
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }
