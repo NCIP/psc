@@ -343,7 +343,7 @@ KNOPFLERFISH = struct(
 )
 
 FELIX = struct(
-  Dir[static_lib('felix-1.4.1/*.jar')].inject({}) do |map, jar|
+  Dir[static_lib('felix-1.2.1/*.jar')].inject({}) do |map, jar|
     group, name, version = jar.scan(%r{.*/(org.apache.felix)\.([\w\.]+)-([\d\.]+)\.jar$}).first
     map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
     map
