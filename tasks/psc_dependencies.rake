@@ -364,6 +364,12 @@ DYNAMIC_JAVA = struct(
   :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
 )
 
+PSC_DA_LAUNCHER = struct(
+  :bundle_building_utils => artifact("org.dynamicjava:bundle-building-utils:jar:1.0.2").from(static_lib('bundle-building-utils-1.0.2.jar')),
+  :bundler => artifact("org.dynamicjava:bundler:jar:1.0.1").from(static_lib('bundler-1.0.1.jar')),
+  :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
+)
+
 SPRING_OSGI = struct(
   :core => "org.springframework.osgi:org.springframework.osgi.core:jar:1.1.3.RELEASE",
   :io => "org.springframework.osgi:org.springframework.osgi.io:jar:1.1.3.RELEASE",
