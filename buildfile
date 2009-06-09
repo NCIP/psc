@@ -65,6 +65,14 @@ define "psc" do
       package(:jar)
       package(:sources)
     end
+    
+    desc "Psc own implementations for the da-launcher"
+    define "da-launcher" do
+      project.version = "1.1.1"
+      compile.with PSC_DA_LAUNCHER, OSGI, FELIX, EQUINOX, KNOPFLERFISH, GLOBUS.servlet
+      package(:jar)
+      package(:sources)
+    end
   end
 
   desc "The domain classes for PSC"
@@ -443,7 +451,7 @@ define "psc" do
     task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
       cd _("target/classes") do
         mkdir_p _('tmp/logs')
-        deps = project.test.dependencies.collect { |p| p.to_s }.join(':')
+        deps = project.test.dependencies.collect { |p| p.to_s }
         if ENV['WEBAPP_SIM']
           deps = [deps, project('psc:web').and_dependencies].flatten.uniq
         end
@@ -453,7 +461,7 @@ define "psc" do
       end
     end
     
-    compile.with OSGI, DYNAMIC_JAVA
+    compile.with project('utility:da-launcher').and_dependencies, OSGI
     
     desc "Advertises host-configured services to the OSGi layer"
     define "host-services" do
@@ -478,7 +486,7 @@ define "psc" do
     end
     
     define "integrated-tests" do
-      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA, 
+      test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies, 
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
@@ -495,7 +503,7 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, DYNAMIC_JAVA
+      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher').and_dependencies
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,
