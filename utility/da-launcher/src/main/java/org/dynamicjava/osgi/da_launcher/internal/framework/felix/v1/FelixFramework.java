@@ -12,6 +12,7 @@ import org.dynamicjava.osgi.da_launcher.internal.framework.OsgiFrameworkSettings
 import org.dynamicjava.osgi.da_launcher.internal.framework.support.AbstractOsgiFramework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.apache.felix.framework.cache.BundleCache;
 
 public class FelixFramework extends AbstractOsgiFramework {
 	
@@ -176,6 +177,6 @@ public class FelixFramework extends AbstractOsgiFramework {
 	}
 	
 	
-	protected static final String CACHE_PROFILE_DIR_PROPERTY = "felix.cache.profiledir";
+	protected static final String CACHE_PROFILE_DIR_PROPERTY = BundleCache.CACHE_PROFILE_DIR_PROP;
 	
 }
