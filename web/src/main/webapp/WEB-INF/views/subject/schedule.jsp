@@ -422,10 +422,10 @@
         <li class="[#= stateClasses() #]">
             <label>
                 <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="[#= stateClasses() #]"/>
-                <img src="/images/psc/[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
+                <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
                 <span title="Segment" class="segment">[#= study_segment #]</span> /
-                <a title="Activity" href="/sa/details?[#= id #]">[#= activity.name #]</a>
+                <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>
             </label>
         </li>
     </tags:resigTemplate>
@@ -450,6 +450,7 @@
         <div id="loading-text" class="loading">
             <tags:activityIndicator/> Loading&hellip;
         </div>
+        <div id="scheduled-activities"></div>
     </div>
 </laf:box>
 

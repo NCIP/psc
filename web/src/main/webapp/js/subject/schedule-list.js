@@ -1,3 +1,7 @@
+/*global jQuery psc window */
+if (!window.psc) { var psc = { }; }
+if (!psc.subject) { psc.subject = { }; }
+
 (function ($) {
   psc.subject.ScheduleList = (function () {
     function zeropad(i) {
@@ -46,7 +50,7 @@
       }
 
       $('#schedule-error').hide()
-      $('.loading').fadeOut();
+      $('.loading').fadeOut().hide();
     }
 
     function scheduleError(evt, message) {
