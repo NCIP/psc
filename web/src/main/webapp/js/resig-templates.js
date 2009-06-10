@@ -42,7 +42,5 @@ function resigTemplateCompile(str) {
       .split("\r").join("\\'")
   + "');}return p.join('');"
 
-  console.log(src)
-
   return new Function("obj", src);
 }
