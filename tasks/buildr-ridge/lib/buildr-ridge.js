@@ -14,7 +14,10 @@ function require_absolute(url, options) {
   jQuery.ajax({
     dataType: 'script',
     async: false,
-    url: url
+    url: url,
+    error: function () {
+      alert("Could not load required path " + url)
+    }
   })
 }
 
