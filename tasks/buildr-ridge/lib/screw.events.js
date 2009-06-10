@@ -26,7 +26,7 @@
         .bind('failed', function(e, reason) {
           $(this)
             .addClass('failed')
-            .append($('<p class="error"></p>').text(reason.toString()));
+            .append($('<p class="error"></p>').text(reason.message || reason.toString()));
 
           var file = reason.fileName || reason.sourceURL;
           var line = reason.lineNumber || reason.line;          
