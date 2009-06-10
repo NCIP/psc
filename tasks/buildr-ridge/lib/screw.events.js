@@ -33,13 +33,13 @@
           if (file || line) {
             $(this).append($('<p class="error"></p>').text('line ' + line + ', ' + file));
           }
-        })
+        });
     })
     .bind('before', function() {
       Screw.suite_start_time = new Date();
       $('.status').text('Running...');
     })
     .bind('after', function() {
-      $('.status').fn('display')
-    })
+      $('body .status').fn('display');
+    });
 })(jQuery);

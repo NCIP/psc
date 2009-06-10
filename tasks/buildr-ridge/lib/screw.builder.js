@@ -1,14 +1,28 @@
 var Screw = (function($) {
   var screw = {
     Unit: function(fn) {
-      var contents = fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
-      var fn = new Function("matchers", "specifications",
+      var wrappedFn;
+      if(fn.length == 0) {
+        var contents = fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
+        wrappedFn = new Function("matchers", "specifications",
         "with (specifications) { with (matchers) { " + contents + " } }"
-      );
+        );
+      } else {
+        wrappedFn = function(matchers, specifications) {
+          var screwContext = {};
+          for(var method in matchers) {
+            screwContext[method] = matchers[method];
+          }
+          for(var method in specifications) {
+            screwContext[method] = specifications[method];
+          }
+          fn(screwContext);
+        }
+      }
 
       $(Screw).queue(function() {
         Screw.Specifications.context.push($('body > .describe'));
-        fn.call(this, Screw.Matchers, Screw.Specifications);
+        wrappedFn.call(this, Screw.Matchers, Screw.Specifications);
         Screw.Specifications.context.pop();
         $(this).dequeue();
       });
@@ -65,7 +79,6 @@ var Screw = (function($) {
   };
 
   $(screw).queue(function() { $(screw).trigger('loading') });
-  
   $(window).load(function(){
     $('<div class="describe"></div>')
       .append('<h3 class="status"></h3>')
