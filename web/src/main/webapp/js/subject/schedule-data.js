@@ -11,7 +11,6 @@ if (!psc.subject) { psc.subject = { }; }
     }
     
     var focusDateTriggerer = new psc.tools.AsyncUpdater(function (triggerData) {
-      focusDate = triggerData.date;
       $('#schedule').trigger('focus-date-changed', triggerData);
     }, triggeredDateComparableFn);
     

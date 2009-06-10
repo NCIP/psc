@@ -148,7 +148,7 @@ if (!psc.subject) { psc.subject = { }; }
           var scheduleBlockHeight = $('#schedule').height();
           $('#scheduled-activities > .day').each(function (i, dayBlock) {
             var header = $(dayBlock).find("h3");
-            if (!min && (header.position().top + header.height() > 0)) {
+            if (!min && ($(dayBlock).position().top + header.position().top + header.height() > 0)) {
               min = $(dayBlock).data('date');
             } else if ($(dayBlock).position().top + $(dayBlock).height() > scheduleBlockHeight) {
               max = $(dayBlock).data('date');
