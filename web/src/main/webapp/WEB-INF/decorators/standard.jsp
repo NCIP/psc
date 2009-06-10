@@ -22,10 +22,13 @@
     <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="error-console"/>
     <tags:stylesheetLink name="common"/>
-    <tags:javascriptLink name="jquery/jquery"/>
-      <script type="text/javascript">jQuery = jQuery.noConflict();</script>
 
+    <tags:javascriptLink name="jquery/jquery"/>
+    <script type="text/javascript">
+      jQuery.noConflict();
+    </script>
     <tags:javascriptLink name="prototype"/>
+
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
     <laf:javascriptLink name="ccts-hotlinks"/>

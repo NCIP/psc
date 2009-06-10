@@ -1,214 +1,131 @@
-!timeline_width = 900px
-!detail_timeline_width = 820px
-!total_timeline_height = 24px
-!refcolor = #def
-!refcolor_border = #09b
-!refcolor_overlay_highlight = #bea
-!today_fg = #fff
-!today_bg = #00f
+!detail_timeline_bg=#9cf
+!today=#900
+!hover_border=#266A2E
+!hover_bg=#9c9
 
-#total-timeline
-  :width= !timeline_width
-  :height= !total_timeline_height
+#schedule-timeline
+  :height 220px
   :border 1px solid #000
-  :border-width 0 1px
-  :position relative
-  :margin-top 1.5em
-  #total-timeline-midline
-    :position absolute
-    :height 1px
-    :width 100%
-    :border-top 1px solid #000
-    :top= !total_timeline_height / 2
-    :left 0
-  #total-timeline-refbox
-    :position relative
-    :top= !total_timeline_height / 6
-    :height= !total_timeline_height * 2 / 3
-    :left 0%
-    :width 50px
-    :border-color= !refcolor_border
-    :border-style none solid
-    :border-width 1px
-    :background-color= !refcolor
-    :z-index 1
-    #total-timeline-refbox-midline
-      :position absolute
-      :width 100%
-      :height 1px
-      :border-top= 1px solid !refcolor_border
-      :top= !total_timeline_height / 3
-      :left 0
-      :z-index 4
-  .date
-    :position absolute
-    :font-size 0.9em
-    :top -3px
-    :z-index 2
-  .end-date
-    :right 2px
-  .start-date
-    :left 2px
-  .tick
-    :position absolute
-    :width 1px
-    :background #999
-    :z-index 3
-  .month-tick
-    :bottom= !total_timeline_height / 2
-    :height= !total_timeline_height / 4
-  .year-tick
-    :bottom= !total_timeline_height / 4
-    :height= !total_timeline_height / 2
-  .today-tick
-    :bottom= 0
-    :height= !total_timeline_height
-    :background-color= !today_bg
-
-#detail-timeline-dates
-  :height 2em
-.detail-timeline-date
-  :position absolute
-  :padding 1px
-  :font-size 0.9em
-#detail-timeline-date-today
-  :background= !today_bg
-  :color= !today_fg
-#detail-timeline-date-hover
-  :background= !refcolor_overlay_highlight
-
-#detail-timeline-block
-  :position relative
-  :width= !timeline_width
-  :font-size 0.9em
-  table
-    :table-layout fixed
-    :border-collapse collapse
-    :padding 0
-    :margin 0
-  tr.segment-group
-    td
-      :overflow hidden
-      :padding 3px 1px
-      :height 1em
-
-#detail-timeline-studies
-  :position absolute
-  :width= !timeline_width - !detail_timeline_width
-  table
-    :width 100%
-  td
-    :overflow hidden
-    :text-align right
-    :white-space nowrap
-  tr.segment-group td
-    :padding-right 0.5em
-
-#detail-timeline
-  :width= !detail_timeline_width
-  :overflow-x auto
-  :overflow-y hidden
-  :border= 1px solid !refcolor_border
-  :border-width 0 3px
-  :background-color= !refcolor
-  :position relative
-  :left= !timeline_width - !detail_timeline_width
-  tr
-    td.day
-      :width 7px
-    td.year-start
-      :background-image url(../images/999999_double.png)
-      :background-position left
-      :background-repeat repeat-y
-    td.today
-      :background-color= !today_bg
-    td.hover
-      :background-color= !refcolor_overlay_highlight !important
-    td.has-activities
-      :cursor pointer
-
-  tr.activity-boxes
-    td.day
-      :vertical-align bottom
-      :border-bottom= 1px solid !refcolor_border
-    td.month-start
-      :background-image url(../images/999999.png)
-      :background-position left
-      :background-repeat repeat-y
-    td.year-start
-      :background-image url(../images/999999_double.png)
-
-  .segment-box
-    :background-color #444
-    :color #fff
-    :padding 1px 2px
-    :position absolute
-    :top 0
-    :left 0
-    .dates
-      :display none
-    a
-      :color #fff
-      :text-decoration none
-  .activity-marker
-    :width 5px
-    :height 2px
-    :margin 1px 0
-    :font-size 0
-  .outstanding, .completed, .hidden
-    :border 1px solid #000
-  .outstanding
+  .icon-outstanding
     :background-color #fff
-  .completed
+  .icon-complete
     :background-color #000
-  .hidden
-    :background #900
-    :border-color #900
-
-#scheduled-activities-box .interior
+  #timeline-band-0, #timeline-band-1
+    .timeline-ether-highlight
+      :background-color= !detail_timeline_bg
+  #timeline-band-1
+    .timeline-date-label
+      :display none
+    .timeline-event-tape
+      :background-color #666
+    .timeline-event-label
+      :font-size 0.9em
+      :padding-top 2px
+  #timeline-band-2
+    .timeline-date-label
+      :color #666
+      :border-color #666
+    .timeline-ether-bg
+      :background-color= !detail_timeline_bg
+    .timeline-ether-weekends
+      :background-color #fff
+    .timeline-event-label
+      :font-size 0.2em
+      :display none
+    .timeline-event-icon
+      :width 10px
+      :height 6px
+      :border 1px solid #999
+  .hover-date
+    :display none
+    :background-color= !hover_bg
+    :border-color= !hover_border
+    :border-width 0 1px
+    :border-style dotted
+#schedule-timeline .today
+  :background-color= !today
+.simileAjax-bubble-container
+  :font-family sans-serif
+  :font-size 0.8em
+  .timeline-event-bubble-image
+    :float left
+    :padding 2px 2px 2px 0
+  .timeline-event-bubble-time
+    :padding-top 0.5em
+#schedule-error
+  :background-color #900
+  :color #fff
+  :padding 1em
+  :font-size 1.2em
+  :margin-top 1em
+  :display none
+#lower-pane
   :position relative
+  :height 300px
+  :margin-top 1em
+#lower-pane .box
+  :position absolute
+  .interior
+    :height 300px  
+  h2, p
+    :padding 4px
+    :margin 0
 
-#schedule-legend
-  :z-index 5
+#schedule-box
+  :left 0
+  :width 68%
 
-#scheduled-activities
-  :overflow auto
-  :width 78%
-  :height 30em
+#schedule
+  :overflow-y auto
   :position relative
-  div.hover
-    :border-color= !refcolor_overlay_highlight
-    :background-color= !refcolor_overlay_highlight + #222
-  .day
-    :border 2px solid transparent
-    :border-width 2px 0
-    :margin 0.5em 0
-    :padding 0 1em
-    :overflow auto
-    h3.date
-      :float left
-      :width 12%
-      :left 0
-      :top 0
-      :font-size 1.0em
-      :text-align right
-      :background none
-      :border none
-    .day-activities
-      :float left
-      :width= 85%
-      ul
-        :margin 0
-        :padding 0 0 0 0.5em
-        li
-          :list-style-type none
-    .hidden-activities
-      :color #900
-      :font-size 80%
-      :margin 0.5em 2em
-    img
+  :width 100%
+  :height 100%
+  & > .loading
+    :position absolute
+    :width 100%
+    :left 0
+    :display none
+  #loading-shield
+    :height 100%
+    :background-color #ccc
+    :top 0
+    :opacity 0.8
+    :z-index 5
+  #loading-text
+    :top 4em
+    :background-color #fff
+    :border 1px solid #999
+    :border-width 1px 0px
+    :padding 1em 0
+    :z-index 10
+    :text-align center
+    img.indicator
       :vertical-align middle
+      :visibility visible
+  .day
+    :margin-bottom 0.5em
+    :padding 1em 0.5em
+    :border-width 1px 0
+    :border-color #fff
+    :border-style dotted
+  .hover-date
+    :background-color= !hover_bg
+    :border-color= !hover_border
+  .today
+    :background-color= !today + #55d8CC
+    :border-color= !today
+    :border-width 2px 0
+    :border-style solid
+  h3.date
+    :margin 0 0 0.5em 0
+    & > span
+      :color= !today
   #schedule-today-marker
-    :background-color= !today_bg
-    :height 0.3em
-    :margin 0.5em 0
+    :background-color= !today
+    :height 4px
+
+#schedule-controls-box
+  :left 70%
+  :width 30%
+  .interior
+    :overflow auto

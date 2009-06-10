@@ -1,4 +1,4 @@
-if (!window.psc) { window.psc = { } }
+if (!window.psc) { var psc = { } }
 if (!psc.tools) { psc.tools = { } }
 
 psc.tools.Range = function(start, stop) {

@@ -1,5 +1,11 @@
+/* TODO: these functions must all be namespaced.  Also, most of these event registrations will need
+ * to be made dynamic (in response to schedule updates) instead of one time at load.
+ */
+
 function updateFormForState() {
     var v = $("new-mode-selector").value
+    // TODO: what does this do?  Are you going to be able to tell in 6mos?  In one mo?
+    // Use a better abstraction.
     if ("-1" == v) {
         $("new-date-input-group").hide()
         $("move_date_by_new-date-input-group").hide()

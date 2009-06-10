@@ -1,3 +1,7 @@
+/* TODO: these functions must all be namespaced.  Also, most of these event registrations will need
+ * to be made dynamic (in response to schedule updates) instead of one time at load.
+ */
+
 function registerSubheaderCollapse() {
     $$(".subcollapsible").each(function(section) {
         var header = section.getElementsByByTagName("H3")[0]

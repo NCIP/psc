@@ -16,33 +16,60 @@
     <tags:includeScriptaculous/>
     <tags:sassLink name="schedule"/>
     <tags:sassLink name="single-schedule"/>
-    <tags:javascriptLink name="subject/timeline"/>
+    <tags:stylesheetLink name="main"/>
+
     <tags:javascriptLink name="jquery/ui.core"/>
     <tags:javascriptLink name="jquery/ui.accordion"/>
-    <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
+    <%--TODO: install this locally --%>
+    <%--<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />--%>
 
-    <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="resig-templates" />
+    <script type="text/javascript">
+        Timeline_ajax_url = "<c:url value="/js/simile-timeline/2.3.0/timeline_ajax/simile-ajax-api.js?bundle=true"/>";
+        Timeline_urlPrefix = "<c:url value="/js/simile-timeline/2.3.0/timeline_js/"/>";
+        Timeline_parameters = "bundle=true";
+    </script>
+    <tags:javascriptLink name="simile-timeline/2.3.0/timeline_js/timeline-api"/>
+    <tags:javascriptLink name="psc-tools/async-updater"/>
+    <tags:javascriptLink name="psc-tools/misc"/>
+    <tags:javascriptLink name="psc-tools/range"/>
+    <tags:javascriptLink name="subject/schedule-structure"/>
+    <tags:javascriptLink name="subject/schedule-data"/>
+    <tags:javascriptLink name="subject/schedule-timeline"/>
+    <tags:javascriptLink name="subject/timeline-ext"/>
+    <tags:javascriptLink name="subject/schedule-list"/>
+    <tags:javascriptLink name="subject/schedule-init"/>
+
     <c:choose>
         <c:when test="${schedulePreview}">
             <tags:javascriptLink name="schedule-preview/schedule-preview"/>
             <tags:escapedUrl var="previewResource" value="api~v1~studies~${study.assignedIdentifier}~template~${amendmentIdentifier}~schedulePreview.json" />
         </c:when>
         <c:otherwise>
+            <%-- TODO: reenable when the content is updated to work with the new page
+                 TODO: these scripts should be in the subject folder with everything else
+                       unless they are shared with other pages.
             <tags:javascriptLink name="scheduled-activity"/>
             <tags:javascriptLink name="scheduled-activity-batch-modes"/>
+            --%>
+            <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
+            <script type="text/javascript">
+                psc.subject.ScheduleData.uriGenerator(function () {
+                    return psc.tools.Uris.relative("/api/v1/schedules/${subject.gridId}.json");
+                    <%--return SC.relativeUri("/api/v1/subjects/${subject.gridId}/schedule.json");--%>
+                })
+            </script>
         </c:otherwise>
     </c:choose>
      <style type="text/css">
+         /* TODO: use a descriptive selectors than "myaccordion", "accordionHeader", etc. */
         .myaccordion {
-            position: absolute;
-            right: 1em;
-            width: 21%;
             font-size: 10pt;
             border: 1px solid #444;
             background-color: white;
+            overflow-x: auto;
         }
 
         .legendSetup {
@@ -160,6 +187,7 @@
             padding:0;
         }
 
+        /* TODO: never use presentational class names */
        .alignStudySegmentButtonInTheMiddle {
             font-size:9pt;
             margin-top:1em;"
@@ -180,7 +208,9 @@
             jQuery("#accordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
         });
 
+        /** TODO: these functions need to be properly namespaced and moved to an external file */
 
+        /*
         function incrementDecrementDate(date, shiftByDate){
             var d = new Date();
             var time = date
@@ -190,6 +220,7 @@
         }
 
         function convertStringToDate(dateString){
+            // TODO: use psc.tools.Dates.apiDateToUtc for this
             var day = dateString.substring(3, 5)
             var month = dateString.substring(0, 2)
             month = parseInt(month) -1
@@ -207,6 +238,7 @@
             var day = shiftedDate.getDate()
             var month = shiftedDate.getMonth()+1
 
+            // TODO: use psc.tools.Dates.utcToApiDate for this
             day = (day < 10 ) ? ("0" + day) : day
             month = (month < 10) ? ("0" + month): month
             return year+"-" + month+ "-" + day;
@@ -250,6 +282,7 @@
             var state=""; //default for current state is empty
             var reason="";
             var toDate=0;
+            // TODO: don't use arbitrary integers for these values -- use something meaningful
             if (newModeSelector == "") {
                 reason = $$('#new-reason-input-group input')[0].value
                 toDate = $$("#move_date_by_new-date-input-group input")[0].value
@@ -358,93 +391,71 @@
                 Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
                 })
         </c:if>
+        */
     </script>
 
+    <tags:resigTemplate id="list_day_entry">
+        <div class="day [#= dateClass #]">
+            <h3 class="date">
+                [#= displayDate #]
+                [# if (isToday) { #]
+                    <span>Today</span>
+                [# } #]
+            </h3>
+            <div class="day-activities">
+                [# if (scheduledActivities.length !== 0) { #]
+                <ul>
+                    [#= scheduledActivityListItems #]
+                </ul>
+                [# } #]
+                [# /*if (hasHiddenActivities) { #]
+                    <span class="hidden-activities">
+                        Note: There are one or more activities on this day which
+                        belong to studies or sites to which you don't have access.
+                    </span>
+                [# }*/ #]
+            </div>
+        </div>
+    </tags:resigTemplate>
+
+    <tags:resigTemplate id="list_day_sa_entry">
+        <li class="[#= stateClasses() #]">
+            <label>
+                <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="[#= stateClasses() #]"/>
+                <img src="/images/psc/[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
+                <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
+                <span title="Segment" class="segment">[#= study_segment #]</span> /
+                <a title="Activity" href="/sa/details?[#= id #]">[#= activity.name #]</a>
+            </label>
+        </li>
+    </tags:resigTemplate>
 </head>
 <body>
-<laf:box autopad="true" title="Timeline">
-    <div id="total-timeline">
-        <div class="date start-date <tags:dateClass date="${schedule.dateRange.start}"/>">
-            <tags:formatDate value="${schedule.dateRange.start}"/>
-        </div>
-        <div class="date end-date <tags:dateClass date="${schedule.dateRange.stop}"/>">
-            <tags:formatDate value="${schedule.dateRange.stop}"/>
-        </div>
-        <div id="total-timeline-midline"></div>
-        <div id="total-timeline-refbox">
-            <div id="total-timeline-refbox-midline"></div>
-        </div>
-    </div>
-    <div id="detail-timeline-dates">
-        <c:if test="${schedule.includesToday}">
-            <div id="detail-timeline-date-today" class="detail-timeline-date" title="Today" style="display: none"></div>
-        </c:if>
-        <div id="detail-timeline-date-hover" class="detail-timeline-date" style="display: none"></div>
-    </div>
-    <div id="detail-timeline-block">
-        <div id="detail-timeline-studies">
-            <table>
-                <tr class="activity-boxes">
-                    <td>&nbsp;</td>
-                </tr>
-                <c:set var="lastStudy" value="${null}"/>
-                <c:forEach items="${schedule.segmentRows}" var="row" varStatus="rowStatus">
-                    <c:set var="study" value="${row.assignment.studySite.study}"/>
-                    <tr class="segment-group row-${rowStatus.index} <tags:studyClass study="${study}"/>">
-                        <td class="study" title="${study.assignedIdentifier}">
-                            <c:choose>
-                                <c:when test="${lastStudy != study}">
-                                    <a href="<c:url value="/pages/cal/schedule?assignment=${row.assignment.id}"/>">${study.assignedIdentifier}</a>
-                                </c:when>
-                                <c:otherwise>&nbsp;</c:otherwise>
-                            </c:choose>
-                        </td>
-                    </tr>
-                    <c:set var="lastStudy" value="${study}"/>
-                </c:forEach>
-            </table>
-        </div>
-        <div id="detail-timeline">
-            <table>
-                <tr class="activity-boxes">
-                    <c:forEach items="${schedule.days}" var="day">
-                        <td class="${day.detailTimelineClasses}">
-                            <div class="activity-marker spacer"></div>
-                            <c:forEach items="${day.activities}" var="sa">
-                                <div class="activity-marker ${sa.outstanding ? 'outstanding' : 'completed'}"
-                                    title="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study.assignedIdentifier} / ${sa.scheduledStudySegment.name} / ${sa.activity.name}"
-                                    ></div>
-                            </c:forEach>
-                            <c:if test="${day.hasHiddenActivities}">
-                                <div class="activity-marker hidden" title="One or more hidden activities"></div>
-                            </c:if>
-                        </td>
-                    </c:forEach>
-                </tr>
-                <c:forEach items="${schedule.segmentRows}" var="row" varStatus="rowStatus">
-                    <tr class="segment-group row-${row.rowNumber} <tags:studyClass study="${row.assignment.studySite.study}"/>">
-                        <c:forEach items="${schedule.days}" var="day">
-                            <td class="${day.detailTimelineClasses}">&nbsp;</td>
-                        </c:forEach>
-                    </tr>
-                </c:forEach>
-            </table>
-            <c:forEach items="${schedule.segmentRows}" var="row" varStatus="rowStatus">
-                <c:forEach items="${row.segments}" var="segment" varStatus="segmentStatus">
-                    <c:set var="dates"><tags:formatDate value="${segment.dateRange.start}"/> to <tags:formatDate value="${segment.dateRange.stop}"/></c:set>
-                    <c:set var="classes">row-${row.rowNumber} <tags:dateClass date="${segment.dateRange.start}" prefix="start_date"/> <tags:dateClass date="${segment.dateRange.stop}" prefix="end_date"/></c:set>
-                    <div class="segment-box ${classes}" title="${segment.name} ${dates}" style="display: none">
-                        <a href="<c:url value="/pages/cal/schedule?assignment=${row.assignment.id}"/>&studySegment=${segment.id}">${segment.name}</a>
-                        <span class="dates">${dates}</span>
-                    </div>
-                </c:forEach>
-            </c:forEach>
+<div id="schedule-timeline"></div>
+<div id="schedule-error"></div>
+<!--
+<div id="schedule-help">
+    <p>
+        This page shows all the schedule information PSC has for whoever it is.
+        TODO: more help
+    </p>
+</div>
+-->
+
+<div id="lower-pane">
+
+<laf:box title="Schedule details" id="schedule-box">
+    <div id="schedule">
+        <div id="loading-shield" class="loading"></div>
+        <div id="loading-text" class="loading">
+            <tags:activityIndicator/> Loading&hellip;
         </div>
     </div>
 </laf:box>
-<laf:box autopad="true" title="Scheduled activities" id="scheduled-activities-box">
+
+<laf:box title="Modify schedule" id="schedule-controls-box">
     <%--TODO - move css to display.jsp, make accordion fit in the box--%>
-    <div id="accordion" class="myaccordion">
+    <div id="schedule-controls" class="myaccordion">
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Legend </a></h3>
         </div>
@@ -570,47 +581,8 @@
             </div>
         </div>
      </c:if>
-     </div>
-
-    <%--<sched:legend/>--%>
-    <form id="batch-form" style="font-weight:normal;">
-        <div id="scheduled-activities">
-            <c:forEach items="${schedule.days}" var="day">
-                <c:if test="${day.today}">
-                    <div id="schedule-today-marker" title="Today"></div>
-                </c:if>
-                <c:if test="${not day['empty']}">
-                    <div class="day <tags:dateClass date="${day.date}"/>">
-                        <h3 class="date"><tags:formatDate value="${day.date}"/></h3>
-                        <div class="day-activities">
-                            <c:if test="${not empty day.activities}">
-                                <ul>
-                                    <c:forEach items="${day.activities}" var="sa">
-                                        <c:set var="study" value="${sa.scheduledStudySegment.scheduledCalendar.assignment.studySite.study}"/>
-                                        <li class="${sa.currentState.mode.displayName}">
-                                            <input type="checkbox" value="${sa.gridId}" name="events" class="event <c:if test="${sa.conditionalState}">conditional-event</c:if>
-                                            <c:if test="${(sa.conditionalState || sa.scheduledState) && day.date < sa.scheduledStudySegment.todayDate}">past-due-event</c:if>"/>
-                                            <img src="<c:url value="/images/${sa.currentState.mode.name}.png"/>" alt="Status: ${sa.currentState.mode.name}"/>
-                                            <span title="Study" class="study <tags:studyClass study="${study}"/>">${study.assignedIdentifier}</span>
-                                            / <span title="Segment" class="segment">${sa.scheduledStudySegment.name}</span>
-                                            / <a title="Scheduled activity" href="<c:url value="/pages/cal/scheduleActivity?event=${sa.id}"/>">${sa.activity.name}</a>
-                                        </li>
-                                    </c:forEach>
-                                </ul>
-                            </c:if>
-                            <c:if test="${day.hasHiddenActivities}">
-                                <span class="hidden-activities">
-                                    Note: There are one or more activities on this day
-                                    which belong to studies or sites to which you don't
-                                    have access.
-                                </span>
-                            </c:if>
-                        </div>
-                    </div>
-                </c:if>
-            </c:forEach>
-        </div>
-    </form>
 </laf:box>
+
+</div>
 </body>
 </html>

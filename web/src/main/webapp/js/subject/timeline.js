@@ -1,3 +1,7 @@
+/**
+ * This is the old timeline which should be removed soonish.
+ */
+
 if (!window.SC) { window.SC = { } }
 if (!SC.SS) { SC.SS = { } }
 
