@@ -66,7 +66,7 @@ module Buildr
 
       def self.define_server_task(project)
         task "ridge:serve" do
-          Server.set :tests, Ridge.test_files(project)
+          Server.set :project, project
           Server.set :main_path, Ridge.main_path(project)
           Server.set :spec_path, Ridge.spec_path(project)
           Server.set :project_name, project.to_s
@@ -114,7 +114,7 @@ module Buildr
         enable :logging
         
         get '/' do
-          section_map = options.tests.
+          section_map = Ridge.test_files(options.project).
             collect { |t| t.sub(%r{^#{options.spec_path}/?}, '') }.
             collect { |t| [File.dirname(t), File.basename(t).sub(/_spec.js$/, '.html')] }.
             inject({}) { |h, (dir, file)| h[dir] ||= []; h[dir] << file; h }
