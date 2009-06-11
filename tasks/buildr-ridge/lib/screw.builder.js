@@ -28,6 +28,11 @@ var Screw = (function($) {
       });
     },
 
+    Wait: function (fn, ms) {
+      this.func = fn;
+      this.delay = ms;
+    },
+
     Specifications: {
       context: [],
 
@@ -74,6 +79,10 @@ var Screw = (function($) {
         this.context[this.context.length-1]
           .children('.afters')
             .append(after);
+      },
+
+      wait: function(fn, ms) {
+        throw new Screw.Wait(fn, ms);
       }
     }
   };

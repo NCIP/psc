@@ -107,6 +107,16 @@ Screw.Matchers = (function($) {
       }
     },
 
+    include: {
+      match: function(expected, actual) {
+        return $.inArray(expected, actual) >= 0;
+      },
+
+      failure_message: function(expected, actual, not) {
+        return 'expected ' + $.print(actual) + (not ? ' to not include ' : ' to include ') + $.print(expected);
+      }
+    },
+
     be_empty: {
       match: function(expected, actual) {
         if (actual.length == undefined) throw(actual.toString() + " does not respond to length");

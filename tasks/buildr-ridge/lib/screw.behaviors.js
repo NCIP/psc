@@ -43,21 +43,44 @@
       parent: function() {
         return $(this).parent('.its').parent('.describe');
       },
-      
+
       run: function() {
+        var self = this;
+        $(this).data('screwunit.run_segment', function () {
+          $(self).fn('parent').fn('run_befores');
+          $(self).data('screwunit.run')();
+        });
+        $(this).fn('run_segment');
+      },
+
+      run_segment: function() {
+        var failure = null;
         try {
-          try {
-            $(this).fn('parent').fn('run_befores');
-            $(this).data('screwunit.run')();
-          } finally {
-            $(this).fn('parent').fn('run_afters');
-          }
-          $(this).trigger('passed');
+          $(this).data('screwunit.run_segment')();
         } catch(e) {
-          $(this).trigger('failed', [e]);
+          if (e instanceof Screw.Wait) {
+            var self = this;
+            setTimeout(function () {
+              $(self).data('screwunit.run_segment', e.func)
+              $(self).fn("run_segment");
+            }, e.delay);
+            return;
+          } else {
+            failure = [e];
+          }
+        }
+
+        try {
+          if (failure) {
+            $(this).trigger('failed', failure);
+          } else {
+            $(this).trigger('passed');
+          }
+        } finally {
+          $(this).fn('parent').fn('run_afters')
         }
       },
-      
+
       enqueue: function() {
         var self = $(this).trigger('enqueued');
         $(Screw)
