@@ -13,6 +13,7 @@ require_main("psc-tools/async-updater.js");
             updater = new psc.tools.AsyncUpdater(function (newValue) {
               seen.push(newValue);
             });
+            updater.refreshTime = 120; // Rhino can't handle 20ms updates
           });
 
           after(function () {
@@ -25,8 +26,10 @@ require_main("psc-tools/async-updater.js");
         });
       }
 
-      in_isolation_it("has a default refresh rate of every 20ms", function (updater, seen) {
+      it("has a default refresh rate of every 20ms", function () {
+        var updater = new psc.tools.AsyncUpdater(function () { });
         expect(updater.refreshTime).to(equal, 20);
+        updater.stop();
       });
 
       in_isolation_it("doesn't update immediately", function (updater, seen) {
