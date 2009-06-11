@@ -1,5 +1,4 @@
-if (!window.psc) { var psc = { } }
-if (!psc.tools) { psc.tools = { } }
+psc.namespace("tools");
 
 psc.tools.Range = function(start, stop) {
   function includesRange(thisRange, otherRange) {

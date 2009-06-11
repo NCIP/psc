@@ -1,6 +1,5 @@
 /*global jQuery psc window */
-if (!window.psc) { var psc = { }; }
-if (!psc.subject) { psc.subject = { }; }
+psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {

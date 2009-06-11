@@ -1,6 +1,5 @@
 /*global window jQuery */
-if (!window.psc) { var psc = { }; }
-if (!psc.tools) { psc.tools = { }; }
+psc.namespace("tools");
 
 /**
  * Encapsulates the pattern where you need to respond to a change in a value,

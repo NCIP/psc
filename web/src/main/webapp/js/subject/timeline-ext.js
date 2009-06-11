@@ -1,3 +1,5 @@
+psc.namespace("subject");
+
 psc.subject.DivIconOnlyPainter = function (params) {
   Timeline.OriginalEventPainter.call(this, params);
 }

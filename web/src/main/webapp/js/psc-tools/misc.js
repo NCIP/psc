@@ -1,5 +1,4 @@
-if (!window.psc) { var psc = { } }
-if (!psc.tools) { psc.tools = { } }
+psc.namespace("tools");
 
 /*
  * Utility functions for PSC.

@@ -1,6 +1,5 @@
 /*global window jQuery */
-if (!window.psc) { var psc = { }; }
-if (!psc.subject) { psc.subject = { }; }
+psc.namespace("subject");
 
 psc.subject.isToday = function (date) {
   var today = new Date();

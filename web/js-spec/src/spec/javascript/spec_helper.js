@@ -1,5 +1,6 @@
 jQuery.noConflict();
 require_main("prototype.js");
+require_main("common.js");
 
 (function ($) {
   Screw.Matchers["raise"] = {

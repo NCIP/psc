@@ -1,6 +1,5 @@
 /*global psc jQuery window Timeline */
-if (!window.psc) { var psc = { }; }
-if (!psc.subject) { psc.subject = { }; }
+psc.namespace("subject");
 
 /*
  * Manages the Simile Timeline instance for the subject single schedule page.

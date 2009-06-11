@@ -1,4 +1,21 @@
-var SC = new Object();
+var SC = {}; // old namespace
+var psc = {}; // new namespace
+
+/** 
+ * Define a new namespace object for the given path, but only if there isn't
+ * one already defined.  Based on the similar fn in YUI2 (YAHOO.namespace).
+ * The namespace is defined under "psc".  Example:
+ *   psc.namespace("subject.schedule")
+ * would build a namespace psc.subject.schedule.
+ */
+psc.namespace = function (nsname) {
+  var ns = psc;
+  var pieces = nsname.split('.');
+  for (var i = 0; i < pieces.length; i += 1) {
+    ns[pieces[i]] = (ns[pieces[i]] || { });
+    ns = ns[pieces[i]];
+  }
+}
 
 SC.asyncSubmit = function(form, options) {
     var f = $(form);
@@ -43,7 +60,9 @@ SC.asyncRequest = function(href, options) {
   return new Ajax.Request(href, options)
 }
 
-/** Provides a context-path-sensitive relative URI within PSC -- similar to the JSTL tag c:url. */
+/** Provides a context-path-sensitive relative URI within PSC -- similar to the JSTL tag c:url. 
+ * Deprecated: Use psc.tools.Uris.relative instead.
+ */
 SC.relativeUri = function(path) {
   var relpath = path;
   if (path.substring(0,1) == '/') relpath = path.substring(1);
