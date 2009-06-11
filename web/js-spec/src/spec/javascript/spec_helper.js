@@ -1,15 +1,6 @@
 jQuery.noConflict();
 require_main("prototype.js");
 
-// There is apparently no better option for actual synchronous sleep
-// (in order to test the result of a setTimeout)
-function busySleep(ms) {
-  jQuery.ajax({
-    async: false,
-    url: '/wait/' + ms
-  });
-}
-
 (function ($) {
   Screw.Matchers["raise"] = {
     match: function (expected, actual) {
