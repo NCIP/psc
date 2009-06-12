@@ -60,10 +60,10 @@
         } catch(e) {
           if (e instanceof Screw.Wait) {
             var self = this;
-            setTimeout(function () {
+            $(this).data('timeout', setTimeout(function () {
               $(self).data('screwunit.run_segment', e.func)
               $(self).fn("run_segment");
-            }, e.delay);
+            }, e.delay));
             return;
           } else {
             failure = [e];
@@ -78,6 +78,7 @@
           }
         } finally {
           $(this).fn('parent').fn('run_afters')
+          $(this).removeData('timeout')
         }
       },
 
@@ -86,7 +87,19 @@
         $(Screw)
           .queue(function() {
             self.fn('run');
-            setTimeout(function() { $(Screw).dequeue(); }, 0);
+            if (self.data('timeout')) {
+              // If the test contains pending async elements, wait for
+              // them to complete.
+              var watcher = setInterval(function () {
+                if (!self.data('timeout')) {
+                  clearInterval(watcher);
+                  $(Screw).dequeue();
+                }
+              }, 100);
+            } else {
+              // Otherwise, immediately start the next test.
+              setTimeout(function() { $(Screw).dequeue(); }, 0);
+            }
           });
       },
       
