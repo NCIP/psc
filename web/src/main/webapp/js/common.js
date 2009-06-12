@@ -120,14 +120,6 @@ SC.objectifyXml = function(elementName, xmlDoc, initializer) {
   }
 }
 
-SC.zeropad = function(number, digits) {
-    var s = "" + number;
-    while (s.length < digits) {
-        s = "0" + s
-    }
-    return s;
-}
-
 SC.SessionExpiredLogic = Class.create( {
     initialize: function(url) {
         this.url = url
