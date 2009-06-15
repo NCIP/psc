@@ -1,16 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.hibernate.Session;
+import org.hibernate.HibernateException;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.Date;
 import java.util.List;
+import java.sql.SQLException;
 
 @Transactional(readOnly = true)
 public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> implements DeletableDomainObjectDao<Subject> {
@@ -61,6 +64,27 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
         log.info(message);
 
         return null;
+    }
+
+
+   /**
+    * Finds the subjects doing a LIKE search with some search text for subject's firs name, middle name or last name.
+    *
+    * @param  searchText the text we are searching with
+    * @return      a list of subjects found based on the search text
+    */
+    @SuppressWarnings({ "unchecked" })
+    public List<Subject> getSubjectsBySearchText(final String searchText) {
+        return (List<Subject>) getHibernateTemplate().execute(new HibernateCallback() {
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                Criteria criteria = session.createCriteria(Subject.class);
+                if (searchText != null) {
+                    String like = new StringBuilder().append("%").append(searchText.toLowerCase()).append("%").toString();
+                    criteria.add(Restrictions.or(Restrictions.or(Restrictions.ilike("firstName", like), Restrictions.ilike("lastName", like)), Restrictions.ilike("personId", like)));
+                }
+                return criteria.list();
+            }
+        });
     }
 
     /**

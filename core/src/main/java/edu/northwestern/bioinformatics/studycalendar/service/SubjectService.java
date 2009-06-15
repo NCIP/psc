@@ -35,7 +35,7 @@ public class SubjectService {
     private SubjectDao subjectDao;
     private SiteService siteService;
     private AmendmentService amendmentService;
-  
+
     public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator) {
         return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator);
     }
@@ -507,6 +507,18 @@ public class SubjectService {
         }
         return subjects;
     }
+
+    @SuppressWarnings("unchecked")
+    /**
+     * Searches all the subjects in the system for those that match the given
+     * criteria.  Returns a list of transient Subject elements containing just the
+     * matching activities.
+     */
+    public List<Subject> getFilteredSubjects(String subjSearch) {
+        List<Subject> matches = subjectDao.getSubjectsBySearchText(subjSearch);
+        return matches;
+    }
+
 
     public List<Subject> findSubjects(Subject searchCriteria) {
         if (searchCriteria == null) return null;

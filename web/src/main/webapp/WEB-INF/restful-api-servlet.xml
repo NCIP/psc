@@ -108,6 +108,13 @@
         <property name="xmlSerializer" ref="labelXmlSerializer"/>
     </bean>
 
+
+    <bean name="/subjects"
+          id="subjectsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectsResource"
+            >
+    </bean>
+
     <bean name="/studies/{study-identifier}/sites/{site-identifier}"
           id="studySiteResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudySiteResource">
