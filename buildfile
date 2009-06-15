@@ -1,6 +1,7 @@
 require "buildr"
 require "buildr/jetty"
 require "buildr/emma" if emma?
+require "shenandoah/buildr"
 
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
@@ -608,7 +609,7 @@ define "psc" do
     define "js-spec" do
       # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
       # circular dependency failure
-      test.using :ridge, :main_path => _("../src/main/webapp/js")
+      test.using :shenandoah, :main_path => _("../src/main/webapp/js")
     end
   end
   
