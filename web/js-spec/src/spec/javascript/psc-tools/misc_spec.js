@@ -13,7 +13,14 @@ Screw.Unit(function () {
         expect(psc.tools.Dates.utcToApiDate(new Date(Date.UTC(2009, 3, 9)))).to(
           equal, "2009-04-09");
       });
+
+      it("converts a utc date to a display date", function () {
+        expect(psc.tools.Dates.utcToDisplayDate(new Date(Date.UTC(2009, 4, 5)))).to(
+          equal, "05/05/2009");
+      });
     });
+
+
     
     describe("day manipulation", function () {
       it("gives the UTC midnight instant for 2009-05-03 22:11:13", function () {

@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import org.springframework.validation.Errors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -34,6 +36,10 @@ public class AssignSubjectCommand implements Validatable {
     private String gender;
     private String personId;
     private String studySubjectId;
+    private String checkbox;
+    private String radioButton;
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     public AssignSubjectCommand() {
         populations = new HashSet<Population>();
@@ -41,19 +47,24 @@ public class AssignSubjectCommand implements Validatable {
 
 
     public void validate(Errors errors){
-        Subject subject = createSubject();
-
-        if (isEmpty(personId) && (isEmpty(firstName) || isEmpty(lastName) || dateOfBirth == null)) {
-            errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
-        } else if (startDate == null) {
-            errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
+        Subject subject = null;
+        if (getRadioButton().equals("existing")){
+            subject = subjectDao.findSubjectByPersonId(checkbox);
         } else {
-            List<Subject> results = subjectService.findSubjects(subject);
-            if (results.size() > 1) {
-                if (subject.getPersonId() != null) {
-                    errors.rejectValue("personId", "error.person.id.already.exists");
-                } else {
-                    errors.rejectValue("lastName", "error.person.last.name.already.exists");
+            subject = createSubject();
+
+            if (isEmpty(personId) && (isEmpty(firstName) || isEmpty(lastName) || dateOfBirth == null)) {
+                errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
+            } else if (startDate == null) {
+                errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
+            } else {
+                List<Subject> results = subjectService.findSubjects(subject);
+                if (results.size() > 1) {
+                    if (subject.getPersonId() != null) {
+                        errors.rejectValue("personId", "error.person.id.already.exists");
+                    } else {
+                        errors.rejectValue("lastName", "error.person.last.name.already.exists");
+                    }
                 }
             }
         }
@@ -61,7 +72,7 @@ public class AssignSubjectCommand implements Validatable {
 
 
     public StudySubjectAssignment assignSubject() {
-		Subject subject = createAndSaveSubject();
+		Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
             subject, getStudySite(), getEffectiveStudySegment(), getStartDate(), getStudySubjectId(), getSubjectCoordinator());
         subjectService.updatePopulations(assignment, getPopulations());
@@ -78,9 +89,14 @@ public class AssignSubjectCommand implements Validatable {
         return subject;
     }
 
-    public Subject createAndSaveSubject() {
-		Subject subject = createSubject();
-        subjectDao.save(subject);
+    public Subject createAndSaveNewOrExtractExistingSubject() {
+		Subject subject = null;
+        if (getRadioButton().equals("existing")){
+            subject = subjectDao.findSubjectByPersonId(checkbox);
+        } else {
+            subject = createSubject();
+            subjectDao.save(subject);
+        }
         return subject;
     }
 
@@ -205,4 +221,19 @@ public class AssignSubjectCommand implements Validatable {
         this.personId = personId;
     }
 
+    public String getCheckbox() {
+        return checkbox;
+    }
+
+    public void setCheckbox(String checkbox) {
+        this.checkbox = checkbox;
+    }
+
+    public String getRadioButton() {
+        return radioButton;
+    }
+
+    public void setRadioButton(String radioButton) {
+        this.radioButton = radioButton;
+    }
 }

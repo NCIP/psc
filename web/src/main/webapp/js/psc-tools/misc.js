@@ -16,6 +16,12 @@ psc.tools.Dates = (function () {
         "-" + psc.tools.Strings.leftpad(jsDate.getUTCMonth() + 1, 2) +
         "-" + psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2);
     },
+
+    utcToDisplayDate: function(jsDate) {
+        return psc.tools.Strings.leftpad(jsDate.getUTCMonth() + 1, 2)+
+         '/'+psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2)+
+         '/'+jsDate.getUTCFullYear()
+    },
     
     startOfUtcDay: function (d) {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY);

@@ -5,6 +5,9 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
+<tags:javascriptLink name="psc-tools/misc"/>
+
+
 <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
 <%-- TODO: move common YUI parts to a tag if they are re-used --%>
 <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
@@ -16,9 +19,6 @@
     <title>Assign subject</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
-        div.row div.label{
-            /*width: 35%;*/
-        }
         div.submit {
             text-align: right;
         }
@@ -40,11 +40,6 @@
             padding-top:5em;
             padding-left:1em;
             width:50%
-        }
-
-        .radioButton{
-            padding-left:0.5em;
-            padding-top:0.5em;
         }
 
         .mainTable{
@@ -91,8 +86,6 @@
             );
         }
 
-
-
         var bundleList;
 
         function subjectAutocompleterChoices(str, callback) {
@@ -115,12 +108,12 @@
 
                      var bundleListColumns = [
 
-                       {key: "check", label: "",
-                            formatter:  YAHOO.widget.DataTable.formatCheckbox
+                       {key: "check", name:"checkbox", label: "",
+                            formatter:  checkboxFormatter
                        },
-                       { key: "first_name", label: "First Name", sortable: true },
+                       { key: "first_name", name:"TableFirstName", value:"First Name", label: "First Name", sortable: true },
                        { key: "last_name", label: "Last Name", sortable: true },
-                       { key: "date_of_birth", label: "Date of Birth", sortable: true },
+                       { key: "date_of_birth", label: "Date of Birth", formatter: dateOfBirthFormat, sortable: true },
                        { key: "gender", label: "Gender", sortable: true },
                        { key: "person_id", label: "Person ID", sortable: true },
                        { key: "assignments", label: "Assignments", formatter: myFormatAssignment }
@@ -133,9 +126,12 @@
                     myDataSource.responseSchema = {
                         resultsList : "results",
                         fields : [
-                            { key: "first_name" },
+                            {
+                                key: "check", name:"checkbox", formatter: checkboxFormatter
+                            },
+                            { key: "first_name", name:"TableFirstName", value:"first_name"},
                             { key: "last_name" },
-                            { key: "date_of_birth"},
+                            { key: "date_of_birth", formatter: dateOfBirthFormat},
                             { key: "gender"},
                             { key: "person_id" },
                             { key: "assignments", formatter: myFormatAssignment }
@@ -143,9 +139,53 @@
                     };
 
                     bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
+
+                    bundleList.subscribe('checkboxClickEvent',function (e) {
+                         var select = e.target.checked;
+                         this.unselectAllRows();
+                         if (select) {
+                             this.selectRow(e.target);
+                         }
+                     });
+                     bundleList.subscribe('rowSelectEvent', check);
+                     bundleList.subscribe('rowUnselectEvent',uncheck);
+                     bundleList.subscribe('unselectAllRowsEvent',uncheckAll);
+                           
+
+
                 }
             })
         }
+
+        // Create a custom formatter for the checkboxes
+        var checkboxFormatter = function (liner,rec,col,data) {
+           var name = 'checkbox';
+           liner.innerHTML = '<input name="'+name+'" type="checkbox" value="'+rec.getData('person_id')+'">';
+        };
+
+        // Add some convenience methods onto the prototype
+        function check(e) {
+           var cb = e.el.cells[0].getElementsByTagName('input')[0];
+           cb.checked = true;
+        };
+        function uncheck(e) {
+           var cb = e.el.cells[0].getElementsByTagName('input')[0];
+           cb.checked = false;
+        };
+        function uncheckAll() {
+           var name = 'checkbox';
+           var checks = document.getElementsByName(name),i;
+           for (i = checks.length - 1; i >= 0; --i) {
+               checks[i].checked = false;
+           }
+        };
+
+
+       var dateOfBirthFormat = function(elCell, oRecord, oColumn, oData){
+           var date_of_birth = oRecord.getData('date_of_birth')
+           var date_of_birth_str = date_of_birth.split(' ')
+           elCell.innerHTML = elCell.innerHTML + psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(date_of_birth_str[0]));
+       }
 
         // Define a custom format function
         var myFormatAssignment = function(elCell, oRecord, oColumn, oData) {
@@ -158,19 +198,22 @@
                 assignment = assignments[i];
                 var site = assignment.site;
                 var study = assignment.study;
-                var start_date = assignment.start_date;
-                var end_date = assignment.end_date;
+                var start_date_str = assignment.start_date.split(' ');
+                var start_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(start_date_str[0]));
 
                 text = "- Subject is already enrolled to site '" + site + "' and study '" + study + "' as of start date '" + start_date +"'"
-                if (end_date != null && end_date.length>0) {
-                       text = text + " and till the end date '" + end_date + "'"
+                var end_date_str = assignment.end_date;
+                if (end_date_str != null && end_date_str.length> 0) {
+                    end_date_str = end_date_str.split(' ');
+                    var end_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(end_date_str[0]));
+                    text = text + " and till the end date '" + end_date + "'"
                 }
-                elCell.innerHTML = elCell.innerHTML  + text + '</br>'
+                elCell.innerHTML = elCell.innerHTML  + text + '<br>'
             }
         };
 
         function toggleAlert(buttonName) {
-            if(buttonName.className == "radioButton1"){
+            if(buttonName.className == "newSubjRadioButton"){
                 disableEnableElementsOfDiv1(true)
                 disableEnableElementsOfDiv2(false)
                 disableEnableElementsForCommonDiv(false)
@@ -226,7 +269,7 @@
     <table class="mainTable">
         <tr class="subjectContent">
             <td class="newSubjectContent">
-                <Input type = radio class="radioButton1" Name = r1 Value = "New Subject" onclick="toggleAlert(this)" > New Subject
+                <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
                 <c:if test="${not empty sites}">
 
                     <laf:division cssClass="divisionClass">
@@ -283,7 +326,7 @@
                 </c:if>
             </td>
             <td class="existingSubjectContent">
-                <Input type = radio class="radioButton2" Name = r1 Value = "NW" onclick="toggleAlert(this)" > Existing Subject
+                <Input type = radio class="existingSubjRadioButton" Name = radioButton Value = "existing" onclick="toggleAlert(this)" > Existing Subject
                 <div class="commonDivToDisable2">
                     <div class="row">
                         <div class="label"> Name: </div>
@@ -391,7 +434,8 @@
 
                     <div class="row">
                         <div class="submit">
-                            <input type="submit" value="Assign"/>
+                            <input id="submitForNew" type="submit" value="Assign"/>
+                            <input id="submitForExisting" style="visibility:hidden;" type="submit" value="Assign"/>
                         </div>
                     </div>
                 </div>

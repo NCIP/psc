@@ -25,6 +25,8 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
     private SubjectService subjectService;
     private SubjectDao subjectDao;
     private Subject subject;
+    private String EXISTING = "existing";
+    private String NEW = "new";
 
     @Override
     protected void setUp() throws Exception {
@@ -42,6 +44,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setPersonId(subject.getPersonId());
         command.setDateOfBirth(subject.getDateOfBirth());
         command.setStartDate(createDate(2008, 2, 1));
+        command.setRadioButton(NEW);
     }
 
     public void testAssignSubject() throws Exception {
@@ -72,7 +75,8 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         assertSame("Assignment should be the same", assignment, actual);
     }
 
-    public void testValidate() throws Exception {
+    public void testValidateNew() throws Exception {
+        command.setRadioButton(NEW);
         expect(subjectService.findSubjects(subjectEq(subject))).andReturn(Collections.singletonList(subject));
         replayMocks();
 
@@ -82,6 +86,20 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
 
         assertFalse(errors.hasErrors());
     }
+
+    public void testValidateExisting() throws Exception {
+        command.setRadioButton(EXISTING);
+        command.setCheckbox(subject.getPersonId());
+        expect(subjectDao.findSubjectByPersonId(subject.getPersonId())).andReturn(subject);
+        replayMocks();
+
+        BindException errors = new BindException(subject, StringUtils.EMPTY);
+        command.validate(new BindException(subject, StringUtils.EMPTY));
+        verifyMocks();
+
+        assertFalse(errors.hasErrors());
+    }
+
 
     public void testValidateWithExistingSubject() throws Exception {
         expect(subjectService.findSubjects(subjectEq(subject))).andReturn(Arrays.asList(subject, new Subject()));

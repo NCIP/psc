@@ -25,7 +25,6 @@ public class SubjectsResource extends AbstractPscResource {
     private SubjectService subjectService;
     private SubjectDao subjectDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private static final SimpleDateFormat dayFormatter = new SimpleDateFormat("MM-dd-yyyy");
 
 
     @Override
@@ -69,27 +68,26 @@ public class SubjectsResource extends AbstractPscResource {
     public static JSONObject createJSONSubject(Subject subject) throws ResourceException {
         try {
             JSONObject jsonSubject = new JSONObject();
-
-            JSONObject jsonStudySiteInfoObject = new JSONObject();
             JSONArray jsonStudySiteInfoArray = new JSONArray();
             List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
+
             for(StudySubjectAssignment studySubjectAssignemt : studySubjectAssignments) {
+                JSONObject jsonStudySiteInfoObject = new JSONObject();
                 Date startDate = studySubjectAssignemt.getStartDateEpoch();
                 Date endDate = studySubjectAssignemt.getEndDateEpoch();
                 jsonStudySiteInfoObject.put("site", studySubjectAssignemt.getStudySite().getSite().getName());
                 jsonStudySiteInfoObject.put("study", studySubjectAssignemt.getStudySite().getStudy().getName());
                 if (startDate != null){
-                    jsonStudySiteInfoObject.put("start_date", dayFormatter.format(startDate));
+                    jsonStudySiteInfoObject.put("start_date", startDate);
                 } else {
                     jsonStudySiteInfoObject.put("start_date", "");
                 }
 
                 if (endDate != null) {
-                    jsonStudySiteInfoObject.put("end_date", dayFormatter.format(endDate));
+                    jsonStudySiteInfoObject.put("end_date", endDate);
                 } else {
                     jsonStudySiteInfoObject.put("end_date", "");
                 }
-
                 jsonStudySiteInfoObject.put("assignment_id", studySubjectAssignemt.getGridId());
                 jsonStudySiteInfoArray.put(jsonStudySiteInfoObject);
             }
@@ -99,7 +97,7 @@ public class SubjectsResource extends AbstractPscResource {
             jsonSubject.put("last_name", subject.getLastName());
             jsonSubject.put("subject_id", subject.getPersonId());
             if(subject.getDateOfBirth() != null) {
-                jsonSubject.put("date_of_birth", dayFormatter.format(subject.getDateOfBirth()));
+                jsonSubject.put("date_of_birth", subject.getDateOfBirth());
             } else {
                 jsonSubject.put("date_of_birth", "");
             }
