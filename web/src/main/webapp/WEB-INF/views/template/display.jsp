@@ -513,8 +513,7 @@
 
 			function registerHideHandler(){
                 if ( hideButton != null) {
-                    var hide = $("hide_button")
-                    Event.observe(hide, "click", function(e) {
+                    Event.observe(hideButton, "click", function(e) {
                         Event.stop(e);
                         day.each(SC.slideAndHide);
                         showMonth.each(function(e){e.reveal();});
