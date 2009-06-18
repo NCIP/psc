@@ -410,7 +410,7 @@
             code: '${selectedActivity.code}',
             source: '${selectedActivity.source.name}'
         }, {
-            id: ${selectedActivity.type.id},
+            selector: "activity-type-" + '${selectedActivity.type.name}'.toLowerCase().replace(" ","_"),
             name: '${selectedActivity.type.name}'
         })
         </c:if>
