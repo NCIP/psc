@@ -457,7 +457,7 @@
                 })
             }
 			function registerShowHandler(){
-				if ( showButton != null) {
+				if (showButton) {
                 Event.observe(showButton, "click", function(e) {
                     Event.stop(e);
                     day.each(SC.slideAndShow);
@@ -480,7 +480,7 @@
 			}
 
 			function registerHideHandler(){
-                if ( hideButton != null) {
+                if (hideButton) {
                     Event.observe(hideButton, "click", function(e) {
                         Event.stop(e);
                         day.each(SC.slideAndHide);
