@@ -457,18 +457,19 @@
                 })
             }
 			function registerShowHandler(){
-				Event.observe(showButton, "click", function(e) {
-		            Event.stop(e);
-				    day.each(SC.slideAndShow);
-				   	showMonth.each(function(e){e.conceal();});
-  					hideMonth.each(function(e){e.reveal();});
-					showButton.conceal()
-					hideButton.reveal()
+				if ( showButton != null) {
+                Event.observe(showButton, "click", function(e) {
+                    Event.stop(e);
+                    day.each(SC.slideAndShow);
+                    showMonth.each(function(e){e.conceal();});
+                    hideMonth.each(function(e){e.reveal();});
+                    showButton.conceal()
+                    hideButton.reveal()
 
                     showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
 
-				}
-				);
+                }
+                );
 			}
 
 			function showSetup(){
@@ -479,24 +480,26 @@
 			}
 
 			function registerHideHandler(){
-				var hide = $("hide_button")
-				Event.observe(hide, "click", function(e) {
-		            Event.stop(e);
-				    day.each(SC.slideAndHide);
-					showMonth.each(function(e){e.reveal();});
-  					hideMonth.each(function(e){e.conceal();});
-					showButton.reveal()
-					hideButton.conceal()
+                if ( hideButton != null) {
+                    Event.observe(hideButton, "click", function(e) {
+                        Event.stop(e);
+                        day.each(SC.slideAndHide);
+                        showMonth.each(function(e){e.reveal();});
+                        hideMonth.each(function(e){e.conceal();});
+                        showButton.reveal()
+                        hideButton.conceal()
 
-                    if ($('showArrow') != null && $('showArrow').innerHTML.toLowerCase() == '<b>-</b>'){
-                        $('showArrow').innerHTML = "";
+                        if ($('showArrow') != null && $('showArrow').innerHTML.toLowerCase() == '<b>-</b>'){
+                            $('showArrow').innerHTML = "";
+                        }
+
+                        showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
                     }
-
-                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
-				}
-				);
+                    );
+                }
 
 			}
+
 			function hideSetup(){
                 if (init == null) {
                     initialize_arrows();
