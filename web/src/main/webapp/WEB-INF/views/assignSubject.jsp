@@ -116,7 +116,7 @@
                        { key: "date_of_birth", label: "Date of Birth", formatter: dateOfBirthFormat, sortable: true },
                        { key: "gender", label: "Gender", sortable: true },
                        { key: "person_id", label: "Person ID", sortable: true },
-                       { key: "assignments", label: "Assignments", formatter: myFormatAssignment }
+                       { key: "assignments", label: "Other Assignments", formatter: myFormatAssignment }
 
                     ];
 
@@ -134,7 +134,8 @@
                             { key: "date_of_birth", formatter: dateOfBirthFormat},
                             { key: "gender"},
                             { key: "person_id" },
-                            { key: "assignments", formatter: myFormatAssignment }
+                            { key: "assignments", formatter: myFormatAssignment },
+                            { key: "hidden_assignments"}
                         ]
                     };
 
@@ -189,7 +190,7 @@
 
         // Define a custom format function
         var myFormatAssignment = function(elCell, oRecord, oColumn, oData) {
-            var text = undefined;
+            var text = "";
             var assignments = oRecord.getData('assignments'),
                 assignment = undefined,
                 i = 0;
@@ -209,8 +210,18 @@
                     text = text + " and till the end date '" + end_date + "'"
                 }
                 elCell.innerHTML = elCell.innerHTML  + text + '<br>'
+
+            }
+
+            var hidden = oRecord.getData('hidden_assignments');
+            if (oRecord.getData('hidden_assignments')){
+
+                text = text + '<br>' +"- Note: There are one or more studies the subject belongs to and to which you don't have access."
+                elCell.innerHTML = elCell.innerHTML + text
             }
         };
+
+
 
         function toggleAlert(buttonName) {
             if(buttonName.className == "newSubjRadioButton"){
@@ -245,7 +256,10 @@
 
         function disableEnableElementsForCommonDiv(flag) {
             $('studySubjectId').disabled = flag;
-            $('studySegment').disabled = flag;
+            var studySegmentElement = $('studySegment')
+            if (studySegmentElement != null) {
+                $('studySegment').disabled = flag;
+            }
             $('startDate').disabled = flag;
             $('population-checkboxes').disabled = flag;
         }

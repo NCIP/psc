@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import org.restlet.Context;
@@ -23,8 +24,7 @@ import java.text.SimpleDateFormat;
 public class SubjectsResource extends AbstractPscResource {
 
     private SubjectService subjectService;
-    private SubjectDao subjectDao;
-    private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private AuthorizationService authorizationService;
 
 
     @Override
@@ -65,13 +65,23 @@ public class SubjectsResource extends AbstractPscResource {
 
 
     //TODO might want to move to helper class, if we make ScheduleRepresentationHelper more suitable for all types of objects
-    public static JSONObject createJSONSubject(Subject subject) throws ResourceException {
+    public JSONObject createJSONSubject(Subject subject) throws ResourceException {
         try {
             JSONObject jsonSubject = new JSONObject();
             JSONArray jsonStudySiteInfoArray = new JSONArray();
             List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
 
-            for(StudySubjectAssignment studySubjectAssignemt : studySubjectAssignments) {
+
+            List<StudySubjectAssignment> visibleAssignments
+                = authorizationService.filterAssignmentsForVisibility(studySubjectAssignments, getCurrentUser());
+
+            Set<StudySubjectAssignment> hiddenAssignments
+                = new LinkedHashSet<StudySubjectAssignment>(studySubjectAssignments);
+            for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
+                    hiddenAssignments.remove(visibleAssignment);
+            }            
+
+            for(StudySubjectAssignment studySubjectAssignemt : visibleAssignments) {
                 JSONObject jsonStudySiteInfoObject = new JSONObject();
                 Date startDate = studySubjectAssignemt.getStartDateEpoch();
                 Date endDate = studySubjectAssignemt.getEndDateEpoch();
@@ -103,6 +113,12 @@ public class SubjectsResource extends AbstractPscResource {
             }
             jsonSubject.put("gender", subject.getGender().getDisplayName());
             jsonSubject.put("person_id", subject.getPersonId());
+            if (hiddenAssignments.size()>0){
+                jsonSubject.put("hidden_assignments", true);
+            } else {
+                jsonSubject.put("hidden_assignments", false);
+            }
+
 
             return jsonSubject;
         } catch (JSONException e) {
@@ -116,13 +132,8 @@ public class SubjectsResource extends AbstractPscResource {
     }
 
     @Required
-    public void setSubjectDao(SubjectDao subjectDao) {
-        this.subjectDao = subjectDao;
-    }
-
-    @Required
-    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
-        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 }
 
