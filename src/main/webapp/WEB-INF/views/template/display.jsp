@@ -456,21 +456,21 @@
                     } });
                 })
             }
-			function registerShowHandler(){
-				if (showButton) {
-                Event.observe(showButton, "click", function(e) {
-                    Event.stop(e);
-                    day.each(SC.slideAndShow);
-                    showMonth.each(function(e){e.conceal();});
-                    hideMonth.each(function(e){e.reveal();});
-                    showButton.conceal()
-                    hideButton.reveal()
+            function registerShowHandler(){
+                if (showButton) {
+                    Event.observe(showButton, "click", function(e) {
+                        Event.stop(e);
+                        day.each(SC.slideAndShow);
+                        showMonth.each(function(e){e.conceal();});
+                        hideMonth.each(function(e){e.reveal();});
+                        showButton.conceal()
+                        hideButton.reveal()
 
-                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
+                        showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
 
+                    });
                 }
-                );
-			}
+            }
 
 			function showSetup(){
                 if (init == null) {
@@ -494,8 +494,7 @@
                         }
 
                         showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
-                    }
-                    );
+                    });
                 }
 
 			}
