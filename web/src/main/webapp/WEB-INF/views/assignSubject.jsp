@@ -68,6 +68,16 @@
             float:left;
         }
 
+        .myLi {
+            list-style-type: none;
+            padding: 0 0 5px 0;
+        }
+
+        .myUl {
+            margin: 0 0 0 9em;
+            padding: 0;    
+        }
+
     </style>
 
    <script type="text/javascript">
@@ -116,7 +126,7 @@
                        { key: "date_of_birth", label: "Date of Birth", formatter: dateOfBirthFormat, sortable: true },
                        { key: "gender", label: "Gender", sortable: true },
                        { key: "person_id", label: "Person ID", sortable: true },
-                       { key: "assignments", label: "Other Assignments", formatter: myFormatAssignment }
+                       { key: "assignments", label: "Other Assignments", formatter:YAHOO.widget.DataTable.formatLink }
 
                     ];
 
@@ -134,7 +144,7 @@
                             { key: "date_of_birth", formatter: dateOfBirthFormat},
                             { key: "gender"},
                             { key: "person_id" },
-                            { key: "assignments", formatter: myFormatAssignment },
+                            { key: "assignments",  formatter:YAHOO.widget.DataTable.formatLink },
                             { key: "hidden_assignments"}
                         ]
                     };
@@ -151,12 +161,23 @@
                      bundleList.subscribe('rowSelectEvent', check);
                      bundleList.subscribe('rowUnselectEvent',uncheck);
                      bundleList.subscribe('unselectAllRowsEvent',uncheckAll);
-                           
 
 
                 }
             })
-        }
+
+            // Override the built-in formatter
+	        YAHOO.widget.DataTable.formatLink = function(elCell, oRecord, oColumn, oData) {
+               var defaultText = "The subject belongs to the "
+               elCell.innerHTML = defaultText;
+
+               var showMoreLink = jQuery('<a />').attr('href', '#').text('following studies').click(function () {
+                   getCellInfo(elCell, oRecord, oColumn, oData)
+                   return false;
+               });
+               jQuery(elCell).append(showMoreLink);
+	        };
+        };
 
         // Create a custom formatter for the checkboxes
         var checkboxFormatter = function (liner,rec,col,data) {
@@ -186,39 +207,52 @@
            var date_of_birth = oRecord.getData('date_of_birth')
            var date_of_birth_str = date_of_birth.split(' ')
            elCell.innerHTML = elCell.innerHTML + psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(date_of_birth_str[0]));
-       }
+       };
+
 
         // Define a custom format function
-        var myFormatAssignment = function(elCell, oRecord, oColumn, oData) {
+        function getCellInfo(elCell, oRecord, oColumn, oData) {
+            var container = jQuery('<div class="day"/>');
+            var list = container.append('<ul class="myUl"/>')
             var text = "";
             var assignments = oRecord.getData('assignments'),
                 assignment = undefined,
                 i = 0;
 
             for(i = 0; i < assignments.length; ++i) {
+                var listItem = jQuery('<li class="myLi" />');
+
                 assignment = assignments[i];
                 var site = assignment.site;
                 var study = assignment.study;
                 var start_date_str = assignment.start_date.split(' ');
                 var start_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(start_date_str[0]));
 
-                text = "- Subject is already enrolled to site '" + site + "' and study '" + study + "' as of start date '" + start_date +"'"
+                text = "Subject is already enrolled to site '" + site + "' and study '" + study + "' as of start date '" + start_date +"'"
                 var end_date_str = assignment.end_date;
                 if (end_date_str != null && end_date_str.length> 0) {
                     end_date_str = end_date_str.split(' ');
                     var end_date = psc.tools.Dates.utcToDisplayDate(psc.tools.Dates.apiDateToUtc(end_date_str[0]));
                     text = text + " and till the end date '" + end_date + "'"
                 }
-                elCell.innerHTML = elCell.innerHTML  + text + '<br>'
-
+                listItem.text(text)
+                list.append(listItem);
             }
+
+            jQuery(elCell).append(container);
 
             var hidden = oRecord.getData('hidden_assignments');
             if (oRecord.getData('hidden_assignments')){
 
                 text = text + '<br>' +"- Note: There are one or more studies the subject belongs to and to which you don't have access."
-                elCell.innerHTML = elCell.innerHTML + text
+                elCell.innerHTML = elCell.innerHTML + text + '<br>'
             }
+
+            var showMoreLink = jQuery('<a />').attr('href', '#').text('Hide').click(function () {
+                   container.remove();
+                   return false;
+               });
+               container.append(showMoreLink);
         };
 
 
@@ -270,8 +304,6 @@
             disableEnableElementsOfDiv1(true)
             disableEnableElementsOfDiv2(true)
         })
-
-
 
     </script>
 </head>
