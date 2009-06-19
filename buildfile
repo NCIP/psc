@@ -641,6 +641,7 @@ define "psc" do
         :requires => %w(spec http static_data).collect { |help| _("src/spec/ruby/#{help}_helper.rb") },
         :properties => { 
           'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
+          'logback.configurationFile' => File.join(test.resources.target.to_s, "logback.xml")
         }
       )
     test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)

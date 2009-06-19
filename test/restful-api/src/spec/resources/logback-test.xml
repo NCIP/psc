@@ -12,7 +12,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>studycalendar-test.log</file>
+        <file>@resources.target@/../../studycalendar-test.log</file>
         <append>false</append>
         <immediateFlush>true</immediateFlush>
         <layout class="ch.qos.logback.classic.PatternLayout">

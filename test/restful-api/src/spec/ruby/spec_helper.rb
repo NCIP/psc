@@ -35,6 +35,10 @@ module PscTest
     )
   end
 
+  def self.log(message)
+    Java::OrgSlf4j::LoggerFactory.getLogger("RESTful API Specs").info(message.to_s)
+  end
+
   class HibernateOpenSession
     def initialize
       mock_request = Java::OrgSpringframeworkMockWeb::MockHttpServletRequest.new
@@ -43,6 +47,7 @@ module PscTest
     end
     
     def begin_session
+      PscTest.log("-------- begin interceptor session --------")
       open_session_interceptors.each { |interceptor| interceptor.preHandle(@web_request) }
     end
     
@@ -58,6 +63,7 @@ module PscTest
         end
         interceptor.afterCompletion(@web_request, nil)
       }
+      PscTest.log("---------- end interceptor session --------")
     end
   
     def open_session_interceptors
