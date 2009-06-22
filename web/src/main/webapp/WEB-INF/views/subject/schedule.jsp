@@ -18,10 +18,6 @@
     <tags:sassLink name="single-schedule"/>
     <tags:stylesheetLink name="main"/>
 
-    <tags:javascriptLink name="jquery/ui.core"/>
-    <tags:javascriptLink name="jquery/ui.accordion"/>
-    <%--TODO: install this locally --%>
-    <%--<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />--%>
 
     <tags:javascriptLink name="resig-templates" />
     <script type="text/javascript">
@@ -39,6 +35,10 @@
     <tags:javascriptLink name="subject/timeline-ext"/>
     <tags:javascriptLink name="subject/schedule-list"/>
     <tags:javascriptLink name="subject/schedule-init"/>
+
+    <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
+    
 
     <c:choose>
         <c:when test="${schedulePreview}">
@@ -205,7 +205,7 @@
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery("#accordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
+            jQuery(".myaccordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
         });
 
         /** TODO: these functions need to be properly namespaced and moved to an external file */
