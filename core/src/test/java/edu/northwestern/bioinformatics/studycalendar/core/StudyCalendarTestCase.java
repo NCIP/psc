@@ -1,15 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.core;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
-// import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.context.ApplicationContext;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -93,6 +95,23 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected static <T> T matchByProperties(T template) {
         EasyMock.reportMatcher(new PropertyMatcher<T>(template));
         return null;
+    }
+
+    /**
+     * Finds a directory relative to the given module, whether the working directory is the
+     * module (as when running the tests from buildr) or the root of the project (as when running
+     * in IDEA).
+     */
+    public static File getModuleRelativeDirectory(String moduleName, String directory) throws IOException {
+        File dir = new File(directory);
+        if (dir.exists()) return dir;
+
+        dir = new File(moduleName.replaceAll(":", "/"), directory);
+        if (dir.exists()) return dir;
+
+        throw new FileNotFoundException(
+            String.format("Could not find directory %s relative to module %s from current directory %s",
+                directory, moduleName, new File(".").getCanonicalPath()));
     }
 
     /**
