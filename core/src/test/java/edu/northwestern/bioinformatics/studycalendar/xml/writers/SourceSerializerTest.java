@@ -23,13 +23,12 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     private SourceSerializer serializer;
     private Source source, anotherSource;
     private Activity act1, act2, act3;
-    private static final String CSV_DELIM = ",";
-    private static final String XLS_DELIM = "\t";
+    private static final char CSV_DELIM = ',';
+    private static final char XLS_DELIM = '\t';
+    private static final String CSV_HEADER = "Name,Type,Code,Description,Source";
+    private static final String XLS_HEADER = "Name\tType\tCode\tDescription\tSource";
 
-    private ActivityType activityType1, activityType2;
-
-    private String headerForCSV = "Name,Type,Code,Description,Source,\n";
-    private String headerForXLS = "Name\tType\tCode\tDescription\tSource\t\n";
+    private ActivityType other, intervention;
 
     private SourceDao sourceDao;
     private SourceService sourceService;
@@ -45,12 +44,14 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         source = createNamedInstance(SOURCE_NAME, Source.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
 
-        activityType1 = Fixtures.createActivityType("OTHER");
-        activityType2 = Fixtures.createActivityType("INTERVENTION");
+        other = Fixtures.createActivityType("OTHER");
+        intervention = Fixtures.createActivityType("INTERVENTION");
 
-        act1 = createActivity("Activity1", "Code1", source, activityType1);
-        act2 = createActivity("Activity2", "Code2", source, activityType2);
-        act3 = createActivity("Activity3", "Code3", source, activityType1);
+        act1 = createActivity("Activity1", "Code1", source, other);
+        act2 = createActivity("Activity2", "Code2", source, intervention);
+        act2.setDescription("A2 also has frob, bar, and zap");
+        act3 = createActivity("Activity3", "Code3", source, other);
+        act3.setDescription("A3\nhas a long\ndescription");
 
         dataDir = getModuleRelativeDirectory("core", "src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/writers/data");
 
@@ -62,41 +63,43 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         serializer.setActivityTypeDao(activityTypeDao);
     }
 
-    public void testCreateHeaderForCSV() throws Exception {
-        String header = serializer.constructHeader(CSV_DELIM);
-        assertEquals("Wrong header for csv", headerForCSV, header);
+    public void testCsvForActivityWithDescriptionWithCommas() throws Exception {
+        Source oneAct = Fixtures.createSource("Src", act2);
+        String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
+        String expected = CSV_HEADER + "\nActivity2,INTERVENTION,Code2,\"A2 also has frob, bar, and zap\",Src\n";
+        assertEquals(expected, doc);
     }
 
-    public void testCreateHeaderForXLS() throws Exception {
-        String header = serializer.constructHeader(XLS_DELIM);
-        assertEquals("Wrong header for csv", headerForXLS, header);
+    public void testCsvForActivityWithDescriptionWithNewlines() throws Exception {
+        Source oneAct = Fixtures.createSource("Src", act3);
+        String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
+        String expected = CSV_HEADER + "\nActivity3,OTHER,Code3,\"A3\nhas a long\ndescription\",Src\n";
+        assertEquals(expected, doc);
     }
 
-
-    public void testCreateCSV() throws Exception {
-        String document = serializer.createDocumentString(source, CSV_DELIM);
-        assertTrue("Document contains header", document.contains(headerForCSV));
-        assertTrue("Document contains activity1", document.contains(act1.getName()));
-        assertTrue("Document contains activity2", document.contains(act2.getType().getName()));
-        assertTrue("Document contains activity3", document.contains(act3.getCode()));
-        assertTrue("Document contains CSV delimiter", document.contains(CSV_DELIM));
-    }
-
-    public void testCreateXLS() throws Exception {
+    public void testWillUseOtherDelimiter() throws Exception {
         String document = serializer.createDocumentString(source, XLS_DELIM);
-        assertTrue("Document contains header", document.contains(headerForXLS));
-        assertTrue("Document contains activity1", document.contains(act1.getName()));
-        assertTrue("Document contains activity2", document.contains(act2.getType().getName()));
-        assertTrue("Document contains activity3", document.contains(act3.getCode()));
-        assertTrue("Document contains XLS delimiter", document.contains(XLS_DELIM));
+        String[] rows = document.split("\n");
+        assertEquals("Header incorrect", XLS_HEADER, rows[0]);
+        assertEquals("Wrong first row", "Activity1\tOTHER\tCode1\t\tTestSource", rows[1]);
+    }
+
+    public void testCsvWithMultipleRows() throws Exception {
+        String doc = serializer.createDocumentString(createSource("foo",
+            createActivity("A"),
+            createActivity("B"),
+            createActivity("C"),
+            createActivity("D")
+        ), CSV_DELIM);
+        assertEquals("Wrong number of rows:\n" + doc, 4 + 1, doc.split("\n").length);
     }
 
     public void testReadCSV() throws Exception {
         InputStream validDocStream = new FileInputStream(new File(dataDir, "Activity.csv"));
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
-        expect(activityTypeDao.getByName("Other")).andReturn(activityType1).anyTimes();
-        expect(activityTypeDao.getByName("Intervention")).andReturn(activityType2).anyTimes();
+        expect(activityTypeDao.getByName("Other")).andReturn(other).anyTimes();
+        expect(activityTypeDao.getByName("Intervention")).andReturn(intervention).anyTimes();
         sourceDao.save(anotherSource);
         replayMocks();
 
@@ -124,8 +127,8 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     public void testExportAndImportCSV() throws Exception {
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
 
-        expect(activityTypeDao.getByName("OTHER")).andReturn(activityType1).anyTimes();
-        expect(activityTypeDao.getByName("INTERVENTION")).andReturn(activityType2).anyTimes();
+        expect(activityTypeDao.getByName("OTHER")).andReturn(other).anyTimes();
+        expect(activityTypeDao.getByName("INTERVENTION")).andReturn(intervention).anyTimes();
         String document = serializer.createDocumentString(source, CSV_DELIM);
 
         sourceDao.save(anotherSource);
@@ -156,8 +159,8 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         InputStream multipleSourceDoc = new FileInputStream(new File(dataDir, "Activity-multiple-sources.csv"));
 
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
-        expect(activityTypeDao.getByName("Other")).andReturn(activityType1).anyTimes();
-        expect(activityTypeDao.getByName("Intervention")).andReturn(activityType1).anyTimes();
+        expect(activityTypeDao.getByName("Other")).andReturn(other).anyTimes();
+        expect(activityTypeDao.getByName("Intervention")).andReturn(other).anyTimes();
         replayMocks();
 
         try {

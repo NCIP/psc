@@ -1,31 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.beans.factory.annotation.Required;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.commons.io.IOUtils;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-
+// TODO: update the source resource to support CSV (#692) then replace all uses of this controller
+// with the resource.
 public class ExportActivitiesController extends AbstractController {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Pattern ID_PATTERN = Pattern.compile("/([^/]+)\\.");
     private SourceDao sourceDao;
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
     private SourceSerializer sourceSerializer;
-
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -55,10 +53,10 @@ public class ExportActivitiesController extends AbstractController {
 
             if (extension.equals("csv")) {
                 response.setContentType("text/plain");
-                elt = sourceSerializer.createDocumentString(source, ",");
+                elt = sourceSerializer.createDocumentString(source, ',');
             } else {
                 response.setContentType("text");
-                elt = sourceSerializer.createDocumentString(source, "\t");
+                elt = sourceSerializer.createDocumentString(source, '\t');
             }
         }
 

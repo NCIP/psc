@@ -49,14 +49,14 @@ public class ExportActivitiesControllerTest extends ControllerTestCase {
     public void testTreatIdentForCsvAsSourcedFirst() throws Exception {
         request.setPathInfo(String.format("/template/display/%s.csv", source.getId().toString()));
         expect(sourceDao.getById(SOURCE_IDENT)).andReturn(source);
-        expect(sourceSerializer.createDocumentString(source, ",")).andReturn(headerForCSV);
+        expect(sourceSerializer.createDocumentString(source, ',')).andReturn(headerForCSV);
         handle(200);
     }
     
     public void testTreatIdentForXlsAsSourcedFirst() throws Exception {
         request.setPathInfo(String.format("/template/display/%s.xls", source.getId().toString()));
         expect(sourceDao.getById(SOURCE_IDENT)).andReturn(source);
-        expect(sourceSerializer.createDocumentString(source, "\t")).andReturn(headerForXLS);
+        expect(sourceSerializer.createDocumentString(source, '\t')).andReturn(headerForXLS);
         handle(200);
     }
 

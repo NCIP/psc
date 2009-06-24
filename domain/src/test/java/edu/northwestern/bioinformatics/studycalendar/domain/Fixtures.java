@@ -307,6 +307,14 @@ public class Fixtures {
         return createNamedInstance(name, Source.class);
     }
 
+    public static Source createSource(final String name, Activity... activities) {
+        Source s = createSource(name);
+        for (Activity activity : activities) {
+            s.addActivity(activity);
+        }
+        return s;
+    }
+
     public static Activity createActivity(String name) {
         return createActivity(name, DEFAULT_ACTIVITY_TYPE);
     }

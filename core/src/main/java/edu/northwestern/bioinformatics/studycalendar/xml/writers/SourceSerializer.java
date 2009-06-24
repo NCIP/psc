@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
@@ -8,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractCsvXlsSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,22 +17,23 @@ import org.springframework.beans.factory.annotation.Required;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-// TODO: Why the hell is this in the "xml" package
-public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
+// TODO: Why is this in the "xml" package?
+public class SourceSerializer {
 
     private final static String ACTIVITY_NAME = "Name";
     private final static String ACTIVITY_TYPE = "Type";
     private final static String ACTIVITY_CODE = "Code";
     private final static String ACTIVITY_DESCRIPTION = "Description";
     private final static String ACTIVITY_SOURCE = "Source";
-    private final static String EMPTY_STRING = "";
 
-    private final String NEW_STRING = "\n";
-    private String[] arrayOfHeaders = new String[]{ACTIVITY_NAME, ACTIVITY_TYPE, ACTIVITY_CODE, ACTIVITY_DESCRIPTION, ACTIVITY_SOURCE};
+    private static final String[] COLUMNS = new String[] {
+        ACTIVITY_NAME, ACTIVITY_TYPE, ACTIVITY_CODE, ACTIVITY_DESCRIPTION, ACTIVITY_SOURCE
+    };
+
     private SourceDao sourceDao;
     private ActivityTypeDao activityTypeDao;
 
@@ -40,32 +41,26 @@ public class SourceSerializer implements AbstractCsvXlsSerializer<Source> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public String createDocumentString(Source source, String delimeter) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(constructHeader(delimeter));
-        for (Activity a : source.getActivities()) {
-            sb.append(a.getName());
-            sb.append(delimeter);
-            sb.append(a.getType().getName());
-            sb.append(delimeter);
-            sb.append((a.getCode() == null || (EMPTY_STRING).equals(a.getCode()) ? EMPTY_STRING : a.getCode()));
-            sb.append(delimeter);
-            sb.append((a.getDescription() == null || (EMPTY_STRING).equals(a.getDescription()) ? EMPTY_STRING : a.getDescription()));
-            sb.append(delimeter);
-            sb.append(source.getName());
-            sb.append(NEW_STRING);
-        }
-        return sb.toString();
-    }
+    public String createDocumentString(Source source, char delimiter) {
+        StringWriter out = new StringWriter();
+        CsvWriter writer = new CsvWriter(out, delimiter);
 
-    public String constructHeader(String delimiter) {
-        StringBuffer sb = new StringBuffer();
-        for (String header : arrayOfHeaders) {
-            sb.append(header);
-            sb.append(delimiter);
+        try {
+            writer.writeRecord(COLUMNS);
+            for (Activity activity : source.getActivities()) {
+                writer.write(activity.getName());
+                writer.write(activity.getType().getNaturalKey());
+                writer.write(activity.getCode());
+                writer.write(activity.getDescription());
+                writer.write(source.getNaturalKey());
+                writer.endRecord();
+            }
+            writer.close();
+        } catch (IOException e) {
+            throw new StudyCalendarSystemException("Error when building CSV in memory", e);
         }
-        sb.append(NEW_STRING);
-        return sb.toString();
+
+        return out.toString();
     }
 
     public Source readDocument(InputStream inputStream) {
