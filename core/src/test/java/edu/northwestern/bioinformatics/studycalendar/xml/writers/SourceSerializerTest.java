@@ -11,8 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -77,6 +78,13 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         assertEquals(expected, doc);
     }
 
+    public void testCsvForActivityWithDescriptionWithQuotes() throws Exception {
+        Source oneAct = Fixtures.createSource("Src", createActivity("A", "A", null, other, "aka \"Alpha\""));
+        String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
+        String expected = CSV_HEADER + "\nA,OTHER,A,\"aka \"\"Alpha\"\"\",Src\n";
+        assertEquals(expected, doc);
+    }
+
     public void testWillUseOtherDelimiter() throws Exception {
         String document = serializer.createDocumentString(source, XLS_DELIM);
         String[] rows = document.split("\n");
@@ -92,6 +100,27 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
             createActivity("D")
         ), CSV_DELIM);
         assertEquals("Wrong number of rows:\n" + doc, 4 + 1, doc.split("\n").length);
+    }
+
+    public void testReadActivityWithEscapedQuotes() throws Exception {
+        Activity actual = readCsvAndReturnActivity("Bs,OTHER,B,\"aka \"\"beta\"\"\",Single");
+        assertEquals("Description not decoded properly", "aka \"beta\"", actual.getDescription());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private Activity readCsvAndReturnActivity(String csvRow) {
+        String doc = CSV_HEADER + '\n' + csvRow + '\n';
+        System.out.println(doc);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        // TODO: none of these things should be called from the serializer (#695)
+        expect(activityTypeDao.getByName((String) notNull())).andStubReturn(other);
+        expect(sourceDao.getByName((String) notNull())).andStubReturn(createSource("Single"));
+        sourceDao.save((Source) notNull());
+        replayMocks();
+
+        Source deserialized = serializer.readDocument(in);
+        assertNotNull("No source returned for " + csvRow, deserialized);
+        return deserialized.getActivities().get(0);
     }
 
     public void testReadCSV() throws Exception {
@@ -122,7 +151,6 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
             }
         }
     }
-
 
     public void testExportAndImportCSV() throws Exception {
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
