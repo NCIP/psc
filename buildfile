@@ -556,7 +556,7 @@ define "psc" do
     
     task :local_jetty do
       ENV['test'] = 'no'
-      set_db_name 'datasource'
+      set_db_name 'datasource' unless ENV['DB']
       
       task(:jetty_deploy_exploded).invoke
       
