@@ -38,7 +38,6 @@
 
     <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
     <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
-    
 
     <c:choose>
         <c:when test="${schedulePreview}">
@@ -49,9 +48,10 @@
             <%-- TODO: reenable when the content is updated to work with the new page
                  TODO: these scripts should be in the subject folder with everything else
                        unless they are shared with other pages.
+                        --%>
             <tags:javascriptLink name="scheduled-activity"/>
             <tags:javascriptLink name="scheduled-activity-batch-modes"/>
-            --%>
+
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
@@ -208,40 +208,9 @@
             jQuery(".myaccordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
         });
 
-        /** TODO: these functions need to be properly namespaced and moved to an external file */
-
-        /*
-        function incrementDecrementDate(date, shiftByDate){
-            var d = new Date();
-            var time = date
-            var time2 =  time + (parseInt(toDate, 10)*24*60*60*1000)
-            d.setTime(time2)
-            return d
-        }
-
-        function convertStringToDate(dateString){
-            // TODO: use psc.tools.Dates.apiDateToUtc for this
-            var day = dateString.substring(3, 5)
-            var month = dateString.substring(0, 2)
-            month = parseInt(month) -1
-            var year = dateString.substring(6, dateString.length)
-
-            return new Date(year, month.toString(), day);
-        }
-
         function shiftDateByNumberOfDays(dateToShiftInMilliseconds, numberOfDaysToShift) {
-            var shiftedDate = new Date();
-            var timeShifted =  dateToShiftInMilliseconds + (parseInt(numberOfDaysToShift, 10)*24*60*60*1000)
-            shiftedDate.setTime(timeShifted)
-
-            var year = shiftedDate.getFullYear()
-            var day = shiftedDate.getDate()
-            var month = shiftedDate.getMonth()+1
-
-            // TODO: use psc.tools.Dates.utcToApiDate for this
-            day = (day < 10 ) ? ("0" + day) : day
-            month = (month < 10) ? ("0" + month): month
-            return year+"-" + month+ "-" + day;
+            var shiftedDate1 = new Date(psc.tools.Dates.incrementDecrementDate(dateToShiftInMilliseconds, numberOfDaysToShift))
+            return psc.tools.Dates.utcToApiDate(shiftedDate1)
         }
 
         function executeDelayAdvancePost() {
@@ -252,7 +221,7 @@
             var toDate = shiftOptionForwardOrBackward*$('toDate').value
             var asOfDate = $(document.getElementById('currentDate')).value
 
-            var asOfDateInDateFormat = convertStringToDate(asOfDate)
+            var asOfDateInDateFormat = psc.tools.Dates.displayDateToUtc(asOfDate)
 
             <c:forEach items="${schedule.days}" var="day">
                 var actualDayInDateRepresentation =  new Date(${day.date.year + 1900}, ${day.date.month}, ${day.date.date});
@@ -282,21 +251,20 @@
             var state=""; //default for current state is empty
             var reason="";
             var toDate=0;
-            // TODO: don't use arbitrary integers for these values -- use something meaningful
-            if (newModeSelector == "") {
-                reason = $$('#new-reason-input-group input')[0].value
-                toDate = $$("#move_date_by_new-date-input-group input")[0].value
-            } if (newModeSelector == 1) {
-                state = "scheduled"
-                toDate = $$("#move_date_by_new-date-input-group input")[0].value
-                reason = $$('#new-reason-input-group input')[0].value
-            } if (newModeSelector == 2) {
-                state = "occurred"
-            } if (newModeSelector == 3) {
-                state = "cancelled"
-                reason = $$('#new-reason-input-group input')[0].value
-            } if (newModeSelector == 6) {
-                reason = $$('#new-reason-input-group input')[0].value
+            if (newModeSelector == "moveDate") {
+                reason = $$('#new-reason-input-group input')[0].value;
+                toDate = $$("#move_date_by_new-date-input-group input")[0].value;
+            } if (newModeSelector == "markAsScheduled") {
+                state = "scheduled";
+                toDate = $$("#move_date_by_new-date-input-group input")[0].value;
+                reason = $$('#new-reason-input-group input')[0].value;
+            } if (newModeSelector == "markAsOccurred") {
+                state = "occurred";
+            } if (newModeSelector == "markAsCancelled") {
+                state = "cancelled";
+                reason = $$('#new-reason-input-group input')[0].value;
+            } if (newModeSelector == "markAsMissed") {
+                reason = $$('#new-reason-input-group input')[0].value;
             }
 
             var mapOfParameters = {};
@@ -310,7 +278,7 @@
                 }
                 var date = checkedEvents[i].up('.day').down('h3').innerHTML
                 var activityKey = checkedEvents[i].value
-                var dateInDateFormat = convertStringToDate(date)
+                var dateInDateFormat = psc.tools.Dates.apiDateToUtc(date)
                 var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
                 mapOfParameters[activityKey] = {
                         "reason": reason,
@@ -332,7 +300,7 @@
                 }
             }))
         }
-
+  /*
         //todo - need to figure out the submect.assignments.gridId for study.
         function putScheduleNextSegment() {
             $('next-studySegment-indicator').reveal()

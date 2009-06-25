@@ -10,6 +10,11 @@ psc.tools.Dates = (function () {
       var pieces = apiDate.split('-')
       return new Date(Date.UTC(pieces[0], pieces[1] - 1, pieces[2]));
     },
+
+    displayDateToUtc: function (humanReadableDate) {
+      var pieces = humanReadableDate.split('/')
+      return new Date(Date.UTC(pieces[2], pieces[0] -1, pieces[1]));
+    },
     
     utcToApiDate: function (jsDate) {
       return jsDate.getUTCFullYear() + 
@@ -22,13 +27,19 @@ psc.tools.Dates = (function () {
          '/'+psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2)+
          '/'+jsDate.getUTCFullYear()
     },
-    
+
     startOfUtcDay: function (d) {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY);
     },
     
     middleOfUtcDay: function (d) {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY + this.ONE_DAY / 2);
+    },
+
+    incrementDecrementDate: function(date, shiftNumber){
+      var d = new Date();
+      var time =  date + (parseInt(shiftNumber, 10)*this.ONE_DAY)
+      return d.setTime(time)
     },
     
     ////// CONSTANTS

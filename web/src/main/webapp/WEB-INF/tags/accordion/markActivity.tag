@@ -37,14 +37,13 @@
 </div>
 <div class="accordionRow">
     <label id="new-mode-selector-group">
-
             <select name="newMode" id="new-mode-selector">
-                <option value="-1">Select an action...</option>
-                <option value="">Move the date</option>
-                <option value="1">Mark/Keep as scheduled</option>
-                <option value="2">Mark as occurred</option>
-                <option value="3">Mark as canceled or NA</option>
-                <option value="6">Mark as missed</option>
+                <option value="selectAnAction">Select an action...</option>
+                <option value="moveDate">Move the date</option>
+                <option value="markAsScheduled">Mark/Keep as scheduled</option>
+                <option value="markAsOccurred">Mark as occurred</option>
+                <option value="markAsCancelled">Mark as canceled or NA</option>
+                <option value="markAsMissed">Mark as missed</option>
             </select>
 
     </label>
