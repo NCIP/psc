@@ -60,7 +60,8 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         }
 
         String displayName = sb.toString();
-        if (displayName != null && displayName.length() > 0) {
+        String trimmedDisplayName = displayName.replaceAll(" ", "");
+        if (trimmedDisplayName != null && trimmedDisplayName.length() > 0) {
             return displayName;
         } else {
             return name;
