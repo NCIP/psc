@@ -70,6 +70,7 @@
             border: 1px solid #444;
             background-color: white;
             overflow-x: auto;
+            height: 297px;
         }
 
         .legendSetup {
@@ -297,6 +298,7 @@
                 onComplete: function() {
                     $('delayOrAdvance-indicator').conceal();
                     $('mark-indicator').conceal();
+                    psc.subject.ScheduleData.refresh()
                 }
             }))
         }
@@ -349,17 +351,26 @@
             var paramsInXML = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
             return paramsInXML;
         }
+        */
         <c:if test="${schedulePreview}">
             Event.observe(window, 'load', function() {
-                SC.SP.generateIntialSchedulePreview('${previewResource}')
-                Event.observe('generateSchedulePreview', 'click', function(){
-                    SC.SP.generateSchedulePreview('${previewResource}')
-                })
-                Event.observe('addToSelectedStudySegments', 'click', SC.SP.selectStudySegmentsForPreview)
-                Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
+                    SC.SP.generateIntialSchedulePreview('${previewResource}')
+                    Event.observe('generateSchedulePreview', 'click', function(){
+                        SC.SP.generateSchedulePreview('${previewResource}')
+                    })
+                    Event.observe('addToSelectedStudySegments', 'click', SC.SP.selectStudySegmentsForPreview)
+                    Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
                 })
         </c:if>
-        */
+
+        Event.observe(window, 'load', function() {
+            psc.subject.ScheduleTimeline.create();
+            psc.subject.ScheduleTimeline.FocusHandler.init();
+            psc.subject.ScheduleList.init();
+            psc.subject.ScheduleList.FocusHandler.init();
+
+        })
+
     </script>
 
     <tags:resigTemplate id="list_day_entry">
@@ -469,27 +480,27 @@
                             <%--day(s) as of date:  <input id="currentDate" path="currentDate" size="15"--%>
                             <%--value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>" class="date"/>--%>
                     <%--</select> --%>
-                    </div>
+                </div>
                     
-                </div>
-                <div class="delayOrAdvanceBlock">
-                    <select id="delayAdvanceSelector" name="delayAdvanceSelector">
-                        <option value="1" selected="true" >Delay</option>
-                        <option value="-1">Advance</option>
-                    </select> scheduled or conditional activities by <input id="toDate" size="5" path="toDate" value="7"/> day(s) as
-                    of date:  <input id="currentDate" path="currentDate" size="10" value="" class="date"/>
-                    <a href="#" id="currentDate-calbutton">
-                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
-                    </a>
-                    Reason: <input id="reason" class="reason" path="reason" value=""/>
-                    
-                </div>
-                <div class="delayOrAdvanceBlock">
-                    <tags:activityIndicator id="delayOrAdvance-indicator"/>
-                    <input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/>
-                </div>
-            <%--</laf:division>--%>
-        </div>
+            </div>
+            <div class="delayOrAdvanceBlock">
+                <select id="delayAdvanceSelector" name="delayAdvanceSelector">
+                    <option value="1" selected="true" >Delay</option>
+                    <option value="-1">Advance</option>
+                </select> scheduled or conditional activities by <input id="toDate" size="5" path="toDate" value="7"/> day(s) as
+                of date:  <input id="currentDate" path="currentDate" size="10" value="" class="date"/>
+                <a href="#" id="currentDate-calbutton">
+                    <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                </a>
+                Reason: <input id="reason" class="reason" path="reason" value=""/>
+
+            </div>
+            <div class="delayOrAdvanceBlock">
+                <tags:activityIndicator id="delayOrAdvance-indicator"/>
+                <input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/>
+            </div>
+        <%--</laf:division>--%>
+    </div>
 
         <%--*********** Mark Portion****************--%>
         <div class="accordionDiv">
