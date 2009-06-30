@@ -10,7 +10,7 @@ Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJR
 
 # Shortcuts for PSC java packages
 module Psc
-  %w(domain domain.delta core).each do |pkg|
+  %w(domain domain.delta core service).each do |pkg|
     class_eval <<-RUBY
       module #{pkg.split('.').map(&:capitalize).join('::')}
         include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'

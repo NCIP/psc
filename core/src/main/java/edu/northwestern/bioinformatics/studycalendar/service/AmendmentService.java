@@ -111,6 +111,7 @@ public class AmendmentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    // TODO: this is sehr unDRY
     public Study updateDevelopmentAmendmentForStudyAndSave(Study study, Change... changes) {
         log.debug("Updating dev amendment for study {} with {} change(s)", study, changes.length);
         if (!study.isInDevelopment()) {
@@ -124,6 +125,7 @@ public class AmendmentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    // TODO: this is sehr unDRY
     public Population updateDevelopmentAmendmentForStudyAndSave(Population population, Study study, Change... changes) {
         log.debug("Updating dev amendment for study {} with {} change(s)", population, changes.length);
         if (!study.isInDevelopment()) {
@@ -152,7 +154,7 @@ public class AmendmentService {
         log.debug("Updating dev amendment for node {} with {} change(s)", node, changes.length);
         node = templateService.findCurrentNode(node);
         log.debug("Current persistent node is {}", node);
-        Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
+        Study study = templateService.findStudy(node);
         if (!study.isInDevelopment()) {
             throw new StudyCalendarSystemException("The study %s is not open for editing or amending", study);
         }
