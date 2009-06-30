@@ -2,17 +2,13 @@ package org.dynamicjava.osgi.da_launcher.internal.framework.felix.v1;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map.Entry;
-
-import org.dynamicjava.osgi.commons.utilities.ReflectionUtils;
-import org.dynamicjava.osgi.da_launcher.internal.exceptions.LauncherException;
+import java.util.Properties;
+import org.apache.felix.framework.Felix;
 import org.dynamicjava.osgi.da_launcher.internal.framework.OsgiFrameworkSettings;
 import org.dynamicjava.osgi.da_launcher.internal.framework.support.AbstractOsgiFramework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.apache.felix.framework.cache.BundleCache;
+
 
 public class FelixFramework extends AbstractOsgiFramework {
 	
@@ -28,19 +24,18 @@ public class FelixFramework extends AbstractOsgiFramework {
 		} catch (Throwable ex) {
 			/// We don't have the permission, it seems that we have to bear with the messages.
 		}
-		
+
 		try {
-			this.setFelixProperties();
-			
-			/// A call to the Main method of felix to run felix framework
-			ReflectionHelper reflectionHelper = this.getReflectionHelper();
-			reflectionHelper.getMainMethod().invoke(null, new Object[]{ new String[0] });
-			
-			Object felix = reflectionHelper.getFelixField().get(reflectionHelper.getMainClass());
-			BundleContext bundleContext = (BundleContext)reflectionHelper.getBundleContextMethod().invoke(felix);
-			
-			setBundleContext(bundleContext);
-			setFelix(felix);
+            //starting felix directly instead of using main method of the felix Main class
+            Properties configMap = getSettings().getFrameworkSpecificProperties();
+            configMap.put("felix.embedded.execution", "true");
+            configMap.put("felix.log.level", "0");
+            configMap.put("org.osgi.framework.storage", getSettings().getProfileDir());
+            Felix m_felix = new Felix(configMap);
+            m_felix.start();
+		    BundleContext bundleContext = m_felix.getBundleContext();
+		    setBundleContext(bundleContext);
+		    setFelix(m_felix);
 		} finally {
 			try {
 				System.setOut(systemOut);
@@ -59,7 +54,7 @@ public class FelixFramework extends AbstractOsgiFramework {
 			this.setFelix(null);
 		}
 	}
-	
+
 	@Override
 	protected BundleContext returnBundleContext() {
 		return bundleContext;
@@ -73,40 +68,20 @@ public class FelixFramework extends AbstractOsgiFramework {
 	protected String getFilterImplClassName() {
 		return ApiMembersNames.Classes.FILTER_IMPL;
 	}
-	
-	@Override
-	protected ClassLoader getFrameworkClassLoader() {
-		return getReflectionHelper().getFelixClassLoader();
-	}
-	
-	
-	protected void setFelixProperties() {
-		setFelixProperty("felix.log.level", "0");
-		setFelixProperty("felix.embedded.execution", "true");
-		
-		for (Entry<Object, Object> property : getSettings().getFrameworkSpecificProperties().entrySet()) {
-			setFelixProperty(property.getKey().toString(), property.getValue().toString());
-		}
-		
-		setFelixProperty(CACHE_PROFILE_DIR_PROPERTY, getSettings().getProfileDir());
-	}
-	
 	protected void setFelixProperty(String name, String value) {
 		System.getProperties().put(name, value);
 	}
-	
-	
+
+
     public FelixFramework(OsgiFrameworkSettings settings) {
     	super(settings);
-    	this.setReflectionHelper(new ReflectionHelper(getClass().getClassLoader()));
     }
-    
+
     public FelixFramework(OsgiFrameworkSettings settings, ClassLoader felixClassLoader) {
     	super(settings);
-    	this.setReflectionHelper(new ReflectionHelper(felixClassLoader));
     }
-	
-	
+
+
 	private Object felix;
 	protected Object getFelix() {
 		return felix;
@@ -114,69 +89,4 @@ public class FelixFramework extends AbstractOsgiFramework {
 	protected void setFelix(Object felix) {
 		this.felix = felix;
 	}
-	
-	
-	private ReflectionHelper reflectionHelper;
-	protected ReflectionHelper getReflectionHelper() {
-		return reflectionHelper;
-	}
-	protected void setReflectionHelper(ReflectionHelper reflectionHelper) {
-		this.reflectionHelper = reflectionHelper;
-	}
-	
-	protected static class ReflectionHelper {
-		
-		private final Class<?> mainClass;
-		public Class<?> getMainClass() {
-			return mainClass;
-		}
-		
-		private final Method mainMethod;
-		public Method getMainMethod() {
-			return mainMethod;
-		}
-		
-		private final Class<?> felixClass;
-		protected Class<?> getFelixClass() {
-			return felixClass;
-		}
-		
-		private final Field felixField;
-		protected Field getFelixField() {
-			return felixField;
-		}
-		
-		private final Method bundleContextMethod;
-		protected Method getBundleContextMethod() {
-			return bundleContextMethod;
-		}
-		
-		private final ClassLoader felixClassLoader;
-		public ClassLoader getFelixClassLoader() {
-			return felixClassLoader;
-		}
-		
-		public ReflectionHelper(ClassLoader felixClassLoader) {
-			try {
-				this.felixClassLoader = felixClassLoader;
-				mainClass = felixClassLoader.loadClass(ApiMembersNames.Classes.MAIN);
-				mainMethod = mainClass.getMethod(ApiMembersNames.Methods.MAIN, String[].class);
-				felixField = mainClass.getDeclaredField(ApiMembersNames.Fields.FELIX);
-				
-				felixClass = felixClassLoader.loadClass(ApiMembersNames.Classes.FELIX);
-				bundleContextMethod = felixClass.getDeclaredMethod(ApiMembersNames.Methods.GET_BUNDLE_CONTEXT);
-				
-				ReflectionUtils.makeAccessible(felixField);
-				ReflectionUtils.makeAccessible(bundleContextMethod);
-			} catch (Exception ex) {
-				throw new LauncherException(String.format(
-						"Failed to load Felix members using Reflection API: %s", ex.getMessage()), ex);
-			}
-		}
-		
-	}
-	
-	
-	protected static final String CACHE_PROFILE_DIR_PROPERTY = BundleCache.CACHE_PROFILE_DIR_PROP;
-	
 }

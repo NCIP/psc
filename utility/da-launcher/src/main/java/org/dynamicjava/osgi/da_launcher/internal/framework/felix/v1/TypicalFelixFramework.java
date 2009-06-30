@@ -96,6 +96,6 @@ public class TypicalFelixFramework  extends AbstractOsgiFramework {
 	
 	protected static final String GET_BUNDLE_CONTEXT_METHOD = "getBundleContext";
 	
-	protected static final String CACHE_PROFILE_DIR_PROPERTY = BundleCache.CACHE_PROFILE_DIR_PROP;
+	protected static final String CACHE_PROFILE_DIR_PROPERTY = "felix.cache.profiledir";
 	
 }
