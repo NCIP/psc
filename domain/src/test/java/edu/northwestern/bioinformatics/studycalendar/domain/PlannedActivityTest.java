@@ -204,7 +204,6 @@ public class PlannedActivityTest extends TestCase {
         }
     }
 
-
     public void testPlannedActivitiesSortingByWeight() throws Exception {
         PlannedActivity pa0, pa1, pa2, pa3;
         pa0 = createPlannedActivity(createActivity("0", Fixtures.createActivityType("PROCEDURE")), 1, 5);
@@ -227,5 +226,32 @@ public class PlannedActivityTest extends TestCase {
         assertTrue("Second element after sorting has wrong weight ", listOfPAs.get(1).getWeight()==5);
         assertTrue("Third element after sorting has wrong weight ", listOfPAs.get(2).getWeight()==0);
         assertTrue("Forth element after sorting has wrong weight ", listOfPAs.get(3).getWeight()==-1);
+    }
+
+    public void testPlanDayWithoutPeriod() throws Exception {
+        assertNull(new PlannedActivity().getPlanDay());
+    }
+    
+    public void testPlanDayForDayOne() throws Exception {
+        assertEquals("1", createPlannedActivityInPeriod(1, 1).getPlanDay());
+    }
+
+    public void testPlanDayForDayTwoWithPeriodAtOne() throws Exception {
+        assertEquals("2", createPlannedActivityInPeriod(1, 2).getPlanDay());
+    }
+
+    public void testPlanDayForDayOneWithPeriodAtTwo() throws Exception {
+        assertEquals("2", createPlannedActivityInPeriod(2, 1).getPlanDay());
+    }
+
+    public void testPlanDayForDayOneWithPeriodStartingNegative() throws Exception {
+        assertEquals("-9", createPlannedActivityInPeriod(-9, 1).getPlanDay());
+    }
+
+    private PlannedActivity createPlannedActivityInPeriod(int periodStartDay, int paDay) {
+        Period p = createPeriod(periodStartDay, 21, 1);
+        PlannedActivity pa = createPlannedActivity("A", paDay);
+        p.addPlannedActivity(pa);
+        return pa;
     }
 }

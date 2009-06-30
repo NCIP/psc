@@ -239,11 +239,8 @@ public class Fixtures {
     }
 
     public static ScheduledStudySegment createScheduledStudySegment(StudySegment studySegment) {
-        ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
-        scheduledStudySegment.setStudySegment(studySegment);
-        scheduledStudySegment.setStartDay(1);
-        scheduledStudySegment.setStartDate(DateTools.createDate(1997, Calendar.JANUARY, 12));
-        return scheduledStudySegment;
+        return createScheduledStudySegment(
+            studySegment, DateTools.createDate(1997, Calendar.JANUARY, 12));
     }
 
     public static ScheduledStudySegment createScheduledStudySegment(Date startDate, int length) {
@@ -251,6 +248,15 @@ public class Fixtures {
         StudySegment segment = createNamedInstance("Fixture", StudySegment.class);
         segment.addPeriod(period);
         ScheduledStudySegment scheduled = createScheduledStudySegment(segment);
+        scheduled.setStartDate(startDate);
+        new ScheduledCalendar().addStudySegment(scheduled);
+        return scheduled;
+    }
+
+    public static ScheduledStudySegment createScheduledStudySegment(StudySegment segment, Date startDate) {
+        ScheduledStudySegment scheduled = new ScheduledStudySegment();
+        scheduled.setStudySegment(segment);
+        scheduled.setStartDay(1);
         scheduled.setStartDate(startDate);
         new ScheduledCalendar().addStudySegment(scheduled);
         return scheduled;

@@ -2,6 +2,7 @@ require 'rest-open-uri'
 require 'builder'
 require 'rexml/document'
 require 'json/pure'
+require 'cgi'
 
 module HttpHelper
   attr_reader :response
@@ -31,8 +32,12 @@ module HttpHelper
   end
 
   # TODO: parameterize
-  def full_uri(relative)
-    "http://localhost:7200/psc/api/v1#{relative}"
+  def full_uri(relative, params=nil)
+    qs =
+      if params
+        params.map { |k, v| "#{CGI.escape k}=#{CGI.escape v}" }.join("&")
+      end
+    "http://localhost:7200/psc/api/v1#{relative}" + (qs ? "?#{qs}" : "")
   end
 
   def psc_xml(root_name, root_attributes={}, &block)
@@ -53,7 +58,9 @@ module HttpHelper
 
   def execute_request!(relative_uri, options)
     begin
-      OpenURI.open_uri full_uri(relative_uri), options do |f|
+      uri = full_uri(relative_uri, options.delete(:params))
+      PscTest.log("#{options[:method]} #{uri} with options #{options.inspect}")
+      OpenURI.open_uri uri, options do |f|
         @response = Response.new(f)
       end
     rescue OpenURI::HTTPError => e

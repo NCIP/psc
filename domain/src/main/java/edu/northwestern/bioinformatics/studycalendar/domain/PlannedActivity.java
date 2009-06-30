@@ -85,6 +85,18 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		}
 	}
 
+    /**
+     * Returns the day this PA represents relative to the containing segment.
+     */
+    // TODO: make cycleLength-aware
+    @Transient
+    public String getPlanDay() {
+        if (getPeriod() == null) {
+            return null;
+        }
+        return Integer.toString(getPeriod().getStartDay() + getDay() - 1);
+    }
+
 	@Transient
 	public List<Integer> getDaysInStudySegment() {
 		int dayInStudySegment = getPeriod().getStartDay() + getDay() - 1;
