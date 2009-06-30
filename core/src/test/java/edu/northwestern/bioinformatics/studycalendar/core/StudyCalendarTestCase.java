@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -97,6 +99,11 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         return null;
     }
 
+    public static <T extends Date> T sameDay(int year, int month, int day) {
+        EasyMock.reportMatcher(new DayMatcher(year, month, day));
+        return null;
+    }
+
     /**
      * Finds a directory relative to the given module, whether the working directory is the
      * module (as when running the tests from buildr) or the root of the project (as when running
@@ -160,6 +167,24 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
 
         public void appendTo(StringBuffer buffer) {
             buffer.append(template).append(" (by properties)");
+        }
+    }
+
+    private static class DayMatcher implements IArgumentMatcher {
+        private int year, month, date;
+
+        private DayMatcher(int year, int month, int day) {
+            this.year = year;
+            this.month = month;
+            this.date = day;
+        }
+
+        public boolean matches(Object o) {
+            return DateTools.daysEqual((Date) o, year, month, date);
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("same day as ").append(date);
         }
     }
 }

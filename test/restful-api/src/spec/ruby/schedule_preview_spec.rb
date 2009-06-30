@@ -10,13 +10,22 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
               p.activity "Alcohol", 4
             end
           end
-          
+
           e.study_segment "B"
         end
       end
     end
 
+    update_study @nu480, :development do |s|
+      s.add_study_segment "C", :in => "Treatment" do |c|
+        c.period "P1" do |p|
+          p.activity "CBC", 4
+        end
+      end
+    end
+
     @nu480_a, @nu480_b = @nu480.planned_calendar.epochs.first.study_segments.to_a
+    @nu480_c = @nu480.development_amendment.deltas.first.changes.first.child
   end
 
   describe "GET" do
@@ -63,17 +72,17 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
         end
 
         it "cannot refer to an unreleased segment" do
-          pending
           get "/studies/NU480/template/current/schedule-preview.json",
-            "segment[0]" => @nu480_c.grid_id, "start_date[0]" => "2009-05-01"
+            :params => { "segment[0]" => @nu480_c.grid_id, "start_date[0]" => "2009-05-01" },
+            :as => :erin
           response.status_code.should == 400
+          response.entity.should =~ /No study segment with identifier/
         end
       end
 
       describe "for development version" do
         describe "basic functioning" do
           before do
-            pending
             get "/studies/NU480/template/development/schedule-preview.json",
               :params => { "segment[0]" => @nu480_c.grid_id, "start_date[0]" => "2009-05-15" },
               :as => :erin
@@ -88,8 +97,7 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
           end
 
           it "contains the right number of activities" do
-            pending
-            response.json["days"].inject(0) { |sum, day| sum + day["activities"].size }.should == 8
+            response.json["days"].inject(0) { |sum, (_, day)| sum + day["activities"].size }.should == 1
           end
         end
       end
@@ -107,7 +115,7 @@ describe "/studies/{study}/template/{as_of}/schedule-preview" do
           end
 
           it "has the correct days" do
-            @days.keys.sort.should == %w(2009-05-02 2009-05-05 2009-05-09 
+            @days.keys.sort.should == %w(2009-05-02 2009-05-05 2009-05-09
               2009-05-12 2009-05-16 2009-05-19 2009-05-23 2009-05-26)
           end
 

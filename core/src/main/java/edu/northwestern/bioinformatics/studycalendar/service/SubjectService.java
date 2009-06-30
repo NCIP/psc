@@ -118,8 +118,8 @@ public class SubjectService {
     /**
      * Derives Scheduled StudySegment for the preview.
      */
-    public ScheduledStudySegment scheduleStudySegmentPreview(ScheduledCalendar calendar,StudySegment studySegment, Date startDate) {
-        
+    public void scheduleStudySegmentPreview(ScheduledCalendar calendar,StudySegment studySegment, Date startDate) {
+        log.debug("Appending {} to preview starting at {}", studySegment, startDate);
         Integer studySegmentStartDay = studySegment.getDayRange().getStartDay();
 
         ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
@@ -134,7 +134,6 @@ public class SubjectService {
 
         // Sort in the same order they'll be coming out of the database (for consistency)
         Collections.sort(scheduledStudySegment.getActivities(), DatabaseEventOrderComparator.INSTANCE);
-        return scheduledStudySegment;
     }
 
     /**

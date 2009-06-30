@@ -67,6 +67,11 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         assertEquals("Wrong response status", status, response.getStatus());
     }
 
+    protected void assertResponseStatus(Status expectedStatus, String expectedMessage) {
+        assertEquals("Wrong response status", expectedStatus, response.getStatus());
+        assertEquals("Wrong response message", expectedMessage, response.getStatus().getDescription());
+    }
+
     @SuppressWarnings({ "deprecation" }) // URLEncoder.encode is deprecated for stupid reasons
     protected void expectRequestEntityFormAttribute(String name, String value) throws IOException {
         StringBuilder form = new StringBuilder();

@@ -85,7 +85,9 @@ public class AmendedTemplateHelper {
     }
 
     private Study applyDevelopmentAmendment() {
+        log.debug("Applying dev amendment to {}", originalStudy.getAssignedIdentifier());
         if (originalStudy.getDevelopmentAmendment() == null) {
+            log.debug(" - No dev amendment");
             throw new NotFound("Study template %s is not in development",
                 originalStudy.getAssignedIdentifier());
         }
@@ -95,6 +97,7 @@ public class AmendedTemplateHelper {
     private Study applyReleasedAmendment(String amendmentIdentifier) {
         Amendment amendment;
         if (AmendedTemplateHelper.CURRENT.equals(amendmentIdentifier)) {
+            log.debug("Using current version of {}", originalStudy.getAssignedIdentifier());
             amendment = originalStudy.getAmendment();
             if (amendment == null) {
                 throw new NotFound(
@@ -102,6 +105,7 @@ public class AmendedTemplateHelper {
                     originalStudy.getAssignedIdentifier());
             }
         } else {
+            log.debug("Looking for {} in {}", amendmentIdentifier, originalStudy.getAssignedIdentifier());
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, originalStudy);
             if (amendment != null && !amendment.equals(originalStudy.getAmendment()) && !originalStudy.getAmendment().hasPreviousAmendment(amendment)) {
                 throw new NotFound("The amendment %s is not part of %s",
@@ -111,6 +115,7 @@ public class AmendedTemplateHelper {
                     amendmentIdentifier, originalStudy.getAssignedIdentifier());
             }
         }
+        log.debug("Amending {} with {}", originalStudy.getAssignedIdentifier(), amendment.getNaturalKey());
         return amendmentService.getAmendedStudy(originalStudy, amendment);
     }
 

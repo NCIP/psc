@@ -15,15 +15,12 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Methods to ease the creation of domain objects for testing.
  *
- * @see edu.northwestern.bioinformatics.studycalendar.domain.core.ServicedFixtures
  * @author Rhett Sutphin
  */
 public class Fixtures {
@@ -68,6 +65,34 @@ public class Fixtures {
     public static <T extends GridIdentifiable> T setGridId(String gridId, T target) {
         target.setGridId(gridId);
         return target;
+    }
+
+    public static <T extends PlanTreeNode & Named> T findNodeByName(Study from, Class<T> clazz, String name) {
+        return findNodeByName(from.getPlannedCalendar(), clazz, name);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static <T extends PlanTreeNode & Named> T findNodeByName(PlanTreeInnerNode from, Class<T> clazz, String name) {
+        if (from.childClass().isAssignableFrom(clazz)) {
+            for (Object child : from.getChildren()) {
+                Named n = (Named) child;
+                if (n.getName().equals(name)) {
+                    return (T) n;
+                }
+            }
+            return null;
+        } else {
+            for (Object child : from.getChildren()) {
+                PlanTreeNode n = (PlanTreeNode) child;
+                if (n instanceof PlanTreeInnerNode) {
+                    T found = findNodeByName((PlanTreeInnerNode) n, clazz, name);
+                    if (found != null) {
+                        return found;
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     /**
