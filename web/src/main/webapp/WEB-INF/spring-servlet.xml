@@ -100,7 +100,7 @@
         <property name="commandBeanName" value="moveCommand"/>
     </bean>
 
-    <bean name="/cal/template/schedulePreview" id="schedulePreviewController" autowire="byName"
+    <bean name="/cal/template/preview" id="schedulePreviewController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SchedulePreviewController">
         <property name="crumb.parent">
             <ref local="displayTemplateController"/>

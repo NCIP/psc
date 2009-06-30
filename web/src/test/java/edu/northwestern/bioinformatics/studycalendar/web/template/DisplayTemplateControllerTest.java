@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
@@ -15,22 +16,26 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Arrays;
-import static java.util.Collections.singletonList;
+import java.util.Calendar;
+import static java.util.Collections.*;
 import java.util.List;
 import java.util.Map;
+import java.sql.Timestamp;
 
 /**
  * @author Rhett Sutphin
  */
 public class DisplayTemplateControllerTest extends ControllerTestCase {
     private static final String STUDY_NAME = "NU-1066";
+    private static final Timestamp NOW = DateTools.createTimestamp(2008, Calendar.SEPTEMBER, 18);
 
     private DisplayTemplateController controller;
 
@@ -38,6 +43,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private DeltaService deltaService;
     private TemplateService templateService;
     private AmendmentService amendmentService;
+    private StaticNowFactory nowFactory;
 
     private Study study;
     private StudySegment seg1, seg0a, seg0b;
@@ -53,6 +59,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         deltaService = registerMockFor(DeltaService.class);
         templateService = registerMockFor(TemplateService.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        nowFactory = new StaticNowFactory();
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
@@ -78,6 +85,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setAmendmentService(amendmentService);
         controller.setControllerTools(controllerTools);
         controller.setApplicationSecurityManager(applicationSecurityManager);
+        controller.setNowFactory(nowFactory);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
@@ -89,6 +97,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
          expect(templateService.filterForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                  .andReturn(singletonList(study)).anyTimes();
 
+        nowFactory.setNowTimestamp(NOW);
     }
 
 
@@ -249,6 +258,10 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel = getAndReturnModel();
 
         assertSame("Study should be assignable", Boolean.TRUE, actualModel.get("canAssignSubjects"));
+    }
+
+    public void testIncludesTodaysDateInApiFormatForPreview() throws Exception {
+        assertEquals("2008-09-18", getAndReturnModel().get("todayForApi"));
     }
 
     @SuppressWarnings({ "unchecked" })

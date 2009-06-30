@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -19,6 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Breadcrum
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,6 +44,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private UserDao userDao;
     private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private NowFactory nowFactory;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -94,6 +97,9 @@ public class DisplayTemplateController extends PscAbstractController {
         if(study.getAmendment()!=null && study.getDevelopmentAmendment()!=null) {
             model.put("disableAddAmendment", study.getAmendment().getReleasedDate());
         }
+
+        model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
+
         return new ModelAndView("template/display", model);
     }
 
@@ -207,6 +213,11 @@ public class DisplayTemplateController extends PscAbstractController {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setNowFactory(NowFactory nowFactory) {
+        this.nowFactory = nowFactory;
     }
 
     private static class Crumb extends DefaultCrumb {

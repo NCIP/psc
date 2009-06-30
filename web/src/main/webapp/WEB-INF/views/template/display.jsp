@@ -8,6 +8,11 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<jsp:useBean id="study" class="edu.northwestern.bioinformatics.studycalendar.domain.Study" scope="request"/>
+<jsp:useBean id="amendment" class="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment" scope="request"/>
+<jsp:useBean id="todayInApi" class="java.lang.String" scope="request"/>
+
 <html>
     <head>
         <title>Template</title>
@@ -710,19 +715,6 @@
                 arrowsHideShowSetup();
             }
 
-            function generateSchedulePreviewRequest() {
-                var date = new Date();
-                var year = date.getFullYear()
-                var day = date.getDate()
-                var month = date.getMonth()+1
-                day = (day < 10 ) ? ("0" + day) : day
-                month = (month < 10) ? ("0" + month): month
-                var start_date =  year+"-" + month+ "-" + day;
-                var data = "?study=" +${study.id}+ "&amendment=" + ${amendment.id}
-                        +"#segment[0]=" +"${studySegment.base.gridId}" +"&start_date[0]=" +start_date;
-                window.location = SC.relativeUri("/pages/cal/template/schedulePreview") + data
-            }
-
             <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", loadFunctionsForDevelopmentRevision)
             </c:if>
@@ -891,7 +883,9 @@
             <div id="schedule-preview" style="margin-left:8px;">
                 <div class="row">
                     <div class="value" style="margin:3px;">
-                        <a class="control" id="schedulePreview" href="#" onclick="generateSchedulePreviewRequest()">Schedule Preview</a>
+                        <a class="control" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
+                            Schedule Preview
+                        </a>
                     </div>
                 </div>
             </div>
