@@ -447,11 +447,11 @@
 <div id="lower-pane">
 
 <laf:box title="Schedule details" id="schedule-box">
+    <div id="loading-shield" class="loading"></div>
+    <div id="loading-text" class="loading">
+        <tags:activityIndicator/> Loading&hellip;
+    </div>
     <div id="schedule">
-        <div id="loading-shield" class="loading"></div>
-        <div id="loading-text" class="loading">
-            <tags:activityIndicator/> Loading&hellip;
-        </div>
         <div id="scheduled-activities"></div>
     </div>
 </laf:box>
