@@ -1,21 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import org.restlet.Context;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.resource.*;
-import org.restlet.data.*;
-import org.springframework.beans.factory.annotation.Required;
-import org.json.JSONObject;
-import org.json.JSONException;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -88,13 +95,13 @@ public class SubjectsResource extends AbstractPscResource {
                 jsonStudySiteInfoObject.put("site", studySubjectAssignemt.getStudySite().getSite().getName());
                 jsonStudySiteInfoObject.put("study", studySubjectAssignemt.getStudySite().getStudy().getName());
                 if (startDate != null){
-                    jsonStudySiteInfoObject.put("start_date", startDate);
+                    jsonStudySiteInfoObject.put("start_date", getApiDateFormat().format(startDate));
                 } else {
                     jsonStudySiteInfoObject.put("start_date", "");
                 }
 
                 if (endDate != null) {
-                    jsonStudySiteInfoObject.put("end_date", endDate);
+                    jsonStudySiteInfoObject.put("end_date", getApiDateFormat().format(endDate));
                 } else {
                     jsonStudySiteInfoObject.put("end_date", "");
                 }
@@ -107,7 +114,7 @@ public class SubjectsResource extends AbstractPscResource {
             jsonSubject.put("last_name", subject.getLastName());
             jsonSubject.put("subject_id", subject.getPersonId());
             if(subject.getDateOfBirth() != null) {
-                jsonSubject.put("date_of_birth", subject.getDateOfBirth());
+                jsonSubject.put("date_of_birth", getApiDateFormat().format(subject.getDateOfBirth()));
             } else {
                 jsonSubject.put("date_of_birth", "");
             }

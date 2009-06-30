@@ -1,10 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.restlet.data.Method.*;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 
 /**
@@ -68,6 +72,26 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertSame(expected, getResource().getCurrentUser());
         // expect no failures on verify
         verifyMocks();
+    }
+
+    public void testApiDateFormatIsCorrect() throws Exception {
+        assertEquals("2009-02-04",
+            getApiDateFormat().format(DateTools.createDate(2009, Calendar.FEBRUARY, 4)));
+    }
+
+    public void testApiDateFormatIsCached() throws Exception {
+        assertSame(getApiDateFormat(), getApiDateFormat());
+    }
+
+    public void testApiDateFormatIsThreadLocal() throws Exception {
+        final DateFormat fromThisThread = getApiDateFormat();
+        final DateFormat[] fromOtherThread = new DateFormat[1];
+        Thread t = new Thread(new Runnable() {
+            public void run() { fromOtherThread[0] = getApiDateFormat(); }
+        });
+        t.join();
+
+        assertNotSame(fromThisThread, fromOtherThread[0]);
     }
 
     public static class TestResource extends AbstractPscResource {

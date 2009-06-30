@@ -43,6 +43,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
 
+    // TODO: tests should be declarative.  Rewrite to avoid using this
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override

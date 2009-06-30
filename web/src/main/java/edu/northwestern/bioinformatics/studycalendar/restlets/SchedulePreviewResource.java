@@ -1,22 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-
-import java.util.*;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
-import org.restlet.Context;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.data.*;
-import org.springframework.beans.factory.annotation.Required;
-import org.json.JSONObject;
-import org.json.JSONException;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Jalpa Patel
@@ -24,8 +37,6 @@ import org.json.JSONArray;
 public class SchedulePreviewResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private AmendedTemplateHelper helper;
     private SubjectService subjectService;
-    private Study study;
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
     @Override
@@ -34,11 +45,11 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-
      }
 
     @Override
     protected ScheduledCalendar loadRequestedObject(Request request) throws ResourceException {
+        Study study;
         try {
             study = helper.getAmendedTemplate();
         } catch (AmendedTemplateHelper.NotFound notFound) {
@@ -61,7 +72,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
                 }
             }
             try {
-                start_dates.add(i,formatter.parse(start_date));
+                start_dates.add(i, getApiDateFormat().parse(start_date));
             }  catch (ParseException pe) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse date " + start_date);
             }
@@ -94,7 +105,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        if (getRequestedObject() != null ) {
+        if (getRequestedObject() != null) {
             if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
                 return createJSONRepresentation(getRequestedObject());
             } else {
@@ -116,13 +127,14 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
                 studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
             }
             for (Date date : activities.keySet()) {
-                 dayWiseActivities.put(new String(formatter.format(date)),
+                 dayWiseActivities.put(getApiDateFormat().format(date),
                                 ScheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
             }
             jsonData.put("days", dayWiseActivities);
             jsonData.put("study_segments", studySegments);
             return new JsonRepresentation(jsonData);
         } catch (JSONException e) {
+            // TODO: this is major bad: swallowing exception
 	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 	    }
     }

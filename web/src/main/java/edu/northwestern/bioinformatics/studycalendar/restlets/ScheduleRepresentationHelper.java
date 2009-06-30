@@ -5,14 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -21,19 +20,11 @@ import java.util.List;
 // TODO: this is split from the Resources that use it along an odd seam -- the two resources still have a
 // bunch of duplicated code related to building the whole object
 public class ScheduleRepresentationHelper {
-    // TODO: The API date format is the same everywhere, so it should be extracted out from here and everywhere
-    private static final ThreadLocal<DateFormat> dayFormatter = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyy-MM-dd");
-        }
-    };
-
     public static JSONObject createJSONStateInfo(ScheduledActivityState state) throws ResourceException{
         try {
             JSONObject stateInfo = new JSONObject();
             stateInfo.put("name", state.getMode().toString());
-            stateInfo.put("date", dayFormatter.get().format(state.getDate()));
+            stateInfo.put("date", getApiDateFormat().format(state.getDate()));
             stateInfo.put("reason", state.getReason());
             return stateInfo;
         } catch (JSONException e) {
@@ -84,7 +75,7 @@ public class ScheduleRepresentationHelper {
             jsonSA.put("study", sa.getScheduledStudySegment().getStudySegment()
                                    .getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier());
             jsonSA.put("study_segment", sa.getScheduledStudySegment().getName());
-            jsonSA.put("ideal_date", dayFormatter.get().format(sa.getIdealDate()));
+            jsonSA.put("ideal_date", getApiDateFormat().format(sa.getIdealDate()));
             jsonSA.put("plan_day", sa.getPlannedActivity().getPlanDay());
             jsonSA.put("current_state", createJSONStateInfo(sa.getCurrentState()));
             jsonSA.put("activity", createJSONActivity(sa.getActivity()));
@@ -123,8 +114,8 @@ public class ScheduleRepresentationHelper {
             JSONObject jsonSegment = new JSONObject();
             jsonSegment.put("name", segment.getName());
             JSONObject jsonRange = new JSONObject();
-            jsonRange.put("start_date", dayFormatter.get().format(segment.getDateRange().getStart()));
-            jsonRange.put("stop_date", dayFormatter.get().format(segment.getDateRange().getStop()));
+            jsonRange.put("start_date", getApiDateFormat().format(segment.getDateRange().getStart()));
+            jsonRange.put("stop_date", getApiDateFormat().format(segment.getDateRange().getStop()));
             jsonSegment.put("range", jsonRange);
             JSONObject jsonPlannedSegmentInfo = new JSONObject();
             JSONObject jsonPlannedSegment = new JSONObject();

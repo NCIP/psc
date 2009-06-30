@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -14,8 +15,9 @@ import org.restlet.resource.StringRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.acegisecurity.Authentication;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +29,10 @@ import java.util.Map;
  */
 public class AbstractPscResource extends Resource implements AuthorizedResource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    private static final ThreadLocal<DateFormat> API_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override protected DateFormat initialValue() { return new SimpleDateFormat("yyyy-MM-dd"); }
+    };
 
     private static final Collection<Role> NO_AUTH = Collections.emptySet();
 
@@ -132,6 +138,10 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         } else {
             clientErrorReason = null;
         }
+    }
+
+    public static DateFormat getApiDateFormat() {
+        return API_DATE_FORMAT.get();
     }
 
     ////// CONFIGURATION

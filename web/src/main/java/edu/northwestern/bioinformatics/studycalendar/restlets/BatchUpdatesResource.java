@@ -1,25 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Context;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.resource.Variant;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.data.*;
-import org.springframework.beans.factory.annotation.Required;
-import org.json.JSONObject;
-import org.json.JSONException;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
 
-import java.util.*;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * @author Jalpa Patel
@@ -27,7 +31,6 @@ import java.text.ParseException;
 public class BatchUpdatesResource extends AbstractPscResource{
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -62,7 +65,7 @@ public class BatchUpdatesResource extends AbstractPscResource{
                         String reason = activityState.get("reason").toString();
                         String dateString = activityState.get("date").toString();
                         try {
-                            Date date = formatter.parse(dateString);
+                            Date date = getApiDateFormat().parse(dateString);
                             ScheduledActivityState scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
                             if (scheduledActivityState == null) {
                                 statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);

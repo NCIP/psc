@@ -1,28 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.data.*;
+import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-import org.restlet.resource.Representation;
 import org.springframework.beans.factory.annotation.Required;
-import org.json.JSONObject;
-import org.json.JSONException;
-import org.json.JSONArray;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -33,8 +40,6 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private SubjectDao subjectDao;
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
-
-    private static final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -90,7 +95,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
             JSONObject dayWiseActivities = new JSONObject();
             for (ScheduleDay scheduleDay : schedule.getDays()) {
                 if (!scheduleDay.getActivities().isEmpty()) {
-                    dayWiseActivities.put(new String(dayFormatter.format(scheduleDay.getDate())),
+                    dayWiseActivities.put(getApiDateFormat().format(scheduleDay.getDate()),
                            ScheduleRepresentationHelper.createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
                 }
             }
