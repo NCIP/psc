@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,11 +66,11 @@ public class BatchUpdatesResource extends AbstractPscResource{
                         String dateString = activityState.get("date").toString();
                         try {
                             Date date = getApiDateFormat().parse(dateString);
-                            ScheduledActivityState scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
-                            if (scheduledActivityState == null) {
+                            ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
+                            if (newMode == null) {
                                 statusMessage = createResponseStatusMessage(Status.CLIENT_ERROR_BAD_REQUEST, "Unknown State: "+state);
                             } else {
-                                scheduledActivity.changeState(scheduledActivityState);
+                                scheduledActivity.changeState(newMode.createStateInstance(date, reason));
                                 String target = store(scheduledActivity);
                                 statusMessage = createResponseStatusMessage(Status.SUCCESS_CREATED, "Activity State Updated");
                                 statusMessage.put("Location",getRequest().getRootRef()+target);

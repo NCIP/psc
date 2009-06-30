@@ -1,11 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Missed;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +50,15 @@ public class ScheduledActivityMode<T extends ScheduledActivityState> extends Abs
         return getById(ScheduledActivityMode.class, id);
     }
 
+    public static ScheduledActivityMode getByName(String name) {
+        for (ScheduledActivityMode mode : values()) {
+            if (name.equalsIgnoreCase(mode.getName())) {
+                return mode;
+            }
+        }
+        return null;
+    }
+
     public T createStateInstance() {
         try {
             return clazz.newInstance();
@@ -50,6 +67,17 @@ public class ScheduledActivityMode<T extends ScheduledActivityState> extends Abs
         } catch (IllegalAccessException e) {
             throw new StudyCalendarSystemException(e);
         }
+    }
+
+    public T createStateInstance(Date date, String reason) {
+        T state = createStateInstance();
+        state.setDate(date);
+        state.setReason(reason);
+        return state;
+    }
+
+    public T createStateInstance(int year, int month, int date, String reason) {
+        return createStateInstance(DateTools.createDate(year, month, date), reason);
     }
 
     public static Collection<ScheduledActivityMode> values() {

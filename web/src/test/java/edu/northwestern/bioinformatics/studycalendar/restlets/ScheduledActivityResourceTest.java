@@ -1,28 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractScheduledActivityStateXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
+import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.resource.InputRepresentation;
 import org.restlet.ext.json.JsonRepresentation;
-import org.json.JSONObject;
+import org.restlet.resource.InputRepresentation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,9 +42,6 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     private Study study;
 
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
-
-    // TODO: tests should be declarative.  Rewrite to avoid using this
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public void setUp() throws Exception {
@@ -75,6 +72,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     protected ScheduledActivityResource createResource() {
         ScheduledActivityResource resource = new ScheduledActivityResource();
         resource.setScheduledActivityDao(scheduledActivityDao);
@@ -178,17 +176,19 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
     public void testPostValidJSONRepresentation() throws Exception {
         expectGetScheduledActivity();
-        JSONObject activityState = createJSONFormatForRequest("canceled", "2008-03-02", "Just Canceled");
-        expectUpdateScheduledActivityState(activityState, new Canceled());
+        setJsonRequestEntity("canceled", "2008-03-02", "Just Canceled");
         scheduledActivityDao.save(scheduledActivity);
         doPost();
 
         assertResponseStatus(Status.SUCCESS_CREATED);
+        assertEquals(ScheduledActivityMode.CANCELED, scheduledActivity.getCurrentState().getMode());
+        assertDayOfDate("Wrong date", 2008, Calendar.MARCH, 2, scheduledActivity.getCurrentState().getDate());
+        assertEquals("Just Canceled", scheduledActivity.getCurrentState().getReason());
     }
 
     public void testPostInvalidDateJSONRepresentation() throws Exception {
         expectGetScheduledActivity();
-        createJSONFormatForRequest("canceled", "2008", "Just Canceled");
+        setJsonRequestEntity("canceled", "2008", "Just Canceled");
         doPost();
 
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -196,24 +196,19 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
     public void testPostInvalidState() throws Exception {
         expectGetScheduledActivity();
-        JSONObject activityState = createJSONFormatForRequest("canceledd", "2008-03-02", "Just Canceled");
-        expectUpdateScheduledActivityState(activityState,null);
+        setJsonRequestEntity("canceledd", "2008-03-02", "Just Canceled");
         doPost();
 
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
-    private void expectUpdateScheduledActivityState(JSONObject object, ScheduledActivityState state) throws Exception {
-        expect(scheduleService.createScheduledActivityState(object.get("state").toString(), formatter.parse(object.get("date").toString()) ,object.get("reason").toString()))
-                .andReturn(state);
-    }
 
-    private JSONObject createJSONFormatForRequest(String state, String date, String reason) throws Exception {
+    private JSONObject setJsonRequestEntity(String state, String date, String reason) throws Exception {
         JSONObject entity  = new JSONObject();
         JSONObject activityState = new JSONObject();
         activityState.put("reason", reason);
         activityState.put("state", state);
         activityState.put("date", date);
-        entity.put(scheduledActivity.getGridId(),activityState);
+        entity.put(scheduledActivity.getGridId(), activityState);
         request.setEntity(new JsonRepresentation(entity));
         return activityState;
     }

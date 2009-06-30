@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
@@ -32,7 +33,6 @@ import java.util.Date;
  */
 public class ScheduledActivityResource extends AbstractDomainObjectResource<ScheduledActivity> {
     private ScheduledActivityDao scheduledActivityDao;
-    private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduleService scheduleService;
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateXmlSerializer;
 
@@ -80,10 +80,10 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
      */
     @Override
     public void acceptRepresentation(final Representation representation) throws ResourceException {
-        ScheduledActivityState scheduledActivityState;
+        ScheduledActivityState newState = null;
         if (representation.getMediaType() == MediaType.TEXT_XML) {
             try {
-                scheduledActivityState = currentScheduledActivityStateXmlSerializer.readDocument(representation.getStream());
+                newState = currentScheduledActivityStateXmlSerializer.readDocument(representation.getStream());
             } catch (IOException e) {
                 log.warn("POST failed with IOException", e);
                 throw new ResourceException(e);
@@ -91,17 +91,22 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
         } else if (representation.getMediaType().isCompatible(MediaType.APPLICATION_JSON)) {
+            // TODO: this code is shared with the batch update resource
             try {
                 JSONObject entity = new JSONObject(representation.getText());
                 JSONObject activityState = (JSONObject)(entity.get(getRequestedObject().getGridId()));
                 String state = activityState.get("state").toString();
                 String reason = activityState.get("reason").toString();
                 String dateString = activityState.get("date").toString();
-                try {
-                    Date date = getApiDateFormat().parse(dateString);
-                    scheduledActivityState = scheduleService.createScheduledActivityState(state, date, reason);
-                } catch (ParseException pe) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Problem parsing date " +dateString);
+                ScheduledActivityMode newMode = ScheduledActivityMode.getByName(state);
+                if (newMode != null) {
+                    Date date;
+                    try {
+                        date = getApiDateFormat().parse(dateString);
+                    } catch (ParseException pe) {
+                        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Problem parsing date " + dateString);
+                    }
+                    newState = newMode.createStateInstance(date, reason);
                 }
             } catch (JSONException e) {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unparseable entity", e);
@@ -113,10 +118,10 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
                 Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + representation.getMediaType());
         }
 
-        if (scheduledActivityState == null) {
+        if (newState == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request entity");
         } else {
-            getRequestedObject().changeState(scheduledActivityState);
+            getRequestedObject().changeState(newState);
             scheduledActivityDao.save(getRequestedObject());
             getResponse().setStatus(Status.SUCCESS_CREATED);
             getResponse().setLocationRef(getRequest().getOriginalRef());
@@ -127,7 +132,7 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
 
     @Required
     public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
-        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+        StudySubjectAssignmentDao studySubjectAssignmentDao1 = studySubjectAssignmentDao;
     }
 
     @Required
