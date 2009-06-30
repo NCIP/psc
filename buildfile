@@ -70,7 +70,7 @@ define "psc" do
     desc "Psc own implementations for the da-launcher"
     define "da-launcher" do
       project.version = "1.1.1"
-      compile.with PSC_DA_LAUNCHER, OSGI, FELIX, EQUINOX, KNOPFLERFISH, GLOBUS.servlet
+      compile.with PSC_DA_LAUNCHER, OSGI, FELIX, EQUINOX, KNOPFLERFISH, CONTAINER_PROVIDED
       package(:jar)
       package(:sources)
     end
@@ -89,7 +89,7 @@ define "psc" do
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
-      SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE
+      SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE, HIBERNATE_ANNOTATIONS
     test.with(UNIT_TESTING)
 
     package(:jar)
@@ -104,7 +104,7 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end    
     compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS, 
-      CTMS_COMMONS.core, JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE
+      CTMS_COMMONS.core, JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
@@ -394,18 +394,18 @@ define "psc" do
       felix_main = artifact(FELIX.main)
       equinox_main = artifact(EQUINOX.osgi)
 
-      if true # knopflerfish?
-        system_optional = [FELIX.shell_remote, KNOPFLERFISH.consoletelnet]
-        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
-        osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
-      elsif false # felix?
+      if true # felix?
         system_optional = [FELIX.shell_remote]
-        system_bundles = FELIX.values - [FELIX.main] - system_optional
+        system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional
         osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
-      else
+      elsif false # equinox?
         system_optional = [FELIX.shell_remote]
         system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional + [FELIX.shell]
         osgi_framework = { "osgi-framework/equinox/#{equinox_main.version.split('.')[0 .. 2].join('.')}" => [equinox_main] }
+      else
+        system_optional = [FELIX.shell_remote, KNOPFLERFISH.consoletelnet]
+        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
+        osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
       end
       
       system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } + 
@@ -417,12 +417,12 @@ define "psc" do
       application_optional = 
         bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
       application_infrastructure = 
-        [ SPRING_OSGI.extender, GLOBUS.core, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
+        [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
-        reject { |a| a.to_s =~ /osgi_R4/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - application_bundles - application_infrastructure
+        reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
+        system_bundles - application_bundles - application_infrastructure - [FELIX.shell]
 
       task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
@@ -462,7 +462,7 @@ define "psc" do
       end
     end
     
-    compile.with project('utility:da-launcher').and_dependencies, OSGI
+    compile.with project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main
     
     desc "Advertises host-configured services to the OSGi layer"
     define "host-services" do
@@ -504,7 +504,7 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher').and_dependencies
+      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), FELIX.main, DYNAMIC_JAVA.osgi_commons
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,

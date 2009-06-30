@@ -149,7 +149,7 @@ STAX_API = artifact("org.dynamicjava.jsr:stax-api:jar:1.0.1").
 
 HIBERNATE = struct(
   :main => "org.hibernate:com.springsource.org.hibernate:jar:3.3.1.GA",
-  :annotations => "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
+  #:annotations => "org.hibernate:com.springsource.org.hibernate.annotations:jar:3.4.0.GA",
   :annotations_common => "org.hibernate:com.springsource.org.hibernate.annotations.common:jar:3.3.0.ga",
   :antlr => "org.antlr:com.springsource.antlr:jar:2.7.7",
   :c3p0 => "com.mchange.c3p0:com.springsource.com.mchange.v2.c3p0:jar:0.9.1.2",
@@ -161,6 +161,8 @@ HIBERNATE = struct(
   :stax => STAX_API,
   :jgroups => "org.jgroups:com.springsource.org.jgroups:jar:2.5.1"
 )
+
+HIBERNATE_ANNOTATIONS = artifact("org.hibernate:edu.northwestern.bioinformatics.hibernate.annotations:jar:3.4.0.GA").from(static_lib('edu.northwestern.bioinformatics.hibernate.annotations-3.4.0.GA.jar'))
 
 EHCACHE = struct(
   :ehcache => "net.sourceforge.ehcache:com.springsource.net.sf.ehcache:jar:1.5.0",
@@ -330,8 +332,8 @@ CONTAINER_PROVIDED = [
 ]
 
 OSGI = struct(
-  :core => 'org.osgi:osgi_R4_core:jar:1.0',
-  :compendium => 'org.osgi:osgi_R4_compendium:jar:1.0'
+  :core => 'org.apache.felix:org.osgi.core:jar:1.2.0',
+  :compendium => 'org.apache.felix:org.osgi.compendium:jar:1.2.0'
 )
 
 KNOPFLERFISH = struct(
@@ -343,7 +345,7 @@ KNOPFLERFISH = struct(
 )
 
 FELIX = struct(
-  Dir[static_lib('felix-1.2.1/*.jar')].inject({}) do |map, jar|
+  Dir[static_lib('felix-1.8.0/*.jar')].inject({}) do |map, jar|
     group, name, version = jar.scan(%r{.*/(org.apache.felix)\.([\w\.]+)-([\d\.]+)\.jar$}).first
     map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
     map

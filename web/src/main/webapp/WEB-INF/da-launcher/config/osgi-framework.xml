@@ -11,8 +11,8 @@
 	in the '/osgi-framework/about.txt' file.
 	-->
     <!-- <framework name="equinox" version="3.4.0" /> -->
-    <!-- <framework name="felix" version="1.4.1" /> -->
-    <framework name="knopflerfish" version="2.2.0" />
+     <framework name="felix" version="1.8.0" />
+    <!--<framework name="knopflerfish" version="2.2.0" />-->
 	
 	<!-- Defines Framework specific properties that will be passed to the Framework when starting it. (e.g., 'felix.log.level', 'osgi.context.bootdelegation', etc.) -->
 	<framework-properties>
