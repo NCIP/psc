@@ -12,7 +12,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
                 <ref bean="httpSessionContextIntegrationFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
-                <ref bean="securityContextHolderAwareRequestFilter"/>
+                <ref bean="requestAuthenticationSocket"/>
                 <ref bean="exceptionTranslationFilter"/>
                 <ref bean="filterInvocationInterceptor"/>
             </list>
@@ -65,9 +65,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </bean>
         </property>
     </bean>
-
-    <bean id="securityContextHolderAwareRequestFilter"
-          class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter"/>
+                                        
+    <bean id="requestAuthenticationSocket"
+          class="edu.northwestern.bioinformatics.studycalendar.security.internal.RequestAuthenticationSocket"/>
 
     <bean id="anonymousProcessingFilter"
           class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
