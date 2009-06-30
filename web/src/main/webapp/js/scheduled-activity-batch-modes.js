@@ -15,7 +15,7 @@ function registerBatchRescheduleHandlers() {
 }
 
 function registerCheckAllEvents() {
-    Event.observe('check-all-events', "click", function(event){console.log("======== check all? "); $('batch-form').checkCheckboxes('event');Event.stop(event);})
+    Event.observe('check-all-events', "click", function(event){$('batch-form').checkCheckboxes('event');Event.stop(event);})
 }
 
 function registerUncheckAllEvents() {
@@ -25,14 +25,14 @@ function registerUncheckAllEvents() {
 function registerCheckAllConditionalEvents() {
     Event.observe('check-all-conditional-events', "click", function(event){
         $('batch-form').uncheckCheckboxes('event');Event.stop(event);
-        $('batch-form').checkCheckboxes('conditional-event');Event.stop(event);
+        $('batch-form').checkCheckboxes('conditional');Event.stop(event);
     })
 }
 
 function registerCheckAllPastDueEvents() {
     Event.observe('check-all-past-due-events', "click", function(event){
         $('batch-form').uncheckCheckboxes('event');Event.stop(event);
-        $('batch-form').checkCheckboxes('past-due-event');Event.stop(event);
+        $('batch-form').checkCheckboxes('past-due');Event.stop(event);
     })
 }
 

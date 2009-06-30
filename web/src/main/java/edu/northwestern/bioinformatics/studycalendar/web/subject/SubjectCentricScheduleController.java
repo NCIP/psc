@@ -56,7 +56,7 @@ public class SubjectCentricScheduleController extends PscAbstractController {
 
         ModelMap model = new ModelMap("schedule", schedule);
         model.addObject(subject);
-
+        model.addAttribute("schedulePreview", false);
         return new ModelAndView("subject/schedule", model);
     }
 

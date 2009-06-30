@@ -209,6 +209,10 @@
             margin-top:1em;"
         }
 
+        div.accordionRow a {
+            color: #0000CC;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -217,8 +221,8 @@
         });
 
         function shiftDateByNumberOfDays(dateToShiftInMilliseconds, numberOfDaysToShift) {
-            var shiftedDate1 = new Date(psc.tools.Dates.incrementDecrementDate(dateToShiftInMilliseconds, numberOfDaysToShift))
-            return psc.tools.Dates.utcToApiDate(shiftedDate1)
+            var shiftedDate = new Date(psc.tools.Dates.incrementDecrementDate(dateToShiftInMilliseconds, numberOfDaysToShift))
+            return psc.tools.Dates.utcToApiDate(shiftedDate)
         }
 
         function executeDelayAdvancePost() {
@@ -264,7 +268,7 @@
                 toDate = $$("#move_date_by_new-date-input-group input")[0].value;
             } if (newModeSelector == "markAsScheduled") {
                 state = "scheduled";
-                toDate = $$("#move_date_by_new-date-input-group input")[0].value;
+                toDate = $$("#new-date-input-group input")[0].value;
                 reason = $$('#new-reason-input-group input')[0].value;
             } if (newModeSelector == "markAsOccurred") {
                 state = "occurred";
@@ -278,13 +282,13 @@
             var mapOfParameters = {};
             var events = $$('.event')
             var checkedEvents = events.select(function(e) { return e.checked })
-
             var isStateEmpty= (state == "");
             for (var i = 0; i< checkedEvents.length; i++ ){
                 if (isStateEmpty) {
-                    state = $$('.event')[2].up('li').className.toLowerCase()
+                    state = checkedEvents[i].className.split(' ')[2]
                 }
-                var date = checkedEvents[i].up('.day').down('h3').innerHTML
+                var date = checkedEvents[i].up('.day').down('h3').innerHTML;
+                date = date.match(/\d{4}-\d{2}-\d{2}/).toString()
                 var activityKey = checkedEvents[i].value
                 var dateInDateFormat = psc.tools.Dates.apiDateToUtc(date)
                 var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
@@ -408,7 +412,7 @@
         <li class="[#= stateClasses() #]">
             <label>
                 [# if (hasId()) { #]
-                  <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="[#= stateClasses() #]"/>
+                  <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
@@ -452,7 +456,9 @@
         <tags:activityIndicator/> Loading&hellip;
     </div>
     <div id="schedule">
-        <div id="scheduled-activities"></div>
+        <form id="batch-form" style="font-weight:normal;">
+            <div id="scheduled-activities"></div>
+        </form>
     </div>
 </laf:box>
 
