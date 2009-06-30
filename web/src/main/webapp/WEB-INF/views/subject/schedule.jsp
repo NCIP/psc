@@ -6,9 +6,11 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <tags:escapedUrl var="collectionResource" value="api~v1~schedules~${subject.gridId}~batchUpdate"/>
+
+<jsp:useBean id="schedulePreview" type="java.lang.Boolean" scope="request"/>
 
 <html>
 <head>
@@ -41,8 +43,21 @@
 
     <c:choose>
         <c:when test="${schedulePreview}">
-            <tags:javascriptLink name="schedule-preview/schedule-preview"/>
-            <tags:escapedUrl var="previewResource" value="api~v1~studies~${study.assignedIdentifier}~template~${amendmentIdentifier}~schedulePreview.json" />
+            <jsp:useBean id="study" type="edu.northwestern.bioinformatics.studycalendar.domain.Study" scope="request"/>
+            <jsp:useBean id="amendmentIdentifier" type="java.lang.String" scope="request"/>
+
+            <tags:javascriptLink name="jquery/jquery.query"/>
+            <tags:javascriptLink name="schedule-preview/parameters"/>
+            <tags:javascriptLink name="schedule-preview/wiring"/>
+
+            <tags:escapedUrl var="previewResource" value="api~v1~studies~${study.assignedIdentifier}~template~${amendmentIdentifier}~schedule-preview.json" />
+            <script type="text/javascript">
+                psc.subject.ScheduleData.uriGenerator(function () {
+                    console.log(psc.schedule.preview.Parameters.toQueryString());
+                    console.log("${previewResource}");
+                    return "${previewResource}" + psc.schedule.preview.Parameters.toQueryString();
+                });
+            </script>
         </c:when>
         <c:otherwise>
             <%-- TODO: reenable when the content is updated to work with the new page
@@ -400,11 +415,17 @@
     <tags:resigTemplate id="list_day_sa_entry">
         <li class="[#= stateClasses() #]">
             <label>
-                <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="[#= stateClasses() #]"/>
+                [# if (hasId()) { #]
+                  <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="[#= stateClasses() #]"/>
+                [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
                 <span title="Segment" class="segment">[#= study_segment #]</span> /
-                <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>
+                [# if (hasId()) { #]
+                  <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>
+                [# } else { #]
+                  [#= activity.name #]
+                [# } #]
             </label>
         </li>
     </tags:resigTemplate>

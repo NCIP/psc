@@ -52,7 +52,7 @@ public class SchedulePreviewController  extends PscAbstractController {
         }
 
         model.put("study",study);
-        model.put("schedulePreview","true");
+        model.put("schedulePreview", true);
         return new ModelAndView("subject/schedule", model);
     }
 

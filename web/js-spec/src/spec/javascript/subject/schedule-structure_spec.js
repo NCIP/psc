@@ -37,7 +37,8 @@ Screw.Unit(function () {
               "name": "Activity O",
               "type": "Other"
             },
-            "study_segment": "Treatment: A"
+            "study_segment": "Treatment: A",
+            "id": "foo"
           },
           {
             "current_state": {
@@ -189,6 +190,16 @@ Screw.Unit(function () {
 
         it("is false for other days", function () {
           expect(sched.days["2008-04-25"].activities[0].isToday()).to(equal, false)
+        });
+      });
+      
+      describe("hasId()", function () {
+        it("is true when it does", function () {
+          expect(sched.days['2008-04-25'].activities[0].hasId()).to(be_true)
+        });
+
+        it("is false when it doesn't", function () {
+          expect(sched.days['2008-04-25'].activities[1].hasId()).to(be_false)
         });
       });
       

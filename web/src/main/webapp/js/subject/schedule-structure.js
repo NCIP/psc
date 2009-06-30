@@ -54,6 +54,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       
       isToday: function () {
         return psc.subject.isToday(this.currentDate());
+      },
+      
+      hasId: function () {
+        return sa.id !== undefined;
       }
     });
   }
