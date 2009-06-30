@@ -203,6 +203,41 @@
                             <representation href="#study-snapshot-xml"/>
                         </response>
                     </method>
+                    
+                    <resource path="schedule-preview">
+                        <doc>
+                            <html:p>
+                                Build a John Doe schedule from the template at the specified revision.
+                                This template will not be persisted, but rather is to provide a preview
+                                of what a schedule could look like (hence the name).
+                            </html:p>
+                            <html:p>
+                                In particular, note that this resource is available for an unreleased
+                                template.  This allows the user to see what a schedule for a template
+                                would look like before going through the release and approval process.
+                            </html:p>
+                        </doc>
+                        <method name="GET">
+                            <param name="segment[n]" style="query">
+                                <doc>
+                                    The identifier for one of the study segments to be included in the preview.
+                                    <html:code>n</html:code> may be any value, so long as there's a 
+                                    corresponding <html:code>start-date</html:code>.  At least one 
+                                    <html:code>segment</html:code>/<html:code>start-date</html:code>
+                                    pair is required.
+                                </doc>
+                            </param>
+                            <param name="start-date[n]" style="query">
+                                <doc>
+                                    The start date for segment <html:code>n</html:code>.
+                                </doc>
+                            </param>
+                            <response>
+                                <representation href="#schedule-xml"/>
+                                <representation mediaType="application/json"/>
+                            </response>
+                        </method>
+                    </resource>
 
                     <resource path="epochs/{epoch-name}/study-segments/{segment-name}/periods/{period-identifier}/planned-activities">
                         <doc>
@@ -421,6 +456,7 @@
                     <doc>Retrieve the full schedule for the assignment.</doc>
                     <response>
                         <representation href="#schedule-xml"/>
+                        <representation mediaType="application/json"/>
                     </response>
                 </method>
                 <method name="POST">

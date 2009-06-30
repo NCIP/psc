@@ -34,7 +34,6 @@
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
-
     <bean name="/studies"
           id="studiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
@@ -60,7 +59,7 @@
         <property name="xmlSerializer" ref="studySnapshotXmlSerializer"/>
     </bean>
 
-    <bean name="/studies/{study-identifier}/template/{amendment-identifier}/schedulePreview"
+    <bean name="/studies/{study-identifier}/template/{amendment-identifier}/schedule-preview"
           id="schedulePreviewResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SchedulePreviewResource">
         <property name="xmlSerializer" ref="scheduledCalendarXmlSerializer"/>
@@ -108,7 +107,6 @@
         <property name="xmlSerializer" ref="labelXmlSerializer"/>
     </bean>
 
-
     <bean name="/subjects"
           id="subjectsResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectsResource"
@@ -154,8 +152,8 @@
         <property name="currentScheduledActivityStateXmlSerializer" ref="currentScheduledActivityStateXmlSerializer"/>
     </bean>
 
-
     <!-- SITE -->
+
     <bean name="/sites/{site-identifier}"
           id="siteResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SiteResource"
