@@ -1,4 +1,9 @@
 require_spec("spec_helper.js");
+
+if (psc.test.envjs()) {
+  print("SKIPPING async-updater_spec until I make env.js's setTimeout behavior non-pathological");
+} else {
+
 require_main("psc-tools/async-updater.js");
 
 (function ($) {
@@ -66,3 +71,4 @@ require_main("psc-tools/async-updater.js");
   });  
 }(jQuery))
 
+} // end env detect
