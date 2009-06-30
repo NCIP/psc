@@ -72,6 +72,20 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>BeansInRequestFilter</filter-name>
+        <filter-class>gov.nih.nci.cabig.ctms.web.filters.BeansInRequestFilter</filter-class>
+        <init-param>
+            <param-name>beanNames</param-name>
+            <param-value>configuration, buildInfo</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>BeansInRequestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
         <filter-name>Installed authentication system</filter-name>
         <filter-class>
             org.acegisecurity.util.FilterToBeanProxy
@@ -163,20 +177,6 @@
     <filter-mapping>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <url-pattern>/setup/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>BeansInRequestFilter</filter-name>
-        <filter-class>gov.nih.nci.cabig.ctms.web.filters.BeansInRequestFilter</filter-class>
-        <init-param>
-            <param-name>beanNames</param-name>
-            <param-value>configuration, buildInfo</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>BeansInRequestFilter</filter-name>
-        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
