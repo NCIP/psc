@@ -28,6 +28,14 @@ psc.tools.Dates = (function () {
          '/'+jsDate.getUTCFullYear()
     },
 
+    apiDateToDisplayDate: function (apiDate) {
+      return this.utcToDisplayDate(this.apiDateToUtc(apiDate));
+    },
+
+    displayDateToApiDate: function (displayDate) {
+      return this.utcToApiDate(this.displayDateToUtc(displayDate));
+    },
+
     startOfUtcDay: function (d) {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY);
     },

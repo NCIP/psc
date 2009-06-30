@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>psc.schedule.preview.Controls | JavaScript Testing Results</title>
+  <link rel="stylesheet" href="/screw.css" type="text/css" charset="utf-8" />
+  
+  <!-- this template must be kept in sync with the one in schedule.jsp -->
+  <script type="text/html" id="preview_segment_entry">
+    <li class="preview-segment preview-segment-[#= id #] [#= name ? 'known' : 'unknown' #]">
+        <div class="segment-name">[#= name ? name : "Unknown" #]</div>
+        <div class="segment-date">Starting <span class="date">[#= start_date #]</span></div>
+        <div class="remove control"><input type="button" value="Remove"/></div>
+    </li>
+  </script>
+  
+  <script type="text/javascript">
+    window.location.hash = 'cleared'; // ensure that the hash doesn't contain anything in particular on test start
+  </script>
+  <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
+</head>
+
+<body>
+  <!-- Put any HTML fixture elements here. -->
+  <div id="schedule"></div>
+  
+  <div id="schedule-preview-controls">
+      <ul id="preview-segments">
+          <li id="next-segment">
+              <h4>Preview another segment?</h4>
+              <div class="segment-name">
+                  <select id="preview-segment-selector">
+                      <option value="GRID-A">Treatment: A</option>
+                      <option value="GRID-B">Treatment: B</option>
+                      <option value="GRID-FU">Follow up</option>
+                  </select>
+              </div>
+              <div class="segment-date">
+                  Starting <input id="next-segment-date" class="date" type="text"/>
+              </div>
+              <div class="add control"><input id="add-button" type="button" value="Add"/></div>
+          </li>
+      </ul>
+
+      <div id="refresh-preview-control">
+          <span class="notice">When you're done making changes&hellip;</span>
+          <input id="refresh-preview" type="button" value="Refresh preview"/>
+      </div>
+  </div>
+</body>
+</html>

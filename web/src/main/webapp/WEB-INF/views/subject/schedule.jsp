@@ -46,15 +46,15 @@
             <jsp:useBean id="study" type="edu.northwestern.bioinformatics.studycalendar.domain.Study" scope="request"/>
             <jsp:useBean id="amendmentIdentifier" type="java.lang.String" scope="request"/>
 
+            <tags:sassLink name="schedule-preview"/>
             <tags:javascriptLink name="jquery/jquery.query"/>
             <tags:javascriptLink name="schedule-preview/parameters"/>
+            <tags:javascriptLink name="schedule-preview/controls"/>
             <tags:javascriptLink name="schedule-preview/wiring"/>
 
             <tags:escapedUrl var="previewResource" value="api~v1~studies~${study.assignedIdentifier}~template~${amendmentIdentifier}~schedule-preview.json" />
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
-                    console.log(psc.schedule.preview.Parameters.toQueryString());
-                    console.log("${previewResource}");
                     return "${previewResource}" + psc.schedule.preview.Parameters.toQueryString();
                 });
             </script>
@@ -207,14 +207,6 @@
        .alignStudySegmentButtonInTheMiddle {
             font-size:9pt;
             margin-top:1em;"
-        }
-
-        div.previewRow{
-            float:left;
-            vertical-align:middle;
-            width:100%;
-            padding: 2px;
-            margin: 1px 0;
         }
 
     </style>
@@ -429,6 +421,16 @@
             </label>
         </li>
     </tags:resigTemplate>
+
+    <c:if test="${schedulePreview}">
+        <tags:resigTemplate id="preview_segment_entry">
+            <li id="preview-segment-[#= id #]" class="preview-segment [#= name ? 'known' : 'unknown' #]">
+                <div class="segment-name">[#= name ? name : "Unknown" #]</div>
+                <div class="segment-date">Starting <span class="date">[#= start_date #]</span></div>
+                <div class="remove control"><input type="button" value="Remove"/></div>
+            </li>
+        </tags:resigTemplate>
+    </c:if>
 </head>
 <body>
 <div id="schedule-timeline"></div>
@@ -549,36 +551,31 @@
      </c:if>
      <c:if test="${schedulePreview}">
         <div class="accordionDiv" id="accordianHeader-5">
-        <h3><a class="accordionA" href="#">Reschedule Preview</a></h3>
+        <h3><a class="accordionA" href="#">Preview study segments</a></h3>
         </div>
-        <div class="schedulePreview">
-            <div class="previewRow">
-                <label class="label">Start date</label>
-                <input id="previewStartDate" size="10" class="date"/>
-                <a href="#" id="previewStartDate-calbutton">
-                    <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0"/>
-                </a>
-            </div>
-            <div class="previewRow">
-                <select id="studySegmentPreviewSelector" class="studySegmentPreviewSelector">
-                    <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
-                        <c:forEach items="${epoch.studySegments}" var="studySegment">
-                            <option value="${studySegment.gridId}_${epoch.name}:${studySegment.name}_${studySegment.lengthInDays}">${epoch.name}:${studySegment.name}</option>
-                        </c:forEach>
-                    </c:forEach>
-                </select>
-            </div>
-            <div class="previewRow">
-                <input id="addToSelectedStudySegments" class = "control" type="button"
-                               name="addToSelectedStudySegments" value="Add" />
-                 <input id="removeSelectedStudySegments" class = "control" type="button" value="Remove"/>
-            </div>
-            <div class="previewRow">
-                <select class="selectedStudySegments" id="selectedStudySegments" size="5" style="width:100%"></select>
-            </div>
-            <div class="previewRow">
-                <input id="generateSchedulePreview" class = "control" type="button"
-                               name="generateSchedulePreview" value="Schedule Preview"/>
+        <div id="schedule-preview-controls">
+            <ul id="preview-segments">
+                <li id="next-segment">
+                    <h4>Preview another segment?</h4>
+                    <div class="segment-name">
+                        <select id="preview-segment-selector">
+                            <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
+                                <c:forEach items="${epoch.studySegments}" var="studySegment">
+                                    <option value="${studySegment.gridId}">${studySegment.qualifiedName}</option>
+                                </c:forEach>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="segment-date">
+                        Starting <laf:dateInput path="next-segment-date" local="true"/>
+                    </div>
+                    <div class="add control"><input type="button" value="Add" id="add-button"/></div>
+                </li>
+            </ul>
+
+            <div id="refresh-preview-control">
+                <span class="notice">When you're done making changes&hellip;</span>
+                <input id="refresh-preview" type="button" value="Refresh preview"/>
             </div>
         </div>
      </c:if>

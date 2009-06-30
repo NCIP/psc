@@ -3,11 +3,6 @@
  * single-subject schedule page.
  */
 
-(function ($) {
-  // for parameters
-  
-  $(window).load(function () {
-    psc.schedule.preview.Parameters.init(window.location.hash);
-  });
-
-}(jQuery));
+jQuery(window).load(function () {
+  psc.schedule.preview.Controls.init(window.location.hash);
+});

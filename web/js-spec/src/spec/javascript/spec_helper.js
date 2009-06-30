@@ -2,6 +2,12 @@ jQuery.noConflict();
 require_main("prototype.js");
 require_main("common.js");
 
+psc.namespace("test");
+
+psc.test.envjs = function () {
+  return navigator.userAgent.indexOf('EnvJS') >= 0;
+};
+
 (function ($) {
   Screw.Matchers["raise"] = {
     match: function (expected, actual) {

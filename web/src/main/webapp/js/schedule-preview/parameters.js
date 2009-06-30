@@ -5,10 +5,10 @@ psc.schedule.preview.Parameters = (function ($) {
   var query = null;
   var pending = false;
 
-  function findKey(obj, desired) {
+  function findPairKey(pair) {
     var found;
-    $.each(obj, function (prop, val) {
-      if (val == desired) {
+    $.each(query.get('segment'), function (prop, val) {
+      if (val == pair.segment && query.get('start_date[' + prop + ']') === pair.start_date) {
         found = prop;
         return false;
       }
@@ -24,7 +24,7 @@ psc.schedule.preview.Parameters = (function ($) {
       }
     });
     intKeys.sort();
-    return (intKeys.pop() || -1) + 1;
+    return (intKeys.pop() || 0) + 1;
   }
 
   return {
@@ -54,8 +54,8 @@ psc.schedule.preview.Parameters = (function ($) {
       pending = true;
     },
 
-    remove: function(segmentIdent) {
-      var key = findKey(query.get('segment'), segmentIdent);
+    remove: function(pair) {
+      var key = findPairKey(pair);
       if (key) {
         query.REMOVE('segment[' + key + ']');
         query.REMOVE('start_date[' + key + ']');
@@ -65,11 +65,6 @@ psc.schedule.preview.Parameters = (function ($) {
 
     pending: function() {
       return pending;
-    },
-
-    dateForSegment: function (segmentIdent) {
-      var key = findKey(query.get('segment'), segmentIdent);
-      return query.get('start_date')[key];
     },
 
     requestedSegments: function () {

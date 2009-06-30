@@ -3,30 +3,36 @@ require_main("psc-tools/misc.js");
 
 Screw.Unit(function () {
   describe("Dates", function () {
-    describe("api date conversion", function () {
+    describe("conversion", function () {
       it("converts 2009-05-01 to a UTC date", function () {
         expect(psc.tools.Dates.apiDateToUtc("2009-05-01")).to(
           equal_utc_date, new Date(Date.UTC(2009, 4, 1)));
       });
 
-      it("converts display date 2009-06-23 to a UTC date", function () {
-        expect(psc.tools.Dates.displayDateToUtc("06/23/2009").getUTCDate()).to(
-          equal, 23);
+      it("converts display date 06/23/2009 to a UTC date", function () {
+        expect(psc.tools.Dates.displayDateToUtc("06/23/2009")).to(
+          equal_utc_date, new Date(Date.UTC(2009, 5, 23)));
       });
       
-      it("converts a js date to the appropriate string", function () {
+      it("converts a UTC date to an API date", function () {
         expect(psc.tools.Dates.utcToApiDate(new Date(Date.UTC(2009, 3, 9)))).to(
           equal, "2009-04-09");
       });
 
-      it("converts a utc date to a display date", function () {
+      it("converts a UTC date to a display date", function () {
         expect(psc.tools.Dates.utcToDisplayDate(new Date(Date.UTC(2009, 4, 5)))).to(
           equal, "05/05/2009");
       });
+      
+      it("converts a display date 11/23/2003 to the API date 2003-11-23", function () {
+        expect(psc.tools.Dates.displayDateToApiDate("11/23/2003")).to(equal, "2003-11-23");
+      })
+      
+      it("converts an API date 2005-11-03 to the display date 11/03/2005", function () {
+        expect(psc.tools.Dates.apiDateToDisplayDate("2005-11-03")).to(equal, "11/03/2005");
+      })
     });
 
-
-    
     describe("day manipulation", function () {
       it("gives the UTC midnight instant for 2009-05-03 22:11:13", function () {
         expect(psc.tools.Dates.startOfUtcDay(new Date(Date.UTC(2009, 4, 3, 22, 11, 13)))).to(
