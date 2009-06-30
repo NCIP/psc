@@ -27,7 +27,7 @@ describe TemplateBuilder do
     it "gives you a study" do
       @study.assigned_identifier.should == "NU 04B8"
     end
-    
+
     it "gives you a saved study" do
       @study.getId.should_not be_nil # use getId b/c id is in Ruby's Object
       @study.grid_id.should_not be_nil
@@ -156,12 +156,158 @@ describe TemplateBuilder do
           it "has the requested repetitions" do
             @period.repetitions.should == 4
           end
-          
+
           it "has the requested activities" do
             @period.planned_activities.size.should == 2
           end
         end
       end
     end
+  end
+
+  describe "#update_study" do
+    before do
+      @nu481 = create_study "NU481" do |s|
+        s.planned_calendar do |cal|
+          cal.epoch "Treatment" do |e|
+            e.study_segment "A"
+            e.study_segment "B"
+          end
+          cal.epoch "Follow up"
+        end
+      end
+    end
+
+    describe ":development" do
+      def first_delta
+        @nu481.development_amendment.deltas.first
+      end
+
+      def first_change
+        first_delta.changes.first
+      end
+
+      before do
+        @nu481.development_amendment.should be_nil
+      end
+
+      describe "with an epoch" do
+        before do
+          update_study @nu481, :development do |s|
+            s.add_epoch "LTFU"
+          end
+        end
+
+        it "has a PC delta" do
+          first_delta.node.should == @nu481.planned_calendar
+        end
+
+        describe "the sole change" do
+          it "is an add" do
+            first_change.action.code.should == 'add'
+          end
+
+          it "has the right name" do
+            first_change.child.name.should == 'LTFU'
+          end
+        end
+      end
+
+      describe "with a study segment" do
+        def add(name, opts=nil)
+          update_study @nu481, :development do |s|
+            s.add_study_segment name, opts
+          end
+        end
+
+        it "fails without in" do
+          lambda { add("C") }.should raise_error("Please specify the name of the target epoch.  E.g. :in => 'Treatment'.")
+        end
+
+        describe "and correct options" do
+          before { add("C", :in => "Treatment") }
+
+          it "adds to the correct epoch" do
+            first_delta.node.should == @nu481.planned_calendar.epochs.first
+          end
+
+          it "uses the correct name" do
+            first_change.child.name.should == "C"
+          end
+        end
+      end
+
+      describe "with a period" do
+        def add(name, opts=nil)
+          update_study @nu481, :development do |s|
+            s.add_period name, opts
+          end
+        end
+
+        it "fails without in" do
+          lambda { add("P1") }.should raise_error("Please specify the name of the target study segment.  E.g. :in => 'Treatment: B'.")
+        end
+
+        describe "and minimum options" do
+          before { add("P1", :in => "Treatment: B") }
+
+          it "adds to the correct segment" do
+            first_delta.node.should == @nu481.planned_calendar.epochs.first.study_segments[1]
+          end
+
+          it "uses the correct name" do
+            first_change.child.name.should == "P1"
+          end
+        end
+
+        describe "and period options" do
+          it "uses the specified duration" do
+            add("P4", :in => "Treatment: B", :duration => [1, :month])
+
+            first_change.child.duration.unit.to_s.should == 'month'
+            first_change.child.duration.quantity.should == 1
+          end
+
+          it "uses the specified reps" do
+            add("P7", :in => "Treatment: B", :repetitions => 5)
+            first_change.child.repetitions.should == 5
+          end
+
+          it "uses the specified start day" do
+            add("P11", :in => "Treatment: B", :start_day => 99)
+            first_change.child.start_day.should == 99
+          end
+        end
+
+        describe "with a planned activity" do
+          def add(name, day, opts=nil)
+            update_study @nu481, :development do |s|
+              s.add_planned_activity name, day, opts
+            end
+          end
+
+          it "fails without in" do
+            lambda { add("CBC", 4) }.should raise_error("Please specify the name of the target period.  E.g. :in => 'Treatment: B: P4'.")
+          end
+
+          describe "and correct options" do
+            before { add("CBC", 2, :in => "Treatment: B: default") }
+
+            it "adds to the correct period" do
+              first_delta.node.should == @nu481.planned_calendar.epochs.first.study_segments[1].periods.to_a.first
+            end
+
+            it "uses the correct name" do
+              first_change.child.activity.name.should == "CBC"
+            end
+
+            it "uses the correct day" do
+              first_change.child.day.should == 2
+            end
+          end
+        end
+      end
+    end
+
   end
 end
