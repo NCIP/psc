@@ -103,6 +103,20 @@ Screw.Unit(function () {
         psc.tools.Uris.INTERNAL_URI_BASE_PATH = "/psc/";
         expect(psc.tools.Uris.relative("/foo/etc")).to(equal, "/psc/foo/etc");
       })
-    })
+    });
+
+    describe("escapePathElement", function () {
+      it("escapes slashes into 0x04", function () {
+        expect(psc.tools.Uris.escapePathElement("A/B")).to(equal, "A%04B");
+      });
+
+      it("escapes all slashes into 0x04", function () {
+        expect(psc.tools.Uris.escapePathElement("A/B/C/D")).to(equal, "A%04B%04C%04D");
+      });
+
+      it("escapes multiple slashes into separate 0x04s", function () {
+        expect(psc.tools.Uris.escapePathElement("A///D")).to(equal, "A%04%04%04D");
+      });
+    });
   });
 });

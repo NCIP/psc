@@ -86,6 +86,10 @@ psc.tools.Uris = (function () {
       } else {
         return uri;
       }
+    },
+
+    escapePathElement: function(element){
+      return element.replace(/\//g, "%04");
     }
   };
 }());

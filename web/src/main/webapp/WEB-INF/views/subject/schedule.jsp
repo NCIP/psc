@@ -313,39 +313,26 @@
                 }
             }))
         }
-  /*
-        //todo - need to figure out the submect.assignments.gridId for study.
-        function putScheduleNextSegment() {
-            $('next-studySegment-indicator').reveal()
-            var parameters = gatherDataFromScheduleStudySegment()
-            var studySegmentSelector = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex].value //gives us ids for study, epoch, study_segment
-            studySegmentSelector = studySegmentSelector.split("_")
-            var studyId = studySegmentSelector[0];
-            var studyIdentifierName = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex].text.split(":")[0] //gives us names for study, epoch, study_segment
 
-//            TODO - need to figure out assignment part
-            var href = '/psc/api/v1/studies/'+studyIdentifierName+'/schedules/${subject.assignments[0].gridId}'
+        function postSchedulingStudySegment(href, parameters) {
             SC.asyncRequest(href, Object.extend({
                 method: 'POST',
                 contentType: 'text/xml',
                 postBody: parameters,
                 onComplete: function(){
                     $('next-studySegment-indicator').conceal()
+                    psc.subject.ScheduleData.refresh()
                 }
             }))
         }
 
-        function gatherDataFromScheduleStudySegment() {
-            var selectedElt = $$('#studySegmentSelector')[0].options[$$('#studySegmentSelector')[0].selectedIndex]
-            var studySegmentSelectorIds = selectedElt.value //gives us ids for study, epoch, study_segment
-            var studySegmentSelectorNames = selectedElt.text //gives us names for study, epoch, study_segment
-            studySegmentSelectorIds = studySegmentSelectorIds.split("_")
-            var epochId = studySegmentSelectorIds[1];
-            var studySegmentId = studySegmentSelectorIds[2];
+        function putScheduleNextSegment() {
+            $('next-studySegment-indicator').reveal()
+            var selectedElt = jQuery('#studySegmentSelector option:selected')
 
-            studySegmentSelectorNames = studySegmentSelectorNames.split(":")
-            var epochName = studySegmentSelectorNames [1]
-            var studySegmentName = studySegmentSelectorNames [2]
+            var studySegmentId = selectedElt.attr('studySegment')
+            var studyId = selectedElt.attr('study')
+            var assignmnentId = selectedElt.attr('assignment')
 
             var immediateOrPerProtocol = $$('#mode-row input');
             for (var i= 0; i < 2; i++){
@@ -356,13 +343,13 @@
             immediateOrPerProtocol = immediateOrPerProtocol.replace("_", "-");
             var date = $('start-date-input').value;
             date = date.split("/")
-
             date = date[2] + '-'+date[0]+'-'+date[1]
+            var parameters = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
+            var href = psc.tools.Uris.relative('/api/v1/studies/'+psc.tools.Uris.escapePathElement(studyId)+'/schedules/'+psc.tools.Uris.escapePathElement(assignmnentId))
+            postSchedulingStudySegment(href, parameters)
 
-            var paramsInXML = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
-            return paramsInXML;
         }
-        */
+
         <c:if test="${schedulePreview}">
             Event.observe(window, 'load', function() {
                     SC.SP.generateIntialSchedulePreview('${previewResource}')
@@ -371,7 +358,6 @@
                     })
                     Event.observe('addToSelectedStudySegments', 'click', SC.SP.selectStudySegmentsForPreview)
                     Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
-                })
         </c:if>
 
         Event.observe(window, 'load', function() {
@@ -379,7 +365,7 @@
             psc.subject.ScheduleTimeline.FocusHandler.init();
             psc.subject.ScheduleList.init();
             psc.subject.ScheduleList.FocusHandler.init();
-
+            Event.observe($('next-study-segment-button'), 'click', function() {putScheduleNextSegment()})
         })
 
     </script>
@@ -546,7 +532,7 @@
           <h3><a class="accordionHeader" href="#">Next Segment</a></h3>
         </div>
         <div>
-            <markTag:scheduleStudySegment/>
+            <markTag:scheduleStudySegment subject="${subject}"/>
         </div>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>

@@ -4,14 +4,15 @@
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@attribute name="subject" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject"%>
 
 <div class="accordionRow">
     <label id="new-mode-selector-group" class="studySegmentSelectLabel">
         <select id="studySegmentSelector" class="studySegmentSelector">
-            <c:forEach items="${schedule.studies}" var="study">
-                <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
+            <c:forEach items="${subject.assignments}" var="assignment">
+                <c:forEach items="${assignment.studySite.study.plannedCalendar.epochs}" var="epoch">
                     <c:forEach items="${epoch.studySegments}" var="studySegment">
-                        <option value="${study.gridId}_${epoch.id}_${studySegment.gridId}">${study.name}:${epoch.name}:${studySegment.name}</option>
+                        <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}">${assignment.studySite.study.name}: ${studySegment.qualifiedName}</option>
                     </c:forEach>
                 </c:forEach>
             </c:forEach>
@@ -43,6 +44,6 @@
 
 <div class="alignStudySegmentButtonInTheMiddle">
     <tags:activityIndicator id="next-studySegment-indicator"/>
-    <input type="submit" style="margin:auto;" value="Schedule next study segment" id="next-studySegment-button" onclick="putScheduleNextSegment();"/>
+    <input type="submit" style="margin:auto;" value="Schedule next study segment" id="next-study-segment-button"/>
 </div>
 
