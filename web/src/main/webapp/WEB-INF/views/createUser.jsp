@@ -124,9 +124,62 @@
         })
     }
 
+    function registerEditUserInfoLink() {
+        var aElement = $('user-edit-link')
+
+        Event.observe(aElement, "click", function(e) {
+            Event.stop(e)
+            $('cancel-user-edit-link').style.display = 'inline';
+            $('firstNameField').style.display = 'inline';
+            $('middleNameField').style.display = 'inline';
+            $('lastNameField').style.display = 'inline';
+            $('userFirstName').hide()
+            $('userMiddleName').hide()
+            $('userLastName').hide()
+            aElement.hide()
+        })
+    }
+
+    function undoUserEdit(){
+        $('user-edit-link').style.display = 'inline';
+        $('firstNameField').style.display = 'none';
+        $('firstNameField').value= $('userFirstName').innerHTML
+        $('middleNameField').value= $('userMiddleName').innerHTML
+        $('lastNameField').value= $('userLastName').innerHTML
+
+        $('middleNameField').style.display = 'none';
+        $('lastNameField').style.display = 'none';
+        $('userFirstName').show()
+        $('userMiddleName').show()
+        $('userLastName').show()
+        $('cancel-user-edit-link').hide()
+    }
+
+    function registerCancelEditUserInfoLink() {
+        var aElement = $('cancel-user-edit-link')
+        Event.observe(aElement, "click", function(e) {
+            Event.stop(e)
+            undoUserEdit()
+        })
+    }
+
+
+    function cancelButtonClick() {
+        var aElement = $('submit')
+        Event.observe(aElement, 'click', function(e){
+            undoUserEdit()
+        })
+        
+    }
+
+    Event.observe(window, "load", registerEditUserInfoLink);
+    Event.observe(window, "load", registerCancelEditUserInfoLink);
     Event.observe(window, "load", registerEditPasswordLink);
     Event.observe(window, "load", registerCancelEditPasswordLink);
     Event.observe(window, "load", updateTable);
+    Event.observe(window, "load", cancelButtonClick);
+
+
     </c:if>
 
     </script>
@@ -161,6 +214,24 @@
             color:#0000cc;
             cursor:pointer;
             white-space:nowrap;
+        }
+
+        .user-edit-link, .cancel-user-edit-link {
+            color:#0000cc;
+            cursor:pointer;
+            white-space:nowrap;
+            padding-left: 9em;
+        }
+
+        .cancel-user-edit-link {
+            color:#0000cc;
+            cursor:pointer;
+            white-space:nowrap;
+            padding-left:0em;
+        }
+
+        .userField{
+            display:none;
         }
 
     </style>
@@ -202,7 +273,10 @@
                         <form:input path="user.firstName"/>
                     </c:if>
                     <c:if test="${actionText=='Edit'}">
-                        ${command.user.firstName}
+                         <span id="userFirstName">${command.user.firstName}</span>
+                        <form:input path="user.firstName"id="firstNameField" cssClass="userField"/>
+                        <span id="user-edit-link" class="user-edit-link" style="<c:if test="${passwordError}">display:none</c:if>">Change User Information</span>
+                        <span id="cancel-user-edit-link" class="cancel-user-edit-link" style="<c:if test="${not passwordError}">display:none</c:if>">Undo User Changes</span>
                     </c:if>
                 </div>
             </div>
@@ -215,7 +289,8 @@
                         <form:input path="user.middleName"/>
                     </c:if>
                     <c:if test="${actionText=='Edit'}">
-                        ${command.user.middleName}
+                        <form:input path="user.middleName"id="middleNameField" cssClass="userField"/>
+                        <span id="userMiddleName">${command.user.middleName}</span>
                     </c:if>
                 </div>
             </div>
@@ -228,7 +303,8 @@
                         <form:input path="user.lastName"/>
                     </c:if>
                     <c:if test="${actionText=='Edit'}">
-                        ${command.user.lastName}
+                        <form:input path="user.lastName"id="lastNameField" cssClass="userField"/>
+                        <span id="userLastName">${command.user.lastName}</span>
                     </c:if>
                 </div>
             </div>
@@ -328,7 +404,7 @@
                 <div class="submit">
                     <input type="submit"
                            value="<c:if test="${actionText=='Create'}">Create</c:if><c:if test="${actionText=='Edit'}">Save</c:if>"/>
-                    <input type="submit"
+                    <input type="submit" id="submit"
                            name="_cancel"
                            value="Cancel"/>
                 </div>
