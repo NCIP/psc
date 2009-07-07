@@ -302,7 +302,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
         User newUser = new User();
         expect(userService.saveUser(eq(newUser), randomPassword(), (String) eq(null))).andReturn(newUser);
-        expectedCsmUser(newUser);
         CreateUserCommand command = createCommand(newUser);
         replayMocks();
 
