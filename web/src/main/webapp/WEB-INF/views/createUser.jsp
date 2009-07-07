@@ -133,25 +133,31 @@
             $('firstNameField').style.display = 'inline';
             $('middleNameField').style.display = 'inline';
             $('lastNameField').style.display = 'inline';
+            $('emailAddressField').style.display = 'inline';
             $('userFirstName').hide()
             $('userMiddleName').hide()
             $('userLastName').hide()
+            $('userEmail').hide()
             aElement.hide()
         })
     }
 
     function undoUserEdit(){
         $('user-edit-link').style.display = 'inline';
-        $('firstNameField').style.display = 'none';
+
         $('firstNameField').value= $('userFirstName').innerHTML
         $('middleNameField').value= $('userMiddleName').innerHTML
         $('lastNameField').value= $('userLastName').innerHTML
+        $('emailAddressField').value= $('userEmail').innerHTML
 
+        $('firstNameField').style.display = 'none';
         $('middleNameField').style.display = 'none';
         $('lastNameField').style.display = 'none';
+        $('emailAddressField').style.display = 'none';
         $('userFirstName').show()
         $('userMiddleName').show()
         $('userLastName').show()
+        $('userEmail').show()
         $('cancel-user-edit-link').hide()
     }
 
@@ -318,7 +324,8 @@
                         <form:input path="emailAddress"/>
                     </c:if>
                     <c:if test="${actionText=='Edit'}">
-                        ${command.emailAddress}
+                        <form:input path="emailAddress"id="emailAddressField" cssClass="userField"/>
+                        <span id="userEmail">${command.emailAddress}</span>
                     </c:if>
                 </div>
             </div>

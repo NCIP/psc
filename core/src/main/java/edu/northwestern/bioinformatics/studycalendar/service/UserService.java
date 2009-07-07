@@ -46,6 +46,10 @@ public class UserService implements Serializable {
             try {
                 gov.nih.nci.security.authorization.domainobjects.User csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
                 csmUser.setPassword(password);
+                //for editing emailAddress
+                if (! csmUser.getEmailId().equals(emailAddress)) {
+                    csmUser.setEmailId(emailAddress);
+                }
                 userProvisioningManager.modifyUser(csmUser);
             } catch (CSObjectNotFoundException e) {
                 throw new StudyCalendarSystemException(

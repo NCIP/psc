@@ -143,6 +143,9 @@ public class CreateUserCommand implements Validatable, Serializable {
             user.setActiveFlag(isUserActiveFlag());
             userService.saveUser(user, getOrCreatePassword(), getEmailAddress());
         } else {
+            if (user!= null && !userService.getEmailAddresssForUser(user).equals(getEmailAddress())) {
+                userService.saveUser(user, getPassword(), getEmailAddress());
+            }
             // must be update only
             //make sure user has not updated email address
             user.setActiveFlag(isUserActiveFlag());
