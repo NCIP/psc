@@ -265,7 +265,7 @@
                     The relative day of the start of this period.  This may be positive, negative, or zero.
                 </div>
                 <div class="value">
-                    <form:input path="period.startDay" size="3" maxlength="3"/>
+                    <form:input path="period.startDay" size="4" maxlength="4"/>
                 </div>
             </div>
             <div class="row odd">
