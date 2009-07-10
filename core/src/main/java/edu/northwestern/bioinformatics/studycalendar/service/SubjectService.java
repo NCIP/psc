@@ -87,7 +87,7 @@ public class SubjectService {
         if (mode == NextStudySegmentMode.IMMEDIATE) {
             String cancellationReason = "Immediate transition to " + studySegment.getQualifiedName();
             for (ScheduledStudySegment existingStudySegment : calendar.getScheduledStudySegments()) {
-                existingStudySegment.unscheduleOutstandingEvents(cancellationReason);
+                existingStudySegment.unscheduleOutstandingEvents(cancellationReason, startDate);
             }
         }
 
