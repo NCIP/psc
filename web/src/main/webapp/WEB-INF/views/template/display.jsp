@@ -830,7 +830,7 @@
                                         <c:if test="${!isSubjectCoordinatorAssigned}">
                                             Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
                                         </c:if>
-                                        <c:if test="${isSubjectCoordinatorAssigned}">
+                                        <c:if test="${canAssignSubjects && isSubjectCoordinatorAssigned}">
                                             <c:if test="${configuration.map.enableAssigningSubject}">
                                                 <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
                                                     Assign Subject
