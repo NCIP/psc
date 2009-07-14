@@ -1,20 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
 
 import static java.util.Calendar.AUGUST;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 public class StudySubjectAssignmentTest extends TestCase {
-    private StudySubjectAssignment assignment = new StudySubjectAssignment();
+    private StudySubjectAssignment assignment;
+    private Site augusta, portland;
+    private Subject joe;
+    private Study studyA, studyB;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        assignment = new StudySubjectAssignment();
+        augusta = createNamedInstance("Augusta", Site.class);
+        portland = createNamedInstance("Portland", Site.class);
+        joe = createSubject("Joe", "B");
+
+        studyA = createSingleEpochStudy("A", "E");
+        studyB = createSingleEpochStudy("B", "E");
+    }
 
     public void testSetCalendarMaintainsBidrectionality() throws Exception {
         ScheduledCalendar calendar = new ScheduledCalendar();
@@ -43,25 +59,64 @@ public class StudySubjectAssignmentTest extends TestCase {
 
     public void testGetAvailableUnappliedAmendments() throws Exception {
         Study study = new Study();
-        StudySite augusta = createStudySite(study, createNamedInstance("Augusta", Site.class));
+        StudySite ss = createStudySite(study, this.augusta);
         Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
         Amendment a2 = a3.getPreviousAmendment();
         Amendment a1 = a2.getPreviousAmendment();
         Amendment a0 = a1.getPreviousAmendment();
         study.setAmendment(a3);
 
-        augusta.approveAmendment(a0, DateTools.createDate(2003, AUGUST, 1));
-        augusta.approveAmendment(a1, DateTools.createDate(2003, AUGUST, 2));
-        augusta.approveAmendment(a2, DateTools.createDate(2003, AUGUST, 3));
+        ss.approveAmendment(a0, DateTools.createDate(2003, AUGUST, 1));
+        ss.approveAmendment(a1, DateTools.createDate(2003, AUGUST, 2));
+        ss.approveAmendment(a2, DateTools.createDate(2003, AUGUST, 3));
         // a3 not approved
 
-        assignment.setStudySite(augusta);
+        assignment.setStudySite(ss);
         assignment.setCurrentAmendment(a0);
 
         List<Amendment> actual = assignment.getAvailableUnappliedAmendments();
         assertEquals("Wrong number of amendments returned", 2, actual.size());
         assertEquals("Wrong amendment available", a1, actual.get(0));
         assertEquals("Wrong amendment available", a2, actual.get(1));
+    }
+
+    public void testStudyNameForSingleAssignment() throws Exception {
+        StudySubjectAssignment normal = createAssignment(studyA, augusta, joe);
+        assertEquals("Wrong name", "A", normal.getName());
+    }
+
+    public void testStudyNameForMultipleAssignmentsToDifferentStudies() throws Exception {
+        StudySubjectAssignment onA = createAssignment(studyA, augusta, joe);
+        StudySubjectAssignment onB = createAssignment(studyB, augusta, joe);
+
+        assertEquals("A", onA.getName());
+        assertEquals("B", onB.getName());
+    }
+
+    public void testStudyNameForMultipleAssignmentsToDifferentSites() throws Exception {
+        StudySubjectAssignment atAugusta = createAssignment(studyA, augusta, joe);
+        StudySubjectAssignment atPortland = createAssignment(studyA, portland, joe);
+
+        assertEquals("A at Augusta", atAugusta.getName());
+        assertEquals("A at Portland", atPortland.getName());
+    }
+
+    public void testStudyNameForMultipleAssignmentsToTheSameStudyAtTheSameSite() throws Exception {
+        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe); a1.setStartDateEpoch(new Date());
+        StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
+
+        assertEquals("A (1)", a1.getName());
+        assertEquals("A (2)", a2.getName());
+    }
+
+    public void testStudyNameForMultipleAssignmentsToTheSameStudyAtTheSameSitePlusAnAssignmentAtAnotherSite() throws Exception {
+        StudySubjectAssignment b1 = createAssignment(studyB, portland, joe); b1.setStartDateEpoch(new Date());
+        StudySubjectAssignment b2 = createAssignment(studyB, augusta, joe);
+        StudySubjectAssignment b3 = createAssignment(studyB, portland, joe);
+
+        assertEquals("B at Portland (1)", b1.getName());
+        assertEquals("B at Augusta", b2.getName());
+        assertEquals("B at Portland (2)", b3.getName());
     }
 
     private void addAdverseEventNotification(int aeId) {

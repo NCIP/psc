@@ -10,8 +10,27 @@ import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashMap;
 
 
 /**
@@ -56,6 +75,43 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         addNotification(notification);
     }
 
+    /**
+     * Provides a human-readable name for this assignment.  In general this will be only the
+     * study name.  In cases where the subject is on the same study more than once, it will
+     * include disambiguating information. 
+     * @return
+     */
+    @Transient
+    public String getName() {
+        StringBuilder sb = new StringBuilder(getStudySite().getStudy().getName());
+
+        List<StudySubjectAssignment> sameStudyAssignments = new LinkedList<StudySubjectAssignment>();
+        for (StudySubjectAssignment assignment : getSubject().getAssignments()) {
+            if (assignment.getStudySite().getStudy().equals(this.getStudySite().getStudy())) {
+                sameStudyAssignments.add(assignment);
+            }
+        }
+        if (sameStudyAssignments.size() == 1) return sb.toString();
+
+        Map<Site, List<StudySubjectAssignment>> bySite = new LinkedHashMap<Site, List<StudySubjectAssignment>>();
+        for (StudySubjectAssignment assignment : sameStudyAssignments) {
+            Site site = assignment.getStudySite().getSite();
+            if (!bySite.containsKey(site)) {
+                bySite.put(site, new LinkedList<StudySubjectAssignment>());
+            }
+            bySite.get(site).add(assignment);
+        }
+
+        if (bySite.size() != 1) {
+            sb.append(" at ").append(getStudySite().getSite().getName());
+        }
+
+        List<StudySubjectAssignment> sameSite = bySite.get(getStudySite().getSite());
+        if (sameSite.size() != 1) {
+            sb.append(" (").append(sameSite.indexOf(this) + 1).append(')');
+        }
+        return sb.toString();
+    }
 
     @Transient
     public List<Amendment> getAvailableUnappliedAmendments() {
