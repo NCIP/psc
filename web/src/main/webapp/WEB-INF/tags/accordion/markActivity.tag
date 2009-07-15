@@ -8,14 +8,14 @@
     <div class="label">Study: </div>
     <div class="value">
     <c:set var="studiesCountGreaterThanOne" value="false"/>
-    <c:if test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
+    <c:if test="${not empty subject.assignments && fn:length(subject.assignments) gt 1}">
         <c:set var="studiesCountGreaterThanOne" value="true"/>
     </c:if>
 
     <c:if test="${studiesCountGreaterThanOne}">
         <select id="studySelector" class="delayAdvanceSelector">
             <option value="all" selected="true">All Studies </option>
-            <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
+            <c:forEach items="${subject.assignments}" var="row" varStatus="rowStatus">
                 <option value="${row.id}">${row.name}</option>
             </c:forEach>
          </select>

@@ -1,33 +1,55 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<div class="populationRow odd">
-    <div class="label">Study</div>
-    <div class="value">${schedule.segmentRows[0].assignment.studySite.study.name}</div>
-</div>
-<div class="populationRow even">
-    <div class="label">Site</div>
-    <div class="value">${schedule.segmentRows[0].assignment.studySite.site.name}</div>
-</div>
-<div class="row odd">
-    <div class="label">Current amendment</div>
-    <div class="value">
-        ${schedule.segmentRows[0].assignment.currentAmendment.displayName}
-    </div>
-</div>
-<c:if test="${not empty schedule.segmentRows[0].assignment.studySite.study.populations}">
-    <div class="populationRow even" style="clear:both;">
-        <div class="label">Populations</div>
-        <div class="value">
-            <ul>
-                <c:if test="${empty schedule.segmentRows[0].assignment.populations}"><em>None</em></c:if>
-                <c:forEach items="${schedule.segmentRows[0].assignment.populations}" var="pop">
-                    <li>${pop.name}</li>
-                </c:forEach>
-                <li><a class="control"
-                       href="<c:url value="/pages/cal/schedule/populations?assignment=${schedule.segmentRows[0].assignment.id}"/>">Change</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+<c:if test="${fn:length(subject.assignments) gt 0}">
+    <table class="populationTable">
+        <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
+            <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
+                <td class="populationTableTD">
+                    <div class="row">
+                        <div class="label">Study</div>
+                    </div>
+                </td>
+                <td class="populationTableTD">
+                    <div class="row">
+                        <div class="value">${assignment.name}</div>
+                    </div>
+                </td>
+                <td class="populationTableTD">
+                    <div class="row">
+                        <div class="label">Populations</div>
+                    </div>
+                </td>
+                <c:choose>
+                <c:when  test="${not empty assignment.populations}">
+                    <td class="populationTableTD">
+                        <div class="row">
+                            <div class="value">
+                                <ul>
+                                    <c:forEach items="${assignment.populations}" var="pop">
+                                        <li>${pop.name}</li>
+                                    </c:forEach>
+                                    <li><a class="control"
+                                           href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            </div>
+                        </td>
+                </c:when>
+                <c:otherwise>
+                    <td class="populationTableTD">
+                        <div class="row">
+                            <div class="value">
+                                <em>None</em>
+                            </div>
+                         </div>
+                    </td>
+                </c:otherwise>
+                </c:choose>
+            </tr>
+
+        </c:forEach>
+    </table>
 </c:if>

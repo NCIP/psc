@@ -162,13 +162,6 @@
 
         }
 
-        div.populationRow div.value{
-            font-weight:normal;
-            margin-left:8em;
-            line-height:1.5em;
-            font-size:9pt;
-        }
-
         div.row div.label{
             float:left;
             font-weight:bold;
@@ -213,11 +206,20 @@
             color: #0000CC;
         }
 
+        td.populationTableTD {
+            vertical-align:top;
+        }
+
+         table.populationTable {
+             border-spacing:0px;
+             border-collapse:collapse;
+         }
+
     </style>
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery(".myaccordion").accordion({ autoHeight: true, collapsible: true, navigation: true });
+            jQuery(".myaccordion").accordion({ autoHeight: false, collapsible: true, navigation: true });
         });
 
         function shiftDateByNumberOfDays(dateToShiftInMilliseconds, numberOfDaysToShift) {
