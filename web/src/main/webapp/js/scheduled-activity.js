@@ -15,7 +15,7 @@ function updateFormForState() {
     } else {
         $("move_date_by_new-date-input-group").hide()
     }
-    if ("markAsCancelled" == selection || "markAsScheduled" == selection || "moveDate" == selection || "markAsMissed" == selection || 5 == selection) {
+    if ("markAsCanceled" == selection || "markAsScheduled" == selection || "moveDate" == selection || "markAsMissed" == selection || 5 == selection) {
         $("new-reason-input-group").show()
     } else {
         $("new-reason-input-group").hide()

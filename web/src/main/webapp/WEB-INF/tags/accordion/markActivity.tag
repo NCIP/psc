@@ -42,7 +42,7 @@
                 <option value="moveDate">Move the date</option>
                 <option value="markAsScheduled">Mark/Keep as scheduled</option>
                 <option value="markAsOccurred">Mark as occurred</option>
-                <option value="markAsCancelled">Mark as canceled or NA</option>
+                <option value="markAsCanceled">Mark as canceled or NA</option>
                 <option value="markAsMissed">Mark as missed</option>
             </select>
 

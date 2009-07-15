@@ -274,8 +274,8 @@
                 reason = $$('#new-reason-input-group input')[0].value;
             } if (newModeSelector == "markAsOccurred") {
                 state = "occurred";
-            } if (newModeSelector == "markAsCancelled") {
-                state = "cancelled";
+            } if (newModeSelector == "markAsCanceled") {
+                state = "canceled";
                 reason = $$('#new-reason-input-group input')[0].value;
             } if (newModeSelector == "markAsMissed") {
                 reason = $$('#new-reason-input-group input')[0].value;
