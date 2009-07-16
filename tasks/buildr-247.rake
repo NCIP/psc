@@ -7,8 +7,10 @@ class OpenObject < Hash
   end
   
   %w([] []= delete to_hash).each do |n|
-    define_method n do
-      super
-    end
+    class_eval <<-RUBY
+      def #{n}(*args)
+        super
+      end
+    RUBY
   end
 end
