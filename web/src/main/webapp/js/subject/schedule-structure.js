@@ -43,6 +43,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       studyClass: function () {
         return "study-" + this.study.replace(/\W/g, '_')
       },
+
+      assignmentClass: function() {
+        return "assignment-" + this.assignment.replace(/\W/g, '_')
+      },
       
       isOpen: function () {
         if (sa.current_state && sa.current_state.name) {
@@ -130,7 +134,8 @@ psc.subject.ScheduledStudySegment = function(study, name) {
   return {
     name: function () { return name; },
     study: function () { return study; },
-    
+    assignment: function () { return assignment; },
+
     startDate: function () { return startDate; },
     stopDate: function () { return stopDate; },
     

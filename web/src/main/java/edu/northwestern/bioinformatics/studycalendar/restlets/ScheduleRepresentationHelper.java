@@ -74,6 +74,7 @@ public class ScheduleRepresentationHelper {
             }
             jsonSA.put("study", sa.getScheduledStudySegment().getStudySegment()
                                    .getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier());
+            jsonSA.put("assignment", sa.getScheduledStudySegment().getScheduledCalendar().getAssignment().getName());
             jsonSA.put("study_segment", sa.getScheduledStudySegment().getName());
             jsonSA.put("ideal_date", getApiDateFormat().format(sa.getIdealDate()));
             jsonSA.put("plan_day", sa.getPlannedActivity().getPlanDay());

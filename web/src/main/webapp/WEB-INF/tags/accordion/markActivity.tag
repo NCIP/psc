@@ -13,7 +13,7 @@
     </c:if>
 
     <c:if test="${studiesCountGreaterThanOne}">
-        <select id="studySelector" class="delayAdvanceSelector">
+        <select id="studySelector" class="studySelector">
             <option value="all" selected="true">All Studies </option>
             <c:forEach items="${subject.assignments}" var="row" varStatus="rowStatus">
                 <option value="${row.id}">${row.name}</option>

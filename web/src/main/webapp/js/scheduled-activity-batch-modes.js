@@ -14,8 +14,20 @@ function registerBatchRescheduleHandlers() {
     })
 }
 
+function getCheckboxClassName(studyNameForCheckbox){
+    var selectedStudyValue = jQuery('#studySelector.studySelector option:selected')[0].value
+    var selectedStudyName = jQuery('#studySelector.studySelector option:selected')[0].innerHTML
+    if (selectedStudyValue != "all") {
+        studyNameForCheckbox = studyNameForCheckbox+'.assignment-'+selectedStudyName.replace(/\W/g, '_')
+    }
+    return studyNameForCheckbox;
+}
+
 function registerCheckAllEvents() {
-    Event.observe('check-all-events', "click", function(event){$('batch-form').checkCheckboxes('event');Event.stop(event);})
+    Event.observe('check-all-events', "click", function(event){
+        var studyNameForCheckbox = 'event'
+        $('batch-form').checkCheckboxes(getCheckboxClassName(studyNameForCheckbox));Event.stop(event);
+    })
 }
 
 function registerUncheckAllEvents() {
@@ -24,15 +36,19 @@ function registerUncheckAllEvents() {
 
 function registerCheckAllConditionalEvents() {
     Event.observe('check-all-conditional-events', "click", function(event){
-        $('batch-form').uncheckCheckboxes('event');Event.stop(event);
-        $('batch-form').checkCheckboxes('conditional');Event.stop(event);
+        var unchecking = 'event'
+        var checking ='conditional'
+        $('batch-form').uncheckCheckboxes(getCheckboxClassName(unchecking));Event.stop(event);
+        $('batch-form').checkCheckboxes(getCheckboxClassName(checking));Event.stop(event);
     })
 }
 
 function registerCheckAllPastDueEvents() {
     Event.observe('check-all-past-due-events', "click", function(event){
-        $('batch-form').uncheckCheckboxes('event');Event.stop(event);
-        $('batch-form').checkCheckboxes('past-due');Event.stop(event);
+        var unchecking ='event'
+        var checking = 'past-due'
+        $('batch-form').uncheckCheckboxes(getCheckboxClassName(unchecking));Event.stop(event);
+        $('batch-form').checkCheckboxes(getCheckboxClassName(checking));Event.stop(event);
     })
 }
 

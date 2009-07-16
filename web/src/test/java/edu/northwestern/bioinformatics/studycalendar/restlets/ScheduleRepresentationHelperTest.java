@@ -1,17 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -44,6 +33,8 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         properties.add(Fixtures.createActivityProperty("URI", "template", "activity uri"));
 
         Study study = Fixtures.createSingleEpochStudy("S", "Treatment");
+        Site site = Fixtures.createSite("site");
+        Subject subject = Fixtures.createSubject("First", "Last");
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         epoch.setGridId("E");
         StudySegment studySegment = epoch.getStudySegments().get(0);
@@ -63,6 +54,7 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         sa.setGridId("1111");
         scheduledSegment = Fixtures.createScheduledStudySegment(studySegment, DateTools.createDate(2009, Calendar.APRIL, 3));
         scheduledCalendar.addStudySegment(scheduledSegment);
+        scheduledCalendar.setAssignment(Fixtures.createAssignment(study, site, subject));
         sa.setScheduledStudySegment(scheduledSegment);
     }
 
