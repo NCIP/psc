@@ -403,8 +403,11 @@
                   <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
-                <%--<span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /--%>
-                <span title="Assignment" class="assignment [#= assignmentClass() #]">[#= assignment #]</span> /
+                [# if(hasAssignment()) { #]
+                  <span title="Assignment" class="assignment [#= assignmentClass() #]">[#= assignment #]</span> /
+                [# } else { #]
+                  <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
+                [# } #]
                 <span title="Segment" class="segment">[#= study_segment #]</span> /
                 [# if (hasId()) { #]
                   <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>

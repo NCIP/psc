@@ -45,7 +45,11 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       },
 
       assignmentClass: function() {
-        return "assignment-" + this.assignment.replace(/\W/g, '_')
+        if (this.hasAssignment()) {
+          return "assignment-" + this.assignment.replace(/\W/g, '_')
+        } else {
+          return undefined;
+        }
       },
       
       isOpen: function () {
@@ -62,6 +66,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       
       hasId: function () {
         return sa.id !== undefined;
+      },
+
+      hasAssignment: function() {
+        return sa.assignment !== undefined;
       }
     });
   }
