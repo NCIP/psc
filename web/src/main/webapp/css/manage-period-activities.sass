@@ -3,6 +3,7 @@
 !notes_width = 19em
 !border_color = #ccc
 !contrast_color = #444
+!tool_icon_height = 16px
 
 .section
   :width= !activities_width + !days_width + !notes_width
@@ -10,11 +11,15 @@
   table
     :table-layout fixed
     :border-spacing 0px
+    :border-collapse separate
+    // Damn you IE7
+    :*border-collapse expression('separate', cellSpacing = '0px')
     :position absolute
-    :border = 0px solid !border_color
+    :border= 0px solid !border_color
     :padding 0
 #heading-section
-  :height 7.5em
+  :height 8em
+  :border-bottom = 1px solid !border_color
 #data-section
   height: 18em
   tr.unused
@@ -28,11 +33,9 @@
     .unused-message
       :display none
   tr.new-row
-    td
-      :background-color #ffc
+    :background-color #ffc
   tr.hover
-    td
-      :background-color #cfc
+    :background-color #cfc
   tr.emphasized
     td
       :background-color #00c
@@ -47,13 +50,11 @@
   :position absolute
   :overflow hidden
   :border= 0 solid !border_color
-  :z-index 5
   td, th
     :height 2em
     :border = 1px solid !border_color
     :border-width 0px 1px 1px 0px
     :padding 3px
-    :overflow hidden
   tr.activity-type
     td, th
       :height 1em
@@ -67,6 +68,7 @@
   td, th
     :position relative
     :text-align right
+    :overflow hidden
     :white-space nowrap
     :text-overflow ellipsis
     :width 100%
@@ -75,9 +77,6 @@
     :position absolute
     :left 0px
     :color= !border_color
-#activities-heading, #notes-heading
-  :border-bottom= 3px solid !contrast_color
-  :z-index 8
 tr.activity-type
   td, th
     :background-color= !contrast_color
@@ -90,21 +89,19 @@ tr.activity-type
 .days
   :left = !activities_width
   :width = !days_width
-  td, th
+  td
     :white-space nowrap
     :text-align center
     :width 4em
-    :padding 3px 0
-#days, #days-heading
-  :border = 1px solid !contrast_color
+    :overflow none
 #days-heading
-  :border-width 1px 1px 0 1px
   table
     :bottom 0px
-  td, th
+  td
     :border-bottom-width 0px
   .cycle-number
     :padding 2px
+    :margin-top 2px
   .odd
     :background-color #666
     :color #fff
@@ -118,19 +115,47 @@ tr.activity-type
     :overflow hidden
 #days
   :overflow auto
-  :border-width 0 1px 1px 1px
-  :z-index 10
+  tr.activity:hover
+    :background-color #9f9
   tr.activity td:hover
     :background-color #393
-  td.pending
-    :background url('../images/indicator.white.gif') no-repeat 3px center
+  .action-add & 
+    .marker
+      :cursor not-allowed
+    tr.activity td
+      :cursor pointer
+  td.in-progress
+    :background
+      :image url(../images/indicator.white.gif)
+      :position 90% center
+      :repeat no-repeat
+    .marker
+      :color #999
+  tr.moving
+    :cursor move
+  td.moving 
+    .marker
+      :border 1px dotted #999
+    &.in-progress
+      :background-image none
   td.error
     :background-color #900
     :color #fff
+body.action-move.step-1
+  tr.activity
+    :background-color= !border_color - 22
+    :cursor not-allowed
+    td
+      :border-color= !border_color
+  tr.moving
+    :background-color= #fff
+    :cursor move
+    &:hover
+      :background-color transparent !important
+    
 .notes
   :left = !activities_width + !days_width
   :width = !notes_width
-#notes-heading
 #notes
   :position relative
   table
@@ -144,8 +169,8 @@ a.notes-edit
   color: white
   padding: 2px
   text-decoration: none
+  font-size: 0.8em
   z-index: 20000
-  :font-size 0.9em
   &:hover
     :background= !border_color
 .notes-content
@@ -153,8 +178,10 @@ a.notes-edit
   :overflow hidden
   :white-space nowrap
   :text-overflow ellipsis
+  .note
+    display: none
 #notes-preview
-  :background-color= !border_color
+  :background-color #fff
   :border= 2px solid !border_color
   :display block
   :position absolute
@@ -164,21 +191,18 @@ a.notes-edit
   :right 3em
   :z-index 100
   :font-size 1em
-  :overflow hidden
+  :overflow auto
   h2
     :background-color= !border_color
     :color= !contrast_color
     :margin 0
-    :padding 0.3em 2px
+    :padding 5px 2px
     :font-size 1.2em
-    :overflow hidden
   dl
     :padding 0.5em 1em
     :margin 0
-    :height 10.5em
     :overflow auto
     :display block
-    :background-color #fff
   .none
     :font-style italic
   dt
@@ -202,7 +226,7 @@ a.notes-edit
   :position absolute
   :bottom 0
   :padding 0
-  :margin 0 0 0 2em
+  :margin 0 0 0 1em
   li
     :list-style-type none
     :float left
@@ -210,10 +234,9 @@ a.notes-edit
     :border-bottom-width 0
     :margin 0 3px
     &.selected
-      :background-color= !contrast_color
-      :border-color= !contrast_color
+      :background-color= !border_color
       a
-        :color= !border_color
+        :color= !contrast_color
     a
       :text-decoration none
       :display block
@@ -222,53 +245,66 @@ a.notes-edit
       &:hover
         :background-color= !contrast_color
         :color #fff
-#source-section
-  :height 6em
+#tools-section
+  :height 5.5em
   :width = !activities_width + !days_width
   :position relative
-#populations
-  :position absolute
-  :left 0
-  :padding 0
-  :margin-left= !activities_width
-  :height 5.5em
-  :width= !days_width - 5em
-  :overflow auto
-  table
-    :table-layout fixed
-    :border-width 0
-    :border-spacing 1em 0
-    :border-collapse collapse
-    :height 4em
-    :position static
-  td
-    :width 4em
-    :height 4em
-.population
-  :width 4em
-  :height 4em
-  :border= 1px solid !contrast_color
-  h2
-    :font
-      :size 75%
-      :weight normal
-    :background= !contrast_color
-    :color #fff
-    :margin 0
+  #tool-palette
+    :border= 1px solid !contrast_color
+    h2
+      :font
+        size: 75%
+        weight: normal
+      :background-color= !contrast_color
+      :margin 0
+      :padding 2px
+      :color #fff
+    :position absolute
+    :left 0
     :padding 0
-    :white-space nowrap
-    :overflow hidden
-  .marker
-    :font-size 1.5em
-    :padding 0.5em 0
-#remove-target
-  :position absolute
-  :right 0
-  :border-color #900
-  h2
-    :background-color #900
-  .marker
-    :color #900
+    :margin-left= !activities_width
+    :width= !days_width
+    :background-color= !border_color
+    ul
+      :padding 0
+      :margin 0px 0px
+      :clear both
+    li
+      :float left
+      :display block
+      :position relative
+      &.selected
+        :background-color= !border_color !important
+        :cursor default !important
+      &.tool-selector
+        :width 2em
+        :height 2em
+        :border-right= 1px solid !contrast_color
+        :cursor pointer
+        :background-color= #fff
+        img
+          :display block
+          :position absolute
+          :top 50%
+          :margin-top= !tool_icon_height / -2
+          :left 50%
+          :margin-left= !tool_icon_height / -2
+        &:hover
+          :background-color #333
+          :color #eee
+      &#tool-details
+        :font
+          :size 75%
+        :height 2em
+        :width= !days_width
+        .tool-detail
+          :display none
+          :position absolute
+          :left 0.5em
+          :padding-top 0.5em
+          :margin 0
+          select
+            :border= 1px solid !contrast_color
 .marker
   :cursor pointer
   :text-align center

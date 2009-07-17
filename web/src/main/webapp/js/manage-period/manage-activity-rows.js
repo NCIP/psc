@@ -2,23 +2,6 @@ if (!window.SC) { window.SC = { } }
 if (!SC.MP) { SC.MP = { } }
 
 Object.extend(SC.MP, {
-  registerActivityHover: function(tr) {
-    // finding the row to highlight is too slow w/o xpath, so disable it
-    if (Prototype.BrowserFeatures.XPath) {
-      tr.observe("mouseover", SC.MP.hoverDataRow)
-      tr.observe("mouseout", SC.MP.unhover)
-    }
-  },
-  
-  hoverDataRow: function(evt) {
-    var tr = Event.findElement(evt, "tr")
-    $$("." + SC.MP.findRowIndexClass(tr)).each(function(row) { row.addClassName("hover") })
-  },
-  
-  unhover: function() {
-    $$(".hover").each(function(elt) { elt.removeClassName("hover") })
-  },
-  
   unnew: function() {
     $$(".new-row").each(function(elt) { elt.removeClassName('new-row') })
   },
@@ -29,9 +12,9 @@ Object.extend(SC.MP, {
       console.log("There is already a group for %o", activityType.name)
       return;
     }
-    var selectorPrefix = "activity-type-"
+    var selectorPrefix = "activity-type-";
     var beforeBodyClass = $$("#activities tbody").map(function(group) {
-      return $w(group.className).detect(function(clz) { return clz.indexOf(selectorPrefix) == 0 })
+      return $w(group.className).detect(function(clz) { return clz.indexOf(selectorPrefix) == 0 });
     }).detect(function(typeClass) {
       return typeClass ? activityType.selector < typeClass : false
     })
@@ -42,7 +25,6 @@ Object.extend(SC.MP, {
       beforeBodyClass, activityType)
     SC.MP.insertNewActivityTypeTbody("notes", "new_notes_tbody_template",
       beforeBodyClass, activityType)
-    SC.MP.reindex();
 
     return $$("#activities ." + activityType.selector).first()
   },
@@ -75,7 +57,6 @@ Object.extend(SC.MP, {
       beforeRowClass, activity, activityType)
     SC.MP.insertNewActivityRow("notes", "new_notes_row_template", 
       beforeRowClass, activity, activityType)
-    SC.MP.reindex()
     
     var daysGroup = $$("#days ." + activityType.selector).first()
     var newRowIndex = beforeRowClass ? 
@@ -165,39 +146,9 @@ Object.extend(SC.MP, {
     }
   },
 
-  createActivitiesAutocompleter: function() {
-    SC.MP.activitiesAutocompleter = new SC.FunctionalAutocompleter(
-      'activities-autocompleter-input', 'activities-autocompleter-div', SC.MP.activityAutocompleterChoices, {
-        select: "activity-name",
-        afterUpdateElement: function(input, selected) {
-          var activity = {
-            name:   selected.select(".activity-name").first().innerHTML,
-            code:   selected.select(".activity-code").first().innerHTML,
-            source: selected.select(".activity-source").first().innerHTML
-          }
-          var activityType = {
-            selector: selected.getAttribute("activity-type-selector"),
-            name: selected.getAttribute("activity-type-name")
-          }
-          SC.MP.addActivityRow(activity, activityType)
-          input.value = ""
-          input.focus()
-        }
-      }
-    );
-  },
 
-  activityAutocompleterChoices: function(str, callback) {
-    SC.MP.findNextActivities(function(data) {
-      var lis = data.map(function(activity) {
-        return resigTemplate("new_activity_autocompleter_row", activity)
-      }).join("\n")
-      callback("<ul>\n" + lis + "\n</ul>")
-    })
-  }
-})
+});
 
 $(document).observe('dom:loaded', function() {
-  $$('tr.activity').each(SC.MP.registerActivityHover)
   SC.MP.createActivitiesAutocompleter()
 })

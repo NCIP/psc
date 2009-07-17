@@ -1,172 +1,102 @@
-if (!window.SC) { window.SC = { } }
-if (!SC.MP) { SC.MP = { } }
+psc.namespace('template.mpa');
 
-Object.extend(SC.MP, {
-  NOTE_TYPES: $w("details condition labels weight"),
-  DEFAULT_NOTE_TYPE: "details",
+/** TODO: this module needs tests */
 
-  selectDisplayedNotes: function(evt) {
-    var srcHref;
-    if (evt && evt.type == 'click') {
-      srcHref = Event.element(evt).href
-    } else {
-      srcHref = location.href
-    }
-    
-    var anchorStart = srcHref.indexOf('#')
-    var selectedNoteType = SC.MP.DEFAULT_NOTE_TYPE
-    if (anchorStart >= 0) {
-      var anchorName = srcHref.substring(anchorStart + 1)
-      if (SC.MP.NOTE_TYPES.include(anchorName)) {
-        selectedNoteType = anchorName
-      }
-    }
-    
-    SC.MP.NOTE_TYPES.
-      reject(function(t) { return t == selectedNoteType }).
-      each(SC.MP.hideNoteType)
-    SC.MP.showNoteType(selectedNoteType)
-  },
-  
-  flipNoteType: function(type, show) {
-    $$("#notes span." + type).invoke(show)
-  },
-  
-  showNoteType: function(type) {
-    SC.MP.flipNoteType(type, "show")
-    $$("#notes-heading li." + type).first().addClassName("selected")
-  },
-  
-  hideNoteType: function(type) {
-    SC.MP.flipNoteType(type, "hide")
-    $$("#notes-heading li." + type).first().removeClassName("selected")
-  },
-  
-  registerNotePreviewHandler: function(editButton) {
-    $(editButton).observe('mouseout', SC.MP.hideNotePreview)
-    $(editButton).observe('mouseover', SC.MP.updateNotePreview)
-    $('notes-preview').observe('mouseover', function() { $('notes-preview').show() })
-    $('notes-preview').observe('mouseout', SC.MP.hideNotePreview)
-  },
-  
-  hideNotePreview: function(evt) {
-    var box = $('notes-preview')
-    box.hide()
-  },
-  
-  updateNotePreview: function(evt) {
-    var editButton = Event.element(evt)
-    var notesRow = Event.findElement(evt, "tr")
-    var rowClass = SC.MP.findRowIndexClass(notesRow)
+psc.template.mpa.ActivityNotes = (function ($) {
+  var NOTE_TYPES = ['details', 'condition', 'labels', 'weight'];
+  var Model = psc.template.mpa.Model;
+  var notesObservers;
 
-    var box = $('notes-preview')
-    $w(box.className).each(function(clz) {
-      if (clz.substring(0, 4) == "row-") {
-        box.removeClassName(clz)
-      }
-    })
-    box.addClassName(rowClass)
+  function updateNotePreview() {
+    var rowN = Model.rowNumberFor(this);
+    var notesRow = $(this).closest('tr');
+    var activity = Model.activity(rowN);
 
-    // update contents
-    box.select('h2').first().innerHTML = 
-      $$("#activities ." + rowClass + " td").first().title
-    SC.MP.NOTE_TYPES.each(function(noteKind) {
-      var content = notesRow.select("." + noteKind).first().innerHTML.strip()
-      var elt = $(noteKind + "-preview")
-      if (content.length == 0) {
-        elt.innerHTML = "None"
-        elt.addClassName("none")
+    $(NOTE_TYPES).each(function () {
+      var content = notesRow.find('.' + this).text().trim()
+      var elt = $('#' + this + "-preview")
+      if (content.length === 0) {
+        elt.text("None").addClass("none")
       } else {
-        elt.innerHTML = content
-        elt.removeClassName("none")
+        elt.text(content).removeClass("none")
       }
-    })
+    });
+    $('#notes-preview').attr('row', rowN).show().find('h2').text(activity.name);
+  }
+  
+  function editNotes(rowN) {
+    var activity = Model.activity(rowN);
+    var notesRow = Model.findRow('notes', rowN);
+    $(["notes", "days", "activities"]).each(function () {
+      Model.findRow(this, rowN).addClass('emphasized');
+    });
     
-    // reposition box
-    box.style.top = ($('notes').scrollTop + 18) + "px"
-    box.show()
-  },
-
-  clickEditButton: function(evt) {
-    Event.stop(evt)
-    var editButton = Event.element(evt)
-    SC.MP.editNotes(editButton.up("tr"))
-  },
-
-  clickNotesPreview: function(evt) {
-    Event.stop(evt)
-    var rowClass = SC.MP.findRowIndexClass($('notes-preview'))
-    SC.MP.editNotes($$("#notes tr." + rowClass).first())
-  },
-
-  editNotes: function(notesRow) {
-    var rowClass = SC.MP.findRowIndexClass(notesRow)
-    var activity = SC.MP.findActivity(rowClass.substring(4))
-    $$(".column ." + rowClass).invoke("addClassName", "emphasized")
-    $$("#edit-notes-lightbox .activity-name").invoke("update", activity.name)
-    SC.MP.NOTES_OBSERVERS = { }
-    $w("details condition labels weight").each(function(noteKind) {
-      var noteSpan = notesRow.select(".notes-content ." + noteKind).first();
-      var noteInput = $('edit-notes-' + noteKind);
+    $("#edit-notes-lightbox .activity-name").text(activity.name);
+    notesObservers = []
+    $(NOTE_TYPES).each(function() {
+      var noteSpan = notesRow.find(".notes-content ." + this);
+      var noteInput = $('#edit-notes-' + this);
       // copy in current values from spans
-      noteInput.value = noteSpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
-      SC.applyInputHint(noteInput)
+      noteInput.val(noteSpan.text().unescapeHTML().trim().replace(/\s+/g, " "));
+      SC.applyInputHint(noteInput[0])
       // observe the text field and update the span
-      SC.MP.NOTES_OBSERVERS[noteKind] = new Form.Element.Observer(
-        noteInput,
+      notesObservers.push(new Form.Element.Observer(
+        noteInput[0],
         0.4,
         function(e, value) {
-          if (noteInput.hasClassName("input-hint")) {
-            noteSpan.innerHTML = ""
+          if (noteInput.is(".input-hint")) {
+            noteSpan.empty();
           } else {
-            noteSpan.innerHTML = value.strip()
+            noteSpan.text(value.trim());
           }
         }
-      )
+      ));
     })
-    $('edit-notes-lightbox').addClassName(rowClass)
-    $('edit-notes-lightbox').show()
-    $$("#edit-notes-lightbox input").invoke("enable")
-    LB.Lightbox.activate()
-  },
-
-  finishEditingNotes: function(evt) {
-    $$("#edit-notes-lightbox input").invoke("disable")
-    Object.values(SC.MP.NOTES_OBSERVERS).invoke("stop")
-
-    var rowClass = SC.MP.findRowIndexClass($('edit-notes-lightbox'))
-    $('edit-notes-lightbox').removeClassName(rowClass)
-    
-    var rowIndex = rowClass.substring(4)
-    var cells = $$("#days ." + rowClass + " .cell")
-    var success = function(r, c) {
-      return function() {
-        SC.MP.reportInfo("Successfully updated notes for " + r + ", " + c)
-      }
-    }
-
-    for (var col = 0 ; col < cells.length ; col++) {
-      var cell = cells[col]
-      var marker = cell.select(".marker").first()
-      if (marker) {
-        cell.addClassName("pending")
-        SC.MP.putPlannedActivity(marker.getAttribute("resource-href"), rowIndex, col,
-          SC.MP.plannedActivityAjaxOptions(success(rowIndex, col), cell)
-        )
-      }
-    }
-    $$(".column ." + rowClass).invoke("removeClassName", "emphasized")
-    LB.Lightbox.deactivate()
+    $('#edit-notes-lightbox').attr('row', rowN).show().find('input').attr('disabled', null);
+    LB.Lightbox.activate();
   }
-})
+  
+  function finishEditingNotes() {
+    $("#edit-notes-lightbox input").attr("disabled", "disabled");
+    $(notesObservers).each(function () { this.stop() });
+    
+    Model.findRow('days', $('#edit-notes-lightbox').attr('row')).
+      find('td.cell .marker').each(function () {
+        var data = Model.cellData($(this).parent('td.cell'));
+        data.action = { name: 'update-notes', step: 0 };
+        $('#days').trigger('action-started', data);
+      });
+    
+    $('tr.activity.emphasized').removeClass('emphasized');
+    LB.Lightbox.deactivate();
+  }
 
-$(document).observe("dom:loaded", function() {
-  SC.MP.selectDisplayedNotes();
-  $$("#notes-heading ul a").each(function(a) {
-    $(a).observe("click", SC.MP.selectDisplayedNotes)
-  })
-  $$(".notes-edit").each(SC.MP.registerNotePreviewHandler)
-  $$(".notes-edit").each(function(button) { button.observe("click", SC.MP.clickEditButton) })
-  $('notes-preview').observe("click", SC.MP.clickNotesPreview)
-  $('edit-notes-done').observe('click', SC.MP.finishEditingNotes)
-})
+  function registerNotesPreviewHandlers() {
+    $('.notes-edit').unbind().hover(
+      updateNotePreview,
+      function () { $('#notes-preview').hide() }
+    ).click(function () {
+      editNotes(Model.rowNumberFor(this));
+      return false;
+    });
+  }
+
+  return {
+    init: function () {
+      registerNotesPreviewHandlers();
+      
+      $('#days').bind('row-added', registerNotesPreviewHandlers);
+
+      $('#notes-preview').hover(
+        function () { $('#notes-preview').show() },
+        function () { $('#notes-preview').hide() }
+      ).click(function () {
+        editNotes($(this).attr('row'));
+        return false;
+      });
+      
+      $('#edit-notes-done').click(finishEditingNotes);
+    },
+    
+  };
+}(jQuery));

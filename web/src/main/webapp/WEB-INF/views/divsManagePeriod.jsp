@@ -1,3 +1,4 @@
+<%@ page import="edu.northwestern.bioinformatics.studycalendar.domain.Period" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
@@ -6,19 +7,20 @@
 <html>
 <head>
     <title>Manage ${period.displayName} activities</title>
-    <tags:javascriptLink name="manage-period/plan-activities" />
-    <tags:javascriptLink name="manage-period/manage-activity-rows" />
+    <tags:javascriptLink name="manage-period/model" />
+    <tags:javascriptLink name="manage-period/actions" />
+    <tags:javascriptLink name="manage-period/grid-controls" />
+    <tags:javascriptLink name="manage-period/rows" />
     <tags:javascriptLink name="manage-period/activity-notes" />
-    <tags:javascriptLink name="manage-period/reindex" />
-    <tags:javascriptLink name="manage-period/server" />
     <tags:javascriptLink name="manage-period/pa-labels" />
+    <tags:javascriptLink name="manage-period/presentation" />
+    <tags:javascriptLink name="manage-period/wiring" />
     <tags:javascriptLink name="resig-templates" />
 
     <tags:resigTemplate id="new_activity_row_template">
-        <tr class="new-row unused activity">
-            <td title="[#= name #]" activity-code="[#= code #]" activity-source="[#= source #]">
-                <span class="row-number">-1</span>
-                [#= name #]
+        <tr class="new-row unused activity" activity-code="[#= code #]" activity-source="[#= source #]">
+            <td title="[#= name #]">
+                <span class="activity-name">[#= name #]</span>
             </td>
         </tr>
     </tags:resigTemplate>
@@ -36,17 +38,17 @@
                     View/Edit
                 </a>
                 <div class="notes-content">
-                    <span class="details" style="display: none"></span>
-                    <span class="condition" style="display: none"></span>
-                    <span class="labels" style="display: none"></span>
-                    <span class="weight"  style="display: none"></span>
+                    <span class="details note" style="display: none"></span>
+                    <span class="condition note" style="display: none"></span>
+                    <span class="labels note" style="display: none"></span>
+                    <span class="weight note"  style="display: none"></span>
                     &nbsp;
                 </div>
             </td>
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_activity_tbody_template">
-        <tbody class="activity-type [#= selector #]">
+        <tbody class="activity-type [#= selector #]" activity-type="[#= name #]">
             <tr class="activity-type">
                 <th>
                     <span class="text">[#= name #]</span>
@@ -55,7 +57,7 @@
         </tbody>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_days_tbody_template">
-        <tbody class="activity-type [#= selector #]">
+        <tbody class="activity-type [#= selector #]" activity-type="[#= name #]">
             <tr class="activity-type">
                 [# for (var i = parseInt($('days').getAttribute('day-count')) ; i > 0 ; i--) { #]
                 <td>
@@ -66,7 +68,7 @@
         </tbody>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_notes_tbody_template">
-        <tbody class="activity-type [#= selector #]">
+        <tbody class="activity-type [#= selector #]" activity-type="[#= name #]">
             <tr class="activity-type">
                 <td>
                     <span class="text">&nbsp;</span>
@@ -90,13 +92,13 @@
     </tags:resigTemplate>
 
     <tags:stylesheetLink name="main"/>
-    <tags:sassLink name="manage-period"/>
+    <tags:sassLink name="manage-period-activities"/>
     <style type="text/css">
-        .days table { width: 40em; }
+        .days table { width: <%= Math.min(40, ((Period) request.getAttribute("period")).getDuration().getQuantity() * 4) %>em; }
     </style>
 
     <script type="text/javascript">
-        SC.MP.collectionResource = '${collectionResource}'
+        psc.template.mpa.Actions.collectionUri = '${collectionResource}';
     </script>
 </head>
 <body>
@@ -105,37 +107,47 @@
 <laf:division>
 
 <!--
-    SOURCE SECTION
+    TOOL SECTION
  -->
 
-<div class="section" id="source-section">
-    <div id="populations">
-        <table>
-            <tr>
-                <td>
-                    <div class='population' id='populations-all'>
-                        <h2>All subjects</h2>
-                        <div class='marker'>
-                            &times;
-                        </div>
-                    </div>
-                </td>
-                <c:forEach items="${study.populations}" var="pop">
-                    <td title="${pop.name}">
-                        <div class='population' id='population-${pop.abbreviation}'>
-                            <h2>${pop.name}</h2>
-                            <div class='marker population-${pop.abbreviation}'>
-                                ${pop.abbreviation}
-                            </div>
-                        </div>
-                    </td>
-                </c:forEach>
-            </tr>
-        </table>
-    </div>
-    <div class='population' id='remove-target'>
-        <h2>Remove</h2>
-        <div class='cell'></div>
+<div class='section' id='tools-section'>
+    <div id='tool-palette'>
+        <h2>Tools</h2>
+        <ul>
+            <li class='tool-selector selected' id='add-tool' title='Add'>
+                <img alt='Add' src='<c:url value="/images/add.png"/>' />
+            </li>
+            <li class='tool-selector' id='move-tool' title='Move'>
+                <img alt='Move' src='<c:url value="/images/move.png"/>' />
+            </li>
+            <li class='tool-selector' id='delete-tool' title='Delete'>
+                <img alt='Delete' src='<c:url value="/images/delete.png"/>' />
+            </li>
+            <li id='tool-details'>
+                <div class='tool-detail' id='add-tool-detail'>
+                    Add a new activity for
+                    <select id='population-selector'>
+                        <option value=''>all subjects</option>
+                        <c:forEach items="${study.populations}" var="pop">
+                            <option value="${pop.naturalKey}">${pop.name}</option>
+                        </c:forEach>
+                    </select>
+                    by clicking in the grid.
+                </div>
+                <div class='tool-detail' id='move-tool-detail'>
+                    <span class='step-0'>
+                        First, click on the one you want to move.
+                    </span>
+
+                    <span class='step-1'>
+                        Then, click the target cell (in the same row).  Click elsewhere to cancel.
+                    </span>
+                </div>
+                <div class='tool-detail' id='delete-tool-detail'>
+                    Click on a cell to clear the activity from that day.
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
 
@@ -149,7 +161,7 @@
         <table>
             <tr title="Relative to study segment">
                 <c:forEach items="${grid.dayHeadings}" var="oneDay" varStatus="cell">
-                    <td class="day" day-number="${grid.columnDayNumbers[cell.index]}">
+                    <td class="day" day="${grid.columnDayNumbers[cell.index]}">
                         <div class="period-duration-reference" title="Relative to period">
                             ${grid.period.duration.unit}&nbsp;${cell.count}
                         </div>
@@ -202,18 +214,16 @@
     <div class="activities column" id="activities">
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type ${typeAndRows.key.selector}">
+                <tbody class="activity-type ${typeAndRows.key.selector}" activity-type="${typeAndRows.key.name}">
                     <tr class="activity-type">
                         <th>
                             <span class="text">${typeAndRows.key.name}</span>
                         </th>
                     </tr>
                     <c:forEach items="${typeAndRows.value}" var="row" varStatus="rowStatus">
-                        <tr class="activity">
-                            <td title="${row.activity.name}" activity-code="${row.activity.code}" activity-source="${row.activity.source.naturalKey}">
-                                <span class="row-number">${rowStatus.count}</span>
-                                ${row.activity.name}
-                                <input type="hidden" value="${row.activity.id}" name="activityId"/>
+                        <tr class="activity" activity-code="${row.activity.code}" activity-source="${row.activity.source.naturalKey}">
+                            <td title="${row.activity.name}">
+                                <span class="activity-name">${row.activity.name}</span>
                             </td>
                         </tr>
                     </c:forEach>
@@ -228,10 +238,10 @@
         </table>
     </div>
 
-    <div class="days column" id="days">
+    <div class="days column" id="days" day-count="${grid.columnCount}">
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type ${typeAndRows.key.selector}">
+                <tbody class="activity-type ${typeAndRows.key.selector}" activity-type="${typeAndRows.key.name}">
                     <!-- stripe for activity type -->
                     <tr class="activity-type">
                         <c:forEach begin="1" end="${grid.columnCount}">
@@ -255,6 +265,7 @@
                                                 </div>
                                             </c:if>
                                             <c:if test="${study.inAmendmentDevelopment}">
+                                                <%-- TODO: this should be addressed in the controller, not in the view --%>
                                                 <c:if test="${not empty pa.population}">
                                                     <c:set var="populationId" value="${pa.population.gridId}"/>
                                                     <c:set var="popName" value=""/>
@@ -293,7 +304,6 @@
                 <dd class='none' id='details-preview'>None</dd>
                 <dt>Condition</dt>
                 <dd class='none' id='condition-preview'>None</dd>
-                <!-- Labels will be enabled in 2.2.1 -->
                 <dt>Labels</dt>
                 <dd class='none' id='labels-preview'>None</dd>
                 <dt>Weight</dt>
@@ -303,7 +313,7 @@
         </div>
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
-                <tbody class="activity-type ${typeAndRows.key.selector}">
+                <tbody class="activity-type ${typeAndRows.key.selector}" activity-type="${typeAndRows.key.name}">
                     <!-- stripe for activity type -->
                     <tr class="activity-type">
                         <td>
@@ -317,16 +327,16 @@
                                     View/Edit
                                 </a>
                                 <div class='notes-content'>
-                                    <span class='details' style='display: none'>
+                                    <span class='note details' style='display: none'>
                                         ${row.details}
                                     </span>
-                                    <span class='condition' style='display: none'>
+                                    <span class='note condition' style='display: none'>
                                         ${row.condition}
                                     </span>
-                                    <span class='weight'>
+                                    <span class='note weight'>
                                         ${row.weight}
                                     </span>                                    
-                                    <span class='labels' style='display: none'>
+                                    <span class='note labels' style='display: none'>
                                         <c:forEach items="${row.labels}" var="label">
                                             ${label}
                                         </c:forEach>
@@ -391,7 +401,7 @@
         <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}"/>">Create new activity</a>
 
         <div style="position: relative">
-            <div id="activities-autocompleter-div" class="autocomplete"></div>
+            <div id="activities-autocompleter-div" class="autocomplete" style="display: none"></div>
         </div>
     </div>
 
