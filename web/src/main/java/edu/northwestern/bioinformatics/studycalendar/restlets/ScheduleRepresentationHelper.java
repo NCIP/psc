@@ -79,7 +79,9 @@ public class ScheduleRepresentationHelper {
             }
             jsonSA.put("study_segment", sa.getScheduledStudySegment().getName());
             jsonSA.put("ideal_date", getApiDateFormat().format(sa.getIdealDate()));
-            jsonSA.put("plan_day", sa.getPlannedActivity().getPlanDay());
+            if (sa.getPlannedActivity() != null && sa.getPlannedActivity().getPlanDay() != null) {
+                jsonSA.put("plan_day", sa.getPlannedActivity().getPlanDay());
+            }
             jsonSA.put("current_state", createJSONStateInfo(sa.getCurrentState()));
             jsonSA.put("activity", createJSONActivity(sa.getActivity()));
             JSONArray state_history =  new JSONArray();
