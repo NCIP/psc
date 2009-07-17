@@ -13,7 +13,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
     var activity = Model.activity(rowN);
 
     $(NOTE_TYPES).each(function () {
-      var content = notesRow.find('.' + this).text().trim()
+      var content = $.trim(notesRow.find('.' + this).text());
       var elt = $('#' + this + "-preview")
       if (content.length === 0) {
         elt.text("None").addClass("none")
@@ -37,7 +37,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
       var noteSpan = notesRow.find(".notes-content ." + this);
       var noteInput = $('#edit-notes-' + this);
       // copy in current values from spans
-      noteInput.val(noteSpan.text().unescapeHTML().trim().replace(/\s+/g, " "));
+      noteInput.val($.trim(noteSpan.text().unescapeHTML()).replace(/\s+/g, " "));
       SC.applyInputHint(noteInput[0])
       // observe the text field and update the span
       notesObservers.push(new Form.Element.Observer(
@@ -47,7 +47,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
           if (noteInput.is(".input-hint")) {
             noteSpan.empty();
           } else {
-            noteSpan.text(value.trim());
+            noteSpan.text($.trim(value));
           }
         }
       ));

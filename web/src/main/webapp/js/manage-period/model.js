@@ -31,7 +31,7 @@ psc.template.mpa.Model = (function ($) {
 
       var notesRow = this.findRow('notes', rowNumber);
 
-      var pop = cell.find('.marker').text().trim();
+      var pop = $.trim(cell.find('.marker').text());
       if (pop && !pop.match(/\w/)) { pop = null; }
 
       return {
