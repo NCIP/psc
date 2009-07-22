@@ -1,9 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.bind.ServletRequestDataBinder;
 
 import java.beans.PropertyEditor;
 
@@ -41,8 +48,34 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
         request.setAttribute("currentUser", user);
         assertSame(user, tools.getCurrentUser(request));
     }
+    
+    public void testDomainObjectEditorForPlainDomainObject() throws Exception {
+        assertPropertyEditorForDao(new DODao(), DaoBasedEditor.class);
+    }
 
+    public void testDomainObjectEditorForGridIdentDomainObject() throws Exception {
+        assertPropertyEditorForDao(new GridDODao(), GridIdentifiableDaoBasedEditor.class);
+    }
 
+    private void assertPropertyEditorForDao(StudyCalendarDao<?> dao, final Class<? extends PropertyEditor> expectedClass) {
+        final boolean[] registered = new boolean[1];
+        tools.registerDomainObjectEditor(new ServletRequestDataBinder(null) {
+            @Override
+            @SuppressWarnings({ "RawUseOfParameterizedType" })
+            public void registerCustomEditor(Class aClass, String s, PropertyEditor propertyEditor) {
+                registered[0] = true;
+                assertEquals("Wrong property editor type", expectedClass, propertyEditor.getClass());
+            }
+
+            @Override
+            @SuppressWarnings({ "RawUseOfParameterizedType" })
+            public void registerCustomEditor(Class aClass, PropertyEditor propertyEditor) {
+                registered[0] = true;
+                assertEquals("Wrong property editor type", expectedClass, propertyEditor.getClass());
+            }
+        }, "dc", dao);
+        assertTrue("No property editor registered for " + dao, registered[0]);
+    }
 
    	public void testCustomDateEditorWithExactDateLength() {
    		int maxLength = 10;
@@ -79,5 +112,42 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
    			fail("Exception shouldn't be thrown because this is a valid date");
    		}
     }
-    
+
+    private static class DO implements DomainObject {
+        public Integer getId() {
+            throw new UnsupportedOperationException("getId not implemented");
+        }
+
+        public void setId(Integer integer) {
+            throw new UnsupportedOperationException("setId not implemented");
+        }
+    }
+
+    private static class GridDO extends DO implements GridIdentifiable {
+        public String getGridId() {
+            throw new UnsupportedOperationException("getGridId not implemented");
+        }
+
+        public void setGridId(String s) {
+            throw new UnsupportedOperationException("setGridId not implemented");
+        }
+
+        public boolean hasGridId() {
+            throw new UnsupportedOperationException("hasGridId not implemented");
+        }
+    }
+
+    private static class DODao extends StudyCalendarDao<DO> {
+        @Override public Class<DO> domainClass() { return DO.class; }
+    }
+
+    private static class GridDODao extends StudyCalendarDao<GridDO> implements GridIdentifiableDao<GridDO> {
+        public GridDO getByGridId(String s) {
+            throw new UnsupportedOperationException("getByGridId not implemented");
+        }
+
+        @Override public Class<GridDO> domainClass() {
+            return GridDO.class;
+        }
+    }
 }

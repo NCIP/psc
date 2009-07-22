@@ -16,7 +16,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.ModelMap;
@@ -57,7 +59,13 @@ public class ControllerTools {
     }
 
     public void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {
-        binder.registerCustomEditor(dao.domainClass(), field, new DaoBasedEditor(dao));
+        DaoBasedEditor editor;
+        if (dao instanceof GridIdentifiableDao) {
+            editor = new GridIdentifiableDaoBasedEditor((GridIdentifiableDao<?>) dao);
+        } else {
+            editor = new DaoBasedEditor(dao);
+        }
+        binder.registerCustomEditor(dao.domainClass(), field, editor);
     }
 
     public void addHierarchyToModel(ScheduledActivity event, Map<String, Object> model) {

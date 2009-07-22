@@ -13,7 +13,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -51,8 +50,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
-        binder.registerCustomEditor(ScheduledActivity.class, "event",
-            new GridIdentifiableDaoBasedEditor(scheduledActivityDao));
+        getControllerTools().registerDomainObjectEditor(binder, "event", scheduledActivityDao);
         binder.registerCustomEditor(ScheduledActivityMode.class, "newMode",
             new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
