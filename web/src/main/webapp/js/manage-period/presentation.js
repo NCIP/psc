@@ -172,7 +172,6 @@ psc.template.mpa.Presentation = (function ($) {
   }
 
   function unnew() {
-    console.log("unnew");
     $('.new-row').removeClass('new-row')
   }
 

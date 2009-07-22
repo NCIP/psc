@@ -1,15 +1,12 @@
 psc.namespace('template.mpa');
 
-/** TODO: this module needs tests */
-
 psc.template.mpa.ActivityNotes = (function ($) {
   var NOTE_TYPES = ['details', 'condition', 'labels', 'weight'];
   var Model = psc.template.mpa.Model;
   var notesObservers;
 
-  function updateNotePreview() {
-    var rowN = Model.rowNumberFor(this);
-    var notesRow = $(this).closest('tr');
+  function updateNotePreview(rowN) {
+    var notesRow = Model.findRow('notes', rowN);
     var activity = Model.activity(rowN);
 
     $(NOTE_TYPES).each(function () {
@@ -73,7 +70,10 @@ psc.template.mpa.ActivityNotes = (function ($) {
 
   function registerNotesPreviewHandlers() {
     $('.notes-edit').unbind().hover(
-      updateNotePreview,
+      function () {
+        updateNotePreview(Model.rowNumberFor(this));
+        $('#notes-preview').show();
+      },
       function () { $('#notes-preview').hide() }
     ).click(function () {
       editNotes(Model.rowNumberFor(this));
@@ -84,19 +84,11 @@ psc.template.mpa.ActivityNotes = (function ($) {
   return {
     init: function () {
       registerNotesPreviewHandlers();
-      
       $('#days').bind('row-added', registerNotesPreviewHandlers);
-
-      $('#notes-preview').hover(
-        function () { $('#notes-preview').show() },
-        function () { $('#notes-preview').hide() }
-      ).click(function () {
-        editNotes($(this).attr('row'));
-        return false;
-      });
-      
       $('#edit-notes-done').click(finishEditingNotes);
     },
-    
+
+    // exposed for testing
+    updateNotePreview: updateNotePreview
   };
 }(jQuery));

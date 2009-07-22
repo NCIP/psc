@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>actions.js | JavaScript Testing Results</title>
+  <link rel="stylesheet" href="/screw.css" type="text/css" charset="utf-8" />
+  <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
+  <style type="text/css">
+    #lightbox {
+      display: none;
+    }
+
+    #fixtures {
+      position: absolute;
+      left: -500px;
+      width: 300px
+    }
+  </style>
+</head>
+
+<body>
+<div id="fixtures">
+  <div id="days" class="days column">
+    <table>
+      <tbody class="activity-type" activity-type="Procedure">
+        <tr class="activity-type"></tr>
+        <tr class="activity">
+          <td class="cell"></td>
+          <td class="cell"><div class="marker">B</div></td>
+          <td class="cell"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="notes" class="notes column">
+    <div id="notes-preview" style="display: none">
+      <h2>[Activity name]</h2>
+      <dl>
+        <dt>Details</dt>
+        <dd class='none' id='details-preview'>None</dd>
+        <dt>Condition</dt>
+        <dd class='none' id='condition-preview'>None</dd>
+        <dt>Labels</dt>
+        <dd class='none' id='labels-preview'>None</dd>
+        <dt>Weight</dt>
+        <dd class='none' id='weight-preview'>None</dd>
+      </dl>
+      <p id="notes-preview-edit">Click to edit</p>
+    </div>
+    <table>
+      <tbody class="activity-type" activity-type="Procedure">
+        <tr class="activity-type"></tr>
+        <tr class="activity">
+          <td>
+            <a class="notes-edit" href="#notes-edit">View/Edit</a>
+            <div class="notes-content">
+              <span class="details note">Row 0 details</span>
+              <span class="condition note">Row 0 condition</span>
+              <span class="labels note">r0 label</span>
+              <span class="weight note">0</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="activity">
+          <td>
+            <a class="notes-edit" href="#notes-edit">View/Edit</a>
+            <div class="notes-content">
+              <span class="details note">Row 1 details</span>
+              <span class="condition note">Row 1 condition</span>
+              <span class="labels note">r1 label</span>
+              <span class="weight note">1</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="overlay"></div>
+
+  <div id="lightbox">
+    <div id="edit-notes-lightbox">
+      <h1>Editing planned activity notes for <span class="activity-name">[Not filled in]</span></h1>
+      <div class="row">
+        <div class="label">
+          <label for="edit-notes-details">Details</label>
+        </div>
+        <div class="value">
+          <input type="text" class="text" id="edit-notes-details" hint="No details" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="label">
+          <label for="edit-notes-condition">Condition</label>
+        </div>
+        <div class="value">
+          <input type="text" class="text" id="edit-notes-condition" hint="No condition" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="edit-notes-labels">Labels</label>
+        </div>
+        <div class="value">
+          <!--<input type="text" class="text" id="edit-notes-labels" hint="No labels" />-->
+          <input id="edit-notes-labels" class="autocomplete" type="text" hint="No labels" autocomplete="off" />
+          <div style="position: relative">
+            <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="edit-notes-weight">Weight</label>
+        </div>
+        <div class="value">
+          <input type="text" class="text" id="edit-notes-weight" hint="Default is 0" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="submit">
+          <input type="button" value="Done" id="edit-notes-done"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

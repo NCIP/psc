@@ -76,3 +76,9 @@ psc.test.envjs = function () {
     }
   }
 }(jQuery));
+
+if (!window.console) {
+  window.console = {
+    log: function () { }
+  }
+}

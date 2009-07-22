@@ -1,0 +1,2698 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>psc.template.mpa.GridControls | JavaScript Testing Results</title>
+  <link rel="stylesheet" href="/screw.css" type="text/css" charset="utf-8" />
+  <style>
+    .column {
+      width: 15em;
+      height: 15em;
+    }
+    #days {
+      overflow: auto;
+    }
+    .column {
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    #fixtures {
+      position: absolute;
+      left: -300px;
+    }
+    .tool-detail {
+      display: none;
+    }
+    .note {
+      display: none;
+    }
+  </style>
+  <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
+</head>
+
+<body>
+  <!-- Derived from the spike using unit=week -->
+  <div id="fixtures">
+    <div class='section' id='tools-section'>
+      <div id='tool-palette'>
+        <h2>Tools</h2>
+        <ul>
+          <li class='tool-selector selected' id='add-tool' title='Add'>
+            <img alt='Add' src='img/add.png' />
+          </li>
+          <li class='tool-selector' id='move-tool' title='Move'>
+            <img alt='Move' src='img/move.png' />
+          </li>
+          <li class='tool-selector' id='delete-tool' title='Delete'>
+            <img alt='Delete' src='img/delete.png' />
+          </li>
+          <li id='tool-details'>
+            <div class='tool-detail' id='add-tool-detail'>
+              Add a new activity for
+              <select id='population-selector'>
+                <option value=''>all subjects</option>
+                <option value='A'>A</option>
+                <option value='B'>B</option>
+                <option value='Cd'>Cd</option>
+                <option value='E'>E</option>
+                <option value='F'>F</option>
+                <option value='Ghi'>Ghi</option>
+                <option value='KLm'>KLm</option>
+                <option value='NOP'>NOP</option>
+                <option value='Q'>Q</option>
+                <option value='R'>R</option>
+                <option value='ST'>ST</option>
+                <option value='Uv'>Uv</option>
+              </select>
+              by clicking in the grid.
+            </div>
+            <div class='tool-detail' id='move-tool-detail'>
+              <span class='step-0'>
+                First, click on the one you want to move.
+              </span>
+              <span class='step-1'>
+                Then, click the cell in the same row you want to move this
+                activity to.  Or you can click outside the grid to cancel.
+              </span>
+            </div>
+            <div class='tool-detail' id='delete-tool-detail'>
+              Click on a cell to clear the activity from that day.
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class='section' id='heading-section'>
+      <div class='activities heading column' id='activities-heading'></div>
+      <div class='days heading column' id='days-heading'>
+        <table>
+          <tr>
+            <td day='1'>
+              <div class='even cycle-number'>3</div>
+              <div class='odd cycle-number'>150</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>444</div>
+            </td>
+            <td day='8'>
+              <div class='odd cycle-number'>10</div>
+              <div class='even cycle-number'>157</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>451</div>
+            </td>
+            <td day='15'>
+              <div class='even cycle-number'>17</div>
+              <div class='odd cycle-number'>164</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>458</div>
+            </td>
+            <td day='22'>
+              <div class='odd cycle-number'>24</div>
+              <div class='even cycle-number'>171</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>465</div>
+            </td>
+            <td day='29'>
+              <div class='even cycle-number'>31</div>
+              <div class='odd cycle-number'>178</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>472</div>
+            </td>
+            <td day='36'>
+              <div class='odd cycle-number'>38</div>
+              <div class='even cycle-number'>185</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>479</div>
+            </td>
+            <td day='43'>
+              <div class='even cycle-number'>45</div>
+              <div class='odd cycle-number'>192</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>486</div>
+            </td>
+            <td day='50'>
+              <div class='odd cycle-number'>52</div>
+              <div class='even cycle-number'>199</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>493</div>
+            </td>
+            <td day='57'>
+              <div class='even cycle-number'>59</div>
+              <div class='odd cycle-number'>206</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>500</div>
+            </td>
+            <td day='64'>
+              <div class='odd cycle-number'>66</div>
+              <div class='even cycle-number'>213</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>507</div>
+            </td>
+            <td day='71'>
+              <div class='even cycle-number'>73</div>
+              <div class='odd cycle-number'>220</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>514</div>
+            </td>
+            <td day='78'>
+              <div class='odd cycle-number'>80</div>
+              <div class='even cycle-number'>227</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>521</div>
+            </td>
+            <td day='85'>
+              <div class='even cycle-number'>87</div>
+              <div class='odd cycle-number'>234</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>528</div>
+            </td>
+            <td day='92'>
+              <div class='odd cycle-number'>94</div>
+              <div class='even cycle-number'>241</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>535</div>
+            </td>
+            <td day='99'>
+              <div class='even cycle-number'>101</div>
+              <div class='odd cycle-number'>248</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>542</div>
+            </td>
+            <td day='106'>
+              <div class='odd cycle-number'>108</div>
+              <div class='even cycle-number'>255</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>549</div>
+            </td>
+            <td day='113'>
+              <div class='even cycle-number'>115</div>
+              <div class='odd cycle-number'>262</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>556</div>
+            </td>
+            <td day='120'>
+              <div class='odd cycle-number'>122</div>
+              <div class='even cycle-number'>269</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>563</div>
+            </td>
+            <td day='127'>
+              <div class='even cycle-number'>129</div>
+              <div class='odd cycle-number'>276</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>570</div>
+            </td>
+            <td day='134'>
+              <div class='odd cycle-number'>136</div>
+              <div class='even cycle-number'>283</div>
+              <div class='cycle-number'>...</div>
+              <div class='even cycle-number'>577</div>
+            </td>
+            <td day='141'>
+              <div class='even cycle-number'>143</div>
+              <div class='odd cycle-number'>290</div>
+              <div class='cycle-number'>...</div>
+              <div class='odd cycle-number'>584</div>
+            </td>
+            <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+            <td class='trailer' id='days-heading-trailer'>
+               
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class='notes heading column' id='notes-heading'>
+        <ul>
+          <li class='details'>
+            <a href='#details'>Details</a>
+          </li>
+          <li class='conditions'>
+            <a href='#conditions'>Conditions</a>
+          </li>
+          <li class='labels'>
+            <a href='#labels'>Labels</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class='section' id='data-section'>
+      <div class='activities column' id='activities'>
+        <table>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <th>
+                <span class='text'>Disease measure</span>
+              </th>
+            </tr>
+            <tr activity-source='Arb' activity-code='vnpx ' class='activity'>
+              <td title=' XPNV'>
+                <span class='row-number'>1</span>
+                <span class='activity-name'>
+                   XPNV
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='ze' class='activity'>
+              <td title='EZ'>
+                <span class='row-number'>2</span>
+                <span class='activity-name'>
+                  EZ
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='jvhqnkcdqcesrafadjf' class='activity'>
+              <td title='FJDAFARSECQDCKNQHVJ'>
+                <span class='row-number'>3</span>
+                <span class='activity-name'>
+                  FJDAFARSECQDCKNQHVJ
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='claeifbyccmbvhh' class='activity'>
+              <td title='HHVBMCCYBFIEALC'>
+                <span class='row-number'>4</span>
+                <span class='activity-name'>
+                  HHVBMCCYBFIEALC
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='ygxesvtjhddavp' class='activity'>
+              <td title='PVADDHJTVSEXGY'>
+                <span class='row-number'>5</span>
+                <span class='activity-name'>
+                  PVADDHJTVSEXGY
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='zjbahotttrydsappft' class='activity'>
+              <td title='TFPPASDYRTTTOHABJZ'>
+                <span class='row-number'>6</span>
+                <span class='activity-name'>
+                  TFPPASDYRTTTOHABJZ
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='fveaacxsldxu' class='activity'>
+              <td title='UXDLSXCAAEVF'>
+                <span class='row-number'>7</span>
+                <span class='activity-name'>
+                  UXDLSXCAAEVF
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='btvwzqzovyqylnz' class='activity'>
+              <td title='ZNLYQYVOZQZWVTB'>
+                <span class='row-number'>8</span>
+                <span class='activity-name'>
+                  ZNLYQYVOZQZWVTB
+                </span>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <th>
+                <span class='text'>Lab test</span>
+              </th>
+            </tr>
+            <tr activity-source='Arb' activity-code='tgawaqtclilwkeb jos' class='activity'>
+              <td title='SOJ BEKWLILCTQAWAGT'>
+                <span class='row-number'>1</span>
+                <span class='activity-name'>
+                  SOJ BEKWLILCTQAWAGT
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='jdms odxjjjhddvu' class='activity'>
+              <td title='UVDDHJJJXDO SMDJ'>
+                <span class='row-number'>2</span>
+                <span class='activity-name'>
+                  UVDDHJJJXDO SMDJ
+                </span>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <th>
+                <span class='text'>Other</span>
+              </th>
+            </tr>
+            <tr activity-source='Arb' activity-code='dosddczcx ls' class='activity'>
+              <td title='SL XCZCDDSOD'>
+                <span class='row-number'>1</span>
+                <span class='activity-name'>
+                  SL XCZCDDSOD
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='iuemdupegelukz' class='activity'>
+              <td title='ZKULEGEPUDMEUI'>
+                <span class='row-number'>2</span>
+                <span class='activity-name'>
+                  ZKULEGEPUDMEUI
+                </span>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <th>
+                <span class='text'>Procedure</span>
+              </th>
+            </tr>
+            <tr activity-source='Arb' activity-code='ujinzfryoxhgb ' class='activity'>
+              <td title=' BGHXOYRFZNIJU'>
+                <span class='row-number'>1</span>
+                <span class='activity-name'>
+                   BGHXOYRFZNIJU
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='deaomduyc ' class='activity'>
+              <td title=' CYUDMOAED'>
+                <span class='row-number'>2</span>
+                <span class='activity-name'>
+                   CYUDMOAED
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='zqeuiydqrb' class='activity'>
+              <td title='BRQDYIUEQZ'>
+                <span class='row-number'>3</span>
+                <span class='activity-name'>
+                  BRQDYIUEQZ
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='psdyymwbzpglpwisj' class='activity'>
+              <td title='JSIWPLGPZBWMYYDSP'>
+                <span class='row-number'>4</span>
+                <span class='activity-name'>
+                  JSIWPLGPZBWMYYDSP
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='kuilalxfwdgm' class='activity'>
+              <td title='MGDWFXLALIUK'>
+                <span class='row-number'>5</span>
+                <span class='activity-name'>
+                  MGDWFXLALIUK
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='iiqnlcdcyn' class='activity'>
+              <td title='NYCDCLNQII'>
+                <span class='row-number'>6</span>
+                <span class='activity-name'>
+                  NYCDCLNQII
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='oasolxgdzjhbby kjep' class='activity'>
+              <td title='PEJK YBBHJZDGXLOSAO'>
+                <span class='row-number'>7</span>
+                <span class='activity-name'>
+                  PEJK YBBHJZDGXLOSAO
+                </span>
+              </td>
+            </tr>
+            <tr activity-source='Arb' activity-code='vxztcip' class='activity'>
+              <td title='PICTZXV'>
+                <span class='row-number'>8</span>
+                <span class='activity-name'>
+                  PICTZXV
+                </span>
+              </td>
+            </tr>
+          </tbody>
+          <tr class='trailer' id='activities-trailer'>
+            <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+            <td>
+               
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class='days column' id='days'>
+        <table>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_6'>
+                  B
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_9'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_10'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_15'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_4'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_8'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_12'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_15'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_18'>
+                  R
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_19'>
+                  Q
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_10'>
+                  KLm
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_11'>
+                  B
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_13'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_20'>
+                  B
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_0'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_4'>
+                  F
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_10'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_13'>
+                  Ghi
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_16'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_17'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_1'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_3'>
+                  F
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_19'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_0'>
+                  Cd
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_1'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_5'>
+                  Ghi
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_8'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_9'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_10'>
+                  R
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_12'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_13'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_14'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_19'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_6'>
+                  Ghi
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_10'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_14'>
+                  R
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_4'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_6'>
+                  R
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_7'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_8'>
+                  R
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_18'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_20'>
+                  &#215;
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_5'>
+                  KLm
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_7'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_11'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_13'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_20'>
+                  ST
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_0'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_2'>
+                  E
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_8'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_10'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_11'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_12'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_17'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_4'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_6'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_16'>
+                  Q
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_20'>
+                  &#215;
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_0'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_1'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_4'>
+                  Uv
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_6'>
+                  KLm
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_8'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_10'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_11'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_13'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_17'>
+                  B
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_18'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+          </tbody>
+          <tbody class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_3'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_6'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_8'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_9'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_12'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_13'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_16'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_19'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/0_20'>
+                  &#215;
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_0'>
+                  Uv
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_1'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_2'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_9'>
+                  B
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_14'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/1_16'>
+                  Ghi
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_4'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_5'>
+                  Cd
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_16'>
+                  KLm
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_17'>
+                  A
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_18'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/2_20'>
+                  &#215;
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_0'>
+                  F
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_3'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_5'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_6'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_12'>
+                  NOP
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_13'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_17'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_18'>
+                  A
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/3_19'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_3'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_4'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_5'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_7'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_15'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/4_17'>
+                  E
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_0'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_11'>
+                  B
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_18'>
+                  KLm
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/5_19'>
+                  Q
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_1'>
+                  ST
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_6'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/6_7'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_5'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_7'>
+                  Q
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_9'>
+                  &#215;
+                </div>
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                 
+              </td>
+              <td class='cell'>
+                <div class='marker' resource-href='/etc/PAs/7_20'>
+                  B
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class='notes column' id='notes'>
+        <div id='notes-preview' style='display: none'>
+          <h2>[Activity name]</h2>
+          <dl>
+            <dt>Details</dt>
+            <dd class='none' id='details-preview'>None</dd>
+            <dt>Conditions</dt>
+            <dd class='none' id='conditions-preview'>None</dd>
+            <dt>Labels</dt>
+            <dd class='none' id='labels-preview'>None</dd>
+          </dl>
+        </div>
+        <table>
+          <tbody activity-type='#&lt;Activity::Type:0x12fdd38&gt;' class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    Some details
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    Some details
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    Some details
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody activity-type='#&lt;Activity::Type:0x12fdd10&gt;' class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody activity-type='#&lt;Activity::Type:0x12fdce8&gt;' class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    Some details
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody activity-type='#&lt;Activity::Type:0x12fdcfc&gt;' class='activity-type'>
+            <tr class='activity-type'>
+              <td>
+                <span class='text'> </span>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                    <span class='label'>research-billing</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      bar
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr class='activity'>
+              <td>
+                <a class='notes-edit' href=''>
+                  View/Edit
+                </a>
+                <div class='notes-content'>
+                  <span class='details note'>
+                    A whole heaping mess of details.  More than you can comfortably shake a stick at, I tell you what.
+                    Actually, not that many, come to say.  I mean, how detailed should you be?  Less that this?  More?
+                    Who is to say?
+                  </span>
+                  <span class='conditions note'>
+                    If frob > zap
+                  </span>
+                  <span class='labels note'>
+                    <span class='label'>
+                      foo
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tr class='trailer' id='notes-trailer'>
+            <!-- hidden cell so we can scroll past and keep the columns aligned at the end -->
+            <td>
+               
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class='section' id='footer-section'>
+      <div class='activities footer column' id='activities-footer'></div>
+      <div class='days footer column' id='days-footer'>
+        <div id='message'></div>
+      </div>
+      <div class='notes footer column' id='notes-footer'></div>
+    </div>
+  </div>
+</body>
+</html>
