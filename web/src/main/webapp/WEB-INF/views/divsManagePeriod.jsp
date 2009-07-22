@@ -418,19 +418,13 @@
 </laf:box>
 
 <script type="text/javascript">
-    // Sync scrolling
-    $('days').observe('scroll', function() {
-        $('days-heading').scrollLeft = $('days').scrollLeft
-        $('activities').scrollTop = $('days').scrollTop
-        $('notes').scrollTop = $('days').scrollTop
-    })
-
     // Doing this in dom:loaded does not work consistently in Safari
     Event.observe(window, "load", function() {
         // hide the trailer for the horizontal scroll if there's no horizontal scroll happening
         if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
             $$("#heading-section .trailer").invoke("hide")
         }
+        // TODO: port this to the new style
         <c:if test="${not empty selectedActivity}">
         SC.MP.addActivityRow({
             name: '${selectedActivity.name}',
