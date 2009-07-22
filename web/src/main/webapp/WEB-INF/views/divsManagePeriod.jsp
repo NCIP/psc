@@ -7,6 +7,8 @@
 <html>
 <head>
     <title>Manage ${period.displayName} activities</title>
+    <tags:javascriptLink name="jquery/jquery.enumerable"/>
+    
     <tags:javascriptLink name="manage-period/model" />
     <tags:javascriptLink name="manage-period/actions" />
     <tags:javascriptLink name="manage-period/grid-controls" />

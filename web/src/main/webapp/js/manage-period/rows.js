@@ -9,8 +9,8 @@ psc.template.mpa.ActivityRows = (function ($) {
       console.log("There is already a group for %o", activityType.name)
       return;
     }
-    var beforeBodyN = $.grep($('#activities tbody.activity-type'), function () { 
-      return $(this).attr('activity-type') < activityType.name;
+    var beforeBodyN = $.grep($('#activities tbody.activity-type'), function (e) { 
+      return $(e).attr('activity-type').toLowerCase() < activityType.name.toLowerCase();
     }).length;
     
     insertNewActivityTypeTbody("activities", "new_activity_tbody_template",
@@ -42,21 +42,26 @@ psc.template.mpa.ActivityRows = (function ($) {
   function addActivityRow(activity, activityType) {
     var activitiesGroup = $("#activities tbody." + activityType.selector)[0]
     if (!activitiesGroup) { activitiesGroup = addNewActivityGroup(activityType) }
-    // var rows = $(activitiesGroup).find("tr.activity")
-    var beforeTypeRow = 0; // TODO: preserve order
+    var beforeTypeRow = $.grep($(activitiesGroup).find('tr.activity'), function (e) {
+      return $(e).find('.activity-name').text().toLowerCase() < activity.name.toLowerCase();
+    }).length;
     console.log("Will insert at %s", beforeTypeRow);
-    
-    $('.new-row').removeClass('new-row');
-    
+
     insertNewActivityRow("activities", "new_activity_row_template", 
       beforeTypeRow, activity, activityType);
     insertNewActivityRow("days", "new_days_row_template", 
       beforeTypeRow, activity, activityType);
     insertNewActivityRow("notes", "new_notes_row_template", 
       beforeTypeRow, activity, activityType);
-    
+
+    var tbodyIndex = $('#activities tbody.activity-type').index($(activitiesGroup));
+    var rowN = $('#activities tbody.activity-type:lt(' + tbodyIndex + ')').
+      map(function () { return $(this).find('tr.activity').length; }).sum() + 
+      beforeTypeRow;
+
+    console.log("Added row is now #", rowN);
     $('#days').trigger('row-added', {
-      rowNumber: beforeTypeRow // TODO: this is wrong -- it should be the global row number for consistency
+      row: rowN
     });
 
     scrollToRow(beforeTypeRow)

@@ -107,7 +107,7 @@ psc.template.mpa.GridControls = (function ($) {
   return {
     init: function () {
       $('#days').bind('action-changed', actionChanged).bind('row-added', function (evt, data) {
-        Model.findRow('days', data.rowNumber).find('td.cell').click(cellClick);
+        Model.findRow('days', data.row).find('td.cell').click(cellClick);
       });
       $('#days td.cell').click(cellClick);
       $('body').click(resetMove);
