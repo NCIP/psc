@@ -3,6 +3,8 @@ psc.namespace('template.mpa');
 /** TODO: this module needs tests */
 
 psc.template.mpa.ActivityRows = (function ($) {
+  var Model = psc.template.mpa.Model;
+  
   function addNewActivityGroup(activityType) {
     var activitiesGroup = $("#activities tbody." + activityType.selector)[0]
     if (activitiesGroup) {
@@ -64,15 +66,15 @@ psc.template.mpa.ActivityRows = (function ($) {
       row: rowN
     });
 
-    scrollToRow(beforeTypeRow)
+    scrollToRow(rowN);
   }
 
-  function scrollToRow(rowIndex) {
-    // TODO
-    // var daysBounds = SC.MP.bounds('days')
-    // var row = $$("#days .row-" + rowIndex).first();
-    // var finalScroll = row.positionedOffset().top + row.getDimensions().height / 2 - daysBounds.height / 2
-    // new Effect.Tween('days', $('days').scrollTop, finalScroll, { transition: Effect.Transitions.sinoidal }, 'scrollTop')
+  function scrollToRow(rowN) {
+    var row = Model.findRow('days', rowN);
+    var finalScroll = $(row).position().top + $(row).outerHeight() / 2 - $('#days').outerHeight() / 2;
+    $('#days').animate({
+      scrollTop: finalScroll
+    }, { easing: 'swing', duration: 800 });
   }
 
   function insertNewActivityRow(block, template, typeRowN, activity, activityType) {
