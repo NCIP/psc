@@ -337,39 +337,39 @@ function registerHeaderCollapse() {
     })
 }
 
+////// INPUT HINTS
+
 SC.addInputHintBehavior = function(input) {
-  console.log("adding hint behavior to %o", input)
+  console.log("adding hint behavior to %o", input);
   if (input.getAttribute("hint") && input.type == 'text') {
-    $(input).observe('focus', SC.inputHintFocus)
-    $(input).observe('blur', SC.inputHintBlur)
-    SC.applyInputHint(input)
+    $(input).observe('focus', SC.inputHintFocus);
+    $(input).observe('blur', SC.inputHintBlur);
+    SC.applyInputHint(input);
   } else {
-    console.log("Can't apply an input hint to %o -- it isn't a text input with the hint attribute.", input)
+    console.log("Can't apply an input hint to %o -- it isn't a text input with the hint attribute.", input);
   }
 }
 
 SC.inputHintFocus = function(evt) {
-  var input = Event.element(evt)
-  if (input.hasClassName("input-hint")) {
-    input.removeClassName("input-hint")
-    input.value = ""
+  var input = jQuery(Event.element(evt))
+  if (input.hasClass("input-hint")) {
+    input.removeClass("input-hint").val("");
   }
 }
 
 SC.inputHintBlur = function(evt) {
-  var input = Event.element(evt)
-  SC.applyInputHint(input)
+  SC.applyInputHint(Event.element(evt));
 }
 
 SC.applyInputHint = function(input) {
-  if (input.value.blank() || input.value == input.getAttribute("hint")) {
-    input.addClassName("input-hint")
-    input.value = input.getAttribute("hint")
+  input = jQuery(input);
+  if (!input.val() || input.val() == input.attr("hint")) {
+    input.addClass("input-hint").val(input.attr("hint"));
   } else {
-    input.removeClassName("input-hint")
+    input.removeClass("input-hint");
   }
 }
 
 $(document).observe("dom:loaded", function() {
-  $$("input[hint]").each(SC.addInputHintBehavior)
+  $$("input[hint]").each(SC.addInputHintBehavior);
 })
