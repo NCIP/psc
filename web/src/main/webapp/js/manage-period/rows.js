@@ -171,10 +171,10 @@ psc.template.mpa.ActivityRows = (function ($) {
     $('.column').find('tr.activity:eq(' + rowN + ')').
       removeClass('unused').removeClass('used').
       addClass(count == 0 ? 'unused' : 'used');
-    // IE sucks: it doesn't immediately show the view/edit button after the row class is changed to unused
-    // This ugly hack reminds it.
-    if (Prototype.Browser.IE && count != 0) {
-      $$("#notes " + rowSelector + " .notes-edit").first().hide().show()
+    // IE sucks: it doesn't immediately show/hide the view/edit button after 
+    // the row class is changed to used/unused.  This ugly hack reminds it.
+    if ($.browser.msie) {
+      Model.findRow('notes', rowN).find('.notes-edit').toggle(count != 0);
     }
   }
 
