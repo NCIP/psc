@@ -299,7 +299,7 @@
     </div>
 
     <div class="notes column" id="notes">
-        <div id="notes-preview" style="display: none">
+        <div id="notes-preview">
             <h2>[Activity name]</h2>
             <dl>
                 <dt>Details</dt>

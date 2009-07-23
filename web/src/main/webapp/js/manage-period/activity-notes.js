@@ -2,6 +2,7 @@ psc.namespace('template.mpa');
 
 psc.template.mpa.ActivityNotes = (function ($) {
   var NOTE_TYPES = ['details', 'condition', 'labels', 'weight'];
+  var NOTES_PREVIEW_MARGIN = 12;
   var Model = psc.template.mpa.Model;
   var notesObservers;
 
@@ -18,7 +19,16 @@ psc.template.mpa.ActivityNotes = (function ($) {
         elt.text(content).removeClass("none")
       }
     });
-    $('#notes-preview').attr('row', rowN).show().find('h2').text(activity.name);
+    $('#notes-preview').attr('row', rowN).find('h2').text(activity.name);
+    
+    var previewList = $('#notes-preview dl');
+    var availableHeight = $('#notes').innerHeight() - 
+      $('#notes-preview h2').outerHeight() -
+      $('#notes-preview-edit').outerHeight() - 
+      previewList.css('padding-top').replace(/px/, '') -
+      previewList.css('padding-bottom').replace(/px/, '') -
+      NOTES_PREVIEW_MARGIN * 2; // top and bottom spacing
+    previewList.height(availableHeight);
   }
   
   function editNotes(rowN) {
@@ -53,6 +63,10 @@ psc.template.mpa.ActivityNotes = (function ($) {
     LB.Lightbox.activate();
   }
   
+  function editDisplayedNotes() {
+    editNotes($('#notes-preview').attr('row'));
+  }
+  
   function finishEditingNotes() {
     $("#edit-notes-lightbox input").attr("disabled", "disabled");
     $(notesObservers).each(function () { this.stop() });
@@ -72,18 +86,30 @@ psc.template.mpa.ActivityNotes = (function ($) {
     $('.notes-edit').unbind().hover(
       function () {
         updateNotePreview(Model.rowNumberFor(this));
-        $('#notes-preview').show();
+        showNotesPreview();
       },
-      function () { $('#notes-preview').hide() }
+      hideNotesPreview
     ).click(function () {
       editNotes(Model.rowNumberFor(this));
       return false;
     });
   }
 
+  function showNotesPreview() {
+    $('#notes-preview').css('top', ($('#notes').scrollTop() + NOTES_PREVIEW_MARGIN) + "px");
+    $('#notes-preview').css('left', NOTES_PREVIEW_MARGIN + 'px');
+  }
+
+  function hideNotesPreview() {
+    $('#notes-preview').css('left', '-4000px');
+  }
+
   return {
     init: function () {
       registerNotesPreviewHandlers();
+      $('#notes-preview').
+        hover(showNotesPreview, hideNotesPreview).
+        click(editDisplayedNotes);
       $('#days').bind('row-added', registerNotesPreviewHandlers);
       $('#edit-notes-done').click(finishEditingNotes);
     },

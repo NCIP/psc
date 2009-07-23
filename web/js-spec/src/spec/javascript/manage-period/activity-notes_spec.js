@@ -108,8 +108,6 @@ Screw.Unit(function () {
               find('.labels').text('nlabel').end().
               find('.weight').text('-4').end();
 
-            print()
-
             $('#edit-notes-done').click();
           });
 
