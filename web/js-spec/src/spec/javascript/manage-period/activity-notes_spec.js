@@ -5,6 +5,10 @@ require_main('lightbox.js');
 require_main('manage-period/model.js');
 require_main('manage-period/activity-notes.js');
 
+if (psc.test.envjs()) {
+  print("SKIPPING activity-notes.js because prototype observers don't work consistently with env.js");
+} else {
+
 Screw.Unit(function () {
   (function ($) {
     describe("psc.template.mpa.ActivityNotes", function () {
@@ -104,6 +108,8 @@ Screw.Unit(function () {
               find('.labels').text('nlabel').end().
               find('.weight').text('-4').end();
 
+            print()
+
             $('#edit-notes-done').click();
           });
 
@@ -137,3 +143,5 @@ Screw.Unit(function () {
     });
   }(jQuery));
 });
+
+}
