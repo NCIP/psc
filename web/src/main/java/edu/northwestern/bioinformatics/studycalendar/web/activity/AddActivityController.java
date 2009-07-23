@@ -42,7 +42,6 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
         getControllerTools().registerDomainObjectEditor(binder, "activitySource", sourceDao);
     }
 
-
     @Override
     @SuppressWarnings({ "unchecked" })
     protected ModelAndView handle(NewActivityCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -73,10 +72,10 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
         model.put("activityTypes", activityTypeDao.getAll());
         model.put("displayCreateNewActivity", Boolean.TRUE);
         return new ModelAndView("template/ajax/activityTableUpdate", model);
-
     }
 
     //// CONFIGURATION
+
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;

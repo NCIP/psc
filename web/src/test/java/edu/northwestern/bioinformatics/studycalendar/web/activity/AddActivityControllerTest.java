@@ -1,22 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityCommand;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddActivityControllerTest extends ControllerTestCase {
 
@@ -52,12 +52,13 @@ public class AddActivityControllerTest extends ControllerTestCase {
         controller.setPlannedActivityDao(plannedActivityDao);
         controller.setActivityTypeDao(activityTypeDao);
         command = new NewActivityCommand(activityDao);
-        activityType = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createActivityType("DISEASE_MEASURE");
-        command.setActivityType(activityType);
+
+        activityType = setId(2, Fixtures.createActivityType("DISEASE_MEASURE"));
+        request.addParameter("activityType", "2");
+        expect(activityTypeDao.getById(2)).andReturn(activityType).anyTimes();
 
         source = setId(11, createNamedInstance("Test Source", Source.class));
-        request.addParameter("activityType", activityType.toString());
-        request.addParameter("activitySource", source.getId().toString());
+        request.addParameter("activitySource", "11");
         expect(sourceDao.getById(source.getId())).andReturn(source).anyTimes();
 
         List<Activity> activities = new ArrayList<Activity>();
@@ -69,12 +70,10 @@ public class AddActivityControllerTest extends ControllerTestCase {
         assertEquals(source, command.getActivitySource());
     }
 
-
     public void testBindActivityType() throws Exception {
         doHandle();
         assertEquals(activityType, command.getActivityType());
     }
-
 
     private ModelAndView doHandle() throws Exception {
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
@@ -87,13 +86,11 @@ public class AddActivityControllerTest extends ControllerTestCase {
         return actualModel;
     }
 
-
     public void testModel() throws Exception {
         ModelAndView model = doHandle();
         assertTrue("Missing model object", model.getModel().containsKey("enableDeletes"));
         assertTrue("Missing model object", model.getModel().containsKey("activitiesPerSource"));
         assertTrue("Missing model object", model.getModel().containsKey("activityTypes"));
-
     }
 
     public void testCreatingNewActivity() throws Exception {
@@ -107,5 +104,4 @@ public class AddActivityControllerTest extends ControllerTestCase {
         Activity a2 = command.createActivity();
         assertEquals("Activities are not the same", a1.getName(), a2.getName());
     }
-
 }
