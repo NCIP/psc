@@ -13,6 +13,7 @@ import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
 import org.acegisecurity.userdetails.memory.UserMap;
 import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.EasyMock.notNull;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -21,6 +22,7 @@ import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockServiceReference;
 
 import javax.sql.DataSource;
+import java.util.Dictionary;
 
 /**
  * @author Rhett Sutphin
@@ -78,6 +80,10 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
 
     private void expectSelectedService(MockPlugin plugin) {
         expect(mockBundleContext.getService(plugin.getServiceReference())).andReturn(plugin.getSystem());
+        // these are side effects of using an OsgiBundleApplicationContext
+        expect(mockBundleContext.getBundle()).andReturn(plugin.getBundle()).anyTimes();
+        expect(mockBundleContext.registerService((String[]) notNull(), notNull(), (Dictionary<?, ?>) notNull())).
+            andReturn(null).anyTimes();
     }
 
     private void expectUngetService(MockPlugin plugin) {

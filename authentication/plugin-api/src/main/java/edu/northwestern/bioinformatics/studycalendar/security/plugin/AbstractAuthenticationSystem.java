@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
@@ -66,15 +66,7 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
      * context are visible to Spring as it instantiates them.
      */
     protected ApplicationContext loadClassRelativeXmlApplicationContext(ApplicationContext parent, String... contextResourcePaths) {
-        GenericApplicationContext ctx = new GenericApplicationContext(parent);
-        XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-        for (String path : contextResourcePaths) {
-            xmlReader.loadBeanDefinitions(new ClassPathResource(path, getClass()));
-        }
-        xmlReader.setBeanClassLoader(getClass().getClassLoader());
-        ctx.setClassLoader(getClass().getClassLoader());
-        ctx.refresh();
-        return ctx;
+        return new ClassRelativeOsgiXmlApplicationContext(parent, contextResourcePaths, getClass());
     }
 
     protected Configuration getConfiguration() {
@@ -229,6 +221,32 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
                     throw new StudyCalendarValidationException("%s is required for the selected authentication system",
                         prop.getName());
                 }
+            }
+        }
+    }
+
+    private class ClassRelativeOsgiXmlApplicationContext extends OsgiBundleXmlApplicationContext {
+        private String[] contextResourcePaths;
+        private Class<?> klass;
+
+        public ClassRelativeOsgiXmlApplicationContext(ApplicationContext parent, String[] contextResourcePaths, Class<?> klass) {
+            super(parent);
+            this.contextResourcePaths = contextResourcePaths;
+            this.klass = klass;
+            this.setClassLoader(klass.getClassLoader());
+            this.setBundleContext(bundleContext);
+            this.refresh();
+        }
+
+        @Override
+        protected void initBeanDefinitionReader(XmlBeanDefinitionReader xmlReader) {
+            xmlReader.setBeanClassLoader(klass.getClassLoader());
+        }
+
+        @Override
+        protected void loadBeanDefinitions(XmlBeanDefinitionReader xmlReader) {
+            for (String path : contextResourcePaths) {
+                xmlReader.loadBeanDefinitions(new ClassPathResource(path, klass));
             }
         }
     }

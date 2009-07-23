@@ -6,6 +6,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
 
@@ -13,6 +15,8 @@ import java.util.Dictionary;
  * @author Rhett Sutphin
  */
 public abstract class PluginActivator implements BundleActivator {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private ServiceRegistration systemFactoryRegistration;
 
     public void start(BundleContext context) throws Exception {
@@ -30,8 +34,10 @@ public abstract class PluginActivator implements BundleActivator {
         return new ServiceFactory() {
             public Object getService(Bundle bundle, ServiceRegistration serviceRegistration) {
                 try {
+                    log.debug("Instantiating authentication system {}", authenticationSystemClass());
                     AuthenticationSystem authenticationSystem = authenticationSystemClass().newInstance();
                     if (authenticationSystem instanceof AbstractAuthenticationSystem) {
+                        log.debug("- System can receive bundle context; setting to {}", context);
                         ((AbstractAuthenticationSystem) authenticationSystem).setBundleContext(context);
                     }
                     return authenticationSystem;
