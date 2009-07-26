@@ -45,7 +45,29 @@ Object.extend(SC.MP, {
       }).join("\n")
       callback("<ul>\n" + list + "\n</ul>")
     });
-  }   
+  },
+
+  findNextLabels: function(receiver) {
+    var searchString = SC.MP.lastLabel($F("edit-notes-labels"));
+    if (searchString.blank()) {
+        receiver([]);
+        return;
+    }
+    var uri = SC.relativeUri("/api/v1/labels")
+    var params = { };
+    if (!searchString.blank()) params.q = searchString;
+
+    SC.asyncRequest(uri, {
+      method: "GET", parameters: params,
+      onSuccess: function(response) {
+        var doc = response.responseXML;
+        var labels = SC.objectifyXml("label", doc, function(elt, label) {
+          label = elt.parentNode.getAttribute("name")
+        })
+        receiver(labels)
+      }
+    })
+  }
 })
 
 $(document).observe("dom:loaded", function() {
