@@ -16,7 +16,7 @@
                     </c:forEach>
                     <c:forEach items="${mapOfPastDueActivities.value}" var="mapOfPastDueActivitiesValue" varStatus="valueStatus">
                         <a href=
-                            "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivitiesValue.key.id}"/>" > ${pastDueActivities} past-due activities</a>. Earliest is
+                            "<c:url value="/pages/subject?subject=${mapOfPastDueActivitiesValue.key.subject.id}"/>" > ${pastDueActivities} past-due activities</a> on study ${mapOfPastDueActivitiesValue.key.studySite.study.name}. Earliest is
                             from <tags:formatDate value="${mapOfPastDueActivitiesValue.value.actualDate}"/>
                         <br>
                     </c:forEach>
