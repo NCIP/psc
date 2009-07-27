@@ -15,8 +15,15 @@ function registerBatchRescheduleHandlers() {
 }
 
 function getCheckboxClassName(studyNameForCheckbox){
-    var selectedStudyValue = jQuery('#studySelector.studySelector option:selected')[0].value
-    var selectedStudyName = jQuery('#studySelector.studySelector option:selected')[0].innerHTML
+    var selectedStudyValue;
+    var selectedStudyName;
+
+    if (jQuery('#studySelector.studySelector option:selected').size > 0) {
+      selectedStudyValue = jQuery('#studySelector.studySelector option:selected')[0].value
+      selectedStudyName = jQuery('#studySelector.studySelector option:selected')[0].innerHTML
+    } else {
+      selectedStudyName = $('studyIdentifier').value
+    }
     if (selectedStudyValue != "all") {
         studyNameForCheckbox = studyNameForCheckbox+'.assignment-'+selectedStudyName.replace(/\W/g, '_')
     }

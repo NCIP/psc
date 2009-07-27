@@ -80,8 +80,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
         command.apply();
         Map<String, Object> model = new HashMap<String, Object>();
         ScheduledStudySegment studySegment = command.getEvent().getScheduledStudySegment();
-        model.put("studySegment", studySegment.getId());
-        model.put("calendar", studySegment.getScheduledCalendar().getId());
+        model.put("subject", studySegment.getScheduledCalendar().getAssignment().getSubject().getId());
         return new ModelAndView("redirectToSchedule", model);
     }
 

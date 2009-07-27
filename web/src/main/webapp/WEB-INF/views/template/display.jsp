@@ -849,10 +849,14 @@
                             <li>View schedule (On Study) for
                                 <select id="assigned-subject-selector">
                                     <c:forEach items="${onStudyAssignments}" var="assignment">
-                                        <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
+                                        <option value="${assignment.subject.id}" assignment="${assignment.id}">${assignment.subject.lastFirst}</option>
+
                                     </c:forEach>
                                 </select>
-                                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+                                <a class="control" href="<c:url value="/pages/subject"/>" id="go-to-schedule-control">Go</a>
+
+                                <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take
+                                        subject off study</a>
                             </li>
                             </security:secureOperation>
                         </c:if>
@@ -864,7 +868,8 @@
                                         <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
                                     </c:forEach>
                                 </select>
-                                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+                                <%--<a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>--%>
+                                <a class="control" href="<c:url value="/pages/subject"/>" id="offstudy-go-to-schedule-control">Go</a>
                             </li>
                             </security:secureOperation>
                         </c:if>

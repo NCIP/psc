@@ -34,11 +34,11 @@ public class SubjectCoordinatorDashboardService {
         Collection<ScheduledActivity> collectionOfEvents;
         Map<String, Object> mapOfUserAndCalendar = new LinkedHashMap<String, Object>();
 
-        Map <String, Object> subjectAndEvents;
+        Map <Subject, Object> subjectAndEvents;
 
         for (int i =0; i< initialShiftDate; i++) {
             Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
-            subjectAndEvents = new HashMap<String, Object>();
+            subjectAndEvents = new HashMap<Subject, Object>();
             for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
 
                 List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
@@ -55,7 +55,7 @@ public class SubjectCoordinatorDashboardService {
                     }
                 }
                 if (events != null && events.size() > 0) {
-                    subjectAndEvents.put(subjectName, events);
+                    subjectAndEvents.put(subject, events);
                 }
             }
             String keyDate = formatDateToString(tempStartDate);
@@ -73,7 +73,7 @@ public class SubjectCoordinatorDashboardService {
         Collection<ScheduledActivity> collectionOfEvents;
         Map<String, Object> mapOfUserAndCalendar = new LinkedHashMap<String, Object>();
 
-        Map <String, Object> subjectAndEvents;
+        Map <Subject, Object> subjectAndEvents;
 
         for (int i = 0; i< initialShiftDate; i++) {
             Date tempStartDate;
@@ -83,13 +83,13 @@ public class SubjectCoordinatorDashboardService {
             } else {
                 tempStartDate = shiftStartDayByNumberOfDays(startDate, 1);
             }
-            subjectAndEvents = new HashMap<String, Object>();
+            subjectAndEvents = new HashMap<Subject, Object>();
             for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
                 List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
                 ScheduledCalendar calendar = studySubjectAssignment.getScheduledCalendar();
                 collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
                 Subject subject = studySubjectAssignment.getSubject();
-                String subjectName = subject.getFullName();
+//                String subjectName = subject.getFullName();
 
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledActivity event : collectionOfEvents) {
@@ -108,7 +108,7 @@ public class SubjectCoordinatorDashboardService {
                     }
                 }
                 if (events != null && events.size()> 0)  {
-                    subjectAndEvents.put(subjectName, events);
+                    subjectAndEvents.put(subject, events);
                 }
             }
             String keyDate = formatDateToString(tempStartDate);

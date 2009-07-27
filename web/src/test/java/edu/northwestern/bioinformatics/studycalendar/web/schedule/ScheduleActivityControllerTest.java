@@ -4,10 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import static org.easymock.classextension.EasyMock.expect;
@@ -30,6 +29,8 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     private ActivityService activityService;
     private ScheduledActivity event;
     private ScheduleActivityCommand command;
+    private Study study;
+    private Site site;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -115,9 +116,16 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     }
 
     public void testChangeStateOnSubmit() throws Exception {
+        Subject subject = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject("firstName", "lastName");
+        StudySite studySite = new StudySite();
+        Study study = new Study();
+        study.setAssignedIdentifier("test-study");
+        studySite.setStudy(study);
+
         command.setEvent(new ScheduledActivity());
         command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
         command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
+        command.getEvent().getScheduledStudySegment().getScheduledCalendar().setAssignment(Fixtures.createAssignment(studySite, subject));
         request.setMethod("POST");
         command.apply();
 

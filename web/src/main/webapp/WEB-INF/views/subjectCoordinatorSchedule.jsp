@@ -172,7 +172,8 @@
                                                              </c:forEach>
                                                            </c:forEach>
                                                          <c:if test="${isAnyActivityAssigned}">
-                                                             <a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">
+                                                             <%--<a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">--%>
+                                                             <a href="<c:url value="/pages/subject?subject=${listOfSubjects.subject.id}"/>" class="primary">
                                                                 ${listOfSubjects.subject.firstName}
                                                                 ${listOfSubjects.subject.lastName}
                                                              </a>

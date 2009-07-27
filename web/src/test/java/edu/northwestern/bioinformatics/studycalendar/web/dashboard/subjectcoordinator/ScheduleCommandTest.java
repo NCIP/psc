@@ -358,9 +358,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         Set<String> valueOneKey = valueOne.keySet();
         assertEquals("Wrong number of subjects ", 1, valueOneKey.size());
-        String subjectKey = (String) valueOneKey.toArray()[0];
+        Subject subjectKey = (Subject) valueOneKey.toArray()[0];
         String expectedSubjectKeyOne = subjectOne.getFullName();
-        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey);
+        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey.getFullName());
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
         Set<String> valueTwoKey = valueTwo.keySet();
@@ -498,9 +498,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         Set<String> valueOneKey = valueOne.keySet();
         assertEquals("Wrong number of subjects ", 1, valueOneKey.size());
-        String subjectKey = (String) valueOneKey.toArray()[0];
+        Subject subjectKey = (Subject)valueOneKey.toArray()[0];
         String expectedSubjectKeyOne = subjectOne.getFullName() ;
-        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey);
+        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey.getFullName());
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
         Set<String> valueTwoKey = valueTwo.keySet();

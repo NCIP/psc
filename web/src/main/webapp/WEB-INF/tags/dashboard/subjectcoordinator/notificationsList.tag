@@ -7,8 +7,7 @@
      <ul class="menu" style="width:100%;">
          <li class="noMarginAtAllNotifications">
             <c:if test="${not empty notificationsSubjectMap.value}">
-                <a href="<c:url value="/pages/cal/schedule?calendar=${notificationsSubjectMap.value[0].assignment.scheduledCalendar.id}&studySegment=${notificationsSubjectMap.value[0].assignment.scheduledCalendar.scheduledStudySegments[0].id}"/>">
-               ${notificationsSubjectMap.key.firstName} ${notificationsSubjectMap.key.lastName}</a>
+                <a href="<c:url value="/pages/subject?subject=${notificationsSubjectMap.key.id}"/>">${notificationsSubjectMap.key.firstName} ${notificationsSubjectMap.key.lastName}</a>
             </c:if>
 
             <c:forEach items="${notificationsSubjectMap.value}" var="value" varStatus="valueStatus">

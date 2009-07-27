@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
@@ -29,6 +30,7 @@ import java.util.Set;
  */
 public class SubjectCentricScheduleController extends PscAbstractController {
     private SubjectDao subjectDao;
+    private StudySubjectAssignmentDao studySubjectAssignmnentDao;
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private ApplicationSecurityManager applicationSecurityManager;
@@ -40,8 +42,14 @@ public class SubjectCentricScheduleController extends PscAbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(subjectDao);
-        editor.setAsText(ServletRequestUtils.getRequiredStringParameter(request, "subject"));
+        editor.setAsText(ServletRequestUtils.getStringParameter(request, "subject"));
         Subject subject = (Subject) editor.getValue();
+
+        editor.setAsText(ServletRequestUtils.getStringParameter(request, "assignment"));
+        StudySubjectAssignment studySubjectAssignment = (StudySubjectAssignment) editor.getValue();
+        if (subject == null) {
+            subject = studySubjectAssignment.getSubject();
+        }
 
         List<StudySubjectAssignment> allAssignments = subject.getAssignments();
         List<StudySubjectAssignment> visibleAssignments
@@ -65,6 +73,11 @@ public class SubjectCentricScheduleController extends PscAbstractController {
     @Required
     public void setSubjectDao(SubjectDao subjectDao) {
         this.subjectDao = subjectDao;
+    }
+
+    @Required
+    public void setStudySubjectAssignmnentDao(StudySubjectAssignmentDao studySubjectAssignmnentDao) {
+        this.studySubjectAssignmnentDao = studySubjectAssignmnentDao;
     }
 
     @Required
