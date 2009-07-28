@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.subject;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
@@ -30,7 +31,8 @@ import java.util.Set;
  */
 public class SubjectCentricScheduleController extends PscAbstractController {
     private SubjectDao subjectDao;
-    private StudySubjectAssignmentDao studySubjectAssignmnentDao;
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private ScheduledCalendarDao scheduledCalendarDao;
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private ApplicationSecurityManager applicationSecurityManager;
@@ -45,12 +47,18 @@ public class SubjectCentricScheduleController extends PscAbstractController {
         editor.setAsText(ServletRequestUtils.getStringParameter(request, "subject"));
         Subject subject = (Subject) editor.getValue();
 
-        editor.setAsText(ServletRequestUtils.getStringParameter(request, "assignment"));
-        StudySubjectAssignment studySubjectAssignment = (StudySubjectAssignment) editor.getValue();
         if (subject == null) {
+            Integer studySubjectId = ServletRequestUtils.getIntParameter(request, "assignment");
+            Integer scheduledCalendarId = ServletRequestUtils.getIntParameter(request, "calendar");
+            StudySubjectAssignment studySubjectAssignment;
+            if ( studySubjectId  == null && scheduledCalendarId != null) {
+                studySubjectAssignment = scheduledCalendarDao.getById(scheduledCalendarId).getAssignment();
+            } else {
+                studySubjectAssignment = studySubjectAssignmentDao.getById(studySubjectId);
+            }
+
             subject = studySubjectAssignment.getSubject();
         }
-
         List<StudySubjectAssignment> allAssignments = subject.getAssignments();
         List<StudySubjectAssignment> visibleAssignments
             = authorizationService.filterAssignmentsForVisibility(allAssignments, applicationSecurityManager.getUser());
@@ -76,8 +84,13 @@ public class SubjectCentricScheduleController extends PscAbstractController {
     }
 
     @Required
-    public void setStudySubjectAssignmnentDao(StudySubjectAssignmentDao studySubjectAssignmnentDao) {
-        this.studySubjectAssignmnentDao = studySubjectAssignmnentDao;
+    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+    }
+
+    @Required
+    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
+        this.scheduledCalendarDao = scheduledCalendarDao;
     }
 
     @Required

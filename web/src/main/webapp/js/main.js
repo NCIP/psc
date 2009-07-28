@@ -22,13 +22,12 @@ SC.Main.registerGoToScheduleControl = function() {
         Event.observe('go-to-schedule-control', "click", function(e) {
             Event.stop(e)
             var a = $('go-to-schedule-control')
-            var subjectId = $F('assigned-subject-selector')
-            window.location.href = a.href + "?subject=" + subjectId;
+            var scheduleId = $F('assigned-subject-selector')
+            window.location.href = a.href + "?calendar=" + scheduleId;
         })
     }
 }
 Event.observe(window, "load", SC.Main.registerGoToScheduleControl)
-
 
 
 SC.Main.registerOffStudyGoToScheduleControl = function() {
@@ -36,11 +35,22 @@ SC.Main.registerOffStudyGoToScheduleControl = function() {
         Event.observe('offstudy-go-to-schedule-control', "click", function(e) {
             Event.stop(e)
             var a = $('offstudy-go-to-schedule-control')
-//            var scheduleId = $F('offstudy-assigned-subject-selector')
-//            window.location.href = a.href + "?calendar=" + scheduleId;
-            var subjectId = $F('assigned-subject-selector')
-            window.location.href = a.href + "?subject=" + subjectId;
+            var scheduleId = $F('offstudy-assigned-subject-selector')
+            window.location.href = a.href + "?calendar=" + scheduleId;
         })
     }
 }
 Event.observe(window, "load", SC.Main.registerOffStudyGoToScheduleControl)
+
+
+SC.Main.registerTakeSubjectOffStudy = function() {
+    if ($('take-subject-off-study')) {
+        Event.observe('take-subject-off-study', "click", function(e) {
+            Event.stop(e)
+            var a = $('take-subject-off-study')
+            var assignment = jQuery('#assigned-subject-selector option:selected').attr('assignment')
+            window.location.href = a.href + "?assignment=" + assignment;
+        })
+    }
+}
+Event.observe(window, "load", SC.Main.registerTakeSubjectOffStudy)

@@ -855,7 +855,7 @@
                                 </select>
                                 <a class="control" href="<c:url value="/pages/subject"/>" id="go-to-schedule-control">Go</a>
 
-                                <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take
+                                <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy"/>" id="take-subject-off-study">Take
                                         subject off study</a>
                             </li>
                             </security:secureOperation>
