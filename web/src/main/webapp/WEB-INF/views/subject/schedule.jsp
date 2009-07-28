@@ -213,6 +213,7 @@
          table.populationTable {
              border-spacing:0px;
              border-collapse:collapse;
+             width:100%;
          }
 
     </style>
