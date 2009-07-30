@@ -18,7 +18,7 @@ function getCheckboxClassName(studyNameForCheckbox){
     var selectedStudyValue;
     var selectedStudyName;
 
-    if (jQuery('#studySelector.studySelector option:selected').size > 0) {
+    if (jQuery('#studySelector.studySelector option:selected').size() > 0) {
       selectedStudyValue = jQuery('#studySelector.studySelector option:selected')[0].value
       selectedStudyName = jQuery('#studySelector.studySelector option:selected')[0].innerHTML
     } else {
