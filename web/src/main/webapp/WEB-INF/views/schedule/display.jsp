@@ -386,7 +386,7 @@
                                 <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
                     </c:forEach>
                 </select>
-                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+                <a class="control" href="<c:url value="/pages/subject"/>" id="go-to-schedule-control">Go</a>
             </c:if>
         </span>
         <span class="schedule-switch-control">

@@ -849,7 +849,7 @@
                             <li>View schedule (On Study) for
                                 <select id="assigned-subject-selector">
                                     <c:forEach items="${onStudyAssignments}" var="assignment">
-                                        <option value="${assignment.subject.id}" assignment="${assignment.id}">${assignment.subject.lastFirst}</option>
+                                        <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
 
                                     </c:forEach>
                                 </select>
