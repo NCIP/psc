@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <div id="schedule-legend" class="legend">
+    <h3>Legend</h3>
     <ul>
         <li class="even"><img src="<c:url value="/images/scheduled.png"/>" alt="scheduled icon"/> Scheduled</li>
         <li class="odd"> <img src="<c:url value="/images/occurred.png"/>" alt="occurred icon"/> Occurred</li>

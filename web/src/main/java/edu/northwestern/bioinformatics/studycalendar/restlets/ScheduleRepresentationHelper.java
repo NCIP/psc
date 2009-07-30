@@ -13,6 +13,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author Jalpa Patel
@@ -66,6 +67,18 @@ public class ScheduleRepresentationHelper {
 	    }
     }
 
+    public static String formatLabels(SortedSet<String> labels) {
+        String result=null;
+        if (labels != null && labels.size() > 0) {
+            String stringOfLabels = "";
+            for (String label: labels){
+                stringOfLabels = stringOfLabels + label +" ";
+            }
+            result = stringOfLabels;
+        }
+        return result;
+    }
+
     public static JSONObject createJSONScheduledActivity(ScheduledActivity sa) throws ResourceException {
         try {
             JSONObject jsonSA = new JSONObject();
@@ -84,6 +97,13 @@ public class ScheduleRepresentationHelper {
             }
             jsonSA.put("current_state", createJSONStateInfo(sa.getCurrentState()));
             jsonSA.put("activity", createJSONActivity(sa.getActivity()));
+
+            if (sa.getPlannedActivity() != null) {
+                jsonSA.put("details", sa.getPlannedActivity().getDetails());
+                jsonSA.put("condition", sa.getPlannedActivity().getCondition());
+                jsonSA.put("labels", formatLabels(sa.getPlannedActivity().getLabels()));
+            }
+
             JSONArray state_history =  new JSONArray();
             for (ScheduledActivityState state : sa.getAllStates()) {
                 state_history.put(createJSONStateInfo(state));

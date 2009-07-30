@@ -416,6 +416,28 @@
                 [# } else { #]
                   [#= activity.name #]
                 [# } #]
+
+                <span class="event-details" >
+                    [# if (hasDetails()) { #]
+                         [#= getDetails() #]
+                         [# if (hasCondition()) { #]
+                            [#= ';' #]
+                         [# } #]
+
+                    [# } #]
+                    [# if (hasCondition()) { #]
+                            [#= 'Condition:' #] [#= getCondition() #]
+                            [# if (hasLabels()) { #]
+                                [#= ';' #]
+                            [# } #]
+                    [# } #]
+                    [# if (hasLabels()) { #]
+                        <span class="label">
+                            [#= 'Labels:' #] [#= getLabels() #]
+                        </span>
+                    [# } #]
+                </span>
+
             </label>
         </li>
     </tags:resigTemplate>
@@ -460,7 +482,7 @@
     <%--TODO - move css to display.jsp, make accordion fit in the box--%>
     <div id="schedule-controls" class="myaccordion">
         <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Legend </a></h3>
+            <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
         <div><sched:legend/> </div>
      <c:if test="${not schedulePreview}">

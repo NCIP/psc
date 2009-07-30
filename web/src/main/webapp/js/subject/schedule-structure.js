@@ -31,7 +31,7 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       currentDate: function () {
         return psc.tools.Dates.apiDateToUtc(this.current_state.date);
       },
-      
+
       dateClasses: function () {
         var classes = ["date-" + this.current_state.date];
         if (this.isToday()) {
@@ -70,6 +70,30 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
       hasAssignment: function() {
         return sa.assignment !== undefined;
+      },
+
+      hasDetails: function() {
+        return sa.details !== undefined;
+      },
+
+      getDetails : function() {
+        return this.details
+      },
+
+      getCondition : function() {
+        return this.condition
+      },
+
+      hasCondition: function() {
+        return sa.condition !== undefined;
+      },
+
+      getLabels : function() {
+        return this.labels;
+      },
+
+      hasLabels: function() {
+        return sa.labels !== undefined;
       }
     });
   }
@@ -148,7 +172,7 @@ psc.subject.ScheduledStudySegment = function(study, name) {
     stopDate: function () { return stopDate; },
     
     scheduledActivities: function () { return activities; },
-    
+
     addActivity: function (scheduledActivity) {
       activities.push(scheduledActivity);
       updateRange(scheduledActivity.current_state.date);
