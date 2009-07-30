@@ -128,7 +128,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.CopyStudyController"/>
 
     <bean name="/subject" id="subjectCentricScheduleController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricScheduleController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricScheduleController">
+    </bean>
 
     <bean name="/activities" id="activityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
@@ -409,7 +410,7 @@
     <bean name="/cal/scheduleActivity" id="scheduleActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleActivityController">
         <property name="crumb.parent">
-            <ref local="displayScheduleController"/>
+            <ref local="subjectCentricScheduleController"/>
         </property>
     </bean>
 
