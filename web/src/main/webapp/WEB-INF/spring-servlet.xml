@@ -391,14 +391,14 @@
     <bean name="/cal/schedule/amend" id="changeAmendmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangeAmendmentController">
         <property name="crumb.parent">
-            <ref local="displayScheduleController"/>
+            <ref local="subjectCentricScheduleController"/>
         </property>
     </bean>
 
     <bean name="/cal/schedule/populations" id="changePopulationsController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangePopulationsController">
         <property name="crumb.parent">
-            <ref local="displayScheduleController"/>
+            <ref local="subjectCentricScheduleController"/>
         </property>
     </bean>
 
@@ -582,7 +582,7 @@
     <bean name="/cal/takeSubjectOffStudy" id="subjectOffStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.SubjectOffStudyController">
         <property name="crumb.parent">
-            <ref local="displayScheduleController"/>
+            <ref local="subjectCentricScheduleController"/>
         </property>
     </bean>
 
