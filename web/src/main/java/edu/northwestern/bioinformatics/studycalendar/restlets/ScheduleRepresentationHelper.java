@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
 import org.json.JSONArray;
@@ -79,6 +76,13 @@ public class ScheduleRepresentationHelper {
         return result;
     }
 
+    //moved the javascript functionality over - for the original code, check scheduledStudySegment.tag calculations
+    public static String formatDaysFromPlan(ScheduledActivity sa) {
+        DayNumber day = sa.getDayNumber();
+        return day.getHasCycle() ? day.toString() : "Day " + day.getDayNumber();
+    }
+
+
     public static JSONObject createJSONScheduledActivity(ScheduledActivity sa) throws ResourceException {
         try {
             JSONObject jsonSA = new JSONObject();
@@ -102,6 +106,7 @@ public class ScheduleRepresentationHelper {
                 jsonSA.put("details", sa.getPlannedActivity().getDetails());
                 jsonSA.put("condition", sa.getPlannedActivity().getCondition());
                 jsonSA.put("labels", formatLabels(sa.getPlannedActivity().getLabels()));
+                jsonSA.put("formatted_plan_day", formatDaysFromPlan(sa));
             }
 
             JSONArray state_history =  new JSONArray();

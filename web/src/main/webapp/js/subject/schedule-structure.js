@@ -94,6 +94,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
       hasLabels: function() {
         return sa.labels !== undefined;
+      },
+
+      getPlanDay : function() {
+        return this.formated_plan_day
       }
     });
   }

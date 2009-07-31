@@ -12,6 +12,9 @@
 
 <jsp:useBean id="schedulePreview" type="java.lang.Boolean" scope="request"/>
 
+<%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
+<tags:javascriptLink name="scheduled-activity-batch-days-subheader"/>
+
 <html>
 <head>
     <title>Comprehensive Subject Schedule</title>
@@ -438,7 +441,12 @@
                     [# } #]
                 </span>
 
-            </label>
+                <li class="days_from_period" id="days_from_period" style="display:none;">
+                    <span class="event-details">
+                        [#= getPlanDay() #]    
+                    </span>
+                </li>
+             </label>
         </li>
     </tags:resigTemplate>
 
@@ -484,7 +492,13 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
-        <div><sched:legend/> </div>
+        <div>
+            <sched:legend/>
+            <div class="content" id="selected-studySegment-content">
+                <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
+                <a id="hide_days_button" href="#?" class="control" style="display:none;">Hide days from study plan</a>
+            </div>
+        </div>
      <c:if test="${not schedulePreview}">
           <%--************ Delay Or Advance Portion**********--%>
         <div class="accordionDiv">
@@ -547,9 +561,9 @@
         <%--</laf:division>--%>
     </div>
 
-        <%--*********** Mark Portion****************--%>
+        <%--*********** Select and modify Portion****************--%>
         <div class="accordionDiv">
-        <h3><a class="accordionHeader" href="#">Mark</a></h3>
+        <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
         </div>
         <div class="content">
             <markTag:markActivity/>
