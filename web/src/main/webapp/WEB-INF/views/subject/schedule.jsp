@@ -356,17 +356,6 @@
 
         }
 
-        <c:if test="${schedulePreview}">
-            Event.observe(window, 'load', function() {
-                SC.SP.generateIntialSchedulePreview('${previewResource}')
-                Event.observe('generateSchedulePreview', 'click', function(){
-                    SC.SP.generateSchedulePreview('${previewResource}')
-                })
-                Event.observe('addToSelectedStudySegments', 'click', SC.SP.selectStudySegmentsForPreview)
-                Event.observe('removeSelectedStudySegments', 'click', SC.SP.removeFromSelectedStudySegments)
-            })
-        </c:if>
-
         Event.observe(window, 'load', function() {
             psc.subject.ScheduleTimeline.create();
             psc.subject.ScheduleTimeline.FocusHandler.init();
