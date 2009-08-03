@@ -97,7 +97,7 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       },
 
       getPlanDay : function() {
-        return this.formated_plan_day
+        return this.formatted_plan_day
       }
     });
   }
