@@ -213,7 +213,7 @@
             vertical-align:top;
         }
 
-         table.populationTable {
+         table.populationTable, table.accordianTbl {
              border-spacing:0px;
              border-collapse:collapse;
              width:100%;
@@ -573,6 +573,29 @@
         <div class="card">
             <markTag:population/>
         </div>
+
+        <!-- Export accordian -->
+        <div class="accordionDiv">
+            <h3><a class="accordionHeader" href="#">Export</a></h3>
+        </div>
+        <div class="content">
+            <table class="accordianTbl">
+                <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
+                <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
+                <td>
+                    <div class="accordionRow">
+                        <div class="label">${assignment.name}</div>
+                        <div class="value"><a class="control"
+                                href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
+                                id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
+                        </div>
+                    </div>
+                </td>
+                </tr>
+                </c:forEach>
+           </table>
+        </div>
+         
      </c:if>
      <c:if test="${schedulePreview}">
         <div class="accordionDiv" id="accordianHeader-5">
