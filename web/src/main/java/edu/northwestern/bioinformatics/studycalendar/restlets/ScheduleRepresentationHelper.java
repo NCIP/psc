@@ -11,6 +11,7 @@ import org.restlet.resource.ResourceException;
 
 import java.util.List;
 import java.util.SortedSet;
+import java.util.Collections;
 
 /**
  * @author Jalpa Patel
@@ -128,6 +129,7 @@ public class ScheduleRepresentationHelper {
                 jsonScheduledActivities.put("hidden_activities", hidden_activities);
             }
             JSONArray activities = new JSONArray();
+            Collections.sort(scheduledActivities);
             for (ScheduledActivity scheduledActivity: scheduledActivities ) {
                 activities.put(createJSONScheduledActivity(scheduledActivity));
             }
