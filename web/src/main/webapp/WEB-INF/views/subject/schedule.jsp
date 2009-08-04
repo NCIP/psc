@@ -486,7 +486,7 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
-        <div id="accordian-content">
+        <div class="accordian-content">
             <sched:legend/>
             <div class="content" id="selected-studySegment-content">
                 <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
@@ -499,7 +499,7 @@
             <h3><a class="accordionHeader" href="#">Delay or Advance</a></h3>
         </div>
 
-        <div style="display: none" id="accordian-content">
+        <div class="accordian-content" style="display: none">
             <div class="accordionRow">
                 <div class="label">Study: </div>
                 <div class="value">
@@ -559,7 +559,7 @@
         <div class="accordionDiv">
         <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
         </div>
-        <div class="content" id="accordian-content">
+        <div class="accordian-content">
             <markTag:markActivity/>
             <div class="delayOrAdvanceBlock">
                 <tags:activityIndicator id="mark-indicator"/>
@@ -569,21 +569,23 @@
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Next Segment</a></h3>
         </div>
-        <div id="accordian-content">
+        <div class="accordian-content">
             <markTag:scheduleStudySegment subject="${subject}"/>
         </div>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
-        <div class="card" id="accordian-content">
-            <markTag:population/>
+        <div class="accordian-content">
+            <div class="card">
+                <markTag:population/>
+            </div>
         </div>
 
         <!-- Export accordian -->
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
-        <div class="content" id="accordian-content">
+        <div class="accordian-content">
             <table class="accordianTbl">
                 <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
                 <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
@@ -606,7 +608,7 @@
         <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Preview study segments</a></h3>
         </div>
-        <div id="schedule-preview-controls">
+        <div id="schedule-preview-controls" class="accordian-content">
             <ul id="preview-segments">
                 <li id="next-segment">
                     <h4>Preview another segment?</h4>
