@@ -31,13 +31,15 @@
     </style>
     <script type="text/javascript">
         function resetFilters() {
-           document.getElementById("filters.studyAssignedIdentifier").value = "";
-           document.getElementById("filters.siteName").value = "";
-           document.getElementById("filters.currentStateMode").value = "";
-           document.getElementById("filters.activityType").value = "";
-           document.getElementById("actual-date-start").value = "";
-           document.getElementById("actual-date-stop").value = "";
-           document.getElementById("filters.subjectCoordinator").value = "";
+           $("filters.studyAssignedIdentifier").value = "";
+           $("filters.siteName").value = "";
+           $("filters.currentStateMode").value = "";
+           $("filters.activityType").value = "";
+           $("actual-date-start").value = "";
+           $("actual-date-stop").value = "";
+           $("filters.subjectCoordinator").value = "";
+           $("qurey-result-display").hide();
+           $("searchResult").hide();
         }
 
         //need this method to avoid form submission on the enter key press for labels autocompleter
@@ -56,7 +58,7 @@
             <tags:errors path="*"/>
              <div class="search_box">
                  <input type="submit" value="Search" class="button" onclick="submit()"/>
-                 ${fn:length(results)} results
+                    <span id="searchResult">${fn:length(results)} results</span>
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
             <div class="search-filters">
