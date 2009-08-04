@@ -87,10 +87,15 @@
             font-size: 10pt;
             border: 1px solid #444;
             background-color: white;
-            overflow-x: auto;
+            overflow-y: auto;
             height: 297px;
+            position: relative;
         }
 
+        #accordian-content {
+            overflow: auto;
+            overflow-x: auto;
+        }
         .legendSetup {
             position: static;
             width: 90%;
@@ -481,7 +486,7 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
-        <div>
+        <div id="accordian-content">
             <sched:legend/>
             <div class="content" id="selected-studySegment-content">
                 <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
@@ -494,7 +499,7 @@
             <h3><a class="accordionHeader" href="#">Delay or Advance</a></h3>
         </div>
 
-        <div style="display: none">
+        <div style="display: none" id="accordian-content">
             <div class="accordionRow">
                 <div class="label">Study: </div>
                 <div class="value">
@@ -554,7 +559,7 @@
         <div class="accordionDiv">
         <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
         </div>
-        <div class="content">
+        <div class="content" id="accordian-content">
             <markTag:markActivity/>
             <div class="delayOrAdvanceBlock">
                 <tags:activityIndicator id="mark-indicator"/>
@@ -564,13 +569,13 @@
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Next Segment</a></h3>
         </div>
-        <div>
+        <div id="accordian-content">
             <markTag:scheduleStudySegment subject="${subject}"/>
         </div>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
-        <div class="card">
+        <div class="card" id="accordian-content">
             <markTag:population/>
         </div>
 
@@ -578,7 +583,7 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
-        <div class="content">
+        <div class="content" id="accordian-content">
             <table class="accordianTbl">
                 <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
                 <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
@@ -598,7 +603,7 @@
          
      </c:if>
      <c:if test="${schedulePreview}">
-        <div class="accordionDiv" id="accordianHeader-5">
+        <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Preview study segments</a></h3>
         </div>
         <div id="schedule-preview-controls">
