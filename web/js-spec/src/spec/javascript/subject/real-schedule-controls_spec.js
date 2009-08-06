@@ -106,14 +106,9 @@ Screw.Unit(function () {
           });
         });
 
-        it("includes the reason if provided", function () {
+        it("includes the reason", function () {
           $('#delay-reason').val('Timing');
           expect(actual()['Co']['reason']).to(equal, 'Timing');
-        });
-  
-        it("does not include a reason if not provided", function () {
-          $('#delay-reason').val('');
-          expect(actual()['Co']['reason']).to(equal, undefined);
         });
       });
     });

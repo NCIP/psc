@@ -54,12 +54,8 @@ psc.subject.RealScheduleControls = (function ($) {
               date: psc.tools.Dates.utcToApiDate(
                 psc.tools.Dates.shiftByDays(
                   psc.tools.Dates.apiDateToUtc(this.current_state.date), delayAmount)),
-              reason: 'foo'
+              reason: $('#delay-reason').val()
             };
-            var reason = $('#delay-reason').val();
-            if (reason) {
-              params[this['id']].reason = reason;
-            }
           }
         });
       });

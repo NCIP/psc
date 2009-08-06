@@ -517,7 +517,7 @@
                 by <input id="delay-amount" size="3" value="7"/> day(s)
                 as of <laf:dateInput local="true" path="delay-as-of"/>.
                 <br/>
-                Reason: <input id="delay-reason"/>
+                Why? <input id="delay-reason"/>
             </div>
             <div>
                 <tags:activityIndicator id="delayOrAdvance-indicator"/>
