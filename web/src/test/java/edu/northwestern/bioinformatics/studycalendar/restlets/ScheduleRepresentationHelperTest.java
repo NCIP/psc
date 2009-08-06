@@ -53,6 +53,7 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         scheduledActivities.add(sa);
         sa.setGridId("1111");
         scheduledSegment = Fixtures.createScheduledStudySegment(studySegment, DateTools.createDate(2009, Calendar.APRIL, 3));
+        scheduledSegment.setGridId("GRID-SEG");
         scheduledCalendar.addStudySegment(scheduledSegment);
         scheduledCalendar.setAssignment(Fixtures.createAssignment(study, site, subject));
         sa.setScheduledStudySegment(scheduledSegment);
@@ -139,6 +140,7 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     public void testScheduledStudySegmentsInJson() throws Exception {
         JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
         assertEquals("has different name", scheduledSegment.getName(), jsonSegment.get("name"));
+        assertEquals("missing ID", scheduledSegment.getGridId(), jsonSegment.get("id"));
 
         JSONObject jsonRange = (JSONObject)(jsonSegment.get("range"));
         assertEquals("different start date", "2009-04-03", jsonRange.get("start_date"));

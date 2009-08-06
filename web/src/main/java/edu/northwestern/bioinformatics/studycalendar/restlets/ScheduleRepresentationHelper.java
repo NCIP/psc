@@ -147,6 +147,9 @@ public class ScheduleRepresentationHelper {
         try {
             JSONObject jsonSegment = new JSONObject();
             jsonSegment.put("name", segment.getName());
+            if (segment.getGridId() != null) {
+                jsonSegment.put("id", segment.getGridId());
+            }
             JSONObject jsonRange = new JSONObject();
             jsonRange.put("start_date", getApiDateFormat().format(segment.getDateRange().getStart()));
             jsonRange.put("stop_date", getApiDateFormat().format(segment.getDateRange().getStop()));
@@ -167,8 +170,7 @@ public class ScheduleRepresentationHelper {
             jsonSegment.put("planned", jsonPlannedSegmentInfo);
             return jsonSegment;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-	    }
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+        }
     }
 }
