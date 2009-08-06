@@ -2,7 +2,7 @@
 /*global psc josephine equal_date */
 
 require_spec('spec_helper.js');
-require_spec('sample-data/josephine-schedule.json');
+require_spec('sample-data/josephine-schedule.js');
 require_main('subject/schedule-structure.js');
 require_main('psc-tools/misc.js');
 
@@ -10,7 +10,7 @@ Screw.Unit(function () {
   var j;
   
   before(function () {
-    j = new psc.subject.Schedule(josephine()); // test data from josephine-schedule.json
+    j = new psc.subject.Schedule(josephine()); // test data from josephine-schedule.js
   });
 
   describe("psc.subject.Schedule", function () {
