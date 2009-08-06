@@ -77,12 +77,14 @@ public class ScheduleRepresentationHelper {
         return result;
     }
 
-    //moved the javascript functionality over - for the original code, check scheduledStudySegment.tag calculations
     public static String formatDaysFromPlan(ScheduledActivity sa) {
         DayNumber day = sa.getDayNumber();
-        return day.getHasCycle() ? day.toString() : "Day " + day.getDayNumber();
+        if (day == null) {
+            return null;
+        } else {
+            return day.getHasCycle() ? day.toString() : "Day " + day.getDayNumber();
+        }
     }
-
 
     public static JSONObject createJSONScheduledActivity(ScheduledActivity sa) throws ResourceException {
         try {
