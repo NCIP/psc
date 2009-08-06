@@ -26,11 +26,11 @@ Screw.Unit(function () {
       
       it("converts a display date 11/23/2003 to the API date 2003-11-23", function () {
         expect(psc.tools.Dates.displayDateToApiDate("11/23/2003")).to(equal, "2003-11-23");
-      })
+      });
       
       it("converts an API date 2005-11-03 to the display date 11/03/2005", function () {
         expect(psc.tools.Dates.apiDateToDisplayDate("2005-11-03")).to(equal, "11/03/2005");
-      })
+      });
     });
 
     describe("day manipulation", function () {
@@ -42,6 +42,18 @@ Screw.Unit(function () {
       it("gives the UTC noon instant for 2009-05-03 22:11:13", function () {
         expect(psc.tools.Dates.middleOfUtcDay(new Date(Date.UTC(2009, 4, 3, 22, 11, 13)))).to(
           equal_utc_time, new Date(Date.UTC(2009, 4, 3, 12, 0, 0, 0)))
+      });
+    });
+
+    describe("day shifting", function () {
+      it("can shift into the future 9 days", function () {
+        expect(psc.tools.Dates.shiftByDays(new Date(Date.UTC(2009, 4, 29, 10, 9, 8)), 9)).to(
+          equal_utc_time, new Date(Date.UTC(2009, 5, 7, 10, 9, 8)));
+      });
+
+      it("can shift into the past 4 days", function () {
+        expect(psc.tools.Dates.shiftByDays(new Date(Date.UTC(2009, 3, 6, 10, 11, 12)), -4)).to(
+          equal_utc_time, new Date(Date.UTC(2009, 3, 2, 10, 11, 12)));
       });
     });
     

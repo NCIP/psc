@@ -63,12 +63,14 @@
             </script>
         </c:when>
         <c:otherwise>
-            <%-- TODO: reenable when the content is updated to work with the new page
-                 TODO: these scripts should be in the subject folder with everything else
+            <%-- TODO: these scripts should be in the subject folder with everything else
                        unless they are shared with other pages.
                         --%>
             <tags:javascriptLink name="scheduled-activity"/>
             <tags:javascriptLink name="scheduled-activity-batch-modes"/>
+
+            <tags:javascriptLink name="subject/real-schedule-controls"/>
+            <tags:javascriptLink name="subject/real-schedule-wiring"/>
 
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
@@ -76,8 +78,9 @@
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
                     return psc.tools.Uris.relative("/api/v1/schedules/${subject.gridId}.json");
-                    <%--return SC.relativeUri("/api/v1/subjects/${subject.gridId}/schedule.json");--%>
-                })
+                });
+
+                psc.subject.RealScheduleControls.batchResource('${collectionResource}');
             </script>
         </c:otherwise>
     </c:choose>
@@ -231,11 +234,6 @@
             jQuery(".myaccordion").accordion({ autoHeight: false, collapsible: true, navigation: true });
         });
 
-        function shiftDateByNumberOfDays(dateToShiftInMilliseconds, numberOfDaysToShift) {
-            var shiftedDate = new Date(psc.tools.Dates.incrementDecrementDate(dateToShiftInMilliseconds, numberOfDaysToShift))
-            return psc.tools.Dates.utcToApiDate(shiftedDate)
-        }
-
         function executeDelayAdvancePost() {
             $('delayOrAdvance-indicator').reveal()
             var mapOfParameters={};
@@ -362,10 +360,6 @@
         }
 
         Event.observe(window, 'load', function() {
-            psc.subject.ScheduleTimeline.create();
-            psc.subject.ScheduleTimeline.FocusHandler.init();
-            psc.subject.ScheduleList.init();
-            psc.subject.ScheduleList.FocusHandler.init();
             Event.observe($('next-study-segment-button'), 'click', function() {putScheduleNextSegment()})
         })
 
@@ -501,59 +495,35 @@
 
         <div class="accordian-content" style="display: none">
             <div class="accordionRow">
-                <div class="label">Study: </div>
-                <div class="value">
-                    <c:if test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
-                        <select id="studySelector" class="delayAdvanceSelector">
-                            <option value="all" selected="true">All Studies </option>
-                            <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
-                                <option value="${row.id}">${row.name}</option>
-                            </c:forEach>
-                         </select>
-                    </c:if>
-                    <c:if test="${fn:length(schedule.studies) eq 1}">
-                        <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
-                            <input id="studyId" type="hidden" value="${row.id}"/>${row.name}
-                        </c:forEach>
-                    </c:if>
-
-                        <%--if we decide to delayOrAdvance study segment--%>
-                        <%--<c:if test="${not empty schedule.segmentRows}">--%>
-                            <%--<option value="all" selected="true"> Full Study </option>--%>
-                        <%--</c:if>--%>
-                        <%--<c:forEach items="${schedule.segmentRows}" var="row" varStatus="rowStatus">--%>
-                            <%--<c:forEach items="${row.segments}" var="segment" varStatus="segmentStatus">--%>
-                                <%--<option value="${segment.id}" <c:if test="${segment.id == selectedId}">selected</c:if>>${segment.name}</option>--%>
-                            <%--</c:forEach>--%>
-                        <%--</c:forEach>--%>
-
-
-                        <%--if we keep the perProtocol functionality, then the code is below--%>
-                         <%--<input id="toDate" size="5" path="toDate" value="7"/>--%>
-                            <%--day(s) as of date:  <input id="currentDate" path="currentDate" size="15"--%>
-                            <%--value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>" class="date"/>--%>
-                    <%--</select> --%>
-                </div>
-                    
-            </div>
-            <div class="delayOrAdvanceBlock">
-                <select id="delayAdvanceSelector" name="delayAdvanceSelector">
-                    <option value="1" selected="true" >Delay</option>
+                <select id="delay-or-advance">
+                    <option value="1" selected="selected">Delay</option>
                     <option value="-1">Advance</option>
-                </select> scheduled or conditional activities by <input id="toDate" size="5" path="toDate" value="7"/> day(s) as
-                of date:  <input id="currentDate" path="currentDate" size="10" value="" class="date"/>
-                <a href="#" id="currentDate-calbutton">
-                    <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
-                </a>
-                Reason: <input id="reason" class="reason" path="reason" value=""/>
+                </select>
+                scheduled and conditional activities in
+                <select id="delay-study">
+                    <c:choose>
+                        <c:when test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
+                            <option value="" selected="selected">all studies</option>
+                            <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
+                                <option>${row.name}</option>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <option>${schedule.studies[0].name}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </select>
 
+                by <input id="delay-amount" size="3" value="7"/> day(s)
+                as of <laf:dateInput local="true" path="delay-as-of"/>.
+                <br/>
+                Reason: <input id="delay-reason"/>
             </div>
-            <div class="delayOrAdvanceBlock">
+            <div>
                 <tags:activityIndicator id="delayOrAdvance-indicator"/>
-                <input class="submitDelayOrAdvance" type="submit" value="Submit" onclick="executeDelayAdvancePost();"/>
+                <input type="submit" value="Update" id="delay-submit"/>
             </div>
-        <%--</laf:division>--%>
-    </div>
+        </div>
 
         <%--*********** Select and modify Portion****************--%>
         <div class="accordionDiv">

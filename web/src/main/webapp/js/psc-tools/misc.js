@@ -44,12 +44,12 @@ psc.tools.Dates = (function () {
       return new Date(Math.floor(d.getTime() / this.ONE_DAY) * this.ONE_DAY + this.ONE_DAY / 2);
     },
 
-    incrementDecrementDate: function(date, shiftNumber){
-      var d = new Date();
-      var time =  date + (parseInt(shiftNumber, 10)*this.ONE_DAY)
-      return d.setTime(time)
+    shiftByDays: function (d, dayCount) {
+      var newD = new Date();
+      newD.setTime(d.getTime() +  dayCount * this.ONE_DAY);
+      return newD;
     },
-    
+
     ////// CONSTANTS
     
     ONE_DAY: 86400000
