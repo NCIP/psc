@@ -1,24 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.ArrayList;
-
-
-import static org.easymock.EasyMock.expect;
-import org.restlet.data.Status;
-import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import static org.easymock.EasyMock.expect;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Status;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -39,7 +45,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         subjectDao = registerDaoMockFor(SubjectDao.class);
         subject = createSubject("1111", "Perry", "Duglas", createDate(1980, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
         subject.setId(11);
-        Study study = createBasicTemplate();
+        Study study = createBasicTemplate("Joe's Study");
         Site site = createSite("NU");
         StudySubjectAssignment studySubjectAssignment = createAssignment(study,site,subject);
         study = Fixtures.createSingleEpochStudy("S", "Treatment");
