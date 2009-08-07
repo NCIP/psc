@@ -77,13 +77,30 @@ Screw.Unit(function () {
       var segment, actualEvent;
       
       before(function () {
-        segment = new psc.subject.ScheduledStudySegment("NU 1402", "Treatment: B");
-        segment.addActivity({
-          current_state: { 'date': '2009-04-06' }
-        });
-        
         actualEvent = function () {
-          return psc.subject.ScheduleTimeline.eventForScheduledStudySegment(segment);
+          var sched = new psc.subject.Schedule({
+            "days": {
+              "2009-04-06": {
+              }
+            },
+            
+            "study_segments": [
+              {
+                name: "Treatment: B",
+                planned: { 
+                  study: {
+                    assigned_identifier: "NU 1402"
+                  }
+                },
+                range: {
+                  start_date: "2009-04-06",
+                  stop_date: "2009-04-06"
+                }
+              }
+            ]
+          });
+          
+          return psc.subject.ScheduleTimeline.eventForScheduledStudySegment(sched.study_segments[0]);
         };
       });
       
