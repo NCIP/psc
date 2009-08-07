@@ -143,7 +143,6 @@ LB.addLightboxMarkup = function() {
     if (!document.getElementById('lightbox')) {
       var lb = document.createElement('div');
       lb.id = 'lightbox';
-      lb.className = 'loading';
       bod.appendChild(lb);
     }
 }
