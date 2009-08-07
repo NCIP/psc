@@ -296,88 +296,36 @@ Screw.Unit(function () {
       });
     });
 
-    describe("segment list", function () {
-      it("is created from the activities", function () {
-        expect(j.studySegments().length).to(equal, 4);
-      });
-
-      it("is sorted by start date", function () {
-        expect(j.studySegments()[0].name()).to(equal, "Treatment: Monitoring");
-        expect(j.studySegments()[1].name()).to(equal, "Treatment: A");
-        expect(j.studySegments()[2].name()).to(equal, "Treatment: B");
-        expect(j.studySegments()[3].name()).to(equal, "Followup");
-      });
-    });
-
-    describe("a segment", function () {
+    describe("segment enhancements", function () {
       var a;
 
       before(function () {
-        a = j.studySegments()[1];
+        a = j.study_segments[0];
       });
 
-      it("has a name", function () {
-        expect(a.name()).to(equal, "Treatment: A");
-      });
-
-      it("belongs to a study", function () {
-        expect(a.study()).to(equal, "NU 1400");
-      });
-
-      it("contains scheduled activities", function () {
-        expect(a.scheduledActivities()).to(have_length, 72);
-      });
-
-      it("has a start date", function () {
-        expect(a.startDate()).to(equal_utc_date, new Date(Date.UTC(2009, 3, 23)));
-      });
-
-      it("has a stop date", function () {
-        expect(a.stopDate()).to(equal_utc_date, new Date(Date.UTC(2009, 5, 4, 23, 59, 59, 999)));
-      });
-    });
-  });
-
-  describe("psc.subject.ScheduledStudySegment", function () {
-    var segment;
-
-    before(function () {
-      segment = new psc.subject.ScheduledStudySegment("NU 07X1", "Follow up");
-    });
-
-    it("has a name", function () {
-      expect(segment.name()).to(equal, "Follow up");
-    });
-
-    it("belongs to a study", function () {
-      expect(segment.study()).to(equal, "NU 07X1");
-    });
-
-    describe("range", function () {
-      before(function () {
-        segment.addActivity({ 'current_state': { 'date': '2008-04-11' } });
-      });
-
-      it("spans a full day for single date", function () {
-        expect(segment.startDate()).to(equal_utc_date, new Date(Date.UTC(2008, 3, 11)));
-        expect(segment.stopDate()).to( equal_utc_date, new Date(Date.UTC(2008, 3, 11, 23, 59, 59, 999)));
-      });
-
-      describe("expands to cover added activities", function () {
-        it("after stop", function () {
-          segment.addActivity({ 'current_state': { 'date': '2008-04-18' } });
-
-          expect(segment.startDate()).to(equal_utc_date, new Date(Date.UTC(2008, 3, 11)));
-          expect(segment.stopDate()).to( equal_utc_date, new Date(Date.UTC(2008, 3, 18, 23, 59, 59, 999)));
+      describe("assignmentName()", function () {
+        it("is the assignment name when present", function () {
+          expect(a.assignmentName()).to(equal, "NU 1400 (1)");
         });
-
-        it("before start", function () {
-          segment.addActivity({ 'current_state': { 'date': '2008-04-09' } });
-
-          expect(segment.startDate()).to(equal_utc_date, new Date(Date.UTC(2008, 3, 9)));
-          expect(segment.stopDate()).to( equal_utc_date, new Date(Date.UTC(2008, 3, 11, 23, 59, 59, 999)));
+        
+        it("is the study name otherwise", function () {
+          a.assignment = null;
+          expect(a.assignmentName()).to(equal, "NU 1400");
         });
       });
+      
+      describe("startDate()", function () {
+        it("is the UTC Date version of the response start date", function () {
+          expect(a.startDate()).to(equal_utc_date, new Date(Date.UTC(2009, 3, 22)));
+        })
+      });
+
+      describe("stopDate()", function () {
+        it("is the UTC Date version of the response stop date", function () {
+          expect(a.stopDate()).to(equal_utc_time, new Date(Date.UTC(2009, 5, 5, 23, 59, 59, 999)));
+        })
+      });
+
     });
   });
 });

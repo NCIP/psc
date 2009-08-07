@@ -144,7 +144,7 @@ psc.namespace("subject");
         }, '.');
 
         var segEvents = [];
-        $.each(schedule.studySegments(), function (idx, segment) {
+        $.each(schedule.study_segments, function (idx, segment) {
           segEvents.push(psc.subject.ScheduleTimeline.eventForScheduledStudySegment(segment));
         });
         
@@ -186,7 +186,7 @@ psc.namespace("subject");
           durationEvent: true,
           start: segment.startDate(),
           end: segment.stopDate(),
-          title: segment.study() + " / " + segment.name(),
+          title: segment.assignmentName() + " / " + segment.name,
           description: ""
         };
       },

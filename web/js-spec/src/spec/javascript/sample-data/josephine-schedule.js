@@ -2042,21 +2042,27 @@ function josephine() {
     "study_segments": [
       {
         "name": "Treatment: A",
+        "id": "TA",
         "range": {
           "start_date": "2009-04-22",
-          "end_date": "2009-06-05"
+          "stop_date": "2009-06-05"
         },
         "planned": {
           "study": {
             "assigned_identifier": "NU 1400"
           }
+        },
+        "assignment": {
+          "name": "NU 1400 (1)",
+          "id": "NU_14.0"
         }
       },
       {
         "name": "Treatment: B",
+        "id": "TB",
         "range": {
           "start_date": "2009-06-06",
-          "end_date": "2009-07-08"
+          "stop_date": "2009-07-08"
         },
         "planned": {
           "study": {
@@ -2066,9 +2072,10 @@ function josephine() {
       },
       {
         "name": "Treatment: Monitoring",
+        "id": "TM",
         "range": {
           "start_date": "2009-04-21",
-          "end_date": "2009-07-06"
+          "stop_date": "2009-07-06"
         },
         "planned": {
           "study": {
@@ -2078,9 +2085,10 @@ function josephine() {
       },
       {
         "name": "Followup",
+        "id": "F",
         "range": {
           "start_date": "2009-08-01",
-          "end_date": "2011-01-28"
+          "stop_date": "2011-01-28"
         },
         "planned": {
           "study": {
