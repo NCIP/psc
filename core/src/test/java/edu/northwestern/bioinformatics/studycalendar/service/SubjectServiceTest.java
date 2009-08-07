@@ -491,17 +491,17 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setStartDateEpoch(startDate);
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(createScheduledActivity("ABC", 2007, SEPTEMBER, 2, new Occurred()));
-        studySegment0.addEvent(createScheduledActivity("DEF", 2007, SEPTEMBER, 4, new Canceled()));
-        studySegment0.addEvent(createScheduledActivity("GHI", 2007, SEPTEMBER, 6, new Occurred()));
-        studySegment0.addEvent(createScheduledActivity("JKL", 2007, SEPTEMBER, 8, new Scheduled()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("ABC", 2007, SEPTEMBER, 2, new Occurred()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("DEF", 2007, SEPTEMBER, 4, new Canceled()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("GHI", 2007, SEPTEMBER, 6, new Occurred()));
+        studySegment0.addEvent(createScheduledActivityWithStudy("JKL", 2007, SEPTEMBER, 8, new Scheduled()));
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(createScheduledActivity("MNO", 2007, OCTOBER, 2, new Occurred()));
-        studySegment1.addEvent(createScheduledActivity("PQR", 2007, OCTOBER, 4, new Scheduled()));
-        studySegment1.addEvent(createScheduledActivity("STU", 2007, OCTOBER, 6, new Scheduled()));
-        studySegment1.addEvent(createScheduledActivity("VWX", 2007, OCTOBER, 8, new Scheduled()));
-        studySegment1.addEvent(createConditionalEvent("YZA", 2007, OCTOBER, 10));
+        studySegment1.addEvent(createScheduledActivityWithStudy("MNO", 2007, OCTOBER, 2, new Occurred()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("PQR", 2007, OCTOBER, 4, new Scheduled()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("STU", 2007, OCTOBER, 6, new Scheduled()));
+        studySegment1.addEvent(createScheduledActivityWithStudy("VWX", 2007, OCTOBER, 8, new Scheduled()));
+        studySegment1.addEvent(createConditionalEventWithStudy("YZA", 2007, OCTOBER, 10));
 
         ScheduledCalendar calendar = new ScheduledCalendar();
         calendar.setAssignment(expectedAssignment);

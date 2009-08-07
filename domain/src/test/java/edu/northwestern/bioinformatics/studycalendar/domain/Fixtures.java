@@ -327,7 +327,51 @@ public class Fixtures {
         event.changeState(new Scheduled(null, DateTools.createDate(year, month, day)));
         return event;
     }
+    public static ScheduledActivity createScheduledActivityWithStudy(PlannedActivity planned, int year, int month, int day) {
+        planned.setPeriod(createTemplateWithPeriod());
+        return createScheduledActivity(planned, year, month, day);
+    }
 
+    public static ScheduledActivity createScheduledActivityWithStudy(String activityName, int year, int month, int day) {
+        PlannedActivity planned = createPlannedActivity(activityName, 0);
+        return createScheduledActivityWithStudy(planned, year, month, day);
+    }
+    
+    public static ScheduledActivity createScheduledActivityWithStudy(
+        String activityName, int year, int month, int day, ScheduledActivityState state
+    ) {
+        PlannedActivity planned = createPlannedActivity(activityName, 0);
+        return createScheduledActivityWithStudy(planned, year, month,  day,  state);
+    }
+
+    public static ScheduledActivity createScheduledActivityWithStudy(
+        PlannedActivity planned, int year, int month, int day, ScheduledActivityState state
+    ) {
+        planned.setPeriod(createTemplateWithPeriod());
+        ScheduledActivity scheduledActivity = createScheduledActivity(planned, year, month, day);
+        scheduledActivity.changeState(state);
+        return scheduledActivity;
+    }
+
+    public static ScheduledActivity createConditionalEventWithStudy(String activityName, int year, int month, int day) {
+        PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
+        baseEvent.setCondition("Details");
+        baseEvent.setPeriod(createTemplateWithPeriod());
+        return createScheduledActivity(baseEvent, year, month, day, new Conditional());
+    }
+
+    public static Period createTemplateWithPeriod() {
+        Study study = setId(3, createNamedInstance("Study", Study.class));
+        PlannedCalendar calendar = new PlannedCalendar();
+        calendar.setStudy(study);
+        Epoch epoch =  new Epoch();
+        epoch.setPlannedCalendar(calendar);
+        Period period = createPeriod("Period", 7, 28, 4);
+        StudySegment studySegment = setId(4, createNamedInstance("Segment", StudySegment.class));
+        studySegment.setEpoch(epoch);
+        period.setStudySegment(studySegment);
+        return period;
+    }
     public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");

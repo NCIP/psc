@@ -71,18 +71,18 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 2));
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
-        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("AAA", 2005, Calendar.JULY, 1));
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("BBB", 2005, Calendar.JULY, 2,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 3))));
-        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
-        studySegment0.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("CCC", 2005, Calendar.JULY, 4));
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("DDD", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
+        studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("EEE", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        studySegment1.addEvent(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
-        studySegment1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
+        studySegment1.addEvent(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivityWithStudy("FFF", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("GGG", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
@@ -110,17 +110,17 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
-        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("AAA", 2005, Calendar.JULY, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
-        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
-        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("BBB", 2005, Calendar.JULY, 3));
+        studySegment0.addEvent(Fixtures.createScheduledActivityWithStudy("CCC", 2005, Calendar.JULY, 8));
         calendar.addStudySegment(studySegment0);
 
         ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
-        studySegment1.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
+        studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("DDD", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
-        studySegment1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
+        studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("EEE", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivityWithStudy("FFF", 2005, Calendar.AUGUST, 8));
         calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);

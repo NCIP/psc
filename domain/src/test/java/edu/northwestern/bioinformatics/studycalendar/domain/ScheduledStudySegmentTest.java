@@ -64,10 +64,10 @@ public class ScheduledStudySegmentTest extends TestCase {
     }
 
     public void testEventsByDay() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity("One", 2006, Calendar.SEPTEMBER, 20));
-        scheduledStudySegment.addEvent(createScheduledActivity("Two", 2006, Calendar.SEPTEMBER, 20));
-        scheduledStudySegment.addEvent(createScheduledActivity("Three", 2006, Calendar.SEPTEMBER, 18));
-        scheduledStudySegment.addEvent(createScheduledActivity("Two", 2006, Calendar.SEPTEMBER, 24));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy("One", 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy("Two", 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy("Three", 2006, Calendar.SEPTEMBER, 18));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy("Two", 2006, Calendar.SEPTEMBER, 24));
 
         Map<Date, List<ScheduledActivity>> byDate = scheduledStudySegment.getActivitiesByDate();
         assertEquals(3, byDate.size());
@@ -83,10 +83,10 @@ public class ScheduledStudySegmentTest extends TestCase {
     }
 
     public void testEventsByDayWithWeightedPlannedActivity() throws Exception {
-        scheduledStudySegment.addEvent(createScheduledActivity(setId(1,createPlannedActivity("ActivityOne", 20, -5)), 2006, Calendar.SEPTEMBER, 20));
-        scheduledStudySegment.addEvent(createScheduledActivity(setId(2, createPlannedActivity("ActivityTwo", 20, 0)), 2006, Calendar.SEPTEMBER, 20));
-        scheduledStudySegment.addEvent(createScheduledActivity(setId(3, createPlannedActivity("ActivityThree", 20, 10)), 2006, Calendar.SEPTEMBER, 20));
-        scheduledStudySegment.addEvent(createScheduledActivity(setId(4, createPlannedActivity("ActivityFour", 20, 2)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy(setId(1,createPlannedActivity("ActivityOne", 20, -5)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy(setId(2, createPlannedActivity("ActivityTwo", 20, 0)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy(setId(3, createPlannedActivity("ActivityThree", 20, 10)), 2006, Calendar.SEPTEMBER, 20));
+        scheduledStudySegment.addEvent(createScheduledActivityWithStudy(setId(4, createPlannedActivity("ActivityFour", 20, 2)), 2006, Calendar.SEPTEMBER, 20));
 
         Map<Date, List<ScheduledActivity>> byDate = scheduledStudySegment.getActivitiesByDate();
 
