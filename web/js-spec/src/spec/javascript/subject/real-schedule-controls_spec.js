@@ -12,13 +12,18 @@ Screw.Unit(function () {
         var realScheduleDataModule, actualParams;
 
         function testActivity(id, dateS, currentState, study) {
+          study = study || "NU 00A0";
           return {
             id: id,
             current_state: {
               name: currentState,
               date: dateS
             },
-            study: study || "NU 00A0",
+            study: study,
+            assignment: {
+              id: "GRID-" + study.replace(/\s/g, '_'),
+              name: study
+            },
             activity: {
               name: "Activity A",
               type: "Other"
@@ -56,7 +61,7 @@ Screw.Unit(function () {
 
           $('#delay-or-advance').val('1')
           $('#delay-amount').val('3');
-          $('#delay-study').val("All studies");
+          $('#delay-assignment').val("All studies");
           $('#delay-as-of').val('');
           $('#delay-reason').val('');
           actualParams = null;
@@ -84,10 +89,10 @@ Screw.Unit(function () {
         });
 
         if (psc.test.envjs()) {
-          print("SKIPPING study filter spec b/c env.js doesn't work with SELECTs");
+          print("SKIPPING assignment filter spec b/c env.js doesn't work with SELECTs");
         } else {
-          it("filters the activities to delay based on the selected study", function () {
-            $('#delay-study').val("NU 07A0");
+          it("filters the activities to delay based on the selected assignment", function () {
+            $('#delay-assignment').val("GRID-NU_07A0");
             expect(actual()['S']).to(equal, undefined);
             expect(actual()['07A0']['date']).to(equal, '2008-04-28');
           });

@@ -500,12 +500,12 @@
                     <option value="-1">Advance</option>
                 </select>
                 scheduled and conditional activities in
-                <select id="delay-study">
+                <select id="delay-assignment">
                     <c:choose>
                         <c:when test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
                             <option value="" selected="selected">all studies</option>
-                            <c:forEach items="${schedule.studies}" var="row" varStatus="rowStatus">
-                                <option>${row.name}</option>
+                            <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
+                                <option value="${row.gridId}">${row.name}</option>
                             </c:forEach>
                         </c:when>
                         <c:otherwise>

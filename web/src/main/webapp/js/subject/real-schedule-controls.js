@@ -38,14 +38,14 @@ psc.subject.RealScheduleControls = (function ($) {
       var asOf = $('#delay-as-of').val() ?
         psc.tools.Dates.displayDateToUtc($('#delay-as-of').val()) :
         null;
-      var onlyStudy = $('#delay-study').val() || null;
+      var onlyAssign = $('#delay-assignment').val() || null;
       $.each(psc.subject.ScheduleData.current()['days'], function (day, value) {
         if (asOf) {
           var date = psc.tools.Dates.apiDateToUtc(day);
           if (date < asOf) return true; // continue
         }
         $.each(value['activities'], function () {
-          if (onlyStudy && onlyStudy !== this.study) {
+          if (onlyAssign && onlyAssign !== this.assignment.id) {
             return true; // continue
           }
           if (this.isOpen()) {
