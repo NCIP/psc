@@ -71,6 +71,7 @@
 
             <tags:javascriptLink name="subject/real-schedule-controls"/>
             <tags:javascriptLink name="subject/real-schedule-wiring"/>
+            <tags:javascriptLink name="subject/real-schedule-next-segment"/>
 
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
@@ -322,46 +323,6 @@
                 }
             }))
         }
-
-        function postSchedulingStudySegment(href, parameters) {
-            SC.asyncRequest(href, Object.extend({
-                method: 'POST',
-                contentType: 'text/xml',
-                postBody: parameters,
-                onComplete: function(){
-                    $('next-studySegment-indicator').conceal()
-                    psc.subject.ScheduleData.refresh()
-                }
-            }))
-        }
-
-        function putScheduleNextSegment() {
-            $('next-studySegment-indicator').reveal()
-            var selectedElt = jQuery('#studySegmentSelector option:selected')
-
-            var studySegmentId = selectedElt.attr('studySegment')
-            var studyId = selectedElt.attr('study')
-            var assignmnentId = selectedElt.attr('assignment')
-
-            var immediateOrPerProtocol = $$('#mode-row input');
-            for (var i= 0; i < 2; i++){
-                if (immediateOrPerProtocol[i].checked) {
-                    immediateOrPerProtocol = immediateOrPerProtocol[i].value
-                }
-            }
-            immediateOrPerProtocol = immediateOrPerProtocol.replace("_", "-");
-            var date = $('start-date-input').value;
-            date = date.split("/")
-            date = date[2] + '-'+date[0]+'-'+date[1]
-            var parameters = '<next-scheduled-study-segment study-segment-id="'+studySegmentId+ '" start-date="'+date+ '" mode="'+ immediateOrPerProtocol.toLowerCase() +'" start-day="5"/>'
-            var href = psc.tools.Uris.relative('/api/v1/studies/'+psc.tools.Uris.escapePathElement(studyId)+'/schedules/'+psc.tools.Uris.escapePathElement(assignmnentId))
-            postSchedulingStudySegment(href, parameters)
-
-        }
-
-        Event.observe(window, 'load', function() {
-            Event.observe($('next-study-segment-button'), 'click', function() {putScheduleNextSegment()})
-        })
 
     </script>
 

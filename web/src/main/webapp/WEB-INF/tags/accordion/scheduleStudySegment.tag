@@ -12,7 +12,7 @@
             <c:forEach items="${subject.assignments}" var="assignment">
                 <c:forEach items="${assignment.studySite.study.plannedCalendar.epochs}" var="epoch">
                     <c:forEach items="${epoch.studySegments}" var="studySegment">
-                        <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}">${assignment.studySite.study.name}: ${studySegment.qualifiedName}</option>
+                        <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}" startday="${studySegment.dayRange.startDay}" >${assignment.studySite.study.name}: ${studySegment.qualifiedName}</option>
                     </c:forEach>
                 </c:forEach>
             </c:forEach>
@@ -23,8 +23,7 @@
 <div class="accordionRow" style="margin-top:1em;">
     <div class="label">Start date</div>
     <div class="value"><input type="text" name="startDate" id="start-date-input"
-                              value="<tags:formatDate value="${schedule.datesImmediatePerProtocol['PER_PROTOCOL']}"/>"
-                              class="date" size="10"/>
+                                                           class="date" size="10"/>
         <a href="#" id="start-date-input-calbutton">
             <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="middle"/>
         </a>
@@ -37,7 +36,7 @@
         <input type="radio" class="mode-radio" id="mode-radio-immediate"
                 name="mode" value="IMMEDIATE"/> Immediately <br>
         <input type="radio" class="mode-radio" id="mode-radio-per-protocol"
-                name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol
+                name="mode" value="PER_PROTOCOL" /> Per Protocol
     </div>
  </div>
 
