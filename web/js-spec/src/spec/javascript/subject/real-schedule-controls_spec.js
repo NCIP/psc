@@ -1,7 +1,6 @@
 /*global jQuery before after describe it expect equal Screw psc require_spec require_main */
 
 require_spec('spec_helper.js');
-require_main('subject/schedule-data.js')
 require_main('subject/schedule-structure.js');
 require_main('psc-tools/misc.js');
 require_main('subject/real-schedule-controls.js')
@@ -84,11 +83,15 @@ Screw.Unit(function () {
           expect(actual()['S01']['date']).to(equal, '2008-05-04');
         });
 
-        it("filters the activities to delay based on the selected study", function () {
-          $('#delay-study').val("NU 07A0");
-          expect(actual()['S']).to(equal, undefined);
-          expect(actual()['07A0']['date']).to(equal, '2008-04-28');
-        });
+        if (psc.test.envjs()) {
+          print("SKIPPING study filter spec b/c env.js doesn't work with SELECTs");
+        } else {
+          it("filters the activities to delay based on the selected study", function () {
+            $('#delay-study').val("NU 07A0");
+            expect(actual()['S']).to(equal, undefined);
+            expect(actual()['07A0']['date']).to(equal, '2008-04-28');
+          });
+        }
 
         it("delays scheduled activities", function () {
           expect(actual()['S']['state']).to(equal, 'scheduled');
