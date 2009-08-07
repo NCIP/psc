@@ -148,6 +148,6 @@ psc.subject.Schedule = function (scheduleApiResponse) {
   }());
 
   return jQuery.extend(scheduleApiResponse, {
-    allDays: function () { return days; },
+    allDays: function () { return days; }
   });
 };
