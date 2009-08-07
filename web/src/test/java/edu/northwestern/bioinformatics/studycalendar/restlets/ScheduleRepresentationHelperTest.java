@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -26,36 +27,36 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
 
     public void setUp() throws Exception {
         super.setUp();
-        ActivityType activityType = Fixtures.createActivityType("Type1");
-        activity = Fixtures.createActivity("activity1", activityType);
+        ActivityType activityType = createActivityType("Type1");
+        activity = createActivity("activity1", activityType);
         properties = new ArrayList<ActivityProperty>();
-        properties.add(Fixtures.createActivityProperty("URI", "text", "activity defination"));
-        properties.add(Fixtures.createActivityProperty("URI", "template", "activity uri"));
+        properties.add(createActivityProperty("URI", "text", "activity defination"));
+        properties.add(createActivityProperty("URI", "template", "activity uri"));
 
-        Study study = Fixtures.createSingleEpochStudy("S", "Treatment");
-        Site site = Fixtures.createSite("site");
-        Subject subject = Fixtures.createSubject("First", "Last");
+        Study study = createSingleEpochStudy("S", "Treatment");
+        Site site = createSite("site");
+        Subject subject = createSubject("First", "Last");
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         epoch.setGridId("E");
         StudySegment studySegment = epoch.getStudySegments().get(0);
         studySegment.setGridId("S");
-        Period p = Fixtures.createPeriod(3, 7, 1);
+        Period p = createPeriod(3, 7, 1);
         studySegment.addPeriod(p);
-        PlannedActivity pa = Fixtures.createPlannedActivity(activity, 4);
+        PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
 
         state = new Scheduled();
         state.setDate(DateTools.createDate(2009, Calendar.APRIL, 3));
         state.setReason("Just moved by 4 days");
-        sa = Fixtures.createScheduledActivity(pa, 2009, Calendar.APRIL, 7, state);
+        sa = createScheduledActivity(pa, 2009, Calendar.APRIL, 7, state);
         sa.setIdealDate(DateTools.createDate(2009, Calendar.APRIL, 7));
         scheduledActivities =  new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa);
         sa.setGridId("1111");
-        scheduledSegment = Fixtures.createScheduledStudySegment(studySegment, DateTools.createDate(2009, Calendar.APRIL, 3));
+        scheduledSegment = createScheduledStudySegment(studySegment, DateTools.createDate(2009, Calendar.APRIL, 3));
         scheduledSegment.setGridId("GRID-SEG");
         scheduledCalendar.addStudySegment(scheduledSegment);
-        scheduledCalendar.setAssignment(Fixtures.createAssignment(study, site, subject));
+        scheduledCalendar.setAssignment(setGridId("GRID-ASSIGN", createAssignment(study, site, subject)));
         sa.setScheduledStudySegment(scheduledSegment);
     }
 
@@ -67,7 +68,7 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
     
     public void testActivityPropertyInJson() throws Exception {
-        ActivityProperty ap = Fixtures.createActivityProperty("URI","text","activity defination");
+        ActivityProperty ap = createActivityProperty("URI","text","activity defination");
         JSONObject apJson = ScheduleRepresentationHelper.createJSONActivityProperty(ap);
         assertEquals("Namespace is different", ap.getNamespace(), apJson.get("namespace"));
         assertEquals("Name is different", ap.getName(), apJson.get("name"));
@@ -97,6 +98,18 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         assertEquals("Study Segment is different", sa.getScheduledStudySegment().getName(), jsonSA.get("study_segment"));
         assertEquals("Ideal Date is different", "2009-04-07", jsonSA.get("ideal_date"));
         assertEquals("Planned day is different", "6", jsonSA.get("plan_day"));
+    }
+
+    public void testScheduledActivityIncludesAssignmentName() throws Exception {
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertEquals("Missing assignment name",
+            "S", ((JSONObject) jsonSA.get("assignment")).get("name"));
+    }
+
+    public void testScheduledActivityIncludesAssignmentId() throws Exception {
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertEquals("Missing assignment name",
+            "GRID-ASSIGN", ((JSONObject) jsonSA.get("assignment")).get("id"));
     }
 
     public void testScheduledActivityCurrentState() throws Exception {
@@ -158,5 +171,17 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         JSONObject jsonStudy =  (JSONObject)(jsonPlannedSegmentInfo.get("study"));
         assertEquals("Study doesn't match", scheduledSegment.getStudySegment().getEpoch().getPlannedCalendar()
             .getStudy().getAssignedIdentifier(), jsonStudy.get("assigned_identifier"));
+    }
+
+    public void testScheduledSegmentIncludesAssignmentName() throws Exception {
+        JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        assertEquals("Missing assignment name", "S",
+            ((JSONObject) jsonSegment.get("assignment")).get("name"));
+    }
+
+    public void testScheduledSegmentIncludesAssignmentId() throws Exception {
+        JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        assertEquals("Missing assignment id", "GRID-ASSIGN",
+            ((JSONObject) jsonSegment.get("assignment")).get("id"));
     }
 }

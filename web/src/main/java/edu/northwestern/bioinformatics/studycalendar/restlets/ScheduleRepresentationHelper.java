@@ -1,17 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.Collections;
 
 /**
  * @author Jalpa Patel
@@ -94,9 +100,6 @@ public class ScheduleRepresentationHelper {
             }
             jsonSA.put("study", sa.getScheduledStudySegment().getStudySegment()
                                    .getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier());
-            if (sa.getScheduledStudySegment().getScheduledCalendar().getAssignment() != null) {
-                jsonSA.put("assignment", sa.getScheduledStudySegment().getScheduledCalendar().getAssignment().getName());
-            }
             jsonSA.put("study_segment", sa.getScheduledStudySegment().getName());
             jsonSA.put("ideal_date", getApiDateFormat().format(sa.getIdealDate()));
             if (sa.getPlannedActivity() != null && sa.getPlannedActivity().getPlanDay() != null) {
@@ -104,6 +107,10 @@ public class ScheduleRepresentationHelper {
             }
             jsonSA.put("current_state", createJSONStateInfo(sa.getCurrentState()));
             jsonSA.put("activity", createJSONActivity(sa.getActivity()));
+            if (sa.getScheduledStudySegment().getScheduledCalendar().getAssignment() != null) {
+                jsonSA.put("assignment", createJSONAssignmentProperties(
+                    sa.getScheduledStudySegment().getScheduledCalendar().getAssignment()));
+            }
 
             if (sa.getPlannedActivity() != null) {
                 jsonSA.put("details", sa.getPlannedActivity().getDetails());
@@ -122,6 +129,13 @@ public class ScheduleRepresentationHelper {
             // TODO: this exception swallows the thrown exception.  Cardinal sin.
 	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 	    }
+    }
+
+    private static JSONObject createJSONAssignmentProperties(StudySubjectAssignment assignment) {
+        return new JSONObject(
+            new MapBuilder<String, String>()
+                .put("id", assignment.getGridId())
+                .put("name", assignment.getName()).toMap());
     }
 
     public static JSONObject createJSONScheduledActivities(Boolean hidden_activities, List<ScheduledActivity> scheduledActivities) throws ResourceException{
@@ -149,6 +163,10 @@ public class ScheduleRepresentationHelper {
             jsonSegment.put("name", segment.getName());
             if (segment.getGridId() != null) {
                 jsonSegment.put("id", segment.getGridId());
+            }
+            if (segment.getScheduledCalendar().getAssignment() != null) {
+                jsonSegment.put("assignment", createJSONAssignmentProperties(
+                    segment.getScheduledCalendar().getAssignment()));
             }
             JSONObject jsonRange = new JSONObject();
             jsonRange.put("start_date", getApiDateFormat().format(segment.getDateRange().getStart()));

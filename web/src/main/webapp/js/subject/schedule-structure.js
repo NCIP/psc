@@ -44,14 +44,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return "study-" + this.study.replace(/\W/g, '_')
       },
 
-      assignmentClass: function() {
-        if (this.hasAssignment()) {
-          return "assignment-" + this.assignment.replace(/\W/g, '_')
-        } else {
-          return undefined;
-        }
+      assignmentClass: function () {
+        return "assignment-" + this.assignment.id.replace(/\W/g, '_')
       },
-      
+
       isOpen: function () {
         if (sa.current_state && sa.current_state.name) {
           return jQuery.inArray(sa.current_state.name, ["scheduled", "conditional"]) >= 0;

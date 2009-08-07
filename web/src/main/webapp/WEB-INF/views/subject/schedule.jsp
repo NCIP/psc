@@ -397,7 +397,7 @@
                 [# } #]
                 <img src="<c:url value="/images/"/>[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
                 [# if(hasAssignment()) { #]
-                  <span title="Assignment" class="assignment [#= assignmentClass() #]">[#= assignment #]</span> /
+                  <span title="Assignment" class="assignment">[#= assignment.name #]</span> /
                 [# } else { #]
                   <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
                 [# } #]
@@ -434,7 +434,7 @@
                         [#= getPlanDay() #]    
                     </span>
                 </li>
-             </label>
+            </label>
         </li>
     </tags:resigTemplate>
 
