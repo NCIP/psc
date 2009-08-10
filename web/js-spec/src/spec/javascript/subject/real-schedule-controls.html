@@ -7,12 +7,64 @@
   <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
 </head>
 
+<script type="text/html" id="list_day_entry">
+        <div class="day [#= dateClass #]">
+            <h3 class="date">
+                [#= displayDate #]
+                [# if (isToday) { #]
+                    <span>Today</span>
+                [# } #]
+            </h3>
+            <div class="day-activities">
+                [# if (scheduledActivities.length !== 0) { #]
+                <ul>
+                    [#= scheduledActivityListItems #]
+                </ul>
+                [# } #]
+            </div>
+        </div>
+</script>
+
+
+<script type="text/html" id="list_day_sa_entry">
+    
+        <li class="[#= stateClasses() #]">
+            <label>
+                [# if (hasId()) { #]
+                  <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
+                [# } #]
+                <img src="/psc/images/[#= current_state.name #].png" alt="Status: [#= current_state.name #]"/>
+                [# if(hasAssignment()) { #]
+                  <span title="Assignment" class="assignment">[#= assignment.name #]</span> /
+                [# } else { #]
+                  <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
+                [# } #]
+                <span title="Segment" class="segment">[#= study_segment #]</span> /
+                [# if (hasId()) { #]
+                  <a title="Activity" href="/psc/pages/cal/scheduleActivity?event=[#= id #]">[#= activity.name #]</a>
+                [# } else { #]
+                  [#= activity.name #]
+                [# } #]
+
+                <li class="days_from_period" id="days_from_period" style="display:none;">
+                    <span class="event-details">
+                        [#= getPlanDay() #]    
+                    </span>
+                </li>
+            </label>
+        </li>
+    
+</script>
+
+
 <body>
   <!-- Put any HTML fixture elements here. -->
-  <div id="schedule"></div>
+  <div id="schedule">
+    <div id="scheduled-activities"></div>
+  </div>
 
-  <div id="delayControls">
-    <select id="delay-or-advance" name="delayAdvanceSelector">
+  <div id="delay-controls">
+    <select id="delay-or-advance">
         <option value="1" selected="selected">Delay</option>
         <option value="-1">Advance</option>
     </select>
@@ -29,8 +81,44 @@
     Why? <input id="delay-reason"/>
   </div>
 
-  <div id="markControls">
-
+  <div id="mark-controls">
+    <p>
+      The action you select below will be applied to all the activities which
+      are checked in the list to the left.  You could select within
+      <select id="mark-select-assignment">
+        <option value="" selected="selected">all studies</option>
+        <option value="GRID-NU_07A0">NU 07A0</option>
+        <option value="GRID-NU_00A0">NU 00A0</option>
+      </select> 
+      <a href="#" id="mark-select-all" class="mark-select">all activities</a>,
+      <a href="#" id="mark-select-none" class="mark-select">no activities</a>,
+      <a href="#" id="mark-select-past-due" class="mark-select">past due activities</a>,
+      <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>, or you
+      can just check things off by hand.   
+      <span id="mark-activities-count">There are currently 0 activities checked.</span>
+    </p>
+    <p>
+      <select id="mark-new-mode">
+        <option value="move-date-only">Leave the state the same</option>
+        <option value="scheduled">Mark/keep as scheduled</option>
+        <option value="occurred">Mark as occurred</option>
+        <option value="canceled-or-na">Mark as canceled or NA</option>
+        <option value="missed">Mark missed</option>
+      </select>
+      <label id="mark-date-group">
+        and 
+        <select id="mark-delay-or-advance">
+          <option value="1" selected="selected">delay</option>
+          <option value="-1">advance</option>
+        </select>
+        by 
+        <input type="text" id="mark-delay-amount" value="0" size="3"/>
+        days.
+      </label>
+      <label id="mark-reason-group">
+          Why? <input type="text" id="mark-reason"/>
+      </label>
+    </p>
   </div>
 </body>
 </html>

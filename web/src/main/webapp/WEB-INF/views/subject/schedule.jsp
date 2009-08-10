@@ -13,7 +13,6 @@
 <jsp:useBean id="schedulePreview" type="java.lang.Boolean" scope="request"/>
 
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
-<tags:javascriptLink name="scheduled-activity-batch-days-subheader"/>
 
 <html>
 <head>
@@ -42,6 +41,8 @@
     <tags:javascriptLink name="subject/schedule-init"/>
 
     <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:javascriptLink name="jquery/jquery.enumerable"/>
+
     <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
 
     <c:choose>
@@ -63,12 +64,6 @@
             </script>
         </c:when>
         <c:otherwise>
-            <%-- TODO: these scripts should be in the subject folder with everything else
-                       unless they are shared with other pages.
-                        --%>
-            <tags:javascriptLink name="scheduled-activity"/>
-            <tags:javascriptLink name="scheduled-activity-batch-modes"/>
-
             <tags:javascriptLink name="subject/real-schedule-controls"/>
             <tags:javascriptLink name="subject/real-schedule-wiring"/>
             <tags:javascriptLink name="subject/real-schedule-next-segment"/>
@@ -86,98 +81,34 @@
         </c:otherwise>
     </c:choose>
      <style type="text/css">
-         /* TODO: use a descriptive selectors than "myaccordion", "accordionHeader", etc. */
-        .myaccordion {
-            font-size: 10pt;
-            border: 1px solid #444;
+        /* TODO: use a descriptive selectors than "accordionHeader", etc. */
+        #schedule-controls {
             background-color: white;
             overflow-y: auto;
             height: 297px;
             position: relative;
+            font-size: 0.8em;
         }
 
-        #accordian-content {
-            overflow: auto;
-            overflow-x: auto;
-        }
-        .legendSetup {
-            position: static;
-            width: 90%;
-        }
-
-        .myaccordion #schedule-legend  {
+        #schedule-legend  {
             width: 70%;
             position: static;
             right: 0;
             top: 0;
-            font-size:9pt;
         }
 
-        .myaccordion .accordionDiv .accordionHeader{
+        #schedule-controls .accordionDiv .accordionHeader{
             padding: 0px;
             border: 0px;
-        }
-
-        .myaccordion .value .delayAdvanceSelector {
-            color:#000000;
-            font-family:'Helvetica Neue',Arial,Helvetica,sans-serif;
-            font-size:9pt;
-            margin-bottom:1em;
-        }
-
-        .submitDelayOrAdvance {
-            margin-top: 2em;
-        }
-
-        .delayAdvanceHeader {
-            line-height: 2em;
         }
 
         .card {
             border: 0pt;
         }
 
-        div.accordionRow div.value{
-            font-weight:normal;
-            margin-left:7em;
-            font-size:9pt;
-        }
-
-        div.accordionRow div.label{
-            font-weight:bold;
-            text-align:right;
-            float:left;
-            font-size:9pt;
-            line-height:1em;
-        }
-
-        div.delayOrAdvanceBlock{
-            font-size:9pt;
-            line-height:1.5em;
-        }
-
-        div.accordionRow{
-            font-size:9pt;
-            margin:1px 0;
-            padding:2px;
-        }
-
-        div.populationRow div.label{
-            font-size:9pt;
-            float:left;
-            font-weight:bold;
-            font-size:9pt;
-            margin-left:0.5em;
-            text-align:right;
-            width:7em;
-            line-height:1.5em;
-
-        }
-
         div.row div.label{
             float:left;
             font-weight:bold;
-            font-size:9pt;
             margin-left:0.5em;
             text-align:right;
             width:7em;
@@ -186,7 +117,6 @@
         div.row div.value {
             font-weight:normal;
             margin-left:8em;
-            font-size:9pt;
         }
 
         .card .value ul {
@@ -199,131 +129,38 @@
             padding-bottom: 0.25em;
         }
 
-        div.studySegmentSelector {
-            line-height:1em;
-            font-size:9pt;
-            font-family:Verdana,Arial,sans-serif;
-            text-decoration:none;
-            margin:0;
-            padding:0;
-        }
-
-        /* TODO: never use presentational class names */
-       .alignStudySegmentButtonInTheMiddle {
-            font-size:9pt;
-            margin-top:1em;"
-        }
-
         div.accordionRow a {
             color: #0000CC;
+            display: inline !important;
         }
 
         td.populationTableTD {
             vertical-align:top;
         }
 
-         table.populationTable, table.accordianTbl {
-             border-spacing:0px;
-             border-collapse:collapse;
-             width:100%;
-         }
+        table.populationTable, table.accordianTbl {
+            border-spacing:0px;
+            border-collapse:collapse;
+            width:100%;
+        }
 
+        .accordion-content p {
+            margin-top: 1.5em;
+        }
+
+        .ui-helper-reset {
+            font-size: 1.0em;
+        }
+
+        a.ui-accordion-content-active {
+            display: inline !important;
+        }
     </style>
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery(".myaccordion").accordion({ autoHeight: false, collapsible: true, navigation: true });
+            jQuery("#schedule-controls").accordion({ autoHeight: false, collapsible: true, navigation: true });
         });
-
-        function executeDelayAdvancePost() {
-            $('delayOrAdvance-indicator').reveal()
-            var mapOfParameters={};
-            var shiftOptionForwardOrBackward = $('delayAdvanceSelector').value
-            var reason = $('reason').value
-            var toDate = shiftOptionForwardOrBackward*$('toDate').value
-            var asOfDate = $(document.getElementById('currentDate')).value
-
-            var asOfDateInDateFormat = psc.tools.Dates.displayDateToUtc(asOfDate)
-
-            <c:forEach items="${schedule.days}" var="day">
-                var actualDayInDateRepresentation =  new Date(${day.date.year + 1900}, ${day.date.month}, ${day.date.date});
-                var shiftedDate = shiftDateByNumberOfDays(${day.date.time}, toDate)
-
-                if (actualDayInDateRepresentation >= asOfDateInDateFormat) {
-                    <c:if test="${not day['empty']}">
-                        <c:if test="${not empty day.activities}">
-                            <c:forEach items="${day.activities}" var="sa">
-                                mapOfParameters['${sa.gridId}']={
-                                    "reason": reason,
-                                    "date": shiftedDate,
-                                    "state" : '${sa.currentState.mode}'
-                                };
-                            </c:forEach>
-                        </c:if>
-                    </c:if>
-                }
-            </c:forEach>
-            post(Object.toJSON(mapOfParameters) );
-        }
-
-
-        function executeMarkPost() {
-            $('mark-indicator').reveal()
-            var newModeSelector = $$("#new-mode-selector")[0].value
-            var state=""; //default for current state is empty
-            var reason="";
-            var toDate=0;
-            if (newModeSelector == "moveDate") {
-                reason = $$('#new-reason-input-group input')[0].value;
-                toDate = $$("#move_date_by_new-date-input-group input")[0].value;
-            } if (newModeSelector == "markAsScheduled") {
-                state = "scheduled";
-                toDate = $$("#new-date-input-group input")[0].value;
-                reason = $$('#new-reason-input-group input')[0].value;
-            } if (newModeSelector == "markAsOccurred") {
-                state = "occurred";
-            } if (newModeSelector == "markAsCanceled") {
-                state = "canceled";
-                reason = $$('#new-reason-input-group input')[0].value;
-            } if (newModeSelector == "markAsMissed") {
-                reason = $$('#new-reason-input-group input')[0].value;
-            }
-
-            var mapOfParameters = {};
-            var events = $$('.event')
-            var checkedEvents = events.select(function(e) { return e.checked })
-            var isStateEmpty= (state == "");
-            for (var i = 0; i< checkedEvents.length; i++ ){
-                if (isStateEmpty) {
-                    state = checkedEvents[i].className.split(' ')[2]
-                }
-                var date = checkedEvents[i].up('.day').down('h3').innerHTML;
-                date = date.match(/\d{4}-\d{2}-\d{2}/).toString()
-                var activityKey = checkedEvents[i].value
-                var dateInDateFormat = psc.tools.Dates.apiDateToUtc(date)
-                var shiftedDate = shiftDateByNumberOfDays(dateInDateFormat.getTime(), toDate)
-                mapOfParameters[activityKey] = {
-                        "reason": reason,
-                        "date": shiftedDate,
-                        "state" : state
-                };
-            }
-            post(Object.toJSON(mapOfParameters) );
-        }
-
-        function post(parameters) {
-            SC.asyncRequest('${collectionResource}'+'/', Object.extend({
-                method: 'POST',
-                contentType: 'application/json',
-                postBody: parameters,
-                onComplete: function() {
-                    $('delayOrAdvance-indicator').conceal();
-                    $('mark-indicator').conceal();
-                    psc.subject.ScheduleData.refresh()
-                }
-            }))
-        }
-
     </script>
 
     <tags:resigTemplate id="list_day_entry">
@@ -441,7 +278,7 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Display </a></h3>
         </div>
-        <div class="accordian-content">
+        <div class="accordion-content">
             <sched:legend/>
             <div class="content" id="selected-studySegment-content">
                 <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
@@ -451,10 +288,10 @@
      <c:if test="${not schedulePreview}">
           <%--************ Delay Or Advance Portion**********--%>
         <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Delay or Advance</a></h3>
+            <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>
         </div>
 
-        <div class="accordian-content" style="display: none">
+        <div class="accordion-content" style="display: none">
             <div class="accordionRow">
                 <select id="delay-or-advance">
                     <option value="1" selected="selected">Delay</option>
@@ -463,14 +300,16 @@
                 scheduled and conditional activities in
                 <select id="delay-assignment">
                     <c:choose>
-                        <c:when test="${not empty schedule.studies && fn:length(schedule.studies) gt 1}">
+                        <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
                             <option value="" selected="selected">all studies</option>
                             <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
                                 <option value="${row.gridId}">${row.name}</option>
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
-                            <option>${schedule.studies[0].name}</option>
+                            <option value="${schedule.visibleAssignments[0].gridId}">
+                                ${schedule.visibleAssignments[0].name}
+                            </option>
                         </c:otherwise>
                     </c:choose>
                 </select>
@@ -482,7 +321,7 @@
             </div>
             <div>
                 <tags:activityIndicator id="delayOrAdvance-indicator"/>
-                <input type="submit" value="Update" id="delay-submit"/>
+                <input type="submit" value="Apply" id="delay-submit"/>
             </div>
         </div>
 
@@ -490,23 +329,72 @@
         <div class="accordionDiv">
         <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
         </div>
-        <div class="accordian-content">
-            <markTag:markActivity/>
-            <div class="delayOrAdvanceBlock">
-                <tags:activityIndicator id="mark-indicator"/>
-                <input class="submitDelayOrAdvance" type="submit" value="Submit" id="new-mode-submit" onclick="executeMarkPost()"/>
+        <div class="accordion-content">
+            <p>
+                Within
+                <select id="mark-select-assignment">
+                    <c:choose>
+                        <c:when test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
+                            <option value="" selected="selected">all studies</option>
+                            <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
+                                <option value="${row.gridId}">${row.name}</option>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${schedule.visibleAssignments[0].gridId}">
+                                ${schedule.visibleAssignments[0].name}
+                            </option>
+                        </c:otherwise>
+                    </c:choose>
+                </select>
+                you can select
+                <a href="#" id="mark-select-all" class="mark-select">all activities</a>,
+                <a href="#" id="mark-select-none" class="mark-select">no activities</a>,
+                <a href="#" id="mark-select-past-due" class="mark-select">past due activities</a>,
+                <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>, or you
+                can just check things off by hand.
+            </p>
+            <p>
+                When you have a set of activities selected, you can modify them here:
+            </p>
+            <p>
+                <select id="mark-new-mode">
+                    <option value="move-date-only">Leave the state the same</option>
+                    <option value="scheduled">Mark/keep as scheduled</option>
+                    <option value="occurred">Mark as occurred</option>
+                    <option value="canceled-or-na">Mark as canceled or NA</option>
+                    <option value="missed">Mark missed</option>
+                </select>
+                <label id="mark-date-group">
+                    and
+                    <select id="mark-delay-or-advance">
+                        <option value="1" selected="selected">delay</option>
+                        <option value="-1">advance</option>
+                    </select>
+                    by
+                    <input type="text" id="mark-delay-amount" value="0" size="3"/>
+                    days.
+                </label>
+                <label id="mark-reason-group">
+                    Why? <input type="text" id="mark-reason"/>
+                </label>
+            </p>
+            <div>
+                <tags:activityIndicator id="markUpdate-indicator"/>
+                <input type="submit" value="Apply" id="mark-submit"/>
+                <span id="mark-activities-count"></span>
             </div>
         </div>
         <div class="accordionDiv">
-          <h3><a class="accordionHeader" href="#">Next Segment</a></h3>
+          <h3><a class="accordionHeader" href="#">Next segment</a></h3>
         </div>
-        <div class="accordian-content">
+        <div class="accordion-content">
             <markTag:scheduleStudySegment subject="${subject}"/>
         </div>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
-        <div class="accordian-content">
+        <div class="accordion-content">
             <div class="card">
                 <markTag:population/>
             </div>
@@ -516,7 +404,7 @@
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
-        <div class="accordian-content">
+        <div class="accordion-content">
             <table class="accordianTbl">
                 <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
                 <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
@@ -539,7 +427,7 @@
         <div class="accordionDiv">
         <h3><a class="accordionA" href="#">Preview study segments</a></h3>
         </div>
-        <div id="schedule-preview-controls" class="accordian-content">
+        <div id="schedule-preview-controls" class="accordion-content">
             <ul id="preview-segments">
                 <li id="next-segment">
                     <h4>Preview another segment?</h4>

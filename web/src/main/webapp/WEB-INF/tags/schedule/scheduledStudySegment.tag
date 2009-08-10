@@ -21,7 +21,7 @@
                 <h3>Modify selected activities</h3>
                 <div class="content">
                     <laf:division>
-                        <markTag:markActivity/>
+                        <%--<markTag:markActivity/>--%>
                         <tags:activityIndicator id="batch-indicator"/>
                         <input type="submit" value="Submit" id="new-mode-submit"/>
                     </laf:division>
