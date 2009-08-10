@@ -73,7 +73,7 @@
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
-                    return psc.tools.Uris.relative("/api/v1/schedules/${subject.gridId}.json");
+                    return psc.tools.Uris.relative("/api/v1/schedules/${subject.gridId}.json?"+new Date().getTime());
                 });
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
