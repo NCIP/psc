@@ -121,11 +121,13 @@
     :border-style solid
   h3.date
     :margin 0 0 0.5em 0
-    & > span
+    & > .today-label
       :color= !today
   #schedule-today-marker
     :background-color= !today
     :height 4px
+  .plan-day
+    :display none
 
 #schedule-controls-box
   :left 70%

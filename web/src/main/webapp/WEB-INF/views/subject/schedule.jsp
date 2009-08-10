@@ -155,6 +155,14 @@
         a.ui-accordion-content-active {
             display: inline !important;
         }
+
+        #mark-reason-group {
+            white-space: nowrap
+        }
+        
+        #display-controls {
+            margin-top: 1em
+        }
     </style>
 
     <script type="text/javascript">
@@ -168,7 +176,7 @@
             <h3 class="date">
                 [#= displayDate #]
                 [# if (isToday) { #]
-                    <span>Today</span>
+                    <div class="today-label">Today</div>
                 [# } #]
             </h3>
             <div class="day-activities">
@@ -200,39 +208,38 @@
                   <span title="Study" class="study [#= studyClass() #]">[#= study #]</span> /
                 [# } #]
                 <span title="Segment" class="segment">[#= study_segment #]</span> /
-                [# if (hasId()) { #]
-                  <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>
-                [# } else { #]
-                  [#= activity.name #]
-                [# } #]
-
-                <span class="event-details" >
-                    [# if (hasDetails()) { #]
-                         [#= getDetails() #]
-                         [# if (hasCondition()) { #]
-                            [#= ';' #]
-                         [# } #]
-
-                    [# } #]
-                    [# if (hasCondition()) { #]
-                            [#= 'Condition:' #] [#= getCondition() #]
-                            [# if (hasLabels()) { #]
-                                [#= ';' #]
-                            [# } #]
-                    [# } #]
-                    [# if (hasLabels()) { #]
-                        <span class="label">
-                            [#= 'Labels:' #] [#= getLabels() #]
-                        </span>
-                    [# } #]
-                </span>
-
-                <li class="days_from_period" id="days_from_period" style="display:none;">
-                    <span class="event-details">
-                        [#= getPlanDay() #]    
-                    </span>
-                </li>
             </label>
+
+            [# if (hasId()) { #]
+              <a title="Activity" href="<c:url value="/pages/cal/scheduleActivity"/>?event=[#= id #]">[#= activity.name #]</a>
+            [# } else { #]
+              [#= activity.name #]
+            [# } #]
+
+            <span class="event-details" >
+                [# if (hasDetails()) { #]
+                     [#= getDetails() #]
+                     [# if (hasCondition()) { #]
+                        [#= ';' #]
+                     [# } #]
+
+                [# } #]
+                [# if (hasCondition()) { #]
+                        [#= 'Condition:' #] [#= getCondition() #]
+                        [# if (hasLabels()) { #]
+                            [#= ';' #]
+                        [# } #]
+                [# } #]
+                [# if (hasLabels()) { #]
+                    <span class="label">
+                        [#= 'Labels:' #] [#= getLabels() #]
+                    </span>
+                [# } #]
+            </span>
+
+            <span class="event-details plan-day">
+                [#= getPlanDay() #]
+            </span>
         </li>
     </tags:resigTemplate>
 
@@ -280,9 +287,8 @@
         </div>
         <div class="accordion-content">
             <sched:legend/>
-            <div class="content" id="selected-studySegment-content">
-                <a id="show_days_button" href="#?" class="control">Show days from study plan</a>
-                <a id="hide_days_button" href="#?" class="control" style="display:none;">Hide days from study plan</a>
+            <div id="display-controls">
+                <a href="#" id="toggle-plan-days" class="control">Show days from study plan</a>
             </div>
         </div>
      <c:if test="${not schedulePreview}">
@@ -329,7 +335,7 @@
         <div class="accordionDiv">
         <h3><a class="accordionHeader" href="#">Select and modify</a></h3>
         </div>
-        <div class="accordion-content">
+        <div id="mark-select-content" class="accordion-content">
             <p>
                 Within
                 <select id="mark-select-assignment">
@@ -365,16 +371,20 @@
                     <option value="canceled-or-na">Mark as canceled or NA</option>
                     <option value="missed">Mark missed</option>
                 </select>
-                <label id="mark-date-group">
-                    and
-                    <select id="mark-delay-or-advance">
-                        <option value="1" selected="selected">delay</option>
-                        <option value="-1">advance</option>
-                    </select>
-                    by
-                    <input type="text" id="mark-delay-amount" value="0" size="3"/>
-                    days.
-                </label>
+                <span id="mark-date-group">
+                    <label>
+                        and
+                        <select id="mark-delay-or-advance">
+                            <option value="1" selected="selected">delay</option>
+                            <option value="-1">advance</option>
+                        </select>
+                    </label>
+                    <label>
+                        by
+                        <input type="text" id="mark-delay-amount" value="0" size="3"/>
+                        days.
+                    </label>
+                </span>
                 <label id="mark-reason-group">
                     Why? <input type="text" id="mark-reason"/>
                 </label>
@@ -421,7 +431,7 @@
                 </c:forEach>
            </table>
         </div>
-         
+
      </c:if>
      <c:if test="${schedulePreview}">
         <div class="accordionDiv">
