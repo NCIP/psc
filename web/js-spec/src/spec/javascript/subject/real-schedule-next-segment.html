@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>psc.subject.RealScheduleControls &amp; related | JavaScript Testing Results</title>
+  <link rel="stylesheet" href="/screw.css" type="text/css" charset="utf-8" />
+  <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
+</head>
+<body>
+  <!-- Put any HTML fixture elements here. -->
+  <div id="schedule"></div>
+
+  <div class="accordionRow">
+    <select id="studySegmentSelector" class="studySegmentSelector">
+        <option assignment="GRID_ASSIGNMENT_1" study="NU_011" studySegment="GRID_NU011_SEGMENT_1" startdate="1" value="1" >NU011:EPOCH1:STUDYSEGMENT1</option>
+        <option assignment="GRID_ASSIGNMENT_2" study="NU_012" studySegment="GRID_NU012_SEGMENT_1" startdate="1" value="2">NU012:EPOCH1:STUDYSEGMENT1</option>
+    </select>
+  </div>
+  <div class="accordionRow">
+    <div class="label">Start date</div>
+    <div class="value"><input type="text" name="startDate" id="start-date-input"
+                                                           class="date" value=""/>
+    </div>
+  </div>
+
+  <div class="accordionRow" id="mode-row">
+    <div class="label">When?</div>
+    <div class="value">
+        <input type="radio" class="mode-radio" id="mode-radio-immediate"
+                name="mode" value="IMMEDIATE"/> Immediately <br>
+        <input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                name="mode" value="PER_PROTOCOL"/> Per Protocol
+    </div>
+  </div>
+  <div class="alignStudySegmentButtonInTheMiddle">
+      <input type="submit" style="margin:auto;" value="Schedule next study segment" id="next-study-segment-button"/>
+  </div>
+
+</body>
+</html>
+
+
+
+
+
