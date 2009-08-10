@@ -187,7 +187,7 @@ public class ScheduledStudySegmentTest extends TestCase {
         scheduledStudySegment.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 5,
             new NotApplicable()));
 
-        scheduledStudySegment.unscheduleOutstandingEvents("Testing", null);
+        scheduledStudySegment.unscheduleOutstandingEvents("Testing");
 
         assertEquals("Scheduled event not changed", 2, scheduledStudySegment.getActivities().get(0).getAllStates().size());
         assertEquals("Scheduled not changed to canceled", ScheduledActivityMode.CANCELED,

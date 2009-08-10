@@ -195,6 +195,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
             ScheduledActivityState newState
                 = getCurrentState().getMode().getUnscheduleMode().createStateInstance();
             newState.setReason(reason);
+            newState.setDate(getCurrentState().getDate());
             changeState(newState);
         }
     }

@@ -157,7 +157,8 @@ public class ScheduledActivityTest extends TestCase {
     }
 
     public void testUnscheduleScheduledActivity() throws Exception {
-        scheduledActivity.changeState(new Scheduled());
+        Date scheduledOn = DateTools.createDate(2005, Calendar.MAY, 5);
+        scheduledActivity.changeState(new Scheduled(null, scheduledOn));
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -166,10 +167,13 @@ public class ScheduledActivityTest extends TestCase {
             scheduledActivity.getCurrentState().getMode());
         assertEquals("New state has wrong reason", "Testing",
             scheduledActivity.getCurrentState().getReason());
+        assertEquals("New state does not preserve previous date", scheduledOn,
+            scheduledActivity.getCurrentState().getDate());
     }
 
-    public void testUnscheduleConditionalEvent() throws Exception {
-        scheduledActivity.changeState(new Conditional());
+    public void testUnscheduleConditionalActivity() throws Exception {
+        Date conditionalFor = DateTools.createDate(2005, Calendar.MAY, 9);
+        scheduledActivity.changeState(new Conditional(null, conditionalFor));
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
@@ -178,6 +182,8 @@ public class ScheduledActivityTest extends TestCase {
             scheduledActivity.getCurrentState().getMode());
         assertEquals("New state has wrong reason", "Testing",
             scheduledActivity.getCurrentState().getReason());
+        assertEquals("New state does not preserve previous date", conditionalFor,
+            scheduledActivity.getCurrentState().getDate());
     }
 
     public void testUnscheduleCanceledEvent() throws Exception {

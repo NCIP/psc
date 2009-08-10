@@ -147,13 +147,9 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         return true;
     }
 
-    public void unscheduleOutstandingEvents(String reason, Date cancelDate) {
+    public void unscheduleOutstandingEvents(String reason) {
         for (ScheduledActivity event : getActivities()) {
             event.unscheduleIfOutstanding(reason);
-            //setting the current_state_date to the day when event was cancelled
-            if (event.getCurrentState().getDate() == null) {
-                event.getCurrentState().setDate(cancelDate);
-            }
         }
     }
 
@@ -161,11 +157,6 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         for (ScheduledActivity event : getActivities()) {
             if ( (event.getPlannedActivity().getPopulation() != null) && (event.getPlannedActivity().getPopulation().equals(toRemove))) {
                 event.unscheduleIfOutstanding(reason);
-                //setting the current_state_date to the day when event was cancelled
-                if (event.getCurrentState().getDate() == null) {
-                    Date date = Calendar.getInstance().getTime();
-                    event.getCurrentState().setDate(date);
-                }
             }
         }
     }
