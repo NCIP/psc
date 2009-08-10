@@ -38,6 +38,7 @@ psc.subject.RealScheduleControls = (function ($) {
       selector += '.assignment-' + assign.replace(/\W/g, '_');
     }
     $(selector).attr('checked', kind == 'none' ? '' : 'checked');
+    return false;
   }
 
   function updateActivityCountMessage() {
@@ -119,6 +120,15 @@ psc.subject.RealScheduleControls = (function ($) {
         click(updateActivityCountMessage);
       $('input.event').live('click', updateActivityCountMessage);
       $('#mark-new-mode').change(mutateMarkForm);
+      $('#toggle-plan-days').click(function () {
+        $('.event-details.plan-day').toggle();
+        if ($(this).text().match(/Show/)) {
+          $(this).text($(this).text().replace(/Show/, 'Hide'));
+        } else {
+          $(this).text($(this).text().replace(/Hide/, 'Show'));
+        }
+        return false;
+      });
     },
 
     batchResource: function (uri) {
