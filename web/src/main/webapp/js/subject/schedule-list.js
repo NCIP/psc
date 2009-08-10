@@ -1,4 +1,4 @@
-/*global jQuery psc window */
+/*global jQuery psc window resigTemplate */
 psc.namespace("subject");
 
 (function ($) {
@@ -10,28 +10,28 @@ psc.namespace("subject");
         return "" + i;
       }
     }
-    
+
     function dateKey(date) {
       return date.getUTCFullYear() + "-" +
         zeropad(date.getUTCMonth() + 1) + "-" +
         zeropad(date.getUTCDate());
     }
-    
+
     function scheduleReady() {
       var schedule = psc.subject.ScheduleData.current();
-      
+
       if (null !== schedule) {
-        var container = $('#scheduled-activities').empty()
+        var container = $('#scheduled-activities').empty();
         jQuery.each(schedule.allDays(), function (i, day) {
           var key = dateKey(day);
-          var activities = 
-            (schedule.days && schedule.days[key] && schedule.days[key].activities)
+          var activities =
+            (schedule.days && schedule.days[key] && schedule.days[key].activities);
           if (psc.subject.isToday(day) && !activities) {
             container.append("<div id='schedule-today-marker' title='Today'></div>");
           }
           if (activities) {
             var items = $.map(activities, function (sa) {
-              return resigTemplate('list_day_sa_entry', sa)
+              return resigTemplate('list_day_sa_entry', sa);
             }).join('\n');
             container.append(
               resigTemplate('list_day_entry', {
@@ -41,14 +41,14 @@ psc.namespace("subject");
                 displayDate: key,
                 scheduledActivityListItems: items
               })
-            )
-            $(container.find("div.day:last-child")[0]).data("date", day)
+            );
+            $(container.find("div.day:last-child")[0]).data("date", day);
           }
-        })
-        psc.subject.ScheduleList.FocusHandler.init()
+        });
+        psc.subject.ScheduleList.FocusHandler.init();
       }
 
-      $('#schedule-error').hide()
+      $('#schedule-error').hide();
       $('.loading').fadeOut().hide();
     }
 
@@ -66,19 +66,19 @@ psc.namespace("subject");
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
       },
-      
+
       FocusHandler: (function () {
         var SOURCE_NAME = "list";
         var hoverUpdating = false, manualScrolling = false;
         var programaticallyScrolling = false;
-        
+
         var hoverAnimator = new psc.tools.AsyncUpdater(function (dateStr) {
           $('#scheduled-activities .day').removeClass('hover-date');
           if (dateStr) {
             $('#scheduled-activities .date-' + dateStr).addClass('hover-date');
           }
         });
-        
+
         var focusAnimator = new psc.tools.AsyncUpdater(function (data) {
           var scrollTo = determineOffsetToDate(data.date, data.range);
           if (scrollTo) {
@@ -89,20 +89,21 @@ psc.namespace("subject");
         }, function (v) {
           return v === null ? null : v.date.getTime();
         });
-        
+
         function extractDate(classes) {
           var bits = classes.match(/date-(\d{4})-(\d{1,2})-(\d{1,2})/);
           return new Date(Date.UTC(bits[1], bits[2] - 1, bits[3], 12, 0, 0, 0));
         }
-        
+
         function hoverOverDay(evt) {
-          psc.subject.ScheduleData.hoverDate(extractDate(this.className), SOURCE_NAME)
+          psc.subject.ScheduleData.hoverDate(
+            extractDate(this.className), SOURCE_NAME);
         }
-        
+
         function hoverOutDay() {
-          psc.subject.ScheduleData.hoverDate(null, SOURCE_NAME)
+          psc.subject.ScheduleData.hoverDate(null, SOURCE_NAME);
         }
-        
+
         function hoverEvent(evt, triggerData) {
           if (triggerData.date) {
             hoverAnimator.update(dateKey(triggerData.date));
@@ -110,7 +111,7 @@ psc.namespace("subject");
             hoverAnimator.update(null);
           }
         }
-        
+
         function determineOffsetToDate(date, range) {
           var offset;
           if (psc.subject.isToday(date)) {
@@ -141,7 +142,7 @@ psc.namespace("subject");
             return $('#scheduled-activities').height();
           }
         }
-        
+
         function visibleRange() {
           var min, max;
           var scheduleBlockHeight = $('#schedule').height();
@@ -155,7 +156,7 @@ psc.namespace("subject");
             if (min && max) {
               return false;
             }
-          })
+          });
           if (!max) {
             max = $('#scheduled-activities > .day:last-child').data('date');
           }
@@ -165,29 +166,29 @@ psc.namespace("subject");
             return null;
           }
         }
-        
+
         function fireFocusChanged(evt) {
           if (!programaticallyScrolling) {
             var span = visibleRange();
             psc.subject.ScheduleData.focusDate(span.start, SOURCE_NAME, span);
           }
         }
-        
+
         function scrollToFocusDate(evt, triggerData) {
           if (triggerData.source !== SOURCE_NAME) {
             focusAnimator.update(triggerData);
           }
         }
-        
+
         return {
           init: function () {
             $('#scheduled-activities > .day').mouseover(hoverOverDay).mouseout(hoverOutDay);
-            $('#schedule').scroll(fireFocusChanged)
-            
-            $('#schedule').bind('hover-date-changed', hoverEvent)
-            $('#schedule').bind('focus-date-changed', scrollToFocusDate)
+            $('#schedule').scroll(fireFocusChanged);
+
+            $('#schedule').bind('hover-date-changed', hoverEvent);
+            $('#schedule').bind('focus-date-changed', scrollToFocusDate);
           }
-        }
+        };
       }())
     };
   }());
