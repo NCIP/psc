@@ -97,26 +97,25 @@
             top: 0;
         }
 
-        #schedule-controls .accordionDiv .accordionHeader{
-            padding: 0px;
-            border: 0px;
+        #schedule-controls .accordionDiv .accordionHeader {
+            padding: 0;
+            border: 0;
         }
 
         .card {
-            border: 0pt;
+            border: 0;
         }
 
-        div.row div.label{
-            float:left;
-            font-weight:bold;
-            margin-left:0.5em;
-            text-align:right;
-            width:7em;
+        #schedule-controls div.row div.label {
+            width: 8em;
         }
 
-        div.row div.value {
-            font-weight:normal;
-            margin-left:8em;
+        #schedule-controls div.row div.value {
+            margin-left: 9em;
+        }
+
+        #schedule-controls .none {
+            font-style: italic;
         }
 
         .card .value ul {
@@ -132,16 +131,6 @@
         div.accordionRow a {
             color: #0000CC;
             display: inline !important;
-        }
-
-        td.populationTableTD {
-            vertical-align:top;
-        }
-
-        table.populationTable, table.accordianTbl {
-            border-spacing:0px;
-            border-collapse:collapse;
-            width:100%;
         }
 
         .accordion-content p {
@@ -353,15 +342,15 @@
                         </c:otherwise>
                     </c:choose>
                 </select>
-                you can select
+                select
                 <a href="#" id="mark-select-all" class="mark-select">all activities</a>,
                 <a href="#" id="mark-select-none" class="mark-select">no activities</a>,
                 <a href="#" id="mark-select-past-due" class="mark-select">past due activities</a>,
-                <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>, or you
-                can just check things off by hand.
+                <a href="#" id="mark-select-conditional" class="mark-select">conditional activities</a>, 
+                or just check things off by hand.
             </p>
             <p>
-                When you have a set of activities selected, you can modify them here:
+                When there is a set of activities selected, modify them here:
             </p>
             <p>
                 <select id="mark-new-mode">
@@ -415,21 +404,15 @@
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
         <div class="accordion-content">
-            <table class="accordianTbl">
-                <c:forEach items="${subject.assignments}" var="assignment" varStatus="outterCounter">
-                <tr class="<c:if test="${outterCounter.index%2 != 0}">odd</c:if> <c:if test="${outterCounter.index%2 == 0}">even</c:if>">
-                <td>
-                    <div class="accordionRow">
-                        <div class="label">${assignment.name}</div>
-                        <div class="value"><a class="control"
-                                href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
-                                id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
-                        </div>
+            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+                <div class="row ${commons:parity(outerCounter.index)}">
+                    <div class="label">${assignment.name}</div>
+                    <div class="value"><a class="control"
+                            href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
+                            title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
                     </div>
-                </td>
-                </tr>
-                </c:forEach>
-           </table>
+                </div>
+            </c:forEach>
         </div>
 
      </c:if>
