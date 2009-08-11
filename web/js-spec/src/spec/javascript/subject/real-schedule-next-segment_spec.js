@@ -4,6 +4,10 @@ require_main('subject/schedule-structure.js');
 require_main('psc-tools/misc.js');
 require_main('subject/real-schedule-next-segment.js');
 
+if (psc.test.envjs()) {
+  print("SKIPPING real-schedule-next-segment because prototype event handlers don't work in env.js");
+} else {
+
 Screw.Unit(function () {
    (function ($) {
     describe("psc.subject.RealScheduleNextSegment", function () {
@@ -75,3 +79,5 @@ Screw.Unit(function () {
    })
  }(jQuery));
 })
+
+}
