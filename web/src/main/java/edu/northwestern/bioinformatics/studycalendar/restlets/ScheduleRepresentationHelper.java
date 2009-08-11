@@ -33,8 +33,7 @@ public class ScheduleRepresentationHelper {
             stateInfo.put("reason", state.getReason());
             return stateInfo;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
     }
 
@@ -46,8 +45,7 @@ public class ScheduleRepresentationHelper {
             jsonAP.put("value", ap.getValue());
             return jsonAP;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
 
     }
@@ -66,8 +64,7 @@ public class ScheduleRepresentationHelper {
             }
             return jsonActivity;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
     }
 
@@ -116,7 +113,6 @@ public class ScheduleRepresentationHelper {
             jsonSA.put("state_history", state_history);
             return jsonSA;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
         }
     }
@@ -142,8 +138,7 @@ public class ScheduleRepresentationHelper {
             jsonScheduledActivities.put("activities", activities);
             return jsonScheduledActivities;
         } catch (JSONException e) {
-            // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
     }
 
