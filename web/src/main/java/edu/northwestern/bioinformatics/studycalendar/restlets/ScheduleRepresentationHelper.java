@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,7 +18,6 @@ import org.restlet.resource.ResourceException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
 
 /**
  * @author Jalpa Patel
@@ -71,18 +71,6 @@ public class ScheduleRepresentationHelper {
 	    }
     }
 
-    public static String formatLabels(SortedSet<String> labels) {
-        String result=null;
-        if (labels != null && labels.size() > 0) {
-            String stringOfLabels = "";
-            for (String label: labels){
-                stringOfLabels = stringOfLabels + label +" ";
-            }
-            result = stringOfLabels;
-        }
-        return result;
-    }
-
     public static String formatDaysFromPlan(ScheduledActivity sa) {
         DayNumber day = sa.getDayNumber();
         if (day == null) {
@@ -112,12 +100,14 @@ public class ScheduleRepresentationHelper {
                     sa.getScheduledStudySegment().getScheduledCalendar().getAssignment()));
             }
 
+            jsonSA.put("details", sa.getDetails());
             if (sa.getPlannedActivity() != null) {
-                jsonSA.put("details", sa.getPlannedActivity().getDetails());
                 jsonSA.put("condition", sa.getPlannedActivity().getCondition());
-                jsonSA.put("labels", formatLabels(sa.getPlannedActivity().getLabels()));
-                jsonSA.put("formatted_plan_day", formatDaysFromPlan(sa));
             }
+            if (!sa.getLabels().isEmpty()) {
+                jsonSA.put("labels", StringUtils.join(sa.getLabels().iterator(), ' '));
+            }
+            jsonSA.put("formatted_plan_day", formatDaysFromPlan(sa));
 
             JSONArray state_history =  new JSONArray();
             for (ScheduledActivityState state : sa.getAllStates()) {
@@ -127,8 +117,8 @@ public class ScheduleRepresentationHelper {
             return jsonSA;
         } catch (JSONException e) {
             // TODO: this exception swallows the thrown exception.  Cardinal sin.
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-	    }
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+        }
     }
 
     private static JSONObject createJSONAssignmentProperties(StudySubjectAssignment assignment) {
