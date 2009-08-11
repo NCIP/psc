@@ -7,10 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -50,6 +47,12 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         state.setReason("Just moved by 4 days");
         sa = createScheduledActivity(pa, 2009, Calendar.APRIL, 7, state);
         sa.setIdealDate(DateTools.createDate(2009, Calendar.APRIL, 7));
+
+        SortedSet<String> labels = new TreeSet<String>();
+        labels.add("label1");
+        labels.add("label2");
+        sa.setLabels(labels);
+
         scheduledActivities =  new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa);
         sa.setGridId("1111");
@@ -183,5 +186,27 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
         assertEquals("Missing assignment id", "GRID-ASSIGN",
             ((JSONObject) jsonSegment.get("assignment")).get("id"));
+    }
+
+    public void testDetailsInJson() throws Exception {
+        sa.setDetails("Detail");
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertEquals("Missing details", "Detail", jsonSA.get("details"));
+    }
+
+    public void testMissingDetailsInJson() throws Exception {
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertTrue(jsonSA.isNull("details"));
+    }
+
+    public void testConditionalInJson() throws Exception {
+        sa.getPlannedActivity().setCondition("Conditional Details");
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertEquals("Missing conditions", "Conditional Details", jsonSA.get("condition"));
+    }
+
+    public void testLabelsInJson() throws Exception {
+        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        assertEquals("Missing labels", "label1 label2", jsonSA.get("labels"));
     }
 }
