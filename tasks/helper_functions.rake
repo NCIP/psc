@@ -42,3 +42,11 @@ def datasource_properties(ant)
   ant.datasource_properties :applicationDirectoryName => APPLICATION_SHORT_NAME,
     :databaseConfigurationName => db_name
 end
+
+def db_deps
+  [
+    DB.postgresql,
+    DB.hsqldb,
+    (DB.oracle if ENV['ORACLE'])
+  ].compact
+end

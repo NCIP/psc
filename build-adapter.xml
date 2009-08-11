@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project name="caBIG Study Calendar" default="build:war" basedir=".">
+    <description>Builds, tests, and runs the project psc.</description>
+    <property name="download" value="${basedir}/temp/download"/>
+    <property name="jruby.binaries.file" value="jruby-bin-1.3.0.zip"/>
+    <property name="jruby.src.url" value="http://dist.codehaus.org/jruby/1.3.0/${jruby.binaries.file}"/>
+    <property name="jruby.binaries.relative.dir" value="${download}/jruby-1.3.0"/>
+    <property name="jruby.dest.file" value="${download}/${jruby.binaries.file}"/>
+    <property name="path.to.jruby.bin" value="${jruby.binaries.relative.dir}/bin/jruby"/>
+    <available file="${jruby.dest.file}" property="jruby.exists" />
+
+ <!--Standard sub project build TARGETS -->
+    <target name="install" unless="jruby.exists" description="Downloads JRuby and install require gems">
+        <mkdir dir="${basedir}/temp/download"/>
+        <get src="${jruby.src.url}" dest="${jruby.dest.file}"/>
+        <unzip dest="${download}" src="${jruby.dest.file}" />
+        <echo message="Downloaded JRuby sucessfully"/>
+        <exec executable="chmod">
+            <arg line="u+x ${path.to.jruby.bin}"/>
+        </exec>
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="gem"/>
+            <arg value="install"/>
+            <arg value="buildr"/>
+            <arg value="-v"/>
+            <arg value="1.3.3"/>
+            <arg value="-V"/>
+            <arg value="--no-rdoc"/>
+            <arg value="--no-ri"/>
+        </exec>
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="gem"/>
+            <arg value="install"/>
+            <arg value="shenandoah"/>
+            <arg value="-v"/>
+            <arg value="0.0.0"/>
+            <arg value="-V"/>
+            <arg value="--no-rdoc"/>
+            <arg value="--no-ri"/>
+       </exec>
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="gem"/>
+            <arg value="install"/>
+            <arg value="facets"/>
+            <arg value="-v"/>
+            <arg value="2.4.5"/>
+            <arg value="-V"/>
+            <arg value="--no-rdoc"/>
+            <arg value="--no-ri"/>
+       </exec>
+    </target>
+    <target name="build:war" depends="install">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="buildr"/>
+            <arg value="build"/>
+            <arg value="test=no"/>
+        </exec>
+    </target>
+
+    <target name="clean" depends="install">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="buildr"/>
+            <arg value="clean"/>
+        </exec>
+    </target>
+
+    <target name="migrate" depends="install">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="buildr"/>
+            <arg value="migrate"/>
+        </exec>
+    </target>
+
+    <target name="compile" depends="install">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="buildr"/>
+            <arg value="compile"/>
+            <arg value="test=no"/>
+        </exec>
+    </target>
+    <target name="test" depends="install">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="buildr"/>
+            <arg value="test"/>
+        </exec>
+    </target>
+
+    <target name="clean-download">
+        <delete dir="${download}" />
+    </target>
+</project>

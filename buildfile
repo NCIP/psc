@@ -104,7 +104,7 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end    
     compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS, 
-      CTMS_COMMONS.core, JAKARTA_COMMONS, DB, HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
+      CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps, HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
     test.with UNIT_TESTING
     
     # Automatically generate the HSQLDB when the migrations change
@@ -236,7 +236,7 @@ define "psc" do
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies,
-        project('database').and_dependencies, project('database').test_dependencies, DB
+        project('database').and_dependencies, project('database').test_dependencies, db_deps
       test.resources.filter.using(:ant, 'application-short-name'  => APPLICATION_SHORT_NAME)
       package(:jar)
     end

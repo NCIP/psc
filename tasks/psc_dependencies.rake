@@ -1,5 +1,7 @@
 # Dependency groups used by PSC's buildfile
 
+load File.dirname(__FILE__) + "/psc-osgi-artifact.rake"
+
 ###### REPOS
 
 # NU m2 repo (for ctms-commons, caGrid, other non-repo dependencies)
