@@ -205,29 +205,12 @@
               [#= activity.name #]
             [# } #]
 
-            <span class="event-details" >
-                [# if (hasDetails()) { #]
-                     [#= getDetails() #]
-                     [# if (hasCondition()) { #]
-                        [#= ';' #]
-                     [# } #]
-
-                [# } #]
-                [# if (hasCondition()) { #]
-                        [#= 'Condition:' #] [#= getCondition() #]
-                        [# if (hasLabels()) { #]
-                            [#= ';' #]
-                        [# } #]
-                [# } #]
-                [# if (hasLabels()) { #]
-                    <span class="label">
-                        [#= 'Labels:' #] [#= getLabels() #]
-                    </span>
-                [# } #]
+            <span class="event-details plan-notes" >
+                [#= planNotes() #]
             </span>
 
             <span class="event-details plan-day">
-                [#= getPlanDay() #]
+                [#= formatted_plan_day #]
             </span>
         </li>
     </tags:resigTemplate>

@@ -66,32 +66,16 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return sa.assignment !== undefined;
       },
 
-      hasDetails: function() {
-        return sa.details !== undefined;
-      },
-
-      getDetails : function() {
-        return this.details
-      },
-
-      getCondition : function() {
-        return this.condition
-      },
-
-      hasCondition: function() {
-        return sa.condition !== undefined;
-      },
-
-      getLabels : function() {
-        return this.labels;
-      },
-
-      hasLabels: function() {
-        return sa.labels !== undefined;
-      },
-
-      getPlanDay : function() {
-        return this.formatted_plan_day
+      planNotes: function () {
+        var notes = [];
+        if (this.details) notes.push(this.details);
+        if (this.condition) notes.push(this.condition);
+        if (this.labels) notes.push("Labels: " + this.labels);
+        if (notes.length > 0) {
+          return notes.join("; ")
+        } else {
+          return null;
+        }
       }
     });
   }

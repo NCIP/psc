@@ -141,6 +141,34 @@ Screw.Unit(function () {
             }
           }
         ] };
+        response["days"]["2009-01-01"] = { "activities": [
+          {
+            "current_state": { "name": "scheduled", "date": "2009-01-01" },
+            "details": "Some details",
+            "condition": "All the time",
+            "labels": "foo bar",
+            "activity": { "name": "Everything" }
+          },
+          {
+            "current_state": { "name": "scheduled", "date": "2009-01-01" },
+            "details": "Some other details",
+            "activity": { "name": "Details only" }
+          },
+          {
+            "current_state": { "name": "scheduled", "date": "2009-01-01" },
+            "condition": "Once or twice",
+            "activity": { "name": "Condition only" }
+          },
+          {
+            "current_state": { "name": "scheduled", "date": "2009-01-01" },
+            "labels": "foo",
+            "activity": { "name": "Labels only" }
+          },
+          {
+            "current_state": { "name": "scheduled", "date": "2009-01-01" },
+            "activity": { "name": "No notes" }
+          },
+        ] }
         sched = new psc.subject.Schedule(response);
       });
       
@@ -200,6 +228,33 @@ Screw.Unit(function () {
 
         it("is false when it doesn't", function () {
           expect(sched.days['2008-04-25'].activities[1].hasId()).to(be_false)
+        });
+      });
+      
+      describe("planNotes()", function () {
+        it("includes the details when present", function () {
+          expect(sched.days['2009-01-01'].activities[1].planNotes()).to(
+            equal, "Some other details");
+        });
+
+        it("includes the condition when present", function () {
+          expect(sched.days['2009-01-01'].activities[2].planNotes()).to(
+            equal, "Once or twice");
+        });
+
+        it("includes the labels when present", function () {
+          expect(sched.days['2009-01-01'].activities[3].planNotes()).to(
+            equal, "Labels: foo");
+        });
+
+        it("joins the elements with semi-colons when multiple are present", function () {
+          expect(sched.days['2009-01-01'].activities[0].planNotes()).to(
+            equal, "Some details; All the time; Labels: foo bar");
+        });
+
+        it("is null with no notes", function () {
+          expect(sched.days['2009-01-01'].activities[4].planNotes()).to(
+            equal, null);
         });
       });
       
