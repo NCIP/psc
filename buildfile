@@ -583,7 +583,7 @@ define "psc" do
       
       task(:jetty_deploy_exploded).invoke
       
-      msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
+      msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop.  PID: #{Process.pid || "?"}"
       info "=" * msg.size
       info msg
       info "=" * msg.size
