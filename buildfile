@@ -6,7 +6,7 @@ require "shenandoah/buildr"
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
-VERSION_NUMBER="2.5.1.RELEASE"
+VERSION_NUMBER="2.5.2.DEV"
 APPLICATION_SHORT_NAME = 'psc'
 
 ###### Jetty config
