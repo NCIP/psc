@@ -28,9 +28,10 @@ import java.util.List;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 
-import com.thoughtworks.xstream.XStream;
+//import com.thoughtworks.xstream.XStream;
 
 /**
  * Added for testing CCTS roll-back script requirement.
@@ -82,7 +83,13 @@ public class PSCStudyConsumerMessgeTest extends AbstractTransactionalSpringConte
         try {
             InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     "gov/nih/nci/ccts/grid/client/client-config.wsdd");
-            Reader reader = new FileReader(regFile);
+            Reader reader = null;
+            if (regFile != null){
+            	reader = new FileReader(regFile);
+            }else{
+            	reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                    "SampleStudyMessage.xml"));
+            }
             studyDTO = (gov.nih.nci.cabig.ccts.domain.Study) gov.nih.nci.cagrid.common.Utils.deserializeObject(reader, gov.nih.nci.cabig.ccts.domain.Study.class, config);
         }
         catch (Exception e) {
@@ -107,8 +114,9 @@ public class PSCStudyConsumerMessgeTest extends AbstractTransactionalSpringConte
         DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
 
 
-        regFile = System.getProperty("psc.test.sampleStudyFile",
-                "grid/study-consumer/test/resources/SampleStudyMessage.xml");
+//        regFile = System.getProperty("psc.test.sampleStudyFile",
+//                "grid/study-consumer/test/resources/SampleStudyMessage.xml");
+        regFile = System.getProperty("psc.test.sampleStudyFile");
 
     }
 
