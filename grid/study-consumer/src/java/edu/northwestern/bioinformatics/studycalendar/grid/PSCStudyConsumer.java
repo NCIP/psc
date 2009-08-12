@@ -159,7 +159,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         try {
             if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
-                amendmentService.deleteDevelopmentAmendment(study);
+//                amendmentService.deleteDevelopmentAmendment(study);
             } else {
                 logger.info(String.format("Study was not created %s minute before the current time:%s  so can not rollback this study:%s",
                         rollbackTime, calendar.getTime().toString(), study.getId()));
