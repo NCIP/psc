@@ -219,29 +219,6 @@
             var saveRequest = new Ajax.Request(href,
             {
                 method: 'post',
-                onComplete: function(t) {
-                    $(labelName).innerHTML = $(inputName).value;
-                    $(inputName).hide()
-                    $(labelName).show()
-
-                    $(labelCode).innerHTML = $(inputCode).value
-                    $(inputCode).hide()
-                    $(labelCode).show()
-
-                    $(labelDescription).innerHTML = $(inputDescription).value
-                    $(inputDescription).hide()
-                    $(labelDescription).show()
-
-                    $(labelType).innerHTML = $(selectType).options[$(selectType).selectedIndex].innerHTML
-                    $(labelType).show();
-                    $(divType).style.display='none'
-
-                    var editButton = 'Edit'+activityId
-                    $(editButton).style.display="inline"
-                    $('errors').innerHTML = "";
-                    var saveButton = 'Save'+activityId
-                    $(saveButton).style.display="none"
-                } ,
                 onFailure: function(response) {
                     displayErrorOnFailure(response, indicator)
                 }
