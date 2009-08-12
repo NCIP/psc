@@ -17,6 +17,8 @@ repositories.remote << "http://repository.springsource.com/maven/bundles/externa
 repositories.remote << "http://maven.dynamicjava.org"
 # main m2 repo
 repositories.remote << "http://repo1.maven.org/maven2"
+#Jboss repository added to fetch dbunit 2.2 jar.
+repositories.remote << "http://repository.jboss.org/maven2"
 
 ###### HELPERS
 
@@ -409,3 +411,32 @@ DB = struct(
   :postgresql => eponym("postgresql", "8.2-504.jdbc3"),
   :oracle => "com.oracle:ojdbc14:jar:10.2.0.2.0"
 )
+
+ADVERSE_EVENT_CONSUMER_GRID = struct(
+  Dir[static_lib('grid-consumer/AdverseEventConsumer*.jar')].inject({}) do |map, jar|
+    group, name = jar.scan(%r{.*/(AdverseEventConsumer)-(\w+)\.jar$}).first
+    version= "1.0"
+    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+
+REGISTRATION_CONSUMER_GRID = struct(
+  Dir[static_lib('grid-consumer/RegistrationConsumer*.jar')].inject({}) do |map, jar|
+    group, name = jar.scan(%r{.*/(RegistrationConsumer)-(\w+)\.jar$}).first
+    version= "1.0"
+    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+
+STUDY_CONSUMER_GRID = struct(
+  Dir[static_lib('grid-consumer/StudyConsumer*.jar')].inject({}) do |map, jar|
+    group, name = jar.scan(%r{.*/(StudyConsumer)-(\w+)\.jar$}).first
+    version= "1.0"
+    map[name.gsub('.', '_').to_sym] = artifact("#{group}:#{group}.#{name}:jar:#{version}").from(jar)
+    map
+  end
+)
+
+DBUNIT_GRID= "org.dbunit:dbunit:jar:2.2"
