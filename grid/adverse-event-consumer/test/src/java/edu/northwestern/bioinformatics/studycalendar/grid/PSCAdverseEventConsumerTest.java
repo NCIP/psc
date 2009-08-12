@@ -16,13 +16,15 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
+import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
+
 import java.io.*;
 import java.util.Date;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
  */
-public class PSCAdverseEventConsumerTest extends DBTestCase {
+public class PSCAdverseEventConsumerTest extends DaoTestCase {
 
     private String clientConfigFile;
 
@@ -30,48 +32,48 @@ public class PSCAdverseEventConsumerTest extends DBTestCase {
 
     private String serviceUrl;
 
-    private void init() {
-        clientConfigFile = System.getProperty("psc.test.clientConfigFile",
-                "/gov/nih/nci/cabig/ctms/grid/ae/client/client-config.wsdd");
-        aeFile = System.getProperty("psc.test.sampleNotificationFile",
-                "grid/adverse-event-consumer/test/resources/SampleAdverseEventMessage.xml");
-        // serviceUrl = System.getProperty("psc.test.serviceUrl",
-        // "http://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
-
-        serviceUrl = System.getProperty("psc.test.serviceUrl",
-                "https://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
-
-        String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
-        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc_test");
-        String usr = System.getProperty("psc.test.db.usr", "psc");
-        String pwd = System.getProperty("psc.test.db.pwd", "psc");
-
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, driver);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, url);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
-    }
-
-    public PSCAdverseEventConsumerTest() {
-        super();
-        init();
-
-    }
-
-    public PSCAdverseEventConsumerTest(final String name) {
-        super(name);
-        init();
-    }
-
-    @Override
-    protected DatabaseOperation getSetUpOperation() throws Exception {
-        return DatabaseOperation.CLEAN_INSERT;
-    }
-
-    @Override
-    protected DatabaseOperation getTearDownOperation() throws Exception {
-        return DatabaseOperation.NONE;
-    }
+//    private void init() {
+//        clientConfigFile = System.getProperty("psc.test.clientConfigFile",
+//                "/gov/nih/nci/cabig/ctms/grid/ae/client/client-config.wsdd");
+//        aeFile = System.getProperty("psc.test.sampleNotificationFile",
+//                "grid/adverse-event-consumer/test/resources/SampleAdverseEventMessage.xml");
+//        // serviceUrl = System.getProperty("psc.test.serviceUrl",
+//        // "http://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
+//
+//        serviceUrl = System.getProperty("psc.test.serviceUrl",
+//                "https://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
+//
+//        String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
+//        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc_test");
+//        String usr = System.getProperty("psc.test.db.usr", "psc");
+//        String pwd = System.getProperty("psc.test.db.pwd", "psc");
+//
+//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, driver);
+//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, url);
+//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
+//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
+//    }
+//
+//    public PSCAdverseEventConsumerTest() {
+//        super();
+//        init();
+//
+//    }
+//
+//    public PSCAdverseEventConsumerTest(final String name) {
+//        super(name);
+//        init();
+//    }
+//
+//    @Override
+//    protected DatabaseOperation getSetUpOperation() throws Exception {
+//        return DatabaseOperation.CLEAN_INSERT;
+//    }
+//
+//    @Override
+//    protected DatabaseOperation getTearDownOperation() throws Exception {
+//        return DatabaseOperation.NONE;
+//    }
 
     public void testCreateNotificationLocal() {
         AENotificationType ae = getNotification();
@@ -128,30 +130,32 @@ public class PSCAdverseEventConsumerTest extends DBTestCase {
         return ae;
     }
 
-    public static void main(final String[] args) {
-        junit.textui.TestRunner.run(suite());
-    }
-
-    public static Test suite() {
-        TestSuite suite = new TestSuite();
-
-        /*
-           * NOTE: These tests CANNOT be run in succession because it will cause the maximum number of connections to be exceeded.
-           */
-        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
-        // suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationLocal"));
-        return suite;
-    }
+//    public static void main(final String[] args) {
+//        junit.textui.TestRunner.run(suite());
+//    }
+//
+//    public static Test suite() {
+//        TestSuite suite = new TestSuite();
+//
+//        /*
+//           * NOTE: These tests CANNOT be run in succession because it will cause the maximum number of connections to be exceeded.
+//           */
+//        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
+//        // suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationLocal"));
+//        return suite;
+//    }
 
     @Override
     protected IDataSet getDataSet() throws Exception {
-        String fileName = "grid/adverse-event-consumer/test/resources/test_data.xml";
-        File testFile = new File(fileName);
-        if (!testFile.exists()) {
-            throw new RuntimeException(fileName + " not found.");
-        }
-
-        return new FlatXmlDataSet(new FileInputStream(testFile));
+        //String fileName = "grid/adverse-event-consumer/test/resources/test_data.xml";
+//        File testFile = new File(fileName);
+//        if (!testFile.exists()) {
+//            throw new RuntimeException(fileName + " not found.");
+//        }
+//
+//        return new FlatXmlDataSet(new FileInputStream(testFile));
+    	String fileName = "test_data.xml";
+        return new FlatXmlDataSet(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
     }
 
 }
