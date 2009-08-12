@@ -93,7 +93,7 @@ public class PSCStudyConsumerMessgeRollbackTest extends AbstractTransactionalSpr
 
         }
 
-        amendmentService.deleteDevelopmentAmendmentOnly(study);
+//        amendmentService.deleteDevelopmentAmendmentOnly(study);
         logger.debug(String.format("deleted development amendment for study ", assignedIdentifier));
 
         StudySite studySite = study.getStudySite(site);
