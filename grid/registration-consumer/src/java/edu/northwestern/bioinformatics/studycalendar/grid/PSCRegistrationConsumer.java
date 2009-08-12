@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ccts.domain.*;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import gov.nih.nci.ccts.grid.common.RegistrationConsumerI;
@@ -59,6 +59,8 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private String registrationConsumerGridServiceUrl;
 
     private String rollbackTimeOut;
+    
+    private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
 
     /**
      * Does nothing as we are already  commiting Registraiton message by default.
@@ -204,7 +206,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         }
 
 
-        String userName = ApplicationSecurityManager.getUser();
+        String userName = applicationSecurityManager.getUserName();
         // FIXME:Saurabh: check for correct implementation of userDao
         // User user = userDao.getByName(userName);
 
