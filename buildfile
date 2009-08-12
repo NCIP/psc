@@ -2,6 +2,8 @@ require "buildr"
 require "buildr/jetty"
 require "buildr/emma" if emma?
 require "shenandoah/buildr"
+require "buildr/core/filter"
+require 'fileutils'
 
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
@@ -17,6 +19,13 @@ Java.classpath.concat([
   "org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
 ])
 jetty.url = "http://localhost:7200"
+
+#### building the wsrf directory name to be used by the grid services for deployment
+wsrf_dir_name = "wsrf"
+if(ENV['WSRF_DIR_NAME'])
+  wsrf_dir_name = ENV['WSRF_DIR_NAME']
+end
+wsrf_dir = ENV['CATALINA_HOME']+"/webapps/"+wsrf_dir_name
 
 ###### PROJECT
 
@@ -494,6 +503,210 @@ define "psc" do
         project('web').test_dependencies,
         project('authentication:plugin-api').test_dependencies
       test.enhance([:build_test_da_launcher])
+    end
+  end
+  
+  ##Adding the grid module.
+  desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"
+  define "grid" do
+    
+    task :check_globus do |task|
+      raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
+    end
+    
+    task :check_caaers do |task|
+      raise "CAAERS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CAAERS_HOME']
+    end
+    
+    task :check_ccts do |task|
+      raise "CCTS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CCTS_HOME']
+    end
+    
+    task :check_grid_tomcat do |task|
+      raise "CATALINA_HOME not set. Cannot deploy grid service without TOMCAT" unless ENV['CATALINA_HOME']
+    end
+    
+    task :check_wsrf do |task|
+      raise "#{wsrf_dir} not found. Cannot deploy grid service" unless File.directory? wsrf_dir
+    end
+    
+    ##Project src and test compiling successfully but test cases are failing. 
+    desc "AdverseEvent Grid Service"
+    define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, ADVERSE_EVENT_CONSUMER_GRID
+      resources.from(_('src/java')).include('*.xml')
+      package(:jar)
+      package(:sources)
+      
+      #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
+      test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).compile.from(_('test/src/java'))
+      
+      test.resources.from(_('test/resources')).include('*')
+      test.resources.from('src/test/resources').include('logback-test.xml')
+      
+      #removing the DBUNIT 2.1 from the test dependencies
+      test.dependencies.reject! do |dep|
+        dep == artifact(eponym("dbunit", "2.1"))
+      end
+      
+      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_caaers', 'psc:grid:check_grid_tomcat'] do |task|
+        ##Delegating to caaers.
+        ##Not Tested therefore commented temporarily
+        #ant('deploy-adverse-event-consumer-service') do |ant|
+        #  ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
+        #  ant.subant :buildpath => ENV['CAAERS_HOME']+"/grid/introduce/AdverseEventConsumerService1.2", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
+        #end
+        
+        task(:deploy_impl).invoke
+        
+        ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
+        ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
+        ##Tested and working
+        FileUtils.mkdir_p _('target/work')
+        filter.from(wsrf_dir+"/WEB-INF/etc/cagrid_AdverseEventConsumer").into(_('target/work')).include("server-config.wsdd").using(
+           :xml, :xpath => "/deployment/service", :insert_type => :before, :xml_content => "<handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoRequestHandler\"
+           type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler\"/>
+
+        <handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoResponseHandler\"
+            type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler\"/>"
+        ).run
+        FileUtils.rm wsrf_dir+"/WEB-INF/etc/cagrid_AdverseEventConsumer/server-config.wsdd"
+        filter.from(_('target/work')).into(
+            wsrf_dir+"/WEB-INF/etc/cagrid_AdverseEventConsumer").include("server-config.wsdd").using(
+            :xml, :xpath => "/deployment/service", :insert_type => :under, :xml_content => "<requestFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoRequestHandler\"/>
+            </requestFlow>
+            <responseFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoResponseHandler\"/>
+            </responseFlow>"
+        ).run
+        FileUtils.remove_dir _('target/work')
+      end
+      
+      task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
+        cp package.name, wsrf_dir+"/WEB-INF/lib"
+        compile.dependencies.each do |lib|
+          cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
+        end
+      end
+    end
+    
+    desc "Registration consumer Grid Service"
+    define "registration-consumer-impl", :base_dir => _('registration-consumer') do
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, REGISTRATION_CONSUMER_GRID
+      resources.from(_('src/java')).include('*.xml')
+      package(:jar)
+      package(:sources)
+      
+      #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
+      test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).compile.from(_('test/src/java'))
+      
+      test.resources.from(_('test/resources')).include('*')
+      test.resources.from('src/test/resources').include('logback-test.xml')
+      
+      #removing the DBUNIT 2.1 from the test dependencies
+      test.dependencies.reject! do |dep|
+        dep == artifact(eponym("dbunit", "2.1"))
+      end
+      
+      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
+        ##Delegating to ccts.
+        ##Not Tested therefore commented temporarily
+        #ant('deploy-registration-consumer-service') do |ant|
+        #  ant.echo :message => "delegating the registration consumer service deployment to ccts"
+        #  ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
+        #end
+        task(:deploy_impl).invoke
+        
+        ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
+        ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
+        ##Tested and working
+        FileUtils.mkdir_p _('target/work')
+        filter.from(wsrf_dir+"/WEB-INF/etc/cagrid_RegistrationConsumer").into(_('target/work')).include("server-config.wsdd").using(
+           :xml, :xpath => "/deployment/service", :insert_type => :before, :xml_content => "<handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoRequestHandler\"
+           type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler\"/>
+
+        <handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoResponseHandler\"
+            type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler\"/>"
+        ).run
+        FileUtils.rm wsrf_dir+"/WEB-INF/etc/cagrid_RegistrationConsumer/server-config.wsdd"
+        filter.from(_('target/work')).into(
+            wsrf_dir+"/WEB-INF/etc/cagrid_RegistrationConsumer").include("server-config.wsdd").using(
+            :xml, :xpath => "/deployment/service", :insert_type => :under, :xml_content => "<requestFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoRequestHandler\"/>
+            </requestFlow>
+            <responseFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoResponseHandler\"/>
+            </responseFlow>"
+        ).run
+        FileUtils.remove_dir _('target/work')
+      end
+      
+      task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
+        cp package.name, wsrf_dir+"/WEB-INF/lib"
+        compile.dependencies.each do |lib|
+          cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
+        end
+      end
+    end
+    
+    desc "Study consumer Grid Service"
+    define "study-consumer-impl", :base_dir => _('study-consumer') do
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID
+      resources.from(_('src/java')).include('*.xml')
+      package(:jar)
+      package(:sources)
+      
+      #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
+      test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).compile.from(_('test/src/java'))
+      
+      test.resources.from(_('test/resources')).include('*')
+      test.resources.from('src/test/resources').include('logback-test.xml')
+      
+      #removing the DBUNIT 2.1 from the test dependencies
+      test.dependencies.reject! do |dep|
+        dep == artifact(eponym("dbunit", "2.1"))
+      end
+      
+      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
+        ##Delegating to ccts.
+        ##Not Tested therefore commented temporarily
+        #ant('deploy-study-consumer-service') do |ant|
+        #  ant.echo :message => "delegating the study consumer service deployment to ccts"
+        #  ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
+        #end
+        task(:deploy_impl).invoke
+        
+        ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
+        ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
+        ##Tested and working
+        FileUtils.mkdir_p _('target/work')
+        filter.from(wsrf_dir+"/WEB-INF/etc/cagrid_StudyConsumer").into(_('target/work')).include("server-config.wsdd").using(
+           :xml, :xpath => "/deployment/service", :insert_type => :before, :xml_content => "<handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoRequestHandler\"
+           type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler\"/>
+
+        <handler xmlns=\"http://xml.apache.org/axis/wsdd/\"  name=\"auditInfoResponseHandler\"
+            type=\"java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler\"/>"
+        ).run
+        FileUtils.rm wsrf_dir+"/WEB-INF/etc/cagrid_StudyConsumer/server-config.wsdd"
+        filter.from(_('target/work')).into(
+            wsrf_dir+"/WEB-INF/etc/cagrid_StudyConsumer").include("server-config.wsdd").using(
+            :xml, :xpath => "/deployment/service", :insert_type => :under, :xml_content => "<requestFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoRequestHandler\"/>
+            </requestFlow>
+            <responseFlow xmlns=\"http://xml.apache.org/axis/wsdd/\" >
+                <handler type=\"auditInfoResponseHandler\"/>
+            </responseFlow>"
+        ).run
+        FileUtils.remove_dir _('target/work')
+      end
+      
+      task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
+        cp package.name, wsrf_dir+"/WEB-INF/lib"
+        compile.dependencies.each do |lib|
+          cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
+        end
+      end
     end
   end
   
