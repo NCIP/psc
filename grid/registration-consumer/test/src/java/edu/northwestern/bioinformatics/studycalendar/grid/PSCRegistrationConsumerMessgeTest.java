@@ -22,6 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
  import java.io.InputStream;
  import java.io.Reader;
  import java.io.FileReader;
+ import java.io.InputStreamReader;
  import java.io.FileOutputStream;
 
 /**
@@ -67,9 +68,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
      protected void onSetUpInTransaction() throws Exception {
 
          DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/RegistrationConsumer"));
-         regFile = System.getProperty("psc.test.sampleRegistrationFile",
-                 "grid/registration-consumer/test/resources/SampleRegistrationMessage.xml");
-
+//         regFile = System.getProperty("psc.test.sampleRegistrationFile",
+//                 "grid/registration-consumer/test/resources/SampleRegistrationMessage.xml");
+         regFile = System.getProperty("psc.test.sampleRegistrationFile");
+         
          study = studyDao.getByAssignedIdentifier(assignedIdentifier);
          if (study == null) {
              logger.error(String.format("no study found for given identifier %s", assignedIdentifier));
@@ -178,7 +180,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
          try {
              InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                      "gov/nih/nci/ccts/grid/client/client-config.wsdd");
-             Reader reader = new FileReader(regFile);
+             Reader reader = null;
+             if (regFile != null){
+             	reader = new FileReader(regFile);
+             }else{
+             	reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                     "SampleRegistrationMessage.xml"));
+             }
              reg = (Registration) Utils.deserializeObject(reader, Registration.class, config);
          }
          catch (Exception ex) {
