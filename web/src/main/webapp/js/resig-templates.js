@@ -5,6 +5,8 @@
 //  - Split out compile function for debugging
 //  - Switched template delimiters from ERB-style <% to vaguely freemarker-ish [#
 //    since <% is also used by JSP
+//  - Made [#= #] resistant to undefined properties.  N.B.: a side effect of 
+//    this is that the content of [#= #] sections are evaluated twice.
 (function(){
   var cache = {};
 
@@ -36,7 +38,7 @@ function resigTemplateCompile(str) {
       .replace(/[\r\t\n]/g, " ")
       .split("[#").join("\t")
       .replace(/((^|#\])[^\t]*)'/g, "$1\r")
-      .replace(/\t=(.*?)#\]/g, "',$1,'")
+      .replace(/\t=(.*?)#\]/g, "',(typeof ($1) === 'undefined') ? '' : ($1),'")
       .split("\t").join("');")
       .split("#]").join("p.push('")
       .split("\r").join("\\'")
