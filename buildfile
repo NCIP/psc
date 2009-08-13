@@ -727,7 +727,7 @@ define "psc" do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
-        war.path("WEB-INF/#{COMPILED_SASS_PKG_DIR}").include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
+        war.path(COMPILED_SASS_PKG_DIR).include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
       end
     end
     package(:sources)
