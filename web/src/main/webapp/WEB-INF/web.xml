@@ -293,20 +293,6 @@
     </servlet-mapping>
     -->
 
-    <servlet>
-        <servlet-name>sass</servlet-name>
-        <servlet-class>edu.northwestern.bioinformatics.johaml.servlet.SassServlet</servlet-class>
-        <init-param>
-            <param-name>TemplatePath</param-name>
-            <param-value>/</param-value> <!-- load from webapp public root -->
-        </init-param>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>sass</servlet-name>
-        <url-pattern>*.sass</url-pattern>
-    </servlet-mapping>
-
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
         <welcome-file>index.jsp</welcome-file>

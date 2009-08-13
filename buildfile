@@ -433,7 +433,7 @@ define "psc" do
         "bundles/application-libraries" => application_libraries
       )
     end
-    
+
     task :build_test_da_launcher => ["psc:osgi-layer:da_launcher_artifacts"] do |task|
       mkdir_p _('target', 'test')
       rm_rf _('target', 'test', 'da-launcher')
@@ -448,7 +448,7 @@ define "psc" do
         }
       end
     end
-    
+
     task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
       cd _("target/classes") do
         mkdir_p _('tmp/logs')
@@ -496,15 +496,19 @@ define "psc" do
       test.enhance([:build_test_da_launcher])
     end
   end
-  
+
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
+    COMPILED_SASS_TARGET = _(:target, :'compiled-sass')
+    COMPILED_SASS_PKG_DIR = "sass-css"
+    
     compile.with SLF4J, LOGBACK, CTMS_COMMONS.web,
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), FELIX.main, DYNAMIC_JAVA.osgi_commons
+      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), 
+      FELIX.main, DYNAMIC_JAVA.osgi_commons
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,
@@ -513,14 +517,15 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      war.enhance ["psc:osgi-layer:da_launcher_artifacts"] do
+      war.enhance ["psc:osgi-layer:da_launcher_artifacts", "psc:web:compile_sass"] do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
+        war.path("#{COMPILED_SASS_PKG_DIR}").include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
       end
     end
     package(:sources)
-    
+
     iml.add_component("FacetManager") do |component|
       component.facet :type => 'web', :name => 'Web' do |facet|
         facet.configuration do |conf|
@@ -535,31 +540,93 @@ define "psc" do
         end
       end
     end
-    
-    task :explode => [compile, "psc:osgi-layer:da_launcher_artifacts"] do
-      packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
-        war_package.classes.each do |clz_src|
-          filter.from(clz_src).into(_('src/main/webapp/WEB-INF/classes')).run
+
+    def compile_sass(src, dst)
+      trace "Compiling Sass #{src} => #{dst}"
+      require 'sass'
+      mkdir_p File.dirname(dst)
+      File.open(dst, 'w') do |f|
+        f.write(Sass::Engine.new(File.read(src)).render)
+      end
+    end
+
+    def sass_dst(src)
+      src.
+        sub(_(:source, :main, 'sass'), COMPILED_SASS_TARGET).
+        sub(/sass$/, 'css')
+    end
+
+    def sass_src
+      Dir[_(:source, :main, 'sass') + "/**/*.sass"]
+    end
+
+    def watch_sass
+      sass_src.each do |src|
+        dst = sass_dst(src)
+        if File.stat(dst) < File.stat(src)
+          info "Recompiling #{src} into #{dst}"
+          compile_sass(src, dst)
         end
-        libdir = _('src/main/webapp/WEB-INF/lib')
+      end
+    end
+
+    task :compile_sass
+    sass_src.each do |src|
+      dst = sass_dst(src)
+      file dst => src do
+        compile_sass(src, dst)
+      end
+      task(:compile_sass).enhance [dst]
+    end
+
+    def link_unique_nodes(src, dst)
+      Dir["#{src}/*"].each do |src_path|
+        dst_path = src_path.sub(src, dst)
+        if File.exist? dst_path
+          link_unique_nodes(src_path, dst_path)
+        else
+          ln_s(src_path, dst_path)
+        end
+      end
+    end
+
+    task :explode => [compile, :compile_sass, "psc:osgi-layer:da_launcher_artifacts"] do |t|
+      class << t; attr_accessor :target; end
+      t.target = _(:target, 'dev-webapp')
+      rm_rf t.target
+      mkdir_p t.target
+
+      packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
+        # Explicitly copied (i.e., built) pieces
+        war_package.classes.each do |clz_src|
+          filter.from(clz_src).into(t.target + '/WEB-INF/classes').run
+        end
+        libdir = t.target + '/WEB-INF/lib'
         mkdir_p libdir
         war_package.libs.each do |lib|
           cp lib.to_s, libdir
         end
         task('psc:osgi-layer:da_launcher_artifacts').values.each do |path, artifacts|
-          dadir = _("src/main/webapp/WEB-INF/da-launcher/#{path}")
+          dadir = t.target + "/WEB-INF/da-launcher/#{path}"
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
+        ln_s COMPILED_SASS_TARGET, t.target + "/" + COMPILED_SASS_PKG_DIR
+        
+        # Symlinked (i.e., source) pieces.  Must come 2nd.
+        # Approach: walk src/main/webapp
+        # For each node, if it appears in src and target, traverse down
+        #                if it appears in src only, link
+        link_unique_nodes(_('src/main/webapp'), t.target)
       end
     end
-    
+
     task :local_jetty do
       ENV['test'] = 'no'
       set_db_name 'datasource' unless ENV['DB']
-      
+
       task(:jetty_deploy_exploded).invoke
-      
+
       msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop."
       info "=" * msg.size
       info msg
@@ -568,14 +635,14 @@ define "psc" do
       # Keep the script running until interrupted
       while(true)
         sleep(1)
+        watch_sass
       end
     end
-    
+
     directory _('tmp/logs')
-    
+
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
-      logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
-      rm _('src/main/webapp/WEB-INF/classes/logback.xml')
+      logconfig = task(:explode).target + '/WEB-INF/classes/logback.xml'
       filter(_('src/main/java')).
         using(:maven, 'catalina.home' => _('tmp').to_s).
         include(File.basename(logconfig)).
@@ -583,28 +650,11 @@ define "psc" do
         run
       Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
       Java.java.lang.System.setProperty("catalina.home", _('tmp').to_s)
+      Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
 
-      jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
+      jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
-    
-    # exclude exploded files from IDEA
-    iml.excluded_directories << 
-      _('src/main/webapp/WEB-INF/da-launcher/bundles') << 
-      _('src/main/webapp/WEB-INF/da-launcher/runtime') << 
-      _('src/main/webapp/WEB-INF/da-launcher/logs') << 
-      _('src/main/webapp/WEB-INF/da-launcher/osgi-framework') << 
-      _('src/main/webapp/WEB-INF/lib') << 
-      _('src/main/webapp/WEB-INF/classes')
-    
-    # clean exploded files, too
-    clean(["psc:osgi-layer:da_launcher_artifacts"]) {
-      dal_paths = [task('psc:osgi-layer:da_launcher_artifacts').values.keys + %w(logs runtime osgi-framework/felix osgi-framework/knopflerfish osgi-framework/equinox)].
-        flatten.collect { |path| "da-launcher/#{path}" }
-      (%w(lib classes) + dal_paths).each do |exploded_path|
-        rm_rf _("src/main/webapp/WEB-INF/#{exploded_path}")
-      end
-    }
-    
+
     desc "Specs for client-side javascript"
     define "js-spec" do
       # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
@@ -673,8 +723,10 @@ define "psc" do
     cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
     puts `svn export https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
 
-    task.filename = _("target/dist/psc-#{VERSION_NUMBER}-bin.zip")
-    zip(task.filename).path("psc-#{VERSION_NUMBER}").include("#{dist_dir}/*").root.invoke
+    pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
+
+    task.filename = _("target/dist/#{pkg_name}-bin.zip")
+    zip(task.filename).path(pkg_name).include("#{dist_dir}/*").root.invoke
   end
 end
 
