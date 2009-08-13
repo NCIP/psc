@@ -723,8 +723,10 @@ define "psc" do
     cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
     puts `svn export https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
 
-    task.filename = _("target/dist/psc-#{VERSION_NUMBER}-bin.zip")
-    zip(task.filename).path("psc-#{VERSION_NUMBER}").include("#{dist_dir}/*").root.invoke
+    pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
+
+    task.filename = _("target/dist/#{pkg_name}-bin.zip")
+    zip(task.filename).path(pkg_name).include("#{dist_dir}/*").root.invoke
   end
 end
 
