@@ -20,13 +20,6 @@ Java.classpath.concat([
 ])
 jetty.url = "http://localhost:7200"
 
-#### building the wsrf directory name to be used by the grid services for deployment
-wsrf_dir_name = "wsrf"
-if(ENV['WSRF_DIR_NAME'])
-  wsrf_dir_name = ENV['WSRF_DIR_NAME']
-end
-wsrf_dir = ENV['CATALINA_HOME']+"/webapps/"+wsrf_dir_name
-
 ###### PROJECT
 
 desc "Patient Study Calendar"

@@ -50,3 +50,8 @@ def db_deps
     (DB.oracle if ENV['ORACLE'])
   ].compact
 end
+
+# building the wsrf directory name to be used by the grid services for deployment
+def wsrf_dir
+  [ENV['CATALINA_HOME'], "/webapps/", (ENV['WSRF_DIR_NAME'] || "wsrf")].join('')
+end
