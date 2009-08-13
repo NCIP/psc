@@ -1,7 +1,7 @@
-bundles/system-*
-bundles/application-*
-osgi-framework/equinox
-osgi-framework/felix
-osgi-framework/knopflerfish
-logs/*
-runtime/*
+# bundles/system-*
+# bundles/application-*
+# osgi-framework/equinox
+# osgi-framework/felix
+# osgi-framework/knopflerfish
+# logs/*
+# runtime/*

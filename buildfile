@@ -536,21 +536,44 @@ define "psc" do
       end
     end
     
-    task :explode => [compile, "psc:osgi-layer:da_launcher_artifacts"] do
-      packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
-        war_package.classes.each do |clz_src|
-          filter.from(clz_src).into(_('src/main/webapp/WEB-INF/classes')).run
+    def link_unique_nodes(src, dst)
+      Dir["#{src}/*"].each do |src_path|
+        dst_path = src_path.sub(src, dst)
+        if File.exist? dst_path
+          link_unique_nodes(src_path, dst_path)
+        else
+          ln_s(src_path, dst_path)
         end
-        libdir = _('src/main/webapp/WEB-INF/lib')
+      end
+    end
+    
+    task :explode => [compile, "psc:osgi-layer:da_launcher_artifacts"] do |t|
+      class << t; attr_accessor :target; end
+      t.target = _(:target, 'dev-webapp')
+      rm_rf t.target
+      mkdir_p t.target
+      
+      packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
+        # Explicitly copied (i.e., built) pieces
+        war_package.classes.each do |clz_src|
+          filter.from(clz_src).into(t.target + '/WEB-INF/classes').run
+        end
+        libdir = t.target + '/WEB-INF/lib'
         mkdir_p libdir
         war_package.libs.each do |lib|
           cp lib.to_s, libdir
         end
         task('psc:osgi-layer:da_launcher_artifacts').values.each do |path, artifacts|
-          dadir = _("src/main/webapp/WEB-INF/da-launcher/#{path}")
+          dadir = t.target + "/WEB-INF/da-launcher/#{path}"
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
+        
+        # Symlinked (i.e., source) pieces.  Must come 2nd.
+        # Approach: walk src/main/webapp
+        # For each node, if it appears in src and target, traverse down
+        #                if it appears in src only, link
+        link_unique_nodes(_('src/main/webapp'), t.target)
       end
     end
     
@@ -574,8 +597,7 @@ define "psc" do
     directory _('tmp/logs')
     
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
-      logconfig = _('src/main/webapp/WEB-INF/classes/logback.xml')
-      rm _('src/main/webapp/WEB-INF/classes/logback.xml')
+      logconfig = task(:explode).target + '/WEB-INF/classes/logback.xml'
       filter(_('src/main/java')).
         using(:maven, 'catalina.home' => _('tmp').to_s).
         include(File.basename(logconfig)).
@@ -583,27 +605,10 @@ define "psc" do
         run
       Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
       Java.java.lang.System.setProperty("catalina.home", _('tmp').to_s)
+      Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
 
-      jetty.deploy "#{jetty.url}/psc", _('src/main/webapp').to_s
+      jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
-    
-    # exclude exploded files from IDEA
-    iml.excluded_directories << 
-      _('src/main/webapp/WEB-INF/da-launcher/bundles') << 
-      _('src/main/webapp/WEB-INF/da-launcher/runtime') << 
-      _('src/main/webapp/WEB-INF/da-launcher/logs') << 
-      _('src/main/webapp/WEB-INF/da-launcher/osgi-framework') << 
-      _('src/main/webapp/WEB-INF/lib') << 
-      _('src/main/webapp/WEB-INF/classes')
-    
-    # clean exploded files, too
-    clean(["psc:osgi-layer:da_launcher_artifacts"]) {
-      dal_paths = [task('psc:osgi-layer:da_launcher_artifacts').values.keys + %w(logs runtime osgi-framework/felix osgi-framework/knopflerfish osgi-framework/equinox)].
-        flatten.collect { |path| "da-launcher/#{path}" }
-      (%w(lib classes) + dal_paths).each do |exploded_path|
-        rm_rf _("src/main/webapp/WEB-INF/#{exploded_path}")
-      end
-    }
     
     desc "Specs for client-side javascript"
     define "js-spec" do
