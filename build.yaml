@@ -1,3 +1,4 @@
 gems:
 - facets ~>2.4.0
 - shenandoah =0.0.0
+- haml ~>2.2.0

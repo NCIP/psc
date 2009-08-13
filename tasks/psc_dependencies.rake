@@ -315,9 +315,6 @@ WEB = [
   artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
   eponym('displaytag', '1.1.1'),
   "displaytag:displaytag-export-poi:jar:1.1.1",
-  artifact("org.johaml:johaml-bridge:jar:0.0").from(static_lib('johaml-bridge-0.0.jar')),
-  artifact("org.johaml:patched-jruby:jar:1.1.3").from(static_lib('patched-jruby-complete-1.1.3.jar')),
-  eponym("bsf", "2.4.0")
 ]
 
 RESTLET = struct({

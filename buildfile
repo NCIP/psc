@@ -442,7 +442,7 @@ define "psc" do
         "bundles/application-libraries" => application_libraries
       )
     end
-    
+
     task :build_test_da_launcher => ["psc:osgi-layer:da_launcher_artifacts"] do |task|
       mkdir_p _('target', 'test')
       rm_rf _('target', 'test', 'da-launcher')
@@ -457,7 +457,7 @@ define "psc" do
         }
       end
     end
-    
+
     task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
       cd _("target/classes") do
         mkdir_p _('tmp/logs')
@@ -709,15 +709,19 @@ define "psc" do
       end
     end
   end
-  
+
   desc "Web interfaces, including the GUI and the RESTful API"
   define "web" do
+    COMPILED_SASS_TARGET = _(:target, :'compiled-sass')
+    COMPILED_SASS_PKG_DIR = "sass-css"
+    
     compile.with SLF4J, LOGBACK, CTMS_COMMONS.web,
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), FELIX.main, DYNAMIC_JAVA.osgi_commons
+      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), 
+      FELIX.main, DYNAMIC_JAVA.osgi_commons
 
     test.with project('test-infrastructure').and_dependencies, 
       project('test-infrastructure').test_dependencies,
@@ -726,14 +730,15 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      war.enhance ["psc:osgi-layer:da_launcher_artifacts"] do
+      war.enhance ["psc:osgi-layer:da_launcher_artifacts", "psc:web:compile_sass"] do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
         end
+        war.path("WEB-INF/#{COMPILED_SASS_PKG_DIR}").include(Dir[COMPILED_SASS_TARGET + "/**/*.css"])
       end
     end
     package(:sources)
-    
+
     iml.add_component("FacetManager") do |component|
       component.facet :type => 'web', :name => 'Web' do |facet|
         facet.configuration do |conf|
@@ -748,7 +753,45 @@ define "psc" do
         end
       end
     end
-    
+
+    def compile_sass(src, dst)
+      trace "Compiling Sass #{src} => #{dst}"
+      require 'sass'
+      mkdir_p File.dirname(dst)
+      File.open(dst, 'w') do |f|
+        f.write(Sass::Engine.new(File.read(src)).render)
+      end
+    end
+
+    def sass_dst(src)
+      src.
+        sub(_(:source, :main, 'sass'), COMPILED_SASS_TARGET).
+        sub(/sass$/, 'css')
+    end
+
+    def sass_src
+      Dir[_(:source, :main, 'sass') + "/**/*.sass"]
+    end
+
+    def watch_sass
+      sass_src.each do |src|
+        dst = sass_dst(src)
+        if File.stat(dst) < File.stat(src)
+          info "Recompiling #{src} into #{dst}"
+          compile_sass(src, dst)
+        end
+      end
+    end
+
+    task :compile_sass
+    sass_src.each do |src|
+      dst = sass_dst(src)
+      file dst => src do
+        compile_sass(src, dst)
+      end
+      task(:compile_sass).enhance [dst]
+    end
+
     def link_unique_nodes(src, dst)
       Dir["#{src}/*"].each do |src_path|
         dst_path = src_path.sub(src, dst)
@@ -759,13 +802,13 @@ define "psc" do
         end
       end
     end
-    
-    task :explode => [compile, "psc:osgi-layer:da_launcher_artifacts"] do |t|
+
+    task :explode => [compile, :compile_sass, "psc:osgi-layer:da_launcher_artifacts"] do |t|
       class << t; attr_accessor :target; end
       t.target = _(:target, 'dev-webapp')
       rm_rf t.target
       mkdir_p t.target
-      
+
       packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
         # Explicitly copied (i.e., built) pieces
         war_package.classes.each do |clz_src|
@@ -781,6 +824,7 @@ define "psc" do
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
+        ln_s COMPILED_SASS_TARGET, t.target + "/" + COMPILED_SASS_PKG_DIR
         
         # Symlinked (i.e., source) pieces.  Must come 2nd.
         # Approach: walk src/main/webapp
@@ -789,13 +833,13 @@ define "psc" do
         link_unique_nodes(_('src/main/webapp'), t.target)
       end
     end
-    
+
     task :local_jetty do
       ENV['test'] = 'no'
       set_db_name 'datasource' unless ENV['DB']
-      
+
       task(:jetty_deploy_exploded).invoke
-      
+
       msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop.  PID: #{Process.pid || "?"}"
       info "=" * msg.size
       info msg
@@ -804,11 +848,12 @@ define "psc" do
       # Keep the script running until interrupted
       while(true)
         sleep(1)
+        watch_sass
       end
     end
-    
+
     directory _('tmp/logs')
-    
+
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
       logconfig = task(:explode).target + '/WEB-INF/classes/logback.xml'
       filter(_('src/main/java')).
@@ -822,7 +867,7 @@ define "psc" do
 
       jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
-    
+
     desc "Specs for client-side javascript"
     define "js-spec" do
       # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
