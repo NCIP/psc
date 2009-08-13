@@ -803,26 +803,32 @@ define "psc" do
       mkdir_p t.target
 
       packages.detect { |pkg| pkg.to_s =~ /war$/ }.tap do |war_package|
+        info "Exploding into #{t.target}"
         # Explicitly copied (i.e., built) pieces
+        info "- Exploding classes"
         war_package.classes.each do |clz_src|
           filter.from(clz_src).into(t.target + '/WEB-INF/classes').run
         end
+        info "- Exploding libs"
         libdir = t.target + '/WEB-INF/lib'
         mkdir_p libdir
         war_package.libs.each do |lib|
           cp lib.to_s, libdir
         end
+        info "- Exploding DA Launcher libs"
         task('psc:osgi-layer:da_launcher_artifacts').values.each do |path, artifacts|
           dadir = t.target + "/WEB-INF/da-launcher/#{path}"
           mkdir_p dadir
           artifacts.each { |a| a.invoke; cp a.to_s, dadir }
         end
+        info "- Linking Sass"
         ln_s COMPILED_SASS_TARGET, t.target + "/" + COMPILED_SASS_PKG_DIR
         
         # Symlinked (i.e., source) pieces.  Must come 2nd.
         # Approach: walk src/main/webapp
         # For each node, if it appears in src and target, traverse down
         #                if it appears in src only, link
+        info "- Linking static files"
         link_unique_nodes(_('src/main/webapp'), t.target)
       end
     end
