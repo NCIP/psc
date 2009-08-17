@@ -406,8 +406,8 @@
         <div class="accordion-content">
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
 
-                    <c:if test="${configuration.externalAppsConfigured}">
-                        <div class="row ${commons:parity(outerCounter.index)}">
+                <c:if test="${configuration.externalAppsConfigured}">
+                    <div class="row ${commons:parity(outerCounter.index)}">
                         <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
                         <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
                         <c:set var="ctmsAvail" value="${not empty configuration.map.patientPageUrl}"/>
@@ -431,10 +431,12 @@
                                                    cssClass="control">lab results</tags:externalLink>
                             </c:if>
                         </div>
-                            </div>
-                    </c:if>
-
+                    </div>
+                </c:if>
             </c:forEach>
+            <c:if test="${! configuration.externalAppsConfigured}">
+                <li class="none">None configured</li>
+             </c:if>  
 
         </div>
 
