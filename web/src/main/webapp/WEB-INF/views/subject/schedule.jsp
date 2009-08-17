@@ -78,6 +78,12 @@
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
             </script>
+            <c:set var="isNotificationAvailable" value="false"/>
+            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+                <c:if test="${not empty assignment.currentAeNotifications}">
+                    <c:set var="isNotificationAvailable" value="true"/>
+                </c:if>
+           </c:forEach>
         </c:otherwise>
     </c:choose>
      <style type="text/css">
@@ -118,12 +124,12 @@
             font-style: italic;
         }
 
-        .card .value ul {
+        .value ul {
             margin: 0;
             padding: 0;
         }
 
-        .card .value ul li {
+        .value ul li {
             list-style-type: none;
             padding-bottom: 0.25em;
         }
@@ -152,13 +158,22 @@
         #display-controls {
             margin-top: 1em
         }
-
-
+        a.notification-control {
+            padding:0 2px;
+        }
     </style>
 
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery("#schedule-controls").accordion({ autoHeight: false, collapsible: true, navigation: true });
+            jQuery("#schedule-controls").accordion({ autoHeight: false, collapsible: true, navigation: true, active: false });
+            <c:choose>
+                <c:when test="${isNotificationAvailable == true}">
+                   jQuery("#schedule-controls").accordion('activate', 1)
+                </c:when>
+                <c:otherwise>
+                   jQuery("#schedule-controls").accordion('activate', 0)
+               </c:otherwise>
+            </c:choose>
         });
     </script>
 
@@ -266,6 +281,34 @@
             </div>
         </div>
      <c:if test="${not schedulePreview}">
+        <div class="accordionDiv">
+            <h3><a class="accordionHeader" href="#">Notifications </a></h3>
+        </div>
+        <div class="accordion-content">
+           <span id="notification-message"></span>
+           <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+                <c:if test="${not empty assignment.currentAeNotifications}">
+                   <div class="row ${commons:parity(outerCounter.index)}" id="div-${assignment.name}" >
+                        <div class="label">${assignment.name}</div>
+                        <div class="value">
+                            <ul>
+                            <c:forEach items="${assignment.currentAeNotifications}" var="notification" varStatus="innerCounter">
+                                <li id="notifiction-${notification.gridId}" class="notification-list ${assignment.name} remove ${commons:parity(innerCounter.index)}" study="${assignment.name}">
+                                    <a href="<c:url value="${notification.message}"/>">${notification.title}</a>
+                                    <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
+                                       notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                </li>
+                            </c:forEach>
+                            </ul>
+                        </div>
+                    </div>
+                </c:if>
+           </c:forEach>
+           <c:if test="${isNotificationAvailable == false}" >
+               <div class="label">No current notifications available.</div>
+           </c:if>
+        </div>
+
           <%--************ Delay Or Advance Portion**********--%>
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Delay or advance</a></h3>
@@ -379,9 +422,7 @@
           <h3><a class="accordionHeader" href="#">Population</a></h3>
         </div>
         <div class="accordion-content">
-            <div class="card">
-                <markTag:population/>
-            </div>
+            <markTag:population/>
         </div>
 
         <!-- Export accordian -->

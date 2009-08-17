@@ -112,6 +112,41 @@ psc.subject.RealScheduleControls = (function ($) {
     }
   }
 
+   function dismissNotification() {
+       var notificationId = $(this).attr('notification');
+       var assignmentId = $(this).attr('assignment');
+       var subjectId = $(this).attr('subject');
+       var params = {
+           dismissed: true
+       };
+       var url = psc.tools.Uris.relative('/api/v1/subjects/'+psc.tools.Uris.escapePathElement(subjectId)+
+                                      '/assignments/'+psc.tools.Uris.escapePathElement(assignmentId)+'/notifications/'
+                                       +psc.tools.Uris.escapePathElement(notificationId))
+       var list = $(this).parents('li:first')
+       $.ajax({
+         url: url,
+         type: 'PUT',
+         data: Object.toJSON(params),
+         contentType: 'application/json',
+         complete: function() {
+            updateNotificationList(list)
+         }
+       });
+   }
+
+   function updateNotificationList(li) {
+       li.slideUp()
+       li.removeClass("remove");
+       if ($('li.'+li.attr('study')+'.remove:not(.removed)').length == 0) {
+         var div = $('#div-'+li.attr('study'))
+         div.slideUp()
+       }
+       if ($('li.remove:not(.removed)').length == 0) {
+         $('#notification-message').
+             text('No current notifications available.');
+       }
+   }
+
   return {
     init: function () {
       $('#delay-submit').click(performDelay);
@@ -129,6 +164,7 @@ psc.subject.RealScheduleControls = (function ($) {
         }
         return false;
       });
+      $('a.notification-control').click(dismissNotification)
     },
 
     batchResource: function (uri) {
