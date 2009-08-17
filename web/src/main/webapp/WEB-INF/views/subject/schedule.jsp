@@ -107,11 +107,11 @@
         }
 
         #schedule-controls div.row div.label {
-            width: 8em;
+            width: 10em;
         }
 
         #schedule-controls div.row div.value {
-            margin-left: 9em;
+            margin-left: 11em;
         }
 
         #schedule-controls .none {
@@ -152,6 +152,8 @@
         #display-controls {
             margin-top: 1em
         }
+
+
     </style>
 
     <script type="text/javascript">
@@ -396,6 +398,44 @@
                     </div>
                 </div>
             </c:forEach>
+        </div>
+
+        <div class="accordionDiv">
+            <h3><a class="accordionHeader" href="#">Interapplication links</a> </h3>
+        </div>
+        <div class="accordion-content">
+            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+
+                    <c:if test="${configuration.externalAppsConfigured}">
+                        <div class="row ${commons:parity(outerCounter.index)}">
+                        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+                        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+                        <c:set var="ctmsAvail" value="${not empty configuration.map.patientPageUrl}"/>
+                        <c:set var="subjectAssignment" value="${assignment}"/>
+                        <div class="label">
+                            <c:if test="${caaersAvail || labViewerAvail || ctmsAvail}">
+                                View this subject's
+                            </c:if>
+                        </div>
+                        <div class="value">
+                            <c:if test="${ctmsAvail}">
+                                <tags:externalLink appShortName="ctms" subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="patientPageUrl"
+                                                   cssClass="control">${configuration.map.ctmsName} record</tags:externalLink>
+                            </c:if>
+                            <c:if test="${caaersAvail}">
+                                <tags:externalLink appShortName="caaers"  subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="caAERSBaseUrl"
+                                                   cssClass="control">adverse events</tags:externalLink>
+                            </c:if>
+                            <c:if test="${labViewerAvail}">
+                                <tags:externalLink appShortName="labviewer" subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="labViewerBaseUrl"
+                                                   cssClass="control">lab results</tags:externalLink>
+                            </c:if>
+                        </div>
+                            </div>
+                    </c:if>
+
+            </c:forEach>
+
         </div>
 
      </c:if>

@@ -39,17 +39,26 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         Study study = new Study();
         study.setAssignedIdentifier("ABC 0532");
         context.setStudy(study);
-        
+
         assertEquals("Identifier not resolved", "ABC 0532", GeneratedUriTemplateVariable.STUDY_IDENTIFIER.resolve(context));
     }
 
-    public void testResolvePatientIdentifier() throws Exception {
+    public void testResolvePatientIdentifierToGridId() throws Exception {
         Subject subject = new Subject();
-        subject.setId(24);
+        subject.setGridId("24");
         context.setSubject(subject);
 
-        assertEquals("Identifier not resolved", 24, GeneratedUriTemplateVariable.SUBJECT_IDENTIFIER.resolve(context));
-    }    
+        assertEquals("Identifier not resolved", "24", GeneratedUriTemplateVariable.SUBJECT_IDENTIFIER.resolve(context));
+    }
+
+    public void testResolvePatientIdentifierToPersonId() throws Exception {
+        Subject subject = new Subject();
+        subject.setPersonId("36");
+        subject.setGridId("25");
+        context.setSubject(subject);
+
+        assertEquals("Identifier not resolved", "36", GeneratedUriTemplateVariable.SUBJECT_IDENTIFIER.resolve(context));
+    }
 
     public void testCreateAllVariablesMap() throws Exception {
         String gridId = "Expected";
@@ -58,6 +67,15 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         context.setStudySubjectAssignment(assignment);
 
         Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context);
+        assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
+    }
+
+    public void testCreateAllVariablesMapWithAssignmentPassedIn() throws Exception {
+        String gridId = "Expected Assignment";
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setGridId(gridId);
+
+        Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context, assignment);
         assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
     }
 }
