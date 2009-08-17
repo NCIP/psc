@@ -196,6 +196,19 @@
           id="batchUpdatesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
     </bean>
+
+    <bean name="/subjects/{subject-identifier}/assignments/{assignment-identifier}/notifications"
+          id="notificationsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.NotificationsResource"
+            >
+        <property name="xmlSerializer" ref="notificationXmlSerializer"/>
+    </bean>
+
+    <bean name="/subjects/{subject-identifier}/assignments/{assignment-identifier}/notifications/{notification-identifier}"
+          id="notificationResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.NotificationResource">
+        <property name="xmlSerializer" ref="notificationXmlSerializer"/>
+    </bean>
     
     <!--Users Role -->
     <bean name="/users/{username}/roles"

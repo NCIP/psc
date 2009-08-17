@@ -25,7 +25,8 @@ public enum UriTemplateParameters {
     SCHEDULED_ACTIVITY_IDENTIFIER,
     USERNAME,
     ROLENAME,
-    BUNDLE_ID
+    BUNDLE_ID,
+    NOTIFICATION_IDENTIFIER
     ;
 
     public String attributeName() {

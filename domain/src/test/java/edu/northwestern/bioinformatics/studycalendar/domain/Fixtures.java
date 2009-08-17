@@ -353,6 +353,14 @@ public class Fixtures {
         return scheduledActivity;
     }
 
+    public static ScheduledActivity createReconsentScheduledActivity(String activityName, int year, int month, int day) {
+        ScheduledActivity reconcentEvent = new ScheduledActivity();
+        Activity activity = createActivity(activityName);
+        reconcentEvent.setActivity(activity);
+        reconcentEvent.setIdealDate(DateTools.createDate(year, month, day - 2));
+        return reconcentEvent;
+    }
+
     public static ScheduledActivity createConditionalEventWithStudy(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
