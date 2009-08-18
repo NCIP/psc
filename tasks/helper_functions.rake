@@ -53,5 +53,9 @@ end
 
 # building the wsrf directory name to be used by the grid services for deployment
 def wsrf_dir
-  [ENV['CATALINA_HOME'], "/webapps/", (ENV['WSRF_DIR_NAME'] || "wsrf")].join('')
+  [ENV['CATALINA_HOME'], "/webapps/", wsrf_dir_name].join('')
+end
+
+def wsrf_dir_name
+  ENV['WSRF_DIR_NAME'] || "wsrf"
 end
