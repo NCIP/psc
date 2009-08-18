@@ -154,7 +154,14 @@
                                              <h3 class="site">${studySites.site.name} </h3>
                                              <c:if test="${configuration.map.enableAssigningSubject}">
                                                  <ul class="controls">
-                                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
+                                                     <c:choose>
+                                                         <c:when test="${empty studySites.unapprovedAmendments}">
+                                                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
+                                                         </c:when>
+                                                         <c:otherwise>
+                                                             This template has not been approved yet
+                                                         </c:otherwise>
+                                                     </c:choose>
                                                 </ul>
                                             </c:if>
                                             <c:forEach items="${studySites.studySubjectAssignments}" var="listOfSubjects" varStatus="listOfSubjectsStatus">
