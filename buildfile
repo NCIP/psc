@@ -523,6 +523,24 @@ define "psc" do
       raise "#{wsrf_dir} not found. Cannot deploy grid service" unless File.directory? wsrf_dir
     end
     
+    task :deploy_globus do |task|
+      raise "GLOBUS_LOCATION not found. Cannot deploy globus" unless ENV['GLOBUS_LOCATION']
+      ant('deploy-globus') do |ant|
+        ant.echo :message => "deploying secured globus on tomcat, #{ENV['tomcat.dir']}"
+        ant.subant :buildpath => ENV['GLOBUS_LOCATION'], :antfile => "share/globus_wsrf_common/tomcat/tomcat.xml", :target => "deploySecureTomcat", :inheritAll => "false"  do |subant|
+          subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
+          subant.property :name => "webapp.name", :value => wsrf_dir_name
+        end
+      end
+    end
+    
+    ##this will deploy all the psc implementations together with the grid services provided PSC. Consider this for CCTS deployments since the 
+    ##container will most likely be secured before deploy the PSC specific implementations. Also check the "deploy_with_globus" task.
+    task :deploy => ['psc:grid:adverse-event-consumer-impl:deploy' , 'psc:grid:registration-consumer-impl:deploy' , 'psc:grid:study-consumer-impl:deploy']
+    
+    ##this will grid secure the tomcat and then deploy all the implementation. 
+    task :deploy_with_globus => [:deploy_globus , :deploy]
+      
     ##Project src and test compiling successfully but test cases are failing. 
     desc "AdverseEvent Grid Service"
     define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
@@ -545,10 +563,13 @@ define "psc" do
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_caaers', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to caaers.
         ##Not Tested therefore commented temporarily
-        #ant('deploy-adverse-event-consumer-service') do |ant|
-        #  ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
-        #  ant.subant :buildpath => ENV['CAAERS_HOME']+"/grid/introduce/AdverseEventConsumerService1.2", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
-        #end
+        ant('deploy-adverse-event-consumer-service') do |ant|
+          ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
+          ant.subant :buildpath => ENV['CAAERS_HOME']+"/grid/introduce/AdverseEventConsumerService1.2", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+            subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
+            subant.property :name => "globus.webapp", :value => wsrf_dir_name
+          end
+        end
         
         task(:deploy_impl).invoke
         
@@ -578,10 +599,18 @@ define "psc" do
       
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
+        
+        #removing the AdverseEventConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
+        compile.dependencies.reject! do |dep|
+          ADVERSE_EVENT_CONSUMER_GRID.member?(dep)
+        end
+        
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
+      
+      task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
     
     desc "Registration consumer Grid Service"
@@ -605,10 +634,13 @@ define "psc" do
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to ccts.
         ##Not Tested therefore commented temporarily
-        #ant('deploy-registration-consumer-service') do |ant|
-        #  ant.echo :message => "delegating the registration consumer service deployment to ccts"
-        #  ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
-        #end
+        ant('deploy-registration-consumer-service') do |ant|
+          ant.echo :message => "delegating the registration consumer service deployment to ccts"
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/RegistrationConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+            subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
+            subant.property :name => "globus.webapp", :value => wsrf_dir_name
+          end
+        end
         task(:deploy_impl).invoke
         
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -637,10 +669,18 @@ define "psc" do
       
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
+        
+        #removing the RegistrationConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
+        compile.dependencies.reject! do |dep|
+          REGISTRATION_CONSUMER_GRID.member?(dep)
+        end
+        
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
+      
+      task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
     
     desc "Study consumer Grid Service"
@@ -664,10 +704,13 @@ define "psc" do
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to ccts.
         ##Not Tested therefore commented temporarily
-        #ant('deploy-study-consumer-service') do |ant|
-        #  ant.echo :message => "delegating the study consumer service deployment to ccts"
-        #  ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false"
-        #end
+        ant('deploy-study-consumer-service') do |ant|
+          ant.echo :message => "delegating the study consumer service deployment to ccts"
+          ant.subant :buildpath => ENV['CCTS_HOME']+"/StudyConsumerGridService", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+            subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
+            subant.property :name => "globus.webapp", :value => wsrf_dir_name
+          end
+        end
         task(:deploy_impl).invoke
         
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
@@ -696,10 +739,18 @@ define "psc" do
       
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
+        
+        #removing the StudyConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
+        compile.dependencies.reject! do |dep|
+          STUDY_CONSUMER_GRID.member?(dep)
+        end
+        
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
+      
+      task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
   end
 
