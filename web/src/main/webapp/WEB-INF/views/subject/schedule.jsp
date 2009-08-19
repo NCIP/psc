@@ -485,7 +485,7 @@
             <h3><a class="accordionHeader" href="#">Template links</a> </h3>
         </div>
         <div class="accordion-content">
-            <c:if test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
+            <c:if test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 0}">
                 Return to template :
                 <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
                     <a class="control" href="<c:url value="/pages/cal/template?study=${row.studySite.study.id}"/>">
