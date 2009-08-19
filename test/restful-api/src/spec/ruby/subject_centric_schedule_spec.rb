@@ -133,12 +133,12 @@ describe "/subjects/{subject-identifier}/schedules" do
     
   end
   
-  describe "POST" do
+  describe "/activities POST" do
     
     it "updates the scheduled activity states for batch activities" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceled, reason : Just canceled , date : 2009-12-29 }}"
-      post "/schedules/ID001/batchUpdate", @JSONentity, 
+      post "/subjects/ID001/schedules/activities", @JSONentity,
         :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201
@@ -150,7 +150,7 @@ describe "/subjects/{subject-identifier}/schedules" do
     it "updates scheduled activity state for one activity and send 400 - Bad Request for another activity with incorrect state in request" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceledd, reason : Just canceled , date : 2009-12-29 }}"
-      post "/schedules/ID001/batchUpdate", @JSONentity,
+      post "/subjects/ID001/schedules/activities", @JSONentity,
             :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201
@@ -161,7 +161,7 @@ describe "/subjects/{subject-identifier}/schedules" do
     it "updates scheduled activity state for one activity and send 400 - Bad Request for another activity with incorrect date in request" do
       @JSONentity = "{#{@scheduled_activity1.gridId} : { state : scheduled, reason : Delay by two days , date : 2009-12-30 },
                       #{@scheduled_activity2.gridId} : { state : canceled, reason : Just canceled , date : 2009 }}"
-      post "/schedules/ID001/batchUpdate", @JSONentity,
+      post "/subjects/ID001/schedules/activities", @JSONentity,
             :as => :erin , 'Content-Type' => 'application/json'
       response.status_code.should == 207
       response.json[@scheduled_activity1.gridId]["Status"] == 201

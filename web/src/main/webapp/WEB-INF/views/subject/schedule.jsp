@@ -8,7 +8,7 @@
 <%@taglib prefix="markTag" tagdir="/WEB-INF/tags/accordion" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<tags:escapedUrl var="collectionResource" value="api~v1~schedules~${subject.gridId}~batchUpdate"/>
+<tags:escapedUrl var="collectionResource" value="api~v1~subjects~${subject.gridId}~schedules~activities"/>
 
 <jsp:useBean id="schedulePreview" type="java.lang.Boolean" scope="request"/>
 

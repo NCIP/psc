@@ -198,8 +198,13 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCentricScheduleResource">
           <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
     </bean>
-
+    <!-- deprecated -->
     <bean name="/schedules/{subject-identifier}/batchUpdate"
+          id="batchUpdatesResourceDeprecated" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
+    </bean>
+
+    <bean name="/subjects/{subject-identifier}/schedules/activities"
           id="batchUpdatesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
     </bean>
