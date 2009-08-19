@@ -186,7 +186,14 @@
     </bean>
 
     <!-- Subject Centric Schedule -->
+    <!-- deprecated -->
     <bean name="/schedules/{subject-identifier}"
+          id="subjectCentricScheduleResourceDeprecated" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCentricScheduleResource">
+          <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
+    </bean>
+
+    <bean name="/subjects/{subject-identifier}/schedules"
           id="subjectCentricScheduleResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCentricScheduleResource">
           <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>

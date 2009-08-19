@@ -1,4 +1,4 @@
-describe "/subject_centric_schedule" do
+describe "/subjects/{subject-identifier}/schedules" do
   before do
     begin
     #create site
@@ -91,7 +91,7 @@ describe "/subject_centric_schedule" do
   describe "GET" do
         
     it "allows to get schedule for subject in xml representation to an authorized user" do
-      get "/schedules/ID001", :as => :erin
+      get "/subjects/ID001/schedules", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'text/xml'
@@ -102,7 +102,7 @@ describe "/subject_centric_schedule" do
     end
     
     it "allows to get schedule for subject in JSON representation to an authorized user" do
-      get "/schedules/ID001.json", :as => :erin
+      get "/subjects/ID001/schedules.json", :as => :erin
       response.status_code.should == 200
       response.status_message.should == "OK"
       response.content_type.should == 'application/json'
@@ -126,7 +126,7 @@ describe "/subject_centric_schedule" do
     end
     
     it "doesn't give schedule for invalid subject" do
-      get "/schedules/ID002", :as => :erin  
+      get "subjects/ID002/schedules", :as => :erin  
       response.status_code.should == 404
       response.status_message.should == "Not Found"
     end
