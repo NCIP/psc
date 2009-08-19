@@ -18,16 +18,14 @@ public class ImportActivitiesCommand implements Validatable {
 
     private ImportActivitiesService service;
     private MultipartFile activitiesFile;
+    private String activitiesType;
 
     public Source apply() throws Exception {
-        if (activitiesFile.getContentType().contains("xml")) {
-
+        if (getActivitiesType().toLowerCase().trim().equals("xml")) {
             return service.loadAndSave(activitiesFile.getInputStream());
-        } else if (activitiesFile.getContentType().contains("plain")) {
-
-          return service.loadAndSaveCSVFile(activitiesFile.getInputStream());
+        } else if (getActivitiesType().toLowerCase().trim().equals("csv")) {
+            return service.loadAndSaveCSVFile(activitiesFile.getInputStream());
         }
-   
         return null;
     }
 
@@ -38,7 +36,7 @@ public class ImportActivitiesCommand implements Validatable {
         }
 
         try {
-            if (activitiesFile.getContentType().contains("xml")) {
+            if (getActivitiesType().toLowerCase().trim().equals("xml")) {
                 invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, activitiesFile.getInputStream(), errors);
             }
         } catch (IOException ioe) {
@@ -55,6 +53,14 @@ public class ImportActivitiesCommand implements Validatable {
 
     public MultipartFile getActivitiesFile() {
         return activitiesFile;
+    }
+
+    public String getActivitiesType() {
+        return activitiesType;
+    }
+
+    public void setActivitiesType(String activitiesType) {
+        this.activitiesType = activitiesType;
     }
 
     public void setImportActivitiesService(ImportActivitiesService service) {

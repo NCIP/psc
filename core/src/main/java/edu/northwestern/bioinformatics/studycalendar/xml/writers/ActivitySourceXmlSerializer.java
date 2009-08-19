@@ -54,7 +54,7 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
             if (source.getActivities()!=null){
                  for (Activity a : source.getActivities()) {
                     if (activity.getName().equals(a.getName()) || activity.getCode().equals(a.getCode())) {
-                       throw new StudyCalendarValidationException("Name and Code must be unique for activities within same source");
+                       throw new StudyCalendarValidationException("Name and Code must be unique for activities within same source. Please correct activity with name = " + activity.getName());
                     }
                  }
             }

@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -15,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class ImportActivitiesController extends PscSimpleFormController {
@@ -36,26 +41,25 @@ public class ImportActivitiesController extends PscSimpleFormController {
         try {
             s = command.apply();
         } catch (Exception e) {
-            errors.reject("error.problem.reading.csv.file", new String[]{e.getMessage()}, e.getMessage());
+            errors.reject("error.problem.importing.file", new String[]{e.getMessage()}, e.getMessage());
 
         }
         Map<String, Object> model = errors.getModel();
         if (errors.hasErrors()) {
             return showForm(request, response, errors);
         } else {
-//            model = processRequest(model, sources);
             List<Source> sourcesAfterAdding = sourceDao.getAll();
             //default sourse to display if there is an error
             Source sourceToDisplay = sourcesAfterAdding.get(0);
             if(s!= null) {
                 sourceToDisplay = s;
-            }   else {
-                    for (Source source : sourcesAfterAdding) {
-                        if (!sources.contains(source)) {
-                            sourceToDisplay = source;
-                            break;
-                         }
+            } else {
+                for (Source source : sourcesAfterAdding) {
+                    if (!sources.contains(source)) {
+                        sourceToDisplay = source;
+                        break;
                     }
+                }
             }
             model.put("sourceId", sourceToDisplay.getId());
             return new ModelAndView(getSuccessView(),model);
@@ -63,12 +67,6 @@ public class ImportActivitiesController extends PscSimpleFormController {
         }
     }
 
-
-//    private Map<String, Object> processRequest( Map<String, Object> model, List<Source> sources) throws Exception{
-//
-//
-//        return model;
-//    }
 
     protected ImportActivitiesCommand formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ImportActivitiesCommand command = new ImportActivitiesCommand();

@@ -22,11 +22,12 @@ public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
         command = new ImportActivitiesCommand();
         command.setImportActivitiesService(service);
         command.setActivitiesFile(file);
+        command.setActivitiesType("xml");
     }
 
     public void testApply() throws Exception {
         expect(file.getInputStream()).andReturn(null);
-        expect(file.getContentType()).andReturn("text/xml");
+//        expect(file.getContentType()).andReturn("text/xml");
         expect(service.loadAndSave(null)).andReturn(null).anyTimes();
         replayMocks();
 

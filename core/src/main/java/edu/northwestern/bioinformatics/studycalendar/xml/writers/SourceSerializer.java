@@ -72,6 +72,10 @@ public class SourceSerializer {
             CsvReader reader = new CsvReader(inputStreamReader);
 
             reader.readHeaders();
+            //primitive check for the correct header for CSV files
+            if (reader.getHeaderCount() != 5 && !reader.getHeader(0).equals(ACTIVITY_NAME)){
+                throw new StudyCalendarValidationException(" The file format might be incorrect - Please verify the content of the file along with the selected extention");
+            }
             while (reader.readRecord()) {
                 String name = reader.get(ACTIVITY_NAME);
                 String type = reader.get(ACTIVITY_TYPE);

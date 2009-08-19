@@ -40,6 +40,18 @@
             </div>
 
             <div class="row">
+                <div class="label">
+                    <form:label path="activitiesType">Type:</form:label>
+                </div>
+                <div class="value">
+                    <select id="type" name="activitiesType">
+                        <option id="xml" value="xml">XML</option>
+                        <option id="csv" value="csv">CSV</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="label">&nbsp;</div>
                 <div class="submit" style="text-align:left">
                     <input type="submit" id="submit-button" value="Import"/>
