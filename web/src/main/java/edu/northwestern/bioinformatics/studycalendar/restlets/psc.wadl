@@ -46,6 +46,10 @@
             Resources marked <html:em class="pending">Pending</html:em> are planned
             for a future release of PSC but are not yet implemented.
         </html:p>
+        <html:p class="main">
+            Resources marked <html:em class="pending">Deprecated</html:em> are planned
+            to remove in a future release of PSC.
+        </html:p>
     </doc>
 
     <grammars>
@@ -527,6 +531,7 @@
 
         <resource path="schedules/{subject-identifier}">
             <doc>
+               <html:em class="pending">Deprecated</html:em>
                <html:p>The schedule for a single subject for all assign studies</html:p>
             </doc>
             <param style="template" name="subject-identifier">
@@ -541,6 +546,43 @@
                 </response>
             </method>
             <resource path="batchUpdate">
+                <doc>
+                    <html:em class="pending">Deprecated</html:em>
+                    <html:p>The batch update for the list of scheduled activities for single subject</html:p>
+                </doc>
+                <method name="POST">
+                    <doc>
+                         Accepts new scheduled activity state (date, status, and reason) to
+                         update the scheduled activity for the list of scheduled activities.
+                         Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
+                         If update sucessful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+                    </doc>
+                    <request>
+                        <representation mediaType="application/json"/>
+                    </request>
+                    <response>
+                        <representation mediaType="application/json"/>
+                    </response>
+               </method>
+            </resource>
+        </resource>
+
+        <resource path="subjects/{subject-identifier}/schedules">
+            <doc>
+               <html:p>The schedule for a single subject for all assign studies</html:p>
+            </doc>
+            <param style="template" name="subject-identifier">
+                <doc>The persion id or generated identifier for subject.You can assign
+                    the person id while creating the subject and use for subject registration</doc>
+            </param>
+            <method name="GET">
+                <doc>Retrieve the full schedule for the subject from multiple studies</doc>
+                <response>
+                    <representation href="#subject-assignments-xml"/>
+                    <representation mediaType="application/json"/>
+                </response>
+            </method>
+            <resource path="activities">
                 <doc>
                     <html:p>The batch update for the list of scheduled activities for single subject</html:p>
                 </doc>
