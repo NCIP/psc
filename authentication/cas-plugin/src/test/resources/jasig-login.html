@@ -1,0 +1,101 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+	    <title>CAS &#8211; Central Authentication Service</title>
+	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	    <style type="text/css" media="screen">@import 'css/cas.css'/**/;</style>
+	    <!--[if gte IE 6]><style type="text/css" media="screen">@import 'css/ie_cas.css';</style><![endif]-->
+	    <script type="text/javascript" src="js/common_rosters.js"></script>
+	</head>
+
+	<body id="cas" onload="init();">
+	    <div id="header">
+	        <h1 id="app-name">Central Authentication Service (CAS)</h1>
+
+	    </div>
+
+	    <div id="content">
+
+			<form id="fm1" class="fm-v clearfix" method="post" action="/cas/login?service=https%3A%2F%2Fccis-kc-app.duhs.duke.edu%3A443%2Fc3pr%2Fj_acegi_cas_security_check">
+
+	            <fieldset>
+	                <legend>CAS Login Form</legend>
+	                <div class="box" id="login">
+	                <!-- Congratulations on bringing CAS online!  The default authentication handler authenticates where usernames equal passwords: go ahead, try it out.  -->
+
+	                    <h2>Enter your NetID and Password and Select the Authentication Service to use for Authentication.</h2>
+	                    <div class="row">
+	                        <label for="username"><span class="accesskey">N</span>etID:</label>
+
+
+
+
+							<input id="username" name="username" class="required" tabindex="1" accesskey="n" type="text" value="" size="25" autocomplete="false"/>
+
+	                    </div>
+	                    <div class="row">
+	                        <label for="password"><span class="accesskey">P</span>assword:</label>
+
+
+
+							<input id="password" name="password" class="required" tabindex="2" accesskey="p" type="password" value="" size="25"/>
+	                    </div>
+	                    <div class="row">
+	                        <label for="authenticationServiceURL"><span class="accesskey">A</span>uthentication Service:</label>
+
+							<select id="authenticationServiceURL" name="authenticationServiceURL" class="required" tabindex="3" accesskey="a">
+								<option value="-">-- Please Select</option>
+            					<option value="https://ccis-kc-grid.dhe.duke.edu:8443/wsrf/services/cagrid/Dorian">Dorian</option>
+
+        					</select>
+	                    </div>
+	                    <div class="row check">
+	                        <input id="warn" name="warn" value="true" tabindex="4" accesskey="w" type="checkbox" />
+	                        <label for="warn"><span class="accesskey">W</span>arn me before logging me into other sites.</label>
+	                    </div>
+	                    <div class="row btn-row">
+							<input type="hidden" name="lt" value="_c8B00714F-26E8-B6FA-4E45-731B3FDB1440_k825D6395-3658-E499-B959-FC04976460BF" />
+
+							<input type="hidden" name="_eventId" value="submit" />
+
+	                        <input class="btn-submit" accesskey="l" value="LOGIN" tabindex="5" type="submit" />
+	                        <input class="btn-reset" accesskey="c" value="CLEAR" tabindex="6" type="reset" />
+	                    </div>
+	                </div>
+	            </fieldset>
+
+	            <div id="sidebar">
+	                <p>For security reasons, please Log Out and Exit your web browser when you are done accessing services that require authentication!</p>
+
+	                <div id="list-languages">
+
+
+	                    <h3>Languages:</h3>
+						<ul>
+							<li class="first"><a href="login?service=https%3A%2F%2Fccis-kc-app.duhs.duke.edu%3A443%2Fc3pr%2Fj_acegi_cas_security_check&locale=en">English</a></li>
+						</ul>
+	                </div>
+	            </div>
+        	</form>
+
+		</div>
+	    <div id="footer">
+	        <div>
+	            <p>Copyright &copy; 2005-2007 JA-SIG. All rights reserved.</p>
+	            <p>Powered by <a href="http://www.ja-sig.org/products/cas/">JA-SIG Central Authentication Service 3.1</a></p>
+	        </div>
+
+	        <a href="http://www.ja-sig.org" title="go to JA-SIG home page"><img id="logo" src="images/ja-sig-logo.gif" width="118" height="31" alt="JA-SIG" title="go to JA-SIG home page" /></a>
+	    </div>
+	</body>
+</html>
+

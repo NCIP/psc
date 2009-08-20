@@ -1,16 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationPropertyEditor;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +54,17 @@ public class AuthenticationSystemSelectorController
 
     private boolean isSubmit(HttpServletRequest request) {
         return !"GET".equals(request.getMethod());
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
+        Configuration configuration = ((AuthenticationSystemSelectorCommand) getCommand(request)).getWorkConfiguration();
+        for (ConfigurationProperty<?> property : configuration.getProperties().getAll()) {
+            binder.registerCustomEditor(Object.class, "conf[" + property.getKey() + "].value",
+                new ConfigurationPropertyEditor(property));
+        }
     }
 
     @Override

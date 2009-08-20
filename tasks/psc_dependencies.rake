@@ -131,6 +131,8 @@ JAKARTA_COMMONS = struct({
   :net        => spring_osgi_apache_commons("net", "1.4.1"),
 })
 
+HTMLPARSER = psc_osgi_artifact("nu.validator.htmlparser:htmlparser:jar:1.1.0") # 1.2.1 not in mvn repo
+
 SPRING = [
   "org.springframework:spring:jar:#{SPRING_VERSION}",
 ]

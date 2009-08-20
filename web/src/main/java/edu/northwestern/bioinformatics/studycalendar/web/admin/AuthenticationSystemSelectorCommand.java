@@ -64,6 +64,10 @@ public class AuthenticationSystemSelectorCommand implements Validatable {
         installedAuthenticationSystem.updateCompleteAuthenticationSystem(workConfiguration);
     }
 
+    public Configuration getWorkConfiguration() {
+        return workConfiguration;
+    }
+
     public AuthenticationSystemDirectory getDirectory() {
         return directory;
     }

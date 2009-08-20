@@ -15,9 +15,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="casEntryPoint" class="org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint">
         <property name="loginUrl" value="${cas.server.url.login}"/>
-        <property name="serviceProperties">
-            <ref bean="serviceProperties"/>
-        </property>
+        <property name="serviceProperties" ref="serviceProperties"/>
     </bean>
 
     <bean id="casAuthenticationProvider" class="org.acegisecurity.providers.cas.CasAuthenticationProvider">
@@ -30,9 +28,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="statelessTicketCache">
             <ref local="statelessTicketCache"/>
         </property>
-        <property name="key">
-            <value>this_is_the_local_psc_key_for_some_reason</value>
-        </property>
+        <property name="key" value="this_is_the_local_psc_key_for_some_reason"/>
     </bean>
 
     <bean id="casProxyTicketValidator" class="org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator">
@@ -55,9 +51,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="serviceProperties" class="org.acegisecurity.ui.cas.ServiceProperties">
         <property name="service" value="${cas.local.url}"></property>
-        <property name="sendRenew">
-            <value>false</value>
-        </property>
+        <property name="sendRenew" value="false"/>
     </bean>
 
     <bean id="casAuthoritiesPopulator"
@@ -73,10 +67,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="ticketCacheBackend" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName">
-            <value>ticketCache</value>
-        </property>
+        <property name="cacheName" value="ticketCache"/>
     </bean>
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
+
+    <bean id="casDirectAuthenticationProvider" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectAuthenticationProvider">
+        <property name="directLoginHttpFacade" ref="directLoginHttpFacade"/>
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
+    </bean>
+
+    <bean id="directLoginHttpFacade" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.DirectLoginHttpFacade">
+        <property name="httpClient" ref="httpClient"/>
+        <property name="serviceUrl" value="${cas.local.url}"/>
+        <property name="loginUrl" value="${cas.server.url.login}"/>
+    </bean>
+
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient" lazy-init="true"/>
 </beans>

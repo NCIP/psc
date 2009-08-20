@@ -8,7 +8,7 @@
 <jsp:useBean id="authenticationSystemKey" scope="request" type="java.lang.String"/>
 
 <c:if test="${fn:length(command.conf) > 1}">
-    <h3>Configuration options for ${currentAuthenticationSystemDisplayName}</h3>
+    <h3>Configuration options for the selected system</h3>
     <c:forEach items="${command.conf}" var="entry" varStatus="status">
         <c:if test="${entry.key != authenticationSystemKey}">
             <div class="row ${commons:parity(status.count)}">

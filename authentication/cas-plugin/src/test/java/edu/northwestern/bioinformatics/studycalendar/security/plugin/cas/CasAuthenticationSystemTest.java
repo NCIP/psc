@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectAuthenticationProvider;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectUsernamePasswordAuthenticationToken;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.ProviderManager;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider;
 import org.acegisecurity.providers.cas.CasAuthenticationProvider;
 import org.acegisecurity.providers.cas.populator.DaoCasAuthoritiesPopulator;
 import org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy;
@@ -59,24 +62,24 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
 
         assertTrue("Wrong entry point type", getSystem().entryPoint() instanceof CasProcessingFilterEntryPoint);
         CasProcessingFilterEntryPoint entryPoint = (CasProcessingFilterEntryPoint) getSystem().entryPoint();
-        assertEquals("Wrong CAS URL", EXPECTED_SERVICE_URL + "/login", entryPoint.getLoginUrl());
+        assertEquals("Wrong CAS URL", expectedLoginUrl(), entryPoint.getLoginUrl());
         assertCorrectServiceProperties(entryPoint.getServiceProperties());
     }
 
     private void assertCorrectServiceProperties(ServiceProperties serviceProps) {
-        assertEquals("Wrong return URL", EXPECTED_APP_URL + "auth/cas_security_check",
-                serviceProps.getService());
+        assertEquals("Wrong return URL", expectedServiceUrl(), serviceProps.getService());
         assertFalse("Should not send renews", serviceProps.isSendRenew());
     }
 
-    public void testInitializeAuthManager() throws Exception {
+    public void testInitializeCasAuthProvider() throws Exception {
+        configuration.set(CasAuthenticationSystem.ALLOW_DIRECT_CAS, true);
         doValidInitialize();
         assertTrue("Wrong type", getSystem().authenticationManager() instanceof ProviderManager);
         ProviderManager manager = (ProviderManager) getSystem().authenticationManager();
-        assertEquals("Wrong number of providers", 2, manager.getProviders().size());
-        assertTrue("First provider is not CAS provider",
-                manager.getProviders().get(0) instanceof CasAuthenticationProvider);
-        CasAuthenticationProvider provider = (CasAuthenticationProvider) manager.getProviders().get(0);
+        assertEquals("Wrong number of providers", 3, manager.getProviders().size());
+        assertTrue("Second provider is not CAS provider",
+                manager.getProviders().get(1) instanceof CasAuthenticationProvider);
+        CasAuthenticationProvider provider = (CasAuthenticationProvider) manager.getProviders().get(1);
         CasProxyTicketValidator validator = ((CasProxyTicketValidator) provider.getTicketValidator());
 
         assertTrue("Wrong kind of authorities populator",
@@ -88,6 +91,36 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
         assertCorrectServiceProperties(validator.getServiceProperties());
         assertTrue("Proxy tickets should be allowed",
                 provider.getCasProxyDecider() instanceof AcceptAnyCasProxy);
+    }
+
+    public void testInitializeCasDirectAuthProvider() throws Exception {
+        configuration.set(CasAuthenticationSystem.ALLOW_DIRECT_CAS, true);
+        doValidInitialize();
+        assertTrue("Wrong type", getSystem().authenticationManager() instanceof ProviderManager);
+        ProviderManager manager = (ProviderManager) getSystem().authenticationManager();
+        assertEquals("Wrong number of providers", 3, manager.getProviders().size());
+        assertTrue("First provider is not CAS direct provider",
+                manager.getProviders().get(0) instanceof CasDirectAuthenticationProvider);
+        CasDirectAuthenticationProvider provider = (CasDirectAuthenticationProvider) manager.getProviders().get(0);
+
+        assertEquals("Wrong service URL", expectedServiceUrl(), provider.getDirectLoginHttpFacade().getServiceUrl());
+        assertEquals("Wrong login URL", expectedLoginUrl(), provider.getDirectLoginHttpFacade().getLoginUrl());
+    }
+    
+    public void testAllowDirectCasDefaultsToFalse() throws Exception {
+        assertFalse(configuration.get(CasAuthenticationSystem.ALLOW_DIRECT_CAS));
+    }
+
+    public void testCasDirectAuthProviderNotIncludedWhenDisabled() throws Exception {
+        configuration.set(CasAuthenticationSystem.ALLOW_DIRECT_CAS, false);
+        doValidInitialize();
+        assertTrue("Wrong type", getSystem().authenticationManager() instanceof ProviderManager);
+        ProviderManager manager = (ProviderManager) getSystem().authenticationManager();
+        assertEquals("Wrong number of providers", 2, manager.getProviders().size());
+        assertTrue("Wrong first provider: " + manager.getProviders().get(0),
+            manager.getProviders().get(0) instanceof CasAuthenticationProvider);
+        assertTrue("Wrong second provider: " + manager.getProviders().get(1),
+            manager.getProviders().get(1) instanceof AnonymousAuthenticationProvider);
     }
 
     public void testInitializeLogoutFilter() throws Exception {
@@ -108,6 +141,31 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
         assertTrue("Wrong type of Authentication", actual instanceof UsernamePasswordAuthenticationToken);
         assertEquals("Wrong principal", CasProcessingFilter.CAS_STATELESS_IDENTIFIER, actual.getPrincipal());
         assertEquals("Wrong credentials", "PT-foo", actual.getCredentials());
+    }
+
+    public void testUsernamePasswordAuthGivesCasDirectTokenWhenEnabled() throws Exception {
+        configuration.set(CasAuthenticationSystem.ALLOW_DIRECT_CAS, true);
+        doValidInitialize();
+        Authentication actual = getSystem().createUsernamePasswordAuthenticationRequest("someone", "something");
+        assertTrue("Wrong type of Authentication: " + actual,
+            actual instanceof CasDirectUsernamePasswordAuthenticationToken);
+        assertEquals("Wrong principal", "someone", actual.getPrincipal());
+        assertEquals("Wrong credentials", "something", actual.getCredentials());
+    }
+
+    public void testUsernamePasswordAuthGivesNullWhenDisabled() throws Exception {
+        configuration.set(CasAuthenticationSystem.ALLOW_DIRECT_CAS, false);
+        doValidInitialize();
+        Authentication actual = getSystem().createUsernamePasswordAuthenticationRequest("someone", "something");
+        assertNull(actual);
+    }
+
+    private String expectedLoginUrl() {
+        return EXPECTED_SERVICE_URL + "/login";
+    }
+
+    private String expectedServiceUrl() {
+        return EXPECTED_APP_URL + "auth/cas_security_check";
     }
 
     @Override

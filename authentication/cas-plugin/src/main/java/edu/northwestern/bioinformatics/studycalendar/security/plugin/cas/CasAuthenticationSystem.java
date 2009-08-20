@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas;
 
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemTools;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectUsernamePasswordAuthenticationToken;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringBeanConfigurationTools;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
@@ -15,16 +16,22 @@ import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.ui.cas.CasProcessingFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
  */
 public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final DefaultConfigurationProperties PROPERTIES
         = new DefaultConfigurationProperties(
             new ClassPathResource(absoluteClasspathResourceNameFor("cas-details.properties"), CasAuthenticationSystem.class));
@@ -34,6 +41,8 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         = PROPERTIES.add(new DefaultConfigurationProperty.Text("cas.trustStore"));
     public static final ConfigurationProperty<String> APPLICATION_URL
         = PROPERTIES.add(new DefaultConfigurationProperty.Text(PSC_URL_CONFIGURATION_PROPERTY_NAME));
+    public static final ConfigurationProperty<Boolean> ALLOW_DIRECT_CAS
+        = PROPERTIES.add(new DefaultConfigurationProperty.Bool("cas.direct.enable"));
 
     private static final String CAS_FILTER_PATH = "/auth/cas_security_check";
 
@@ -108,8 +117,13 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     @Override
     protected AuthenticationManager createAuthenticationManager() {
-        return AuthenticationSystemTools.createProviderManager(getApplicationContext(),
-            (AuthenticationProvider) casContext.getBean("casAuthenticationProvider"));
+        List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>(2);
+        if (getConfiguration().get(ALLOW_DIRECT_CAS)) {
+            log.debug("Initializing CAS plugin with direct CAS support");
+            providers.add((AuthenticationProvider) casContext.getBean("casDirectAuthenticationProvider"));
+        }
+        providers.add((AuthenticationProvider) casContext.getBean("casAuthenticationProvider"));
+        return AuthenticationSystemTools.createProviderManager(getApplicationContext(), providers);
     }
 
     @Override
@@ -134,7 +148,11 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     }
 
     public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
-        return null;
+        if (getConfiguration().get(ALLOW_DIRECT_CAS)) {
+            return new CasDirectUsernamePasswordAuthenticationToken(username, password);
+        } else {
+            return null;
+        }
     }
 
     public Authentication createTokenAuthenticationRequest(String token) {

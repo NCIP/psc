@@ -259,7 +259,8 @@ define "psc" do
         "org.acegisecurity.providers.cas.ticketvalidator" <<
         "org.acegisecurity.ui.cas" <<
         "org.acegisecurity.ui.logout"
-      compile.with project('plugin-api').and_dependencies, SECURITY.cas, EHCACHE
+      compile.with project('plugin-api').and_dependencies, SECURITY.cas, 
+        EHCACHE, JAKARTA_COMMONS.httpclient, HTMLPARSER
       test.with project('plugin-api').test_dependencies
       package(:jar)
     end
