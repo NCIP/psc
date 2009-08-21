@@ -42,6 +42,7 @@
 
     <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
     <tags:javascriptLink name="jquery/jquery.enumerable"/>
+    <tags:javascriptLink name="jquery/jquery.cookie"/>
 
     <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
 
@@ -67,6 +68,7 @@
             <tags:javascriptLink name="subject/real-schedule-controls"/>
             <tags:javascriptLink name="subject/real-schedule-wiring"/>
             <tags:javascriptLink name="subject/real-schedule-next-segment"/>
+            <tags:icsInstructions/>
 
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
@@ -425,17 +427,32 @@
             <markTag:population/>
         </div>
 
-        <!-- Export accordian -->
+        <!-- Export accordion -->
         <div class="accordionDiv">
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
-        <div class="accordion-content">
+        <div class="accordion-content" id="export-controls">
+            <div class="row even">
+                <div class="label">All</div>
+                <div class="value">
+                    <a class="control ics-subscribe"
+                       href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
+                       title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
+                    <a class="control"
+                       href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
+                       title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
+                </div>
+            </div>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
-                <div class="row ${commons:parity(outerCounter.index)}">
+                <div class="row ${commons:parity(outerCounter.count)}">
                     <div class="label">${assignment.name}</div>
-                    <div class="value"><a class="control"
+                    <div class="value">
+                        <a class="control ics-subscribe"
                             href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
-                            title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
+                            title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
+                        <a class="control"
+                           href="<c:url value="/api/v1/studies/${assignment.studySite.study.assignedIdentifier}/schedules/${assignment.gridId}.ics"/>"
+                           title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
                     </div>
                 </div>
             </c:forEach>
