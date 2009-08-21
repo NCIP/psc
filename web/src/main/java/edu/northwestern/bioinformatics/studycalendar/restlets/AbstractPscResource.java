@@ -144,6 +144,11 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         return API_DATE_FORMAT.get();
     }
 
+    public String getApplicationBaseUrl() {
+        String baseURL = (getRequest().getRootRef().toString().split("/api/v1"))[0];
+        return baseURL;
+    }
+
     ////// CONFIGURATION
 
     @Required
