@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -8,15 +9,20 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
-import org.apache.commons.lang.StringUtils;
 import org.restlet.Context;
 import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+
+import net.fortuna.ical4j.model.Calendar;
 
 /**
  * @author John Dzak
@@ -33,7 +39,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
-
+        getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
     }
 
 
@@ -48,7 +54,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         Study study = studyDao.getByAssignedIdentifier(studyIdent);
         if (study == null) return null;
 
-        String assignmentId = findAssignmentId(request);
+        String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
         if (assignment == null) {
             assignment = studySubjectAssignmentDao.getByStudySubjectIdentifier(study, assignmentId);
@@ -59,34 +65,18 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         return null;
     }
 
-    private boolean isICSRequest(Request request) {
-        return StringUtils.contains(request.getResourceRef().getPath(), ".ics");
-    }
-
-    /**
-     * Finds grid id in request.
-     *
-     * @param request the request
-     */
-    private String findAssignmentId(final Request request) {
-        // the grid Id should be in following form "/%s/studies/%s/schedules/[assignment-grid-id].ics"
-
-        String pathInfo = request.getResourceRef().getPath();
-        if (!isICSRequest(request)) {
-            return UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
-        }
-        int beginIndex = pathInfo.indexOf("schedules/");
-
-        int endIndex = pathInfo.indexOf(".ics");
-
-        return pathInfo.substring(beginIndex + 10, endIndex);
-    }
-
     @Override
     protected Representation createCalendarRepresentation(ScheduledCalendar scheduledCalendar) {
+        Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         StudySubjectAssignment studySubjectAssignment = scheduledCalendar.getAssignment();
-        Representation representation = new ICSRepresentation(studySubjectAssignment);
-        return representation;
+
+        for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
+            SortedMap<Date, List<ScheduledActivity>> events = scheduledStudySegment.getActivitiesByDate();
+                for (Date date : events.keySet()) {
+                    ICalTools.generateICSCalendarForActivities(icsCalendar, date, events.get(date), getApplicationBaseUrl());
+                }
+        }
+        return new ICSRepresentation(icsCalendar, studySubjectAssignment.getName());
     }
 
     public void acceptRepresentation(final Representation entity) throws ResourceException {
