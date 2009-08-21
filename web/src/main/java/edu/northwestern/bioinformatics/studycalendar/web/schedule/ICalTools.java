@@ -10,10 +10,8 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.*;
-import net.fortuna.ical4j.util.UidGenerator;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
@@ -57,14 +55,13 @@ public class ICalTools {
             scheduledActivity.getCurrentState().getMode().equals(ScheduledActivityMode.CONDITIONAL) ) {
             try {
                 VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), createEventSummary(scheduledActivity));
-
+                vEvent.getProperties().add(new Uid(scheduledActivity.getGridId()));
                 vEvent.getProperties().add(new Transp(Property.TRANSP));
                 vEvent.getProperty(Property.TRANSP).setValue("TRANSPARENT");
                 Description description = new Description(createEventDescription(scheduledActivity));
                 vEvent.getProperties().add(description);
                 vEvent.getProperties().add(new Url());
                 vEvent.getProperty(Property.URL).setValue(createActivityURL(scheduledActivity, baseUrl));
-
                 vEvent.getProperties().add(new DtEnd());
                 return vEvent;
             } catch (URISyntaxException use) {
@@ -103,7 +100,7 @@ public class ICalTools {
     }
 
     private static String createActivityURL(ScheduledActivity scheduledActivity, String baseURL) {
-        String activityURL= baseURL.concat("/pages/cal/scheduleActivity?event=").concat(scheduledActivity.getId().toString());
+        String activityURL= baseURL.concat("/pages/cal/scheduleActivity?event=").concat(scheduledActivity.getGridId());
         return activityURL;
     }
     /**
@@ -122,13 +119,6 @@ public class ICalTools {
 
         // this property is required for Outlook (http://en.wikipedia.org/wiki/ICalendar#Microsoft_Outlook)
         icsCalendar.getProperties().add(Method.PUBLISH);
-        try {
-            UidGenerator ug = new UidGenerator("uidGen");
-            Uid uid = ug.generateUid();
-            icsCalendar.getProperties().add(uid);
-        } catch (SocketException e) {
-            throw new StudyCalendarSystemException("Error while creating ics calendar", e);
-        }
         return icsCalendar;
     }
 }

@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
@@ -36,12 +36,12 @@ public class ICalToolsTest extends StudyCalendarTestCase {
         Site site = Fixtures.createSite("NU");
         StudySubjectAssignment studySubjectAssignment = Fixtures.createAssignment(study,site,subject);
         ScheduledStudySegment scheduledStudySegment =  Fixtures.createScheduledStudySegment(studySegment, DateTools.createDate(2008, java.util.Calendar.MARCH, 1));
-        scheduledActivities.add(setId(11,Fixtures.createScheduledActivityWithStudy("Activity1", 2006, java.util.Calendar.SEPTEMBER, 20)));
-        scheduledActivities.add(setId(12,Fixtures.createScheduledActivityWithStudy("Activity2", 2006, java.util.Calendar.SEPTEMBER, 20)));
-        ScheduledActivity sa3 = setId(13,Fixtures.createScheduledActivityWithStudy("Activity3", 2006, java.util.Calendar.SEPTEMBER, 20));
+        scheduledActivities.add(setGridId("GridId1",Fixtures.createScheduledActivityWithStudy("Activity1", 2006, java.util.Calendar.SEPTEMBER, 20)));
+        scheduledActivities.add(setGridId("GridId2",Fixtures.createScheduledActivityWithStudy("Activity2", 2006, java.util.Calendar.SEPTEMBER, 20)));
+        ScheduledActivity sa3 = setGridId("GridId3",Fixtures.createScheduledActivityWithStudy("Activity3", 2006, java.util.Calendar.SEPTEMBER, 20));
         sa3.setDetails("Activity Detail");
         scheduledActivities.add(sa3);
-        scheduledActivities.add(setId(14,Fixtures.createConditionalEventWithStudy("Activity4", 2006, java.util.Calendar.SEPTEMBER, 20)));
+        scheduledActivities.add(setGridId("GridId4",Fixtures.createConditionalEventWithStudy("Activity4", 2006, java.util.Calendar.SEPTEMBER, 20)));
         for (ScheduledActivity sa: scheduledActivities) {
             sa.setScheduledStudySegment(scheduledStudySegment);
         }
@@ -53,13 +53,14 @@ public class ICalToolsTest extends StudyCalendarTestCase {
         Calendar calendar = ICalTools.generateCalendarSkeleton();
         ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl);
         assertEquals("calendar should have 4 events", 4, calendar.getComponents().size());
-        assertEquals("calendar should have only 4 properties..", 4, calendar.getProperties().size());
+        assertEquals("calendar should have only 3 properties..", 3, calendar.getProperties().size());
     }
 
     public void testCalendarEventWithProperties() throws Exception {
         VEvent vEvent = getCalendarEventOfInxex(0);
-        assertEquals("vEvent should have  7 properties", 7, vEvent.getProperties().size());
+        assertEquals("vEvent should have  8 properties", 8, vEvent.getProperties().size());
         assertNotNull("vEvent should have DtStamp property", vEvent.getProperty(Property.DTSTAMP));
+        assertNotNull("vEvent should have UID property", vEvent.getProperty(Property.UID));
         assertNotNull("vEvent should have DtStart property", vEvent.getProperty(Property.DTSTART));
         assertNotNull("vEvent should have DtEnd property", vEvent.getProperty(Property.DTSTART));
         assertNotNull("vEvent should have SUMMARY property", vEvent.getProperty(Property.SUMMARY));
@@ -72,7 +73,14 @@ public class ICalToolsTest extends StudyCalendarTestCase {
         VEvent vEvent = getCalendarEventOfInxex(0);
         Property actualUrl = vEvent.getProperty(Property.URL);
         assertNotNull("vEvent should have URL property", actualUrl);
-        assertEquals("Activity URl doesn't match", "http://testurl.com/pages/cal/scheduleActivity?event=11", actualUrl.getValue());
+        assertEquals("Activity URl doesn't match", "http://testurl.com/pages/cal/scheduleActivity?event=GridId1", actualUrl.getValue());
+    }
+
+    public void testCalendarEventWithUIDProperty() throws Exception {
+        VEvent vEvent = getCalendarEventOfInxex(0);
+        Property uid = vEvent.getProperty(Property.UID);
+        assertNotNull("vEvent should have UID property", uid);
+        assertEquals("Activity URl doesn't match", "GridId1", uid.getValue());
     }
 
     public void testCalendarEventWithSummaryProperty() throws Exception {
