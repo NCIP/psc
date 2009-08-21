@@ -136,7 +136,10 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     ////// Helper methods
 
     public StudySubjectAssignment createAssignment(ScheduledCalendar calendar) {
-        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        Subject subject = Fixtures.createSubject("Perry", "Duglas");
+        Study study = Fixtures.createSingleEpochStudy("Study", "Treatment");
+        Site site = Fixtures.createSite("NU");
+        StudySubjectAssignment assignment = Fixtures.createAssignment(study,site,subject);
         assignment.setScheduledCalendar(calendar);
         return assignment;
     }
