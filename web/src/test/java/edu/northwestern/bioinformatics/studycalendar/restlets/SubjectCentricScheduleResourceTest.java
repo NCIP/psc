@@ -25,6 +25,7 @@ import org.restlet.data.Status;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Arrays;
 
 
 /**
@@ -111,13 +112,27 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
-        List<Preference<MediaType>> contentType = new ArrayList<Preference<MediaType>>();
-        contentType.add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
-        request.getClientInfo().setAcceptedMediaTypes(contentType);
+        makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertEquals("Result is not of right content type", MediaType.APPLICATION_JSON, response.getEntity().getMediaType());
+    }
+
+        public void testGetICSCalendarRepresentation() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".ics",SUBJECT_IDENTIFIER);
+        expectGetCurrentUser();
+        expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
+        expect(authorizationService.filterAssignmentsForVisibility
+                (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
+        makeRequestType(MediaType.TEXT_CALENDAR);
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertEquals("Result is not of right content type", MediaType.TEXT_CALENDAR, response.getEntity().getMediaType());
+    }
+
+    private void makeRequestType(MediaType requestType) {
+        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(requestType)));
     }
 
 }

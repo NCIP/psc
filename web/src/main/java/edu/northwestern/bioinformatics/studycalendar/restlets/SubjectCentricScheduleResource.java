@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
+import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
@@ -31,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.fortuna.ical4j.model.Calendar;
 
 /**
  * @author Jalpa Patel
@@ -40,12 +42,14 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private SubjectDao subjectDao;
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
+    private Subject subject;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+        getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setSubjectCentric(true);
         
     }
@@ -57,7 +61,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         if (subjectId == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,"No subject identifier in request");
         }
-        Subject subject = subjectDao.findSubjectByPersonId(subjectId);
+        subject = subjectDao.findSubjectByPersonId(subjectId);
         if (subject == null) {
             subject = subjectDao.getByGridId(subjectId);
             if (subject == null) {
@@ -72,11 +76,21 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         List<StudySubjectAssignment> allAssignments = new ArrayList<StudySubjectAssignment> (getAllObjects());
         List<StudySubjectAssignment> visibleAssignments
                 = authorizationService.filterAssignmentsForVisibility(allAssignments, getCurrentUser());
+        Set<StudySubjectAssignment> hiddenAssignments
+                = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
+        for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
+                hiddenAssignments.remove(visibleAssignment);
+        }
+        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
+            visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visibleAssignments);
         }
         else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             return createJSONRepresentation(allAssignments,visibleAssignments);
+        }
+        else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
+            return  createICSRepresentation(schedule);
         }
         return null;
     }
@@ -111,6 +125,14 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
 	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 	    }
         return new JsonRepresentation(jsonData);
+    }
+
+    public Representation createICSRepresentation(SubjectCentricSchedule schedule) {
+        Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
+        for (ScheduleDay scheduleDay : schedule.getDays()) {
+            ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(), scheduleDay.getActivities(), getApplicationBaseUrl());
+        }
+        return new ICSRepresentation(icsCalendar, subject.getFullName());
     }
 
     public StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> getXmlSerializer() {
