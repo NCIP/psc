@@ -3,6 +3,7 @@ require 'builder'
 require 'rexml/document'
 require 'json/pure'
 require 'cgi'
+require 'icalendar'
 
 module HttpHelper
   attr_reader :response
@@ -126,6 +127,15 @@ module HttpHelper
     def json
       content_type.should == 'application/json'
       @json ||= JSON.parse(entity)
+    end
+    
+    def ics
+      content_type.should == 'text/calendar'
+      @ics ||= Icalendar.parse(entity)
+    end
+    
+    def calendar
+      ics.first
     end
   end
 end
