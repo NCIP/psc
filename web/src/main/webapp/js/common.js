@@ -104,7 +104,7 @@ SC.objectifyXml = function(elementName, xmlDoc, initializer) {
     var list = []
     var elt;
     while (elt = xmlIterator.iterateNext()) {
-      list.unshift(wrap(elt));
+      list.push(wrap(elt)); // preserve document order
     }
     return list;
   } else {
