@@ -2,17 +2,19 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.Transaction;
+import java.util.*;
 
 /**
  * @author Saurabh Agrawal
@@ -61,18 +63,11 @@ public class SourceService {
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void updateSource(final Source existingSource, final List<Activity> activitiesToAddAndRemove) {
-
         //delete  or update the activity
-
         removeAndUpdateActivities(existingSource.getActivities(), activitiesToAddAndRemove);
-
-
         //add new activities
         existingSource.addNewActivities(activitiesToAddAndRemove);
-
         sourceDao.save(existingSource);
-
-
     }
 
     /**
@@ -88,18 +83,22 @@ public class SourceService {
     private void removeAndUpdateActivities(List<Activity> targetActivities, final List<Activity> activitiesToAddAndRemove) {
         //delete  or update the activity
         List<Activity> activitiesToRemove = new ArrayList<Activity>();
-
+        Map<Activity, Activity> activityToUpdate = new HashMap<Activity,Activity>();
         for (Activity existingActivity : targetActivities) {
 
             Activity activity = existingActivity.findActivityInCollectionWhichHasSameCode(activitiesToAddAndRemove);
 
             if (activity != null) {
-                existingActivity.updateActivity(activity);
+                //for the case when exist A:1 and B:2, and we import A:2 and B:1 - we need to check names
+                Activity activityWithName = existingActivity.findActivityInCollectionWhichHasSameName(activitiesToAddAndRemove);
+                if (activityWithName == null || (activityWithName!= null && activityWithName.equals(activity))) {
+                    activityToUpdate.put(existingActivity, activity);
+                } else {
+                    activitiesToRemove.add(existingActivity);
+                }
             } else {
                 activitiesToRemove.add(existingActivity);
-
-
-            }
+           }
         }
 
         targetActivities.removeAll(activitiesToRemove);
@@ -108,9 +107,17 @@ public class SourceService {
             boolean deleteActivity = activityService.deleteActivity(activity);
             //remove this activity only if its not used any where
             if (!deleteActivity) {
-
-                targetActivities.add(activity);
+                targetActivities.addAll(activitiesToRemove);
+                throw new StudyCalendarValidationException("Import failed. " +
+                        "Activity " + activity.getName() + " with code " + activity.getCode() + " is referenced withing the study. " +
+                        "Please remove those references manuall and try to import activity again "); 
             }
+        }
+
+        Set<Activity> existingActivities = activityToUpdate.keySet();
+        for (Activity existingActivity : existingActivities) {
+            Activity activity = activityToUpdate.get(existingActivity);
+            existingActivity.updateActivity(activity);
         }
     }
 
