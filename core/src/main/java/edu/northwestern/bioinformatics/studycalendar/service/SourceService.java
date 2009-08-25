@@ -91,7 +91,7 @@ public class SourceService {
             if (activity != null) {
                 //for the case when exist A:1 and B:2, and we import A:2 and B:1 - we need to check names
                 Activity activityWithName = existingActivity.findActivityInCollectionWhichHasSameName(activitiesToAddAndRemove);
-                if (activityWithName == null || (activityWithName!= null && activityWithName.equals(activity))) {
+                if (activityWithName == null || activityWithName.equals(activity)) {
                     activityToUpdate.put(existingActivity, activity);
                 } else {
                     activitiesToRemove.add(existingActivity);
@@ -109,7 +109,7 @@ public class SourceService {
             if (!deleteActivity) {
                 targetActivities.addAll(activitiesToRemove);
                 throw new StudyCalendarValidationException("Import failed. " +
-                        "Activity " + activity.getName() + " with code " + activity.getCode() + " is referenced withing the study. " +
+                        "Activity " + activity.getName() + " with code " + activity.getCode() + " is referenced within the study. " +
                         "Please remove those references manuall and try to import activity again "); 
             }
         }
