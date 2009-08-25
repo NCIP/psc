@@ -87,7 +87,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
             return createXmlRepresentation(visibleAssignments);
         }
         else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return createJSONRepresentation(allAssignments,visibleAssignments);
+            return createJSONRepresentation(schedule, visibleAssignments);
         }
         else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
             return  createICSRepresentation(schedule);
@@ -95,15 +95,8 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         return null;
     }
 
-    public Representation createJSONRepresentation(List<StudySubjectAssignment> allAssignments,List<StudySubjectAssignment> visibleAssignments)
+    public Representation createJSONRepresentation(SubjectCentricSchedule schedule, List<StudySubjectAssignment> visibleAssignments)
             throws ResourceException  {
-        Set<StudySubjectAssignment> hiddenAssignments
-                = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
-        for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
-                hiddenAssignments.remove(visibleAssignment);
-        }
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
-            visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
         JSONObject jsonData = new JSONObject();
         try {
             JSONObject dayWiseActivities = new JSONObject();
