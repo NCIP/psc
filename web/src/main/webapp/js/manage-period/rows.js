@@ -146,14 +146,7 @@ psc.template.mpa.ActivityRows = (function ($) {
       method: "GET", parameters: params,
       onSuccess: function(response) {
         var doc = response.responseXML;
-        var activities = SC.objectifyXml("activity", doc, function(elt, activity) {
-          activity.source = elt.parentNode.getAttribute("name")
-          activity.type = {
-              name: activity['type'],
-              selector: "activity-type-" + activity['type'].toLowerCase().replace(" ", "_")
-          };
-          if (!activity.code) activity.code = "";
-        });
+        var activities = psc.template.mpa.ActivityRows.objectifyActivityXml(doc);
 
         receiver(activities);
       }
@@ -189,6 +182,19 @@ psc.template.mpa.ActivityRows = (function ($) {
       for (var i = 0; i < rowCount; i++) {
         updateUsedUnused(i);
       }
+    },
+
+    // Exposed for testing
+
+    objectifyActivityXml: function (doc) {
+      return SC.objectifyXml("activity", doc, function(elt, activity) {
+        activity.source = elt.parentNode.getAttribute("name")
+        activity.type = {
+            name: activity['type'],
+            selector: "activity-type-" + activity['type'].toLowerCase().replace(/ /g, "_")
+        };
+        if (!activity.code) activity.code = "";
+      });
     }
   }
 }(jQuery))
