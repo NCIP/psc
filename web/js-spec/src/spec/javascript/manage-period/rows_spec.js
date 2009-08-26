@@ -17,7 +17,6 @@ Screw.Unit(function () {
           "  </source>\n" +
           "</sources>\n"
         );
-        console.log(doc);
         actual = psc.template.mpa.ActivityRows.objectifyActivityXml(doc);
       });
 

@@ -110,7 +110,8 @@ SC.objectifyXml = function(elementName, xmlDoc, initializer) {
   } else {
     // IE sucks
     var recurse = function(elt) {
-      if (elt.nodeName == elementName) {
+      // Lowercasing here is a workaround for env.js's lack of proper XML parsing.
+      if (elt.nodeName.toLowerCase() == elementName.toLowerCase()) {
         return elt
       } else {
         return $A(elt.childNodes).map(function(e) { return recurse(e) })
