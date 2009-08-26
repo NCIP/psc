@@ -1,20 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -43,22 +48,24 @@ public class SubjectCentricScheduleController extends PscAbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(subjectDao);
-        editor.setAsText(ServletRequestUtils.getStringParameter(request, "subject"));
-        Subject subject = (Subject) editor.getValue();
+        Subject subject = interpretUsingIdOrGridId(request, "subject", subjectDao);
 
+        // Try assignment
         if (subject == null) {
-            Integer studySubjectId = ServletRequestUtils.getIntParameter(request, "assignment");
-            Integer scheduledCalendarId = ServletRequestUtils.getIntParameter(request, "calendar");
-            StudySubjectAssignment studySubjectAssignment;
-            if ( studySubjectId  == null && scheduledCalendarId != null) {
-                studySubjectAssignment = scheduledCalendarDao.getById(scheduledCalendarId).getAssignment();
-            } else {
-                studySubjectAssignment = studySubjectAssignmentDao.getById(studySubjectId);
-            }
-
-            subject = studySubjectAssignment.getSubject();
+            StudySubjectAssignment assignment = interpretUsingIdOrGridId(request, "assignment", studySubjectAssignmentDao);
+            if (assignment != null) subject = assignment.getSubject();
         }
+        // Try calendar
+        if (subject == null) {
+            ScheduledCalendar calendar = interpretUsingIdOrGridId(request, "calendar", scheduledCalendarDao);
+            if (calendar != null) subject = calendar.getAssignment().getSubject();
+        }
+        
+        if (subject == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No matching subject found");
+            return null;
+        }
+
         List<StudySubjectAssignment> allAssignments = subject.getAssignments();
         List<StudySubjectAssignment> visibleAssignments
             = authorizationService.filterAssignmentsForVisibility(allAssignments, applicationSecurityManager.getUser());
@@ -74,6 +81,14 @@ public class SubjectCentricScheduleController extends PscAbstractController {
         model.addObject(subject);
         model.addAttribute("schedulePreview", false);
         return new ModelAndView("subject/schedule", model);
+    }
+
+    private <T extends GridIdentifiable & DomainObject> T interpretUsingIdOrGridId(
+        HttpServletRequest request, String paramName, GridIdentifiableDao<T> dao
+    ) throws ServletRequestBindingException {
+        DaoBasedEditor editor = new GridIdentifiableDaoBasedEditor(dao);
+        editor.setAsText(ServletRequestUtils.getStringParameter(request, paramName));
+        return (T) editor.getValue();
     }
 
     ////// CONFIGURATION
