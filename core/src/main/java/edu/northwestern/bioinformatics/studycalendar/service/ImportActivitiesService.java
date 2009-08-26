@@ -19,12 +19,11 @@ public class ImportActivitiesService {
     private SourceDao sourceDao;
     private ActivitySourceXmlSerializer xmlSerializer;
     private SourceSerializer sourceSerializer;
+    private SourceService sourceService;
 
     public Source loadAndSave(InputStream sourcesXml) {
         Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
-
-        save(validSources);
         return validSources.iterator().next();
     }
 
@@ -41,27 +40,12 @@ public class ImportActivitiesService {
         List<Source> existingSources = sourceDao.getAll();
 
         for (Source source : sources) {
-
             if (existingSources.contains(source)) {
-
                 Source existingSource = existingSources.get(existingSources.indexOf(source));
-
-                for (Activity activity : source.getActivities()) {
-                    activity.setSource(existingSource);
-                }
-
-                for (Activity activity : source.getActivities()) {
-                    if (!existingSource.getActivities().contains(activity)) {
-                        existingSource.getActivities().add(activity);
-                    }
-                }
-
-                source = existingSource;
+                sourceService.updateSource(existingSource, source.getActivities());
+                validSources.add(existingSource);
             }
-
-            validSources.add(source);
         }
-
         return validSources;
     }
 
@@ -86,5 +70,10 @@ public class ImportActivitiesService {
     @Required
     public void setSourceSerializer(SourceSerializer sourceSerializer) {
         this.sourceSerializer = sourceSerializer;
+    }
+    
+    @Required
+    public void setSourceService(SourceService sourceService) {
+        this.sourceService = sourceService;
     }
 }

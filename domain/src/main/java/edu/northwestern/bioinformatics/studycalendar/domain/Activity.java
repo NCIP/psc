@@ -237,6 +237,22 @@ public class Activity extends AbstractMutableDomainObject
     }
 
     /**
+     * finds the activity in collection which has the same name.
+     *
+     * @param activities collection of activities to match
+     * @return activity if finds any activity in collection matching the same name. null if no match found
+     */
+    @Transient
+    public Activity findActivityInCollectionWhichHasSameName(List<Activity> activities) {
+        for (Activity activitytoFind : activities) {
+            if (this.getName()!=null && this.getName().equals(activitytoFind.getName())) {
+                return activitytoFind;
+            }
+        }
+        return null;
+    }
+
+    /**
      * updates the properties of activity.
      *
      * @param activity source activity

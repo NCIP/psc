@@ -100,18 +100,13 @@ public class Source extends AbstractMutableDomainObject
     @Transient
     public void addNewActivities(final List<Activity> activities) {
         List<Activity> existingActivities = getActivities();
-
         for (Activity activity : activities) {
-
             // check for new activity
             Activity existingActivity = activity.findActivityInCollectionWhichHasSameCode(existingActivities);
-
-
             if (existingActivity == null) {
                 this.addActivity(activity);
 
             }
-
         }
     }
 }
