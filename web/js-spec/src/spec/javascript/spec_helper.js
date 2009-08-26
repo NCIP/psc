@@ -136,6 +136,10 @@ XML.parse = function(text) {
     var doc = XML.newDocument();  // Create an empty document
     doc.loadXML(text);            // Parse text into it
     return doc;                   // Return it
+  } else if (psc.test.envjs()) {
+    // env.js
+    // based on code in envjs's DOMParser
+    return window['$domparser'].parseFromString(text);
   } else {
     // As a last resort, try loading the document from a data: URL
     // This is supposed to work in Safari. Thanks to Manos Batsis and
