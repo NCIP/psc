@@ -51,25 +51,25 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 		return Period.class;
 	}
 
-	public int compareTo(PlannedActivity other) {
-        Integer weightOne = other.getWeight();
-        Integer weightTwo = getWeight();
-
-        if (weightOne == null) {
-            weightOne = 0;
-        }
-        if (weightTwo == null) {
-            weightTwo = 0;
-        }
-
-        int weightDiff = weightOne.compareTo(weightTwo);
+    public int compareTo(PlannedActivity other) {
+        // by weight
+        int weightDiff = compareWeightTo(other);
         if (weightDiff != 0) return weightDiff;
         // by day
-		int dayDiff = getDay() - other.getDay();
-		if (dayDiff != 0) return dayDiff;
-		// then by activity
-		return getActivity().compareTo(other.getActivity());
-	}
+        int dayDiff = getDay() - other.getDay();
+        if (dayDiff != 0) return dayDiff;
+        // then by activity
+        return getActivity().compareTo(other.getActivity());
+    }
+
+    public int compareWeightTo(PlannedActivity other) {
+        return -1 * (this.getEffectiveWeight() - other.getEffectiveWeight());
+    }
+
+    @Transient
+    public int getEffectiveWeight() {
+        return getWeight() == null ? 0 : getWeight();
+    }
 
 	public void addPlannedActivityLabel(PlannedActivityLabel paLabel) {
 		paLabel.setPlannedActivity(this);
