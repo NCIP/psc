@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -26,6 +27,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
     private StudyDao studyDao;
     private StudyService studyService;
+    private PlannedCalendarDao plannedCalendarDao;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -65,10 +67,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (study == null) {
             study = new Study();
             study.setAssignedIdentifier(key);
-
-
             Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
             PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+            if (plannedCalendarDao.getByGridId(calendar.getGridId()) != null) {
+                throw new StudyCalendarValidationException ("The planned calendar with the same grid-ID already exists. Please check the xml file and modify the IDs appropriately.");
+            }
             study.setPlannedCalendar(calendar);
         }
 
@@ -214,6 +217,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
+        this.plannedCalendarDao = plannedCalendarDao;
     }
 
     @Required

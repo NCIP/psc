@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -28,6 +29,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private PlannedCalendar calendar;
     private StudyDao studyDao;
+    private PlannedCalendarDao plannedCalendarDao;
     private PopulationXmlSerializer populationSerializer;
     private Population population;
     private Element ePopulation;
@@ -51,6 +53,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         studyDao = registerDaoMockFor(StudyDao.class);
+        plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
@@ -74,6 +77,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
             }
         };
         serializer.setStudyDao(studyDao);
+        serializer.setPlannedCalendarDao(plannedCalendarDao);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
@@ -101,6 +105,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
+        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
         replayMocks();
 
         Study actual = serializer.readElement(createStudyElement());
