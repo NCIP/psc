@@ -36,6 +36,39 @@ public class PlannedActivityTest extends TestCase {
         assertNegative(pa1.compareTo(pa0));
     }
 
+    public void testNaturalOrderConsidersWeight() throws Exception {
+        pa0.setDay(pa1.getDay());
+        pa0.setActivity(pa1.getActivity());
+        pa0.setWeight(9); pa1.setWeight(4);
+        assertNegative(pa0.compareTo(pa1));
+        assertPositive(pa1.compareTo(pa0));
+    }
+
+    public void testNaturalOrderWorksWithOneNullWeight() throws Exception {
+        pa0.setDay(pa1.getDay());
+        pa0.setActivity(pa1.getActivity());
+        pa0.setWeight(9); pa1.setWeight(null);
+        assertNegative(pa0.compareTo(pa1));
+        assertPositive(pa1.compareTo(pa0));
+    }
+
+    public void testCompareWeightToIsInverseNumericOrder() throws Exception {
+        pa0.setWeight(9); pa1.setWeight(4);
+        assertNegative(pa0.compareWeightTo(pa1));
+        assertPositive(pa1.compareWeightTo(pa0));
+    }
+
+    public void testCompareWeightToNullSafe() throws Exception {
+        pa0.setWeight(null); pa1.setWeight(4);
+        assertNegative(pa1.compareWeightTo(pa0));
+        assertPositive(pa0.compareWeightTo(pa1));
+    }
+    
+    public void testCompareWeightForDefault() throws Exception {
+        assertEquals(0, pa1.compareWeightTo(pa0));
+        assertEquals(0, pa0.compareWeightTo(pa1));
+    }
+
     public void testDaysInStudySegmentSimple() throws Exception {
         changePeriod(1, 7, 1);
         assertDaysInStudySegment(pa0, 1);
@@ -246,6 +279,16 @@ public class PlannedActivityTest extends TestCase {
 
     public void testPlanDayForDayOneWithPeriodStartingNegative() throws Exception {
         assertEquals("-9", createPlannedActivityInPeriod(-9, 1).getPlanDay());
+    }
+    
+    public void testEffectiveWeightWithExplicitWeightIsExplicitWeight() throws Exception {
+        pa0.setWeight(8);
+        assertEquals(8, pa0.getEffectiveWeight());
+    }
+
+    public void testEffectiveWeightWithNoWeightIsZero() throws Exception {
+        pa0.setWeight(null);
+        assertEquals(0, pa0.getEffectiveWeight());
     }
 
     private PlannedActivity createPlannedActivityInPeriod(int periodStartDay, int paDay) {

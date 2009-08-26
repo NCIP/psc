@@ -73,38 +73,31 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
     public void removeLabel(String label) {
         getLabels().remove(label);
     }
-    
-    public int compareTo(ScheduledActivity o) {
-        if (getPlannedActivity()!= null && o.getPlannedActivity()!=null){
-            Study study1= getPlannedActivity().getPeriod().getStudySegment().getEpoch().getPlannedCalendar().getStudy();
-            Study study2= o.getPlannedActivity().getPeriod().getStudySegment().getEpoch().getPlannedCalendar().getStudy();
 
-            if (study1 != null && study2 !=null) {
-                int studyNameDiff = ComparisonTools.nullSafeCompare(study1.getName(), study2.getName());
+    public int compareTo(ScheduledActivity other) {
+        if (getPlannedActivity() != null && other.getPlannedActivity() != null) {
+            Study thisStudy = getStudy(this);
+            Study otherStudy = getStudy(other);
+
+            if (thisStudy != null && otherStudy != null) {
+                int studyNameDiff = ComparisonTools.nullSafeCompare(
+                    thisStudy.getAssignedIdentifier(), otherStudy.getAssignedIdentifier());
                 if (studyNameDiff != 0) return studyNameDiff;
             }
 
-            Integer weightOne = o.getPlannedActivity().getWeight();
-            Integer weightTwo = getPlannedActivity().getWeight();
-
-            if (weightOne == null) {
-                weightOne = 0;
-            }
-            if (weightTwo == null) {
-                weightTwo = 0;
-            }
-
-            int weightDiff = weightOne.compareTo(weightTwo);
+            int weightDiff = this.getPlannedActivity().compareWeightTo(other.getPlannedActivity());
             if (weightDiff != 0) return weightDiff;
+        }
+        return getActivity().compareTo(other.getActivity());
+    }
 
+    @Transient
+    private Study getStudy(ScheduledActivity o) {
+        try {
+            return o.getPlannedActivity().getPeriod().getStudySegment().getEpoch().getPlannedCalendar().getStudy();
+        } catch (NullPointerException npe) {
+            return null;
         }
-        if(getActivity().getType() !=null && o.getActivity().getType()!=null) {
-            // by type first
-            int typeDiff = getActivity().getType().compareTo(o.getActivity().getType());
-            if (typeDiff != 0) return typeDiff;
-        }
-        // then by name
-        return ComparisonTools.nullSafeCompare(getActivity().getName(),o.getActivity().getName());
     }
 
     @Transient

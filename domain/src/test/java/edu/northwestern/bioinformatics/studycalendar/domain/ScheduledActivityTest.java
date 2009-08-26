@@ -6,7 +6,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -17,8 +20,19 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class ScheduledActivityTest extends TestCase {
-    private ScheduledActivity scheduledActivity = new ScheduledActivity();
-    private PlannedActivity plannedActivity = new PlannedActivity();
+    private ScheduledActivity scheduledActivity, sa0, sa1;
+    private PlannedActivity plannedActivity;
+    private Activity activityA = createActivity("A");
+    private Activity activityB = createActivity("B");
+
+    public void setUp() throws Exception {
+        super.setUp();
+        plannedActivity = new PlannedActivity();
+        scheduledActivity = new ScheduledActivity();
+        sa0 = new ScheduledActivity(); sa1 = new ScheduledActivity();
+        sa0.setActivity(activityA);
+        sa1.setActivity(activityB);
+    }
 
     public void testGetActualDateCurrentDate() throws Exception {
         Date expected = DateTools.createDate(2006, Calendar.AUGUST, 3);
@@ -224,5 +238,44 @@ public class ScheduledActivityTest extends TestCase {
     public void testIsOutstandingWhenCompleted() throws Exception {
         scheduledActivity.changeState(new Canceled());
         assertFalse(scheduledActivity.isOutstanding());
+    }
+
+    public void testNaturalOrderConsidersStudy() throws Exception {
+        sa0.setPlannedActivity(plannedActivityFromStudy("Y"));
+        sa1.setPlannedActivity(plannedActivityFromStudy("X"));
+
+        assertPositive(sa0.compareTo(sa1));
+        assertNegative(sa1.compareTo(sa0));
+    }
+    
+    public void testNaturalOrderConsidersPAWeight() throws Exception {
+        PlannedActivity pa0 = plannedActivityFromStudy("X");
+        PlannedActivity pa1 = plannedActivityFromStudy("X");
+        pa1.setWeight(4);
+        sa0.setPlannedActivity(pa0);
+        sa1.setPlannedActivity(pa1);
+
+        assertPositive(sa0.compareTo(sa1));
+        assertNegative(sa1.compareTo(sa0));
+    }
+
+    private PlannedActivity plannedActivityFromStudy(String ident) {
+        PlannedActivity pa = createPlannedActivity(activityA, 2);
+        Period p = createPeriod(1, 7, 1); p.addPlannedActivity(pa);
+        Study s = createSingleEpochStudy(ident, "E");
+        s.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(p);
+        return pa;
+    }
+
+    public void testCompareWithNoPlannedActivityDoesNotErrorOut() throws Exception {
+        sa0.setPlannedActivity(null); sa1.setPlannedActivity(null);
+        assertNegative(sa0.compareTo(sa1));
+    }
+
+    public void testCompareWithDisassociatedPlannedActivityDoesNotErrorOut() throws Exception {
+        sa0.setPlannedActivity(new PlannedActivity());
+        sa1.setPlannedActivity(new PlannedActivity());
+
+        assertNegative(sa0.compareTo(sa1));
     }
 }
