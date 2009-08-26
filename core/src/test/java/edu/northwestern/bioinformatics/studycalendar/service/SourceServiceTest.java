@@ -140,7 +140,7 @@ public class SourceServiceTest extends StudyCalendarTestCase {
             try {
                 sourceService.updateSource(source, targetSource);
             } catch (StudyCalendarValidationException scve) {
-                assertEquals("Import failed. Activity "+ activityToDelete.getName() + " with code " + activityToDelete.getCode() + " is referenced withing the study. " +
+                assertEquals("Import failed. Activity "+ activityToDelete.getName() + " with code " + activityToDelete.getCode() + " is referenced within the study. " +
                         "Please remove those references manuall and try to import activity again " , scve.getMessage());
             }
         verifyMocks();
