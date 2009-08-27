@@ -9,12 +9,14 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class ActivityTest extends TestCase {
-    private Activity a0, a1;
+    private Activity a0, a1, reconsent;
 
     protected void setUp() throws Exception {
         super.setUp();
         a0 = Fixtures.createActivity("Activity 0", Fixtures.createNamedInstance("DISEASE_MEASURE", ActivityType.class));
         a1 = Fixtures.createActivity("Activity 1", Fixtures.createNamedInstance("OTHER", ActivityType.class));
+        reconsent = Fixtures.createActivity("Reconsent");
+        reconsent.setType(null);
     }
 
     public void testNaturalOrderByTypeFirst() throws Exception {
@@ -40,6 +42,11 @@ public class ActivityTest extends TestCase {
 
         assertNegative(a0.compareTo(a1));
         assertPositive(a1.compareTo(a0));
+    }
+    
+    public void testNaturalOrderingMayIncludeReconsents() throws Exception {
+        assertPositive(a0.compareTo(reconsent));
+        assertNegative(reconsent.compareTo(a0));
     }
 
     public void testNaturalKeyIsCode() throws Exception {
