@@ -45,7 +45,7 @@ public class Activity extends AbstractMutableDomainObject
 
     public int compareTo(Activity o) {
         // by type first
-        int typeDiff = getType().compareTo(o.getType());
+        int typeDiff = ComparisonTools.nullSafeCompare(this.getType(), o.getType());
         if (typeDiff != 0) return typeDiff;
         // then by name
         return ComparisonTools.nullSafeCompare(toLower(getName()), toLower(o.getName()));
