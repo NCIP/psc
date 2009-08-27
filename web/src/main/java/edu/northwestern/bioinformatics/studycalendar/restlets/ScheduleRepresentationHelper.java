@@ -9,12 +9,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.Representation;
+import org.restlet.ext.json.JsonRepresentation;
 
 import java.util.Collections;
 import java.util.List;
@@ -111,6 +115,7 @@ public class ScheduleRepresentationHelper {
                 state_history.put(createJSONStateInfo(state));
             }
             jsonSA.put("state_history", state_history);
+            jsonSA.put("subject", sa.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName());
             return jsonSA;
         } catch (JSONException e) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
@@ -171,9 +176,35 @@ public class ScheduleRepresentationHelper {
                                                getPlannedCalendar().getStudy().getAssignedIdentifier());
             jsonPlannedSegmentInfo.put("study", jsonStudy);
             jsonSegment.put("planned", jsonPlannedSegmentInfo);
+            jsonSegment.put("subject", segment.getScheduledCalendar().getAssignment().getSubject().getFullName());
             return jsonSegment;
         } catch (JSONException e) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
         }
+    }
+
+    public static Representation createJSONRepresentation(SubjectCentricSchedule schedule, List<StudySubjectAssignment> visibleAssignments)
+            throws ResourceException  {
+        JSONObject jsonData = new JSONObject();
+        try {
+            JSONObject dayWiseActivities = new JSONObject();
+            for (ScheduleDay scheduleDay : schedule.getDays()) {
+                if (!scheduleDay.getActivities().isEmpty()) {
+                    dayWiseActivities.put(getApiDateFormat().format(scheduleDay.getDate()),
+                           ScheduleRepresentationHelper.createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
+                }
+            }
+            JSONArray studySegments = new JSONArray();
+            for (StudySubjectAssignment studySubjectAssignment: visibleAssignments) {
+                for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
+                    studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
+                }
+            }
+            jsonData.put("days", dayWiseActivities);
+            jsonData.put("study_segments", studySegments);
+        } catch (JSONException e) {
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
+	    }
+        return new JsonRepresentation(jsonData);
     }
 }

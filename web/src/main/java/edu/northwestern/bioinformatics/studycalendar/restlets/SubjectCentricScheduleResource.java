@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
@@ -11,16 +10,12 @@ import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -87,7 +82,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
             return createXmlRepresentation(visibleAssignments);
         }
         else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return createJSONRepresentation(schedule, visibleAssignments);
+            return ScheduleRepresentationHelper.createJSONRepresentation(schedule, visibleAssignments);
         }
         else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
             return  createICSRepresentation(schedule);
@@ -95,35 +90,10 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         return null;
     }
 
-    public Representation createJSONRepresentation(SubjectCentricSchedule schedule, List<StudySubjectAssignment> visibleAssignments)
-            throws ResourceException  {
-        JSONObject jsonData = new JSONObject();
-        try {
-            JSONObject dayWiseActivities = new JSONObject();
-            for (ScheduleDay scheduleDay : schedule.getDays()) {
-                if (!scheduleDay.getActivities().isEmpty()) {
-                    dayWiseActivities.put(getApiDateFormat().format(scheduleDay.getDate()),
-                           ScheduleRepresentationHelper.createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
-                }
-            }
-            JSONArray studySegments = new JSONArray();
-            for (StudySubjectAssignment studySubjectAssignment: visibleAssignments) {
-                for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
-                    studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
-                }
-            }
-            jsonData.put("days", dayWiseActivities);
-            jsonData.put("study_segments", studySegments);
-        } catch (JSONException e) {
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-	    }
-        return new JsonRepresentation(jsonData);
-    }
-
     public Representation createICSRepresentation(SubjectCentricSchedule schedule) {
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
-            ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(), scheduleDay.getActivities(), getApplicationBaseUrl());
+            ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(), scheduleDay.getActivities(), getApplicationBaseUrl(), false);
         }
         return new ICSRepresentation(icsCalendar, subject.getFullName());
     }
