@@ -235,7 +235,12 @@
             >
         <property name="xmlSerializer" ref="userRolesXmlSerializer"/>
     </bean>
-
+    <bean name="/users/{username}/roles/subject-coordinator/schedules"
+          id="subjectCoordinatorSchedulesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SubjectCoordinatorSchedulesResource"
+            >
+        <property name="xmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
+    </bean>
     <!-- bundle-id is optional -->
     <bean name="/osgi/bundles" id="osgiBundleListResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleResource"/>
