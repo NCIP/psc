@@ -102,8 +102,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         List<ScheduledActivity> list = studySegment0.getActivitiesByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
         
         assertEquals("Wrong number of events on July 4th", 2, list.size());
-        assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
-        assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
+        assertEquals("Reconsent Details should be details", "Reconsent Details", list.get(0).getDetails());
+        assertEquals("Reconsent should be activity name", "Reconsent", list.get(0).getActivity().getName());
     }
 
     public void testScheduleReconsentForSecondArmOnSameDayAsScheduledActivity() throws Exception{
@@ -139,8 +139,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         List<ScheduledActivity> list = studySegment1.getActivitiesByDate().get(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         assertEquals("Wrong number of events on August 8th", 2, list.size());
-        assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
-        assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
+        assertEquals("Reconsent Details should be details", "Reconsent Details", list.get(0).getDetails());
+        assertEquals("Reconsent should be activity name", "Reconsent", list.get(0).getActivity().getName());
     }
 
     public void testSave() {
