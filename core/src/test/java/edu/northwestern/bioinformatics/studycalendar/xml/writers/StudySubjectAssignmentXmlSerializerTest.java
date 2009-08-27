@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCa
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
 import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
 
@@ -62,6 +63,29 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assertNotNull("Subject element should exist", actual.element("subject"));
     }
 
+    public void testCreateElementForSubjectCoordinator() throws Exception {
+        expectScheduledCalendarElement();
+        expectSerializeSubject();
+        replayMocks();
+        serializer.setIncludeScheduledCalendar(true);
+        Element actual = serializer.createElement(assignment, true);
+        verifyMocks();
+        assertEquals("Should have 2 elements", 2, actual.elements().size());
+        assertNotNull("Subject element should exist", actual.element("subject"));
+        assertNotNull("Scheduld calendar element should exist", actual.element("scheduled-calendar"));
+    }
+
+    public void testCreateElementForSubjectCentric() throws Exception {
+        expectScheduledCalendarElement();
+        replayMocks();
+        serializer.setSubjectCentric(true);
+        Element actual = serializer.createElement(assignment, true);
+        verifyMocks();
+        assertEquals("Should have only 1 element", 1, actual.elements().size());
+        assertNull("Subject element should not exist", actual.element("subject"));
+        assertNotNull("Scheduld calendar element should exist", actual.element("scheduled-calendar"));
+    }
+
     ////// Expect Methods
     private void expectSerializeSubject() {
         expect(subjectSerializer.createElement(subject)).andReturn(new BaseElement("subject"));
@@ -77,5 +101,15 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assignment.setStartDateEpoch(createDate(2008, Calendar.JANUARY, 1));
         assignment.setEndDateEpoch(createDate(2008, Calendar.MARCH, 1));
         return assignment;
+    }
+
+    private void expectScheduledCalendarElement() {
+        ScheduledCalendarXmlSerializer scheduledCalendarXmlSerializer = registerMockFor(ScheduledCalendarXmlSerializer.class);
+        serializer.setScheduledCalendarXmlSerializer(scheduledCalendarXmlSerializer);
+
+        Element eCalendar = DocumentHelper.createElement("scheduled-calendar");
+        ScheduledCalendar schedule = setGridId("schedule-grid-0", new ScheduledCalendar());
+        assignment.setScheduledCalendar(schedule);
+        expect(scheduledCalendarXmlSerializer.createElement(schedule)).andReturn(eCalendar);
     }
 }

@@ -17,6 +17,7 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
     private AbstractStudyCalendarXmlSerializer<Subject> subjectXmlSerializer;
     private ScheduledCalendarXmlSerializer scheduledCalendarXmlSerializer;
     private Boolean subjectCentric = false;
+    private Boolean includeScheduledCalendar = false;
     protected XsdElement rootElement() { return XsdElement.SUBJECT_ASSIGNMENT; }
     protected XsdElement collectionRootElement() { return XsdElement.SUBJECT_ASSIGNMENTS; }
 
@@ -33,7 +34,7 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
         if (!subjectCentric) {
             elt.add(subjectXmlSerializer.createElement(assignment.getSubject()));
         }
-        if (subjectCentric) {
+        if (subjectCentric || includeScheduledCalendar) {
             elt.add(scheduledCalendarXmlSerializer.createElement(assignment.getScheduledCalendar()));
         }
         return elt;
@@ -52,6 +53,10 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
 
     public void setSubjectCentric(Boolean subjectCentric) {
         this.subjectCentric = subjectCentric;
+    }
+
+    public void setIncludeScheduledCalendar(Boolean includeScheduledCalendar) {
+        this.includeScheduledCalendar = includeScheduledCalendar;
     }
 
     public void setScheduledCalendarXmlSerializer(ScheduledCalendarXmlSerializer scheduledCalendarXmlSerializer) {
