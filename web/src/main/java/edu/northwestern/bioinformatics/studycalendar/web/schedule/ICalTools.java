@@ -39,10 +39,10 @@ public class ICalTools {
         }
     }
 
-    public static Calendar generateICSCalendarForActivities(Calendar icsCalendar, Date date, List<ScheduledActivity> scheduledActivities, String baseUrl) {
+    public static Calendar generateICSCalendarForActivities(Calendar icsCalendar, Date date, List<ScheduledActivity> scheduledActivities, String baseUrl, Boolean includeSubject) {
         Collections.sort(scheduledActivities);
         for (final ScheduledActivity scheduleActivity :scheduledActivities ) {
-            VEvent vEvent = generateAllDayEventForScheduleActivity(date, scheduleActivity, baseUrl);
+            VEvent vEvent = generateAllDayEventForScheduleActivity(date, scheduleActivity, baseUrl, includeSubject);
             if (vEvent != null) {
                 icsCalendar.getComponents().add(vEvent);
             }
@@ -50,11 +50,11 @@ public class ICalTools {
         return icsCalendar;
     }
 
-    private static VEvent generateAllDayEventForScheduleActivity(final Date date, final ScheduledActivity scheduledActivity, String baseUrl) {
+    private static VEvent generateAllDayEventForScheduleActivity(final Date date, final ScheduledActivity scheduledActivity, String baseUrl, Boolean includeSubject) {
         if (scheduledActivity.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED)||
             scheduledActivity.getCurrentState().getMode().equals(ScheduledActivityMode.CONDITIONAL) ) {
             try {
-                VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), createEventSummary(scheduledActivity));
+                VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), createEventSummary(scheduledActivity, includeSubject));
                 vEvent.getProperties().add(new Uid(scheduledActivity.getGridId()));
                 vEvent.getProperties().add(new Transp(Property.TRANSP));
                 vEvent.getProperty(Property.TRANSP).setValue("TRANSPARENT");
@@ -75,8 +75,11 @@ public class ICalTools {
         return null;
     }
 
-    private static String createEventSummary(ScheduledActivity scheduledActivity) {
+    private static String createEventSummary(ScheduledActivity scheduledActivity, Boolean includeSubject) {
         StringBuilder sb = new StringBuilder();
+        if (includeSubject) {
+            sb.append(scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName()).append("/");
+        }
         sb.append(scheduledActivity.getScheduledStudySegment().getScheduledCalendar().getAssignment().getName());
         sb.append("/").append(scheduledActivity.getActivity().getName());
         return sb.toString();

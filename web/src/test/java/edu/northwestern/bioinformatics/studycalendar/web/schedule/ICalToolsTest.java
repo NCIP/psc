@@ -51,7 +51,7 @@ public class ICalToolsTest extends StudyCalendarTestCase {
 
     public void testGenerateCalendarForActivities() throws Exception {
         Calendar calendar = ICalTools.generateCalendarSkeleton();
-        ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl);
+        ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl, false);
         assertEquals("calendar should have 4 events", 4, calendar.getComponents().size());
         assertEquals("calendar should have only 3 properties..", 3, calendar.getProperties().size());
     }
@@ -90,6 +90,15 @@ public class ICalToolsTest extends StudyCalendarTestCase {
         assertEquals("Summary value does not match", "Study/Activity1", summary.getValue());
     }
 
+    public void testCalendarEventSummaryForSubjectCoordinator() throws Exception {
+        Calendar calendar = ICalTools.generateCalendarSkeleton();
+        ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl, true);
+        List<VEvent> vEvents = calendar.getComponents();
+        VEvent vEvent = vEvents.get(0);
+        Summary summary = (Summary) vEvent.getProperty("SUMMARY");
+        assertEquals("Summary value does not match", "Perry Duglas/Study/Activity1", summary.getValue());
+    }
+
     public void testCalendarEventWithDescriptionProperty() throws Exception {
         VEvent vEvent = getCalendarEventOfInxex(0);
         Description description = vEvent.getDescription();
@@ -115,7 +124,7 @@ public class ICalToolsTest extends StudyCalendarTestCase {
     // Test Helper Methd
     private VEvent getCalendarEventOfInxex(int index) {
         Calendar calendar = ICalTools.generateCalendarSkeleton();
-        ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl);
+        ICalTools.generateICSCalendarForActivities(calendar, date, scheduledActivities, baseUrl, false);
         List<VEvent> vEvents = calendar.getComponents();
         return vEvents.get(index);
     }

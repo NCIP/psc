@@ -73,7 +73,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
             SortedMap<Date, List<ScheduledActivity>> events = scheduledStudySegment.getActivitiesByDate();
                 for (Date date : events.keySet()) {
-                    ICalTools.generateICSCalendarForActivities(icsCalendar, date, events.get(date), getApplicationBaseUrl());
+                    ICalTools.generateICSCalendarForActivities(icsCalendar, date, events.get(date), getApplicationBaseUrl(), false);
                 }
         }
         return new ICSRepresentation(icsCalendar, studySubjectAssignment.getName());
