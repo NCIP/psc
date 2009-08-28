@@ -601,6 +601,44 @@
                     </response>
                </method>
             </resource>
+            <resource path="assignments/{assignment-identifier}/notifications">
+                <doc>
+                    <html:p>The list of current notifications for the study subject assignment for subject.</html:p>
+                </doc>
+                <param style="template" name="assignment-identifier">
+                    <doc>The generated identifier for study subject assignment.</doc>
+                </param>
+                <method name="GET">
+                    <doc>Retrieve current notifications for the study subject assignment.</doc>
+                    <response>
+                        <representation href="#notifications-xml"/>
+                        <representation mediaType="application/json"/>
+                    </response>
+                </method>
+                <resource path="{notification-identifier}">
+                    <doc>
+                        <html:p>The current notifications with given identifier for the study subject assignment</html:p>
+                    </doc>
+                    <param style="template" name="notification-identifier">
+                        <doc>The generated identifier for notification.</doc>
+                    </param>
+                    <method name="GET">
+                        <doc>The current notification with identifier for the study subject assignment.</doc>
+                        <response>
+                            <representation href="#notification-xml"/>
+                            <representation mediaType="application/json"/>
+                        </response>
+                    </method>
+                    <method name="POST">
+                        <doc>
+                            Accepts notification's dismiss flag value and sets accordingly.
+                        </doc>
+                        <request>
+                            <representation mediaType="application/json"/>
+                        </request>
+                    </method>
+                </resource>
+            </resource>
         </resource>
 
         <resource path="activities">
@@ -919,6 +957,8 @@
     <representation mediaType="text/xml" id="blackout-date-xml"            element="psc:blackout-date"/>
     <representation mediaType="text/xml" id="roles-xml"                    element="psc:roles"/>
     <representation mediaType="text/xml" id="role-xml"                     element="psc:role"/>
+    <representation mediaType="text/xml" id="notifications-xml"            element="psc:notifications"/>
+    <representation mediaType="text/xml" id="notification-xml"             element="psc:notification"/>
 
     <representation mediaType="application/x-www-form-urlencoded" id="planned-activity-form">
         <param name="day" style="query" required="true">
