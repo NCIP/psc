@@ -855,6 +855,20 @@
                     </response>
                 </method>
             </resource>
+            <resource path="subject-coordinator/schedules">
+                <doc>
+                   <html:p>The schedule for all the patients belonging to a particular subject coordinator user.
+                       Subject coordinator should able to see her own schedules or for any of her colleagues.</html:p>
+                </doc>
+                <method name="GET">
+                    <doc>Retrieve the full schedules for all subjects belonging to a particular subject coordinator</doc>
+                    <response>
+                        <representation href="#subject-assignments-xml"/>
+                        <representation mediaType="application/json"/>
+                    </response>
+                </method>
+            </resource>
+
         </resource>
         
         <resource path="osgi/bundles">
