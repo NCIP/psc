@@ -59,7 +59,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private String registrationConsumerGridServiceUrl;
 
     private String rollbackTimeOut;
-    
+    	
     private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
 
     /**
