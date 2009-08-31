@@ -25,7 +25,7 @@
         <property name="siteDao" ref="siteDao"/>
         <property name="studyDao" ref="studyDao"/>
         <property name="studyService" ref="studyService"/>
-        <property name="amendmentService" ref="amendmentService"></property>
+        <property name="templateDevelopmentService" ref="templateDevelopmentService"/>
         <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
     </bean>
 

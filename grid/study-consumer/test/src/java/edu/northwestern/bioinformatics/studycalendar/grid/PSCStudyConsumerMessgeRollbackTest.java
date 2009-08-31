@@ -23,7 +23,7 @@ import java.util.Date;
 public class PSCStudyConsumerMessgeRollbackTest extends AbstractTransactionalSpringContextTests {
 
 
-    private AmendmentService amendmentService;
+    private TemplateDevelopmentService templateDevelopmentService;
     private StudySiteDao studySiteDao;
     private UserDao userDao;
     private StudyService studyService;
@@ -93,7 +93,7 @@ public class PSCStudyConsumerMessgeRollbackTest extends AbstractTransactionalSpr
 
         }
 
-//        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
         logger.debug(String.format("deleted development amendment for study ", assignedIdentifier));
 
         StudySite studySite = study.getStudySite(site);
@@ -204,9 +204,10 @@ public class PSCStudyConsumerMessgeRollbackTest extends AbstractTransactionalSpr
     }
 
     @Required
-    public void setAmendmentService(AmendmentService amendmentService) {
-        this.amendmentService = amendmentService;
-    }
+    public void setTemplateDevelopmentService(
+			TemplateDevelopmentService templateDevelopmentService) {
+		this.templateDevelopmentService = templateDevelopmentService;
+	}
 
     @Required
     public void setStudyService(StudyService studyService) {

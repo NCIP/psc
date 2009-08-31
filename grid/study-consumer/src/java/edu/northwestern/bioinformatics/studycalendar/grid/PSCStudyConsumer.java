@@ -9,27 +9,40 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
-import gov.nih.nci.cabig.ccts.domain.*;
+import gov.nih.nci.cabig.ccts.domain.ArmType;
+import gov.nih.nci.cabig.ccts.domain.EpochType;
+import gov.nih.nci.cabig.ccts.domain.IdentifierType;
+import gov.nih.nci.cabig.ccts.domain.NonTreatmentEpochType;
+import gov.nih.nci.cabig.ccts.domain.OrganizationAssignedIdentifierType;
+import gov.nih.nci.cabig.ccts.domain.StudyOrganizationType;
+import gov.nih.nci.cabig.ccts.domain.StudySiteType;
+import gov.nih.nci.cabig.ccts.domain.TreatmentEpochType;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
 import gov.nih.nci.ccts.grid.studyconsumer.common.StudyConsumerI;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.oasis.wsrf.properties.*;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
 
-import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oasis.wsrf.properties.GetMultipleResourcePropertiesResponse;
+import org.oasis.wsrf.properties.GetMultipleResourceProperties_Element;
+import org.oasis.wsrf.properties.GetResourcePropertyResponse;
+import org.oasis.wsrf.properties.QueryResourcePropertiesResponse;
+import org.oasis.wsrf.properties.QueryResourceProperties_Element;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Assumptions: 1. Site should already be existing in DB..
@@ -59,11 +72,9 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private String rollbackTimeOut;
 
+    private TemplateDevelopmentService templateDevelopmentService;
 
-    private AmendmentService amendmentService;
-
-
-    public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
+	public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
             StudyCreationException {
         if (studyDto == null) {
             String message = "No Study message was found";
@@ -159,7 +170,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         try {
             if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
-//                amendmentService.deleteDevelopmentAmendment(study);
+                templateDevelopmentService.deleteDevelopmentAmendment(study);
             } else {
                 logger.info(String.format("Study was not created %s minute before the current time:%s  so can not rollback this study:%s",
                         rollbackTime, calendar.getTime().toString(), study.getId()));
@@ -340,9 +351,10 @@ public class PSCStudyConsumer implements StudyConsumerI {
     }
 
     @Required
-    public void setAmendmentService(final AmendmentService amendmentService) {
-        this.amendmentService = amendmentService;
-    }
+    public void setTemplateDevelopmentService(
+			TemplateDevelopmentService templateDevelopmentService) {
+		this.templateDevelopmentService = templateDevelopmentService;
+	}
 
     @Required
     public void setRollbackTimeOut(String rollbackTimeOut) {
