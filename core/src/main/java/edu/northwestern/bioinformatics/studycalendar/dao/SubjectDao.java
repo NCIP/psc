@@ -55,15 +55,17 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
      */
     @SuppressWarnings("unchecked")
     public Subject findSubjectByPersonId(final String mrn) {
-        List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.personId= ?", mrn);
-        if (!results.isEmpty()) {
-            Subject subject = results.get(0);
-            return subject;
+        if (mrn != null) {
+            List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.personId= ?", mrn);
+            if (!results.isEmpty()) {
+                Subject subject = results.get(0);
+                return subject;
+            }
+            String message = "No subject exist with the given mrn :" + mrn;
+            log.info(message);
         }
-        String message = "No subject exist with the given mrn :" + mrn;
-        log.info(message);
-
         return null;
+
     }
 
 

@@ -8,6 +8,16 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Date;
 import java.util.List;
 
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.validation.BindException;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import org.easymock.EasyMock;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
@@ -178,5 +188,8 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         assertNull("Subject is not null, althouth it shoudl be ", subject1);
     }
 
-  
+    public void testFindSubjectByPersonIdWhenIdIsNull() throws Exception {
+        Subject subject = getDao().findSubjectByPersonId(null);
+        assertNull("Subject is not null ", subject);
+    }
 }
