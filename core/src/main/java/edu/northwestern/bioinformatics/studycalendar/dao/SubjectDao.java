@@ -69,6 +69,28 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
     }
 
 
+    /**
+     * Finds the subject for the given mrn (person id)
+     *
+     * @param  mrn the mrn (person id) to search for the subject with
+     * @return      the subject that correspnds to the given mrn
+     */
+    @SuppressWarnings("unchecked")
+    public Subject findSubjectByGridOrPersonId(final String mrn) {
+        if (mrn != null) {
+           Subject subject = findSubjectByPersonId(mrn);
+           if (subject == null) {
+                List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.gridId= ?", mrn);
+                if (!results.isEmpty()) {
+                    return results.get(0);
+                }
+            }
+            String message = "No subject exist with the given mrn :" + mrn;
+            log.info(message);
+        }
+        return null;
+    }
+
    /**
     * Finds the subjects doing a LIKE search with some search text for subject's firs name, middle name or last name.
     *

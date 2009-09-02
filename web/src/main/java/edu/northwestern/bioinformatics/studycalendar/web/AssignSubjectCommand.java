@@ -36,7 +36,7 @@ public class AssignSubjectCommand implements Validatable {
     private String gender;
     private String personId;
     private String studySubjectId;
-    private String checkbox;
+    private String identifier;
     private String radioButton;
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -48,22 +48,32 @@ public class AssignSubjectCommand implements Validatable {
 
     public void validate(Errors errors){
         Subject subject = null;
-        if (getRadioButton().equals("existing")){
-            subject = subjectDao.findSubjectByPersonId(checkbox);
-        } else {
-            subject = createSubject();
-
-            if (isEmpty(personId) && (isEmpty(firstName) || isEmpty(lastName) || dateOfBirth == null)) {
-                errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
-            } else if (startDate == null) {
-                errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
-            } else {
-                List<Subject> results = subjectService.findSubjects(subject);
-                if (results.size() > 1) {
-                    if (subject.getPersonId() != null) {
-                        errors.rejectValue("personId", "error.person.id.already.exists");
-                    } else {
-                        errors.rejectValue("lastName", "error.person.last.name.already.exists");
+        if (getRadioButton() == null) {
+           errors.rejectValue("personId", "error.subject.please.select.a.subject");
+        }
+        else {
+            if (getRadioButton().equals("existing")){
+                if (getIdentifier() == null || getIdentifier().trim().length()==0){
+                    errors.rejectValue("personId", "error.subject.please.select.a.subject");
+                } else if (getStartDate() == null) {
+                    errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
+                } else {
+                    subject = subjectDao.findSubjectByGridOrPersonId(getIdentifier());
+                }
+            } else if (getRadioButton().equals("new")){
+                if (isEmpty(getPersonId()) && (isEmpty(getFirstName()) || isEmpty(getLastName()) || getDateOfBirth() == null)) {
+                    errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
+                } else if (getStartDate() == null) {
+                    errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
+                } else {
+                    subject = createSubject();
+                    List<Subject> results = subjectService.findSubjects(subject);
+                    if (results.size() > 1) {
+                        if (subject.getPersonId() != null) {
+                            errors.rejectValue("personId", "error.person.id.already.exists");
+                        } else {
+                            errors.rejectValue("lastName", "error.person.last.name.already.exists");
+                        }
                     }
                 }
             }
@@ -92,7 +102,7 @@ public class AssignSubjectCommand implements Validatable {
     public Subject createAndSaveNewOrExtractExistingSubject() {
 		Subject subject = null;
         if (getRadioButton().equals("existing")){
-            subject = subjectDao.findSubjectByPersonId(checkbox);
+            subject = subjectDao.findSubjectByGridOrPersonId(getIdentifier());
         } else {
             subject = createSubject();
             subjectDao.save(subject);
@@ -221,12 +231,12 @@ public class AssignSubjectCommand implements Validatable {
         this.personId = personId;
     }
 
-    public String getCheckbox() {
-        return checkbox;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setCheckbox(String checkbox) {
-        this.checkbox = checkbox;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getRadioButton() {

@@ -125,6 +125,7 @@ public class SubjectsResource extends AbstractPscResource {
             } else {
                 jsonSubject.put("hidden_assignments", false);
             }
+            jsonSubject.put("grid_id", subject.getGridId());
 
 
             return jsonSubject;
