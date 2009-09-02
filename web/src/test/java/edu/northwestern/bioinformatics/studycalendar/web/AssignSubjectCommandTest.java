@@ -7,15 +7,14 @@ import edu.northwestern.bioinformatics.studycalendar.core.*;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +37,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setSubjectDao(subjectDao);
 
         subject = createSubject("11", "Fred", "Jones", createDate(2008, 1, 12),Gender.MALE);
+        subject.setGridId("grid_id_123");
 
         command.setFirstName(subject.getFirstName());
         command.setLastName(subject.getLastName());
@@ -89,8 +89,22 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
 
     public void testValidateExisting() throws Exception {
         command.setRadioButton(EXISTING);
-        command.setCheckbox(subject.getPersonId());
-        expect(subjectDao.findSubjectByPersonId(subject.getPersonId())).andReturn(subject);
+        command.setIdentifier(subject.getPersonId());
+        expect(subjectDao.findSubjectByGridOrPersonId(subject.getPersonId())).andReturn(subject);
+        replayMocks();
+
+        BindException errors = new BindException(subject, StringUtils.EMPTY);
+        command.validate(new BindException(subject, StringUtils.EMPTY));
+        verifyMocks();
+
+        assertFalse(errors.hasErrors());
+    }
+
+
+    public void testValidateExistingByGridId() throws Exception {
+        command.setRadioButton(EXISTING);
+        command.setIdentifier(subject.getGridId());
+        expect(subjectDao.findSubjectByGridOrPersonId(subject.getGridId())).andReturn(subject);
         replayMocks();
 
         BindException errors = new BindException(subject, StringUtils.EMPTY);
@@ -112,6 +126,118 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         assertTrue(errors.hasErrors());
         assertEquals("Wrong error count", 1, errors.getErrorCount());
         assertEquals("Wrong error code", "error.person.id.already.exists", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWithEmptyRadioButtonSelected() throws Exception {
+        command.setRadioButton(null);
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.please.select.a.subject", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWithRadioButtonExistingAndNullId() throws Exception {
+        command.setRadioButton("existing");
+        command.setIdentifier(null);
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.please.select.a.subject", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWithRadioButtonExistingAndEmptyId() throws Exception {
+        command.setRadioButton("existing");
+        command.setIdentifier("");
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.please.select.a.subject", errors.getFieldError().getCode());
+    }
+
+    public void testValidateWithRadioButtonExistingAndEmptyStartDate() throws Exception {
+        command.setRadioButton("existing");
+        command.setIdentifier("123");
+        command.setStartDate(null);
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.a.start.date", errors.getFieldError().getCode());
+    }
+
+    public void testValidateNewWithEmptyPersonIdAndFirstName() throws Exception {
+        command.setRadioButton("new");
+        command.setPersonId("");
+        command.setFirstName("");
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate", errors.getFieldError().getCode());
+
+    }
+
+    public void testValidateNewWithEmptyPersonIdAndLastName() throws Exception {
+        command.setRadioButton("new");
+        command.setPersonId("");
+        command.setLastName("");
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate", errors.getFieldError().getCode());
+
+    }
+
+    public void testValidateNewWithEmptyPersonIdAndDateOfBirth() throws Exception {
+        command.setRadioButton("new");
+        command.setPersonId("");
+        command.setDateOfBirth(null);
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate", errors.getFieldError().getCode());
+
+    }
+
+    public void testValidateNewWithEmptyPersonIdAndStartDate() throws Exception {
+        command.setRadioButton("new");
+        command.setPersonId("123");
+        command.setStartDate(null);
+        replayMocks();
+
+        BindException errors = new BindException(command, StringUtils.EMPTY);
+        command.validate(errors);
+        verifyMocks();
+        assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.subject.assignment.please.enter.a.start.date", errors.getFieldError().getCode());
+
     }
 
     public void testValidateWithExistingSubjectNoPersonId() throws Exception {

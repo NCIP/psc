@@ -20,7 +20,7 @@
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.submit {
-            text-align: right;
+            text-align: center;
         }
         form {
             width: 30em;
@@ -145,7 +145,8 @@
                             { key: "gender"},
                             { key: "person_id" },
                             { key: "assignments",  formatter:YAHOO.widget.DataTable.formatLink },
-                            { key: "hidden_assignments"}
+                            { key: "hidden_assignments"},
+                            { key: "grid_id"}
                         ]
                     };
 
@@ -181,8 +182,12 @@
 
         // Create a custom formatter for the checkboxes
         var checkboxFormatter = function (liner,rec,col,data) {
-           var name = 'checkbox';
-           liner.innerHTML = '<input name="'+name+'" type="checkbox" value="'+rec.getData('person_id')+'">';
+           var name = 'identifier';
+           if (rec.getData('grid_id') != null && rec.getData('grid_id')!=""){
+               liner.innerHTML = '<input name="'+name+'" type="checkbox" value="'+rec.getData('grid_id')+'">';
+           } else {
+               liner.innerHTML = '<input name="'+name+'" type="checkbox" value="'+rec.getData('person_id')+'">';
+           }
         };
 
         // Add some convenience methods onto the prototype
@@ -195,7 +200,7 @@
            cb.checked = false;
         };
         function uncheckAll() {
-           var name = 'checkbox';
+           var name = 'identifier';
            var checks = document.getElementsByName(name),i;
            for (i = checks.length - 1; i >= 0; --i) {
                checks[i].checked = false;
@@ -262,10 +267,14 @@
                 disableEnableElementsOfDiv1(true)
                 disableEnableElementsOfDiv2(false)
                 disableEnableElementsForCommonDiv(false)
-            } else {
+                $('submitBtn').disabled=false
+            } else if (buttonName.className == "existingSubjRadioButton") {
                 disableEnableElementsOfDiv2(true)
                 disableEnableElementsOfDiv1(false)
                 disableEnableElementsForCommonDiv(false)
+                $('submitBtn').disabled=false
+            } else {
+                $('submitBtn').disabled=true
             }
 
         }
@@ -303,6 +312,7 @@
             disableEnableElementsForCommonDiv(true)
             disableEnableElementsOfDiv1(true)
             disableEnableElementsOfDiv2(true)
+            $('submitBtn').disabled=true
         })
 
     </script>
@@ -313,14 +323,13 @@
 <c:url value="/pages/cal/assignSubject" var="action"/>
 <form:form method="post" action="${action}" cssClass="mainForm">
     <table class="mainTable">
+        <tr><form:errors path="*"/></tr>
         <tr class="subjectContent">
             <td class="newSubjectContent">
                 <Input type = radio class="newSubjRadioButton" Name = radioButton Value = "new" onclick="toggleAlert(this)" > New Subject
                 <c:if test="${not empty sites}">
 
                     <laf:division cssClass="divisionClass">
-                            <form:errors path="*"/>
-
                             <div class="row">
                                 <div class="label">
                                     <form:label path="firstName">First Name</form:label>
@@ -480,8 +489,7 @@
 
                     <div class="row">
                         <div class="submit">
-                            <input id="submitForNew" type="submit" value="Assign"/>
-                            <input id="submitForExisting" style="visibility:hidden;" type="submit" value="Assign"/>
+                            <input id="submitBtn" type="submit" value="Assign"/>
                         </div>
                     </div>
                 </div>
