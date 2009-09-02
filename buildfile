@@ -281,7 +281,9 @@ define "psc" do
         "org.acegisecurity.providers.cas.ticketvalidator" <<
         "org.acegisecurity.ui.cas" <<
         "org.acegisecurity.ui.logout" <<
-        "gov.nih.nci.cabig.caaers.web.security.cas"
+        "gov.nih.nci.cabig.caaers.web.security.cas" <<
+        "org.apache.commons.httpclient" << # an instance is directly created in cas-authentication-beans.xml, so it needs to be visible
+        "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct"
       compile.with project('plugin-api').and_dependencies,
         project('cas-plugin').and_dependencies, SECURITY.caaers_cas
       test.with project('plugin-api').test_dependencies,
