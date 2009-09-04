@@ -23,7 +23,11 @@ psc.namespace("subject");
       if (textStatus === "notmodified") {
         triggerScheduleReady();
       } else {
-        $('#schedule').trigger('schedule-error', textStatus);
+        var msg = textStatus;
+        if (msg === "error" && XMLHttpRequest !== null) {
+           msg = XMLHttpRequest.status + " error";
+        }
+        $('#schedule').trigger('schedule-error', msg);
       }
     }
     
@@ -53,7 +57,7 @@ psc.namespace("subject");
         // Since this method is called from a jQuery event handler,
         // trigger the error from a different thread
         setTimeout(function () {
-          $('#schedule').trigger('schedule-error', e);
+          $('#schedule').trigger('schedule-error', e.message);
         }, 300)
       }
     }

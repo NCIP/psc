@@ -14,12 +14,13 @@ Screw.Unit(function () {
       var lastAjaxOptions;
       var desiredErrorText = null;
       var desiredAjaxSetupException = null;
+      var desiredXmlHttpRequestStatus = null;
 
       before(function () {
         psc.subject.ScheduleData.uriGenerator(function () {
           return "spec";
         });
-        
+
         // Stub out the ajax calls to track invocations
         originalAjax = $.ajax;
         $.ajax = function (opts) {
@@ -28,6 +29,11 @@ Screw.Unit(function () {
             opts.error(null, desiredErrorText);
           } else if (desiredAjaxSetupException !== null) {
             throw desiredAjaxSetupException;
+          } else if (desiredXmlHttpRequestStatus !== null) {
+            var stubHttpRequest = {
+              status: desiredXmlHttpRequestStatus
+            }
+            opts.error(stubHttpRequest, 'error');
           } else {
             opts.success({
               "days": {
@@ -44,7 +50,7 @@ Screw.Unit(function () {
           }
         };
       });
-    
+
       after(function () {
         $.ajax = originalAjax;
         psc.subject.ScheduleData.clear();
@@ -77,11 +83,11 @@ Screw.Unit(function () {
           }
           psc.subject.ScheduleData.uriGenerator(null);
         });
-        
+
         after(function () {
           psc.subject.ScheduleData.uriGenerator(originalGenerator);
         });
-        
+
         it("uses the URI from the provided generator", function () {
           psc.subject.ScheduleData.uriGenerator(function () {
             return 'foo';
@@ -89,7 +95,7 @@ Screw.Unit(function () {
           psc.subject.ScheduleData.refresh();
           expect(lastAjaxOptions.url).to(equal, "foo");
         });
-        
+
         it("falls down without a generator", function () {
           expect(function () { psc.subject.ScheduleData.uriGenerator() }).
             to(raise, "psc.subject.ScheduleData.uriGenerator not set.  Don't know which resource to load from.")
@@ -99,10 +105,10 @@ Screw.Unit(function () {
       it("replaces the schedule on a successful load", function () {
         expect(psc.subject.ScheduleData.current()).to(equal, null);
         psc.subject.ScheduleData.refresh();
-      
+
         expect(psc.subject.ScheduleData.current()).to_not(equal, null);
       });
-    
+
       describe("schedule-ready", function () {
         var scheduleReady = false;
         before(function () {
@@ -110,30 +116,30 @@ Screw.Unit(function () {
             scheduleReady = true;
           });
         });
-      
+
         after(function () {
           scheduleReady = false;
         });
-      
+
         it("is triggered on success", function () {
           desiredErrorText = null;
           psc.subject.ScheduleData.refresh();
           expect(scheduleReady).to(equal, true);
         });
-      
+
         it("is triggered when unchanged", function () {
           desiredErrorText = "notmodified";
           psc.subject.ScheduleData.refresh();
           expect(scheduleReady).to(equal, true);
         });
-      
+
         it("is not triggered for errors", function () {
           desiredErrorText = "timeout";
           psc.subject.ScheduleData.refresh();
           expect(scheduleReady).to(equal, false);
         });
       });
-    
+
       describe("schedule-error", function () {
         var scheduleError = false;
         var lastText = null;
@@ -143,36 +149,42 @@ Screw.Unit(function () {
             lastText = textStatus;
           });
         });
-      
+
         after(function () {
           scheduleError = false;
           lastText = null;
         });
-      
+
         it("is not triggered on success", function () {
           desiredErrorText = null;
           psc.subject.ScheduleData.refresh();
           expect(scheduleError).to(equal, false);
         });
-      
+
         it("is not triggered when unchanged", function () {
           desiredErrorText = "notmodified";
           psc.subject.ScheduleData.refresh();
           expect(scheduleError).to(equal, false);
         });
-      
+
         it("is triggered on error", function () {
           desiredErrorText = "error";
           psc.subject.ScheduleData.refresh();
           expect(scheduleError).to(equal, true);
         });
-      
-        it("is triggered with details of the error", function () {
+
+        it("is triggered with details of the error on timeout", function () {
           desiredErrorText = "timeout";
           psc.subject.ScheduleData.refresh();
           expect(lastText).to(equal, "timeout");
         });
-        
+
+        it("is triggered with details of the error on general error", function () {
+          desiredXmlHttpRequestStatus = 404;
+          psc.subject.ScheduleData.refresh();
+          expect(lastText).to(equal, "404 error");
+        });
+
         /* TODO: reenable when there's support for testing async calls
         it("is triggered 300ms after there's an error setting up the ajax call", function () {
           desiredAjaxSetupException = "Configuration error of some kind";
