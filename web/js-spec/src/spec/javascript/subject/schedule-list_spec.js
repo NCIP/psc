@@ -103,9 +103,14 @@ Screw.Unit(function () {
       })
 
       describe("schedule-error", function() {
-        it("shows the error message", function() {
+        it("should display #schedule-error", function() {
           $('#schedule').trigger('schedule-error')
           expect($('#schedule-error').css('display')).to_not(equal, 'none')
+        });
+
+        it("should pass the message 'Banana!'", function() {
+          $('#schedule').trigger('schedule-error', "Banana!")
+          expect($('#schedule-error').text()).to(equal, 'Problem loading schedule data: Banana!')
         });
       });
     });
