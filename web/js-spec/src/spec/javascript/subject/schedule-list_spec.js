@@ -101,6 +101,13 @@ Screw.Unit(function () {
           });
         });
       })
+
+      describe("schedule-error", function() {
+        it("shows the error message", function() {
+          $('#schedule').trigger('schedule-error')
+          expect($('#schedule-error').css('display')).to_not(equal, 'none')
+        });
+      });
     });
   }(jQuery));
 });
