@@ -41,16 +41,17 @@ public class ScheduledActivityTest extends TestCase {
         assertEquals(expected, scheduledActivity.getActualDate());
     }
 
-    public void testGetActualDateIsPreviousDate() throws Exception {
+    public void testGetActualDateIsPreviousDateIfCurrentNotSet() throws Exception {
         Date expected = DateTools.createDate(2006, Calendar.AUGUST, 3);
         scheduledActivity.setIdealDate(DateTools.createDate(2006, Calendar.AUGUST, 1));
-        scheduledActivity.changeState(new Scheduled(null, DateTools.createDate(2006, Calendar.AUGUST, 4)));
         scheduledActivity.changeState(new Scheduled(null, expected));
-        scheduledActivity.changeState(new Canceled(null, expected));
+        scheduledActivity.changeState(new Canceled(null, new Date()));
+        // this shouldn't happen in new data, but there could still be some out there
+        scheduledActivity.getCurrentState().setDate(null);
         assertEquals(expected, scheduledActivity.getActualDate());
     }
 
-    public void testGetActualDateIsIdealDate() throws Exception {
+    public void testGetActualDateIsIdealDateWhenNothingElseAvailable() throws Exception {
         Date expected = DateTools.createDate(2006, Calendar.AUGUST, 3);
         scheduledActivity.setIdealDate(expected);
         assertEquals(expected, scheduledActivity.getActualDate());

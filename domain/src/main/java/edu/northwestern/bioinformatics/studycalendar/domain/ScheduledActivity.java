@@ -128,7 +128,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         Collections.reverse(states);
         for (ScheduledActivityState state : states) {
              actualDate = state.getDate();
-             break;
+             if (actualDate != null) break;
         }
         
         if (actualDate == null) {
