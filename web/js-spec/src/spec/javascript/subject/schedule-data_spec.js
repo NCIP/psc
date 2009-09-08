@@ -16,6 +16,7 @@ Screw.Unit(function () {
       var desiredAjaxSetupException = null;
       var desiredXmlHttpRequestStatus = null;
       var desiredXmlHttpRequestStatusText = null;
+      var desiredXmlHttpRequestResponseText = null;
       var desiredAjaxSendException = null;
 
       before(function () {
@@ -32,6 +33,7 @@ Screw.Unit(function () {
             [ desiredErrorText,
               desiredXmlHttpRequestStatus,
               desiredXmlHttpRequestStatusText,
+              desiredXmlHttpRequestResponseText,
               desiredAjaxSendException
             ].any(function(p) {return p !== null});
 
@@ -39,7 +41,8 @@ Screw.Unit(function () {
             opts.error(
               {
                 status: desiredXmlHttpRequestStatus,
-                statusText: desiredXmlHttpRequestStatusText
+                statusText: desiredXmlHttpRequestStatusText,
+                responseText: desiredXmlHttpRequestResponseText
               },
               desiredErrorText,
               desiredAjaxSendException
@@ -72,6 +75,7 @@ Screw.Unit(function () {
         desiredXmlHttpRequestStatus = null;
         desiredAjaxSendException = null;
         desiredXmlHttpRequestStatusText = null;
+        desiredXmlHttpRequestResponseText = null;
       });
 
       it("triggers 'schedule-load-start' on refresh()", function () {
@@ -196,12 +200,19 @@ Screw.Unit(function () {
           expect(lastText).to(equal, "timeout");
         });
 
-        it("is triggered with details of the error on general error", function () {
+        it("is triggered with a message including response code and text on error", function () {
           desiredErrorText = "error"
           desiredXmlHttpRequestStatus = 400;
           desiredXmlHttpRequestStatusText = "Bad Request: Missing Activities"
           psc.subject.ScheduleData.refresh();
           expect(lastText).to(equal, "Bad Request: Missing Activities (400)");
+        });
+
+        it("is triggered with response text on error", function () {
+          desiredErrorText = "error"
+          desiredXmlHttpRequestResponseText = "An Exception Has Been Thrown";
+          psc.subject.ScheduleData.refresh();
+          expect(lastStackTrace).to(equal, "An Exception Has Been Thrown");
         });
 
         /* TODO: reenable when there's support for testing async calls

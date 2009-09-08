@@ -23,11 +23,10 @@ psc.namespace("subject");
       if (textStatus === "notmodified") {
         triggerScheduleReady();
       } else {
-        var msg = textStatus;
-        if (msg === "error" && XMLHttpRequest !== null) {
-           msg =  XMLHttpRequest.statusText + " (" + XMLHttpRequest.status + ")";
-        }
-        $('#schedule').trigger('schedule-error', msg);
+        var msg = psc.subject.ScheduleData.errorMessage(XMLHttpRequest, textStatus);
+        var details = psc.subject.ScheduleData.errorDetails(XMLHttpRequest, textStatus);
+
+        $('#schedule').trigger('schedule-error', [msg, details]);
       }
     }
     
@@ -102,6 +101,22 @@ psc.namespace("subject");
             throw "psc.subject.ScheduleData.uriGenerator not set.  Don't know which resource to load from."
           }
         }
+      },
+
+      errorMessage: function(XMLHttpRequest, textStatus) {
+        var msg = textStatus;
+        if (msg === "error" && XMLHttpRequest !== null) {
+          msg =  XMLHttpRequest.statusText + " (" + XMLHttpRequest.status + ")";
+        }
+        return msg;
+      },
+
+      errorDetails: function(XMLHttpRequest, textStatus) {
+        var details = null;
+        if (textStatus === "error" && XMLHttpRequest !== null) {
+          details = XMLHttpRequest.responseText;
+        }
+        return details;
       },
       
       clear: function () {
