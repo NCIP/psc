@@ -14,7 +14,7 @@
         </li>
     </ul>
 </laf:box>
-<laf:box title="Create the first site" id="setup-input">
+<laf:box title="Create the first User" id="setup-input">
     <laf:division>
         <p class="instructions">
             Every PSC instance needs at least one System Administrator.  The sysadmin creates users and

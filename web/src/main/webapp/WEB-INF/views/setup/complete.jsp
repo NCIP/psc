@@ -10,7 +10,7 @@
         Initial setup of this Patient Study Calendar instance is complete.  For security reasons, you can't
         repeat this initial setup.  If you need to make any changes to the settings you specified, you can find the
         relevant controls in the <a href="<c:url value="/pages/admin/configure"/>">administration section</a> of
-        the regular PSC interface. (You'll need to log in with a System Administrator account, of course.)
+        the regular PSC interface.
     </p>
 </laf:box>
 </body>
