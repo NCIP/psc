@@ -70,13 +70,11 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
 
     }
 
-
     @Override
     public void remove(Activity activity) {
         //delete only if activity is not used any where
-        log.info("Deleting the activity" + activity.getId());
+        log.debug("Deleting activity {}", activity);
         activityDao.delete(activity);
-
     }
 
     @Override

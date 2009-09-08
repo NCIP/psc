@@ -519,7 +519,7 @@ public class TemplateService {
             }
         }
 
-        log.info("releasedAndAssignedTemplate " + releasedAndAssignedTemplates);
+        log.debug("released and assigned templates are {}", releasedAndAssignedTemplates);
         return releasedAndAssignedTemplates;
     }
 
@@ -543,7 +543,7 @@ public class TemplateService {
                 releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
             }
         }
-        log.info("releasedTemplates " + releasedTemplates);
+        log.debug("released templates are {}", releasedTemplates);
         return releasedTemplates;
     }
 
@@ -558,7 +558,7 @@ public class TemplateService {
                 inDevelopmentTemplates.add(new DevelopmentTemplate(devableStudy));
             }
         }
-        log.info("inDevelopmentTemplates " + inDevelopmentTemplates);
+        log.debug("in-development templates are {}", inDevelopmentTemplates);
         return inDevelopmentTemplates;
     }
 

@@ -61,11 +61,8 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
                 Subject subject = results.get(0);
                 return subject;
             }
-            String message = "No subject exist with the given mrn :" + mrn;
-            log.info(message);
         }
         return null;
-
     }
 
 
@@ -85,8 +82,6 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
                     return results.get(0);
                 }
             }
-            String message = "No subject exist with the given mrn :" + mrn;
-            log.info(message);
         }
         return null;
     }
@@ -125,8 +120,6 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
         if (!results.isEmpty()) {
             return results;
         }
-        String message = "No subject exist with the given firstName : " + firstName + " , lastName : " + lastName + " ,dateOfBirth : " + dateOfBirth;
-        log.info(message);
 
         return null;
     }
