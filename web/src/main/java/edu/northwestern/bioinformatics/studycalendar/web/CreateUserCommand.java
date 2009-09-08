@@ -37,6 +37,7 @@ public class CreateUserCommand implements Validatable, Serializable {
     private UserRoleService userRoleService;
     private UserDao userDao;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
+    private Boolean initialAdministrator = false;
 
     public CreateUserCommand(
             User user, SiteDao siteDao, UserService userService, UserDao userDao,
@@ -151,7 +152,11 @@ public class CreateUserCommand implements Validatable, Serializable {
             user.setActiveFlag(isUserActiveFlag());
             userDao.save(user);
         }
-        assignUserRolesFromRolesGrid();
+        if (initialAdministrator) {
+            userRoleService.assignUserRole(user, Role.SYSTEM_ADMINISTRATOR, null);
+        } else {
+            assignUserRolesFromRolesGrid();
+        }
         return user;
     }
 
@@ -292,5 +297,9 @@ public class CreateUserCommand implements Validatable, Serializable {
 
     public void setEmailAddress(final String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public void setInitialAdministrator(Boolean initialAdministrator) {
+        this.initialAdministrator = initialAdministrator;
     }
 }

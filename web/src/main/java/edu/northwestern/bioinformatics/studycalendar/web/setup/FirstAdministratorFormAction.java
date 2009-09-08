@@ -38,10 +38,7 @@ public class FirstAdministratorFormAction extends FormAction {
         );
         command.setUserActiveFlag(true);
         command.setPasswordModified(true);
-        // set sys admin role for all sites, just to be safe (there should only be one site at this point)
-        for (Map<Role, CreateUserCommand.RoleCell> map : command.getRolesGrid().values()) {
-            map.get(Role.SYSTEM_ADMINISTRATOR).setSelected(true);
-        }
+        command.setInitialAdministrator(true);
         return command;
     }
 
