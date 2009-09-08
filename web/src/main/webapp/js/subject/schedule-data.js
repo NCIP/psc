@@ -25,7 +25,7 @@ psc.namespace("subject");
       } else {
         var msg = textStatus;
         if (msg === "error" && XMLHttpRequest !== null) {
-           msg = XMLHttpRequest.status + " error";
+           msg =  XMLHttpRequest.statusText + " (" + XMLHttpRequest.status + ")";
         }
         $('#schedule').trigger('schedule-error', msg);
       }

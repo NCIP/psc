@@ -15,6 +15,8 @@ Screw.Unit(function () {
       var desiredErrorText = null;
       var desiredAjaxSetupException = null;
       var desiredXmlHttpRequestStatus = null;
+      var desiredXmlHttpRequestStatusText = null;
+      var desiredAjaxSendException = null;
 
       before(function () {
         psc.subject.ScheduleData.uriGenerator(function () {
@@ -25,15 +27,25 @@ Screw.Unit(function () {
         originalAjax = $.ajax;
         $.ajax = function (opts) {
           lastAjaxOptions = opts;
-          if (desiredErrorText !== null) {
-            opts.error(null, desiredErrorText);
+
+          var errorParams =
+            [ desiredErrorText,
+              desiredXmlHttpRequestStatus,
+              desiredXmlHttpRequestStatusText,
+              desiredAjaxSendException
+            ].any(function(p) {return p !== null});
+
+          if (errorParams) {
+            opts.error(
+              {
+                status: desiredXmlHttpRequestStatus,
+                statusText: desiredXmlHttpRequestStatusText
+              },
+              desiredErrorText,
+              desiredAjaxSendException
+            );
           } else if (desiredAjaxSetupException !== null) {
             throw desiredAjaxSetupException;
-          } else if (desiredXmlHttpRequestStatus !== null) {
-            var stubHttpRequest = {
-              status: desiredXmlHttpRequestStatus
-            }
-            opts.error(stubHttpRequest, 'error');
           } else {
             opts.success({
               "days": {
@@ -57,6 +69,9 @@ Screw.Unit(function () {
         lastAjaxOptions = null;
         desiredErrorText = null;
         desiredAjaxSetupException = null;
+        desiredXmlHttpRequestStatus = null;
+        desiredAjaxSendException = null;
+        desiredXmlHttpRequestStatusText = null;
       });
 
       it("triggers 'schedule-load-start' on refresh()", function () {
@@ -143,10 +158,12 @@ Screw.Unit(function () {
       describe("schedule-error", function () {
         var scheduleError = false;
         var lastText = null;
+        var lastStackTrace  = null;
         before(function () {
-          $('#schedule').bind('schedule-error', function (evt, textStatus) {
+          $('#schedule').bind('schedule-error', function (evt, textStatus, stackTrace) {
             scheduleError = true;
             lastText = textStatus;
+            lastStackTrace = stackTrace;
           });
         });
 
@@ -180,9 +197,11 @@ Screw.Unit(function () {
         });
 
         it("is triggered with details of the error on general error", function () {
-          desiredXmlHttpRequestStatus = 404;
+          desiredErrorText = "error"
+          desiredXmlHttpRequestStatus = 400;
+          desiredXmlHttpRequestStatusText = "Bad Request: Missing Activities"
           psc.subject.ScheduleData.refresh();
-          expect(lastText).to(equal, "404 error");
+          expect(lastText).to(equal, "Bad Request: Missing Activities (400)");
         });
 
         /* TODO: reenable when there's support for testing async calls
