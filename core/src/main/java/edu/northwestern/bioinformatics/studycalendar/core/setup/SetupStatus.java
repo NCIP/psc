@@ -48,18 +48,25 @@ public class SetupStatus implements InitializingBean {
         recheck();
     }
 
-    public boolean isSetupNeeded() {
-        for (boolean b : prepared) {
-            if (!b) return true;
-        }
-        return false;
+    public boolean isPreAuthenticationSetupNeeded(){
+        return !prepared[ADMINISTRATOR.ordinal()];
     }
 
-    public InitialSetupElement next() {
+    public boolean isPostAuthenticationSetupNeeded(){
+        return !prepared[SITE.ordinal()];
+    }
+
+    public InitialSetupElement preAuthenticationSetup(){
         recheck();
-        for (int i = 0; i < prepared.length; i++) {
-            if (!prepared[i]) return InitialSetupElement.values()[i];
-        }
+        if (isAdministratorMissing())
+            return InitialSetupElement.ADMINISTRATOR;
+        return null;
+    }
+
+    public InitialSetupElement postAuthenticationSetup(){
+        recheck();
+        if (isSiteMissing())
+            return InitialSetupElement.SITE;
         return null;
     }
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-1.0.xsd">
+    <start-state idref="decide"/>
+
+    <action-state id="decide">
+        <bean-action bean="setupStatus" method="preAuthenticationSetup"/>
+        <transition to="firstAdministrator" on="ADMINISTRATOR"/>
+        <transition to="preAuthenticationSetupComplete" on="null"/>
+    </action-state>
+
+    <view-state id="firstAdministrator" view="setup/adminForm">
+        <render-actions>
+            <action bean="adminFormAction" method="setupForm"/>
+        </render-actions>
+        <transition on="save" to="saveAdministrator">
+            <action bean="adminFormAction" method="bindAndValidate"/>
+        </transition>
+    </view-state>
+
+    <action-state id="saveAdministrator">
+        <evaluate-action expression="${requestScope.adminCommand.apply()}"/>
+        <transition to="decide"/>
+    </action-state>
+
+    <end-state id="preAuthenticationSetupComplete" view="setup/completePreAuthentication"/>
+</flow>

@@ -6,9 +6,8 @@
     <start-state idref="decide"/>
 
     <action-state id="decide">
-        <bean-action bean="setupStatus" method="next"/>
+        <bean-action bean="setupStatus" method="postAuthenticationSetup"/>
         <transition to="firstSite" on="SITE"/>
-        <transition to="firstAdministrator" on="ADMINISTRATOR"/>
         <transition to="setupComplete" on="null"/>
     </action-state>
 
@@ -27,20 +26,6 @@
                 <argument expression="${flowScope.site}"/>
             </method-arguments>
         </bean-action>
-        <transition to="decide"/>
-    </action-state>
-
-    <view-state id="firstAdministrator" view="setup/adminForm">
-        <render-actions>
-            <action bean="adminFormAction" method="setupForm"/>
-        </render-actions>
-        <transition on="save" to="saveAdministrator">
-            <action bean="adminFormAction" method="bindAndValidate"/>
-        </transition>
-    </view-state>
-
-    <action-state id="saveAdministrator">
-        <evaluate-action expression="${requestScope.adminCommand.apply()}"/>
         <transition to="decide"/>
     </action-state>
 

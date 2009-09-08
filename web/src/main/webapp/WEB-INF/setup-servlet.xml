@@ -62,6 +62,7 @@
     <flow:executor id="flowExecutor" registry-ref="flowRegistry" repository-type="singlekey"/>
     
     <flow:registry id="flowRegistry">
-        <flow:location path="/WEB-INF/flows/setup/initial.xml"/>
+        <flow:location path="/WEB-INF/flows/setup/preAuthenticationSetup.xml"/>
+        <flow:location path="/WEB-INF/flows/setup/postAuthenticationSetup.xml"/>
     </flow:registry>
 </beans>

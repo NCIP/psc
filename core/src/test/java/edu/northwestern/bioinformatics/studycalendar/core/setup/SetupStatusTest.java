@@ -52,21 +52,21 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testNextWhenSiteIsNext() throws Exception {
+    public void testPostAuthenticationSetup() throws Exception {
         reset(siteDao);
         expect(siteDao.getCount()).andReturn(0);
         replayMocks();
 
-        assertEquals(SetupStatus.InitialSetupElement.SITE, status.next());
+        assertEquals(SetupStatus.InitialSetupElement.SITE, status.postAuthenticationSetup());
         verifyMocks();
     }
     
-    public void testNextWhenAdminIsNext() throws Exception {
+    public void testPreAuthenticationSetup() throws Exception {
         reset(userDao);
         expect(userDao.getByRole(Role.SYSTEM_ADMINISTRATOR)).andReturn(Collections.<User>emptyList());
         replayMocks();
 
-        assertEquals(SetupStatus.InitialSetupElement.ADMINISTRATOR, status.next());
+        assertEquals(SetupStatus.InitialSetupElement.ADMINISTRATOR, status.preAuthenticationSetup());
         verifyMocks();
     }
 }

@@ -11,9 +11,9 @@ import javax.servlet.FilterChain;
 /**
  * @author Rhett Sutphin
  */
-public class SetupOrNotFilterTest extends WebTestCase {
+public class PreAuthenticationSetupFilterTest extends WebTestCase {
     private FilterChain filterChain;
-    private SetupOrNotFilter filter;
+    private PreAuthenticationSetupFilter filter;
     private SetupStatus setupStatus;
 
     public void setUp() throws Exception {
@@ -22,7 +22,7 @@ public class SetupOrNotFilterTest extends WebTestCase {
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
         filterChain = registerMockFor(FilterChain.class);
 
-        filter = new SetupOrNotFilter();
+        filter = new PreAuthenticationSetupFilter();
         setupStatus = registerMockFor(SetupStatus.class);
 
         expect(applicationContext.getBean("setupStatus")).andReturn(setupStatus);
@@ -34,20 +34,20 @@ public class SetupOrNotFilterTest extends WebTestCase {
         request.setContextPath("/psc7");
     }
 
-    public void testRedirectsToSetupWhenNecessary() throws Exception {
-        expect(setupStatus.isSetupNeeded()).andReturn(true);
+    public void testRedirectsToPreAuthenticationSetupWhenNecessary() throws Exception {
+        expect(setupStatus.isPreAuthenticationSetupNeeded()).andReturn(true);
         replayMocks();
 
         filter.doFilter(request, response, filterChain);
         verifyMocks();
 
         assertNotNull(response.getRedirectedUrl());
-        assertEquals("/psc7/setup/initial", response.getRedirectedUrl());
+        assertEquals("/psc7/setup/preAuthenticationSetup", response.getRedirectedUrl());
     }
-    
+
     public void testFallThroughWhenNotNecessary() throws Exception {
         filterChain.doFilter(request, response);
-        expect(setupStatus.isSetupNeeded()).andReturn(false);
+        expect(setupStatus.isPreAuthenticationSetupNeeded()).andReturn(false);
         replayMocks();
 
         filter.doFilter(request, response, filterChain);

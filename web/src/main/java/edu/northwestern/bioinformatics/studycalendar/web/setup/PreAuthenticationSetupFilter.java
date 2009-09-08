@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public class SetupOrNotFilter extends ContextRetainingFilterAdapter {
+public class PreAuthenticationSetupFilter extends ContextRetainingFilterAdapter {
     private SetupStatus status;
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -25,10 +25,10 @@ public class SetupOrNotFilter extends ContextRetainingFilterAdapter {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (status.isSetupNeeded()) {
-            log.debug("Initial setup required.  Redirecting.");
+        if (status.isPreAuthenticationSetupNeeded()) {
+            log.debug("Initial setup for administrator is required.  Redirecting.");
             try {
-                new RedirectView("/setup/initial", true).render(null, (HttpServletRequest) request, (HttpServletResponse) response);
+                new RedirectView("/setup/preAuthenticationSetup", true).render(null, (HttpServletRequest) request, (HttpServletResponse) response);
             } catch (RuntimeException e) {
                 throw e;
             } catch (ServletException e) {
@@ -39,7 +39,7 @@ public class SetupOrNotFilter extends ContextRetainingFilterAdapter {
                 throw new ServletException("Redirect view rending failed", e);
             }
         } else {
-            log.debug("Initial setup complete.  Proceeding.");
+            log.debug("Initial setup of user is complete.  Proceeding.");
             chain.doFilter(request, response);
         }
     }

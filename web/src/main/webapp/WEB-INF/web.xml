@@ -57,17 +57,17 @@
     </listener>
 
     <filter>
-        <filter-name>setup-or-not</filter-name>
-        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.SetupOrNotFilter</filter-class>
+        <filter-name>pre-authentication-setup-filter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.PreAuthenticationSetupFilter</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>setup-or-not</filter-name>
+        <filter-name>pre-authentication-setup-filter</filter-name>
         <url-pattern>/pages/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>setup-or-not</filter-name>
+        <filter-name>pre-authentication-setup-filter</filter-name>
         <url-pattern>/public/*</url-pattern>
     </filter-mapping>
 
@@ -111,6 +111,14 @@
         <url-pattern>/api/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>post-authentication-setup-filter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.PostAuthenticationSetupFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>post-authentication-setup-filter</filter-name>
+        <url-pattern>/pages/*</url-pattern>
+    </filter-mapping>
     <filter>
         <filter-name>AuditInfoFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
