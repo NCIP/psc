@@ -43,10 +43,6 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
      * The Acegi filter used in the GUI will always return an authentication of this form,
      * so the authentication manager provided by any subclass must be prepared to deal with
      * it.
-     *
-     * @param username
-     * @param password
-     * @return
      */
     public final Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
         return new UsernamePasswordAuthenticationToken(username, password);

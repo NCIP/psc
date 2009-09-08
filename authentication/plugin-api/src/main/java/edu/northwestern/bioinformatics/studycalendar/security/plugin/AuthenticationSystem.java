@@ -32,8 +32,7 @@ public interface AuthenticationSystem {
      * 
      * @see gov.nih.nci.cabig.ctms.tools.configuration.Configuration
      * @see gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties
-     * @see {@link gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties#empty}
-     *      if you don't need any
+     * @see gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties#empty
      */
     ConfigurationProperties configurationProperties();
 
@@ -79,8 +78,16 @@ public interface AuthenticationSystem {
      * Acegi {@link AuthenticationManager} for this system.
      * <p>
      * This method may not return <code>null</code> after {@link #initialize} has been called.
+     * <p>
+     * On successful authentication, the {@link org.acegisecurity.Authentication#getPrincipal() principal}
+     * in the {@link Authentication} token returned by this authentication manager must be a value
+     * returned by the {@link org.acegisecurity.userdetails.UserDetailsService} available as
+     * an OSGi service in the execution environment.  In general that means you need to use
+     * that service instance in your Acegi configuration whereever <tt>UserDetailsService</tt>
+     * is called for.
      *
      * @see AuthenticationSystemTools#createProviderManager
+     * @see edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem#getUserDetailsService() 
      */
     AuthenticationManager authenticationManager();
 
