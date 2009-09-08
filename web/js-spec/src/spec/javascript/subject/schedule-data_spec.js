@@ -17,7 +17,7 @@ Screw.Unit(function () {
       var desiredXmlHttpRequestStatus = null;
       var desiredXmlHttpRequestStatusText = null;
       var desiredXmlHttpRequestResponseText = null;
-      var desiredAjaxSendException = null;
+      var desiredAjaxSendExceptionText  = null;
 
       before(function () {
         psc.subject.ScheduleData.uriGenerator(function () {
@@ -34,7 +34,7 @@ Screw.Unit(function () {
               desiredXmlHttpRequestStatus,
               desiredXmlHttpRequestStatusText,
               desiredXmlHttpRequestResponseText,
-              desiredAjaxSendException
+              desiredAjaxSendExceptionText
             ].any(function(p) {return p !== null});
 
           if (errorParams) {
@@ -45,7 +45,7 @@ Screw.Unit(function () {
                 responseText: desiredXmlHttpRequestResponseText
               },
               desiredErrorText,
-              desiredAjaxSendException
+              new Error(desiredAjaxSendExceptionText)
             );
           } else if (desiredAjaxSetupException !== null) {
             throw desiredAjaxSetupException;
@@ -73,9 +73,9 @@ Screw.Unit(function () {
         desiredErrorText = null;
         desiredAjaxSetupException = null;
         desiredXmlHttpRequestStatus = null;
-        desiredAjaxSendException = null;
         desiredXmlHttpRequestStatusText = null;
         desiredXmlHttpRequestResponseText = null;
+        desiredAjaxSendExceptionText  = null;
       });
 
       it("triggers 'schedule-load-start' on refresh()", function () {
@@ -162,12 +162,12 @@ Screw.Unit(function () {
       describe("schedule-error", function () {
         var scheduleError = false;
         var lastText = null;
-        var lastStackTrace  = null;
+        var lastTextDetails  = null;
         before(function () {
-          $('#schedule').bind('schedule-error', function (evt, textStatus, stackTrace) {
+          $('#schedule').bind('schedule-error', function (evt, textStatus, textDetails) {
             scheduleError = true;
             lastText = textStatus;
-            lastStackTrace = stackTrace;
+            lastTextDetails = textDetails;
           });
         });
 
@@ -210,11 +210,21 @@ Screw.Unit(function () {
 
         it("is triggered with response text on error", function () {
           desiredErrorText = "error"
-          desiredXmlHttpRequestResponseText = "An Exception Has Been Thrown";
+          desiredXmlHttpRequestResponseText = "An Exception On The Server Has Been Thrown";
           psc.subject.ScheduleData.refresh();
-          expect(lastStackTrace).to(equal, "An Exception Has Been Thrown");
+
         });
 
+        it("is triggered with server response text and client exception text on error", function () {
+          desiredErrorText = "error"
+          desiredAjaxSendExceptionText = "An Exception On The Client Has Been Thrown";
+          desiredXmlHttpRequestResponseText = "An Exception On The Server Has Been Thrown";
+          psc.subject.ScheduleData.refresh();
+          expect(lastTextDetails[0]).to(equal, "An Exception On The Client Has Been Thrown");
+          expect(lastTextDetails[1]).to(equal, "An Exception On The Server Has Been Thrown");
+        });
+
+        it
         /* TODO: reenable when there's support for testing async calls
         it("is triggered 300ms after there's an error setting up the ajax call", function () {
           desiredAjaxSetupException = "Configuration error of some kind";

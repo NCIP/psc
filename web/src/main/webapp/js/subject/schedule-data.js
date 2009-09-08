@@ -24,7 +24,7 @@ psc.namespace("subject");
         triggerScheduleReady();
       } else {
         var msg = psc.subject.ScheduleData.errorMessage(XMLHttpRequest, textStatus);
-        var details = psc.subject.ScheduleData.errorDetails(XMLHttpRequest, textStatus);
+        var details = psc.subject.ScheduleData.errorDetails(XMLHttpRequest, textStatus, errorThrown);
 
         $('#schedule').trigger('schedule-error', [msg, details]);
       }
@@ -111,11 +111,17 @@ psc.namespace("subject");
         return msg;
       },
 
-      errorDetails: function(XMLHttpRequest, textStatus) {
-        var details = null;
-        if (textStatus === "error" && XMLHttpRequest !== null) {
-          details = XMLHttpRequest.responseText;
+      errorDetails: function(XMLHttpRequest, textStatus, errorThrown) {
+        var details = [];
+
+        if (errorThrown !== null && errorThrown.message !== null) {
+          details.push(errorThrown.message)
         }
+
+        if (textStatus === "error" && XMLHttpRequest !== null) {
+          details.push(XMLHttpRequest.responseText);
+        }
+
         return details;
       },
       
