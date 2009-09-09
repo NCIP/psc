@@ -52,9 +52,18 @@ psc.namespace("subject");
       $('.loading').fadeOut().hide();
     }
 
-    function scheduleError(evt, message) {
-      $('#schedule-error').empty().
-        append("Problem loading schedule data: " + message).show();
+    function scheduleError(evt, message, details) {
+      $('#schedule-error-msg h1').empty().
+        append("Problem loading schedule data: " + message);
+
+      $('#schedule-error-details').empty();
+      if (details && details !== null) {
+        details.each( function(d) {
+          $('#schedule-error-details').append("<div>" + d + "</div>");
+        });
+      }
+
+      $('#schedule-error').show();
       $('.loading').fadeOut();
     }
 
@@ -65,6 +74,7 @@ psc.namespace("subject");
         });
         $('#schedule').bind('schedule-ready', scheduleReady);
         $('#schedule').bind('schedule-error', scheduleError);
+        $('#schedule-error-msg a').click( function() { $('#schedule-error-details').show() } );
       },
 
       FocusHandler: (function () {

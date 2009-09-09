@@ -56,7 +56,7 @@ psc.namespace("subject");
         // Since this method is called from a jQuery event handler,
         // trigger the error from a different thread
         setTimeout(function () {
-          $('#schedule').trigger('schedule-error', e.message);
+          $('#schedule').trigger('schedule-error', ['Ajax Setup Error', [e.message]]);
         }, 300)
       }
     }
@@ -114,11 +114,11 @@ psc.namespace("subject");
       errorDetails: function(XMLHttpRequest, textStatus, errorThrown) {
         var details = [];
 
-        if (errorThrown !== null && errorThrown.message !== null) {
+        if (errorThrown && errorThrown !== null && errorThrown.message !== null) {
           details.push(errorThrown.message)
         }
 
-        if (textStatus === "error" && XMLHttpRequest !== null) {
+        if (textStatus && textStatus === "error" && XMLHttpRequest !== null) {
           details.push(XMLHttpRequest.responseText);
         }
 

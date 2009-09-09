@@ -104,13 +104,15 @@ Screw.Unit(function () {
 
       describe("schedule-error", function() {
         it("should display #schedule-error", function() {
-          $('#schedule').trigger('schedule-error')
-          expect($('#schedule-error').css('display')).to_not(equal, 'none')
+          $('#schedule').trigger('schedule-error');
+          expect($('#schedule-error').css('display')).to_not(equal, 'none');
         });
 
         it("should pass the message 'Banana!'", function() {
-          $('#schedule').trigger('schedule-error', "Banana!")
-          expect($('#schedule-error').text()).to(equal, 'Problem loading schedule data: Banana!')
+          $('#schedule').trigger('schedule-error', ["Banana!", ['Bananas are fruit', 'Bananas are yellow']]);
+          expect($('#schedule-error-msg').text()).to(equal, 'Problem loading schedule data: Banana!');
+          expect($('#schedule-error-details div:eq(0)').text()).to(equal, 'Bananas are fruit');
+          expect($('#schedule-error-details div:eq(1)').text()).to(equal, 'Bananas are yellow');
         });
       });
     });
