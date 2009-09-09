@@ -109,10 +109,8 @@ Screw.Unit(function () {
         });
 
         it("should pass the message 'Banana!'", function() {
-          $('#schedule').trigger('schedule-error', ["Banana!", ['Bananas are fruit', 'Bananas are yellow']]);
-          expect($('#schedule-error-msg').text()).to(equal, 'Problem loading schedule data: Banana!');
-          expect($('#schedule-error-details div:eq(0)').text()).to(equal, 'Bananas are fruit');
-          expect($('#schedule-error-details div:eq(1)').text()).to(equal, 'Bananas are yellow');
+          $('#schedule').trigger('schedule-error', "Banana!");
+          expect($('#schedule-error').text()).to(equal, 'Problem loading schedule data: Banana!');
         });
       });
     });

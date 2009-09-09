@@ -163,17 +163,6 @@
         a.notification-control {
             padding:0 2px;
         }
-
-        #schedule-error-details {
-            display: none;
-        }
-
-        #schedule-error-msg h1 {
-            display: inline;
-            padding-right: .5em;
-            color: #fff;
-            text-size: .8em;
-        }
     </style>
 
     <script type="text/javascript">
@@ -257,10 +246,7 @@
 </head>
 <body>
 <div id="schedule-timeline"></div>
-<div id="schedule-error">
-  <div id="schedule-error-msg"><h1></h1><a>Details</a></div>
-  <div id="schedule-error-details"></div>
-</div>
+<div id="schedule-error"></div>
 <!--
 <div id="schedule-help">
     <p>

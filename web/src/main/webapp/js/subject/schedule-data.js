@@ -23,10 +23,9 @@ psc.namespace("subject");
       if (textStatus === "notmodified") {
         triggerScheduleReady();
       } else {
-        var msg = psc.subject.ScheduleData.errorMessage(XMLHttpRequest, textStatus);
-        var details = psc.subject.ScheduleData.errorDetails(XMLHttpRequest, textStatus, errorThrown);
+        var msg = psc.subject.ScheduleData.errorMessage(XMLHttpRequest, textStatus, errorThrown);
 
-        $('#schedule').trigger('schedule-error', [msg, details]);
+        $('#schedule').trigger('schedule-error', msg);
       }
     }
     
@@ -56,7 +55,7 @@ psc.namespace("subject");
         // Since this method is called from a jQuery event handler,
         // trigger the error from a different thread
         setTimeout(function () {
-          $('#schedule').trigger('schedule-error', ['Ajax Setup Error', [e.message]]);
+          $('#schedule').trigger('schedule-error', 'Problem Requesting Schedule Data (' + e.message + ')');
         }, 300)
       }
     }
@@ -103,28 +102,21 @@ psc.namespace("subject");
         }
       },
 
-      errorMessage: function(XMLHttpRequest, textStatus) {
+      errorMessage: function(XMLHttpRequest, textStatus, errorThrown) {
         var msg = textStatus;
-        if (msg === "error" && XMLHttpRequest !== null) {
-          msg =  XMLHttpRequest.statusText + " (" + XMLHttpRequest.status + ")";
+        if (msg === null || msg === "error") {
+          if (XMLHttpRequest !== null) {
+            msg =  XMLHttpRequest.statusText + " (" + XMLHttpRequest.status + ")";
+          } else if (errorThrown !== null) {
+            msg = "Problem Requesting Schedule Data (" + errorThrown.message + ")";
+          } else {
+            msg = "Problem Requesting Schedule Data";
+          }
         }
+
         return msg;
       },
 
-      errorDetails: function(XMLHttpRequest, textStatus, errorThrown) {
-        var details = [];
-
-        if (errorThrown && errorThrown !== null && errorThrown.message !== null) {
-          details.push(errorThrown.message)
-        }
-
-        if (textStatus && textStatus === "error" && XMLHttpRequest !== null) {
-          details.push(XMLHttpRequest.responseText);
-        }
-
-        return details;
-      },
-      
       clear: function () {
         schedule = null; 
       },
