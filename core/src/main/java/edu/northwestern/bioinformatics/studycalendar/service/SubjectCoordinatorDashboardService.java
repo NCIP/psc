@@ -161,7 +161,9 @@ public class SubjectCoordinatorDashboardService {
                 subjectAndOverDueEvents.put(key, value);
             }
         }
-        return subjectAndOverDueEvents;
+        SortedMap<Object, Object> sortedSubjectAndOverDueEvents = new TreeMap(new PastDueDateComparator(subjectAndOverDueEvents));
+        sortedSubjectAndOverDueEvents.putAll(subjectAndOverDueEvents);
+        return sortedSubjectAndOverDueEvents;
     }
 
 
@@ -206,5 +208,23 @@ public class SubjectCoordinatorDashboardService {
     }
     public ScheduledActivityDao getScheduledActivityDao() {
         return scheduledActivityDao;
+    }
+
+    private static class PastDueDateComparator implements Comparator {
+        Map<Object, Object> map;
+
+        public PastDueDateComparator(Map<Object, Object> map) {
+            this.map = map;
+        }
+
+        public int compare(Object o1, Object o2) {
+            HashMap<Object, Object> key1 = (HashMap<Object, Object>) map.get(o1);
+            HashMap<Object, Object> key2 = (HashMap<Object, Object>) map.get(o2);
+
+            ScheduledActivity sa1 = (ScheduledActivity)key1.values().toArray()[0];
+            ScheduledActivity sa2 = (ScheduledActivity)key2.values().toArray()[0];
+            return sa1.getActualDate().compareTo(sa2.getActualDate());
+
+        }
     }
 }
