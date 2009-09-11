@@ -1,18 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Padmaja Vedula
@@ -22,7 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 @GenericGenerator(name = "id-generator", strategy = "native",
         parameters = {@Parameter(name = "sequence", value = "seq_sites_id")}
 )
-public class Site extends AbstractMutableDomainObject implements Named, Serializable, NaturallyKeyed {
+public class Site extends AbstractProvidableDomainObject implements Named, Serializable, NaturallyKeyed {
     private String name;
 
     private List<StudySite> studySites = new ArrayList<StudySite>();

@@ -27,6 +27,10 @@ public class MockSiteProvider implements SiteProvider {
         return result;
     }
 
+    public String providerToken() {
+        return "mock - NOT FOR PRODUCTION";
+    }
+
     private Site createSite(String assignedIdentifier) {
         if (sites.get(assignedIdentifier) != null) {
             Site newSite = new Site();

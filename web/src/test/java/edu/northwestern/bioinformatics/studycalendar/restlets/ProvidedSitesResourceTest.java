@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteProviderAdapter;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
 
@@ -16,12 +16,12 @@ import java.util.List;
  */
 public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesResource>{
     private SiteDao siteDao;
-    private SiteProvider siteProvider;
+    private SiteProviderAdapter siteProviderAdapter;
 
     public void setUp() throws Exception {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
-        siteProvider = registerMockFor(SiteProvider.class);
+        siteProviderAdapter = registerMockFor(SiteProviderAdapter.class);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesRes
         ProvidedSitesResource resource = new ProvidedSitesResource();
         resource.setXmlSerializer(xmlSerializer);
         resource.setSiteDao(siteDao);
-        resource.setSiteProvider(siteProvider);
+        resource.setSiteProviderAdapter(siteProviderAdapter);
         return resource;
     }
 
@@ -44,7 +44,7 @@ public class ProvidedSitesResourceTest extends ResourceTestCase<ProvidedSitesRes
         Site site = Fixtures.createSite("site");
         sites.add(site);
         expect(siteDao.searchSitesBySearchText(searchString)).andReturn(Collections.unmodifiableList(sites));
-        expect(siteProvider.search(searchString)).andReturn(Collections.unmodifiableList(sites));
+        expect(siteProviderAdapter.search(searchString)).andReturn(Collections.unmodifiableList(sites));
         expect(xmlSerializer.createDocumentString(sites)).andReturn(MOCK_XML);
 
         doGet();

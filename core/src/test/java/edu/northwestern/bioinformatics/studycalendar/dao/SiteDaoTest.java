@@ -1,9 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
+import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -20,6 +21,9 @@ public class SiteDaoTest extends DaoTestCase {
         assertNotNull("Study not found", actual);
         assertEquals("Wrong id", -4, (int) actual.getId());
         assertEquals("Wrong name", "default", actual.getName());
+        assertEquals("Wrong provider", "coppa-direct", actual.getProvider());
+        assertDayOfDate("Wrong last refresh", 2007, Calendar.MARCH, 23, actual.getLastRefresh());
+        assertTimeOfDate("Wrong last refresh", 13, 45, 7, 0, actual.getLastRefresh());
     }
 
     public void testGetByAssignedIdentifier() throws Exception {

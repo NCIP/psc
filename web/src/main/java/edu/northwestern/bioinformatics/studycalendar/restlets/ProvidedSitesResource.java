@@ -1,24 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteProviderAdapter;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
-import org.restlet.resource.*;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.MediaType;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 /**
  * @author Jalpa Patel
  */
 public class ProvidedSitesResource extends Resource {
     private StudyCalendarXmlCollectionSerializer<Site> xmlSerializer;
-    private SiteProvider siteProvider;
+    private SiteProviderAdapter siteProviderAdapter;
     private SiteDao siteDao;
 
     @Override
@@ -31,7 +35,7 @@ public class ProvidedSitesResource extends Resource {
     public List<Site> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
         List<Site> availableSites = siteDao.searchSitesBySearchText(q);
-        List<Site> providedSites = siteProvider.search(q);
+        List<Site> providedSites = siteProviderAdapter.search(q);
         List<Site> duplicateSites = new ArrayList<Site>();
         for (Site providedSite : providedSites) {
             for (Site availableSite : availableSites ) {
@@ -69,8 +73,8 @@ public class ProvidedSitesResource extends Resource {
     }
     
     @Required
-    public void setSiteProvider(SiteProvider siteProvider) {
-        this.siteProvider = siteProvider;
+    public void setSiteProviderAdapter(SiteProviderAdapter siteProvider) {
+        this.siteProviderAdapter = siteProvider;
     }
 
     @Required

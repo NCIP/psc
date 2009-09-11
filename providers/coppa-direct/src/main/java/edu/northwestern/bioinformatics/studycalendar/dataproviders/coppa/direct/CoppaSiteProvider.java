@@ -70,6 +70,10 @@ public class CoppaSiteProvider implements SiteProvider {
         }
     }
 
+    public String providerToken() {
+        return "coppa-direct";
+    }
+
     // package level for testing
     Organization createNameExample(String partialName) {
         Organization example = new Organization();

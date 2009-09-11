@@ -2,12 +2,15 @@
     <SITES
         id="-4"
         name="default"
-        assigned_identifier="assignedId"    />
+        assigned_identifier="assignedId"
+        provider="coppa-direct"
+        last_refresh="2007-03-23 13:45:07"
+        />
     <SITES
-            id="-5"
-            name="anotherSite"
-            grid_id="grid2"
-            />
+        id="-5"
+        name="anotherSite"
+        grid_id="grid2"
+        />
 
     <SITES
         id="-6"
