@@ -33,8 +33,6 @@ import java.util.Enumeration;
 public class InstalledAuthenticationSystem extends FilterAdapter implements InitializingBean {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final String SERVICE_NAME = CompleteAuthenticationSystem.class.getName();
-
     private OsgiLayerTools osgiLayerTools;
     private RawDataConfiguration storedAuthenticationSystemConfiguration;
 
@@ -57,7 +55,7 @@ public class InstalledAuthenticationSystem extends FilterAdapter implements Init
     }
 
     public CompleteAuthenticationSystem getCompleteAuthenticationSystem() {
-        return (CompleteAuthenticationSystem) osgiLayerTools.getRequiredService(SERVICE_NAME);
+        return osgiLayerTools.getRequiredService(CompleteAuthenticationSystem.class);
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })

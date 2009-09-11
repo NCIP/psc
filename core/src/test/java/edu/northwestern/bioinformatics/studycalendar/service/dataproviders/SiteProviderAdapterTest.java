@@ -29,7 +29,7 @@ public class SiteProviderAdapterTest extends StudyCalendarTestCase {
 
     public void testGetSiteDelegatesToFirstAvailableService() throws Exception {
         Site expected = new Site();
-        expect(tools.getOptionalService(SiteProvider.class.getName())).andReturn(mockSiteProvider);
+        expect(tools.getOptionalService(SiteProvider.class)).andReturn(mockSiteProvider);
         expect(mockSiteProvider.getSite("foo")).andReturn(expected);
         replayMocks();
 
@@ -38,7 +38,7 @@ public class SiteProviderAdapterTest extends StudyCalendarTestCase {
     }
 
     public void testGetSiteReturnsNullIfNoService() throws Exception {
-        expect(tools.getOptionalService(SiteProvider.class.getName())).andReturn(null);
+        expect(tools.getOptionalService(SiteProvider.class)).andReturn(null);
         replayMocks();
 
         assertNull(adapter.getSite("foo"));
@@ -47,7 +47,7 @@ public class SiteProviderAdapterTest extends StudyCalendarTestCase {
 
     public void testSearchDelegatesToFirstAvailableService() throws Exception {
         List<Site> expected = Arrays.asList(new Site());
-        expect(tools.getOptionalService(SiteProvider.class.getName())).andReturn(mockSiteProvider);
+        expect(tools.getOptionalService(SiteProvider.class)).andReturn(mockSiteProvider);
         expect(mockSiteProvider.search("foo")).andReturn(expected);
         replayMocks();
 
@@ -56,7 +56,7 @@ public class SiteProviderAdapterTest extends StudyCalendarTestCase {
     }
 
     public void testSearchReturnsNoResultsIfNoService() throws Exception {
-        expect(tools.getOptionalService(SiteProvider.class.getName())).andReturn(null);
+        expect(tools.getOptionalService(SiteProvider.class)).andReturn(null);
         replayMocks();
 
         assertTrue(adapter.search("foo").isEmpty());

@@ -85,7 +85,7 @@ public class InstalledAuthenticationSystemTest extends WebTestCase {
     }
 
     private void expectCompleteAuthenticationSystemRetrieved() {
-        expect(osgiLayerTools.getRequiredService(CompleteAuthenticationSystem.class.getName())).
+        expect(osgiLayerTools.getRequiredService(CompleteAuthenticationSystem.class)).
             andReturn(completeAuthenticationSystem);
     }
 
