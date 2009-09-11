@@ -55,8 +55,8 @@ public class SiteCommandTest extends TestCase {
 
     public void testCommandsExecuteAgainstAllFoundProviders() throws Exception {
         expectFoundProviders(sp1, sp2);
-        expect(sp1.getSite("fourteen")).andReturn(null);
-        expect(sp2.getSite("fourteen")).andReturn(Fixtures.createSite("A1", "fourteen"));
+        expectGetOneSite(sp1, "fourteen", null);
+        expectGetOneSite(sp2, "fourteen", Fixtures.createSite("A1", "fourteen"));
         expectOutput(
             "bundle0",
             "  No match",
@@ -64,6 +64,10 @@ public class SiteCommandTest extends TestCase {
             "- Site id=fourteen name=A1");
 
         doCommand("site get fourteen");
+    }
+
+    private void expectGetOneSite(SiteProvider provider, String ident, Site expected) {
+        expect(provider.getSites(Arrays.asList(ident))).andReturn(Arrays.asList(expected));
     }
 
     public void testSearchWithResults() throws Exception {
@@ -87,14 +91,14 @@ public class SiteCommandTest extends TestCase {
 
     public void testGetWithAResult() throws Exception {
         expectFoundProviders(sp1);
-        expect(sp1.getSite("elf")).andReturn(Fixtures.createSite("Z", "elf"));
+        expectGetOneSite(sp1, "elf", Fixtures.createSite("Z", "elf"));
         expectOutput("bundle0", "- Site id=elf name=Z");
         doCommand("site get elf");
     }
 
     public void testGetWithNoResults() throws Exception {
         expectFoundProviders(sp1);
-        expect(sp1.getSite("Frazz")).andReturn(null);
+        expectGetOneSite(sp1, "Frazz", null);
         expectOutput("bundle0", "  No match");
         doCommand("site get Frazz");
     }

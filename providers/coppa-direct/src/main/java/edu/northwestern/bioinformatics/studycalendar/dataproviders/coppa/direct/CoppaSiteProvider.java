@@ -40,6 +40,11 @@ public class CoppaSiteProvider implements SiteProvider {
         }
     }
 
+    public List<Site> getSites(List<String> assignedIdentifiers) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    @Deprecated // TODO: implement getSites
     public Site getSite(String assignedIdentifier) {
         Organization example = new Organization();
         II ii = new II();

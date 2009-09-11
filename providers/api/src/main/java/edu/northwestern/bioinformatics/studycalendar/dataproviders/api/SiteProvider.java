@@ -9,10 +9,15 @@ import java.util.List;
  */
 public interface SiteProvider {
     /**
-     * Retrieve and return a {@link Site} instance using the given identity.
-     * @return a new instance, or null if the provider doesn't know about the identity.
+     * Retrieve and return {@link Site} instances using the given identity.
+     * The instances must be returned in the same order as the input identities.
+     * If the provider doesn't know about one, it must return null in its position
+     * in the list.
+     * <p>
+     * Implementors may never return null from this method and must always return
+     * a list of the same length as the input list.
      */
-    Site getSite(String assignedIdentifier);
+    List<Site> getSites(List<String> assignedIdentifier);
 
     /**
      * Perform a search of the {@link Site}s available from this provider.

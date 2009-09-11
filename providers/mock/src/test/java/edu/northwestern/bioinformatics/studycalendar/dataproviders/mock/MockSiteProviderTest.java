@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import junit.framework.TestCase;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,23 @@ public class MockSiteProviderTest extends TestCase {
     }
 
     public void testGetSiteComesFromMap() throws Exception {
-        Site actual = provider.getSite("MN026");
+        Site actual = provider.getSites(Arrays.asList("MN026")).get(0);
         assertEquals("Wrong ident", "MN026", actual.getAssignedIdentifier());
         assertEquals("Wrong name", "Mayo Clinic Cancer Center", actual.getName());
     }
 
+    public void testGetMultipleSites() throws Exception {
+        List<Site> actual = provider.getSites(Arrays.asList("IL036", "UN000", "MN026"));
+        assertEquals("Wrong number of results", 3, actual.size());
+        assertEquals("Wrong first site",
+            "Northwestern University Robert H. Lurie Comprehensive Cancer Center",
+            actual.get(0).getName());
+        assertNull("Should be no match for second site", actual.get(1));
+        assertEquals("Wrong third site", "Mayo Clinic Cancer Center", actual.get(2).getName());
+    }
+
     public void testGetUnknownSiteIsNull() throws Exception {
-        assertNull(provider.getSite("IL"));
+        assertNull(provider.getSites(Arrays.asList("IL")).get(0));
     }
 
     public void testSearchWithMultipleHits() throws Exception {

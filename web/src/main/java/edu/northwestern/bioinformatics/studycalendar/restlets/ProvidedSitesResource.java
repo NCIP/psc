@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteProviderAdapter;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class ProvidedSitesResource extends Resource {
     private StudyCalendarXmlCollectionSerializer<Site> xmlSerializer;
-    private SiteProviderAdapter siteProviderAdapter;
+    private SiteConsumer siteConsumer;
     private SiteDao siteDao;
 
     @Override
@@ -35,7 +35,7 @@ public class ProvidedSitesResource extends Resource {
     public List<Site> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
         List<Site> availableSites = siteDao.searchSitesBySearchText(q);
-        List<Site> providedSites = siteProviderAdapter.search(q);
+        List<Site> providedSites = siteConsumer.search(q);
         List<Site> duplicateSites = new ArrayList<Site>();
         for (Site providedSite : providedSites) {
             for (Site availableSite : availableSites ) {
@@ -73,8 +73,8 @@ public class ProvidedSitesResource extends Resource {
     }
     
     @Required
-    public void setSiteProviderAdapter(SiteProviderAdapter siteProvider) {
-        this.siteProviderAdapter = siteProvider;
+    public void setSiteConsumer(SiteConsumer siteProvider) {
+        this.siteConsumer = siteProvider;
     }
 
     @Required

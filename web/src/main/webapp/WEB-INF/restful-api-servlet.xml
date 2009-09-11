@@ -170,7 +170,7 @@
           id="providedSitesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedSitesResource">
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
-        <property name="siteProviderAdapter"  ref="siteProviderAdapter" />
+        <property name="siteConsumer"  ref="siteConsumer" />
     </bean>
     <bean name="/sites/{site-identifier}/blackout-dates"
           id="blackoutDatesResource" autowire="byName" scope="prototype"

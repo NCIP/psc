@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,14 @@ public class MockSiteProvider implements SiteProvider {
 
     public Site getSite(String assignedIdentifier) {
         return createSite(assignedIdentifier);
+    }
+
+    public List<Site> getSites(List<String> assignedIdentifiers) {
+        List<Site> results = new ArrayList<Site>(assignedIdentifiers.size());
+        for (String identifier : assignedIdentifiers) {
+            results.add(createSite(identifier));
+        }
+        return results;
     }
 
     public List<Site> search(String partialName) {

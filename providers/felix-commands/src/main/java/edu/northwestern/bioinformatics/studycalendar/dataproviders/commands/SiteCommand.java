@@ -8,6 +8,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class SiteCommand implements Command {
 
         for (Map.Entry<String, SiteProvider> provider : getSiteProviders(err).entrySet()) {
             out.println(provider.getKey());
-            Site match = provider.getValue().getSite(arg);
+            Site match = provider.getValue().getSites(Arrays.asList(arg)).get(0);
             if (match == null) {
                 out.println("  No match");
             } else {
