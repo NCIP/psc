@@ -105,31 +105,6 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         return blackoutDates;
     }
 
-    ////// OBJECT METHODS
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Site site = (Site) o;
-
-        if (name != null ? !name.equals(site.name) : site.name != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
-
     @Transient
     public boolean checkIfHolidayExists(final BlackoutDate blackoutDate) {
 
@@ -181,5 +156,39 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
 
         }
 
+    }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Site site = (Site) o;
+
+        if (name != null ? !name.equals(site.name) : site.name != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[id=").append(getId())
+            .append("; name=").append(getName())
+            .append("; assignedIdentifier=").append(getAssignedIdentifier())
+            .append(']').toString();
     }
 }

@@ -43,4 +43,13 @@ public class SiteTest extends TestCase {
         assertSame(s3, site.getStudySite(s3).getStudy());
         assertSame(site, site.getStudySite(s3).getSite());
     }
+    
+    public void testToString() throws Exception {
+        site.setId(49);
+        site.setName("An Area");
+        site.setAssignedIdentifier("51");
+        assertEquals("Wrong string rep",
+            "Site[id=49; name=An Area; assignedIdentifier=51]",
+            site.toString());
+    }
 }
