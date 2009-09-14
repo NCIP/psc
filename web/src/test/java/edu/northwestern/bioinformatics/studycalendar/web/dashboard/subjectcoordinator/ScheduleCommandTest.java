@@ -137,9 +137,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
         Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
-        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
-        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToDayOfTheWeekString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusTwo);
 
         assertTrue("Keys don't contain today's date", keys.contains(todayKey));
         assertTrue("Keys don't contain next day ", keys.contains(todayPlusOneKey));
@@ -221,9 +221,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
         Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
-        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
-        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToDayOfTheWeekString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusTwo);
 
 //        assertTrue("Keys don't contain today's date", keys.contains(todayKey));
 //        assertTrue("Keys don't contain next day ", keys.contains(todayPlusOneKey));
@@ -339,9 +339,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
         Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
-        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
-        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToDayOfTheWeekString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusTwo);
 
         assertTrue("Keys don't contain today's date", dates.contains(todayKey));
         assertTrue("Keys don't contain next day ", dates.contains(todayPlusOneKey));
@@ -480,9 +480,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
         Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
-        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
-        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToDayOfTheWeekString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToDayOfTheWeekString(todayPlusTwo);
 
         assertTrue("Keys don't contain today's date", dates.contains(todayKey));
         assertTrue("Keys don't contain next day ", dates.contains(todayPlusOneKey));

@@ -59,7 +59,7 @@ public class SubjectCoordinatorDashboardService {
                 }
             }
             String keyDate = formatDateToString(tempStartDate);
-            keyDate = keyDate + " - " + convertDateKeyToString(tempStartDate);
+            keyDate = keyDate + " - " + convertDateKeyToDayOfTheWeekString(tempStartDate);
             if (subjectAndEvents!= null && subjectAndEvents.size()>0) {
                 mapOfUserAndCalendar.put(keyDate, subjectAndEvents);
             }
@@ -89,8 +89,6 @@ public class SubjectCoordinatorDashboardService {
                 ScheduledCalendar calendar = studySubjectAssignment.getScheduledCalendar();
                 collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
                 Subject subject = studySubjectAssignment.getSubject();
-//                String subjectName = subject.getFullName();
-
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledActivity event : collectionOfEvents) {
                         ActivityType eventActivityType = event.getActivity().getType();
@@ -112,7 +110,7 @@ public class SubjectCoordinatorDashboardService {
                 }
             }
             String keyDate = formatDateToString(tempStartDate);
-            keyDate = keyDate + " - " + convertDateKeyToString(tempStartDate);
+            keyDate = keyDate + " - " + convertDateKeyToDayOfTheWeekString(tempStartDate);
             if (subjectAndEvents!= null && subjectAndEvents.size()>0) {
                 mapOfUserAndCalendar.put(keyDate, subjectAndEvents);
             }
@@ -121,7 +119,10 @@ public class SubjectCoordinatorDashboardService {
         return mapOfUserAndCalendar;
     }
 
-    public String convertDateKeyToString(Date date) {
+    public String convertDateKeyToDayOfTheWeekString(Date date) {
+        if (date == null) {
+            return null;
+        }
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
