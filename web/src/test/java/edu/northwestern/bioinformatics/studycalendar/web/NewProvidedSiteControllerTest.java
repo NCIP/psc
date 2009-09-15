@@ -22,9 +22,12 @@ public class NewProvidedSiteControllerTest extends ControllerTestCase {
     public void testAddNewProvidedSite() throws Exception {
         String siteName = "Northwestern Uni";
         String assignedIdentifier = "NU";
+        String provider = "Provider";
         Site site = Fixtures.createSite(siteName,assignedIdentifier);
+        site.setProvider(provider);
         request.addParameter("name",siteName);
         request.addParameter("assignedIdentifier",assignedIdentifier);
+        request.addParameter("provider", provider);
         expect(siteService.createOrUpdateSite(site)).andReturn(null);
 
         replayMocks();

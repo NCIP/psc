@@ -15,7 +15,7 @@ Object.extend(SC.PS, {
        var lis = data.map(function(site) {
            return resigTemplate("new_site_data_row", site)
        }).join("\n")
-       $('providedSitesTable').insert({ bottom:lis});
+       $('provided-sites-table').insert({ bottom:lis});
        data.each(function(site){
          SC.PS.addSiteControl(site)
        })
@@ -23,17 +23,17 @@ Object.extend(SC.PS, {
   },
 
   addSiteControl: function(site) {
-      if (!$('existingSiteName'+site.name) || !$('existingAssignedIdentifier'+site.identifier)) {
+      if (!$('existing-site-name-'+site.name) || !$('existing-assigned-identifier-'+site.identifier)) {
          var newControl = resigTemplate("new_site_control", site)
-         $('assignedIdentifier'+site.identifier).insert({ after: newControl })
+         $('provider-'+site.identifier).insert({ after: newControl })
       } else {
          var blankCell = document.createElement("td")
-         $('assignedIdentifier'+site.identifier).insert({ after: blankCell })
+         $('provider-'+site.identifier).insert({ after: blankCell })
       }
   },
 
   deleteSiteTableRows: function() {
-    var siteTable = $('providedSitesTable')
+    var siteTable = $('provided-sites-table')
     var rowLength = siteTable.rows.length
     if (rowLength >0) {
        var i = rowLength -1 ;
@@ -45,8 +45,8 @@ Object.extend(SC.PS, {
   },
 
   createSiteTableRows: function() {
-    var siteTable = $('providedSitesTable')
-    var siteHeadData = ["Site Name","Assigned Identifier","Controls "]
+    var siteTable = $('provided-sites-table')
+    var siteHeadData = ["Site Name","Assigned Identifier","Provider","Controls "]
     var newCell
     var newTHEAD = siteTable.createTHead()
     var newRow = newTHEAD.insertRow(-1)
@@ -58,11 +58,13 @@ Object.extend(SC.PS, {
 
   addNewSite: function(siteId) {
     var href = SC.relativeUri("/pages/admin/manage/newProvidedSite")
-    var name = $('siteName'+siteId).innerHTML.strip()
-    var assignedIdentifier = $('assignedIdentifier'+siteId).innerHTML.strip()
+    var name = $('site-name-'+siteId).innerHTML.strip()
+    var assignedIdentifier = $('assigned-identifier-'+siteId).innerHTML.strip()
+    var provider = $('provider-'+siteId).innerHTML.strip()
     var params = { }
     params.name = name
     params.assignedIdentifier = assignedIdentifier
+    params.provider = provider
     SC.asyncRequest(href, {
        method: 'POST',
        parameters:params,
@@ -73,15 +75,15 @@ Object.extend(SC.PS, {
   },
 
   addNewSiteSetup : function(siteId) {
-    var name = $('siteName'+siteId).innerHTML.strip()
-    var assignedIdentifier = $('assignedIdentifier'+siteId).innerHTML.strip()
+    var name = $('site-name-'+siteId).innerHTML.strip()
+    var assignedIdentifier = $('assigned-identifier-'+siteId).innerHTML.strip()
     $('site-name').value = name;
-    $('assigned-Identifier').value = assignedIdentifier
+    $('assigned-identifier').value = assignedIdentifier
   },
     
   findNextSites: function(receiver) {
     var searchString = $F("site-name")
-    var uri = SC.relativeUri("/api/v1/providedSites")
+    var uri = SC.relativeUri("/api/v1/provided-sites")
 
     if (searchString.blank()) {
        receiver([]);
@@ -89,14 +91,17 @@ Object.extend(SC.PS, {
     }
     var params = { };
     if (!searchString.blank()) params.q = searchString;
+    $('provided-site-search-indicator').reveal()
     SC.asyncRequest(uri, {
        method: "GET",
        parameters: params,
        onSuccess: function(response) {
+         $('provided-site-search-indicator').conceal()
          var doc = response.responseXML;
          var sites = SC.objectifyXml("site", doc, function(elt, site) {
              site.name = elt.getAttribute("site-name")
              site.identifier = elt.getAttribute("assigned-identifier")
+             site.provider = elt.getAttribute("provider")
          })
          receiver(sites)
        }

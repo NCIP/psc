@@ -25,9 +25,11 @@ public class NewProvidedSiteController extends PscAbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String name = ServletRequestUtils.getRequiredStringParameter(request, "name");
         String assignedIdentifier = ServletRequestUtils.getRequiredStringParameter(request, "assignedIdentifier");
+        String provider = ServletRequestUtils.getRequiredStringParameter(request, "provider");
         Site site = new Site();
         site.setName(name);
         site.setAssignedIdentifier(assignedIdentifier);
+        site.setProvider(provider);
         siteService.createOrUpdateSite(site);
         return null;
     }

@@ -4,35 +4,25 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <style type="text/css">
-        table.siteTable {
-            width: 100%; border: 1px; background-color:#ddd ;
-        }
-        table.siteTable td, table.siteTable th {
-            white-space: nowrap; padding: 1px; height:16pt;
-        }
-        div.sites {
-            overflow: auto;
-            width :40em; height: 30em;
-            position :relative; margin-left: 11em;
-        }
-        table.siteTable  thead{ font-weight: bold; color: white; background-color: navy; }
-    </style>
-    <tags:javascriptLink name="sites/providedSites" />
+    <tags:stylesheetLink name="provided-sites"/>
+    <tags:javascriptLink name="sites/provided-sites" />
     <tags:javascriptLink name="resig-templates" />
     <tags:resigTemplate id="new_site_data_row">
         <tr class="site row [#= identifier #]">
-            <td title="[#= name #]" class="siteName[#= identifier #]" id="siteName[#= identifier #]" >
+            <td title="[#= name #]" id="site-name-[#= identifier #]" >
                 [#= name #]
             </td>
-            <td title="[#= identifier #]" class="assignedIdentifier[#= identifier #]" id="assignedIdentifier[#= identifier #]">
+            <td title="[#= identifier #]" id="assigned-identifier-[#= identifier #]">
                 [#= identifier #]
+            </td>
+            <td title="[#= provider #]" id="provider-[#= identifier #]">
+                [#= provider #]
             </td>
         </tr>
     </tags:resigTemplate>
     <tags:resigTemplate id="new_site_control">
             <td id="control [#= identifier #]">
-                <input id="Add[#= identifier #]" type="button" name="AddButton" value="Add" onclick="SC.PS.addNewSiteSetup('[#= identifier #]')"/>
+                <input id="add-[#= identifier #]" type="button" name="AddButton" value="Add" onclick="SC.PS.addNewSiteSetup('[#= identifier #]')"/>
             </td>
     </tags:resigTemplate>
     <title>Create the first site</title>
@@ -63,18 +53,18 @@
             <div class="row">
                 <div class="label"><form:label path="name">Site name</form:label></div>
                 <div class="value"><form:input path="name" size="40" id="site-name"/></div>
+            </div>
+            <div class="row">
                 <div Class="label"><form:label path="assignedIdentifier">Assigned Identifier</form:label></div>
-                <div class="value"><form:input path="assignedIdentifier" size="40" id="assigned-Identifier"/></div>
+                <div class="value"><form:input path="assignedIdentifier" size="40" id="assigned-identifier"/></div>
             </div>
             <div class="row submit">
                 <input type="submit" value="Save"/>
             </div>
+            <tags:activityIndicator id="provided-site-search-indicator"/>
         </form:form>
-        <div class="row">
-            <div class="sites">
-                <table id="providedSitesTable" class="siteTable" cellspacing="0" cellpadding="0" border="1">
-                </table>
-           </div>
+        <div class="site-response">
+            <table id="provided-sites-table" class="provided-sites-table" cellspacing="0" cellpadding="0" border="1"></table>
         </div>
     </laf:division>
 </laf:box>
