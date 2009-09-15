@@ -99,6 +99,7 @@ public class ScheduleRepresentationHelper {
             if (sa.getScheduledStudySegment().getScheduledCalendar().getAssignment() != null) {
                 jsonSA.put("assignment", createJSONAssignmentProperties(
                     sa.getScheduledStudySegment().getScheduledCalendar().getAssignment()));
+                jsonSA.put("subject", sa.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName());
             }
 
             jsonSA.put("details", sa.getDetails());
@@ -115,7 +116,6 @@ public class ScheduleRepresentationHelper {
                 state_history.put(createJSONStateInfo(state));
             }
             jsonSA.put("state_history", state_history);
-            jsonSA.put("subject", sa.getScheduledStudySegment().getScheduledCalendar().getAssignment().getSubject().getFullName());
             return jsonSA;
         } catch (JSONException e) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
@@ -157,6 +157,7 @@ public class ScheduleRepresentationHelper {
             if (segment.getScheduledCalendar().getAssignment() != null) {
                 jsonSegment.put("assignment", createJSONAssignmentProperties(
                     segment.getScheduledCalendar().getAssignment()));
+                jsonSegment.put("subject", segment.getScheduledCalendar().getAssignment().getSubject().getFullName());
             }
             JSONObject jsonRange = new JSONObject();
             jsonRange.put("start_date", getApiDateFormat().format(segment.getDateRange().getStart()));
@@ -176,7 +177,6 @@ public class ScheduleRepresentationHelper {
                                                getPlannedCalendar().getStudy().getAssignedIdentifier());
             jsonPlannedSegmentInfo.put("study", jsonStudy);
             jsonSegment.put("planned", jsonPlannedSegmentInfo);
-            jsonSegment.put("subject", segment.getScheduledCalendar().getAssignment().getSubject().getFullName());
             return jsonSegment;
         } catch (JSONException e) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
