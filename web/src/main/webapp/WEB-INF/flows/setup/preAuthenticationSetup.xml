@@ -7,13 +7,44 @@
 
     <action-state id="decide">
         <bean-action bean="setupStatus" method="preAuthenticationSetup"/>
-        <transition to="firstAdministrator" on="ADMINISTRATOR"/>
+        <transition to="selectAuthenticationSystem" on="ADMINISTRATOR"/>
         <transition to="preAuthenticationSetupComplete" on="null"/>
+    </action-state>
+
+    <view-state id="selectAuthenticationSystem" view="setup/selectAuthenticationSystem">
+        <render-actions>
+            <action bean="selectAuthenticationSystemFormAction" method="setupForm"/>
+            <action bean="selectAuthenticationSystemFormAction" method="setupReferenceData"/>
+        </render-actions>
+        <transition on="next" to="authenticationSystemSetup">
+            <action bean="selectAuthenticationSystemFormAction" method="bindAndValidate"/>
+        </transition>
+    </view-state>
+
+    <action-state id="authenticationSystemSetup">
+        <evaluate-action expression="${flowScope.selectAuthenticationSystemCommand.apply()}"/>
+        <transition to="setupAuthenticationSystem"/>
+    </action-state>
+
+    <view-state id="setupAuthenticationSystem" view="setup/authenticationSystemSetup">
+        <render-actions>
+            <action bean="authenticationSystemSetupFormAction" method="setupForm"/>
+            <action bean="authenticationSystemSetupFormAction" method="setupReferenceData"/>
+        </render-actions>
+        <transition on="save" to="saveAuthenticationSystem">
+            <action bean="authenticationSystemSetupFormAction" method="bindAndValidate"/>
+        </transition>
+    </view-state>
+
+    <action-state id="saveAuthenticationSystem">
+        <evaluate-action expression="${flowScope.authenticationSystemSetupCommand.apply()}"/>
+        <transition to="firstAdministrator"/>
     </action-state>
 
     <view-state id="firstAdministrator" view="setup/adminForm">
         <render-actions>
             <action bean="adminFormAction" method="setupForm"/>
+            <action bean="adminFormAction" method="setupReferenceData"/>
         </render-actions>
         <transition on="save" to="saveAdministrator">
             <action bean="adminFormAction" method="bindAndValidate"/>
