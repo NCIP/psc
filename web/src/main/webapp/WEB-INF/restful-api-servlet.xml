@@ -18,7 +18,7 @@
     </bean>
 
     <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
-        <property name="except" value="docs.*|providedSites.*"/>
+        <property name="except" value="docs.*"/>
         <property name="next" ref="router"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
@@ -166,7 +166,7 @@
             >
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
     </bean>
-    <bean name="/providedSites"
+    <bean name="/provided-sites"
           id="providedSitesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedSitesResource">
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
