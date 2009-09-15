@@ -870,6 +870,22 @@
             </resource>
 
         </resource>
+
+        <resource path="provided-sites">
+            <doc>
+                <html:p>List of sites from system and COPPA site provider.</html:p>
+            </doc>
+            <method name="GET">
+                <request>
+                    <param style="query" name="q" type="xsd:string">
+                        <doc>If specified, only sites which contain the query value (case-insensitive) in either their site name or their assigned identifier will be returned.</doc>
+                    </param>
+                </request>
+                <response>
+                    <representation href="#site-list-xml"/>
+                </response>
+            </method>
+        </resource>
         
         <resource path="osgi/bundles">
             <resource path="{bundle-id}">
