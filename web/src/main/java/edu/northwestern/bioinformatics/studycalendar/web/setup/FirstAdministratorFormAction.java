@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.CreateUserCommand;
@@ -12,8 +11,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.webflow.action.FormAction;
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.ScopeType;
+import org.springframework.webflow.execution.Event;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 
-import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -40,6 +40,12 @@ public class FirstAdministratorFormAction extends FormAction {
         command.setPasswordModified(true);
         command.setInitialAdministrator(true);
         return command;
+    }
+
+    public Event setupReferenceData(RequestContext context) throws Exception {
+        MutableAttributeMap requestScope = context.getRequestScope();
+        requestScope.put("usesLocalPasswords", installedAuthenticationSystem.getAuthenticationSystem().usesLocalPasswords());
+        return success();
     }
 
     ////// CONFIGURATION
