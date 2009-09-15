@@ -2,17 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+import org.restlet.data.Method;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
@@ -20,7 +16,7 @@ import java.util.List;
 /**
  * @author Jalpa Patel
  */
-public class ProvidedSitesResource extends Resource {
+public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
     private StudyCalendarXmlCollectionSerializer<Site> xmlSerializer;
     private SiteConsumer siteConsumer;
     private SiteDao siteDao;
@@ -28,8 +24,7 @@ public class ProvidedSitesResource extends Resource {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setReadable(true);
-        getVariants().add(new Variant(MediaType.TEXT_XML));
+        setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public List<Site> getAllObjects() {
@@ -51,19 +46,6 @@ public class ProvidedSitesResource extends Resource {
         return providedSites;
     }
 
-    @Override
-    public Representation represent(Variant variant) throws ResourceException {
-        if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-            return createXmlRepresentation(getAllObjects());
-        } else {
-            return null;
-        }
-    }
-    
-    protected Representation createXmlRepresentation(List<Site> sites) {
-        return new StringRepresentation(
-                getXmlSerializer().createDocumentString(sites), MediaType.TEXT_XML);
-    }
     public StudyCalendarXmlCollectionSerializer<Site> getXmlSerializer() {
         return xmlSerializer;
     }
