@@ -34,6 +34,11 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
         Element siteElement = rootElement().create();
         SITE_SITE_NAME.addTo(siteElement, site.getName());
         SITE_ASSIGNED_IDENTIFIER.addTo(siteElement, site.getAssignedIdentifier());
+
+        if (site.getProvider() != null) {
+            SITE_PROVIDER.addTo(siteElement, site.getProvider());
+        }
+        
         if (userRole != null) {
             if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)) {
                 for (StudySite studySite : userRole.getStudySites()) {
@@ -55,6 +60,10 @@ public class SiteXmlSerializer extends AbstractStudyCalendarXmlCollectionSeriali
         site.setName(siteName);
         if (siteAssignedIdentifier!=null) {
             site.setAssignedIdentifier(siteAssignedIdentifier);
+        }
+        String provider =  SITE_PROVIDER.from(element);
+        if (provider != null) {
+            site.setProvider(provider);
         }
         return site;
     }

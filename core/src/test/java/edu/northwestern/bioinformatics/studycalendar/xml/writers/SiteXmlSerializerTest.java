@@ -49,8 +49,13 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
         replayMocks();
         Element actualElement = serializer.createElement(site);
         verifyMocks();
+    }
 
-
+    public void testCreateElementWithProvider() throws Exception {
+        site.setProvider("site provider");
+        Element actualElement = serializer.createElement(site);
+        assertNotNull(actualElement.attribute("provider"));
+        assertEquals("Wrong provider", "site provider", actualElement.attributeValue("provider"));
     }
 
     public void testReadElement() {
@@ -63,7 +68,15 @@ public class SiteXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertNull(null,read.getGridId());
         assertEquals("Wrong site name", "site", read.getName());
         assertEquals("wrong site assigned identifier", "siteId", read.getAssignedIdentifier());
+    }
 
+    public void testReadElementWithProvider() throws Exception {
+        Element actual = XsdElement.SITE.create();
+        SITE_SITE_NAME.addTo(actual,"site");
+        SITE_PROVIDER.addTo(actual, "provider");
+        Site read = serializer.readElement(actual);
+        assertNotNull(read);
+        assertEquals("Wrong site provider", "provider", read.getProvider());
     }
 
 }

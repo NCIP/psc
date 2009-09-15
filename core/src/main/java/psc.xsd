@@ -353,6 +353,7 @@
 
     <xsd:complexType name="Site">
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="optional"/>
+        <xsd:attribute name="provider" type="xsd:string" use="optional"/>
         <xsd:attribute name="site-name" type="xsd:string" use="required"/>
     </xsd:complexType>
 

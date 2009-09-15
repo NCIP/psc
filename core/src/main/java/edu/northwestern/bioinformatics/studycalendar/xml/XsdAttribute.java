@@ -56,6 +56,7 @@ public enum XsdAttribute {
     STUDY_SITE_SITE_NAME("site-name"),
     SITE_SITE_NAME("site-name"),
     SITE_ASSIGNED_IDENTIFIER("assigned-identifier"),
+    SITE_PROVIDER("provider"),
     SUBJECT_GENDER("gender"),
     ASSIGNMENT_ID("id"),
     SCHEDULED_CALENDAR_ASSIGNMENT_ID("assignment-id"),
