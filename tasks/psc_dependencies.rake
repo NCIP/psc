@@ -220,7 +220,20 @@ CAGRID = [
   "org.globus:cog-tomcat:jar:4.0.3-globus",
   "org.globus:cog-url:jar:1.2",
   "net.sourceforge.addressing:addressing:jar:1.1",
-  "org.apache.axis:axis:jar:1.4"
+  "org.apache.axis:axis:jar:1.4",
+  "org.globus:axis:jar:4.0.3-globus"
+]
+
+CAGRID_CDS = [
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.cagrid:cagrid-cds-client:jar:1.2"), 
+      "Export-Package" => "!org.cagrid.gaards.cds, *"),
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.cagrid:cagrid-cds-stubs:jar:1.2"), 
+      "Export-Package" => "!org.cagrid.gaards.cds, *"),
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.cagrid:cagrid-cds-common:jar:1.2"), 
+      "Export-Package" => "!org.cagrid.gaards.cds, *"),
 ]
 
 GLOBUS = struct(
