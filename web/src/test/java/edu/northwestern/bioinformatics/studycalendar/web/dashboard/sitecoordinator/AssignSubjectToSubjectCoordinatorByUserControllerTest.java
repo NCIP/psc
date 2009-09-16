@@ -21,8 +21,6 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     private UserDao userDao;
     private StudySiteService studySiteService;
     private User subjectCoord0, subjectCoord1, subjectCoord2;
-    private List<StudySite> studySites;
-    private List<Site> sites;
     private Site site0;
     private Site site1;
     private Study study0;
@@ -65,13 +63,11 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         site0 = createNamedInstance("Northwestern", Site.class);
         site1 = createNamedInstance("Mayo", Site.class);
         site2 = createNamedInstance("Empty Site", Site.class);
-        sites = asList(site0, site1, site2);
 
         studySite0 = createStudySite(study0, site0);
         studySite1 = createStudySite(study0, site1);
         studySite2 = createStudySite(study1, site0);
         studySite3 = createStudySite(study0, site2);
-        studySites = asList(studySite0, studySite1, studySite2, studySite3);
 
         subjectCoord0 = setId(0, createNamedInstance("Subject Coordinator 0", User.class));
         subjectCoord1 = setId(1, createNamedInstance("Subject Coordinator 1", User.class));

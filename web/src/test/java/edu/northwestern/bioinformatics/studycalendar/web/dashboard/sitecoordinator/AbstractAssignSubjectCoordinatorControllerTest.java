@@ -1,23 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
 import static java.util.Arrays.asList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @author John Dzak
@@ -27,7 +30,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
-    private SiteService siteService;
     private TemplateService templateService;
     private UserService userService;
 
@@ -50,7 +52,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         siteDao         = registerDaoMockFor(SiteDao.class);
         userDao         = registerDaoMockFor(UserDao.class);
         studyDao        = registerDaoMockFor(StudyDao.class);
-        siteService     = registerMockFor(SiteService.class);
         templateService = registerMockFor(TemplateService.class);
         userService     = registerMockFor(UserService.class);
 
@@ -58,7 +59,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
-        controller.setSiteService(siteService);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         command = registerMockFor(SimpleAssignSubjectCoordinatorCommand.class);
@@ -82,7 +82,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         siteCoordinatorRole = createUserRole(siteCoordinator, Role.SITE_COORDINATOR, site0, site1);
         siteCoordinator.addUserRole(siteCoordinatorRole);
 
-        SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator, "pass");
     }
 
     public void testGetRefData() throws Exception {
@@ -95,7 +95,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetSiteCoordinator() throws Exception {
-        expect(userDao.getByName(siteCoordinator.getName())).andReturn(siteCoordinator);
         replayMocks();
 
         User actualSiteCoord = controller.getSiteCoordinator();
@@ -146,6 +145,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
             setSuccessView("foo");
         }
 
+        @Override
         protected Object formBackingObject(HttpServletRequest request) throws Exception {
             return command;
         }
@@ -157,23 +157,27 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
             super(assignableStudies, assignableSites, assignableUsers);
         }
 
-
+        @Override
         public Map<Study, Map<Site, GridCell>> getGrid() {
             return studyAssignmentGrid;
         }
 
+        @Override
         protected void performCheckAction(Study row, Site column) throws Exception {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         protected void performUncheckAction(Study row, Site column) throws Exception {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         protected boolean isSiteSelected(Study rowElement, Site columnElement) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         protected boolean isSiteAccessAllowed(Study rowElement, Site columnElement) {
             throw new UnsupportedOperationException();
         }

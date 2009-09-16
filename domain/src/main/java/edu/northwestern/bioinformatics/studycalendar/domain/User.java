@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table (name = "users")
@@ -107,6 +108,21 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
             if (assignment.getStudySite().equals(ss)) return true;
         }
         return false;
+    }
+
+    /**
+     * Gets all the sites this user is affiliated with, regardless of role.
+     */
+    @Transient
+    public List<Site> getAllSites() {
+        Set<Site> sites = new HashSet<Site>();
+        for (UserRole userRole : getUserRoles()) {
+            sites.addAll(userRole.getSites());
+            for (StudySite studySite : userRole.getStudySites()) {
+                sites.add(studySite.getSite());
+            }
+        }
+        return new ArrayList<Site>(sites);
     }
 
     ////// IMPLEMENTATION OF UserDetails

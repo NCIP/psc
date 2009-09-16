@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -23,10 +24,13 @@ import java.util.List;
 
 @Transactional
 public class UserService implements Serializable {
+    public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
-    public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private SiteConsumer siteConsumer;
 
     public User saveUser(User user, String password, final String emailAddress) {
         if (user == null)
@@ -129,11 +133,13 @@ public class UserService implements Serializable {
                 Hibernate.initialize(role.getSites());
                 Hibernate.initialize(role.getStudySites());
             }
+            siteConsumer.refresh(user.getAllSites());
         }
         return user;
     }
 
     ////// CONFIGURATION
+
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -144,5 +150,8 @@ public class UserService implements Serializable {
         this.userProvisioningManager = userProvisioningManager;
     }
 
-
+    @Required
+    public void setSiteConsumer(SiteConsumer siteConsumer) {
+        this.siteConsumer = siteConsumer;
+    }
 }

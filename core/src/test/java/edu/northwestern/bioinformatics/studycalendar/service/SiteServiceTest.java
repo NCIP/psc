@@ -1,20 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.core.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.classextension.EasyMock.expect;
 
-import java.util.*;
+import java.util.Arrays;
 import static java.util.Arrays.asList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -24,31 +31,30 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private SiteService service;
     private StudyCalendarAuthorizationManager authorizationManager;
-    private StudySiteDao studySiteDao;
-    private UserDao userDao;
+    private SiteConsumer siteConsumer;
+    private UserService userService;
     private User user;
-    private Site nu;
-    private Site mayo;
+    private Site nu, mayo;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
-        studySiteDao = registerDaoMockFor(StudySiteDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
+        userService = registerMockFor(UserService.class);
+        siteConsumer = registerMockFor(SiteConsumer.class);
 
         service = new SiteService();
         service.setSiteDao(siteDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
-        service.setStudySiteDao(studySiteDao);
-        service.setUserDao(userDao);
+        service.setUserService(userService);
+        service.setSiteConsumer(siteConsumer);
 
         user = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser(7, "jimbo", 73L, true);
         nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
         mayo = setId(4, Fixtures.createNamedInstance("Mayo", Site.class));
 
-        expect(userDao.getByName("jimbo")).andReturn(user).anyTimes();
+        expect(userService.getUserByName("jimbo")).andStubReturn(user);
     }
 
     public void testCreateSite() throws Exception {
@@ -102,21 +108,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertTrue(actualSites.containsAll(expectedSites));
     }
 
-    public void testGetSitesForUser() throws Exception {
-        Fixtures.setUserRoles(user, SUBJECT_COORDINATOR, SITE_COORDINATOR);
-        user.getUserRole(SUBJECT_COORDINATOR).setSites(Collections.singleton(nu));
-        user.getUserRole(SITE_COORDINATOR).setSites(Collections.singleton(mayo));
-
-        Set<Site> expectedSites = new LinkedHashSet<Site>(Arrays.asList(nu, mayo));
-
-        replayMocks();
-        List<Site> actualSites = service.getSitesForUser("jimbo");
-        verifyMocks();
-
-        assertEquals(expectedSites.size(), actualSites.size());
-        assertTrue(expectedSites.containsAll(actualSites));
-    }
-
     public void testAssignProtectionGroup() throws Exception {
         Role role = SUBJECT_COORDINATOR;
         ProtectionGroup pg = createProtectionGroup((long) mayo.getId(), DomainObjectTools.createExternalObjectId(mayo));
@@ -163,7 +154,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testCreateOrMergeSiteForCreateSite() throws Exception {
-
         siteDao.save(nu);
         expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
         authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
@@ -173,17 +163,16 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site newSite = service.createOrMergeSites(null, nu);
         assertEquals(newSite.getName(), nu.getName());
         verifyMocks();
-
     }
 
     public void testCreateOrMergeSiteForMergeSite() throws Exception {
-
         nu.setId(1);
         Site newSite = new Site();
         newSite.setName("new Name");
         siteDao.save(nu);
         expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(new ProtectionGroup());
         expect(siteDao.getById(1)).andReturn(nu);
+        expect(siteConsumer.refresh(nu)).andReturn(nu);
 
         replayMocks();
 
@@ -192,7 +181,36 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
         assertEquals("new Name", mergedSite.getName());
         assertEquals(mergedSite, nu);
-
     }
 
+    public void testGetByIdRefreshesSite() throws Exception {
+        nu.setId(1);
+        expect(siteDao.getById(1)).andReturn(nu);
+        expect(siteConsumer.refresh(nu)).andReturn(nu);
+        replayMocks();
+
+        assertSame(nu, service.getById(1));
+        verifyMocks();
+    }
+
+    public void testGetByAssignedIdentRefreshesSite() throws Exception {
+        expect(siteDao.getByAssignedIdentifier("NU")).andReturn(nu);
+        expect(siteConsumer.refresh(nu)).andReturn(nu);
+        replayMocks();
+
+        assertSame(nu, service.getByAssignedIdentifier("NU"));
+        verifyMocks();
+    }
+    
+    public void testGetAllRefreshes() throws Exception {
+        List<Site> expected = Arrays.asList(nu, mayo);
+        expect(siteDao.getAll()).andReturn(expected);
+        expect(siteConsumer.refresh(expected)).andReturn(expected);
+        replayMocks();
+
+        List<Site> actual = service.getAll();
+        assertSame("Wrong 0", nu, actual.get(0));
+        assertSame("Wrong 1", mayo, actual.get(1));
+        verifyMocks();
+    }
 }

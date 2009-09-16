@@ -5,13 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IExpectationSetters;
+import org.easymock.classextension.EasyMock;
 
+import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -203,6 +205,24 @@ public class SiteConsumerTest extends StudyCalendarTestCase {
         consumer.refresh(Arrays.asList(fromG));
         assertEquals(NOW, fromG.getLastRefresh());
         verifyMocks();
+    }
+
+    public void testRefreshReturnsItsInputForChaining() throws Exception {
+        expectAllProvidersAvailable();
+        replayMocks();
+
+        assertEquals(Arrays.asList(searchG), consumer.refresh(Arrays.asList(searchG)));
+        verifyMocks();
+    }
+    
+    public void testRefreshOneJustDelegates() throws Exception {
+        SiteConsumer partialMock = EasyMock.createMock(
+            SiteConsumer.class, new Method[] { SiteConsumer.class.getMethod("refresh", List.class) });
+        expect(partialMock.refresh(Arrays.asList(fromG))).andReturn(Arrays.asList(fromG));
+        EasyMock.replay(partialMock);
+
+        assertSame(fromG, partialMock.refresh(fromG));
+        EasyMock.verify(partialMock);
     }
 
     public void testRefreshHappensWithNullLastRefresh() throws Exception {

@@ -96,7 +96,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
 
     private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
         String userName = applicationSecurityManager.getUserName();
-        User user = userDao.getByName(applicationSecurityManager.getUserName());
+        User user = applicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
 

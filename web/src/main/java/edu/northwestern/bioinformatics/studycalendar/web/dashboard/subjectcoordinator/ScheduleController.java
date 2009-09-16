@@ -57,16 +57,14 @@ public class ScheduleController extends PscSimpleFormController {
 
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-        String userName = applicationSecurityManager.getUserName();
+        User user = applicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
-        User user = userDao.getByName(userName);
+        List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
 
-        //show notifications on dashboard
+        // show notifications on dashboard
         List<Notification> notifications = new ArrayList<Notification>();
         for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
-
             notifications.addAll(studySubjectAssignment.getNotifications());
         }
 
@@ -112,12 +110,10 @@ public class ScheduleController extends PscSimpleFormController {
     }
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
-        String userName = applicationSecurityManager.getUserName();
-
         Map<User, List<StudySite>> mapOfUsersAndStudies = new HashMap<User, List<StudySite>>();
 
         List<User> pcUsers = userDao.getAllSubjectCoordinators();
-        pcUsers.remove(userDao.getByName(userName));
+        pcUsers.remove(applicationSecurityManager.getUser());
         for (User user : pcUsers) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
             List<Study> studiesForUser = templateService.filterForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
@@ -149,8 +145,7 @@ public class ScheduleController extends PscSimpleFormController {
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
-        String userName = applicationSecurityManager.getUserName();
-        User user = userDao.getByName(userName);
+        User user = applicationSecurityManager.getUser();
         if (scheduleCommand.getNotificationId() != null ) {
             Notification notification = notificationDao.getById(scheduleCommand.getNotificationId());
             notification.setDismissed(true);

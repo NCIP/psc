@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -23,12 +22,12 @@ import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
-import static java.util.Collections.*;
+import static java.util.Collections.singletonList;
 import java.util.List;
 import java.util.Map;
-import java.sql.Timestamp;
 
 /**
  * @author Rhett Sutphin
@@ -48,13 +47,11 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private Study study;
     private StudySegment seg1, seg0a, seg0b;
     private Amendment a0, a1, a2;
-    private UserDao userDao;
     private User subjectCoord;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        userDao = registerDaoMockFor(UserDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         deltaService = registerMockFor(DeltaService.class);
         templateService = registerMockFor(TemplateService.class);
@@ -78,7 +75,6 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setAmendment(a2);
 
         controller = new DisplayTemplateController();
-        controller.setUserDao(userDao);
         controller.setStudyDao(studyDao);
         controller.setDeltaService(deltaService);
         controller.setTemplateService(templateService);
@@ -91,10 +87,9 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.addParameter("study", study.getId().toString());
 
         subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
-        SecurityContextHolderTestHelper.setSecurityContext(subjectCoord.getName(), "asdf");
+        SecurityContextHolderTestHelper.setSecurityContext(subjectCoord, "asdf");
 
-         expect(userDao.getByName(subjectCoord.getName())).andReturn(subjectCoord).anyTimes();
-         expect(templateService.filterForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+        expect(templateService.filterForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                  .andReturn(singletonList(study)).anyTimes();
 
         nowFactory.setNowTimestamp(NOW);

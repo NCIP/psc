@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -10,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessCon
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.easymock.EasyMock.expect;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -29,7 +27,6 @@ import java.util.List;
 public class SecureSectionInterceptorTest extends WebTestCase {
     private Task task0;
     private SecureSectionInterceptor interceptor;
-    private UserDao userDao;
     private User siteCoord, studyCoordAndAdmin;
     private DefaultListableBeanFactory beanFactory;
     private Section section0, section1;
@@ -39,13 +36,11 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         siteCoord = createUser("site coord", Role.SITE_COORDINATOR);
         studyCoordAndAdmin = createUser("study coord", Role.STUDY_COORDINATOR, Role.STUDY_ADMIN);
-        SecurityContextHolderTestHelper.setSecurityContext(siteCoord.getName() , EMPTY);
+        SecurityContextHolderTestHelper.setSecurityContext(siteCoord, EMPTY);
 
-        userDao = registerDaoMockFor(UserDao.class);
         beanFactory = new DefaultListableBeanFactory ();
 
         interceptor = new SecureSectionInterceptor();
-        interceptor.setUserDao(userDao);
         interceptor.setApplicationSecurityManager(applicationSecurityManager);
         interceptor.postProcessBeanFactory(beanFactory);
 
@@ -84,8 +79,6 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
     @SuppressWarnings({"unchecked"})
     public void testPreHandleWhenForSiteCoordinator() throws Exception {
-        expect(userDao.getByName("site coord")).andReturn(siteCoord);
-
         doPreHandle();
 
         List<Section> actualSections = (List<Section>) request.getAttribute("sections");
@@ -97,8 +90,7 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
     @SuppressWarnings({"unchecked"})
     public void testPreHandleWhenForStudyCoordinatorAndAdmin() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(studyCoordAndAdmin.getName(), EMPTY);
-        expect(userDao.getByName(studyCoordAndAdmin.getName())).andReturn(studyCoordAndAdmin);
+        SecurityContextHolderTestHelper.setSecurityContext(studyCoordAndAdmin, EMPTY);
 
         doPreHandle();
 

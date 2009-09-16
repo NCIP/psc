@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import org.acegisecurity.GrantedAuthority;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -101,5 +102,38 @@ public class UserTest extends TestCase {
         joeAtMayo.getUserRole(Role.SUBJECT_COORDINATOR).addSite(Fixtures.createSite("Mayo"));
 
         assertNotEquals(joeAtNu, joeAtMayo);
+    }
+
+    public void testAllSitesIncludesSiteCoordSites() throws Exception {
+        Site expectedSite = createSite("NU");
+        createUserRole(user, Role.SITE_COORDINATOR, expectedSite);
+
+        List<Site> actual = user.getAllSites();
+        assertEquals("Wrong number of sites", 1, actual.size());
+        assertEquals("Wrong site", "NU", actual.get(0).getName());
+    }
+
+    public void testAllSitesIncludesSitesFromStudySites() throws Exception {
+        Site expectedSite = createSite("TJU");
+        UserRole sc = createUserRole(user, Role.SUBJECT_COORDINATOR);
+        sc.addStudySite(createStudySite(createReleasedTemplate(), expectedSite));
+
+        List<Site> actual = user.getAllSites();
+        assertEquals("Wrong number of sites", 1, actual.size());
+        assertEquals("Wrong site", "TJU", actual.get(0).getName());
+    }
+
+    public void testAllSitesIncludesEachSiteOnlyOnce() throws Exception {
+        Site nu = createSite("NU");
+        Site tju = createSite("TJU");
+        Study s = createReleasedTemplate();
+
+        createUserRole(user, Role.SITE_COORDINATOR, nu);
+        createUserRole(user, Role.SUBJECT_COORDINATOR, nu, tju);
+
+        List<Site> actual = user.getAllSites();
+        assertEquals("Wrong number of sites: " + actual, 2, actual.size());
+        assertContains("Missing NU", actual, nu);
+        assertContains("Missing TJU", actual, tju);
     }
 }

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
@@ -43,7 +44,7 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         notificationService.setUserService(userService);
         notificationService.setApplicationSecurityManager(applicationSecurityManager);
 
-        SecurityContextHolderTestHelper.setSecurityContext("user", "password");
+        SecurityContextHolderTestHelper.setSecurityContext(createUser("user"), "password");
     }
 
     public void testAddNotificationIfNothingIsScheduledForPatient() {

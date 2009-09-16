@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -22,12 +23,12 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     }
 
     public void testSetUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext("jim" , "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createUser("jim") , "pass");
         assertNotNull("Session attribute not set", applicationSecurityManager.getUserName());
     }
 
     public void testGetUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext("james" , "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createUser("james"), "pass");
         assertEquals("james", applicationSecurityManager.getUserName());
     }
 
@@ -42,7 +43,7 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     }
 
     public void testRemoveUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext("leaving" , "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(createUser("leaving"), "pass");
         applicationSecurityManager.removeUserSession();
         assertNull("Session attribute not cleared", SecurityContextHolder.getContext().getAuthentication());
     }

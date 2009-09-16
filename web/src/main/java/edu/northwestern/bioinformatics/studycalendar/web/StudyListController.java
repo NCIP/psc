@@ -35,16 +35,15 @@ public class StudyListController extends PscAbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
         log.debug("{} studies found total", studies.size());
-        String userName = applicationSecurityManager.getUserName();
-        User user = userDao.getByName(userName);
+        User user = applicationSecurityManager.getUser();
 
         List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
         List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
         List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
         List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
 
-        log.debug("{} released templates visible to {}", releasedTemplates.size(), userName);
-        log.debug("{} studies open for editing by {}", inDevelopmentTemplates.size(), userName);
+        log.debug("{} released templates visible to {}", releasedTemplates.size(), user.getName());
+        log.debug("{} studies open for editing by {}", inDevelopmentTemplates.size(), user.getName());
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("pendingTemplates", pendingTemplates);

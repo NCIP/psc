@@ -1,14 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.authorization.domainobjects.*;
+import gov.nih.nci.security.authorization.domainobjects.Application;
+import gov.nih.nci.security.authorization.domainobjects.ApplicationContext;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.Privilege;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.jaas.AccessPermission;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
@@ -16,25 +21,24 @@ import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.easymock.IArgumentMatcher;
-import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.reportMatcher;
+import static org.easymock.classextension.EasyMock.*;
 import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
-import java.util.*;
-import static java.util.Arrays.asList;
+import static java.util.Arrays.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class UserServiceTest extends StudyCalendarTestCase {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     private UserProvisioningManagerStub userProvisioningManagerStub;
     private UserService service;
-    private List<Site> sites;
-    private User user0, user1, user2;
-    private Site site0, site1;
-    private UserRole userRole0, userRole1, userRole2;
-    private List<User> users;
+    private SiteConsumer siteConsumer;
+    private User adam, steve, siteCoord;
+    private Site nu, mayo;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,23 +47,23 @@ public class UserServiceTest extends StudyCalendarTestCase {
         userDao = registerMockFor(UserDao.class);
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
         userProvisioningManagerStub = new UserProvisioningManagerStub();
+        siteConsumer = registerMockFor(SiteConsumer.class);
 
         service = new UserService();
         service.setUserDao(userDao);
         service.setUserProvisioningManager(userProvisioningManager);
+        service.setSiteConsumer(siteConsumer);
         
-        user0 = createNamedInstance("Adam", User.class);
-        user1 = createNamedInstance("Steve", User.class);
-        user2 = createNamedInstance("Site Coordinator", User.class);
-        users = asList(user0, user1, user2);
+        adam = createNamedInstance("Adam", User.class);
+        steve = createNamedInstance("Steve", User.class);
+        siteCoord = createNamedInstance("Site Coordinator", User.class);
 
-        site0 = createNamedInstance("Northwestern", Site.class);
-        site1 = createNamedInstance("Mayo Clinic", Site.class);
-        sites = asList(site0, site1);
+        nu = createNamedInstance("Northwestern", Site.class);
+        mayo = createNamedInstance("Mayo Clinic", Site.class);
 
-        userRole0 = createUserRole(user0, Role.SUBJECT_COORDINATOR, site0, site1);
-        userRole1 = createUserRole(user1, Role.SUBJECT_COORDINATOR, site1);
-        userRole2 = createUserRole(user2, Role.SITE_COORDINATOR, site0);
+        createUserRole(adam, Role.SUBJECT_COORDINATOR, nu, mayo);
+        createUserRole(steve, Role.SUBJECT_COORDINATOR, mayo);
+        createUserRole(siteCoord, Role.SITE_COORDINATOR, nu);
     }
 
     public void testSaveNewUser() throws Exception {
@@ -82,22 +86,39 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetSubjectCoordinatorsForSites() throws Exception {
-        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(adam, steve));
         replayMocks();
-        List<User> actualSubjectCoordinators = service.getSubjectCoordinatorsForSites(asList(site0));
+        List<User> actualSubjectCoordinators = service.getSubjectCoordinatorsForSites(asList(nu));
         verifyMocks();
         assertEquals("Wrong number of users", 1, actualSubjectCoordinators.size());
-        assertEquals("Wrong user", user0.getName(), actualSubjectCoordinators.get(0).getName());
+        assertEquals("Wrong user", adam.getName(), actualSubjectCoordinators.get(0).getName());
     }
 
     public void testGetAssignableUsers() throws Exception {
-        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(adam, steve));
         replayMocks();
 
-        List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(user2);
+        List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(siteCoord);
         verifyMocks();
 
         assertEquals("Wrong Number of Users", 1, actualAssignableUsers.size());
+    }
+
+    public void testGetUserByNameReturnNullForUnknown() throws Exception {
+        expect(userDao.getByName("joe")).andReturn(null);
+        replayMocks();
+
+        assertNull(service.getUserByName("joe"));
+        verifyMocks();
+    }
+
+    public void testGeyUserByNameRefreshesAssociatedSites() throws Exception {
+        expect(userDao.getByName("adam")).andReturn(adam);
+        expect(siteConsumer.refresh(asList(nu, mayo))).andReturn(asList(nu, mayo));
+        replayMocks();
+
+        assertSame(adam, service.getUserByName("adam"));
+        verifyMocks();
     }
 
     public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
@@ -138,12 +159,12 @@ public class UserServiceTest extends StudyCalendarTestCase {
     private static class UnsortedArrayEquals extends ArrayEquals {
         public UnsortedArrayEquals(Object expected) {
             super(expected);
-            Arrays.sort((Object[])expected);
+            sort((Object[])expected);
         }
 
         @Override
         public boolean matches(Object actual) {
-            Arrays.sort((Object[])actual);
+            sort((Object[])actual);
             return super.matches(actual);
         }
     }

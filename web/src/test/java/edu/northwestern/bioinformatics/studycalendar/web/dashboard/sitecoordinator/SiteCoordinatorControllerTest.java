@@ -64,7 +64,7 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
         user.getUserRole(Role.SITE_COORDINATOR).addSite(siteB);
         user.getUserRole(Role.SITE_COORDINATOR).addSite(siteA);
         user.getUserRole(Role.SUBJECT_COORDINATOR).addSite(siteZ);
-        SecurityContextHolderTestHelper.setSecurityContext(user.getName(), null);
+        SecurityContextHolderTestHelper.setSecurityContext(user, null);
 
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
     }

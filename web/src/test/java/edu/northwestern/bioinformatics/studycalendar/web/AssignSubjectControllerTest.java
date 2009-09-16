@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -21,7 +20,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.expect;
 import org.springframework.validation.Errors;
@@ -45,11 +43,9 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private AssignSubjectCommand commandForRefdata;
 
     private SubjectDao subjectDao;
-    private SiteService siteService;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySegmentDao studySegmentDao;
-    private UserDao userDao;
     private PopulationDao populationDao;
 
     private Study study;
@@ -63,18 +59,14 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         super.setUp();
         subjectDao = registerDaoMockFor(SubjectDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
-        siteService = registerMockFor(SiteService.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
 
         controller = new AssignSubjectController();
         controller.setSubjectDao(subjectDao);
-        controller.setSiteService(siteService);
         controller.setStudyDao(studyDao);
         controller.setSiteDao(siteDao);
-        controller.setUserDao(userDao);
         controller.setStudySegmentDao(studySegmentDao);
         controller.setPopulationDao(populationDao);
         controller.setControllerTools(controllerTools);
@@ -106,13 +98,12 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
         subjects = new LinkedList<Subject>();
 
-        SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
     }
 
     public void testSubjectAssignedOnSubmit() throws Exception {
         AssignSubjectCommand mockCommand = registerMockFor(AssignSubjectCommand.class);
         AssignSubjectController mockableController = new MockableCommandController(mockCommand);
-        mockableController.setUserDao(userDao);
         mockableController.setControllerTools(controllerTools);
         mockableController.setStudyDao(studyDao);
         mockableController.setSiteDao(siteDao);
@@ -120,7 +111,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         mockableController.setStudySegmentDao(studySegmentDao);
         mockableController.setPopulationDao(populationDao);
         mockableController.setApplicationSecurityManager(applicationSecurityManager);
-        expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
 
         mockCommand.setSubjectCoordinator(user);
         mockCommand.setStudy(study);
@@ -198,7 +188,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     private void expectRefDataCalls() {
         expect(subjectDao.getAll()).andReturn(subjects);
-        expect(userDao.getByName(user.getName())).andReturn(user).atLeastOnce();
     }
 
     public void testRefdataIncludesStudy() throws Exception {

@@ -18,7 +18,8 @@ import java.util.ListIterator;
 import java.util.Map;
 
 /**
- * Consolidates calls into all the {@link SiteProvider}s currently live in the system.
+ * Consolidates calls into all the {@link SiteProvider}s currently live in the system and
+ * provides for refreshing of existing instances from them.
  *
  * @author Rhett Sutphin
  */
@@ -61,8 +62,12 @@ public class SiteConsumer {
         return found;
     }
 
-    public void refresh(List<Site> sites) {
-        new Refresh().execute(sites);
+    public Site refresh(Site site) {
+        return refresh(Arrays.asList(site)).get(0);
+    }
+
+    public List<Site> refresh(List<Site> sites) {
+        return new Refresh().execute(sites);
     }
 
     /**
@@ -106,6 +111,7 @@ public class SiteConsumer {
         this.osgiLayerTools = tools;
     }
 
+    @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
     }
@@ -119,7 +125,7 @@ public class SiteConsumer {
             providers = getSiteProviders();
         }
 
-        public void execute(List<Site> sites) {
+        public List<Site> execute(List<Site> sites) {
             Timestamp now = nowFactory.getNowTimestamp();
             for (Site site : sites) {
                 if (site.getProvider() == null) continue;
@@ -157,6 +163,8 @@ public class SiteConsumer {
                     updateSites(newVersions, targetSites, provider);
                 }
             }
+
+            return sites;
         }
 
         private boolean shouldRefresh(Site site, Timestamp now) {

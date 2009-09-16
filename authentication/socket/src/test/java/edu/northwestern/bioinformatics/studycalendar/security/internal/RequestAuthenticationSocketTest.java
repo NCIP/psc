@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.security.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
 import javax.servlet.FilterChain;
 
 /**
@@ -25,7 +27,7 @@ public class RequestAuthenticationSocketTest extends StudyCalendarTestCase {
     }
 
     public void testAddAuthenticationToRequest() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext("user" , "user");
+        SecurityContextHolderTestHelper.setSecurityContext(Fixtures.createUser("joe") , "user");
         filter.doFilter(request, response, filterChain);
         assertNotNull(request.getAttribute("authentication"));
     }

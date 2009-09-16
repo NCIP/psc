@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordina
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -39,7 +38,6 @@ import java.util.TreeMap;
 public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimpleFormController {
     private UserDao userDao;
     private StudySiteService studySiteService;
-    private StudySiteDao studySiteDao;
     private UserService userService;
     private SubjectDao subjectDao;
     private StudyDao studyDao;
@@ -105,7 +103,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     }
 
     protected User getSiteCoordinator() {
-        return userDao.getByName(applicationSecurityManager.getUserName());
+        return applicationSecurityManager.getUser();
     }
                                                                                                                 
     protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User subjectCoordinator) {
@@ -191,11 +189,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         this.studySiteService = studySiteService;
     }
 
-    public void setStudySiteDao(StudySiteDao studySiteDao) {
-        this.studySiteDao = studySiteDao;
-    }
-
-    public void setUserService(UserService userService) {   
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -24,7 +23,6 @@ import java.util.Map;
 
 public class SearchReleasedTemplatesController extends PscAbstractCommandController<SearchReleasedTemplatesCommand> {
     private StudyDao studyDao;
-    private UserDao userDao;
     private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
 
@@ -42,8 +40,7 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
             String searchText = command.getSearchText() != null ? command.getSearchText() : EMPTY;
             List<Study> studies = studyDao.getAll();
             log.debug("{} studies found total", studies.size());
-            String userName = applicationSecurityManager.getUserName();
-            User user = userDao.getByName(userName);
+            User user = applicationSecurityManager.getUser();
 
             List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
 
@@ -81,11 +78,6 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Required

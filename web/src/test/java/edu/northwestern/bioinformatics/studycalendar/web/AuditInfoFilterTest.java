@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import static org.easymock.EasyMock.expect;
 
@@ -29,7 +30,7 @@ public class AuditInfoFilterTest extends ContextRetainingFilterTestCase {
         initFilter(filter);
         request.setRemoteAddr(REMOTE_ADDR);
         request.setRequestURI(URL);
-        SecurityContextHolderTestHelper.setSecurityContext(USERNAME, PASSWORD);
+        SecurityContextHolderTestHelper.setSecurityContext(createUser(USERNAME), PASSWORD);
         expect(mockApplicationContext.getBean("applicationSecurityManager")).
             andStubReturn(applicationSecurityManager);
     }

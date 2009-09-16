@@ -21,6 +21,11 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implement
         return getHibernateTemplate().find("from User order by name");
     }
 
+    /**
+     * Returns a bare {@link User} that corresponds to the given username. Most higher-level code
+     * should not call this methid directly, but rather
+     * {@link edu.northwestern.bioinformatics.studycalendar.service.UserService#getUserByName}.
+     */
     @SuppressWarnings({"unchecked"})
     public User getByName(String name) {
         if (name == null) {

@@ -1,18 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -41,7 +40,6 @@ public class DisplayTemplateController extends PscAbstractController {
     private DeltaService deltaService;
     private AmendmentService amendmentService;
     private DaoFinder daoFinder;
-    private UserDao userDao;
     private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
     private NowFactory nowFactory;
@@ -71,8 +69,7 @@ public class DisplayTemplateController extends PscAbstractController {
         model.put("canNotViewPopulations", canNotViewPopulations);
 
         if (study.isReleased()) {
-            String userName = applicationSecurityManager.getUserName();
-            User user = userDao.getByName(userName);
+            User user = applicationSecurityManager.getUser();
             List<Study> subjectAssignableStudies = templateService.filterForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
             Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();
 
@@ -200,10 +197,6 @@ public class DisplayTemplateController extends PscAbstractController {
 
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     public void setTemplateService(TemplateService templateService) {

@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
@@ -40,7 +39,6 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private UserDao userDao;
     private SiteDao siteDao;
     private TemplateService templateService;
-    private SiteService siteService;
     private UserService userService;
     private Crumb crumb;
     private ApplicationSecurityManager applicationSecurityManager;
@@ -66,7 +64,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected User getSiteCoordinator() {
-        return userDao.getByName(applicationSecurityManager.getUserName());
+        return applicationSecurityManager.getUser();
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
@@ -129,10 +127,6 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
-    }
-
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 
     public void setUserService(UserService userService) {

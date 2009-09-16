@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -15,13 +14,11 @@ public class UserInRequestFilterTest extends ContextRetainingFilterTestCase {
     private UserInRequestFilter filter;
 
     private FilterChain filterChain;
-    private UserDao userDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         filterChain = registerMockFor(FilterChain.class);
-        userDao = registerDaoMockFor(UserDao.class);
 
         filter = new UserInRequestFilter();
         initFilter(filter);

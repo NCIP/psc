@@ -62,7 +62,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         super.setUp();
         userName = "USER NAME";
         user = Fixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
-        SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
+        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
         subjectDao = registerDaoMockFor(SubjectDao.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
 
@@ -101,7 +101,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");
 
-        expect(userDao.getByName(userName)).andReturn(user).anyTimes();
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
     }
 

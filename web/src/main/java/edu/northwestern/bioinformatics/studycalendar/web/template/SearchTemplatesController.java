@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -27,7 +26,6 @@ import java.util.Map;
 public class SearchTemplatesController extends PscAbstractCommandController<SearchTemplateCommand> {
     private StudyDao studyDao;
     private TemplateService templateService;
-    private UserDao userDao;
     private ApplicationSecurityManager applicationSecurityManager;
 
     public SearchTemplatesController() {
@@ -45,8 +43,7 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
 
             List<Study> studies = studyDao.searchStudiesByStudyName(searchText);
             log.debug("{} studies found total", studies.size());
-            String userName = applicationSecurityManager.getUserName();
-            User user = userDao.getByName(userName);
+            User user = applicationSecurityManager.getUser();
 
             List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
 
@@ -68,11 +65,6 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setUserDao(final UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Required

@@ -2,8 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -12,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,16 +30,20 @@ import java.util.Set;
 @Transactional
 public class SiteService {
     private SiteDao siteDao;
-    private UserDao userDao;
-    private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
+    private SiteConsumer siteConsumer;
+    private UserService userService;
 
     public Site getById(int id) {
-        return siteDao.getById(id);
+        return siteConsumer.refresh(siteDao.getById(id));
+    }
+
+    public Site getByAssignedIdentifier(final String assignedIdentifier) {
+        return siteConsumer.refresh(siteDao.getByAssignedIdentifier(assignedIdentifier));
     }
 
     public List<Site> getAll() {
-        return siteDao.getAll();
+        return siteConsumer.refresh(siteDao.getAll());
     }
     
     public Site createOrUpdateSite(Site site) {
@@ -67,33 +69,8 @@ public class SiteService {
         authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 
-    /**
-     * This method is incomplete.  It should probably be replaced with calls like
-     * {@link User}.getUserRole(desiredRole).getSites().
-     *
-     * @param userName
-     * @return
-     */
-    @Deprecated
-    public List<Site> getSitesForUser(String userName) {
-        User user = userDao.getByName(userName);
-        if (user == null) return Collections.emptyList();
-
-        Set<Site> sites = new LinkedHashSet<Site>();
-        sites.addAll(getSitesForSiteCoordinator(user));
-        sites.addAll(getSitesForSubjectCoordinator(user));
-
-        return new ArrayList<Site>(sites);
-    }
-
-    private List<Site> getSitesForSiteCoordinator(User user) {
-        UserRole siteCoord = user.getUserRole(Role.SITE_COORDINATOR);
-        if (siteCoord == null) return Collections.emptyList();
-        return new ArrayList<Site>(siteCoord.getSites());
-    }
-
     public Collection<Site> getSitesForSubjectCoordinator(String username) {
-        User user = userDao.getByName(username);
+        User user = userService.getUserByName(username);
         if (user == null) return Collections.emptyList();
 
         return getSitesForSubjectCoordinator(user);
@@ -117,19 +94,17 @@ public class SiteService {
     }
 
     public void removeSite(final Site site) throws Exception {
-        boolean siteCanBeDeleted = checkIfSiteCanBeDeleted(site);
-        if (siteCanBeDeleted) {//first remove the protection group
+        if (checkIfSiteCanBeDeleted(site)) {
+            // first remove the protection group
             authorizationManager.removeProtectionGroup(createExternalObjectId(site));
 
-            //it should also delete the study sites and holidays
+            // it should also delete the study sites and holidays
             siteDao.delete(site);
         }
     }
 
     public boolean checkIfSiteCanBeDeleted(final Site site) {
-
-        //site can be deleted only if it has not assignments
-
+        // site can be deleted only if it has not assignments
         List<StudySite> studySiteList = site.getStudySites();
         for (StudySite studySite : studySiteList) {
             List<StudySubjectAssignment> studySubjectAssignmentList = studySite.getStudySubjectAssignments();
@@ -156,15 +131,13 @@ public class SiteService {
             if (newSite.getAssignedIdentifier() != null) site.setAssignedIdentifier(newSite.getAssignedIdentifier());
             return createOrUpdateSite(site);
         }
-
-
     }
 
     ////// CONFIGURATION
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Required
@@ -173,18 +146,12 @@ public class SiteService {
     }
 
     @Required
-    public void setStudySiteDao(StudySiteDao studySiteDao) {
-        this.studySiteDao = studySiteDao;
-    }
-
-    @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 
-    public Site getByAssignedIdentifier(final String assignedIdentifier) {
-        return siteDao.getByAssignedIdentifier(assignedIdentifier);
+    @Required
+    public void setSiteConsumer(SiteConsumer siteConsumer) {
+        this.siteConsumer = siteConsumer;
     }
-
-
 }

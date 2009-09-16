@@ -54,8 +54,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         user = createUser("jimbo");
-        SecurityContextHolderTestHelper.setSecurityContext("jimbo", "password");
-        expect(userDao.getByName("jimbo")).andReturn(user);
+        SecurityContextHolderTestHelper.setSecurityContext(user, "password");
 
         complete = setId(COMPLETE_ID, createSingleEpochStudy("Complete", "E1"));
         complete.setAmendment(new Amendment());

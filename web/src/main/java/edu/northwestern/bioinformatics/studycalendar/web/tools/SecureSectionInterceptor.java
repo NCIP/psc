@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
@@ -27,7 +25,6 @@ import java.util.Set;
  * @author John Dzak
  */
 public class SecureSectionInterceptor extends SectionInterceptor implements BeanFactoryPostProcessor {
-    private UserDao userDao;
     private ConfigurableListableBeanFactory beanFactory;
     private ApplicationSecurityManager applicationSecurityManager;
 
@@ -35,16 +32,7 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         super.preHandle(request,  response, handler);
 
-        String userName = applicationSecurityManager.getUserName();
-        if (userName == null) {
-            // This shouldn't be possible
-            throw new StudyCalendarSystemException("No user available from security context");
-        }
-        User user = userDao.getByName(userName);
-        if (user == null) {
-            // Neither should this be possible
-            throw new StudyCalendarSystemException("%s in security context does not map to an actual user", userName);
-        }
+        User user = applicationSecurityManager.getUser();
 
         List<Section> filtered = new ArrayList<Section>();
 
@@ -82,10 +70,6 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
     }
 
     ////// CONFIGURATION
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {

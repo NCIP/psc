@@ -1,15 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -19,7 +32,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * @author Padmaja Vedula
@@ -29,10 +52,8 @@ import java.util.*;
 public class AssignSubjectController extends PscSimpleFormController {
     private SubjectDao subjectDao;
     private SubjectService subjectService;
-    private SiteService siteService;
     private StudyDao studyDao;
     private StudySegmentDao studySegmentDao;
-    private UserDao userDao;
     private SiteDao siteDao;
     private PopulationDao populationDao;
     private ApplicationSecurityManager applicationSecurityManager;
@@ -96,8 +117,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
-        String userName = applicationSecurityManager.getUserName();
-        User user = userDao.getByName(userName);
+        User user = applicationSecurityManager.getUser();
         command.setSubjectCoordinator(user);
         StudySubjectAssignment assignment = command.assignSubject();
         return new ModelAndView(getSuccessView(), "assignment", assignment.getId());
@@ -112,7 +132,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     private void addAvailableSitesRefdata(Map<String, Object> refdata, Study study) {
-        UserRole subjCoord = userDao.getByName(applicationSecurityManager.getUserName()).getUserRole(Role.SUBJECT_COORDINATOR);
+        UserRole subjCoord = applicationSecurityManager.getUser().getUserRole(Role.SUBJECT_COORDINATOR);
         List<StudySite> applicableStudySites = new LinkedList<StudySite>();
         for (StudySite studySite : study.getStudySites()) {
             if (subjCoord.getStudySites().contains(studySite)) applicableStudySites.add(studySite);
@@ -165,11 +185,6 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    @Required
     public void setPopulationDao(PopulationDao populationDao) {
         this.populationDao = populationDao;
     }
@@ -177,11 +192,6 @@ public class AssignSubjectController extends PscSimpleFormController {
     @Required
     public void setSubjectService(SubjectService subjectService) {
         this.subjectService = subjectService;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 
     @Required
