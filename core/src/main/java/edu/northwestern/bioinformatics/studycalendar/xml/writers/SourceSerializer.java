@@ -87,7 +87,7 @@ public class SourceSerializer {
                 if (!StringUtils.isBlank(name)) {
                     activity.setName(name);
                 } else {
-                    throw new StudyCalendarValidationException("Activity name can not be null for activities");
+                    throw new StudyCalendarValidationException("Activity name can not be empty or null for activities");
                 }
                 if (!StringUtils.isBlank(desc)) {
                     activity.setDescription(desc);
@@ -95,12 +95,11 @@ public class SourceSerializer {
                 if (!StringUtils.isBlank(code)) {
                     activity.setCode(code);
                 } else {
-                    throw new StudyCalendarValidationException("Activity code can not be null for activities");
+                    throw new StudyCalendarValidationException("Activity code can not be empty or null for activities");
                 }
-
                 if (source == null) {
-                    source = sourceDao.getByName(sourceName);
-
+                    source = new Source();
+                    source.setName(sourceName);
                 }
                 if (!StringUtils.isBlank(type) && activityTypeDao.getByName(type) != null) {
                     activity.setType(activityTypeDao.getByName(type));
@@ -115,8 +114,6 @@ public class SourceSerializer {
                             "All activities must belong to same source. %s and %s are not same source.",
                             source.getName(), sourceName);
                     }
-                } else {
-                    throw new StudyCalendarValidationException("source %s does not exist.", sourceName);
                 }
                 if(!activitiesToAddAndRemove.isEmpty()){
                     for(Activity a:activitiesToAddAndRemove) {
@@ -127,12 +124,12 @@ public class SourceSerializer {
                 }
                 activitiesToAddAndRemove.add(activity);
             }
-            sourceService.updateSource(source, activitiesToAddAndRemove);
             reader.close();
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new StudyCalendarSystemException("error importing csv file", e);
         }
+        source.addNewActivities(activitiesToAddAndRemove);
         return source;
     }
 

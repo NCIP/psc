@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
 
 public class SourceSerializerTest extends StudyCalendarTestCase {
     private static final String SOURCE_NAME = "TestSource";
@@ -129,7 +131,7 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
         expect(activityTypeDao.getByName("Other")).andReturn(other).anyTimes();
         expect(activityTypeDao.getByName("Intervention")).andReturn(intervention).anyTimes();
-        sourceDao.save(anotherSource);
+//        sourceDao.save(anotherSource);
         replayMocks();
 
         Source importedSource = serializer.readDocument(validDocStream);
@@ -159,7 +161,7 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         expect(activityTypeDao.getByName("INTERVENTION")).andReturn(intervention).anyTimes();
         String document = serializer.createDocumentString(source, CSV_DELIM);
 
-        sourceDao.save(anotherSource);
+//        sourceDao.save(anotherSource);
 
         replayMocks();
         Source importedSource = serializer.readDocument(IOUtils.toInputStream(document));
@@ -199,6 +201,113 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         }
         verifyMocks();
     }
+
+
+
+    public void testValidateActivityByName() throws Exception {
+        Activity activity = createActivity("", "123", source, createActivityType("Bone Scan"));
+        Source source = new Source();
+        source.addActivity(activity);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        try {
+            serializer.readDocument(in);
+        } catch (Exception e) {
+            assertEquals("Activity name can not be empty or null for activities", e.getMessage());
+        }
+    }
+
+    public void testValidateActivityByCode() throws Exception {
+        Activity activity = createActivity("a", "", source, createActivityType("Bone Scan"));
+        Source source = new Source();
+        source.addActivity(activity);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        try {
+            serializer.readDocument(in);
+        } catch (Exception e) {
+            assertEquals("Activity code can not be empty or null for activities", e.getMessage());
+        }
+    }
+
+    public void testValidateActivityByType() throws Exception {
+        Activity activity = createActivity("a", "123", source, createActivityType(""));
+        Source source = new Source();
+        source.addActivity(activity);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        expect(activityTypeDao.getByName(activity.getType().getName())).andReturn(activity.getType()).anyTimes();
+        try {
+            serializer.readDocument(in);
+        } catch (Exception e) {
+            assertEquals("Activity type " + activity.getType().getName() + " is invalid. Please choose from this list: null.", e.getMessage());
+        }
+    }
+
+    public void testValidateActivitiesByUniqueName() throws Exception {
+        Activity activity1 = createActivity("a", "123", source, createActivityType("Bone Scan"));
+        Activity activity2 = createActivity("b", "1234", source, createActivityType("Bone Scan"));
+        Activity activity3 = createActivity("a", "1235", source, createActivityType("Bone Scan"));
+        List<Activity> activities = new ArrayList<Activity>();
+        activities.add(activity1);
+        activities.add(activity2);
+        activities.add(activity3);
+        Source source = new Source();
+        source.setActivities(activities);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        expect(activityTypeDao.getByName(activity1.getType().getName())).andReturn(activity1.getType()).anyTimes();
+        try {
+            replayMocks();
+            serializer.readDocument(in);
+            verifyMocks();
+        } catch (Exception e) {
+            assertEquals("Name and Code must be unique for activities within same source", e.getMessage());
+        }
+    }
+
+    public void testValidateActivitiesByUniqueCode() throws Exception {
+        Activity activity1 = createActivity("a", "123", source, createActivityType("Bone Scan"));
+        Activity activity2 = createActivity("b", "1234", source, createActivityType("Bone Scan"));
+        Activity activity3 = createActivity("d", "123", source, createActivityType("Bone Scan"));
+        List<Activity> activities = new ArrayList<Activity>();
+        activities.add(activity1);
+        activities.add(activity2);
+        activities.add(activity3);
+        Source source = new Source();
+        source.setActivities(activities);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        expect(activityTypeDao.getByName(activity1.getType().getName())).andReturn(activity1.getType()).anyTimes();
+        try {
+            replayMocks();
+            serializer.readDocument(in);
+            verifyMocks();
+        } catch (Exception e) {
+            assertEquals("Name and Code must be unique for activities within same source", e.getMessage());
+        }
+    }
+
+    public void testValidateActivitiesBySourceNameWhichDontExist() throws Exception {
+        Activity activity = createActivity("a", "123", source, createActivityType("Bone Scan"));
+        List<Activity> activities = Collections.singletonList(activity);
+        Source source = new Source();
+        source.setName("SOURCE");
+        activity.setSource(source);
+        source.setActivities(activities);
+        String doc = serializer.createDocumentString(source, CSV_DELIM);
+        ByteArrayInputStream in = new ByteArrayInputStream(doc.getBytes());
+        expect(activityTypeDao.getByName(activity.getType().getName())).andReturn(activity.getType()).anyTimes();
+        try {
+            replayMocks();
+            serializer.readDocument(in);
+            verifyMocks();
+        } catch (Exception e) {
+            assertEquals("source " + source.getName() + " does not exist.", e.getMessage());
+        }
+    }
+
+
 
     private void assertActivitiesEqual(Activity expected, Activity actual) {
         assertEquals("name must be same", expected.getName(), actual.getName());

@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,15 @@ public class ImportActivitiesService {
     }
 
     public Source loadAndSaveCSVFile(InputStream inputStream) {
-        return sourceSerializer.readDocument(inputStream);
+        Source source = sourceSerializer.readDocument(inputStream);
+        List<Activity> activitiesToAddOrRemove = source.getActivities();
+        String sourceName = source.getName();
+        source = sourceDao.getByName(sourceName);
+        if (source == null) {
+            throw new StudyCalendarValidationException("source %s does not exist.", sourceName);
+        }
+        sourceService.updateSource(source, activitiesToAddOrRemove);
+        return source;
     }
 
     protected Collection<Source> readData(InputStream dataFile) {
