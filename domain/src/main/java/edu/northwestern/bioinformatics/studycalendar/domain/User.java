@@ -15,8 +15,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -36,11 +38,14 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
     private Set<UserRole> userRoles;
     private Boolean activeFlag;
     private List<StudySubjectAssignment> studySubjectAssignments;
+    
+    private Map<String, Object> attributes;
 
     public User() {
         this.userRoles = new LinkedHashSet<UserRole>();
         this.studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
         this.activeFlag = true;
+        this.attributes = new HashMap<String, Object>(); 
     }
 
     ////// LOGIC
@@ -270,4 +275,18 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
     public int hashCode() {
         return (name != null ? name.hashCode() : 0);
     }
+
+	public void addAttribute(String key, Object value){
+		attributes.put(key, value);	
+	}
+	
+	@Transient
+	public Object getAttribute(String key){
+		return attributes.get(key);
+	}
+	
+	public void removeAttribute(String key){
+		attributes.remove(key);
+	}
+
 }
