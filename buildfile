@@ -940,6 +940,30 @@ define "psc" do
       jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
 
+    desc "Prints a list of the bundles in the dev webapp with their IDs"
+    task :'list-dev-bundles' do
+      felix_runtime_dir = _('target/dev-webapp/WEB-INF/da-launcher/runtime/profile')
+      if File.exist?(felix_runtime_dir)
+        Dir["#{felix_runtime_dir}/bundle*"].collect { |b| b.scan(/bundle(\d+)/)[0][0].to_i }.sort.each do |bundle_id|
+          location_file = "#{felix_runtime_dir}/bundle#{bundle_id}/bundle.location"
+          bundle_info =
+            if File.exist? location_file
+              loc = File.read("#{felix_runtime_dir}/bundle#{bundle_id}/bundle.location")
+              if application.options.trace
+                loc
+              else
+                loc.split(%r{/})[-1]
+              end
+            else
+              "<No location available>"
+            end
+          puts "%3d %s" % [bundle_id, bundle_info]
+        end
+      else
+        puts "The dev webapp is not deployed (#{felix_runtime_dir} does not exist)"
+      end
+    end
+
     desc "Specs for client-side javascript"
     define "js-spec" do
       # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
