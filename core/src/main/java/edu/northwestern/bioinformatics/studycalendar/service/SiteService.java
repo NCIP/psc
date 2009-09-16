@@ -35,11 +35,19 @@ public class SiteService {
     private UserService userService;
 
     public Site getById(int id) {
-        return siteConsumer.refresh(siteDao.getById(id));
+        return nullSafeRefresh(siteDao.getById(id));
     }
 
     public Site getByAssignedIdentifier(final String assignedIdentifier) {
-        return siteConsumer.refresh(siteDao.getByAssignedIdentifier(assignedIdentifier));
+        return nullSafeRefresh(siteDao.getByAssignedIdentifier(assignedIdentifier));
+    }
+
+    private Site nullSafeRefresh(Site site) {
+        if (site == null) {
+            return null;
+        } else {
+            return siteConsumer.refresh(site);
+        }
     }
 
     public List<Site> getAll() {

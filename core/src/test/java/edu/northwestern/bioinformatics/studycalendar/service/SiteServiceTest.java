@@ -193,6 +193,14 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testGetByIdForUnknownReturnsNull() throws Exception {
+        expect(siteDao.getById(-1)).andReturn(null);
+        replayMocks();
+
+        assertNull(service.getById(-1));
+        verifyMocks();
+    }
+
     public void testGetByAssignedIdentRefreshesSite() throws Exception {
         expect(siteDao.getByAssignedIdentifier("NU")).andReturn(nu);
         expect(siteConsumer.refresh(nu)).andReturn(nu);
@@ -202,6 +210,14 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
     
+    public void testGetByAssignedIdentForUnknownReturnsNull() throws Exception {
+        expect(siteDao.getByAssignedIdentifier("elf")).andReturn(null);
+        replayMocks();
+
+        assertNull(service.getByAssignedIdentifier("elf"));
+        verifyMocks();
+    }
+
     public void testGetAllRefreshes() throws Exception {
         List<Site> expected = Arrays.asList(nu, mayo);
         expect(siteDao.getAll()).andReturn(expected);
