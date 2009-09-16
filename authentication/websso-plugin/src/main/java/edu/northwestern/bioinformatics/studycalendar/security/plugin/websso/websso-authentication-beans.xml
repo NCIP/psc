@@ -11,7 +11,9 @@
        ">
     <bean id="cctsAuthoritiesPopulator"
           class="edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.WebSSOAuthoritiesPopulator">
-        <property name="userDetailsService" ref="pscUserDetailsService"/>
+        <property name="pscUserDetailsService" ref="pscUserDetailsService"/>
+        <property name="hostKey" value="${websso.hostkey.path}"/>
+        <property name="hostCertificate" value="${websso.hostcert.path}"/>
     </bean>
 
     <bean id="cctsCasProxyTicketValidator"
