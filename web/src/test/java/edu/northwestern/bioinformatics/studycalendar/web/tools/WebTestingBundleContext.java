@@ -5,11 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.security.StubAuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
-import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -29,7 +29,7 @@ public class WebTestingBundleContext extends PscTestingBundleContext {
         testingDetails.clear();
         addService(AuthenticationSystem.class, new StubAuthenticationSystem());
         addService(HostBeans.class, new HostBeansImpl());
-        addService(UserDetailsService.class, new InMemoryDaoImpl());
+        addService(PscUserDetailsService.class, new PscUserDetailsServiceImpl());
         addService(ConfigurationAdmin.class, new MockConfigurationAdmin());
         addService(FilterSecurityInterceptorConfigurer.class, new FilterSecurityInterceptorConfigurer());
         addService(CompleteAuthenticationSystem.class, new CompleteAuthenticationSystemImpl());

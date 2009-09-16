@@ -1,21 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import junit.framework.TestCase;
-import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.DataAccessException;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -23,7 +29,7 @@ import java.sql.SQLException;
 public abstract class AuthenticationTestCase extends TestCase {
     private final Log log = LogFactory.getLog(getClass());
     private MockRegistry mocks;
-    protected UserDetailsService userDetailsService;
+    protected StaticPscUserDetailsService userDetailsService;
     protected DataSource dataSource;
     protected PscTestingBundleContext bundleContext;
 
@@ -32,12 +38,12 @@ public abstract class AuthenticationTestCase extends TestCase {
         super.setUp();
         mocks = new MockRegistry(log);
 
-        userDetailsService = new InMemoryDaoImpl();
+        userDetailsService = new StaticPscUserDetailsService();
         dataSource = new FakeDataSource();
 
         bundleContext = new PscTestingBundleContext();
         bundleContext.addService(DataSource.class, dataSource);
-        bundleContext.addService(UserDetailsService.class, userDetailsService);
+        bundleContext.addService(PscUserDetailsService.class, userDetailsService);
     }
 
     protected <T> T registerMockFor(Class<T> clazz, Method... methods) {
@@ -91,6 +97,20 @@ public abstract class AuthenticationTestCase extends TestCase {
 
         public int getLoginTimeout() throws SQLException {
             throw new UnsupportedOperationException("getLoginTimeout not implemented");
+        }
+    }
+
+    protected static class StaticPscUserDetailsService implements PscUserDetailsService {
+        private Map<String, User> users = new HashMap<String, User>();
+
+        public User loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+            User u = users.get(username);
+            if (u == null) throw new UsernameNotFoundException(username);
+            return u;
+        }
+
+        public void addUser(String username, Role... roles) {
+            users.put(username, Fixtures.createUser(username, roles));
         }
     }
 }

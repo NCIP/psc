@@ -2,16 +2,16 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
-import org.acegisecurity.userdetails.UserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class HostBeansImpl implements HostBeans {
     private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
 
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        DataSource.class, UserDetailsService.class
+        DataSource.class, PscUserDetailsService.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -63,8 +63,8 @@ public class HostBeansImpl implements HostBeans {
         invokers.get(DataSource.class).setBean(dataSource);
     }
 
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        invokers.get(UserDetailsService.class).setBean(userDetailsService);
+    public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
+        invokers.get(PscUserDetailsService.class).setBean(userDetailsService);
     }
 
     private static class DeferredBeanInvoker implements InvocationHandler {

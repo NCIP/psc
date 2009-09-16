@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
@@ -77,8 +78,8 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         this.bundleContext = bundleContext;
     }
 
-    protected UserDetailsService getUserDetailsService() {
-        return getServiceInstance(UserDetailsService.class);
+    protected PscUserDetailsService getUserDetailsService() {
+        return getServiceInstance(PscUserDetailsService.class);
     }
 
     protected DataSource getDataSource() {

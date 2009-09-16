@@ -97,7 +97,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager"/>
 
     <bean id="pscUserDetailsService"
-        class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsService">
+        class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl">
         <property name="userService" ref="userService"/>
     </bean>
 

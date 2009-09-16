@@ -1,11 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.userdetails.UserDetailsService;
-import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -18,12 +15,10 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
         super.setUp();
         system = new InsecureAuthenticationSystem();
         system.setBundleContext(bundleContext);
-        userDetailsService = registerMockFor(UserDetailsService.class);
-        bundleContext.addService(UserDetailsService.class, userDetailsService);
     }
 
     public void testTokenAuthProviderAuthenticatesAnyUsernameInTheService() throws Exception {
-        expect(userDetailsService.loadUserByUsername("jojo")).andReturn(Fixtures.createUser("jojo", Role.STUDY_ADMIN));
+        userDetailsService.addUser("jojo", Role.STUDY_ADMIN);
         replayMocks();
         Authentication result = doTokenAuthenticate("jojo");
         assertTrue(result.isAuthenticated());
@@ -31,7 +26,7 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
 
     public void testTokenAuthProviderGrantsAuthoritiesBasedOnRoles() throws Exception {
-        expect(userDetailsService.loadUserByUsername("jojo")).andReturn(Fixtures.createUser("jojo", Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR));
+        userDetailsService.addUser("jojo", Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR);
         replayMocks();
         Authentication result = doTokenAuthenticate("jojo");
         assertEquals("Wrong number of authorities", 2, result.getAuthorities().length);
@@ -41,7 +36,7 @@ public class InsecureAuthenticationSystemTest extends AuthenticationTestCase {
     }
     
     public void testUserPassProviderAuthenticatesAnyUsername() {
-        expect(userDetailsService.loadUserByUsername("jojo")).andReturn(Fixtures.createUser("jojo", Role.STUDY_ADMIN));
+        userDetailsService.addUser("jojo", Role.STUDY_ADMIN);
         replayMocks();
         Authentication result = doUsernamePasswordAuthenticate("jojo");
         assertTrue(result.isAuthenticated());

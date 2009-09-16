@@ -215,14 +215,24 @@ define "psc" do
         project('test-infrastructure').test_dependencies
       package(:jar)
     end
+
+    define "acegi" do
+      bnd.wrap!
+      bnd.name = "PSC Acegi Extensions"
+      bnd.import_packages << 
+        "org.acegisecurity" <<
+        "gov.nih.nci.cabig.ctms.domain"
+      compile.with SECURITY.acegi, project('domain').and_dependencies
+      package(:jar)
+    end
     
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
-      compile.with project('utility'), SLF4J.api, OSGI,
-        CONTAINER_PROVIDED, SPRING, SECURITY.acegi, CTMS_COMMONS.core, 
-        JAKARTA_COMMONS.lang, SPRING_OSGI
+      compile.with project('utility'), project('authentication:acegi'),
+        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
+        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
       test.with UNIT_TESTING, EHCACHE,
         project('test-infrastructure').and_dependencies,
         project('test-infrastructure').test_dependencies
@@ -370,6 +380,7 @@ define "psc" do
     )
     
     compile.with project('domain').and_dependencies,
+      project('authentication:acegi').and_dependencies,
       project('providers:api').and_dependencies,
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
@@ -475,8 +486,12 @@ define "psc" do
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.Activator"
       bnd.name = "PSC OSGi Layer Access to Host Services"
+      bnd.import_packages <<
+        "org.acegisecurity.userdetails" <<
+        "edu.northwestern.bioinformatics.studycalendar.domain"
       
-      compile.with project('utility').and_dependencies, SECURITY.acegi, OSGI
+      compile.with project('utility').and_dependencies,
+        project('authentication:acegi'), SECURITY.acegi, OSGI
       test.using(:junit).with UNIT_TESTING, 
         project('domain').and_dependencies, project('domain').test_dependencies
       

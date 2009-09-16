@@ -2,9 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
-import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
@@ -26,7 +27,7 @@ public class HostBeansImplTest extends TestCase {
     private Map<String, Object> registeredServices;
     private HostBeansImpl impl;
     private DataSource dataSource;
-    private UserDetailsService pscUserDetailsService;
+    private PscUserDetailsService pscUserDetailsService;
 
     @Override
     protected void setUp() throws Exception {
@@ -45,7 +46,7 @@ public class HostBeansImplTest extends TestCase {
         impl = new HostBeansImpl();
         impl.registerServices(bundleContext);
         dataSource = mockRegistry.registerMockFor(DataSource.class);
-        pscUserDetailsService = mockRegistry.registerMockFor(UserDetailsService.class);
+        pscUserDetailsService = mockRegistry.registerMockFor(PscUserDetailsService.class);
     }
 
     public void testProxyServiceRegisteredForDataSource() throws Exception {
@@ -56,8 +57,9 @@ public class HostBeansImplTest extends TestCase {
     }
 
     public void testProxyServiceRegisteredForUserDetailsService() throws Exception {
-        assertTrue("Missing service", registeredServices.containsKey("org.acegisecurity.userdetails.UserDetailsService"));
-        Object service = registeredServices.get("org.acegisecurity.userdetails.UserDetailsService");
+        String serviceName = PscUserDetailsService.class.getName();
+        assertTrue("Missing service", registeredServices.containsKey(serviceName));
+        Object service = registeredServices.get(serviceName);
         assertNotNull(service);
         assertTrue(service instanceof UserDetailsService);
     }
@@ -86,10 +88,10 @@ public class HostBeansImplTest extends TestCase {
     }
 
     public void testUserDetailsServiceDelegatesToPscUserDetailsServiceBean() throws Exception {
-        UserDetailsService actual = (UserDetailsService) registeredServices.get(UserDetailsService.class.getName());
-        impl.setUserDetailsService(pscUserDetailsService);
+        PscUserDetailsService actual = (PscUserDetailsService) registeredServices.get(PscUserDetailsService.class.getName());
+        impl.setPscUserDetailsService(pscUserDetailsService);
 
-        UserDetails expectedUser = Fixtures.createUser("Joe");
+        User expectedUser = Fixtures.createUser("Joe");
         expect(pscUserDetailsService.loadUserByUsername("joe")).andReturn(expectedUser);
         mockRegistry.replayMocks();
         assertSame(expectedUser, actual.loadUserByUsername("joe"));

@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import org.acegisecurity.userdetails.UserDetailsService;
 import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
@@ -45,11 +45,11 @@ public class HostBeansInitializerTest extends StudyCalendarTestCase {
     }
 
     public void testUserDetailsServicePassedOnOnInit() throws Exception {
-        UserDetailsService uds = registerMockFor(UserDetailsService.class);
-        initializer.setUserDetailsService(uds);
+        PscUserDetailsService uds = registerMockFor(PscUserDetailsService.class);
+        initializer.setPscUserDetailsService(uds);
 
         expectGetHostBeansFromBundleContext();
-        hostBeans.setUserDetailsService(uds); // expect
+        hostBeans.setPscUserDetailsService(uds); // expect
 
         replayMocks();
         initializer.afterPropertiesSet();

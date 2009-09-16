@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices;
 
-import org.acegisecurity.userdetails.UserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 
 import javax.sql.DataSource;
 
@@ -9,5 +9,5 @@ import javax.sql.DataSource;
  */
 public interface HostBeans {
     void setDataSource(DataSource dataSource);
-    void setUserDetailsService(UserDetailsService userDetailsService);
+    void setPscUserDetailsService(PscUserDetailsService userDetailsService);
 }

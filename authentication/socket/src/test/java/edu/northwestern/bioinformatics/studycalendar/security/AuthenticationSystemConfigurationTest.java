@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AbstractAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystemInitializationFailure;
@@ -9,11 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.plugin.Authenticat
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.local.LocalAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
-import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.memory.InMemoryDaoImpl;
-import org.acegisecurity.userdetails.memory.UserMap;
-import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.EasyMock.notNull;
+import static org.easymock.classextension.EasyMock.expect;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -47,21 +44,18 @@ public class AuthenticationSystemConfigurationTest extends AuthenticationTestCas
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        InMemoryDaoImpl dao = new InMemoryDaoImpl();
-        dao.setUserMap(new UserMap());
-        dao.getUserMap().addUser(Fixtures.createUser("alice"));
-        dao.getUserMap().addUser(Fixtures.createUser("barbara"));
-        userDetailsService = dao;
+        userDetailsService.addUser("alice");
+        userDetailsService.addUser("barbara");
         mockBundleContext = registerMockFor(BundleContext.class);
 
         expectSingleService(DataSource.class, dataSource);
-        expectSingleService(UserDetailsService.class, userDetailsService);
+        expectSingleService(PscUserDetailsService.class, userDetailsService);
 
         configuration = new AuthenticationSystemConfiguration();
         configuration.setBundleContext(mockBundleContext);
     }
 
-    private void expectSingleService(Class<?> serviceClass, Object instance) {
+    private <T> void expectSingleService(Class<T> serviceClass, T instance) {
         ServiceReference dsRef = new MockServiceReference(new String[] { serviceClass.getName() });
         expect(mockBundleContext.getServiceReference(serviceClass.getName())).andReturn(dsRef);
         expect(mockBundleContext.getService(dsRef)).andReturn(instance);

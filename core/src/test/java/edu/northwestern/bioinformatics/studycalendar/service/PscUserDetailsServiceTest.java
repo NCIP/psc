@@ -11,7 +11,7 @@ import static org.easymock.EasyMock.expect;
 public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
     private User user;
     private UserService userService;
-    private PscUserDetailsService service;
+    private PscUserDetailsServiceImpl service;
 
     @Override
     protected void setUp() throws Exception {
@@ -19,7 +19,7 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
 
         userService = registerMockFor(UserService.class);
 
-        service = new PscUserDetailsService();
+        service = new PscUserDetailsServiceImpl();
         service.setUserService(userService);
 
         user = Fixtures.createUser(1, "John", 1L, true);
