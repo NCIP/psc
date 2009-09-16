@@ -294,8 +294,14 @@ define "psc" do
         "gov.nih.nci.cabig.caaers.web.security.cas" <<
         "org.apache.commons.httpclient" << # an instance is directly created in cas-authentication-beans.xml, so it needs to be visible
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct"
-      compile.with project('plugin-api').and_dependencies,
-        project('cas-plugin').and_dependencies, SECURITY.caaers_cas
+      compile.with project('plugin-api').and_dependencies, project('cas-plugin').and_dependencies, SECURITY.caaers_cas, 
+        project('domain').and_dependencies
+        #TODO: Uncomment the compile time dependencies when the OSGI-fying the grid is tabled
+        #CAGRID_CDS, GLOBUS.core, psc_osgi_artifact(artifact("gov.nih.nci.cagrid:cagrid-core:jar:1.0"), 
+        #                                    "Export-Package" => "!gov.nih.nci.cagrid, *"), 
+        #  psc_osgi_artifact(artifact("org.globus:wss4j:jar:4.0-cagrid1.0"), 
+        #                                    "Export-Package" => "!org.apache.ws, *")
+                                            
       test.with project('plugin-api').test_dependencies,
         project('cas-plugin').test_dependencies, 
         project('domain').and_dependencies, 
