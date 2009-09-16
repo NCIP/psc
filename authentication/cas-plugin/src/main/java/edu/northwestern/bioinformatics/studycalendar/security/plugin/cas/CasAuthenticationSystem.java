@@ -34,7 +34,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     private static final DefaultConfigurationProperties PROPERTIES
         = new DefaultConfigurationProperties(
-            new ClassPathResource(absoluteClasspathResourceNameFor("cas-details.properties"), CasAuthenticationSystem.class));
+            new ClassPathResource(absoluteClasspathResourceNameFor("cas-details.properties" , CasAuthenticationSystem.class), CasAuthenticationSystem.class));
     public static final ConfigurationProperty<String> SERVICE_URL
         = PROPERTIES.add(new DefaultConfigurationProperty.Text("cas.serviceUrl"));
     public static final ConfigurationProperty<String> TRUST_STORE
@@ -77,10 +77,10 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     }
 
     protected String[] applicationContextResourceNames() {
-        return new String[] { absoluteClasspathResourceNameFor("cas-authentication-beans.xml") };
+        return new String[] { absoluteClasspathResourceNameFor("cas-authentication-beans.xml" , CasAuthenticationSystem.class) };
     }
 
-    private Properties createContextProperties() {
+    protected Properties createContextProperties() {
         Properties template = new Properties();
         nullSafeSetProperty(template, "cas.server.trustStore",   getConfiguration().get(TRUST_STORE));
         nullSafeSetProperty(template, "cas.server.url.base",     getConfiguration().get(SERVICE_URL));
@@ -100,7 +100,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         return template;
     }
 
-    private void nullSafeSetProperty(Properties template, String key, String value) {
+    protected void nullSafeSetProperty(Properties template, String key, String value) {
         template.setProperty(key, value == null ? "" : value);
     }
 
@@ -167,9 +167,9 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         return "casProxyTicketValidator";
     }
 
-    private static String absoluteClasspathResourceNameFor(String relative) {
-        return "/" + CasAuthenticationSystem.class.getName().
-            replaceAll(CasAuthenticationSystem.class.getSimpleName(), "").
+    protected static String absoluteClasspathResourceNameFor(String relative , Class root) {
+        return "/" + root.getName().
+            replaceAll(root.getSimpleName(), "").
             replaceAll("\\.", "/") + relative;
     }
 }
