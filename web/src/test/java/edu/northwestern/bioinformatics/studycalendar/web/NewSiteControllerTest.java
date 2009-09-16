@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.Errors;
 import static org.easymock.EasyMock.expect;
-
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -17,30 +16,33 @@ import java.util.Map;
  */
 public class NewSiteControllerTest  extends ControllerTestCase {
     private NewSiteController controller = new NewSiteController();
-    private SiteDao siteDao = new SiteDao();
-    private SiteService siteService = new SiteService();
+    private SiteService siteService;
     private NewSiteCommand command;
-    private StudyCalendarAuthorizationManager authorizationManager;
     private Site nu;
-    private HibernateTemplate hibernateTemplate;
 
     protected void setUp() throws Exception {
         super.setUp();
         nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
-        siteService.setSiteDao(siteDao);
-        hibernateTemplate = registerMockFor(HibernateTemplate.class);
-        siteDao.setHibernateTemplate(hibernateTemplate);
+        siteService = registerMockFor(SiteService.class);
         command = new NewSiteCommand(nu, siteService);
-        siteDao = registerMockFor(SiteDao.class);
-        controller.setSiteDao(siteDao);
         controller.setSiteService(siteService);
-        authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
-        siteService.setStudyCalendarAuthorizationManager(authorizationManager);
     }
 
-    public void testReferenceData() throws Exception {
+    public void testReferenceDataForCreateAction() throws Exception {
         Map<String, Object> refdata = controller.referenceData(request,command,null);
-        assertEquals("Comamnd not Match","Create / Edit",refdata.get("action"));
+        assertEquals("Action does not match","Create",refdata.get("action"));
+    }
+
+    public void testReferenceDataForEditAction() throws Exception {
+        request.addParameter("id","2");
+        Map<String, Object> refdata = controller.referenceData(request,command,null);
+        assertEquals("Action does not match","Edit",refdata.get("action"));
+    }
+
+    public void testReferenceDataForSite() throws Exception {
+        command.setSite(nu);
+        Map<String, Object> refdata = controller.referenceData(request,command,null);
+        assertEquals("Site does not match", command.getSite(), refdata.get("site"));
     }
 
     public void testFormView() throws Exception {
@@ -48,13 +50,29 @@ public class NewSiteControllerTest  extends ControllerTestCase {
     }
 
     public void testOnSubmit() throws Exception {
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
-        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        hibernateTemplate.saveOrUpdate(nu);
+        NewSiteController mockableController = new MockableCommandController();
+        expect(command.createSite()).andReturn(null);
         replayMocks();
-        Site siteCreated = command.createSite();
+
+        ModelAndView mv = mockableController.handleRequest(request, response);
         verifyMocks();
-        assertNotNull("site not created", siteCreated);
+
+        assertEquals("Wrong view", "sites", ((RedirectView)mv.getView()).getUrl());
+    }
+
+    private class MockableCommandController extends NewSiteController{
+        public MockableCommandController() {
+            setSiteService(siteService);
+            setValidateOnBinding(false);
+        }
+        @Override
+        protected Object formBackingObject(HttpServletRequest request) throws Exception {
+            return command;
+        }
+        @Override
+        protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest, Object oCommand, Errors errors) throws Exception {
+            return null;
+        }
     }
 
 }

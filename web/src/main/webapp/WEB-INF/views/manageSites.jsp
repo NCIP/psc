@@ -37,7 +37,7 @@
                     <td>${site.name}</td>
                     <td><a href="<c:url value="/pages/admin/manage/blackoutDates?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
                     <td></td>
-                    <td><a href="<c:url value="/pages/admin/manage/newSite?site=${site.id}"/>">Edit</a></td>
+                    <td><a href="<c:url value="/pages/admin/manage/editSite?id=${site.id}"/>">Edit</a></td>
                        <c:forEach items="${enableDeletes}" var="enableDelete">
                         <c:if test="${site.id == enableDelete.key}">
                             <c:if test="${enableDelete.value==true}">

@@ -218,6 +218,23 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testGetByNameRefreshesSite() throws Exception {
+        expect(siteDao.getByName("Northwestern")).andReturn(nu);
+        expect(siteConsumer.refresh(nu)).andReturn(nu);
+        replayMocks();
+
+        assertSame(nu, service.getByName("Northwestern"));
+        verifyMocks();
+    }
+
+    public void testGetByNameForUnknownReturnsNull() throws Exception {
+        expect(siteDao.getByAssignedIdentifier("xyz")).andReturn(null);
+        replayMocks();
+
+        assertNull(service.getByAssignedIdentifier("xyz"));
+        verifyMocks();
+    }
+
     public void testGetAllRefreshes() throws Exception {
         List<Site> expected = Arrays.asList(nu, mayo);
         expect(siteDao.getAll()).andReturn(expected);

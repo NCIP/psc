@@ -45,14 +45,14 @@
     <laf:division>
         <form:form method="post">
             <form:errors path="*"/>
-            <input name="provider" id="provider" type="hidden"/> 
+            <input name="provider" id="provider" type="hidden"/>
             <div class="row">
-                <div class="label">Site Name</div>
-                <div class="value"><input id="site-name" name="name" type="text" value="${name}" size="30"/></div>
+                <div class="label"><form:label path="site.name">Site name</form:label></div>
+                <div class="value"><form:input path="site.name" size="40" id="site-name"/></div>
             </div>
             <div class="row">
-                <div class="label">Assigned Identifier</div>
-                <div class="value"><input id="assigned-identifier" name="assignedIdentifier" value="${assignIdentifier}" size="30" /> </div>
+                <div Class="label"><form:label path="site.assignedIdentifier">Assigned Identifier</form:label></div>
+                <div class="value"><form:input path="site.assignedIdentifier" size="40" id="assigned-identifier"/></div>
             </div>
             <div class="row submit">
                     <input type="submit" value="Save"/>

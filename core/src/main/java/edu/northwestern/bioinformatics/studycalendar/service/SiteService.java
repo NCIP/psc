@@ -53,6 +53,10 @@ public class SiteService {
     public List<Site> getAll() {
         return siteConsumer.refresh(siteDao.getAll());
     }
+
+    public Site getByName(final String name) {
+        return nullSafeRefresh(siteDao.getByName(name));
+    }
     
     public Site createOrUpdateSite(Site site) {
         siteDao.save(site);
