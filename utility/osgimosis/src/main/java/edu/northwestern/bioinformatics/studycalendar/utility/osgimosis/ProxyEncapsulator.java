@@ -71,14 +71,28 @@ public class ProxyEncapsulator implements ArrayCapableEncapsulator {
     }
 
     public Object encapsulate(Object far) {
-        log.trace("Proxying {} in {}", far, nearClassLoader);
-        log.trace(" - Identity: {}@{}", far.getClass().getName(), Integer.toHexString(System.identityHashCode(far)));
-        EncapsulationInterceptor interceptor = new EncapsulationInterceptor(far, this);
-        if (nearSuperclass == null) {
-            return proxyWithJdk(interceptor);
-        } else {
-            return proxyWithCglib(interceptor);
+        try {
+            log.trace("Proxying {} in {}", far, nearClassLoader);
+            log.trace(" - Identity: {}@{}", far.getClass().getName(), Integer.toHexString(System.identityHashCode(far)));
+            EncapsulationInterceptor interceptor = new EncapsulationInterceptor(far, this);
+            if (nearSuperclass == null) {
+                return proxyWithJdk(interceptor);
+            } else {
+                return proxyWithCglib(interceptor);
+            }
+        } catch (RuntimeException t) {
+            logProxyError(far, t);
+            throw t;
+        } catch (Error t) {
+            logProxyError(far, t);
+            throw t;
         }
+    }
+
+    private void logProxyError(Object far, Throwable error) {
+        log.error(String.format("There was a problem proxying %s (%s@%s) in classloader %s",
+            far, far.getClass().getName(),  Integer.toHexString(System.identityHashCode(far)), nearClassLoader), 
+            error);
     }
 
     public Class<?> componentType() {
