@@ -11,6 +11,7 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,10 +99,12 @@ public class OsgiLayerTools {
 
     ////// CONFIGURATION
 
+    @Required
     public void setMembrane(Membrane membrane) {
         this.membrane = membrane;
     }
 
+    @Required
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }

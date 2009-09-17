@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.core;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -25,8 +24,12 @@ public class StudyCalendarApplicationContextBuilder {
         "classpath:applicationContext-core-osgi.xml"
     };
 
-    private static ApplicationContext applicationContext = null;
-    private static Throwable acLoadingFailure = null;
+    private static final StaticApplicationContextHelper helper = new StaticApplicationContextHelper() {
+        @Override
+        protected ApplicationContext createApplicationContext() {
+            return createDeployedApplicationContext();
+        }
+    };
 
     /**
      * Creates a new copy of the application context, as it is created in the deployed application.
@@ -43,19 +46,7 @@ public class StudyCalendarApplicationContextBuilder {
      * not retry the load.  This makes running a partially failing suite much faster.
      */
     public static ApplicationContext getDeployedApplicationContext() {
-        synchronized (StudyCalendarApplicationContextBuilder.class) {
-            if (applicationContext == null && acLoadingFailure == null) {
-                try {
-                    applicationContext = createDeployedApplicationContext();
-                } catch (RuntimeException e) {
-                    acLoadingFailure = e;
-                    throw e;
-                }
-            } else if (acLoadingFailure != null) {
-                throw new StudyCalendarSystemException("Application context loading already failed; will not retry.", acLoadingFailure);
-            }
-            return applicationContext;
-        }
+        return helper.getApplicationContext();
     }
 
     // static class

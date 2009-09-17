@@ -5,6 +5,6 @@ class Buildr::Project
   end
   
   def test_dependencies
-    [self.test.compile.target, self.test.compile.dependencies].compact
+    [self.test.compile.target, self.test.resources.target, self.test.compile.dependencies].compact
   end
 end

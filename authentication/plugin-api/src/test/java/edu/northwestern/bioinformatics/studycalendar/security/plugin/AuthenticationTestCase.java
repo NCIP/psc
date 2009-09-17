@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
-import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
+import edu.northwestern.bioinformatics.studycalendar.core.PscTestingBundleContext;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;

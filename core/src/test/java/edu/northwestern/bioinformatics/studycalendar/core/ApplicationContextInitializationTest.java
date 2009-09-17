@@ -11,13 +11,13 @@ import org.springframework.context.ApplicationContext;
  */
 public class ApplicationContextInitializationTest extends StudyCalendarTestCase {
     public void testApplicationContextItself() throws Exception {
-        ApplicationContext context = StudyCalendarApplicationContextBuilder.getDeployedApplicationContext();
+        ApplicationContext context = getDeployedApplicationContext();
         // no exceptions
         assertPositive("No bean definitions loaded", context.getBeanDefinitionCount());
     }
 
     public void testBuildInfoTimestampIsParsed() throws Exception {
-        BuildInfo buildInfo = (BuildInfo) StudyCalendarTestCase.getDeployedApplicationContext().getBean("buildInfo");
+        BuildInfo buildInfo = (BuildInfo) getDeployedApplicationContext().getBean("buildInfo");
         assertNotNull(buildInfo.getTimestamp());
     }
 }

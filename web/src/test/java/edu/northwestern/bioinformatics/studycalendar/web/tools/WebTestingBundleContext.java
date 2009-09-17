@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetai
 import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl;
-import edu.northwestern.bioinformatics.studycalendar.test.PscTestingBundleContext;
+import edu.northwestern.bioinformatics.studycalendar.core.PscTestingBundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;

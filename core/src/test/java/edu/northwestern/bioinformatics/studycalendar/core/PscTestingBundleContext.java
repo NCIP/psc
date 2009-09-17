@@ -1,8 +1,9 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.core;
 
 import org.springframework.osgi.mock.MockBundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.InvalidSyntaxException;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -33,6 +34,16 @@ public class PscTestingBundleContext extends MockBundleContext {
             if (details.getServiceReference() == serviceReference) return details.instance;
         }
         return null;
+    }
+
+    @Override
+    public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+        TestingBundleDetails details = testingDetails.get(clazz);
+        if (details == null) {
+            return null;
+        } else {
+            return new ServiceReference[] { details.getServiceReference() };
+        }
     }
 
     protected static class TestingBundleDetails {

@@ -22,6 +22,7 @@ public class RestfulApiInitializerIntegratedTest extends SchemaInitializerTestCa
     private RestfulApiTestInitializer initializer;
     private DataSource datasource;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         datasource = (DataSource) getDeployedApplicationContext().getBean("nonPooledDataSource");
