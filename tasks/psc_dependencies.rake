@@ -270,7 +270,7 @@ GLOBUS_AXIS_STUB_PACKAGES = %w(
 )
 
 # Some of this is generic caGrid/introduce stuff -- split it out later
-COPPA_VERSION = "1.2.0.PSC000"
+COPPA_VERSION = "3.0.0.PSC000"
 # fragment client-config.wsdd (grid/globus) jars onto the globus metabundle
 # client_config_bnd = { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all" }
 COPPA = [
@@ -282,6 +282,8 @@ COPPA = [
       artifact("gov.nih.nci.coppa:coppa-core-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-common.jar"))),
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-client.jar"))),
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.coppa:coppa-commons:jar:1.2.3").from(static_lib('coppa/coppa-commons-1.2.3.jar'))),      
   # artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-jaxb-adapter:jar:0.0.0").
   #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
   artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:0.0.0").
