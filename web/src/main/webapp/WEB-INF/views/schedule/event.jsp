@@ -54,7 +54,6 @@
             margin-left: 12em;
         }
     </style>
-    <tags:javascriptLink name="scheduled-activity"/>
     <script type="text/javascript">
         function registerStateHistoryControl() {
             Event.observe("show-history-control", "click", function(e) {
@@ -81,24 +80,26 @@
                 <div class="label">Activity</div>
                 <div class="value">${scheduledActivity.activity.name}</div>
             </div>
+            <c:set var="count" value="${count + 1}"/>
             <c:if test="${not empty scheduledActivity.activity.description}">
-                <c:set var="count" value="${count + 1}"/>
                 <div class="row ${commons:parity(count)}">
                     <div class="label">Description</div>
                     <div class="value">${scheduledActivity.activity.description}</div>
                 </div>
+                <c:set var="count" value="${count + 1}"/>
             </c:if>
-            <c:set var="count" value="${count + 1}"/>
             <div class="row ${commons:parity(count)}">
                 <div class="label">Code</div>
                 <div class="value">${scheduledActivity.activity.code}</div>
             </div>
             <c:set var="count" value="${count + 1}"/>
-            <div class="row ${commons:parity(count)}">
-                <div class="label">Details</div>
-                <div class="value">${scheduledActivity.details}</div>
-            </div>
-            <c:set var="count" value="${count + 1}"/>
+            <c:if test="${not empty scheduledActivity.details}">
+                <div class="row ${commons:parity(count)}">
+                    <div class="label">Details</div>
+                    <div class="value">${scheduledActivity.details}</div>
+                </div>
+                <c:set var="count" value="${count + 1}"/>
+            </c:if>
             <c:if test="${not empty scheduledActivity.plannedActivity.condition}">
                 <div class="row ${commons:parity(count)}">
                     <div class="label">Condition</div>
@@ -143,7 +144,6 @@
                         </form:select>
                     </label>
                     <label id="new-date-input-group">Date <laf:dateInput path="newDate"/></label>
-                    <label id="move_date_by_new-date-input-group"/>
                     <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
                 </div>
             </div>
