@@ -7,6 +7,10 @@
 
 <html>
 <head>
+    <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+    <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+        <tags:javascriptLink name="yui/2.7.0/${script}"/>
+    </c:forEach>
     <title>Manage sites</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
@@ -24,31 +28,64 @@
                 }
             })
        }
+
+        function displaySiteList() {
+            var columnDefs = [
+	            { key: "name", label: "Site Name ", sortable: true },
+                { key: "blackoutdates", label: "Manage Blackout Dates" },
+                { key: "controls", label: "Controls" },
+                { key: "provider", label: "Provider" }
+            ];
+            var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("site-list-table"));
+            dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+            dataSource.responseSchema = {
+                fields: [
+                    { key: "name" },
+                    { key: "blackoutdates" },
+                    { key: "controls" },
+                    { key: "provider" }
+                    ]
+	        };
+            new YAHOO.widget.DataTable("site-list", columnDefs, dataSource, {
+                sortedBy: { key: 'name' }
+            });
+        }
+        $(document).observe("dom:loaded",  displaySiteList)
+
     </script>
 </head>
 <body>
-<laf:box title="Manage Sites">
+<laf:box title="Manage Sites" cssClass="yui-skin-sam" autopad="true">
     <laf:division>
         <p><a href="<c:url value="/pages/admin/manage/newSite"/>">Create New Site</a></p>
-
-        <table>
+        <div id="site-list">
+        <table id="site-list-table">
+            <thead>
+            </thead>
+            <tbody>
             <c:forEach items="${sites}" var="site">
                 <tr>
                     <td>${site.name}</td>
-                    <td><a href="<c:url value="/pages/admin/manage/blackoutDates?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
-                    <td></td>
-                    <td><a href="<c:url value="/pages/admin/manage/editSite?id=${site.id}"/>">Edit</a></td>
-                       <c:forEach items="${enableDeletes}" var="enableDelete">
-                        <c:if test="${site.id == enableDelete.key}">
-                            <c:if test="${enableDelete.value==true}">
-                               <td></td>
-                               <td><a id="deleteSite" href="#deleteSite?site=${site.id}" onclick="deleteSite('${site.assignedIdentifier}')">Delete</a></td>
+                    <td><input type="button" name="manageBlackoutDates" value="Manage Blackout Dates"
+                               onclick="location.href='<c:url value="/pages/admin/manage/blackoutDates?site=${site.id}"/>'"/>
+                    </td>
+                    <td>
+                        <c:if test="${empty site.provider}">
+                            <input type="button" name="edit" value="Edit"
+                               onclick="location.href='<c:url value="/pages/admin/manage/editSite?id=${site.id}"/>'"/>
+                        </c:if>
+                        <c:forEach items="${enableDeletes}" var="enableDelete">
+                            <c:if test="${site.id == enableDelete.key && enableDelete.value == true }">
+                                <input type="button" name="delete" value="Delete" onclick="deleteSite('${site.assignedIdentifier}')"/>
                             </c:if>
-                       </c:if>
-                     </c:forEach>
+                        </c:forEach>
+                    </td>
+                    <td><c:if test="${not empty site.provider}">${site.provider}</c:if></td>
                 </tr>
             </c:forEach>
+            </tbody>
         </table>
+        </div>
     </laf:division>
 </laf:box>
 </body>
