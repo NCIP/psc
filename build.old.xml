@@ -491,7 +491,7 @@ the script "buildfile".
         </copy>
         <exec executable="${svn-executable}" taskname="svn">
             <arg value="export"/>
-            <arg value="https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc"/>
+            <arg value="https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc"/>
             <arg value="${install.dir}/psc_install.doc"/>
         </exec>
         <property name="install.zip" value="${install.name}-bin.zip"/>

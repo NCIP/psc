@@ -1036,7 +1036,7 @@ define "psc" do
     mkdir_p _("#{dist_dir}/conf-samples")
     cp _("db/datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
     cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
-    puts `svn export https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
+    puts `svn export https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
 
     pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
 
