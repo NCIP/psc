@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -245,5 +246,17 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertSame("Wrong 0", nu, actual.get(0));
         assertSame("Wrong 1", mayo, actual.get(1));
         verifyMocks();
+    }
+
+    public void testMergeSiteForProvidedSite() throws Exception {
+        nu.setId(1);
+        nu.setProvider("Provider");
+        Site newSite = new Site();
+        try {
+            service.createOrMergeSites(nu, newSite);
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException e) {
+            assertEquals("The provided site Northwestern is not editable", e.getMessage());
+        }
     }
 }

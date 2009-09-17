@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,11 +138,13 @@ public class SiteService {
     public Site createOrMergeSites(final Site existingSite, final Site newSite) throws Exception {
         if (existingSite == null) {
             return createOrUpdateSite(newSite);
-        } else {
+        } else if (existingSite.getProvider() == null){
             Site site = getById(existingSite.getId());
             site.setName(newSite.getName());
             if (newSite.getAssignedIdentifier() != null) site.setAssignedIdentifier(newSite.getAssignedIdentifier());
             return createOrUpdateSite(site);
+        } else {
+            throw new StudyCalendarSystemException("The provided site %s is not editable", existingSite.getAssignedIdentifier());
         }
     }
 
