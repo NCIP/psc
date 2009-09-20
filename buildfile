@@ -568,7 +568,7 @@ define "psc" do
     ##Project src and test compiling successfully but test cases are failing. 
     desc "AdverseEvent Grid Service"
     define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
-      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, ADVERSE_EVENT_CONSUMER_GRID
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, ADVERSE_EVENT_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
@@ -626,7 +626,7 @@ define "psc" do
         
         #removing the AdverseEventConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
-          ADVERSE_EVENT_CONSUMER_GRID.member?(dep)
+          ADVERSE_EVENT_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
         
         compile.dependencies.each do |lib|
@@ -639,7 +639,7 @@ define "psc" do
     
     desc "Registration consumer Grid Service"
     define "registration-consumer-impl", :base_dir => _('registration-consumer') do
-      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, REGISTRATION_CONSUMER_GRID
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, REGISTRATION_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
@@ -698,7 +698,7 @@ define "psc" do
         
         #removing the RegistrationConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
-          REGISTRATION_CONSUMER_GRID.member?(dep)
+          REGISTRATION_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
         
         compile.dependencies.each do |lib|
@@ -711,7 +711,7 @@ define "psc" do
     
     desc "Study consumer Grid Service"
     define "study-consumer-impl", :base_dir => _('study-consumer') do
-      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID
+      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
@@ -770,7 +770,7 @@ define "psc" do
         
         #removing the StudyConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
-          STUDY_CONSUMER_GRID.member?(dep)
+          STUDY_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
         
         compile.dependencies.each do |lib|
