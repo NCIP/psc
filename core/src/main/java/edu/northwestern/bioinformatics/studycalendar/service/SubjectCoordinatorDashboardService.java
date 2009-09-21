@@ -160,11 +160,13 @@ public class SubjectCoordinatorDashboardService {
                 ScheduledActivity earliestEvent = getEarliestEvent(events);
                 value.put(studySubjectAssignment, earliestEvent);
                 subjectAndOverDueEvents.put(key, value);
+                System.out.println("------ subject "+  subject.getFullName() + " == size " + events.size() + " --- earliestEvent " + earliestEvent);
             }
         }
         SortedMap<Object, Object> sortedSubjectAndOverDueEvents = new TreeMap(new PastDueDateComparator(subjectAndOverDueEvents));
         sortedSubjectAndOverDueEvents.putAll(subjectAndOverDueEvents);
         return sortedSubjectAndOverDueEvents;
+//        return subjectAndOverDueEvents;
     }
 
 
@@ -211,7 +213,7 @@ public class SubjectCoordinatorDashboardService {
         return scheduledActivityDao;
     }
 
-    private static class PastDueDateComparator implements Comparator {
+    public static class PastDueDateComparator implements Comparator {
         Map<Object, Object> map;
 
         public PastDueDateComparator(Map<Object, Object> map) {
@@ -219,13 +221,22 @@ public class SubjectCoordinatorDashboardService {
         }
 
         public int compare(Object o1, Object o2) {
-            HashMap<Object, Object> key1 = (HashMap<Object, Object>) map.get(o1);
-            HashMap<Object, Object> key2 = (HashMap<Object, Object>) map.get(o2);
+            HashMap<Object, Object> subjectKey1 = (HashMap<Object, Object>)o1;
+            HashMap<Object, Object> subjectKey2 = (HashMap<Object, Object>)o2;
+            Subject subject1 = (Subject)subjectKey1.keySet().iterator().next();
+            Subject subject2 = (Subject)subjectKey2.keySet().iterator().next();
 
-            ScheduledActivity sa1 = (ScheduledActivity)key1.values().toArray()[0];
-            ScheduledActivity sa2 = (ScheduledActivity)key2.values().toArray()[0];
-            return sa1.getActualDate().compareTo(sa2.getActualDate());
+            HashMap<Object, Object> valueKey1 = (HashMap<Object, Object>) map.get(o1);
+            HashMap<Object, Object> valueKey2 = (HashMap<Object, Object>) map.get(o2);
 
+            ScheduledActivity sa1 = (ScheduledActivity)valueKey1.values().toArray()[0];
+            ScheduledActivity sa2 = (ScheduledActivity)valueKey2.values().toArray()[0];
+
+            int result = sa1.getActualDate().compareTo(sa2.getActualDate());
+            if (result == 0 ){
+                result = subject1.getFullName().compareTo(subject2.getFullName());
+            }
+            return result;
         }
     }
 }
