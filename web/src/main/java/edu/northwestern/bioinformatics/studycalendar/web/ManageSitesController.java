@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -29,10 +28,10 @@ public class ManageSitesController extends PscAbstractController {
         model.put("sites", sites);
         Map<Integer, Boolean> enableDeletes = new HashMap<Integer, Boolean>();
         for (Site site : sites) {
-            if (siteService.checkIfSiteCanBeDeleted(site)) {
-                enableDeletes.put(site.getId(), true);
+            if (site.hasAssignments()) {
+                enableDeletes.put(site.getId(), false );
             } else {
-                enableDeletes.put(site.getId(), false);
+                enableDeletes.put(site.getId(), true);
             }
         }
 

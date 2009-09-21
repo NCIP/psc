@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
@@ -100,20 +98,16 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
 
     public void testDeleteExistingSiteWhichIsNotusedAnyWhere() throws Exception {
         expectFoundSite(site);
-        expectSiteUsedByAssignments(site, true);
         siteService.removeSite(site);
         doDelete();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
     }
 
-    private void expectSiteUsedByAssignments(final Site site, final boolean siteUsedByAssignment) {
-        expect(siteService.checkIfSiteCanBeDeleted(site)).andReturn(siteUsedByAssignment);
-    }
-
     public void testDeleteExistingSiteWhichIsused() throws Exception {
         expectFoundSite(site);
-        expectSiteUsedByAssignments(site, false);
+        Fixtures.createAssignment(new Study(), site, new Subject());
+        
         doDelete();
 
         assertEquals("Result is success", 400, response.getStatus().getCode());

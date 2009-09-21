@@ -68,8 +68,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
         if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Unknown Site Identifier " +UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
         }
-        boolean siteCanBeDeleted = siteService.checkIfSiteCanBeDeleted(site);
-        if (!siteCanBeDeleted) {
+        if (site.hasAssignments()) {
             String message = "Can not delete the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) +
                     " because site has some assignments";
             log.error(message);
