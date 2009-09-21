@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +30,7 @@ public class UserRole  extends AbstractMutableDomainObject implements Serializab
     private User user;
     private Role role;
     // TODO: why is one of these a set and the other a list?
-    private Set<Site> sites = new HashSet<Site>();
+    private Set<Site> sites = new LinkedHashSet<Site>();
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
     public UserRole() { }

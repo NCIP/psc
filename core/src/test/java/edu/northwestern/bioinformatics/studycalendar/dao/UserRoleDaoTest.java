@@ -1,9 +1,13 @@
+
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Collections;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
@@ -23,9 +27,8 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
         assertEquals("Wrong user role id", -1, (int) userRole.getId());
         assertEquals("Wrong user id", -1, (int) userRole.getId());
         assertEquals("Wrong role", Role.STUDY_ADMIN, userRole.getRole());
-        Iterator<Site> siteIter = userRole.getSites().iterator();
-        assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
-        assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
+        assertSitePresent("Northwestern Clinic", userRole.getSites());
+        assertSitePresent("Mayo Clinic", userRole.getSites());
         assertEquals("Wrong user name", "Joey", userRole.getUser().getName());
     }
 
@@ -38,9 +41,8 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong user id", -1, (int) actualUserRole.getId());
             assertEquals("Wrong role", Role.STUDY_ADMIN, actualUserRole.getRole());
             assertEquals("Wrong site size", 2, actualUserRole.getSites().size());
-            Iterator<Site> siteIter = actualUserRole.getSites().iterator();
-            assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
-            assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
+            assertSitePresent("Northwestern Clinic", actualUserRole.getSites());
+            assertSitePresent("Mayo Clinic", actualUserRole.getSites());
 
             actualUserRole.setRole(Role.SITE_COORDINATOR);
             actualUserRole.removeSite(Fixtures.setId(-300, Fixtures.createNamedInstance("Northwestern Clinic", Site.class)));
@@ -58,9 +60,7 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong user id", -1, (int) loaded.getId());
             assertEquals("Wrong role", Role.SITE_COORDINATOR, loaded.getRole());
             assertEquals("Wrong site size", 1, loaded.getSites().size());
-            Iterator<Site> siteIter = loaded.getSites().iterator();
-            assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
-
+            assertSitePresent("Mayo Clinic", loaded.getSites());
         }
     }
 
@@ -73,9 +73,8 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong user id", -1, (int) actualUserRole.getId());
             assertEquals("Wrong role", Role.STUDY_ADMIN, actualUserRole.getRole());
             assertEquals("Wrong site size", 2, actualUserRole.getSites().size());
-            Iterator<Site> siteIter = actualUserRole.getSites().iterator();
-            assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
-            assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
+            assertSitePresent("Northwestern Clinic", actualUserRole.getSites());
+            assertSitePresent("Mayo Clinic", actualUserRole.getSites());
 
             actualUserRole.setRole(Role.SITE_COORDINATOR);
             actualUserRole.addSite(siteDao.getById(-400));
@@ -93,11 +92,9 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong user id", -1, (int) loaded.getId());
             assertEquals("Wrong role", Role.SITE_COORDINATOR, loaded.getRole());
             assertEquals("Wrong site size", 3, loaded.getSites().size());
-            Iterator<Site> siteIter = loaded.getSites().iterator();
-            assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
-            assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
-            assertEquals("Wrong site", "CDC Clinic", siteIter.next().getName());
-
+            assertSitePresent("Northwestern Clinic", loaded.getSites());
+            assertSitePresent("Mayo Clinic", loaded.getSites());
+            assertSitePresent("CDC Clinic", loaded.getSites());
         }
     }
 
@@ -133,7 +130,6 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong id", -1, (int) actualUserRole.getId());
             assertEquals("No study sites assigned", 1, actualUserRole.getStudySites().size());
 
-
             actualUserRole.setStudySites(Collections.<StudySite>emptyList());
             getDao().save(actualUserRole);
             savedId = actualUserRole.getId();
@@ -147,5 +143,12 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong id", -1, (int) loaded.getId());
             assertEquals("Wrong study site size", 0, loaded.getStudySites().size());
         }
+    }
+    
+    private static void assertSitePresent(String expectedSiteName, Collection<Site> actualSites) {
+        for (Site site : actualSites) {
+            if (site.getName().equals(expectedSiteName)) return;
+        }
+        fail("Expected site not present: " + expectedSiteName + " in " + actualSites);
     }
 }

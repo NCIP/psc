@@ -20,7 +20,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @Table (name = "users")
@@ -120,7 +119,7 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
      */
     @Transient
     public List<Site> getAllSites() {
-        Set<Site> sites = new HashSet<Site>();
+        Set<Site> sites = new LinkedHashSet<Site>();
         for (UserRole userRole : getUserRoles()) {
             sites.addAll(userRole.getSites());
             for (StudySite studySite : userRole.getStudySites()) {
