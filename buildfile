@@ -193,6 +193,29 @@ define "psc" do
   
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
+    define "acegi" do
+      bnd.wrap!
+      bnd.name = "PSC Acegi Extensions"
+      bnd.import_packages << 
+        "org.acegisecurity" <<
+        "gov.nih.nci.cabig.ctms.domain"
+      compile.with SECURITY.acegi, project('domain').and_dependencies
+      package(:jar)
+    end
+
+    desc "Interfaces and base classes for PSC's pluggable authentication system"
+    define "plugin-api" do
+      bnd.wrap!
+      bnd.name = "PSC Pluggable Auth API"
+      compile.with project('utility'), project('authentication:acegi'),
+        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
+        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
+      test.with UNIT_TESTING, EHCACHE,
+        project('test-infrastructure').and_dependencies,
+        project('test-infrastructure').test_dependencies
+      package(:jar)
+    end
+
     desc "PSC's framework for using the authentication plugins"
     define "socket" do
       bnd.wrap!
@@ -216,29 +239,6 @@ define "psc" do
       package(:jar)
     end
 
-    define "acegi" do
-      bnd.wrap!
-      bnd.name = "PSC Acegi Extensions"
-      bnd.import_packages << 
-        "org.acegisecurity" <<
-        "gov.nih.nci.cabig.ctms.domain"
-      compile.with SECURITY.acegi, project('domain').and_dependencies
-      package(:jar)
-    end
-    
-    desc "Interfaces and base classes for PSC's pluggable authentication system"
-    define "plugin-api" do
-      bnd.wrap!
-      bnd.name = "PSC Pluggable Auth API"
-      compile.with project('utility'), project('authentication:acegi'),
-        SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
-        CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
-      test.with UNIT_TESTING, EHCACHE,
-        project('test-infrastructure').and_dependencies,
-        project('test-infrastructure').test_dependencies
-      package(:jar)
-    end
-    
     desc "Authentication using PSC's local CSM instance"
     define "local-plugin" do
       bnd.wrap!
