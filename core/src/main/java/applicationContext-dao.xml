@@ -30,6 +30,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Duration</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Period</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity</value>

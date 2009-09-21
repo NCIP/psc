@@ -257,7 +257,22 @@ public class StudyTest extends TestCase {
         assertEquals(DateTools.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
     }
 
-   public void testIsDetached() throws Exception {
+    public void testIsDetached() throws Exception {
         assertFalse("Study is detached from any element ", study.isDetached());
+    }
+
+    public void testAddSecondaryIdentifierAddsTheIdentifier() throws Exception {
+        StudySecondaryIdentifier ident = Fixtures.createStudyIdentifier("A", "1");
+        assertEquals(0, study.getSecondaryIdentifiers().size());
+        study.addSecondaryIdentifier(ident);
+        assertEquals(1, study.getSecondaryIdentifiers().size());
+        assertSame(ident, study.getSecondaryIdentifiers().iterator().next());
+    }
+
+    public void testAddSecondaryIdentifierCreatesLink() throws Exception {
+        StudySecondaryIdentifier ident = Fixtures.createStudyIdentifier("A", "1");
+        assertNull(ident.getStudy());
+        study.addSecondaryIdentifier(ident);
+        assertSame(study, ident.getStudy());
     }
 }

@@ -9,7 +9,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -59,6 +62,8 @@ import java.util.TreeSet;
 public class Study extends AbstractMutableDomainObject implements Serializable, Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
     private String assignedIdentifier;
     private String longTitle;
+    private SortedSet<StudySecondaryIdentifier> secondaryIdentifiers
+        = new TreeSet<StudySecondaryIdentifier>();
     private PlannedCalendar plannedCalendar;
     private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
@@ -147,6 +152,11 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         return Collections.unmodifiableList(sites);
     }
 
+    public void addSecondaryIdentifier(StudySecondaryIdentifier identifier) {
+        identifier.setStudy(this);
+        getSecondaryIdentifiers().add(identifier);
+    }
+
     @Transient
     public boolean isMemoryOnly() {
         return memoryOnly;
@@ -209,12 +219,10 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
         }
 
         for (Amendment amendment : amendmentList) {
-
             if (lastModifiedDate == null) {
                 lastModifiedDate = amendment.getLastModifiedDate();
             } else if (amendment.getLastModifiedDate() != null && amendment.getLastModifiedDate().compareTo(lastModifiedDate) > 0) {
                 lastModifiedDate = amendment.getLastModifiedDate();
-
             }
         }
 
@@ -309,6 +317,17 @@ public class Study extends AbstractMutableDomainObject implements Serializable, 
 
     public void setAssignedIdentifier(String assignedIdentifier) {
         this.assignedIdentifier = assignedIdentifier;
+    }
+
+    @OneToMany(mappedBy = "study")
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Sort(type = SortType.NATURAL)
+    public SortedSet<StudySecondaryIdentifier> getSecondaryIdentifiers() {
+        return secondaryIdentifiers;
+    }
+
+    public void setSecondaryIdentifiers(SortedSet<StudySecondaryIdentifier> secondaryIdentifiers) {
+        this.secondaryIdentifiers = secondaryIdentifiers;
     }
 
     @OneToOne(mappedBy = "study")

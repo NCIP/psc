@@ -5,11 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -73,6 +75,61 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         Collection<Integer> ids = DomainObjectTools.collectIds(loaded.getPopulations());
         assertContains("Missing expected population", ids, -64);
         assertContains("Missing expected population", ids, -96);
+    }
+
+    public void testLoadSecondaryIdentifiers() throws Exception {
+        Study loaded = getDao().getById(-100);
+
+        assertEquals("Wrong number of secondary identifiers: " + loaded.getSecondaryIdentifiers(), 3,
+            loaded.getSecondaryIdentifiers().size());
+        Iterator<StudySecondaryIdentifier> it = loaded.getSecondaryIdentifiers().iterator();
+        assertSecondaryIdentifier("Bad first ident", "NCT", "NCT100", it.next());
+        assertSecondaryIdentifier("Bad second ident", "Organization", "ECOG-100", it.next());
+        assertSecondaryIdentifier("Bad third ident", "Organization", "SWOG-100", it.next());
+    }
+
+    public void testDeleteSecondaryIdent() throws Exception {
+        {
+            Study loaded = getDao().getById(-100);
+            Iterator<StudySecondaryIdentifier> it = loaded.getSecondaryIdentifiers().iterator();
+            it.next();
+            StudySecondaryIdentifier identToRemove = it.next();
+            assertSecondaryIdentifier("Test setup failure", "Organization", "ECOG-100", identToRemove);
+            loaded.getSecondaryIdentifiers().remove(identToRemove);
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        {
+            Study reloaded = getDao().getById(-100);
+            assertEquals("Wrong number of idents after delete", 2, reloaded.getSecondaryIdentifiers().size());
+            Iterator<StudySecondaryIdentifier> it = reloaded.getSecondaryIdentifiers().iterator();
+            assertSecondaryIdentifier("Wrong remaining ident", "NCT", "NCT100", it.next());
+            assertSecondaryIdentifier("Wrong remaining ident", "Organization", "SWOG-100", it.next());
+        }
+    }
+    
+    public void testAddSecondaryIdent() throws Exception {
+        {
+            Study loaded = getDao().getById(-100);
+            Fixtures.addSecondaryIdentifier(loaded, "A", "One");
+            getDao().save(loaded);
+        }
+
+        interruptSession();
+
+        {
+            Study reloaded = getDao().getById(-100);
+            assertEquals("Wrong number of identifiers", 4, reloaded.getSecondaryIdentifiers().size());
+            assertSecondaryIdentifier("Wrong new ident", "A", "One",
+                reloaded.getSecondaryIdentifiers().iterator().next());
+        }
+    }
+
+    private void assertSecondaryIdentifier(String message, String expectedType, String expectedIdent, StudySecondaryIdentifier actual) {
+        assertEquals(message + ": wrong type",  expectedType,  actual.getType());
+        assertEquals(message + ": wrong value", expectedIdent, actual.getValue());
     }
 
     public void testGetAll() throws Exception {

@@ -133,6 +133,19 @@ public class Fixtures {
         return createInDevelopmentTemplate(null);
     }
 
+    public static StudySecondaryIdentifier addSecondaryIdentifier(Study s, String type, String value) {
+        StudySecondaryIdentifier ssi = createStudyIdentifier(type, value);
+        s.addSecondaryIdentifier(ssi);
+        return ssi;
+    }
+
+    public static StudySecondaryIdentifier createStudyIdentifier(String type, String value) {
+        StudySecondaryIdentifier ident = new StudySecondaryIdentifier();
+        ident.setType(type);
+        ident.setValue(value);
+        return ident;
+    }
+
     public static Period createPeriod(int startDay, int dayCount, int repetitions) {
         return createPeriod(null, startDay, dayCount, repetitions);
     }
