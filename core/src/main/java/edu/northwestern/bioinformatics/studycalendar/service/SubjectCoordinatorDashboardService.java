@@ -160,13 +160,11 @@ public class SubjectCoordinatorDashboardService {
                 ScheduledActivity earliestEvent = getEarliestEvent(events);
                 value.put(studySubjectAssignment, earliestEvent);
                 subjectAndOverDueEvents.put(key, value);
-                System.out.println("------ subject "+  subject.getFullName() + " == size " + events.size() + " --- earliestEvent " + earliestEvent);
             }
         }
         SortedMap<Object, Object> sortedSubjectAndOverDueEvents = new TreeMap(new PastDueDateComparator(subjectAndOverDueEvents));
         sortedSubjectAndOverDueEvents.putAll(subjectAndOverDueEvents);
         return sortedSubjectAndOverDueEvents;
-//        return subjectAndOverDueEvents;
     }
 
 
