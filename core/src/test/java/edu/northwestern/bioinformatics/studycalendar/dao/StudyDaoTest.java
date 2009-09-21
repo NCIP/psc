@@ -4,14 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
-import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -209,5 +210,8 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong id", -100, (int) actual.getId());
         assertEquals("Wrong grid ID", "long-GUID-string", actual.getGridId());
         assertEquals("Wrong protocol auth id", "NCI-IS-WATCHING", actual.getAssignedIdentifier());
+        assertEquals("Wrong provider", "NCT", actual.getProvider());
+        assertDayOfDate("Wrong last refresh", 2007, Calendar.MARCH, 29, actual.getLastRefresh());
+        assertTimeOfDate("Wrong last refresh", 13, 45, 7, 0, actual.getLastRefresh());
     }
 }

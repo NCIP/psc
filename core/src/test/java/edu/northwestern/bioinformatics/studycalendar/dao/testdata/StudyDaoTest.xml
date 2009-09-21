@@ -17,6 +17,8 @@
         assigned_identifier="NCI-IS-WATCHING"   
         amendment_id="-45"
         dev_amendment_id="-55"
+        provider="NCT"
+        last_refresh="2007-03-29 13:45:07"
         />
     <STUDY_SECONDARY_IDENTS
         id="-11" study_id="-100" identifier_type="Organization" value="ECOG-100"/>

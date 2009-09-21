@@ -59,7 +59,7 @@ import java.util.TreeSet;
     }
 )
 @Where(clause = "load_status > 0")
-public class Study extends AbstractMutableDomainObject implements Serializable, Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
+public class Study extends AbstractProvidableDomainObject implements Serializable, Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
     private String assignedIdentifier;
     private String longTitle;
     private SortedSet<StudySecondaryIdentifier> secondaryIdentifiers
