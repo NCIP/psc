@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
+import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.OrganizationIdentifier.fromAssignedIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import gov.nih.nci.coppa.po.Id;
+import gov.nih.nci.coppa.po.IdentifiedOrganization;
 import gov.nih.nci.coppa.po.Organization;
+import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import gov.nih.nci.coppa.services.structuralroles.identifiedorganization.client.IdentifiedOrganizationClient;
 import gov.nih.nci.coppa.services.structuralroles.researchorganization.client.ResearchOrganizationClient;
@@ -25,13 +29,13 @@ import java.util.List;
 public class CoppaSiteProvider implements SiteProvider {
     private static final String TEST_ENDPOINT =
         "http://ctms-services-po-2-2-integration.nci.nih.gov/wsrf/services/cagrid/Organization";
-    public static final String ORGANIZATION_II_ROOT = "2.16.840.1.113883.3.26.4.2";
+
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private OrganizationClient client;
-    private IdentifiedOrganizationClient iClient;
-    private ResearchOrganizationClient rClient;
+    private IdentifiedOrganizationClient identifiedOrgClient;
+    private ResearchOrganizationClient researchOrgClient;
 
     public CoppaSiteProvider() {
         try {
@@ -46,17 +50,34 @@ public class CoppaSiteProvider implements SiteProvider {
         }
     }
 
+    /*
+        TODO: How is name obtained for IdentifiedOrganization
+        TODO: Verify extension is from IdentifiedOrganizations.setAssignedId.getExtension 
+              and ResearchOrganizations.getPlayerIdentifier.getExtension
+     */
     public List<Site> getSites(List<String> assignedIdentifiers) {
-        throw new UnsupportedOperationException("TODO");
+        throw new UnsupportedOperationException("Not Implemented Yet");
+
+//        Id[] ids = createIds(assignedIdentifiers);
+//
+//        IdentifiedOrganization[] identOrgs  =
+//                searchIdentifiedOrgsByIds(ids);
+//
+//        ResearchOrganization[] researchOrgs =
+//                searchResearchOrgsByIds(ids);
+//
+//        List<Site> sites = new ArrayList<Site>();
+//
+//        return sites;
     }
 
     @Deprecated // TODO: implement getSites
     public Site getSite(String assignedIdentifier) {
         Organization example = new Organization();
-        II ii = createII(assignedIdentifier);
+        II ii = fromAssignedIdentifier(assignedIdentifier).createII();
         example.setIdentifier(ii);
 
-        Organization[] raw = search(example);
+        Organization[] raw = searchByOrganization(example);
         if (raw != null && raw.length > 0) {
             return createSite(raw[0]);
         } else {
@@ -67,7 +88,7 @@ public class CoppaSiteProvider implements SiteProvider {
     public List<Site> search(String partialName) {
         Organization example = createNameExample(partialName);
 
-        Organization[] raw = search(example);
+        Organization[] raw = searchByOrganization(example);
         if (raw == null) {
             return Collections.emptyList();
         } else {
@@ -102,7 +123,7 @@ public class CoppaSiteProvider implements SiteProvider {
         return site;
     }
 
-    private Organization[] search(Organization criteria) {
+    private Organization[] searchByOrganization(Organization criteria) {
         try {
             return client.search(criteria);
         } catch (RemoteException e) {
@@ -111,20 +132,32 @@ public class CoppaSiteProvider implements SiteProvider {
         }
     }
 
-    private List<II> createIIs(String[] assignedidentifiers) {
-        List<II> iis = new ArrayList<II>();
-        for(String identifier : assignedidentifiers) {
-            iis.add(createII(identifier));
+    private IdentifiedOrganization[] searchIdentifiedOrgsByIds(Id[] ids) {
+        try {
+            return identifiedOrgClient.getByPlayerIds(ids);
+        } catch (RemoteException e) {
+            log.error("COPPA identified organization search failed", e);
+            return  new IdentifiedOrganization[0];
         }
-        return iis;
     }
 
-    private II createII(String assignedIdentifier) {
-        II ii = new II();
-        ii.setRoot(ORGANIZATION_II_ROOT);
-        ii.setExtension(assignedIdentifier);
+    private ResearchOrganization[] searchResearchOrgsByIds(Id[] ids) {
+        try {
+            return researchOrgClient.getByPlayerIds(ids);
+        } catch (RemoteException e) {
+            log.error("COPPA research organization search failed", e);
+            return new ResearchOrganization[0];
+        }
+    }
 
-        return ii;
+
+
+    private Id[] createIds(List<String> assignedidentifiers) {
+        List<Id> iis = new ArrayList<Id>();
+        for(String ai : assignedidentifiers) {
+            iis.add(fromAssignedIdentifier(ai).createId());
+        }
+        return iis.toArray(new Id[0]);
     }
 
     public void setOrganizationClient(OrganizationClient client) {
@@ -132,10 +165,10 @@ public class CoppaSiteProvider implements SiteProvider {
     }
 
     public void setIdentifiedOrganizationClient(IdentifiedOrganizationClient iClient) {
-        this.iClient = iClient;
+        this.identifiedOrgClient = iClient;
     }
 
     public void setResearchOrganizationClient(ResearchOrganizationClient rClient) {
-        this.rClient = rClient;
+        this.researchOrgClient = rClient;
     }
 }
