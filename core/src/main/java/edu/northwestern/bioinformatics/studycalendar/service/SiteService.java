@@ -2,12 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
@@ -34,6 +34,7 @@ public class SiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
     private SiteConsumer siteConsumer;
     private UserService userService;
+    private UserRoleDao userRoleDao;
 
     public Site getById(int id) {
         return nullSafeRefresh(siteDao.getById(id));
@@ -107,25 +108,21 @@ public class SiteService {
     }
 
     public void removeSite(final Site site) throws Exception {
-        if (checkIfSiteCanBeDeleted(site)) {
+        if ( !site.hasAssignments()) {
             // first remove the protection group
             authorizationManager.removeProtectionGroup(createExternalObjectId(site));
 
-            // it should also delete the study sites and holidays
+            List<UserRole> userRoles = userRoleDao.getUserRolesForSite(site);
+            if (userRoles != null) {
+                for (UserRole userRole: userRoles){
+                    userRole.removeSite(site);
+                }
+            }
+            for (StudySite studySite: site.getStudySites()) {
+                studySite.getStudy().getStudySites().remove(studySite);
+            }
             siteDao.delete(site);
         }
-    }
-
-    public boolean checkIfSiteCanBeDeleted(final Site site) {
-        // site can be deleted only if it has not assignments
-        List<StudySite> studySiteList = site.getStudySites();
-        for (StudySite studySite : studySiteList) {
-            List<StudySubjectAssignment> studySubjectAssignmentList = studySite.getStudySubjectAssignments();
-            if (studySubjectAssignmentList != null && !studySubjectAssignmentList.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -149,6 +146,10 @@ public class SiteService {
     }
 
     ////// CONFIGURATION
+    @Required
+    public void setUserRoleDao(UserRoleDao userRoleDao) {
+        this.userRoleDao = userRoleDao;
+    }
 
     @Required
     public void setUserService(UserService userService) {

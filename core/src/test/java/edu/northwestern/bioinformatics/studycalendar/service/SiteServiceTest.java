@@ -5,13 +5,9 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
@@ -36,6 +32,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private UserService userService;
     private User user;
     private Site nu, mayo;
+    private UserRoleDao userRoleDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -44,12 +41,14 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
         userService = registerMockFor(UserService.class);
         siteConsumer = registerMockFor(SiteConsumer.class);
+        userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
         service = new SiteService();
         service.setSiteDao(siteDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setUserService(userService);
         service.setSiteConsumer(siteConsumer);
+        service.setUserRoleDao(userRoleDao);
 
         user = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser(7, "jimbo", 73L, true);
         nu = setId(1, Fixtures.createNamedInstance("Northwestern", Site.class));
@@ -120,23 +119,10 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testCheckIfSiteCanBeDeletedWhenItIsDeletable() throws Exception {
-        Site site = new Site();
-        site.setId(1);
-        assertTrue("site should be deletable", service.checkIfSiteCanBeDeleted(site));
-    }
-
-    public void testCheckIfSiteCanBeDeletedWhenItIsNotDeletable() throws Exception {
-        Site site = setId(4, new Site());
-        Fixtures.createAssignment(new Study(), site, new Subject());
-
-        assertFalse("site should not be deletable", service.checkIfSiteCanBeDeleted(site));
-    }
-
     public void testRemoveRemoveableSite() throws Exception {
         Site site = new Site();
         site.setId(1);
-
+        expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
         authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         siteDao.delete(site);
 
@@ -258,5 +244,34 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         } catch (StudyCalendarSystemException e) {
             assertEquals("The provided site Northwestern is not editable", e.getMessage());
         }
+    }
+
+    public void testDeleteSiteWhenSiteHasUserRole() throws Exception {
+
+        Site site = createNamedInstance("Northwestern", Site.class);
+        site.setId(11);
+        UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site);
+        expect(userRoleDao.getUserRolesForSite(site)).andReturn(Arrays.asList(userRole));
+        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.11");
+        siteDao.delete(site);
+
+        replayMocks();
+        service.removeSite(site);
+        verifyMocks();
+        assertFalse("UserRole shouldn't contain site", userRole.getSites().contains(site));
+    }
+
+    public void testDeleteSiteWhenSiteHasStudySiteRelation() throws Exception {
+        Study study = createNamedInstance("Study A", Study.class);
+        Site site = createNamedInstance("Northwestern", Site.class);
+        site.setId(12);
+        createStudySite(study, site);
+        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.12");
+        expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
+        siteDao.delete(site);
+
+        replayMocks();
+        service.removeSite(site);
+        verifyMocks();
     }
 }

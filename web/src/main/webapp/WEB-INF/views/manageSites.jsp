@@ -19,16 +19,23 @@
         }
     </style>
     <script type="text/javascript">
-        function deleteSite(siteIdentifier) {
-            var uri = SC.relativeUri("/api/v1/sites/") + siteIdentifier
-            SC.asyncRequest(uri, {
-                method: 'DELETE',
-                onSuccess : function() {
-                    window.location = SC.relativeUri("/pages/admin/manage/sites")
-                }
-            })
-       }
-
+        function deleteSite(siteIdentifier, siteName) {
+            var msg = "This will permanently delete the site " +siteName +
+                      ", including all user and study associations. You cannot undo this action."
+                       + "\nAre you sure you wish to proceed?"
+             if (window.confirm(msg)) {
+                var uri = SC.relativeUri("/api/v1/sites/") + siteIdentifier
+                SC.asyncRequest(uri, {
+                    method: 'DELETE',
+                    onSuccess : function() {
+                        window.location = SC.relativeUri("/pages/admin/manage/sites")
+                    }
+                })
+                return true;
+             } else {
+                return false;
+             }
+        }
         function displaySiteList() {
             var columnDefs = [
 	            { key: "name", label: "Site Name ", sortable: true },
@@ -76,7 +83,7 @@
                         </c:if>
                         <c:forEach items="${enableDeletes}" var="enableDelete">
                             <c:if test="${site.id == enableDelete.key && enableDelete.value == true }">
-                                <input type="button" name="delete" value="Delete" onclick="deleteSite('${site.assignedIdentifier}')"/>
+                                <input type="button" name="delete" value="Delete" onclick="deleteSite('${site.assignedIdentifier}', '${site.name}')"/>
                             </c:if>
                         </c:forEach>
                     </td>
