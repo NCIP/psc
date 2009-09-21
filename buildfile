@@ -978,10 +978,16 @@ define "psc" do
     end
   end
 
+  desc "Empty base mocks for JDBC classes"
+  define "jdbc-mock", :base_dir => _('test/jdbc-mock') do
+    compile.using(:javac).from(_("src/main/java#{java6? ? '6' : '5'}"))
+    package(:jar)
+  end
+
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
-      project('core').and_dependencies
+      project('core').and_dependencies, project('jdbc-mock')
     test.with project('core').test_dependencies
     package(:jar)
     package(:sources)

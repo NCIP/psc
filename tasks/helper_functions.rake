@@ -59,3 +59,7 @@ end
 def wsrf_dir_name
   ENV['WSRF_DIR_NAME'] || "wsrf"
 end
+
+def java6?
+  Java.java.lang.System.getProperty("java.specification.version").split('.')[1].to_i > 5
+end

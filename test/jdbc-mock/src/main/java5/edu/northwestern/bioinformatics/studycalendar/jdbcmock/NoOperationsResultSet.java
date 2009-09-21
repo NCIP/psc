@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.test;
+package edu.northwestern.bioinformatics.studycalendar.jdbcmock;
 
 import java.io.InputStream;
 import java.io.Reader;
