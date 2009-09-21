@@ -75,7 +75,8 @@ public class BidirectionalObjectStoreTest extends TestCase {
 
     private Process performMemoryTest(String refType) throws IOException, InterruptedException {
         ProcessBuilder builder = new ProcessBuilder(
-            "java", "-Xms16M", "-Xmx16M", "-cp", "target/classes:target/test/classes", MemTest.class.getName(), refType);
+            "java", "-Xmx16M", "-cp", "target/classes:target/test/classes",
+            MemTest.class.getName(), refType);
         builder.redirectErrorStream(true);
         builder.directory(detectBaseDirectory());
         Process p = builder.start();
@@ -95,27 +96,30 @@ public class BidirectionalObjectStoreTest extends TestCase {
     }
 
     public static class MemTest {
-        public static void main(String[] args) {
+        private static final int ALLOCATION_UNITS = 13;
+        private static final int ALLOCATION_SIZE = 1024 * 1024; // bytes
+
+        public static void main(String[] args) throws Exception {
             boolean soft = "soft".equals(args[0]);
             BidirectionalObjectStore store = new BidirectionalObjectStore(soft);
             System.out.println(String.format("Using %s references", soft ? "soft" : "strong"));
 
             System.out.println(String.format("   Total memory: %8d", Runtime.getRuntime().totalMemory()));
             System.out.println(String.format("    Free memory: %8d", Runtime.getRuntime().freeMemory()));
-            String lastL = null, lastR = null;
-            for (int i = 0 ; i < 2500 ; i++) {
-                lastL = "L" + i;
-                lastR = "R" + i;
+            Element lastL = null, lastR = null;
+            for (int i = 0 ; i < ALLOCATION_SIZE / 128 ; i++) {
+                lastL = new Element("L" + i);
+                lastR = new Element("R" + i);
                 store.put(lastL, lastR);
             }
-            System.out.println("           last: " + lastL + ", " + lastR);
 
             System.out.println(String.format("Reference count: %13d", store.referenceCount()));
             System.out.println(String.format("   Total memory: %8d", Runtime.getRuntime().totalMemory()));
             System.out.println(String.format("    Free memory: %8d", Runtime.getRuntime().freeMemory()));
-            int[][] mem = new int[15][];
+            byte[][] mem = new byte[ALLOCATION_UNITS][];
             for (int i = 0 ; i < mem.length ; i++) {
-                mem[i] = new int[256 * 1024]; // 1MB
+                System.out.println(String.format("                 Allocating round %d", i));
+                mem[i] = new byte[ALLOCATION_SIZE];
                 System.out.println(String.format(" Hard allocated: %8d", mem[i].length * (i + 1)));
                 System.out.println(String.format("Reference count: %13d", store.referenceCount()));
                 System.out.println(String.format("   Total memory: %8d", Runtime.getRuntime().totalMemory()));
@@ -125,6 +129,33 @@ public class BidirectionalObjectStoreTest extends TestCase {
             if (store.get(lastL) != lastR) {
                 throw new AssertionError("Strongly referenced pair not retained");
             }
+        }
+    }
+
+    public static class Element {
+        private String name;
+        
+        public Element(String n) {
+            this.name = n;
+        }
+        
+        public String toString() {
+            return name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Element element = (Element) o;
+
+            return !(name != null ? !name.equals(element.name) : element.name != null);
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
         }
     }
 }
