@@ -30,10 +30,10 @@ define "psc" do
   compile.options.target = "1.5"
   compile.options.source = "1.5"
   compile.options.other = %w(-encoding UTF-8)
-  
+
   test.using(:properties => { "psc.config.datasource" => db_name })
   test.enhance [:check_module_packages]
-  
+
   ipr.add_component("CompilerConfiguration") do |component|
     component.option :name => 'DEFAULT_COMPILER', :value => 'Javac'
     component.option :name => 'DEPLOY_AFTER_MAKE', :value => '0'
@@ -44,20 +44,20 @@ define "psc" do
       xml.entry :name => '?*.nonexistent'
     end
   end
-  
+
   task :public_demo_deploy do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
   end
-  
+
   desc "Pure utility code"
   define "utility" do
     bnd.wrap!
     bnd.name = "PSC Utility Module"
 
-    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections, 
+    compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections,
       CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
-    
+
     package(:jar)
     package(:sources)
 
@@ -68,7 +68,7 @@ define "psc" do
       package(:jar)
       package(:sources)
     end
-    
+
     desc "Psc own implementations for the da-launcher"
     define "da-launcher" do
       project.version = "1.1.1"
@@ -87,9 +87,9 @@ define "psc" do
       "org.hibernate.type;version=3.3" <<
       "org.hibernate.cfg;version=3.3"
 
-    compile.with project('utility'), SLF4J.api, 
+    compile.with project('utility'), SLF4J.api,
       CTMS_COMMONS.lang, CTMS_COMMONS.core,
-      JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections, 
+      JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections,
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
       SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE, HIBERNATE_ANNOTATIONS
     test.with(UNIT_TESTING)
@@ -104,11 +104,11 @@ define "psc" do
     resources.enhance([_("src/main/db/migrate")]) do
       filter.from(_("src/main/db/migrate")).
         into(resources.target.to_s + "/db/migrate").run
-    end    
-    compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS, 
+    end
+    compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS,
       CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps, HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
     test.with UNIT_TESTING
-    
+
     # Automatically generate the HSQLDB when the migrations change
     # if using hsqldb.
     test.enhance hsqldb[:files]
@@ -119,17 +119,17 @@ define "psc" do
         end
       end
     end
-    
+
     task :migrate do
       ant('bering') do |ant|
         # Load DS properties from /etc/psc or ~/.psc
         datasource_properties(ant)
         ant.echo :message => "Migrating ${datasource.url}"
-        
+
         # default values
         ant.property :name => 'migrate.version', :value => ENV['MIGRATE_VERSION'] || ""
         ant.property :name => 'bering.dialect', :value => ""
-        
+
         ant.taskdef :resource => "edu/northwestern/bioinformatics/bering/antlib.xml",
           :classpath => ant_classpath(project('database'))
         ant.migrate :driver => '${datasource.driver}',
@@ -143,11 +143,11 @@ define "psc" do
         if hsqldb?
           # database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
           # released and the tests can reopen it
-          
+
           # TODO: this sometimes (why not in all situations?) kills the buildr
-          #  process.  Using CHECKPOINT instead also kills the process, 
+          #  process.  Using CHECKPOINT instead also kills the process,
           #  as do plain SHUTDOWN and SHUTDOWN COMPACT.
-          ant.sql :driver => "${datasource.driver}", 
+          ant.sql :driver => "${datasource.driver}",
             :url => "${datasource.url}",
             :userid => "${datasource.username}",
             :password => "${datasource.password}",
@@ -157,7 +157,7 @@ define "psc" do
         end
       end
     end
-    
+
     task :create_hsqldb => :clean_hsqldb do |t|
        psc_dir = "#{ENV['HOME']}/.psc"
        mkdir_p psc_dir
@@ -182,21 +182,21 @@ define "psc" do
 
        info "Read-only HSQLB instance named #{db_name} generated in #{hsqldb[:dir]}"
     end
-    
+
     task :clean_hsqldb do
        rm_rf hsqldb[:dir]
     end
-    
+
     package(:jar)
     package(:sources)
   end # database
-  
+
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
     define "acegi" do
       bnd.wrap!
       bnd.name = "PSC Acegi Extensions"
-      bnd.import_packages << 
+      bnd.import_packages <<
         "org.acegisecurity" <<
         "gov.nih.nci.cabig.ctms.domain"
       compile.with SECURITY.acegi, project('domain').and_dependencies
@@ -234,7 +234,7 @@ define "psc" do
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
         project('plugin-api').test_dependencies,
-        project('test-infrastructure').and_dependencies, 
+        project('test-infrastructure').and_dependencies,
         project('test-infrastructure').test_dependencies
       package(:jar)
     end
@@ -243,7 +243,7 @@ define "psc" do
     define "local-plugin" do
       bnd.wrap!
       bnd.name = "PSC Local Auth Plugin"
-      bnd['Bundle-Activator'] = 
+      bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.local.Activator"
       compile.with project('plugin-api').and_dependencies, SECURITY.csm
       test.with project('plugin-api').test_dependencies,
@@ -252,14 +252,14 @@ define "psc" do
       test.resources.filter.using(:ant, 'application-short-name'  => APPLICATION_SHORT_NAME)
       package(:jar)
     end
-    
+
     desc "Authentication via an enterprise-wide CAS server"
     define "cas-plugin" do
       bnd.wrap!
       bnd.name = "PSC CAS Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.Activator"
-      bnd.import_packages << 
+      bnd.import_packages <<
         "org.springframework.beans.factory.config;version=2.5" <<
         "org.springframework.cache.ehcache;version=2.5" <<
         "org.acegisecurity.providers.cas" <<
@@ -269,19 +269,19 @@ define "psc" do
         "org.acegisecurity.providers.cas.ticketvalidator" <<
         "org.acegisecurity.ui.cas" <<
         "org.acegisecurity.ui.logout"
-      compile.with project('plugin-api').and_dependencies, SECURITY.cas, 
+      compile.with project('plugin-api').and_dependencies, SECURITY.cas,
         EHCACHE, JAKARTA_COMMONS.httpclient, HTMLPARSER
       test.with project('plugin-api').test_dependencies
       package(:jar)
     end
-    
+
     desc "Authentication via caGrid's customized version of CAS"
     define "websso-plugin" do
       bnd.wrap!
       bnd.name = "PSC caGrid WebSSO Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
-      bnd.import_packages << 
+      bnd.import_packages <<
         "org.springframework.beans.factory.config;version=2.5" <<
         "org.springframework.cache.ehcache;version=2.5" <<
         "org.acegisecurity.providers.cas" <<
@@ -294,35 +294,35 @@ define "psc" do
         "gov.nih.nci.cabig.caaers.web.security.cas" <<
         "org.apache.commons.httpclient" << # an instance is directly created in cas-authentication-beans.xml, so it needs to be visible
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct"
-      compile.with project('plugin-api').and_dependencies, project('cas-plugin').and_dependencies, SECURITY.caaers_cas, 
+      compile.with project('plugin-api').and_dependencies, project('cas-plugin').and_dependencies, SECURITY.caaers_cas,
         project('domain').and_dependencies
         #TODO: Uncomment the compile time dependencies when the OSGI-fying the grid is tabled
-        #CAGRID_CDS, GLOBUS.core, psc_osgi_artifact(artifact("gov.nih.nci.cagrid:cagrid-core:jar:1.0"), 
-        #                                    "Export-Package" => "!gov.nih.nci.cagrid, *"), 
-        #  psc_osgi_artifact(artifact("org.globus:wss4j:jar:4.0-cagrid1.0"), 
+        #CAGRID_CDS, GLOBUS.core, psc_osgi_artifact(artifact("gov.nih.nci.cagrid:cagrid-core:jar:1.0"),
+        #                                    "Export-Package" => "!gov.nih.nci.cagrid, *"),
+        #  psc_osgi_artifact(artifact("org.globus:wss4j:jar:4.0-cagrid1.0"),
         #                                    "Export-Package" => "!org.apache.ws, *")
-                                            
+
       test.with project('plugin-api').test_dependencies,
-        project('cas-plugin').test_dependencies, 
-        project('domain').and_dependencies, 
+        project('cas-plugin').test_dependencies,
+        project('domain').and_dependencies,
         project('domain').test_dependencies
       package(:jar)
     end
-    
+
     desc "A completely insecure implementation for integrated tests and the like"
     define "insecure-plugin" do
       bnd.wrap!
       bnd.name = "PSC Insecure Auth Plugin"
-      bnd['Bundle-Activator'] = 
+      bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.insecure.Activator"
       compile.with project('plugin-api').and_dependencies
-      test.with project('plugin-api').test_dependencies, 
+      test.with project('plugin-api').test_dependencies,
         project('domain').and_dependencies, project('domain').test_dependencies
       package(:jar)
     end
   end
 
-  desc "External data-providing plugins" 
+  desc "External data-providing plugins"
   define "providers" do
     desc "The interfaces under which data providers expose data"
     define "api" do
@@ -331,7 +331,7 @@ define "psc" do
       compile.with project('domain').and_dependencies
       package(:jar)
     end
-    
+
     desc "Mock data providers with static data"
     define "mock" do
       bnd.wrap!
@@ -341,24 +341,24 @@ define "psc" do
       test.with UNIT_TESTING
       package(:jar)
     end
-    
+
     desc "Data providers which talk directly to COPPA"
     define "coppa-direct" do
       bnd.wrap!
       bnd.name = "PSC COPPA-based Data Providers"
       bnd.autostart = false
-      bnd['Bundle-Activator'] = 
+      bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
       bnd.import_packages <<
         "org.apache.axis.types" <<
         "org.apache.axis.message.addressing"
-      
-      compile.with project('providers:api').and_dependencies, SPRING, OSGI, 
+
+      compile.with project('providers:api').and_dependencies, SPRING, OSGI,
         GLOBUS, COPPA
       test.using(:junit).with UNIT_TESTING
       package(:jar)
     end
-    
+
     desc "Commands for interacting with the providers from the felix console"
     define "felix-commands" do
       compile.with FELIX.shell, OSGI.core,
@@ -367,24 +367,24 @@ define "psc" do
 
       bnd.wrap!
       bnd.name = "PSC Data Provider Felix Shell Commands"
-      bnd['Bundle-Activator'] = 
+      bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.dataproviders.commands.Activator"
       package(:jar)
     end
   end
-  
+
   desc "Core data access, serialization and non-substitutable business logic"
   define "core" do
     project('providers') # Have to reference this before refing project('providers:mock') in buildr 1.3.3 for some reason.  Investigate later.  RMS20090331.
-    
-    resources.filter.using(:ant, 
+
+    resources.filter.using(:ant,
       'application-short-name'  => APPLICATION_SHORT_NAME,
       "buildInfo.versionNumber" => project.version,
       "buildInfo.username"      => ENV['USER'],
       "buildInfo.hostname"      => `hostname`.chomp,
       "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
     )
-    
+
     compile.with project('domain').and_dependencies,
       project('authentication:acegi').and_dependencies,
       project('providers:api').and_dependencies,
@@ -394,20 +394,20 @@ define "psc" do
       QUARTZ, SECURITY, OSGI, SLF4J.jcl,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
-    test.with UNIT_TESTING, project('domain').test.compile.target, 
+    test.with UNIT_TESTING, project('domain').test.compile.target,
       project('database').test_dependencies
 
     package(:jar)
     package(:sources)
-    
+
     check do
       acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
-      
+
       acSetup.should include(`hostname`.chomp)
       acSetup.should include(project.version)
     end
   end # core
-  
+
   desc "Submodules related to building and deploying PSC's embedded plugin layer"
   define "osgi-layer" do
     task :da_launcher_artifacts do |task|
@@ -429,16 +429,16 @@ define "psc" do
         system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
         osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
       end
-      
-      system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } + 
+
+      system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
         [ project('osgi-layer:log4j-configuration').packages.first ]
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
-      application_bundles = 
+      application_bundles =
         bundle_projects.select { |p| p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
-      application_optional = 
+      application_optional =
         bundle_projects.select { |p| !p.bnd.autostart? }.collect { |p| p.package(:jar) } - system_bundles
-      application_infrastructure = 
+      application_infrastructure =
         [ SPRING_OSGI.extender, GLOBUS.jaxb_api, STAX_API ].collect { |a| artifact(a) }
       application_libraries = bundle_projects.
         collect { |p| p.and_dependencies }.flatten.uniq.
@@ -463,10 +463,10 @@ define "psc" do
       task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
         dadir = _("target/test/da-launcher/#{path}")
         mkdir_p dadir
-        artifacts.each { |a| 
+        artifacts.each { |a|
           trace "Putting #{a} in #{path}"
-          a.invoke; 
-          cp a.to_s, dadir 
+          a.invoke;
+          cp a.to_s, dadir
         }
       end
     end
@@ -483,9 +483,9 @@ define "psc" do
         system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
       end
     end
-    
+
     compile.with project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main
-    
+
     desc "Advertises host-configured services to the OSGi layer"
     define "host-services" do
       bnd.wrap!
@@ -495,25 +495,25 @@ define "psc" do
       bnd.import_packages <<
         "org.acegisecurity.userdetails" <<
         "edu.northwestern.bioinformatics.studycalendar.domain"
-      
+
       compile.with project('utility').and_dependencies,
         project('authentication:acegi'), SECURITY.acegi, OSGI
-      test.using(:junit).with UNIT_TESTING, 
+      test.using(:junit).with UNIT_TESTING,
         project('domain').and_dependencies, project('domain').test_dependencies
-      
+
       package(:jar)
     end
-    
+
     define "log4j-configuration" do
       bnd.wrap!
       bnd.name = "PSC OSGi Layer log4j Configuration"
       bnd['Fragment-Host'] = 'com.springsource.org.apache.log4j'
-      
+
       package(:jar)
     end
-    
+
     define "integrated-tests" do
-      test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies, 
+      test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies,
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
@@ -522,31 +522,31 @@ define "psc" do
       test.enhance([:build_test_da_launcher])
     end
   end
-  
+
   ##Adding the grid module.
   desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"
   define "grid" do
-    
+
     task :check_globus do |task|
       raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
     end
-    
+
     task :check_caaers do |task|
       raise "CAAERS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CAAERS_HOME']
     end
-    
+
     task :check_ccts do |task|
       raise "CCTS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CCTS_HOME']
     end
-    
+
     task :check_grid_tomcat do |task|
       raise "CATALINA_HOME not set. Cannot deploy grid service without TOMCAT" unless ENV['CATALINA_HOME']
     end
-    
+
     task :check_wsrf do |task|
       raise "#{wsrf_dir} not found. Cannot deploy grid service" unless File.directory? wsrf_dir
     end
-    
+
     task :deploy_globus do |task|
       raise "GLOBUS_LOCATION not found. Cannot deploy globus" unless ENV['GLOBUS_LOCATION']
       ant('deploy-globus') do |ant|
@@ -557,33 +557,33 @@ define "psc" do
         end
       end
     end
-    
-    ##this will deploy all the psc implementations together with the grid services provided PSC. Consider this for CCTS deployments since the 
+
+    ##this will deploy all the psc implementations together with the grid services provided PSC. Consider this for CCTS deployments since the
     ##container will most likely be secured before deploy the PSC specific implementations. Also check the "deploy_with_globus" task.
     task :deploy => ['psc:grid:adverse-event-consumer-impl:deploy' , 'psc:grid:registration-consumer-impl:deploy' , 'psc:grid:study-consumer-impl:deploy']
-    
-    ##this will grid secure the tomcat and then deploy all the implementation. 
+
+    ##this will grid secure the tomcat and then deploy all the implementation.
     task :deploy_with_globus => [:deploy_globus , :deploy]
-      
-    ##Project src and test compiling successfully but test cases are failing. 
+
+    ##Project src and test compiling successfully but test cases are failing.
     desc "AdverseEvent Grid Service"
     define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
       compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, ADVERSE_EVENT_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
-      
+
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
       test.with(UNIT_TESTING, project('core').test_dependencies, project('database').test_dependencies, CAGRID, DBUNIT_GRID).compile.from(_('test/src/java'))
-      
+
       test.resources.from(_('test/resources')).include('*')
       test.resources.from('src/test/resources').include('logback-test.xml')
-      
+
       #removing the DBUNIT 2.1 from the test dependencies
       test.dependencies.reject! do |dep|
         dep == artifact(eponym("dbunit", "2.1"))
       end
-      
+
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_caaers', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to caaers.
         ##Not Tested therefore commented temporarily
@@ -594,9 +594,9 @@ define "psc" do
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
         end
-        
+
         task(:deploy_impl).invoke
-        
+
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
         ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
         ##Tested and working
@@ -620,23 +620,23 @@ define "psc" do
         ).run
         FileUtils.remove_dir _('target/work')
       end
-      
+
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
-        
+
         #removing the AdverseEventConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
           ADVERSE_EVENT_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
-        
+
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
-      
+
       task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
-    
+
     desc "Registration consumer Grid Service"
     define "registration-consumer-impl", :base_dir => _('registration-consumer') do
       compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, REGISTRATION_CONSUMER_GRID, SLF4J, LOGBACK
@@ -648,15 +648,15 @@ define "psc" do
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
       #test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).
       #  compile.from(_('test/src/java'));
-      
+
       test.resources.from(_('test/resources')).include('*')
       test.resources.from('src/test/resources').include('logback-test.xml')
-      
+
       #removing the DBUNIT 2.1 from the test dependencies
       test.dependencies.reject! do |dep|
         dep == artifact(eponym("dbunit", "2.1"))
       end
-      
+
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to ccts.
         ##Not Tested therefore commented temporarily
@@ -668,7 +668,7 @@ define "psc" do
           end
         end
         task(:deploy_impl).invoke
-        
+
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
         ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
         ##Tested and working
@@ -692,43 +692,43 @@ define "psc" do
         ).run
         FileUtils.remove_dir _('target/work')
       end
-      
+
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
-        
+
         #removing the RegistrationConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
           REGISTRATION_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
-        
+
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
-      
+
       task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
-    
+
     desc "Study consumer Grid Service"
     define "study-consumer-impl", :base_dir => _('study-consumer') do
       compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
-      
+
       # TODO: temporarily disabled testing until it works
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
       #test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).
       #  compile.from(_('test/src/java'))
-      
+
       test.resources.from(_('test/resources')).include('*')
       test.resources.from('src/test/resources').include('logback-test.xml')
-      
+
       #removing the DBUNIT 2.1 from the test dependencies
       test.dependencies.reject! do |dep|
         dep == artifact(eponym("dbunit", "2.1"))
       end
-      
+
       task :deploy => ['psc:grid:check_globus', 'psc:grid:check_ccts', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to ccts.
         ##Not Tested therefore commented temporarily
@@ -740,7 +740,7 @@ define "psc" do
           end
         end
         task(:deploy_impl).invoke
-        
+
         ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
         ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
         ##Tested and working
@@ -764,20 +764,20 @@ define "psc" do
         ).run
         FileUtils.remove_dir _('target/work')
       end
-      
+
       task :deploy_impl => ['psc:grid:check_wsrf', package]  do |task|
         cp package.name, wsrf_dir+"/WEB-INF/lib"
-        
+
         #removing the StudyConsumer jars from the compile dependencies since these jars will be copied by the Grid Service
         compile.dependencies.reject! do |dep|
           STUDY_CONSUMER_GRID.member?(dep) || GLOBUS.member?(dep)
         end
-        
+
         compile.dependencies.each do |lib|
           cp lib.to_s, wsrf_dir+"/WEB-INF/lib"
         end
       end
-      
+
       task :deploy_with_globus => ['psc:grid:deploy_globus', :deploy]
     end
   end
@@ -786,16 +786,16 @@ define "psc" do
   define "web" do
     COMPILED_SASS_TARGET = _(:target, :'compiled-sass')
     COMPILED_SASS_PKG_DIR = "sass-css"
-    
+
     compile.with SLF4J, LOGBACK, CTMS_COMMONS.web,
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'), 
+      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'),
       FELIX.main, DYNAMIC_JAVA.osgi_commons
 
-    test.with project('test-infrastructure').and_dependencies, 
+    test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
       project('authentication:socket').test_dependencies
 
@@ -815,8 +815,8 @@ define "psc" do
       component.facet :type => 'web', :name => 'Web' do |facet|
         facet.configuration do |conf|
           conf.descriptors do |desc|
-            desc.deploymentDescriptor :name => 'web.xml', 
-              :url => "file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml", 
+            desc.deploymentDescriptor :name => 'web.xml',
+              :url => "file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml",
               :optional => "false", :version => "2.4"
           end
           conf.webroots do |webroots|
@@ -902,7 +902,7 @@ define "psc" do
         end
         info "- Linking Sass"
         ln_s COMPILED_SASS_TARGET, t.target + "/" + COMPILED_SASS_PKG_DIR
-        
+
         # Symlinked (i.e., source) pieces.  Must come 2nd.
         # Approach: walk src/main/webapp
         # For each node, if it appears in src and target, traverse down
@@ -977,7 +977,7 @@ define "psc" do
       test.using :shenandoah, :main_path => _("../src/main/webapp/js")
     end
   end
-  
+
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
@@ -986,7 +986,7 @@ define "psc" do
     package(:jar)
     package(:sources)
   end
-  
+
   desc "Integrated tests for the RESTful API"
   define "restful-api-test", :base_dir => _('test/restful-api') do
     # Only set_db after everything is built
@@ -994,17 +994,17 @@ define "psc" do
       set_db_name(ENV['INTEGRATION_DB'] || 'rest-test')
       test.options[:properties]['psc.config.datasource'] = db_name
     end
-    
+
     compile.with(project('web').and_dependencies)
     test.using(:integration, :rspec).
       with(
-        project('test-infrastructure'), 
-        project('test-infrastructure').compile.dependencies, 
+        project('test-infrastructure'),
+        project('test-infrastructure').compile.dependencies,
         project('test-infrastructure').test.compile.dependencies
       ).using(
         :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '1.1.3', 'icalendar' => '1.1.0' },
         :requires => %w(spec http static_data template).collect { |help| _("src/spec/ruby/#{help}_helper.rb") },
-        :properties => { 
+        :properties => {
           'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
           'logback.configurationFile' => File.join(test.resources.target.to_s, "logback.xml")
         }
@@ -1012,19 +1012,19 @@ define "psc" do
     test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)
 
     integration.setup {
-      task(:set_db).invoke 
+      task(:set_db).invoke
       task('psc:web:jetty_deploy_exploded').invoke
     }
-    
+
     desc "One-time setup for the RESTful API integrated tests"
     task :setup => [:set_db, :'test:compile', project('psc:database').task('migrate')] do
       Java::Commands.java(
-        'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._, 
+        'edu.northwestern.bioinformatics.studycalendar.test.restfulapi.OneTimeSetup', project('psc')._,
         :classpath => test.compile.dependencies,
         :properties => { "psc.config.datasource" => db_name })
     end
   end
-  
+
   # This is just a direct port from ant -- might be possible to do something better with buildr
   desc "Build the binary distribution package"
   task :dist do |task|
@@ -1082,12 +1082,12 @@ namespace :ci do
       [:'emma:html', :'emma:xml'].each { |t| task(t).invoke }
     end
   end
-  
+
   task :nightly => [:unit, 'psc:dist', :artifacts_dir] do
     now = Time.now.strftime "%Y%m%d-%H%M%S"
     cp task('psc:dist').filename, "#{task('ci:artifacts_dir').dir}/psc-#{VERSION_NUMBER}-#{now}.zip"
   end
-  
+
   directory project('psc')._('target/artifacts')
   task :artifacts_dir => project('psc')._('target/artifacts') do |task|
     class << task; attr_accessor :dir; end
