@@ -1,15 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.test.restfulapi;
 
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.test.MockDbMetadata;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.RowPreservingInitializer;
 import edu.northwestern.bioinformatics.studycalendar.test.integrated.SchemaInitializer;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Rhett Sutphin
@@ -21,6 +23,7 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
     private ConfigurationInitializer configurationInitializer;
     private UsersInitializer usersInitializer;
     private SampleActivitySourceInitializer sampleSourceInitializer;
+    private Map<String, SchemaInitializer> initializerSeriesMap;
 
     @Override
     public void setUp() throws Exception {
@@ -73,19 +76,21 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
         metadata.link("user_roles", "user_role_sites", "user_role_study_sites");
 
         assertEquals("Wrong number of initializers", 4, initializer.getInitializerSeries().size());
-        assertRowPreservingInitializer("users", "id", initializer.getInitializerSeries().get(0));
-        assertRowPreservingInitializer("user_roles", "id", initializer.getInitializerSeries().get(1));
-        assertRowPreservingInitializer("user_role_sites", Arrays.asList("user_role_id", "site_id"), initializer.getInitializerSeries().get(2));
-        assertSame("user_role_sites should be handled by injected UsersInitializer", usersInitializer, initializer.getInitializerSeries().get(2));
+        assertRowPreservingInitializer("users", "id", getInitializerSeriesMap().get("users"));
+        assertRowPreservingInitializer("user_roles", "id", getInitializerSeriesMap().get("user_roles"));
+        assertRowPreservingInitializer("user_role_sites", Arrays.asList("user_role_id", "site_id"), 
+            getInitializerSeriesMap().get("user_role_sites"));
+        assertSame("user_role_sites should be handled by injected UsersInitializer", usersInitializer,
+            getInitializerSeriesMap().get("user_role_sites"));
         assertRowPreservingInitializer("user_role_study_sites",
-            Arrays.asList("user_role_id", "study_site_id"), initializer.getInitializerSeries().get(3));
+            Arrays.asList("user_role_id", "study_site_id"),
+            getInitializerSeriesMap().get("user_role_study_sites"));
     }
 
     public void testCsmTablesAreHandledByRowPreservingInitializer() throws Exception {
         metadata.link("csm_application", "csm_group");
         metadata.link("csm_group", "csm_user");
         List<SchemaInitializer> actualInitializers = initializer.getInitializerSeries();
-        System.out.println(actualInitializers);
         assertEquals("Wrong number of initializers", 3, actualInitializers.size());
         assertRowPreservingInitializer("csm_application", "application_id", actualInitializers.get(0));
         assertRowPreservingInitializer("csm_group", "group_id", actualInitializers.get(1));
@@ -108,5 +113,17 @@ public class RestfulApiTestInitializerTest extends StudyCalendarTestCase {
             ((RowPreservingInitializer) actual).getTableName());
         assertEquals("Initializer has wrong PK", expectedPks,
             ((RowPreservingInitializer) actual).getPrimaryKeyNames());
+    }
+
+    private Map<String, SchemaInitializer> getInitializerSeriesMap() {
+        if (initializerSeriesMap == null) {
+            initializerSeriesMap = new HashMap<String, SchemaInitializer>();
+            for (SchemaInitializer si : initializer.getInitializerSeries()) {
+                if (si instanceof RowPreservingInitializer) {
+                    initializerSeriesMap.put(((RowPreservingInitializer) si).getTableName(), si);
+                }
+            }
+        }
+        return initializerSeriesMap;
     }
 }
