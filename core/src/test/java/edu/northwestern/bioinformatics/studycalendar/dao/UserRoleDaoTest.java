@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     private SiteDao siteDao;
@@ -143,6 +144,16 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong id", -1, (int) loaded.getId());
             assertEquals("Wrong study site size", 0, loaded.getStudySites().size());
         }
+    }
+
+     public void testGetUserRolesForSites() throws Exception {
+        List<UserRole> userRoles = getDao().getUserRolesForSite(siteDao.getById(-200));
+        assertNotNull(userRoles);
+        assertEquals("Wrong number of UserRoles", 2, userRoles.size());
+        assertEquals("Wrong id of first UserRole", -2, (int) userRoles.get(0).getId());
+        assertEquals("Wrong role of first UserRole", Role.STUDY_COORDINATOR, userRoles.get(0).getRole());
+        assertEquals("Wrong id of second UserRole", -1,(int) userRoles.get(1).getId());
+        assertEquals("Wrong role of second UserRole", Role.STUDY_ADMIN, userRoles.get(1).getRole());
     }
     
     private static void assertSitePresent(String expectedSiteName, Collection<Site> actualSites) {
