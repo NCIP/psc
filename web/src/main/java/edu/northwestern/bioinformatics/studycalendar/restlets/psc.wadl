@@ -768,7 +768,7 @@
                     </request>
                 </method>
                 <method name="DELETE">
-                    <doc>Delete the site, but only if there are no assignments.</doc>
+                    <doc>Permanently delete the site if there are no subject assignments, including all user and study associations</doc>
                 </method>
 
                 <resource path="blackout-dates">
