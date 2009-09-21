@@ -1050,16 +1050,13 @@ end
 projects.each do |p|
   if File.exist?(p._("src/test/java"))
     # Use same logback test config for all modules
-    logback_test_src = project("psc")._("src/test/resources/logback-test.xml")
-    logback_test_dst = File.join(p.test.resources.target.to_s, "logback-test.xml")
-    file logback_test_dst => logback_test_src do |t|
-      filter.clear.from(project("psc")._("src/test/resources")).
-        include("logback-test.xml").
-        into(p.test.resources.target.to_s).
+    p.test.resources.enhance do
+      Buildr::Filter.new.
+        from(project("psc")._("src/test/resources")).
+        into(p.test.resources.target).
         using(:project_root => p._).
         run
     end
-    p.test.resources.enhance [logback_test_dst.to_sym]
   end
 end
 
