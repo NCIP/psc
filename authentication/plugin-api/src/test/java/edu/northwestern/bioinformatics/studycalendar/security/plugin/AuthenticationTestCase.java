@@ -98,6 +98,16 @@ public abstract class AuthenticationTestCase extends TestCase {
         public int getLoginTimeout() throws SQLException {
             throw new UnsupportedOperationException("getLoginTimeout not implemented");
         }
+
+        //// JDBC4 methods
+
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            throw new UnsupportedOperationException("unwrap not implemented");
+        }
+
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            throw new UnsupportedOperationException("isWrapperFor not implemented");
+        }
     }
 
     protected static class StaticPscUserDetailsService implements PscUserDetailsService {
