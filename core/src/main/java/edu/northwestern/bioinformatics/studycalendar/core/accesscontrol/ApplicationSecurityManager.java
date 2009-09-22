@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Padmaja Vedula
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ApplicationSecurityManager {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private UserService userService;
 
     public String getUserName() {
         String user = null;
@@ -36,5 +39,23 @@ public class ApplicationSecurityManager {
     public void removeUserSession() {
         log.debug("Removing authentication from {}", SecurityContextHolder.getContext());
         SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    /**
+     * Reloads the logged in {@link User} in the current hibernate session.
+     */
+    // TODO: copy metadata
+    public User getFreshUser() {
+        String userName = getUserName();
+        if (userName ==  null) {
+            return null;
+        } else {
+            return userService.getUserByName(userName);
+        }
+    }
+
+    @Required
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

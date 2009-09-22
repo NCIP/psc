@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -40,6 +41,7 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
 
         controller = new SiteCoordinatorController();
         controller.setUserDao(userDao);
+        applicationSecurityManager.setUserService(registerMockFor(UserService.class));
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         studyA  = createNamedInstance("A", Study.class);
@@ -66,7 +68,7 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
         user.getUserRole(Role.SUBJECT_COORDINATOR).addSite(siteZ);
         SecurityContextHolderTestHelper.setSecurityContext(user, null);
 
-        expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
+        expect(applicationSecurityManager.getFreshUser()).andReturn(user).anyTimes();
     }
 
     public void testUserInModel() throws Exception {
