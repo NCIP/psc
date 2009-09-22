@@ -3,16 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Id;
-import gov.nih.nci.coppa.po.IdentifiedOrganization;
 import gov.nih.nci.coppa.po.Organization;
-import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
-import gov.nih.nci.coppa.services.structuralroles.identifiedorganization.client.IdentifiedOrganizationClient;
-import gov.nih.nci.coppa.services.structuralroles.researchorganization.client.ResearchOrganizationClient;
 import junit.framework.TestCase;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.notNull;
-import org.iso._21090.*;
+import org.iso._21090.ENON;
+import org.iso._21090.ENXP;
+import org.iso._21090.EntityNamePartType;
 
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -23,21 +21,15 @@ import java.util.List;
 public class CoppaSiteProviderTest extends TestCase {
     private CoppaSiteProvider provider;
     private OrganizationClient client;
-    private IdentifiedOrganizationClient iClient;
-    private ResearchOrganizationClient rClient;
     private MockRegistry mocks = new MockRegistry();
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         client = mocks.registerMockFor(OrganizationClient.class);
-        iClient = mocks.registerMockFor(IdentifiedOrganizationClient.class);
-        rClient = mocks.registerMockFor(ResearchOrganizationClient.class);
 
         provider = new CoppaSiteProvider();
-        provider.setOrganizationClient(client);
-        provider.setIdentifiedOrganizationClient(iClient);
-        provider.setResearchOrganizationClient(rClient);
+        provider.setClient(client);
     }
 
     public void testNameSearchCriterionIsDelForPartialName() throws Exception {
@@ -89,14 +81,14 @@ public class CoppaSiteProviderTest extends TestCase {
         assertSite("Wrong site 2", "NO", "442", actual.get(2));
     }
 
-    public void pending_testGetSitesReturnsCreatedSites() throws Exception {
-        expect(iClient.getByPlayerIds((Id[]) notNull())).andReturn(new IdentifiedOrganization[] {
-            coppaIdentifiedOrganization("NU", "420"),
-        });
+    public void testGetSitesReturnsCreatedSites() throws Exception {
+        expect(client.getById((Id) notNull())).andReturn(
+            coppaOrganization("NU", "420")
+        );
+        expect(client.getById((Id) notNull())).andReturn(
+            coppaOrganization("NA", "422")
+        );
 
-        expect(rClient.getByPlayerIds((Id[]) notNull())).andReturn(new ResearchOrganization[] {
-            coppaResearchOrganization("NA", "422"),
-        });
         mocks.replayMocks();
 
         List<Site> actual = provider.getSites(asList("420", "422"));
@@ -124,35 +116,6 @@ public class CoppaSiteProviderTest extends TestCase {
         id.setRoot(OrganizationIdentifier.ORGANIZATION_II_ROOT);
         id.setExtension(iiValue);
         org.setIdentifier(id);
-
-        return org;
-    }
-
-
-    private IdentifiedOrganization coppaIdentifiedOrganization(String name, String idValue) {
-        IdentifiedOrganization org = new IdentifiedOrganization();
-
-        II i = new II();
-        i.setRoot(OrganizationIdentifier.ORGANIZATION_II_ROOT);
-        i.setExtension(idValue);
-
-        org.setAssignedId(i);
-
-        return org;
-    }
-    
-    private ResearchOrganization coppaResearchOrganization(String name, String idValue) {
-        ResearchOrganization org = new ResearchOrganization();
-
-        ST st = new ST();
-        st.setValue(name);
-        org.setName(st);
-
-        II i = new II();
-        i.setRoot(OrganizationIdentifier.ORGANIZATION_II_ROOT);
-        i.setExtension(idValue);
-
-        org.setPlayerIdentifier(i);
 
         return org;
     }
