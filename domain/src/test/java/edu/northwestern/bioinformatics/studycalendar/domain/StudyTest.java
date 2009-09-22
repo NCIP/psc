@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
@@ -19,12 +20,12 @@ public class StudyTest extends TestCase {
 
     public void testGetSites() throws Exception {
         List<Site> expectedSites = Arrays.asList(
-                Fixtures.createNamedInstance("Site 1", Site.class),
-                Fixtures.createNamedInstance("Site 3", Site.class),
-                Fixtures.createNamedInstance("Site 2", Site.class)
+                createNamedInstance("Site 1", Site.class),
+                createNamedInstance("Site 3", Site.class),
+                createNamedInstance("Site 2", Site.class)
         );
         for (Site site : expectedSites) {
-            Fixtures.createStudySite(study, site);
+            createStudySite(study, site);
         }
 
         List<Site> actualSites = study.getSites();
@@ -87,16 +88,16 @@ public class StudyTest extends TestCase {
     }
 
     public void testGetStudySiteForNonAssociatedSite() throws Exception {
-        Site s4 = Fixtures.createNamedInstance("S4", Site.class);
-        study.addSite(Fixtures.createNamedInstance("S2", Site.class));
-        study.addSite(Fixtures.createNamedInstance("S3", Site.class));
+        Site s4 = createNamedInstance("S4", Site.class);
+        study.addSite(createNamedInstance("S2", Site.class));
+        study.addSite(createNamedInstance("S3", Site.class));
 
         assertNull(study.getStudySite(s4));
     }
 
     public void testGetStudySiteForAssociatedSite() throws Exception {
-        Site s3 = Fixtures.createNamedInstance("S3", Site.class);
-        study.addSite(Fixtures.createNamedInstance("S2", Site.class));
+        Site s3 = createNamedInstance("S3", Site.class);
+        study.addSite(createNamedInstance("S2", Site.class));
         study.addSite(s3);
 
         assertNotNull(study.getStudySite(s3));
@@ -105,15 +106,15 @@ public class StudyTest extends TestCase {
     }
 
     public void testBasicAddSite() throws Exception {
-        Site expectedSite = Fixtures.createNamedInstance("Site 1", Site.class);
+        Site expectedSite = createNamedInstance("Site 1", Site.class);
         study.addSite(expectedSite);
         assertEquals("No studySite added", 1, study.getStudySites().size());
         assertSame("StudySite added not for passed site", expectedSite, study.getStudySites().get(0).getSite());
     }
 
     public void testAddSiteWhenExists() throws Exception {
-        Site expectedSite = Fixtures.createNamedInstance("Site 1", Site.class);
-        Fixtures.createStudySite(study, expectedSite);
+        Site expectedSite = createNamedInstance("Site 1", Site.class);
+        createStudySite(study, expectedSite);
         assertEquals("Test setup incorrect", 1, study.getStudySites().size());
 
         study.addSite(expectedSite);
@@ -170,8 +171,8 @@ public class StudyTest extends TestCase {
     }
 
     public void testCloneWithPopulations() throws Exception {
-        Population p1 = Fixtures.createPopulation("abbreviation1", "name1");
-        Population p2 = Fixtures.createPopulation("abbreviation2", "name2");
+        Population p1 = createPopulation("abbreviation1", "name1");
+        Population p2 = createPopulation("abbreviation2", "name2");
         Set<Population> populations = new HashSet<Population>();
         populations.add(p1);
         populations.add(p2);
@@ -194,27 +195,33 @@ public class StudyTest extends TestCase {
     }
 
     public void testCloneDeepClonesAmendment() throws Exception {
-        Study src = Fixtures.createReleasedTemplate();
+        Study src = createReleasedTemplate();
         Study clone = src.clone();
         assertNotSame("Amendments not cloned",
             src.getAmendment(), clone.getAmendment());
     }
 
     public void testCloneDeepClonesDevAmendment() throws Exception {
-        Study src = Fixtures.createInDevelopmentTemplate("DC");
+        Study src = createInDevelopmentTemplate("DC");
         Study clone = src.clone();
         assertNotSame("Dev amendment not cloned",
             src.getDevelopmentAmendment(), clone.getDevelopmentAmendment());
     }
 
     public void testTransientCloneIncludesTransientAmendment() throws Exception {
-        Study clone = Fixtures.createReleasedTemplate().transientClone();
+        Study clone = createReleasedTemplate().transientClone();
         assertTrue(clone.getAmendment().isMemoryOnly());
     }
 
     public void testTransientCloneIncludesTransientDevAmendment() throws Exception {
-        Study clone = Fixtures.createInDevelopmentTemplate("DC").transientClone();
+        Study clone = createInDevelopmentTemplate("DC").transientClone();
         assertTrue(clone.getDevelopmentAmendment().isMemoryOnly());
+    }
+
+    public void testCloneDeepClonesSecondaryIdentifiers() throws Exception {
+        StudySecondaryIdentifier original = addSecondaryIdentifier(study, "E", "1");
+        Study clone = study.clone();
+        assertNotSame("Not cloned", original, clone.getSecondaryIdentifiers().first());
     }
 
     public void testLastModifiedDate() throws Exception {
@@ -262,7 +269,7 @@ public class StudyTest extends TestCase {
     }
 
     public void testAddSecondaryIdentifierAddsTheIdentifier() throws Exception {
-        StudySecondaryIdentifier ident = Fixtures.createStudyIdentifier("A", "1");
+        StudySecondaryIdentifier ident = createStudyIdentifier("A", "1");
         assertEquals(0, study.getSecondaryIdentifiers().size());
         study.addSecondaryIdentifier(ident);
         assertEquals(1, study.getSecondaryIdentifiers().size());
@@ -270,9 +277,20 @@ public class StudyTest extends TestCase {
     }
 
     public void testAddSecondaryIdentifierCreatesLink() throws Exception {
-        StudySecondaryIdentifier ident = Fixtures.createStudyIdentifier("A", "1");
+        StudySecondaryIdentifier ident = createStudyIdentifier("A", "1");
         assertNull(ident.getStudy());
         study.addSecondaryIdentifier(ident);
         assertSame(study, ident.getStudy());
+    }
+
+    public void testGetSecondaryIdentifierIsNullForUnknownType() throws Exception {
+        assertNull(study.getSecondaryIdentifierValue("some id"));
+    }
+    
+    public void testGetSecondaryIdentifierReturnsFirstOfType() throws Exception {
+        addSecondaryIdentifier(study, "foo", "A");
+        addSecondaryIdentifier(study, "foo", "B");
+
+        assertEquals("A", study.getSecondaryIdentifierValue("foo"));
     }
 }

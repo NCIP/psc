@@ -30,4 +30,17 @@ public class StudySecondaryIdentifierTest extends DomainTestCase {
         assertNegative(id0.compareTo(id1));
         assertPositive(id1.compareTo(id0));
     }
+
+    public void testIsCloneable() throws Exception {
+        StudySecondaryIdentifier ident = createStudyIdentifier("A", "1");
+        StudySecondaryIdentifier clone = ident.clone();
+        assertNotSame(ident, clone);
+    }
+
+    public void testCloningRemovesStudyRef() throws Exception {
+        Study s = createReleasedTemplate();
+        addSecondaryIdentifier(s, "B", "7");
+        StudySecondaryIdentifier clone = s.getSecondaryIdentifiers().first().clone();
+        assertNull("Parent ref not removed", clone.getStudy());
+    }
 }

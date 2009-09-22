@@ -1,15 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * @author Rhett Sutphin
@@ -21,7 +22,7 @@ import javax.persistence.Column;
         @Parameter(name = "sequence", value = "seq_study_secondary_idents_id")
     }
 )
-public class StudySecondaryIdentifier extends AbstractMutableDomainObject implements Comparable<StudySecondaryIdentifier> {
+public class StudySecondaryIdentifier extends AbstractMutableDomainObject implements Comparable<StudySecondaryIdentifier>, Cloneable {
     private Study study;
     private String type, value;
 
@@ -69,5 +70,18 @@ public class StudySecondaryIdentifier extends AbstractMutableDomainObject implem
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    ///// OBJECT METHODS
+
+    @Override
+    public StudySecondaryIdentifier clone() {
+        try {
+            StudySecondaryIdentifier clone = (StudySecondaryIdentifier) super.clone();
+            clone.setStudy(null);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
     }
 }

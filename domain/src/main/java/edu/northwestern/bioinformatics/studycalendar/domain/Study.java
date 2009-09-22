@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -155,6 +154,14 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
     public void addSecondaryIdentifier(StudySecondaryIdentifier identifier) {
         identifier.setStudy(this);
         getSecondaryIdentifiers().add(identifier);
+    }
+
+    @Transient
+    public String getSecondaryIdentifierValue(String type) {
+        for (StudySecondaryIdentifier ident : getSecondaryIdentifiers()) {
+            if (ident.getType().equals(type)) return ident.getValue();
+        }
+        return null;
     }
 
     @Transient
@@ -425,6 +432,10 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
             }
             if (getDevelopmentAmendment() != null) {
                 clone.setDevelopmentAmendment(getDevelopmentAmendment().clone());
+            }
+            clone.setSecondaryIdentifiers(new TreeSet<StudySecondaryIdentifier>());
+            for (StudySecondaryIdentifier src : getSecondaryIdentifiers()) {
+                clone.addSecondaryIdentifier(src.clone());
             }
             return clone;
         }
