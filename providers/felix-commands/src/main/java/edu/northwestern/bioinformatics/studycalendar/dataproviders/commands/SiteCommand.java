@@ -28,11 +28,11 @@ public class SiteCommand implements Command {
     }
 
     public String getUsage() {
-        return "site (get|search) arg";
+        return "site (get|search) <arg>";
     }
 
     public String getShortDescription() {
-        return "executes site provider methods";
+        return "execute site provider methods.";
     }
 
     public void execute(String command, PrintStream out, PrintStream err) {

@@ -46,11 +46,11 @@ public class SiteCommandTest extends TestCase {
     }
 
     public void testShortDescription() throws Exception {
-        assertEquals("executes site provider methods", command.getShortDescription());
+        assertEquals("execute site provider methods.", command.getShortDescription());
     }
 
     public void testUsage() throws Exception {
-        assertEquals("site (get|search) arg", command.getUsage());
+        assertEquals("site (get|search) <arg>", command.getUsage());
     }
 
     public void testCommandsExecuteAgainstAllFoundProviders() throws Exception {
