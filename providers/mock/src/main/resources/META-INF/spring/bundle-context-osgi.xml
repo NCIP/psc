@@ -22,4 +22,14 @@
         </osgi:service-properties>
     </osgi:service>
 
+    <osgi:service id="mockStudyProviderRegistration" ref="mockStudyProvider">
+        <osgi:interfaces>
+            <value>edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="service.ranking">
+                <util:constant static-field="java.lang.Integer.MIN_VALUE"/>
+            </entry>
+        </osgi:service-properties>
+    </osgi:service>
 </beans>

@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-       ">
-
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd        ">
     <bean id="mockSiteProvider" class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockSiteProvider">
         <property name="sites">
             <map>
@@ -493,5 +488,718 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             </map>
         </property>
     </bean>
-
+    <bean class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockStudyProvider" id="mockStudyProvider">
+        <property name="studies">
+            <map>
+                <entry key="NCT00003641">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase III Randomized Study of Four Weeks of High Dose Interferon Alfa-2b in Stage TN ,TN, TN, and T, N (Microscopic) Melanoma" name="longTitle"/>
+                        <property value="NCT00003641" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000066727" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-1697" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="SWOG-E1697" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CALGB-500103" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CAN-NCIC-ME10" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="COG-E1697" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00003641" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00008385">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase III Chemoprevention Trial Of Selenium Supplementation In Persons With Resected Stage I Non-Small Cell Lung Cancer" name="longTitle"/>
+                        <property value="NCT00008385" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000068402" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-5597" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CAN-NCIC-BR16" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CALGB-79803" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="NCCTG-E5597" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="SWOG-E5597" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="NCI-P00-0176" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00008385" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00045305">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase II Study of Reduced Intensity Allogeneic Bone Marrow Transplant for the Treatment of Myelodysplastic Syndromes" name="longTitle"/>
+                        <property value="NCT00045305" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000256928" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1902" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00045305" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00049530">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase II Study of Low Dose Peginterferon Alfa-2b in Patients With Metastatic Melanoma Over-Expressing Basic Fibroblast Growth Factor" name="longTitle"/>
+                        <property value="NCT00049530" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000258114" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-2602" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00049530" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00074282">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase II Trial of Pentostatin, Cyclophosphamide and Rituximab (PCR) Followed by Campath-1H for Previously Treated Relapsed or Refractory Patients With Chronic Lymphocytic Leukemia" name="longTitle"/>
+                        <property value="NCT00074282" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000343796" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-2903" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00074282" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00093470">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase III Randomized Study Of Farnesyl Transferase Inhibitor R115777 In Acute Myeloid Leukemia (AML) Patients In Second Or Subsequent Remission Or In Remission After Primary Induction Failure" name="longTitle"/>
+                        <property value="NCT00093470" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000387995" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2902" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00093470" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00217737">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Randomized Phase III Study Comparing 5-FU, Leucovorin and Oxaliplatin Versus 5-FU, Leucovorin, Oxaliplatin and Bevacizumab in Patients With Stage II Colon Cancer at High Risk for Recurrence to Determine Prospectively the Prognostic Value of Molecular Markers" name="longTitle"/>
+                        <property value="NCT00217737" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000443410" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E5202" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00217737" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00309933">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Quality of Life in Younger Breast Cancer Survivors" name="longTitle"/>
+                        <property value="NCT00309933" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000460234" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2Z04" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00309933" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00309985">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="CHAARTED: ChemoHormonal Therapy Versus Androgen Ablation Randomized Trial for Extensive Disease in Prostate Cancer [CHAARTED]" name="longTitle"/>
+                        <property value="NCT00309985" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000462099" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E3805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00309985" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00310180">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Program for the Assessment of Clinical Cancer Tests (PACCT-1): Trial Assigning Individualized Options for Treatment: The TAILORx Trial" name="longTitle"/>
+                        <property value="NCT00310180" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000472066" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="SWOG-ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CALGB-ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="NCCTG-ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="NSABP-ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ACOSOG-ECOG-PACCT-1" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CAN-NCIC-MAC12" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00310180" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct_alias" name="type"/>
+                                    <property value="NCT00554931" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00313586">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Randomized Phase II Trial of Azacitidine With or Without the Histone Deacetylase Inhibitor MS-275 for the Treatment of Myelodysplastic Syndrome, Chronic Myelomonocytic Leukemia (Dysplastic Type), and Acute Myeloid Leukemia With Multilineage Dysplasia" name="longTitle"/>
+                        <property value="NCT00313586" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000466186" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1905" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00313586" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00316888">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase II Trial of Cetuximab Plus Cisplatin, 5- Fluorouracil and Radiation in Immunocompetent Patients With Anal Carcinoma" name="longTitle"/>
+                        <property value="NCT00316888" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000470269" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E3205" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00316888" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00321685">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase II Study of Preoperative Radiation With Concurrent Capecitabine, Oxaliplatin and Bevacizumab Followed by Surgery and Postoperative 5-FU, Leucovorin, Oxaliplatin (FOLFOX) and Bevacizumab in Patients With Locally Advanced Rectal Cancer" name="longTitle"/>
+                        <property value="NCT00321685" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000471148" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E3204" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00321685" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00324805">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase III Randomized Trial of Adjuvant Chemotherapy With or Without Bevacizumab for Patients With Completely Resected Stage IB (&gt; 4cm)-IIIA Non-Small Lung Cancer (NSCLC)" name="longTitle"/>
+                        <property value="NCT00324805" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000475774" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1505" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="SWOG-E1505" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CALGB-E1505" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CAN-NCIC-E1505" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="NCCTG-E1505" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00324805" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00326898">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="ASSURE: Adjuvant Sorafenib or Sunitinib for Unfavorable Renal Carcinoma" name="longTitle"/>
+                        <property value="NCT00326898" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000478976" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CALGB-E2805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="SWOG-E2805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="CAN-NCIC-E2805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00326898" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00335140">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Phase II Study of Rituximab Given in Conjunction With Standard Chemotherapy in Primary Central Nervous System (CNS) Lymphoma" name="longTitle"/>
+                        <property value="NCT00335140" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000475776" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1F05" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00335140" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00357760">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Randomized Phase II Study to Determine the Effect of 2 Different Doses AVE0005 (VEGF Trap) in Patients With Metastatic Renal Cell Carcinoma" name="longTitle"/>
+                        <property value="NCT00357760" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000489069" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E4805" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00357760" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00378703">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="The BeST Trial: A Randomized Phase II Study of VEGF, RAF Kinase, and mTOR Combination Targeted Therapy (CTT) With Bevacizumab, Sorafenib and Temsirolimus in Advanced Renal Cell Carcinoma [BeST]" name="longTitle"/>
+                        <property value="NCT00378703" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000499788" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2804" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00378703" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00433511">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Double-Blind Phase III Trial of Doxorubicin and Cyclophosphamide Followed by Paclitaxel With Bevacizumab or Placebo in Patients With Lymph Node Positive and High Risk Lymph Node Negative Breast Cancer" name="longTitle"/>
+                        <property value="NCT00433511" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000528955" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E5103" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00433511" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00520975">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Randomized Phase III Double-Blind Placebo-Controlled Trial of First-line Chemotherapy and Trastuzumab With or Without Bevacizumab for Patients With HER-2/NEU Over-expressing Metastatic Breast Cancer" name="longTitle"/>
+                        <property value="NCT00520975" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000561762" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1105" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00520975" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00522392">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Randomized Phase III Trial of Consolidation Therapy With Bortezomib (Velcade®)- Lenalidomide (Revlimid®)&#10;Dexamethasone (VRD) Versus Bortezomib (Velcade®) - Dexamethasone (VD) for Patients With Multiple Myeloma Who Have Completed a Dexamethasone Based Induction Regimen" name="longTitle"/>
+                        <property value="NCT00522392" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000561758" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1A05" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00522392" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00588770">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase III Randomized Trial of Chemotherapy With or Without Bevacizumab In Patients With Recurrent Or Metastatic Head and Neck Cancer" name="longTitle"/>
+                        <property value="NCT00588770" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000582533" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1305" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00588770" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00602641">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="An Intergroup Phase III Randomized Controlled Trial Comparing Melphalan, Prednisone and Thalidomide (MPT) Versus Melphalan, Prednisone and Lenalidomide (Revlimid™) (MPR) in Newly Diagnosed Multiple Myeloma Patients Who Are Not Candidates for High-Dose Therapy" name="longTitle"/>
+                        <property value="NCT00602641" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000583984" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1A06" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00602641" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00634244">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase II Randomized Trial of Carboplatin and Topotecan; Flavopiridol, Mitoxantrone and Cytosine Arabinoside; and Sirolimus, Mitoxantrone, Etoposide and Cytosine Arabinoside for the Treatment of Adults With Primary Refractory or Initial Relapse of Acute Myelogenous Leukemia (AML)" name="longTitle"/>
+                        <property value="NCT00634244" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000588834" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1906" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00634244" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00700882">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Phase II Trial of Dasatinib in Patients With Unresectable Locally Advanced or Stage IV Mucosal, Acral and Solar Melanomas" name="longTitle"/>
+                        <property value="NCT00700882" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000598300" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2607" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00700882" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00843882">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Randomized Phase III Trial Comparing the Frequency of Major Erythroid Response (MER) to Treatment With Lenalidomide (Revlimid®) Alone and in Combination With Epoetin Alfa (Procrit®) in Subjects With Low- or Intermediate-1 Risk MDS and Symptomatic Anemia" name="longTitle"/>
+                        <property value="NCT00843882" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000634119" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E2905" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00843882" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00887159">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="A Randomized Phase II Study of Cisplatin and Etoposide in Combination With Either Hedgehog Inhibitor GDC-0449 or IGF-1R MOAB IMCA12 for Patients With Extensive Stage Small Cell Lung Cancer" name="longTitle"/>
+                        <property value="NCT00887159" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000640898" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E1508" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00887159" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="NCT00897767">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.domain.Study">
+                        <property value="Ancillary Laboratory Protocol For Collecting Diagnostic Material On Patients Considered For ECOG Treatment Trials For Leukemia Or Related Hematologic Disorders" name="longTitle"/>
+                        <property value="NCT00897767" name="assignedIdentifier"/>
+                        <property name="secondaryIdentifiers">
+                            <set>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="org_study" name="type"/>
+                                    <property value="CDR0000357586" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="secondary" name="type"/>
+                                    <property value="ECOG-E3903" name="value"/>
+                                </bean>
+                                <bean class="edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier">
+                                    <property value="nct" name="type"/>
+                                    <property value="NCT00897767" name="value"/>
+                                </bean>
+                            </set>
+                        </property>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </beans>
