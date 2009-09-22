@@ -44,4 +44,13 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
                 XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(actual));
         assertEquals("Should have no children", 0, actual.elements().size());
     }
+
+    public void testCreateSingleElementwithProvider() throws Exception {
+        Study study = Fixtures.createNamedInstance("A", Study.class);
+        study.setProvider("study-provider");
+        Element actualElement = serializer.createElement(study);
+        assertNotNull(actualElement.attribute("provider"));
+        assertEquals("Wrong provider", "study-provider", actualElement.attributeValue("provider"));
+
+    }
 }

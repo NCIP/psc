@@ -110,6 +110,15 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong number of populations", 2, elt.elements("population").size());
         assertEquals("Wrong number of planned calendars", 1, elt.elements("planned-calendar").size());
     }
+    
+    public void testCreateElementWithProvider() throws Exception {
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setProvider("study-provider");
+        study.setPlannedCalendar(new PlannedCalendar());
+        Element elt = serializer.createElement(study);
+        assertNotNull(elt.attribute("provider"));
+        assertEquals("Wrong provider", "study-provider", elt.attributeValue("provider"));
+    }
 
     private Study doParse(String xml, String... formatValues) {
         String doc = String.format(xml, (Object[]) formatValues);

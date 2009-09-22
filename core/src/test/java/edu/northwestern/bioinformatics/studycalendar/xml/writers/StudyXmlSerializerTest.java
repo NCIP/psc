@@ -100,12 +100,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhereElementIsNew() {
-        expectResolveStudy("Study A", null);
-        expectDeserializePopulation();
-        expectDeserializePlannedCalendar();
-        expectDeserializeAmendments();
-        expectDesearializeDevelopmentAmendment();
-        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
+        expectDeserializeDataForNewElement();
         replayMocks();
 
         Study actual = serializer.readElement(createStudyElement());
@@ -117,6 +112,19 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertSame("Wrong first amendment", firstAmendment, actual.getAmendment().getPreviousAmendment());
         assertSame("Wrong second amendment", secondAmendment, actual.getAmendment());
         assertSame("Wrong development amendment", developmentAmendment, actual.getDevelopmentAmendment());
+    }
+
+    public void testReadElementWithProviderForNewElement() throws Exception {
+        Element elt = createStudyElement();
+        elt.addAttribute("provider", "study-provider");
+        expectDeserializeDataForNewElement();
+        replayMocks();
+
+        Study actual = serializer.readElement(elt);
+        verifyMocks();
+        assertNotNull(actual.getProvider());
+        assertEquals("Wrong provider", "study-provider", actual.getProvider());
+
     }
 
     public void testReadElementWithInvalidElementName() {
@@ -175,6 +183,18 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertNotNull("Planned calendar should exist", actual.element("planned-calendar"));
         assertNotNull("Amendment should exist", actual.element("amendment"));
         assertNotNull("Development Amendment should exist", actual.element("development-amendment"));
+
+    }
+
+    public void testCreateElementWithProvider() throws Exception {
+        study.setProvider("study-provider");
+        expectChildrenSerializers();
+        replayMocks();
+
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        assertEquals("Wrong attribute size", 3, actual.attributeCount());
+        assertEquals("Wrong provider", "study-provider", actual.attributeValue("provider"));
 
     }
 
@@ -237,6 +257,15 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private void expectDeserializeAmendments() {
         expect(amendmentSerializer.readElement(eFirstAmendment)).andReturn(firstAmendment);
         expect(amendmentSerializer.readElement(eSecondAmendment)).andReturn(secondAmendment);
+    }
+
+    private void expectDeserializeDataForNewElement() {
+        expectResolveStudy("Study A", null);
+        expectDeserializePopulation();
+        expectDeserializePlannedCalendar();
+        expectDeserializeAmendments();
+        expectDesearializeDevelopmentAmendment();
+        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
     }
 
     ////// Element Creation Helpers

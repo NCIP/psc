@@ -36,6 +36,7 @@
             <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="provider" type="xsd:string" use="optional"/>
         <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
 
     </xsd:complexType>
@@ -58,6 +59,7 @@
             <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="provider" type="xsd:string" use="optional"/>
         <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
 
     </xsd:complexType>

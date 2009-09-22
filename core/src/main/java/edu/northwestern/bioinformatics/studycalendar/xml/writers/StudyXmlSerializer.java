@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.LAST_MODIFIED_DATE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_PROVIDER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +35,9 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         STUDY_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
         LAST_MODIFIED_DATE.addToDateTime(elt, study.getLastModifiedDate());
 
+        if (study.getProvider() != null) {
+            STUDY_PROVIDER.addTo(elt, study.getProvider());
+        }
         Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
         elt.add(eCalendar);
@@ -67,6 +71,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (study == null) {
             study = new Study();
             study.setAssignedIdentifier(key);
+            String provider =  STUDY_PROVIDER.from(element);
+            if (provider != null && provider.length() > 0) {
+                study.setProvider(provider);
+            }
             Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
             PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
             if (plannedCalendarDao.getByGridId(calendar.getGridId()) != null) {

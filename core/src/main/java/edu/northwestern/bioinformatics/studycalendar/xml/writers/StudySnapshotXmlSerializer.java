@@ -20,6 +20,9 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY_SNAPSHOT.create();
         XsdAttribute.STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
+        if (study.getProvider() !=null) {
+            XsdAttribute.STUDY_PROVIDER.addTo(elt, study.getProvider());
+        }
 
         Set<Population> pops = study.getPopulations();
         PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
@@ -43,6 +46,10 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
                     + XsdElement.STUDY_SNAPSHOT.xmlName());
         }
 
+        String provider =  XsdAttribute.STUDY_PROVIDER.from(element);
+        if (provider != null && provider.length() > 0) {
+            study.setProvider(provider);
+        }
         List<Element> popElts = XsdElement.POPULATION.allFrom(element);
         PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
         for (Element popElt : popElts) {

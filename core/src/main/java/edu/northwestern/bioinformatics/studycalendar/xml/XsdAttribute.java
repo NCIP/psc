@@ -89,6 +89,7 @@ public enum XsdAttribute {
     AMENDMENT_DATE("date"),
     PLAN_TREE_NODE_NAME("name"),
     STUDY_ASSIGNED_IDENTIFIER("assigned-identifier"),
+    STUDY_PROVIDER("provider"),
     LAST_MODIFIED_DATE("last-modified-date"),
     RELEASED_DATE("released-date"),
     UPDATED_DATE("updated-date"),
