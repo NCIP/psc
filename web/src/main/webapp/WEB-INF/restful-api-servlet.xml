@@ -42,6 +42,13 @@
         <property name="studySnapshotXmlSerializer" ref="studySnapshotXmlSerializer"/>
     </bean>
 
+    <bean name="/provided-studies"
+          id="ProvidedStudiesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedStudiesResource"
+            >
+        <property name="xmlSerializer" ref="studiesXmlSerializer"/>
+    </bean>
+
     <bean name="/studies/{study-identifier}/template"
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"

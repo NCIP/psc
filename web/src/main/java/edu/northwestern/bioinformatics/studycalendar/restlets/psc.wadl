@@ -886,6 +886,22 @@
                 </response>
             </method>
         </resource>
+
+       <resource path="provided-studies">
+            <doc>
+                <html:p>List of studies from COPPA study provider.</html:p>
+            </doc>
+            <method name="GET">
+                <request>
+                    <param style="query" name="q" type="xsd:string">
+                        <doc>If specified, only studies which contain the query value (case-insensitive) in either their study name or their identifiers will be returned.</doc>
+                    </param>
+                </request>
+                <response>
+                    <representation href="#studies-xml"/>
+                </response>
+            </method>
+        </resource>
         
         <resource path="osgi/bundles">
             <resource path="{bundle-id}">
