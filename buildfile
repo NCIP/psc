@@ -923,6 +923,23 @@ define "psc" do
       info msg
       info "=" * msg.size
 
+      # enable non-default OSGi bundles
+      unless ENV['MOCK_PROVIDER'] == 'no'
+        if start_bundle('edu.northwestern.bioinformatics.psc-providers-mock')
+          info "Started mock providers bundle"
+        else
+          warn "Could not start mock providers bundle"
+        end
+      end
+
+      if ENV['OSGI_TELNET']
+        if start_bundle(/telnet|shell\.remote/)
+          info "Started telnet bundle(s)"
+        else
+          warn "Could not start telnet bundle(s)"
+        end
+      end
+
       # Keep the script running until interrupted
       while(true)
         sleep(1)

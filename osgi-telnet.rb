@@ -11,41 +11,39 @@
 #   $ osgi-telnet.rb STOPPING   # Stop the bundle
 #   {"state":"RESOLVED"}
 #
-# Fairly rough around the edges -- user/pass/hostname are all hard coded.
+# Somewhat rough around the edges -- hostname is hard coded.
 
 require 'rubygems'
-gem 'rest-open-uri'
-require 'rest-open-uri'
+require 'restclient'
 require 'json'
 
-SYSADMIN_USER = "superuser"
-SYSADMIN_PASS = "superuser"
-PSC_HOST = "http://localhost:7200/psc"
+PSC_HOST = "localhost:7200"
+RestClient.log = 'stdout'
 
-def http(method, resource, entity=nil)
-  options = {
-    :method => method,
-    :body => entity,
-    :http_basic_authentication => [SYSADMIN_USER, SYSADMIN_PASS],
-    'Content-Type' => 'application/json'
-  }
-  OpenURI.open_uri "#{PSC_HOST}/api/v1/#{resource}", options do |f|
-    f.read
+def user_settings
+  @settings ||= begin
+    specific_file = "#{ENV['HOME']}/.buildr/settings.yaml"
+    default_file = "#{File.dirname(__FILE__)}/buildr-user-settings.yaml.default"
+    YAML.load(open(File.exist?(specific_file) ? specific_file : default_file))
   end
+end
+
+def psc_url(resource)
+  "http://#{user_settings['psc']['dev_admin']['username']}:#{user_settings['psc']['dev_admin']['password']}@#{PSC_HOST}/psc/api/v1/#{resource}"
 end
 
 new_state = ARGV.first
 
-bundles = JSON.parse(http(:get, 'osgi/bundles'))
+bundles = JSON.parse(RestClient.get(psc_url('osgi/bundles'), :accept => '*/*'))
 telnet_bundles = bundles.select { |b| (b['symbolic-name'] =~ /consoletelnet/) || (b['symbolic-name'] =~ /shell.remote/) }
 raise "Telnet bundle not present: #{bundles.collect { |b| b['symbolic-name'] }.inspect}" if telnet_bundles.empty?
-method, entity = 
-  if new_state
-    [:put, "{ state: '#{new_state}' }"]
-  else
-    [:get]
-  end
 telnet_bundles.each do |b|
-  result = http(method, "osgi/bundles/#{b['id']}/state", entity)
+  url = psc_url("osgi/bundles/#{b['id']}/state")
+  result = 
+    if new_state
+      RestClient.put(url, "{ state: '#{new_state}' }", :content_type => 'application/json')
+    else
+      RestClient.get(url, :accept => '*/*')
+    end
   puts "#{b['symbolic-name']}: #{result}"
 end

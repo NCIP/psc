@@ -1,0 +1,8 @@
+# Defaults for the psc entry in ~/.buildr/settings.yaml
+# DO NOT MODIFY THIS FILE with your local settings.  Instead, copy it to
+# ~/.buildr/settings.yaml and modify it there.
+
+psc:
+  dev_admin:
+    username: superuser
+    password: superuser
