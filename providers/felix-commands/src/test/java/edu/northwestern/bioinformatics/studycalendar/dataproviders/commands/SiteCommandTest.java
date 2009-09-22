@@ -104,12 +104,12 @@ public class SiteCommandTest extends TestCase {
     }
 
     public void testErrorForNoCommand() throws Exception {
-        err.println("Please specify a valid subcommand (get or search)");
+        err.println("Please specify a valid subcommand (get, search)");
         doCommand("site");
     }
 
     public void testErrorForUnknownCommand() throws Exception {
-        err.println("Please specify a valid subcommand (get or search)");
+        err.println("Please specify a valid subcommand (get, search)");
         doCommand("site foo");
     }
 

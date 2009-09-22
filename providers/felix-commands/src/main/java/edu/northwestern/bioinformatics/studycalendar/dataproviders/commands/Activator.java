@@ -10,6 +10,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(Command.class.getName(), new SiteCommand(bundleContext), null);
+        bundleContext.registerService(Command.class.getName(), new StudyCommand(bundleContext), null);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
