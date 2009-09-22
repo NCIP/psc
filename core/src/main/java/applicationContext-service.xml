@@ -106,4 +106,7 @@
     <bean id="siteConsumer"
           class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer"
           autowire="byName"/>
+    <bean id="studyConsumer"
+          class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer"
+          autowire="byName"/>
 </beans>
