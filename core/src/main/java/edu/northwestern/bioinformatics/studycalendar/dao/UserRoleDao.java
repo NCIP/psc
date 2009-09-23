@@ -10,7 +10,8 @@ public class UserRoleDao extends StudyCalendarMutableDomainObjectDao<UserRole> {
     
     @SuppressWarnings({ "unchecked" })
     public List<UserRole> getUserRolesForSite(Site site) {
+        // ordering is for testing consistency only
         return (List<UserRole>) getHibernateTemplate().find(
-                "from UserRole ur where ? in elements(ur.sites)", site);
+            "from UserRole ur where ? in elements(ur.sites) order by ur.id", site);
     }
 }
