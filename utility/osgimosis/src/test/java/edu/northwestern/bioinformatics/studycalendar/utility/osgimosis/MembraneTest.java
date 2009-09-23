@@ -15,6 +15,7 @@ import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -37,7 +38,7 @@ public class MembraneTest extends OsgimosisTestCase {
         assertFalse("Class and interface should be incompatible", iFromB.isAssignableFrom(cFromA));
     }
 
-    public void testMebraneFiltersServiceInterface() throws Exception {
+    public void testMembraneFiltersServiceInterface() throws Exception {
         bridgedPersonService();
         // expect no class cast exception
     }
@@ -165,6 +166,12 @@ public class MembraneTest extends OsgimosisTestCase {
     public void testFarListContentsAreEncapsulated() throws Exception {
         List<Person> actual = bridgedPersonService().createList();
         assertEquals("Ned", actual.get(0).getName());
+        assertEquals(3, actual.size());
+    }
+
+    public void testFarSetContentsAreEncapsulated() throws Exception {
+        Set<Person> actual = bridgedPersonService().createUnique();
+        assertEquals("Ned", actual.iterator().next().getName());
         assertEquals(3, actual.size());
     }
 

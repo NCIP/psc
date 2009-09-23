@@ -41,6 +41,8 @@ public class DefaultEncapsulatorCreator {
             return new ListEncapsulator(membrane);
         } else if (SortedSet.class.isAssignableFrom(farClass)) {
             return new SortedSetEncapsulator(membrane);
+        } else if (Set.class.isAssignableFrom(farClass)) {
+            return new SetEncapsulator(membrane);
         } else if (Collection.class.isAssignableFrom(farClass)) {
             return new CollectionEncapsulator(membrane);
         } else if (farClass.isArray()) {

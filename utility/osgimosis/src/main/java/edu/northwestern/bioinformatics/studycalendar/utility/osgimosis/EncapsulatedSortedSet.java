@@ -7,7 +7,7 @@ import java.util.Comparator;
  * @author Rhett Sutphin
  */
 @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-public class EncapsulatedSortedSet<T> extends EncapsulatedCollection<T> implements SortedSet<T> {
+public class EncapsulatedSortedSet<T> extends EncapsulatedSet<T> implements SortedSet<T> {
     private SortedSet farSet;
 
     public EncapsulatedSortedSet(SortedSet farCollection, Membrane membrane) {
