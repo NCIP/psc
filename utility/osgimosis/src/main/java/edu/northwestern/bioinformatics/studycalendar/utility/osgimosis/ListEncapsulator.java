@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Jalpa Patel
  */
-public class ListEncapsulator implements Encapsulator{
+public class ListEncapsulator implements Encapsulator {
     private Membrane membrane;
 
     public ListEncapsulator(Membrane membrane) {
