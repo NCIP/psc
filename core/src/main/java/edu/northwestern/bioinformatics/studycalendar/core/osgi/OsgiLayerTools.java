@@ -104,7 +104,7 @@ public class OsgiLayerTools {
         this.membrane = membrane;
     }
 
-    @Required
+
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
