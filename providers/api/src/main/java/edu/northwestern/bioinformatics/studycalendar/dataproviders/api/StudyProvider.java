@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public interface StudyProvider {
+public interface StudyProvider extends DataProvider, SearchingProvider<Study> {
     /**
      * Retrieve and return new {@link Study} instances which match the identities
      * associated with the input studies.
@@ -34,11 +34,4 @@ public interface StudyProvider {
      * @param partialName A substring of the desired name
      */
     List<Study> search(String partialName);
-
-    /**
-     * A unique string that will be used to distinguish instances obtained from this provider
-     * from instances created locally or obtained from other providers.  Must be less than
-     * 250 characters.
-     */
-    String providerToken();
 }

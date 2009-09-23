@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public interface SiteProvider {
+public interface SiteProvider extends DataProvider, SearchingProvider<Site> {
     /**
      * Retrieve and return {@link Site} instances using the given identity.
      * The instances must be returned in the same order as the input identities.
@@ -24,11 +24,4 @@ public interface SiteProvider {
      * @param partialName A substring of the desired name
      */
     List<Site> search(String partialName);
-
-    /**
-     * A unique string that will be used to distinguish instances obtained from this provider
-     * from instances created locally or obtained from other providers.  Must be less than
-     * 250 characters.
-     */
-    String providerToken();
 }
