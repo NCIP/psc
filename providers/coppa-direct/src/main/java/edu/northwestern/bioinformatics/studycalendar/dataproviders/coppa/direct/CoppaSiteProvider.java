@@ -46,9 +46,7 @@ public class CoppaSiteProvider implements SiteProvider {
 
         for (Id id: createIds(assignedIdentifiers)) {
             Organization o = searchById(id);
-            if (o != null) {
-                sites.add(createSite(o));
-            }
+            sites.add(createSite(o));
         }
 
         return sites;
