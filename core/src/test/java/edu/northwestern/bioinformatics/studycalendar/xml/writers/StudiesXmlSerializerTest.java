@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addSecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
+import static org.easymock.EasyMock.expect;
 
 import java.util.Arrays;
 
@@ -52,5 +56,20 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertNotNull(actualElement.attribute("provider"));
         assertEquals("Wrong provider", "study-provider", actualElement.attributeValue("provider"));
 
+    }
+
+    public void testCreateElmentWithSecondaryIdentifiers() throws Exception {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                registerMockFor(StudySecondaryIdentifierXmlSerializer.class);
+        serializer.setStudySecondaryIdentifierXmlSerializer(xmlSerializer);
+        Study study = Fixtures.createNamedInstance("A", Study.class);
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
+        Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
+        expect(xmlSerializer.createElement(identifier)).andReturn(eIdentifier);
+
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
     }
 }

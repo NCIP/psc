@@ -2,10 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addSecondaryIdentifier;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createPopulation;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
+import static org.dom4j.DocumentHelper.createElement;
+import static org.easymock.EasyMock.expect;
 
 import java.util.Iterator;
 
@@ -73,6 +77,27 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong abbrev for second pop", "F", second.getAbbreviation());
     }
 
+    public void testReadElementWithSecondaryIdentifiers() throws Exception {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                registerMockFor(StudySecondaryIdentifierXmlSerializer.class);
+        serializer.setStudySecondaryIdentifierXmlSerializer(xmlSerializer);
+        Study study = createNamedInstance("Study A", Study.class);
+        Element eStudy = createElement("study");
+        eStudy.addAttribute("assigned-identifier", "Id1");
+        Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
+        eStudy.add(eIdentifier);
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "Value1");
+        expect(xmlSerializer.readElement(eIdentifier)).andReturn(identifier);
+        replayMocks();
+        Study actual = serializer.readElement(eStudy);
+        verifyMocks();
+        assertNotNull(actual);
+        assertNotNull(actual.getSecondaryIdentifiers());
+        assertEquals("Wrong number of secondary identifiers", 1, actual.getSecondaryIdentifiers().size());
+        assertEquals("Wrong type for first secondary identifier", "Type1", actual.getSecondaryIdentifiers().first().getType());
+        assertEquals("Wrong value for first secondary identifier", "Value1", actual.getSecondaryIdentifiers().first().getValue());
+    }
+
 //    public void testReadMatchesPopulationsAsAppropriate() throws Exception {
 //        Study actual = doParse(
 //            "%s<planned-calendar><epoch name='Treatment'><study-segment name='Treatment'><period duration-quantity='4' duration-unit='day' repetitions='1' start-day='1'>" +
@@ -118,6 +143,22 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element elt = serializer.createElement(study);
         assertNotNull(elt.attribute("provider"));
         assertEquals("Wrong provider", "study-provider", elt.attributeValue("provider"));
+    }
+
+    public void testCreateElmentWithSecondaryIdentifiers() throws Exception {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                registerMockFor(StudySecondaryIdentifierXmlSerializer.class);
+        serializer.setStudySecondaryIdentifierXmlSerializer(xmlSerializer);
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setPlannedCalendar(new PlannedCalendar());
+               StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
+        Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
+        expect(xmlSerializer.createElement(identifier)).andReturn(eIdentifier);
+
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
     }
 
     private Study doParse(String xml, String... formatValues) {

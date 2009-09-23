@@ -8,6 +8,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -17,6 +18,7 @@ import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.dom4j.DocumentHelper.*;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.dom4j.DocumentHelper;
 import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
@@ -127,6 +129,24 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
+    public void testReadElementWithSecondaryIdentifier() throws Exception {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                expectSecondaryIdentifierSerializer();
+        Element eltStudy = createStudyElement();
+        Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
+        eltStudy.add(eIdentifier);
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "NewType", "NewValue");
+        expectDeserializeDataForNewElement();
+        expect(xmlSerializer.readElement(eIdentifier)).andReturn(identifier);
+        replayMocks();
+
+        Study actual = serializer.readElement(eltStudy);
+        verifyMocks();
+        assertNotNull(actual.getSecondaryIdentifiers());
+        assertEquals("Wrong identifier type", "NewType", actual.getSecondaryIdentifiers().first().getType());
+        assertEquals("Wrong identifier value", "NewValue", actual.getSecondaryIdentifiers().first().getValue());
+    }
+
     public void testReadElementWithInvalidElementName() {
         expect(element.getName()).andReturn("study-snapshot").times(2);
         try {
@@ -198,6 +218,20 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
+    public void testCreateElementWithSecondaryIdentifiers() throws Exception {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                expectSecondaryIdentifierSerializer();
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
+        Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
+        expectChildrenSerializers();
+        expect(xmlSerializer.createElement(identifier)).andReturn(eIdentifier);
+
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
+    }
+
     public void testCreateDocumentString() throws Exception {
 
         StringBuffer expected = new StringBuffer();
@@ -266,6 +300,13 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
         expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
+    }
+
+    private StudySecondaryIdentifierXmlSerializer expectSecondaryIdentifierSerializer() {
+        StudySecondaryIdentifierXmlSerializer xmlSerializer =
+                registerMockFor(StudySecondaryIdentifierXmlSerializer.class);
+        serializer.setStudySecondaryIdentifierXmlSerializer(xmlSerializer);
+        return xmlSerializer;
     }
 
     ////// Element Creation Helpers

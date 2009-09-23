@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -29,6 +30,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     private StudyDao studyDao;
     private StudyService studyService;
     private PlannedCalendarDao plannedCalendarDao;
+    private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
@@ -38,6 +40,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (study.getProvider() != null) {
             STUDY_PROVIDER.addTo(elt, study.getProvider());
         }
+
+        for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {
+            elt.add(studySecondaryIdentifierXmlSerializer.createElement(studySecondaryIdent));
+        }
+
         Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
         elt.add(eCalendar);
@@ -75,6 +82,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             if (provider != null && provider.length() > 0) {
                 study.setProvider(provider);
             }
+
+            for(Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {
+                study.addSecondaryIdentifier(studySecondaryIdentifierXmlSerializer.readElement(identifierElt));
+            }
+            
             Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
             PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
             if (plannedCalendarDao.getByGridId(calendar.getGridId()) != null) {
@@ -235,5 +247,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    @Required
+    public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
+        this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
     }
 }

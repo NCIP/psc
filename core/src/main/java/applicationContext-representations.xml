@@ -18,11 +18,12 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
     <bean id="studySnapshotXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer"/>
-
+    <bean id="studiesXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
+    <bean id="studySecondaryIdentifierXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySecondaryIdentifierXmlSerializer"/>
     <bean id="amendmentXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer"/>
-    <bean id="studiesXmlSerializer"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
     <bean id="registrationXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
     <bean id="studySubjectAssignmentXmlSerializer" autowire="byName"

@@ -4,10 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.Set;
@@ -16,12 +18,17 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
+    private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
     @Override
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY_SNAPSHOT.create();
         XsdAttribute.STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
         if (study.getProvider() !=null) {
             XsdAttribute.STUDY_PROVIDER.addTo(elt, study.getProvider());
+        }
+
+        for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {
+            elt.add(studySecondaryIdentifierXmlSerializer.createElement(studySecondaryIdent));
         }
 
         Set<Population> pops = study.getPopulations();
@@ -50,6 +57,11 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         if (provider != null && provider.length() > 0) {
             study.setProvider(provider);
         }
+
+        for (Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {
+            study.addSecondaryIdentifier(studySecondaryIdentifierXmlSerializer.readElement(identifierElt));
+        }
+
         List<Element> popElts = XsdElement.POPULATION.allFrom(element);
         PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
         for (Element popElt : popElts) {
@@ -80,5 +92,10 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
             = (PopulationXmlSerializer) getBeanFactory().getBean("populationXmlSerializer");
         serializer.setStudy(parent);
         return serializer;
+    }
+    
+    @Required
+    public void setStudySecondaryIdentifierXmlSerializer(StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer) {
+        this.studySecondaryIdentifierXmlSerializer = studySecondaryIdentifierXmlSerializer;
     }
 }
