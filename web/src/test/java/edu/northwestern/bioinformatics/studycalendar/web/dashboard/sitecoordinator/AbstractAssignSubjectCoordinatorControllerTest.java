@@ -59,6 +59,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
+        applicationSecurityManager.setUserService(registerMockFor(UserService.class));
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         command = registerMockFor(SimpleAssignSubjectCoordinatorCommand.class);
@@ -95,6 +96,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetSiteCoordinator() throws Exception {
+        expect(applicationSecurityManager.getFreshUser()).andReturn(siteCoordinator).anyTimes();
         replayMocks();
 
         User actualSiteCoord = controller.getSiteCoordinator();

@@ -103,7 +103,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     }
 
     protected User getSiteCoordinator() {
-        return applicationSecurityManager.getUser();
+        return applicationSecurityManager.getFreshUser();
     }
                                                                                                                 
     protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User subjectCoordinator) {
