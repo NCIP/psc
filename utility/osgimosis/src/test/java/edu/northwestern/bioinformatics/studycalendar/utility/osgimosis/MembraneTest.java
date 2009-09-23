@@ -15,6 +15,7 @@ import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -164,6 +165,12 @@ public class MembraneTest extends OsgimosisTestCase {
     public void testFarListContentsAreEncapsulated() throws Exception {
         List<Person> actual = bridgedPersonService().createList();
         assertEquals("Ned", actual.get(0).getName());
+        assertEquals(3, actual.size());
+    }
+
+    public void testFarSortedSetContentsAreEncapsulated() throws Exception {
+        SortedSet<Person> actual = bridgedPersonService().createOrdered();
+        assertEquals("Chuck", actual.first().getName());
         assertEquals(3, actual.size());
     }
 

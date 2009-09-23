@@ -1,12 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl;
 
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PeopleByName;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
 
-import java.util.*;
-import java.util.List;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -26,6 +31,12 @@ public class PersonServiceImpl implements PersonService {
 
     public List<Person> createList() {
         return new LinkedList<Person>(createSeveral());
+    }
+
+    public SortedSet<Person> createOrdered() {
+        SortedSet<Person> set = new TreeSet<Person>(PeopleByName.INSTANCE);
+        set.addAll(createSeveral());
+        return set;
     }
 
     public Person[] createArray() {

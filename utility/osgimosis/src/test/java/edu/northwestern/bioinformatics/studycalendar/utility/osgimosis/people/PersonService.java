@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
-import java.awt.*;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -12,6 +13,7 @@ public interface PersonService {
     Person createPrivateInvestigator();
     Collection<Person> createSeveral();
     List<Person> createList();
+    SortedSet<Person> createOrdered();
     Person[] createArray();
     int[] createNameLengths();
 

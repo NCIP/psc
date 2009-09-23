@@ -3,16 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +39,8 @@ public class DefaultEncapsulatorCreator {
     public Encapsulator create() {
         if (List.class.isAssignableFrom(farClass)) {
             return new ListEncapsulator(membrane);
+        } else if (SortedSet.class.isAssignableFrom(farClass)) {
+            return new SortedSetEncapsulator(membrane);
         } else if (Collection.class.isAssignableFrom(farClass)) {
             return new CollectionEncapsulator(membrane);
         } else if (farClass.isArray()) {
