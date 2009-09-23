@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Note: this class also tests the generic behaviors in AbstractConsumer.
+ *
  * @author Rhett Sutphin
  */
 public class SiteConsumerTest extends StudyCalendarTestCase {

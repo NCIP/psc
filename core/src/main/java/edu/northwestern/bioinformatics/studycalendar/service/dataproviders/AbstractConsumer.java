@@ -1,21 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.service.dataproviders;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SearchingProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.ArrayList;
-import java.sql.Timestamp;
 
 /**
  * @author Rhett Sutphin
@@ -135,8 +136,6 @@ public abstract class AbstractConsumer<D extends Providable, P extends DataProvi
             return in;
         }
 
-        protected abstract void refreshFromProvider(P provider, List<D> source);
-
         private Map<String, List<D>> findToUpdate(List<D> source) {
             Map<String, List<D>> toUpdate = new HashMap<String, List<D>>();
 
@@ -172,5 +171,48 @@ public abstract class AbstractConsumer<D extends Providable, P extends DataProvi
                 return true;
             }
         }
+
+        protected void refreshFromProvider(P provider, List<D> currentVersions) {
+            List<D> newVersions;
+            try {
+                newVersions = loadNewVersions(provider, currentVersions);
+            } catch (RuntimeException re) {
+                log.error("Refreshing " + currentVersions.size() + ' ' +
+                    providerType().getSimpleName() + " instance(s) from " + provider.providerToken() +
+                    "failed", re);
+                log.debug("Specifically, the provider was trying to refresh {}", currentVersions);
+                return;
+            }
+
+            if (newVersions == null) {
+                log.error(
+                    "Provider {} violated protocol by returning null.  Ignoring.",
+                    provider.providerToken());
+            } else if (newVersions.size() != currentVersions.size()) {
+                log.error(
+                    "Provider {} violated protocol returning the wrong number of results ({} when expecting {}).  Ignoring.",
+                    new Object[] { provider.providerToken(), newVersions.size(), currentVersions.size() });
+                newVersions = null;
+            }
+
+            if (newVersions != null) {
+                updateInstances(currentVersions, newVersions, provider);
+            }
+        }
+
+        protected abstract List<D> loadNewVersions(P provider, List<D> targetSites);
+
+        private void updateInstances(List<D> currentVersions, List<D> newVersions, P provider) {
+            for (ListIterator<D> lit = currentVersions.listIterator(); lit.hasNext();) {
+                D current = lit.next();
+                D newVersion = newVersions.get(lit.previousIndex());
+                if (newVersion != null) {
+                    provisionInstance(newVersion, provider);
+                    updateInstanceInPlace(current, newVersion);
+                }
+            }
+        }
+
+        protected abstract void updateInstanceInPlace(D current, D newVersion);
     }
 }

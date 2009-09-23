@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service.dataproviders;
 
-import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import org.springframework.beans.factory.annotation.Required;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -12,18 +13,46 @@ import java.util.List;
  *
  * @author Rhett Sutphin
  */
+public class StudyConsumer extends AbstractConsumer<Study, StudyProvider> {
+    @Override protected Class<StudyProvider> providerType() { return StudyProvider.class; }
 
-public class StudyConsumer {
-    private OsgiLayerTools osgiLayerTools;
-
-    // TODO: this is just a stub implementation
     public List<Study> search(String partialName) {
-        StudyProvider service = osgiLayerTools.getRequiredService(StudyProvider.class);
-        return service.search(partialName);
+        return super.doSearch(partialName);
     }
 
-    @Required
-    public void setOsgiLayerTools(OsgiLayerTools osgiLayerTools) {
-        this.osgiLayerTools = osgiLayerTools;
+    public Study refresh(Study in) {
+        return refresh(Arrays.asList(in)).get(0);
+    }
+
+    private List<Study> refresh(List<Study> in) {
+        return new Refresh().execute(in);
+    }
+
+    private class Refresh extends AbstractRefresh {
+        @Override
+        protected List<Study> loadNewVersions(StudyProvider provider, List<Study> targetSites) {
+            return provider.getStudies(targetSites);
+        }
+
+        @Override
+        protected void updateInstanceInPlace(Study current, Study newVersion) {
+            current.setLastRefresh(newVersion.getLastRefresh());
+            current.setLongTitle(newVersion.getLongTitle());
+
+            // Remove dereferenced idents
+            for (Iterator<StudySecondaryIdentifier> it = current.getSecondaryIdentifiers().iterator(); it.hasNext();) {
+                StudySecondaryIdentifier currentIdent = it.next();
+                if (!newVersion.getSecondaryIdentifiers().contains(currentIdent)) {
+                    it.remove();
+                }
+            }
+
+            // Add new idents
+            for (StudySecondaryIdentifier newIdent : newVersion.getSecondaryIdentifiers()) {
+                if (!current.getSecondaryIdentifiers().contains(newIdent)) {
+                    current.addSecondaryIdentifier(newIdent.clone());
+                }
+            }
+        }
     }
 }
