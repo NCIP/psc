@@ -71,7 +71,7 @@ def user_settings
   if Buildr.settings.user['psc']
     Buildr.settings.user
   else
-    YAML.load("#{File.dirname(__FILE__)}/../buildr-user-settings.yaml.default")
+    YAML.load(open("#{File.dirname(__FILE__)}/../buildr-user-settings.yaml.default"))
   end
 end
 
@@ -87,6 +87,7 @@ def start_bundle(symbolic_name)
         select { |b| symbolic_name === b['symbolic-name'] }
     rescue => e
       warn "Starting #{symbolic_name} failed: #{e}"
+      e.backtrace.each { |l| trace "  #{l}" }
       return false
     end
   if bundles.empty?
