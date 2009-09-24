@@ -1,0 +1,3 @@
+These tests assume a deployed copy of the services.  This means they are not
+suitable for running in the unit test suite.  TODO: find somewhere else to run
+them.
