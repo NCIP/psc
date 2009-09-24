@@ -138,4 +138,12 @@ public class UserRole  extends AbstractMutableDomainObject implements Serializab
         result = 29 * result + (role != null ? role.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[role=").append(getRole()).
+            append("; sites=").append(getSites()).
+            append(']').toString();
+    }
 }
