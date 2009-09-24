@@ -16,9 +16,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class ScheduleControllerTest extends ControllerTestCase {
     private ScheduleController controller;
 
-    private TemplateService templateService;
+    private AuthorizationService authorizationService;
 
     private ScheduledActivityDao scheduledActivityDao;
     private StudyDao studyDao;
@@ -80,7 +80,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         notificationDao = registerDaoMockFor(NotificationDao.class);
 
-        templateService = registerMockFor(TemplateService.class);
+        authorizationService = registerMockFor(AuthorizationService.class);
         command = registerMockFor(ScheduleCommand.class);
 
         controller = new ScheduleController(){
@@ -94,7 +94,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setNotificationDao(notificationDao);
         controller.setActivityTypeDao(activityTypeDao);
-        controller.setTemplateService(templateService);
+        controller.setAuthorizationService(authorizationService);
         controller.setSubjectCoordinatorDashboardService(paService);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
@@ -107,7 +107,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
-        expect(templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 
         replayMocks();

@@ -247,31 +247,6 @@ public class TemplateService {
         return siteLists;
     }
 
-    /**
-     * Returns a copy of the given list of studies containing only those which should be
-     * visible to the given user role.
-     *
-     * @param studies
-     * @return
-     * @throws Exception
-     */
-    // TODO: move to AuthorizationService
-    public List<Study> filterForVisibility(List<Study> studies, UserRole role) {
-        if (studies == null) {
-            throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
-        }
-        if (role == null) {
-            return Collections.emptyList();
-        }
-
-        List<Study> filtered = new ArrayList<Study>(studies);
-        for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
-            Study study = it.next();
-            if (!authorizationService.isTemplateVisible(role, study)) it.remove();
-        }
-        return filtered;
-    }
-
     public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
         if (studyTemplates == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
@@ -438,13 +413,13 @@ public class TemplateService {
 
     public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
                 devableStudies,
-                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
                 subjectAssignableStudies
         );
 
@@ -488,14 +463,14 @@ public class TemplateService {
 
     public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
 
-        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
                 devableStudies,
-                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
                 subjectAssignableStudies
         );
 
@@ -528,14 +503,14 @@ public class TemplateService {
 
     public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
 
-        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
                 devableStudies,
-                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
                 subjectAssignableStudies
         );
 
@@ -552,8 +527,8 @@ public class TemplateService {
 
     public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
 
         List<DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<DevelopmentTemplate>();
         for (Study devableStudy : devableStudies) {

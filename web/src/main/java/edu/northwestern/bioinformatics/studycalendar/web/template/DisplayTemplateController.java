@@ -13,8 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
@@ -40,9 +40,9 @@ public class DisplayTemplateController extends PscAbstractController {
     private DeltaService deltaService;
     private AmendmentService amendmentService;
     private DaoFinder daoFinder;
-    private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
     private NowFactory nowFactory;
+    private AuthorizationService authorizationService;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -70,7 +70,7 @@ public class DisplayTemplateController extends PscAbstractController {
 
         if (study.isReleased()) {
             User user = applicationSecurityManager.getUser();
-            List<Study> subjectAssignableStudies = templateService.filterForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
+            List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
             Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();
 
             List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
@@ -199,10 +199,6 @@ public class DisplayTemplateController extends PscAbstractController {
         this.amendmentService = amendmentService;
     }
 
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
-
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
@@ -211,6 +207,11 @@ public class DisplayTemplateController extends PscAbstractController {
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     private static class Crumb extends DefaultCrumb {

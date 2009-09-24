@@ -14,8 +14,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
@@ -34,7 +34,6 @@ import java.util.Map;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
-    private TemplateService templateService;
 
     private ScheduledActivityDao scheduledActivityDao;
     private StudyDao studyDao;
@@ -43,6 +42,7 @@ public class ScheduleController extends PscSimpleFormController {
     private NotificationDao notificationDao;
     private ActivityTypeDao activityTypeDao;
     private ApplicationSecurityManager applicationSecurityManager;
+    private AuthorizationService authorizationService;
 
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);
@@ -59,7 +59,7 @@ public class ScheduleController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         User user = applicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
 
         // show notifications on dashboard
@@ -116,7 +116,7 @@ public class ScheduleController extends PscSimpleFormController {
         pcUsers.remove(applicationSecurityManager.getUser());
         for (User user : pcUsers) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
-            List<Study> studiesForUser = templateService.filterForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+            List<Study> studiesForUser = authorizationService.filterStudiesForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
             if (studiesForUser != null && studiesForUser.size() > 0) {
                 for (Study study : studiesForUser) {
                     List<StudySite> studysites = study.getStudySites();
@@ -182,11 +182,6 @@ public class ScheduleController extends PscSimpleFormController {
     ////// CONFIGURATION
 
     @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
-
-    @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
@@ -234,5 +229,10 @@ public class ScheduleController extends PscSimpleFormController {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 }

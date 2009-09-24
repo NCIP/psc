@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Collections;
+import static java.util.Arrays.asList;
 
 /**
  * @author Rhett Sutphin
@@ -78,10 +79,6 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         assertTrue(service.isTemplateVisible(coord, studyAB));
     }
     
-    public void testFilterForVisibilityOnAnEmptyListReturnsAnEmptyList() throws Exception {
-        assertTrue(service.filterAssignmentsForVisibility(Collections.<StudySubjectAssignment>emptyList(), user).isEmpty());
-    }
-
     public void testFilterAssignmentsForVisibility() throws Exception {
         StudySubjectAssignment ssa1 = Fixtures.createAssignment(studyAB.getStudySite(siteA), null);
         StudySubjectAssignment ssa2 = Fixtures.createAssignment(studyAB.getStudySite(siteB), null);
@@ -90,6 +87,29 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         List<StudySubjectAssignment> filtered = service.filterAssignmentsForVisibility(Arrays.asList(ssa1, ssa2), user);
         assertEquals("Wrong number of assignments in result", 1, filtered.size());
         assertEquals("Wrong assignment in result", ssa2, filtered.get(0));
+    }
+
+    public void testVisibilityToRoleWithRole() throws Exception {
+        // Other roles, etc., are tested under isTemplateVisible
+        UserRole siteCoordinatorRole = Fixtures.createUserRole(user, Role.SITE_COORDINATOR, siteB);
+
+        replayMocks();
+        List<Study> actualStudyTemplates = service.filterStudiesForVisibility(asList(studyA, studyB), siteCoordinatorRole);
+        verifyMocks();
+        assertEquals("Wrong number of studies returned", 1, actualStudyTemplates.size());
+        assertSame("Wrong study returned", studyB, actualStudyTemplates.get(0));
+    }
+
+    public void testFilterForVizReturnsNothingWithNullRole() throws Exception {
+        replayMocks();
+        List<Study> actual = service.filterStudiesForVisibility(asList(studyA, studyB), (UserRole) null);
+        verifyMocks();
+
+        assertEquals(0, actual.size());
+    }
+
+    public void testFilterForVisibilityOnAnEmptyListReturnsAnEmptyList() throws Exception {
+        assertTrue(service.filterAssignmentsForVisibility(Collections.<StudySubjectAssignment>emptyList(), user).isEmpty());
     }
 
     public void testStudyVisibilityWhenSubjectCoord() throws Exception {

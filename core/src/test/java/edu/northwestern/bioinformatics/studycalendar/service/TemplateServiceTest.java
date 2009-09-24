@@ -496,39 +496,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
     }
 
-    public void testTemplateVisibility() throws Exception {
-        Study studyA = createNamedInstance("A", Study.class);
-        Study studyB = createNamedInstance("B", Study.class);
-        expect(authorizationService.isTemplateVisible(siteCoordinatorRole, studyA)).andReturn(false);
-        expect(authorizationService.isTemplateVisible(siteCoordinatorRole, studyB)).andReturn(true);
-
-        replayMocks();
-        List<Study> actualStudyTemplates = service.filterForVisibility(asList(studyA, studyB), siteCoordinatorRole);
-        verifyMocks();
-        assertEquals("Wrong number of studies returned", 1, actualStudyTemplates.size());
-        assertSame("Wrong study returned", studyB, actualStudyTemplates.get(0));
-    }
-
-    public void testFilterForVizReturnsNothingWithNullRole() throws Exception {
-        Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplates = asList(studyTemplate1);
-
-        replayMocks();
-        List<Study> actual = service.filterForVisibility(studyTemplates, null);
-        verifyMocks();
-
-        assertEquals(0, actual.size());
-    }
-
-    public void testFilterForVizRequiresListOfStudies() throws Exception {
-        try {
-            service.filterForVisibility(null, subjectCoordinatorRole);
-            fail("Exception not thrown");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDIES_LIST_IS_NULL, ise.getMessage());
-        }
-    }
-
     public void testRemoveMultipleTemplates() throws Exception {
         String userId = "123";
         Site site1 = setId(123, createNamedInstance("site1", Site.class));

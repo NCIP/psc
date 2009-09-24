@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -42,6 +43,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private UserService userService;
     private Crumb crumb;
     private ApplicationSecurityManager applicationSecurityManager;
+    private AuthorizationService authorizationService;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -72,7 +74,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
         log.debug("{} studies in system", studies.size());
 
         List<Study> ownedStudies
-                = templateService.filterForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
+                = authorizationService.filterStudiesForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
         log.debug("{} studies visible to {}", ownedStudies.size(), siteCoordinator.getName());
 
         List<Study> assignableStudies = new ArrayList<Study>();
@@ -156,5 +158,10 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 }

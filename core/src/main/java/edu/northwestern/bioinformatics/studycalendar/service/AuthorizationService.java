@@ -8,12 +8,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +24,6 @@ import java.util.Set;
  */
 public class AuthorizationService {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private StudyCalendarAuthorizationManager authorizationManager;
 
     public List<StudySubjectAssignment> filterAssignmentsForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
         log.debug("Filtering {} assignments for visibility to {}", source.size(), visibleTo);
@@ -56,6 +55,27 @@ public class AuthorizationService {
         return new ArrayList<Study>(all);
     }
 
+    /**
+     * Returns a copy of the given list of studies containing only those which should be
+     * visible to the given user role.
+     *
+     * @param studies
+     * @return
+     * @throws Exception
+     */
+    public List<Study> filterStudiesForVisibility(List<Study> studies, UserRole visibleTo) {
+        if (visibleTo == null) {
+            return Collections.emptyList();
+        }
+
+        List<Study> filtered = new ArrayList<Study>(studies);
+        for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
+            Study study = it.next();
+            if (!isTemplateVisible(visibleTo, study)) it.remove();
+        }
+        return filtered;
+    }
+
     public boolean isTemplateVisible(UserRole userRole, Study study) {
         if (userRole.getRole() == SYSTEM_ADMINISTRATOR) {
             return false;
@@ -82,12 +102,5 @@ public class AuthorizationService {
             if (siteCoordinator.getSites().contains(siteOnStudy)) return true;
         }
         return false;
-    }
-
-    ////// CONFIGURATION
-
-    @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
 }

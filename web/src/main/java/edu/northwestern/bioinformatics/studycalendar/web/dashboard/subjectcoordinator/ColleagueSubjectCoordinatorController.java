@@ -12,9 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -37,13 +37,12 @@ import java.util.Map;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ColleagueSubjectCoordinatorController extends PscSimpleFormController {
-    private TemplateService templateService;
-
     private ScheduledActivityDao scheduledActivityDao;
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteService siteService;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
+    private AuthorizationService authorizationService;
     private ActivityTypeDao activityTypeDao;
 
     private ApplicationSecurityManager applicationSecurityManager;
@@ -53,7 +52,6 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         setBindOnNewForm(true);
         setCrumb(new Crumb());
     }
-
 
     public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
         setFormView("/colleagueSubjectCoordinatorSchedule");
@@ -98,7 +96,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         String userName = applicationSecurityManager.getUserName();
         User user = applicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
 
         User colleagueUser = userDao.getById(colleagueId);
         List<Site> sitesToDisplay = getSitesToDisplay(userName, colleagueUser.getName());
@@ -160,25 +158,26 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     }
 
     ////// CONFIGURATION
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
+
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
+
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
+
     public UserDao getUserDao() {
         return userDao;
     }
+
     @Required
     public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
     }
+
     public ScheduledActivityDao getScheduledActivityDao() {
         return scheduledActivityDao;
     }
@@ -205,6 +204,11 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     @Required
     public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
         this.activityTypeDao = activityTypeDao;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     private static class Crumb extends DefaultCrumb {

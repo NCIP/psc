@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparatorByLetterCase;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
@@ -25,10 +25,11 @@ import java.util.Map;
 /**
  * @author nshurupova
  */
+@Deprecated // switch to using the RESTful API
 public class SearchStudiesController extends PscAbstractCommandController<SearchReleasedTemplatesCommand> {
     private StudyDao studyDao;
-    private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
+    private AuthorizationService authorizationService;
 
     public SearchStudiesController() {
         setCommandClass(SearchReleasedTemplatesCommand.class);
@@ -50,7 +51,7 @@ public class SearchStudiesController extends PscAbstractCommandController<Search
             User user = applicationSecurityManager.getUser();
 
             List<Study> ownedStudies
-                = templateService.filterForVisibility(studies, user.getUserRole(Role.SITE_COORDINATOR));
+                = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SITE_COORDINATOR));
             log.debug("{} studies visible to {}", ownedStudies.size(), user.getName());
 
             List<Study> assignableStudies = new ArrayList<Study>();
@@ -98,8 +99,8 @@ public class SearchStudiesController extends PscAbstractCommandController<Search
     }
 
     @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     @Required

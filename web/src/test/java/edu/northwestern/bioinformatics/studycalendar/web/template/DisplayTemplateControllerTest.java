@@ -13,8 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -40,7 +40,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     private StudyDao studyDao;
     private DeltaService deltaService;
-    private TemplateService templateService;
+    private AuthorizationService authorizationService;
     private AmendmentService amendmentService;
     private StaticNowFactory nowFactory;
 
@@ -54,12 +54,12 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
         deltaService = registerMockFor(DeltaService.class);
-        templateService = registerMockFor(TemplateService.class);
+        authorizationService = registerMockFor(AuthorizationService.class);
         amendmentService = registerMockFor(AmendmentService.class);
         nowFactory = new StaticNowFactory();
 
         study = setId(100, Fixtures.createBasicTemplate());
-        study.setName(STUDY_NAME);
+        study.setAssignedIdentifier(STUDY_NAME);
         seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
         seg1 =  study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
@@ -77,7 +77,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller = new DisplayTemplateController();
         controller.setStudyDao(studyDao);
         controller.setDeltaService(deltaService);
-        controller.setTemplateService(templateService);
+        controller.setAuthorizationService(authorizationService);
         controller.setAmendmentService(amendmentService);
         controller.setControllerTools(controllerTools);
         controller.setApplicationSecurityManager(applicationSecurityManager);
@@ -89,7 +89,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord, "asdf");
 
-        expect(templateService.filterForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+        expect(authorizationService.filterStudiesForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                  .andReturn(singletonList(study)).anyTimes();
 
         nowFactory.setNowTimestamp(NOW);
@@ -184,7 +184,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setDevelopmentAmendment(new Amendment("dev"));
         request.setParameter("amendment", "1");
         Study amended = study.transientClone();
-        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+        expect(authorizationService.filterStudiesForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                  .andReturn(singletonList(study)).anyTimes();
         expect(amendmentService.getAmendedStudy(study, a1)).andReturn(amended);
 
@@ -201,7 +201,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setParameter("amendment", "4");
         Study amended = study.transientClone();
 
-        expect(templateService.filterForVisibility(singletonList(amended),
+        expect(authorizationService.filterStudiesForVisibility(singletonList(amended),
             subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(singletonList(study)).anyTimes();
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
@@ -240,7 +240,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setDevelopmentAmendment(dev);
         Study amended = study.transientClone();
 
-        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+        expect(authorizationService.filterStudiesForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(study)).anyTimes();
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();

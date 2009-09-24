@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
 
@@ -32,6 +33,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private SiteDao siteDao;
     private TemplateService templateService;
     private UserService userService;
+    private AuthorizationService authorizationService;
 
     private AbstractAssignSubjectCoordinatorCommand command;
 
@@ -54,13 +56,16 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         studyDao        = registerDaoMockFor(StudyDao.class);
         templateService = registerMockFor(TemplateService.class);
         userService     = registerMockFor(UserService.class);
+        authorizationService = registerMockFor(AuthorizationService.class);
 
         controller = new SimpleAssignSubjectCoordinatorController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
+        // TODO: indirect mocking like this is a bad idea
         applicationSecurityManager.setUserService(registerMockFor(UserService.class));
         controller.setApplicationSecurityManager(applicationSecurityManager);
+        controller.setAuthorizationService(authorizationService);
 
         command = registerMockFor(SimpleAssignSubjectCoordinatorCommand.class);
 
@@ -106,7 +111,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     public void testGetAssignableStudies() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.filterForVisibility(studies, siteCoordinatorRole)).andReturn(studies);
+        expect(authorizationService.filterStudiesForVisibility(studies, siteCoordinatorRole)).andReturn(studies);
         replayMocks();
 
         List<Study> actualAssignableStudies = controller.getAssignableStudies(siteCoordinator);
