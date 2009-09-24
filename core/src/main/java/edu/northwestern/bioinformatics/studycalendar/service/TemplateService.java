@@ -61,7 +61,6 @@ import java.util.Set;
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
-// TODO: None of these methods should throw plain java.lang.Exception
 @Transactional
 public class TemplateService {
     public static final String SUBJECT_COORDINATOR_ACCESS_ROLE = "SUBJECT_COORDINATOR";
@@ -86,7 +85,7 @@ public class TemplateService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
+    public void assignTemplateToSites(Study studyTemplate, List<Site> sites) {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -103,7 +102,7 @@ public class TemplateService {
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
             Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
-    ) throws Exception {
+    ) {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -127,7 +126,7 @@ public class TemplateService {
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User removeAssignedTemplateFromSubjectCoordinator(
             Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
-    ) throws Exception {
+    ) {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -198,7 +197,7 @@ public class TemplateService {
         }
     }
 
-    public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
+    public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
         if (studyTemplates == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
@@ -223,7 +222,7 @@ public class TemplateService {
         }
     }
 
-    public Map<String, List<Site>> getSiteLists(Study studyTemplate) throws Exception {
+    public Map<String, List<Site>> getSiteLists(Study studyTemplate) {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -273,7 +272,7 @@ public class TemplateService {
         return filtered;
     }
 
-    public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
+    public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
         if (studyTemplates == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
@@ -300,6 +299,7 @@ public class TemplateService {
         }
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <P extends Parent> P findParent(Child<P> node) {
         if (node.getParent() != null) {
@@ -319,13 +319,13 @@ public class TemplateService {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <T extends Child> T findAncestor(Child node, Class<T> klass) {
         boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
         boolean parentable = PlanTreeNode.class.isAssignableFrom(node.parentClass());
         if (moreSpecific && parentable) {
-            Parent parent = findParent((Child) node);
+            Parent parent = findParent(node);
             if (klass.isAssignableFrom(parent.getClass())) {
                 return (T) parent;
             } else {
@@ -371,6 +371,7 @@ public class TemplateService {
     /**
      * Finds the node in the given study which matches the type and id of parameter node.
      */
+    @SuppressWarnings({ "unchecked" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <C extends Changeable> C findEquivalentChild(Study study, C node) {
         if (isEquivalent(node, study)) {
@@ -386,6 +387,7 @@ public class TemplateService {
         return findEquivalentChild(study.getPlannedCalendar(), node);
     }
 
+    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <C extends Changeable> C findEquivalentChild(MutableDomainObject tree, C parameterNode) {
         if (isEquivalent(tree, parameterNode)) return (C) tree;
@@ -404,6 +406,7 @@ public class TemplateService {
                 (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <T extends PlanTreeNode> T findCurrentNode(T transientNode) {
         if (!transientNode.isMemoryOnly()) {
@@ -433,7 +436,7 @@ public class TemplateService {
         return (idMatch || gridIdMatch);
     }
 
-    public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -483,7 +486,7 @@ public class TemplateService {
         }
     }
 
-    public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -523,7 +526,7 @@ public class TemplateService {
         return releasedAndAssignedTemplates;
     }
 
-    public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -547,7 +550,7 @@ public class TemplateService {
         return releasedTemplates;
     }
 
-    public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));

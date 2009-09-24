@@ -356,7 +356,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             service.removeAssignedTemplateFromSubjectCoordinator(study, nu, subjectCoordinator);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Wrong exception message", 
+            assertEquals("Wrong exception message",
                 "jimbo is still responsible for one or more subjects on Study A at Northwestern.  Please reassign those subjects before removing jimbo from that study and site.",
                 scve.getMessage());
         }
@@ -614,7 +614,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertSame(study.getPlannedCalendar().getEpochs().get(1),
             service.findParent(study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0)));
     }
-    
+
     public void testFindParentWhenNotImmediatelyAvailable() throws Exception {
         Study study = createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
@@ -679,7 +679,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         assertSame(study.getPlannedCalendar(), service.findAncestor(dynamic, PlannedCalendar.class));
     }
-    
+
     public void testFindAncestorWhenNotPossible() throws Exception {
         Study study = createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);

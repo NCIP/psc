@@ -38,9 +38,6 @@ import java.util.Set;
  * @author Rhett Sutphin
  * @see edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService
  */
-
-// TODO: None of these methods should throw checked exceptions
-
 public class StudyCalendarAuthorizationManager implements Serializable {
     public static final String APPLICATION_CONTEXT_NAME = "study_calendar";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
@@ -51,14 +48,10 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     public static final String AVAILABLE_PES = "AVAILABLE_PES";
     public static final String SUBJECT_COORDINATOR_GROUP = "SUBJECT_COORDINATOR";
     public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
-    
+
     private static Logger log = LoggerFactory.getLogger(StudyCalendarAuthorizationManager.class);
 
     private UserProvisioningManager userProvisioningManager;
-
-    public User getUserObject(String id) throws Exception {
-        return userProvisioningManager.getUserById(id);
-    }
 
     public void createProtectionGroup(String newProtectionGroup) {
         try {
@@ -72,13 +65,13 @@ public class StudyCalendarAuthorizationManager implements Serializable {
             log.debug("new protection group created " + newProtectionGroup);
         }
     }
-    
+
     /**
      * Method to retrieve all site protection groups
-     * 
+     *
      */
     @SuppressWarnings({ "unchecked" })
-    public List<ProtectionGroup> getSites() throws Exception {
+    public List<ProtectionGroup> getSites() {
         List<ProtectionGroup> siteList = new ArrayList<ProtectionGroup>() ;
         ProtectionGroup protectionGroup = new ProtectionGroup();
         SearchCriteria pgSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroup);
@@ -94,7 +87,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
 
         return siteList;
     }
-    
+
     /**
      * Method to retrieve a site protection group
      * @param name
@@ -134,14 +127,14 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return usersForRequiredGroup;
     }
 
-    public void assignProtectionGroupsToUsers(String userId, ProtectionGroup protectionGroup, String roleName) throws Exception {
+    public void assignProtectionGroupsToUsers(String userId, ProtectionGroup protectionGroup, String roleName) {
         assignProtectionGroupsToUsers(asList(userId), protectionGroup, roleName);
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) throws Exception {
+    public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) {
         if (protectionGroup == null) return;
-        
+
         Role role = new Role();
         role.setName(roleName);
         SearchCriteria roleSearchCriteria = new RoleSearchCriteria(role);
@@ -151,13 +144,17 @@ public class StudyCalendarAuthorizationManager implements Serializable {
             String[] roleIds = new String[] {accessRole.getId().toString()};
 
             for (String userId : userIds) {
-                userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+                try {
+                    userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+                } catch (CSTransactionException e) {
+                    throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+                }
             }
         }
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String[] roleNames) throws Exception {
+    public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String[] roleNames) {
         if (protectionGroup == null) return;
 
         List<Role> roleList = new ArrayList<Role>();
@@ -176,18 +173,25 @@ public class StudyCalendarAuthorizationManager implements Serializable {
             }
 
             for (String userId : userIds) {
-                userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+                try {
+                    userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+                } catch (CSTransactionException e) {
+                    throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+                }
             }
         }
     }
-    
-    public void removeProtectionGroupUsers(List<String> userIds, ProtectionGroup protectionGroup) throws Exception
-    {
+
+    public void removeProtectionGroupUsers(List<String> userIds, ProtectionGroup protectionGroup) {
         if (protectionGroup == null) return;
 
         if (!((userIds.size() == 1) && (userIds.get(0).length() == 0))) {
             for (String userId : userIds) {
-                userProvisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
+                try {
+                    userProvisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
+                } catch (CSTransactionException e) {
+                    throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+                }
             }
         }
     }
@@ -269,7 +273,8 @@ public class StudyCalendarAuthorizationManager implements Serializable {
 
         try {
             userProvisioningManager.assignToProtectionGroups(
-                element.getProtectionElementId().toString(), desiredGroupIds.toArray(new String[0]));
+                element.getProtectionElementId().toString(),
+                desiredGroupIds.toArray(new String[desiredGroupIds.size()]));
         } catch (CSTransactionException e) {
             throw new StudyCalendarSystemException("Assigning PE " + element.getProtectionElementName() + " to groups " + desiredProtectionGroups + " failed", e);
         }
@@ -297,19 +302,22 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void removeProtectionGroup(String protectionGroupName) throws Exception {
+    public void removeProtectionGroup(String protectionGroupName) {
         ProtectionGroup pg = new ProtectionGroup();
         pg.setProtectionGroupName(protectionGroupName);
         SearchCriteria pgSearchCriteria = new ProtectionGroupSearchCriteria(pg);
         List<ProtectionGroup> pgList = userProvisioningManager.getObjects(pgSearchCriteria);
         if (pgList.size() > 0) {
-        	userProvisioningManager.removeProtectionGroup(pgList.get(0).getProtectionGroupId().toString());
+            try {
+                userProvisioningManager.removeProtectionGroup(pgList.get(0).getProtectionGroupId().toString());
+            } catch (CSTransactionException e) {
+                throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+            }
         }
-        
     }
-    
+
     @SuppressWarnings({ "unchecked" })
-    public void createAndAssignPGToUser(List<String> userIds, String protectionGroupName, String roleName) throws Exception {
+    public void createAndAssignPGToUser(List<String> userIds, String protectionGroupName, String roleName) {
         ProtectionGroup pg = new ProtectionGroup();
         pg.setProtectionGroupName(protectionGroupName);
         SearchCriteria pgSearchCriteria = new ProtectionGroupSearchCriteria(pg);
@@ -317,7 +325,11 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         if (pgList.size() <= 0) {
             ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
             requiredProtectionGroup.setProtectionGroupName(protectionGroupName);
-            userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
+            try {
+                userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
+            } catch (CSTransactionException e) {
+                throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+            }
         }
         Role role = new Role();
         role.setName(roleName);
@@ -327,17 +339,25 @@ public class StudyCalendarAuthorizationManager implements Serializable {
             Role accessRole = roleList.get(0);
             String[] roleIds = new String[] {accessRole.getId().toString()};
             if (!((userIds.size() == 1) && (userIds.get(0).length() == 0))) {
-                for (String userId : userIds)
-                {
-                    userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, getPGByName(protectionGroupName).getProtectionGroupId().toString());
+                for (String userId : userIds) {
+                    try {
+                        userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, getPGByName(protectionGroupName).getProtectionGroupId().toString());
+                    } catch (CSTransactionException e) {
+                        throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+                    }
                 }
             }
         }
     }
 
     @SuppressWarnings({ "unchecked" })
-    public boolean isUserPGAssigned(String pgName, String userId) throws Exception {
-        Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
+    public boolean isUserPGAssigned(String pgName, String userId) {
+        Set<ProtectionGroupRoleContext> pgRoleContext;
+        try {
+            pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
+        } catch (CSObjectNotFoundException e) {
+            throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+        }
         List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
         if (pgRoleContextList.size() != 0) {
             for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
@@ -349,13 +369,17 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return false;
     }
 
-    public void assignCsmGroups(edu.northwestern.bioinformatics.studycalendar.domain.User user, Set<UserRole> userRoles) throws Exception {
+    public void assignCsmGroups(edu.northwestern.bioinformatics.studycalendar.domain.User user, Set<UserRole> userRoles) {
         List<String> csmRoles = rolesToCsmGroups(userRoles);
         String[] strCsmRoles = csmRoles.toArray(new String[csmRoles.size()]);
-        userProvisioningManager.assignGroupsToUser(user.getCsmUserId().toString(), strCsmRoles);
+        try {
+            userProvisioningManager.assignGroupsToUser(user.getCsmUserId().toString(), strCsmRoles);
+        } catch (CSTransactionException e) {
+            throw new StudyCalendarSystemException("Unexpected CSM failure", e);
+        }
     }
 
-    private List<String> rolesToCsmGroups(Set<UserRole> userRoles) throws Exception{
+    private List<String> rolesToCsmGroups(Set<UserRole> userRoles){
         List<String> csmGroupsForUser = new ArrayList<String>();
         if(userRoles != null) {
             List<Group> allCsmGroups = getAllCsmGroups();
@@ -378,7 +402,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Group> getAllCsmGroups() throws Exception {
+    private List<Group> getAllCsmGroups() {
         SearchCriteria searchCriteria = new GroupSearchCriteria(new Group());
         List<Group> groups = userProvisioningManager.getObjects(searchCriteria);
         if(groups == null) {
@@ -386,7 +410,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         }
         return groups;
     }
-    
+
     private List<ProtectionGroup> getSitePGs(User user) {
         List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
         Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
@@ -427,11 +451,10 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     }
 
     ////// CONFIGURATION
-    
+
     public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
         this.userProvisioningManager = userProvisioningManager;
     }
-
 }
 
 
