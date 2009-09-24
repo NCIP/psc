@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdenti
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.LONG_TITLE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_LONG_TITLE_NAME;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -26,7 +28,11 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         if (study.getProvider() !=null) {
             XsdAttribute.STUDY_PROVIDER.addTo(elt, study.getProvider());
         }
-
+        if (study.getLongTitle() != null && study.getLongTitle().length() >0) {
+            Element eltLongTitle = XsdElement.LONG_TITLE.create();
+            STUDY_LONG_TITLE_NAME.addTo(eltLongTitle, study.getLongTitle());
+            elt.add(eltLongTitle);
+        }
         for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {
             elt.add(studySecondaryIdentifierXmlSerializer.createElement(studySecondaryIdent));
         }
@@ -56,6 +62,14 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         String provider =  XsdAttribute.STUDY_PROVIDER.from(element);
         if (provider != null && provider.length() > 0) {
             study.setProvider(provider);
+        }
+
+        Element eltLongTitle = element.element(LONG_TITLE.xmlName());
+        if (eltLongTitle != null) {
+            String longTitleName = STUDY_LONG_TITLE_NAME.from(eltLongTitle);
+            if (longTitleName != null && longTitleName.length() > 0) {
+                study.setLongTitle(longTitleName);
+            }
         }
 
         for (Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {

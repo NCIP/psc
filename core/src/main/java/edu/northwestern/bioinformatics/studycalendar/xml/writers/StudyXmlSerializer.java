@@ -11,10 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.LAST_MODIFIED_DATE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_PROVIDER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -39,6 +37,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
         if (study.getProvider() != null) {
             STUDY_PROVIDER.addTo(elt, study.getProvider());
+        }
+        if (study.getLongTitle() != null && study.getLongTitle().length() >0) {
+            Element eltLongTitle = XsdElement.LONG_TITLE.create();
+            STUDY_LONG_TITLE_NAME.addTo(eltLongTitle, study.getLongTitle());
+            elt.add(eltLongTitle);
         }
 
         for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {
@@ -81,6 +84,14 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             String provider =  STUDY_PROVIDER.from(element);
             if (provider != null && provider.length() > 0) {
                 study.setProvider(provider);
+            }
+
+            Element eltLongTitle = element.element(LONG_TITLE.xmlName());
+            if (eltLongTitle != null) {
+                String longTitleName = STUDY_LONG_TITLE_NAME.from(eltLongTitle);
+                if (longTitleName != null && longTitleName.length() > 0) {
+                    study.setLongTitle(longTitleName);
+                }
             }
 
             for(Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {

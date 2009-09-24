@@ -72,4 +72,15 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
         assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
     }
+
+    public void testCreateElementWithLongTitle() throws Exception {
+        Study study = Fixtures.createNamedInstance("A", Study.class);
+        study.setLongTitle("study long title");
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        Element eltLongTitle = actual.element("long-title");
+        assertNotNull("Long title should exist", eltLongTitle);
+        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.attributeValue("name"));
+    }
 }

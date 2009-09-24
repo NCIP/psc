@@ -90,6 +90,7 @@ public enum XsdAttribute {
     PLAN_TREE_NODE_NAME("name"),
     STUDY_ASSIGNED_IDENTIFIER("assigned-identifier"),
     STUDY_PROVIDER("provider"),
+    STUDY_LONG_TITLE_NAME("name"),
     SECONDARY_IDENTIFIER_TYPE("type"),
     SECONDARY_IDENTIFIER_VALUE("value"),
     LAST_MODIFIED_DATE("last-modified-date"),

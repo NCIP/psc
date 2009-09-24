@@ -30,6 +30,7 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="psc:long-title" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:secondary-identifier" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
@@ -56,6 +57,7 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
+            <xsd:element ref="psc:long-title" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
             <!--<xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>-->
         </xsd:sequence>
@@ -66,6 +68,12 @@
     </xsd:complexType>
 
     <!-- Elements of the template -->
+    <xsd:element name="long-title" type="psc:LongTitle"/>
+
+    <xsd:complexType name="LongTitle">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
     <xsd:element name="secondary-identifier" type="psc:SecondaryIdentifier"/>
 
     <xsd:complexType name="SecondaryIdentifier">

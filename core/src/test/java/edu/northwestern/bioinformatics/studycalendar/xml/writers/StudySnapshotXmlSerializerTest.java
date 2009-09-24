@@ -98,6 +98,19 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong value for first secondary identifier", "Value1", actual.getSecondaryIdentifiers().first().getValue());
     }
 
+    public void testReadElementWithLongTitle() throws Exception {
+        Element eltStudy = createElement("study");
+        eltStudy.addAttribute("assigned-identifier", "Id1");
+        Element eltLongTitle = DocumentHelper.createElement("long-title");
+        eltLongTitle.addAttribute("name", "study long title");
+        eltStudy.add(eltLongTitle);
+        replayMocks();
+
+        Study actual = serializer.readElement(eltStudy);
+        verifyMocks();
+        assertEquals("Wrong Long title name", eltLongTitle.attributeValue("name"), actual.getLongTitle() );
+    }
+
 //    public void testReadMatchesPopulationsAsAppropriate() throws Exception {
 //        Study actual = doParse(
 //            "%s<planned-calendar><epoch name='Treatment'><study-segment name='Treatment'><period duration-quantity='4' duration-unit='day' repetitions='1' start-day='1'>" +
@@ -151,7 +164,7 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer.setStudySecondaryIdentifierXmlSerializer(xmlSerializer);
         Study study = createNamedInstance("Study A", Study.class);
         study.setPlannedCalendar(new PlannedCalendar());
-               StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
         Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
         expect(xmlSerializer.createElement(identifier)).andReturn(eIdentifier);
 
@@ -159,6 +172,18 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element actual = serializer.createElement(study);
         verifyMocks();
         assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
+    }
+
+    public void testCreateElementWithLongTitle() throws Exception {
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setPlannedCalendar(new PlannedCalendar());
+        study.setLongTitle("Study Long Title");
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        Element eltLongTitle = actual.element("long-title");
+        assertNotNull("Long title should exist", eltLongTitle);
+        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.attributeValue("name"));
     }
 
     private Study doParse(String xml, String... formatValues) {

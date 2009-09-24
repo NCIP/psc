@@ -147,6 +147,19 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong identifier value", "NewValue", actual.getSecondaryIdentifiers().first().getValue());
     }
 
+    public void testReadElementWithLongTitle() throws Exception {
+        Element eltStudy = createStudyElement();
+        Element eltLongTitle = DocumentHelper.createElement("long-title");
+        eltLongTitle.addAttribute("name", "study long title");
+        eltStudy.add(eltLongTitle);
+        expectDeserializeDataForNewElement();
+        replayMocks();
+
+        Study actual = serializer.readElement(eltStudy);
+        verifyMocks();
+        assertEquals("Wrong Long title name", eltLongTitle.attributeValue("name"), actual.getLongTitle() );
+    }
+
     public void testReadElementWithInvalidElementName() {
         expect(element.getName()).andReturn("study-snapshot").times(2);
         try {
@@ -230,6 +243,17 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element actual = serializer.createElement(study);
         verifyMocks();
         assertNotNull("Secondary Identifier should exist", actual.element("secondary-identifier"));
+    }
+
+    public void testCreateElementWithLongTitle() throws Exception {
+        study.setLongTitle("Study Long Title");
+        expectChildrenSerializers();
+        replayMocks();
+        Element actual = serializer.createElement(study);
+        verifyMocks();
+        Element eltLongTitle = actual.element("long-title");
+        assertNotNull("Long title should exist", eltLongTitle);
+        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.attributeValue("name"));
     }
 
     public void testCreateDocumentString() throws Exception {
