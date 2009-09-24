@@ -291,6 +291,13 @@ COPPA = [
   #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
   artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:0.0.0").
     from(static_lib('coppa/coppa-globus-adapter-0.0.0.jar')),
+
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.coppa:coppa-pa-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-stubs.jar"))),
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.coppa:coppa-pa-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-common.jar"))),
+  psc_osgi_artifact(
+      artifact("gov.nih.nci.coppa:coppa-pa-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-client.jar"))),  
   
   # Trial-and-error caGrid/globus deps
   cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-stubs", 
