@@ -45,6 +45,22 @@
             margin-left:7em;
         }
     </style>
+    <script type="text/javascript">
+         function isCorrectInput() {
+            if ($F('username').length == 0 || $F('password').length == 0) {
+               $('loginInputError').update("Username or Password can not be empty.");
+               return false;
+            }
+            return true;
+        }
+        $(document).observe("dom:loaded", function() {
+            $('login').observe("submit", function(fn) {
+                if (!isCorrectInput()) {
+                    Event.stop(fn);
+                }
+            })
+        })
+    </script>
 </head>
 <body>
 <laf:box title="Account login">
