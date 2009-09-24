@@ -8,26 +8,36 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
+import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Collections;
 import static java.util.Arrays.asList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 public class AuthorizationServiceTest extends StudyCalendarTestCase {
     private AuthorizationService service;
+    private StudyConsumer studyConsumer;
+
     private User user;
     private Study studyA, studyB, studyAB;
     private Site siteA, siteB;
     private List<Study> allStudies;
 
     @Override
+    @SuppressWarnings({ "unchecked" })
     protected void setUp() throws Exception {
         super.setUp();
+        studyConsumer = registerMockFor(StudyConsumer.class);
+        expect(studyConsumer.refresh((List<Study>) notNull())).andStubReturn(null);
+
         service = new AuthorizationService();
+        service.setStudyConsumer(studyConsumer);
 
         user = Fixtures.createUser("jimbo");
 
@@ -110,6 +120,22 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
 
     public void testFilterForVisibilityOnAnEmptyListReturnsAnEmptyList() throws Exception {
         assertTrue(service.filterAssignmentsForVisibility(Collections.<StudySubjectAssignment>emptyList(), user).isEmpty());
+    }
+
+    public void testStudyVisibilityForUserRefreshesFirst() throws Exception {
+        expect(studyConsumer.refresh(allStudies)).andReturn(allStudies);
+        replayMocks();
+
+        service.filterStudiesForVisibility(allStudies, user);
+        verifyMocks();
+    }
+
+    public void testStudyVisibilityForUserRoleRefreshesFirst() throws Exception {
+        expect(studyConsumer.refresh(allStudies)).andReturn(allStudies);
+        replayMocks();
+
+        service.filterStudiesForVisibility(allStudies, createUserRole(user, Role.SYSTEM_ADMINISTRATOR));
+        verifyMocks();
     }
 
     public void testStudyVisibilityWhenSubjectCoord() throws Exception {

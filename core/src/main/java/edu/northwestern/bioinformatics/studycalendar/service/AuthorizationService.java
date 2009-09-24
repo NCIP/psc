@@ -8,8 +8,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +26,8 @@ import java.util.Set;
  */
 public class AuthorizationService {
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private StudyConsumer studyConsumer;
 
     public List<StudySubjectAssignment> filterAssignmentsForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
         log.debug("Filtering {} assignments for visibility to {}", source.size(), visibleTo);
@@ -46,6 +50,8 @@ public class AuthorizationService {
     }
 
     public List<Study> filterStudiesForVisibility(List<Study> studies, User visibleTo) {
+        studyConsumer.refresh(studies);
+
         Set<Study> all = new LinkedHashSet<Study>();
         for (Study study : studies) {
             for (UserRole role : visibleTo.getUserRoles()) {
@@ -67,6 +73,7 @@ public class AuthorizationService {
         if (visibleTo == null) {
             return Collections.emptyList();
         }
+        studyConsumer.refresh(studies);
 
         List<Study> filtered = new ArrayList<Study>(studies);
         for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
@@ -102,5 +109,12 @@ public class AuthorizationService {
             if (siteCoordinator.getSites().contains(siteOnStudy)) return true;
         }
         return false;
+    }
+
+    ////// CONFIGURATION
+
+    @Required
+    public void setStudyConsumer(StudyConsumer studyConsumer) {
+        this.studyConsumer = studyConsumer;
     }
 }

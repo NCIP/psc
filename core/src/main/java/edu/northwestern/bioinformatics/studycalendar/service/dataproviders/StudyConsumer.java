@@ -24,7 +24,7 @@ public class StudyConsumer extends AbstractConsumer<Study, StudyProvider> {
         return refresh(Arrays.asList(in)).get(0);
     }
 
-    private List<Study> refresh(List<Study> in) {
+    public List<Study> refresh(List<Study> in) {
         return new Refresh().execute(in);
     }
 

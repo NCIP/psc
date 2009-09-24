@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -43,6 +44,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private AuthorizationService authorizationService;
     private AmendmentService amendmentService;
     private StaticNowFactory nowFactory;
+    private StudyConsumer studyConsumer;
 
     private Study study;
     private StudySegment seg1, seg0a, seg0b;
@@ -56,6 +58,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         deltaService = registerMockFor(DeltaService.class);
         authorizationService = registerMockFor(AuthorizationService.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        studyConsumer = registerMockFor(StudyConsumer.class);
         nowFactory = new StaticNowFactory();
 
         study = setId(100, Fixtures.createBasicTemplate());
@@ -82,6 +85,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setApplicationSecurityManager(applicationSecurityManager);
         controller.setNowFactory(nowFactory);
+        controller.setStudyConsumer(studyConsumer);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
@@ -112,6 +116,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     public void testView() throws Exception {
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
         replayMocks();
@@ -148,6 +153,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         reset(studyDao);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
 
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
@@ -222,6 +228,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(deltaService.revise(study, dev)).andReturn(amended);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -263,6 +270,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private Map<String, Object> getAndReturnModel() throws Exception {
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
         replayMocks();

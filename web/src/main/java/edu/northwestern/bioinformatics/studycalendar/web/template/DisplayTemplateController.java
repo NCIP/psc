@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResourc
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
@@ -43,6 +44,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private ApplicationSecurityManager applicationSecurityManager;
     private NowFactory nowFactory;
     private AuthorizationService authorizationService;
+    private StudyConsumer studyConsumer;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -56,6 +58,7 @@ public class DisplayTemplateController extends PscAbstractController {
         Map<String, Object> model = new HashMap<String, Object>();
 
         Study loaded = getStudyByTheIdentifier(studyStringIdentifier);
+        studyConsumer.refresh(loaded);
         int studyId = loaded.getId();
         
         Study study = selectAmendmentAndReviseStudy(loaded, selectedAmendmentId, model);
@@ -212,6 +215,11 @@ public class DisplayTemplateController extends PscAbstractController {
     @Required
     public void setAuthorizationService(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
+    }
+
+    @Required
+    public void setStudyConsumer(StudyConsumer studyConsumer) {
+        this.studyConsumer = studyConsumer;
     }
 
     private static class Crumb extends DefaultCrumb {
