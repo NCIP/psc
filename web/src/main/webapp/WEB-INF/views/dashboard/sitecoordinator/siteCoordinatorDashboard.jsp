@@ -164,7 +164,7 @@
                         </tr>
                         <c:forEach items="${command.grid}" var="x">
                             <tr>
-                                <th>${x.key.name}</th>
+                                <th>${x.key.displayName}</th>
 
                                 <c:forEach items="${sites}" var="y">
                                     <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
