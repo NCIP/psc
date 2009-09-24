@@ -43,10 +43,11 @@
     </bean>
 
     <bean name="/provided-studies"
-          id="ProvidedStudiesResource" autowire="byName" scope="prototype"
+          id="providedStudiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ProvidedStudiesResource"
             >
         <property name="xmlSerializer" ref="studiesXmlSerializer"/>
+        <property name="studyConsumer" ref="studyConsumerBean"/>
     </bean>
 
     <bean name="/studies/{study-identifier}/template"

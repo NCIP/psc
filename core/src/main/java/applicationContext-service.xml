@@ -38,7 +38,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
-    <bean id="authorizationService" autowire="byName"
+    <bean id="authorizationService" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService"/>
     <bean id="importActivitiesService" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService">
@@ -106,7 +106,8 @@
     <bean id="siteConsumer"
           class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer"
           autowire="byName"/>
-    <bean id="studyConsumer"
+    <!-- can't be called "studyConsumer" because of a conflict with one of the grid services -->
+    <bean id="studyConsumerBean"
           class="edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer"
           autowire="byName"/>
 </beans>

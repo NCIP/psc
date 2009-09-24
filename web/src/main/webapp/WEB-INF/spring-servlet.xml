@@ -2,11 +2,7 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
     <bean id="controllerTools" class="edu.northwestern.bioinformatics.studycalendar.web.ControllerTools"
           autowire="byType"/>
@@ -67,6 +63,7 @@
 
     <bean name="/cal/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
+        <property name="studyConsumer" ref="studyConsumerBean"/>
         <property name="crumb.parent">
             <ref local="studyListController"/>
         </property>
@@ -168,10 +165,8 @@
         </property>
     </bean>
 
-
     <bean name="/activities/display/*" id="exportActivitiesXmlController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportActivitiesController"/>
-
 
     <bean name="/activities/addNewActivity" id="addNewActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddActivityController">
