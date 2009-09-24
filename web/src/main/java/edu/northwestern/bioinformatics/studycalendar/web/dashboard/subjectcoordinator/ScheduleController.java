@@ -111,10 +111,16 @@ public class ScheduleController extends PscSimpleFormController {
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
         Map<User, List<StudySite>> mapOfUsersAndStudies = new HashMap<User, List<StudySite>>();
+        List<User> colleagues = new ArrayList<User>();
+        User current = applicationSecurityManager.getUser();
+        // userDao.getAllSubjectCoordinators().remove doesn't remove user with assignment from list. 
+        for (User pcUser : userDao.getAllSubjectCoordinators()) {
+            if (!pcUser.equals(current)) {
+                colleagues.add(pcUser);
+            }
+        }
 
-        List<User> pcUsers = userDao.getAllSubjectCoordinators();
-        pcUsers.remove(applicationSecurityManager.getUser());
-        for (User user : pcUsers) {
+        for (User user : colleagues) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
             List<Study> studiesForUser = authorizationService.filterStudiesForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
             if (studiesForUser != null && studiesForUser.size() > 0) {
