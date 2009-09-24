@@ -224,17 +224,20 @@ CAGRID = [
   "org.globus:axis:jar:4.0.3-globus"
 ]
 
-CAGRID_CDS = [
-  psc_osgi_artifact(
-      artifact("gov.nih.nci.cagrid:cagrid-cds-client:jar:1.2"), 
-      "Export-Package" => "!org.cagrid.gaards.cds, *"),
-  psc_osgi_artifact(
-      artifact("gov.nih.nci.cagrid:cagrid-cds-stubs:jar:1.2"), 
-      "Export-Package" => "!org.cagrid.gaards.cds, *"),
-  psc_osgi_artifact(
-      artifact("gov.nih.nci.cagrid:cagrid-cds-common:jar:1.2"), 
-      "Export-Package" => "!org.cagrid.gaards.cds, *"),
-]
+# Removed b/c unused.  Uncomment when needed, or remove. If they turn out 
+# to be used, commit the resulting JARs under osgi/bundled-lib, too
+#  -- RMS20090923
+# CAGRID_CDS = [
+#   psc_osgi_artifact(
+#       artifact("gov.nih.nci.cagrid:cagrid-cds-client:jar:1.2"), 
+#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
+#   psc_osgi_artifact(
+#       artifact("gov.nih.nci.cagrid:cagrid-cds-stubs:jar:1.2"), 
+#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
+#   psc_osgi_artifact(
+#       artifact("gov.nih.nci.cagrid:cagrid-cds-common:jar:1.2"), 
+#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
+# ]
 
 GLOBUS = struct(
   :core => Dir[static_lib("psc-globus-all*.jar")].collect { |jar|
