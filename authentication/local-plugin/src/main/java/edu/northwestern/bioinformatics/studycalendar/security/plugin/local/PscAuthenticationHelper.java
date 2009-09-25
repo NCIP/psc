@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import gov.nih.nci.security.util.StringEncrypter;
 import gov.nih.nci.security.util.StringUtilities;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.BadCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +31,11 @@ public class PscAuthenticationHelper {
         {
           if (null == userName || userName.trim().length() == 0)
           {
-              throw new StudyCalendarValidationException("User Name cannot be blank");
+              throw new BadCredentialsException("User Name cannot be blank");
           }
           if (null == password || password.trim().length() == 0)
           {
-              throw new StudyCalendarValidationException("Password cannot be blank");
+              throw new BadCredentialsException("Password cannot be blank");
           }
 		  try {
              Connection connection = dataSource.getConnection();
