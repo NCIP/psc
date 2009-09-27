@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.restlets;
+package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;

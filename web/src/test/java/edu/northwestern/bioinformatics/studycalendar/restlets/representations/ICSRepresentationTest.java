@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.restlets;
+package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import junit.framework.TestCase;
 import org.restlet.data.MediaType;

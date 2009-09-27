@@ -9,6 +9,8 @@ import freemarker.template.Template;
 
 import java.util.List;
 
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
+
 /**
  * @author Nataliya Shurupova
  */

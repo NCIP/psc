@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegmen
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import org.apache.commons.collections15.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
 import org.restlet.Context;
 import org.restlet.resource.Variant;
 import org.restlet.resource.ResourceException;

@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricS
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.restlet.Context;
 import org.restlet.data.MediaType;

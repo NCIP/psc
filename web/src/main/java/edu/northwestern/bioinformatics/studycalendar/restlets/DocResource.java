@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import freemarker.template.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.PscWadlRepresentation;
 
 /**
  * @author Nataliya Shurupova

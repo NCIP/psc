@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.restlets;
+package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import freemarker.template.Configuration;
 import org.restlet.data.MediaType;
