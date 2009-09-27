@@ -99,8 +99,8 @@ public class Fixtures {
      * Creates a template similar to the default one PSC builds when "new template" is selected,
      * except that it has already been released.
      */
-    public static Study createReleasedTemplate() {
-        Study study = createInDevelopmentTemplate();
+    public static Study createReleasedTemplate(String ident) {
+        Study study = createInDevelopmentTemplate(ident);
         study.setAmendment(study.getDevelopmentAmendment());
         study.setDevelopmentAmendment(null);
         for (Change change : study.getAmendment().getDeltas().get(0).getChanges()) {
@@ -109,6 +109,10 @@ public class Fixtures {
             );
         }
         return study;
+    }
+
+    public static Study createReleasedTemplate() {
+        return createReleasedTemplate(null);
     }
 
     /**

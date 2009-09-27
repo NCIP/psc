@@ -13,6 +13,8 @@ repositories.remote << "http://m2.modularity.net.au/releases"
 # SpringSource osgi-ified bundle repos
 repositories.remote << "http://repository.springsource.com/maven/bundles/release"
 repositories.remote << "http://repository.springsource.com/maven/bundles/external"
+# codehaus repo
+repositories.remote << "http://repository.codehaus.org/"
 # dynamicjava.org repo
 repositories.remote << "http://maven.dynamicjava.org"
 # main m2 repo
@@ -342,6 +344,7 @@ WEB = [
   artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
   eponym('displaytag', '1.1.1'),
   "displaytag:displaytag-export-poi:jar:1.1.1",
+  "org.codehaus.jackson:jackson-core-lgpl:jar:1.2.0"
 ]
 
 RESTLET = struct({
