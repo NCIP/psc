@@ -5,9 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.data.MediaType;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +40,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
         return res;
     }
 
-    public void testIsReadOnly() throws Exception {
+    public void testGetAndPostAllowed() throws Exception {
         assertAllowedMethods("GET", "POST");
     }
 
@@ -49,7 +51,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
     }
 
     @SuppressWarnings({ "unchecked" })
-    public void testAllRenderedOut() throws Exception {
+    public void testAllRenderedOutInXml() throws Exception {
         Study a = Fixtures.createBasicTemplate("A"), b = Fixtures.createBasicTemplate("B");
         List<Study> aAndB = Arrays.asList(a, b);
         List<Study> justA = Arrays.asList(a);
@@ -59,8 +61,27 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
         expect(authorizationService.filterStudiesForVisibility(aAndB, getCurrentUser())).andReturn(justA);
         expect(xmlSerializer.createDocumentString(justA)).andReturn(MOCK_XML);
 
+        setAcceptedMediaTypes(MediaType.TEXT_XML);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testAllRenderedOutInJson() throws Exception {
+        Study a = Fixtures.createBasicTemplate("A"), b = Fixtures.createBasicTemplate("B");
+        List<Study> aAndB = Arrays.asList(a, b);
+        List<Study> justA = Arrays.asList(a);
+
+        expectGetCurrentUser();
+        expect(studyDao.getAll()).andReturn(aAndB);
+        expect(authorizationService.filterStudiesForVisibility(aAndB, getCurrentUser())).andReturn(justA);
+
+        setAcceptedMediaTypes(MediaType.APPLICATION_JSON);
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertTrue("Response entity is wrong type", response.getEntity() instanceof StudyListJsonRepresentation);
+        assertSame("Response entity is for wrong studies", justA,
+            ((StudyListJsonRepresentation) response.getEntity()).getStudies());
     }
 }

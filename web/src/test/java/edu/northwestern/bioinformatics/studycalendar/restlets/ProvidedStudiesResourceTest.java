@@ -1,14 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
+import static org.easymock.EasyMock.*;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Jalpa Patel
@@ -21,6 +22,7 @@ public class ProvidedStudiesResourceTest extends ResourceTestCase<ProvidedStudie
         studyConsumer = registerMockFor(StudyConsumer.class);
     }
 
+    @SuppressWarnings({"unchecked"})
     protected ProvidedStudiesResource createResource() {
         ProvidedStudiesResource resource = new ProvidedStudiesResource();
         resource.setXmlSerializer(xmlSerializer);
@@ -32,18 +34,38 @@ public class ProvidedStudiesResourceTest extends ResourceTestCase<ProvidedStudie
         assertAllowedMethods("GET");
     }
 
-    public void testGetAllProvidedStudies() throws Exception {
-        String searchString = "s";
-        QueryParameters.Q.putIn(request, searchString);
-        List<Study> studies = new ArrayList<Study>();
+    @SuppressWarnings({"unchecked"})
+    public void testGetAllProvidedStudiesAsXml() throws Exception {
+        String expectedQ = "s";
+        QueryParameters.Q.putIn(request, expectedQ);
+        setAcceptedMediaTypes(MediaType.TEXT_XML);
+
         Study study = Fixtures.createBasicTemplate("Study");
-        studies.add(study);
-        expect(studyConsumer.search(searchString)).andReturn(Collections.unmodifiableList(studies));
-        expect(xmlSerializer.createDocumentString(studies)).andReturn(MOCK_XML);
+        List<Study> expectedStudies = Arrays.asList(study);
+
+        expect(studyConsumer.search(expectedQ)).andReturn(expectedStudies);
+        expect(xmlSerializer.createDocumentString(expectedStudies)).andReturn(MOCK_XML);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
     }
 
+    @SuppressWarnings({"unchecked"})
+    public void testGetAllProvidedStudiesAsJson() throws Exception {
+        String expectedQ = "s";
+        QueryParameters.Q.putIn(request, expectedQ);
+        setAcceptedMediaTypes(MediaType.APPLICATION_JSON);
+
+        Study study = Fixtures.createBasicTemplate("ECOG-2702");
+        List<Study> expectedStudies = Arrays.asList(study);
+
+        expect(studyConsumer.search(expectedQ)).andReturn(expectedStudies);
+
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+        assertTrue("Response entity is wrong type", response.getEntity() instanceof StudyListJsonRepresentation);
+        assertSame("Response entity is for wrong studies", expectedStudies,
+            ((StudyListJsonRepresentation) response.getEntity()).getStudies());
+    }
 }

@@ -23,7 +23,7 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
         generator.writeFieldName("studies");
         generator.writeStartArray();
 
-        for (Study study : studies) {
+        for (Study study : getStudies()) {
             writeStudyObject(generator, study);
         }
 
@@ -58,5 +58,9 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
         if (value != null) {
             g.writeStringField(fieldName, value);
         }
+    }
+
+    public List<Study> getStudies() {
+        return studies;
     }
 }

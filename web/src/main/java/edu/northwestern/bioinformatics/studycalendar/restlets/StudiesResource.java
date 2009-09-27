@@ -1,30 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import org.restlet.Context;
-import org.restlet.resource.Representation;
-import org.restlet.resource.ResourceException;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.data.Reference;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Collection;
 import java.io.IOException;
+import java.util.List;
 
 /**
- * TODO: this should be sensitive to the user's permissions, just like the html view.
- *
  * @author Rhett Sutphin
  */
 public class StudiesResource extends AbstractCollectionResource<Study> {
@@ -41,13 +41,23 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
+        getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 
     @Override public boolean allowPost() { return true; }
 
     @Override
-    public Collection<Study> getAllObjects() {
+    public List<Study> getAllObjects() {
         return authorizationService.filterStudiesForVisibility(studyDao.getAll(), getCurrentUser());
+    }
+
+    @Override
+    public Representation represent(Variant variant) throws ResourceException {
+        if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
+            return new StudyListJsonRepresentation(getAllObjects());
+        } else {
+            return super.represent(variant);
+        }
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.data.Preference;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -19,6 +20,8 @@ import org.springframework.core.io.FileSystemResourceLoader;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -81,5 +84,13 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         form.append(URLEncoder.encode(name)).
             append('=').append(URLEncoder.encode(value));
         request.setEntity(form.toString(), MediaType.APPLICATION_WWW_FORM);
+    }
+
+    protected void setAcceptedMediaTypes(MediaType... expectedTypes) {
+        List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>(expectedTypes.length);
+        for (MediaType type : expectedTypes) {
+            prefs.add(new Preference<MediaType>(type));
+        }
+        request.getClientInfo().setAcceptedMediaTypes(prefs);
     }
 }
