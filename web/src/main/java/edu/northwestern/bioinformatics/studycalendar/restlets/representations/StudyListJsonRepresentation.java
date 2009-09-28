@@ -34,11 +34,11 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
 
     private void writeStudyObject(JsonGenerator generator, Study study) throws IOException {
         generator.writeStartObject();
-        nullSafeWriteStringField(generator, "assigned-identifier", study.getAssignedIdentifier());
+        nullSafeWriteStringField(generator, "assigned_identifier", study.getAssignedIdentifier());
         nullSafeWriteStringField(generator, "provider", study.getProvider());
-        nullSafeWriteStringField(generator, "long-title", study.getLongTitle());
+        nullSafeWriteStringField(generator, "long_title", study.getLongTitle());
         if (!study.getSecondaryIdentifiers().isEmpty()) {
-            generator.writeFieldName("secondary-identifiers");
+            generator.writeFieldName("secondary_identifiers");
             generator.writeStartArray();
             for (StudySecondaryIdentifier identifier : study.getSecondaryIdentifiers()) {
                 writeSecondaryIdentifier(generator, identifier);
