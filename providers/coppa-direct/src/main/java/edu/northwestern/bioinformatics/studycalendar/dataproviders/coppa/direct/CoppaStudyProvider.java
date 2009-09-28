@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
@@ -14,6 +16,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class CoppaStudyProvider implements StudyProvider {
     private static final String TEST_ENDPOINT =
@@ -39,13 +42,13 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public List<Study> search(String partialName) {
-        StudyProtocol p = new StudyProtocol();
+        StudyProtocol base = new StudyProtocol();
 
         II ii = new II();
         ii.setIdentifierName(partialName);
-        p.setAssignedIdentifier(ii);
+        base.setAssignedIdentifier(ii);
 
-        StudyProtocol[] raw = searchByStudyProtocol(p);
+        StudyProtocol[] raw = searchByStudyProtocol(base);
         if (raw == null) {
             return Collections.emptyList();
         } else {
@@ -70,7 +73,8 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    private Study createStudy(StudyProtocol p) {
+    // Package level for testing
+    Study createStudy(StudyProtocol p) {
         Study s = new Study();
 
         s.setAssignedIdentifier(
@@ -79,9 +83,27 @@ public class CoppaStudyProvider implements StudyProvider {
         s.setLongTitle(
             p.getOfficialTitle().getValue());
 
-        // TODO: Set secondary Secondary Identifiers
-        
+        addSecondaryIdentifiers(p, s);
+
         return s;
+    }
+
+    private void addSecondaryIdentifiers(StudyProtocol p, Study s) {
+        MapBuilder<String, String> secondaryTitles =
+                new MapBuilder<String, String>();
+
+        secondaryTitles
+            .put("extension", p.getAssignedIdentifier().getExtension())
+            .put("root", p.getAssignedIdentifier().getRoot())
+            .put("publicTitle", p.getPublicTitle().getValue())
+            .put("officialTitle", p.getOfficialTitle().getValue());
+
+        for (Map.Entry<String, String> entry : secondaryTitles.toMap().entrySet()) {
+            StudySecondaryIdentifier si = new StudySecondaryIdentifier();
+            si.setType(entry.getKey());
+            si.setValue(entry.getValue());
+            s.addSecondaryIdentifier(si);
+        }
     }
 
     public String providerToken() {
