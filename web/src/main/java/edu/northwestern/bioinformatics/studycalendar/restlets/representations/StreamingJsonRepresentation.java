@@ -24,6 +24,7 @@ public abstract class StreamingJsonRepresentation extends OutputRepresentation {
         super(mediaType);
     }
 
+    @Override
     public void write(OutputStream out) throws IOException {
         JsonFactory jf = new JsonFactory();
         JsonGenerator gen = jf.createJsonGenerator(out, JsonEncoding.UTF8);

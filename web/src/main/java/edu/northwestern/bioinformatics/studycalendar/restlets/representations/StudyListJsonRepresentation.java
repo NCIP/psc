@@ -18,6 +18,7 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
         this.studies = studies;
     }
 
+    @Override
     public void generate(JsonGenerator generator) throws IOException, JsonGenerationException {
         generator.writeStartObject();
         generator.writeFieldName("studies");
