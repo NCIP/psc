@@ -92,11 +92,20 @@ public class CoppaStudyProvider implements StudyProvider {
         MapBuilder<String, String> secondaryTitles =
                 new MapBuilder<String, String>();
 
-        secondaryTitles
-            .put("extension", p.getAssignedIdentifier().getExtension())
-            .put("root", p.getAssignedIdentifier().getRoot())
-            .put("publicTitle", p.getPublicTitle().getValue())
-            .put("officialTitle", p.getOfficialTitle().getValue());
+        if (p.getAssignedIdentifier() != null) {
+            secondaryTitles
+                .put("extension", p.getAssignedIdentifier().getExtension())
+                .put("root", p.getAssignedIdentifier().getRoot());
+        }
+
+        if (p.getPublicTitle() != null) {
+            secondaryTitles.put("publicTitle", p.getPublicTitle().getValue());
+        }
+
+        if (p.getOfficialTitle() != null) {
+            secondaryTitles.put("officialTitle", p.getOfficialTitle().getValue());
+        }
+
 
         for (Map.Entry<String, String> entry : secondaryTitles.toMap().entrySet()) {
             StudySecondaryIdentifier si = new StudySecondaryIdentifier();
