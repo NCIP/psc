@@ -64,6 +64,7 @@
                 </doc>
                 <response>
                     <representation href="#studies-xml"/>
+                    <representation mediaType="application/json"/>
                 </response>
             </method>
             <method name="POST">
@@ -868,12 +869,11 @@
                     </response>
                 </method>
             </resource>
-
         </resource>
 
         <resource path="provided-sites">
             <doc>
-                <html:p>List of sites from system and COPPA site provider.</html:p>
+                <html:p>A list of sites from all enabled SiteProviders</html:p>
             </doc>
             <method name="GET">
                 <request>
@@ -889,20 +889,21 @@
 
        <resource path="provided-studies">
             <doc>
-                <html:p>List of studies from COPPA study provider.</html:p>
+                <html:p>A list of studies from all enabled StudyProviders</html:p>
             </doc>
             <method name="GET">
                 <request>
                     <param style="query" name="q" type="xsd:string">
-                        <doc>If specified, only studies which contain the query value (case-insensitive) in either their study name or their identifiers will be returned.</doc>
+                        <doc>If specified, only studies which contain the query value (case-insensitive) in either their study title or their identifiers will be returned.</doc>
                     </param>
                 </request>
                 <response>
                     <representation href="#studies-xml"/>
+                    <representation mediaType="application/json"/>
                 </response>
             </method>
         </resource>
-        
+
         <resource path="osgi/bundles">
             <resource path="{bundle-id}">
                 <doc>
