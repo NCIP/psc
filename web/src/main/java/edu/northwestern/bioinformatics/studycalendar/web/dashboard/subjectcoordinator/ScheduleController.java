@@ -57,7 +57,7 @@ public class ScheduleController extends PscSimpleFormController {
 
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-        User user = applicationSecurityManager.getUser();
+        User user = applicationSecurityManager.getFreshUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);

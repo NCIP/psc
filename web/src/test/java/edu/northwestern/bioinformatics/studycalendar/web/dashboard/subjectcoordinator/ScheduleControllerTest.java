@@ -19,6 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
@@ -105,6 +106,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
     }
 
     public void testReferenceData() throws Exception {
+        applicationSecurityManager.setUserService(registerMockFor(UserService.class));
+        expect(applicationSecurityManager.getFreshUser()).andReturn(user).anyTimes();
         expect(studyDao.getAll()).andReturn(studies);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
