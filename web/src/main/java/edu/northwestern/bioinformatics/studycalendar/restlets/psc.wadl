@@ -25,7 +25,7 @@
             <html:a href="http://www.oreilly.com/catalog/9780596529260/">RESTful Web Services</html:a>
             also provides an excellent introduction.
         </html:p>
-        
+
         <html:p class="main">
             The current machine readable
             (<html:acronym title="Web Application Description Language">WADL</html:acronym>)
@@ -117,7 +117,7 @@
                         This method and resource is intended for situations where a collaborating
                         application (e.g., a CTMS) wants to define one or more template skeletons
                         and tell PSC to use one of these skeletons at the same time it tells PSC
-                        about the new study.  On the other hand, PUT to 
+                        about the new study.  On the other hand, PUT to
                         <html:code>studies/{study-identifier}/template</html:code> allows the
                         collaborating application to create or update an entire study structure,
                         including all amendments.
@@ -208,7 +208,7 @@
                             <representation href="#study-snapshot-xml"/>
                         </response>
                     </method>
-                    
+
                     <resource path="schedule-preview">
                         <doc>
                             <html:p>
@@ -226,8 +226,8 @@
                             <param name="segment[n]" style="query">
                                 <doc>
                                     The identifier for one of the study segments to be included in the preview.
-                                    <html:code>n</html:code> may be any value, so long as there's a 
-                                    corresponding <html:code>start-date</html:code>.  At least one 
+                                    <html:code>n</html:code> may be any value, so long as there's a
+                                    corresponding <html:code>start-date</html:code>.  At least one
                                     <html:code>segment</html:code>/<html:code>start-date</html:code>
                                     pair is required.
                                 </doc>
@@ -260,7 +260,7 @@
                                 The identifier for the period to which the planned activities belong.
                                 If the period has a name which is unique within its segment, that
                                 can be the identifier.  Otherwise, you must use PSC's generated
-                                identifier. This identifier can be discovered by reading the 
+                                identifier. This identifier can be discovered by reading the
                                 study-snapshot XML.
                             </doc>
                         </param>
@@ -290,7 +290,7 @@
                                 </param>
                             </response>
                         </method>
-                        
+
                         <resource path="{planned-activity-identifier}">
                             <doc>A single planned activity</doc>
                             <param name="planned-activity-identifier" style="template">
@@ -914,7 +914,7 @@
                 <param style="template" name="bundle-id">
                     <doc>
                         <html:p>
-                            The deployed ID for the bundle in question.  
+                            The deployed ID for the bundle in question.
                             The <html:code>osgi/bundles</html:code>
                             resource may be used to look up these IDs.
                         </html:p>
@@ -938,7 +938,7 @@
                                 <html:p>
                                     An object with the key <html:code>state</html:code>
                                     and the value matching one of the six bundle
-                                    state constant names defined by the OSGi 
+                                    state constant names defined by the OSGi
                                     <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
                                 </html:p>
                             </doc>
@@ -951,11 +951,11 @@
                                 <html:p>
                                     An object with the key <html:code>state</html:code>
                                     and the value matching one of the six bundle
-                                    state constant names defined by the OSGi 
+                                    state constant names defined by the OSGi
                                     <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
                                 </html:p>
                                 <html:p>
-                                    Currently, only setting a bundle to 
+                                    Currently, only setting a bundle to
                                     <html:code>STARTING</html:code> or
                                     <html:code>STOPPING</html:code> is supported.
                                 </html:p>
@@ -968,7 +968,7 @@
             <method name="GET">
                 <doc>
                     <html:p>
-                        Returns an array of objects describing all the 
+                        Returns an array of objects describing all the
                         installed bundles.
                     </html:p>
                 </doc>
