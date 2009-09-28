@@ -13,6 +13,12 @@
     <tags:javascriptLink name="dashboards"/>
 
     <tags:includeScriptaculous/>
+    <tags:javascriptLink name="resig-templates" />
+    <tags:javascriptLink name="jquery/jquery.cookie"/>
+    <tags:javascriptLink name="jquery/jquery-ui-1.7.2.custom.min"/>
+    <tags:javascriptLink name="jquery/jquery.enumerable"/>
+    <tags:stylesheetLink name="jquery/jquery-ui-1.7.2.custom"/>
+    <tags:icsInstructions/>
     <title>Subject Coordinator Dashboard</title>
     <script type="text/javascript">
         SC.registerCurrentActivitiesUpdaters('<c:url value="/pages/dashboard/subjectCoordinatorSchedule"/>')
@@ -211,6 +217,20 @@
                     </li>
                 </c:forEach>
             </ul>
+        </laf:box>
+    </c:if>
+    <c:if test="${not empty userName.studySubjectAssignments}">
+        <laf:box title="Export ICS">
+            <div class="row even">
+                <div class="value">
+                    <a class="control ics-subscribe"
+                       href="<c:url value="/api/v1/users/${userName.username}/roles/subject-coordinator/schedules.ics"/>"
+                       title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
+                    <a class="control"
+                       href="<c:url value="/api/v1/users/${userName.username}/roles/subject-coordinator/schedules.ics"/>"
+                       title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
+                </div>
+            </div>
         </laf:box>
     </c:if>
 </body>
