@@ -13,11 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CoppaStudyProvider implements StudyProvider {
     private static final String TEST_ENDPOINT =
@@ -84,31 +80,46 @@ public class CoppaStudyProvider implements StudyProvider {
         s.setLongTitle(
             p.getOfficialTitle().getValue());
 
-        addSecondaryIdentifiers(p, s);
+        Map<String, String> ids = extractSecondaryIdentifiers(p);
+        addSecondaryIdentifiers(s, ids);
 
         return s;
     }
 
-    private void addSecondaryIdentifiers(StudyProtocol p, Study s) {
-        MapBuilder<String, String> secondaryTitles =
+    private Map<String, String> extractSecondaryIdentifiers(StudyProtocol p )  {
+        MapBuilder<String, String> ids =
                 new MapBuilder<String, String>();
 
         if (p.getAssignedIdentifier() != null) {
-            secondaryTitles
-                .put("extension", p.getAssignedIdentifier().getExtension())
-                .put("root", p.getAssignedIdentifier().getRoot());
+            ids.put("extension", p.getAssignedIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null) {
-            secondaryTitles.put("publicTitle", p.getPublicTitle().getValue());
+            ids.put("publicTitle", p.getPublicTitle().getValue());
         }
 
         if (p.getOfficialTitle() != null) {
-            secondaryTitles.put("officialTitle", p.getOfficialTitle().getValue());
+            ids.put("officialTitle", p.getOfficialTitle().getValue());
         }
 
+//        try {
+//            StudySiteServiceClient sc = new StudySiteServiceClient("http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudyProtocolService");
+//            Id id = new Id();
+//            gov.nih.nci.coppa.services.pa.StudySite[] sss = sc.getByStudyProtocol(id);
+//            for(gov.nih.nci.coppa.services.pa.StudySite ss: sss) {
+//
+//                if (ss.getLocalStudyProtocolIdentifier().getValue())
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
-        for (Map.Entry<String, String> entry : secondaryTitles.toMap().entrySet()) {
+        return ids.toMap();
+    }
+
+    private void addSecondaryIdentifiers(Study s, Map<String, String> ids) {
+        for (Map.Entry<String, String> entry : ids.entrySet()) {
             StudySecondaryIdentifier si = new StudySecondaryIdentifier();
             si.setType(entry.getKey());
             si.setValue(entry.getValue());

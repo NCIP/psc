@@ -32,7 +32,7 @@ public class CoppaStudyProviderTest extends TestCase{
 
     public void testSearchWithOneResult() throws Exception{
         expect(client.search((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
-                coppaStudyProtocol("NCI-123", "NCI", "NCI Tissue Banking Protocol")
+            coppaStudyProtocol("NCI-123", "NCI Tissue Banking Protocol", "NCI Public Title")
         });
         mocks.replayMocks();
 
@@ -52,14 +52,13 @@ public class CoppaStudyProviderTest extends TestCase{
     }
 
     public void testCreateStudy() throws Exception {
-        StudyProtocol sp = coppaStudyProtocol("NCI-123", "NCI", "NCI Protocol Official Name", "NCI Protocol Public Name");
+        StudyProtocol sp = coppaStudyProtocol("NCI-123", "NCI Protocol Official Title", "NCI Protocol Public Title");
 
         Study actual = provider.createStudy(sp);
 
         assertEquals("Wrong extension", "NCI-123", actual.getSecondaryIdentifierValue("extension"));
-        assertEquals("Wrong root", "NCI", actual.getSecondaryIdentifierValue("root"));
-        assertEquals("Wrong public title", "NCI Protocol Public Name", actual.getSecondaryIdentifierValue("publicTitle"));
-        assertEquals("Wrong official title", "NCI Protocol Official Name", actual.getSecondaryIdentifierValue("officialTitle"));
+        assertEquals("Wrong public title", "NCI Protocol Public Title", actual.getSecondaryIdentifierValue("publicTitle"));
+        assertEquals("Wrong official title", "NCI Protocol Official Title", actual.getSecondaryIdentifierValue("officialTitle"));
     }
     
     // Helper Methods
@@ -68,23 +67,16 @@ public class CoppaStudyProviderTest extends TestCase{
         assertEquals(msg + ": wrong ident", expectedLongTitle, actual.getLongTitle());
     }
 
-    private StudyProtocol coppaStudyProtocol(String extension, String root, String officalTitle) {
+    private StudyProtocol coppaStudyProtocol(String extension, String officialTitle, String publicTitle) {
         StudyProtocol p = new StudyProtocol();
 
         II ii = new II();
         ii.setExtension(extension);
-        ii.setRoot(root);
         p.setAssignedIdentifier(ii);
 
         ST st = new ST();
-        st.setValue(officalTitle);
+        st.setValue(officialTitle);
         p.setOfficialTitle(st);
-
-        return p;
-    }
-
-    private StudyProtocol coppaStudyProtocol(String extension, String root, String officialTitle, String publicTitle) {
-        StudyProtocol p = coppaStudyProtocol(extension, root, officialTitle);
 
         ST pub = new ST();
         pub.setValue(publicTitle);
