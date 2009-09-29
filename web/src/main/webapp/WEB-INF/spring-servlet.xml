@@ -239,6 +239,10 @@
     <bean name="/dashboard/studyAdmin" id="dashboardStudyAdminController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.StudyAdministratorDashboardController"/>
 
+    <bean name="/cal/template/externalStudy" id="externalStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ExternalStudyController">
+    </bean>
+
     <bean name="/dashboard/systemAdmin" id="dashboardSystemAdminController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.SystemAdministratorDashboardController"/>
 

@@ -786,6 +786,9 @@
                     <div class="row">
                         <div class="value" style="margin:0px;">
                             <c:if test="${not empty developmentRevision}">
+                                <tags:restrictedListItem url="/pages/cal/template/externalStudy" queryString="study=${study.id}" cssClass="control">
+                                    Associate with external study
+                                </tags:restrictedListItem>
                                 <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
                                     Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
                                 </tags:restrictedListItem>
