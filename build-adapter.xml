@@ -8,10 +8,17 @@
     <property name="jruby.binaries.relative.dir" value="${download}/jruby-1.3.0"/>
     <property name="jruby.dest.file" value="${download}/${jruby.binaries.file}"/>
     <property name="path.to.jruby.bin" value="${jruby.binaries.relative.dir}/bin/jruby"/>
-    <available file="${jruby.dest.file}" property="jruby.exists" />
+    <property name="path.to.jruby.gems" value="${jruby.binaries.relative.dir}/lib/ruby/gems/1.8/gems"/>
+    <available file="${jruby.binaries.relative.dir}" property="jruby.exists" />
+    <available file="${path.to.jruby.gems}/buildr-1.3.3-java" property="buildr.exists" />
+    <available file="${path.to.jruby.gems}/shenandoah-0.0.0" property="shenandoah.exists" />
+    <available file="${path.to.jruby.gems}/facets-2.4.5" property="facets.exists" />
+    <available file="${path.to.jruby.gems}/json_pure-1.1.9" property="json_pure.exists" />
 
  <!--Standard sub project build TARGETS -->
-    <target name="install" unless="jruby.exists" description="Downloads JRuby and install require gems">
+    <target name="install" depends="install:buildr,install:shenandoah,install:facets,install:json_pure" description="Downloads JRuby and install require gems">
+    </target>
+    <target name="install:jruby" unless="jruby.exists" description="Downloads jruby">
         <mkdir dir="${basedir}/temp/download"/>
         <get src="${jruby.src.url}" dest="${jruby.dest.file}"/>
         <unzip dest="${download}" src="${jruby.dest.file}" />
@@ -19,6 +26,10 @@
         <exec executable="chmod">
             <arg line="u+x ${path.to.jruby.bin}"/>
         </exec>
+        <delete dir="${jruby.dest.file}"/>
+    </target>
+
+    <target name="install:buildr" unless="buildr.exists" depends="install:jruby" description="Downloads buildr">
         <exec executable="${path.to.jruby.bin}">
             <arg value="-S"/>
             <arg value="gem"/>
@@ -26,21 +37,25 @@
             <arg value="buildr"/>
             <arg value="-v"/>
             <arg value="1.3.3"/>
-            <arg value="-V"/>
             <arg value="--no-rdoc"/>
             <arg value="--no-ri"/>
         </exec>
-        <exec executable="${path.to.jruby.bin}">
+    </target>
+
+    <target name="install:shenandoah" unless="shenandoah.exists" depends="install:jruby" description="Downloads shenandoah">
+       <exec executable="${path.to.jruby.bin}">
             <arg value="-S"/>
             <arg value="gem"/>
             <arg value="install"/>
             <arg value="shenandoah"/>
             <arg value="-v"/>
             <arg value="0.0.0"/>
-            <arg value="-V"/>
             <arg value="--no-rdoc"/>
             <arg value="--no-ri"/>
        </exec>
+    </target>
+
+    <target name="install:facets" unless="facets.exists" depends="install:jruby" description="Downloads facets">
         <exec executable="${path.to.jruby.bin}">
             <arg value="-S"/>
             <arg value="gem"/>
@@ -48,11 +63,24 @@
             <arg value="facets"/>
             <arg value="-v"/>
             <arg value="2.4.5"/>
-            <arg value="-V"/>
             <arg value="--no-rdoc"/>
             <arg value="--no-ri"/>
        </exec>
     </target>
+
+    <target name="install:json_pure" unless="json_pure.exists" depends="install:jruby" description="Downloads json_pure">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="gem"/>
+            <arg value="install"/>
+            <arg value="json_pure"/>
+            <arg value="-v"/>
+            <arg value="1.1.9"/>
+            <arg value="--no-rdoc"/>
+            <arg value="--no-ri"/>
+       </exec>
+    </target>
+
     <target name="build:war" depends="install">
         <exec executable="${path.to.jruby.bin}">
             <arg value="-S"/>
