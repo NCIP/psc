@@ -51,20 +51,6 @@ public class CoppaStudyProviderTest extends TestCase{
         assertStudy("Wrong study created", "NCI-123", "Official", actual.get(0));
     }
 
-    private StudySite coppaLeadStudySite(String localIdentifier) {
-        StudySite ss = new StudySite();
-
-        ST st = new ST();
-        st.setValue(localIdentifier);
-        ss.setLocalStudyProtocolIdentifier(st);
-
-        CD cd = new CD();
-        cd.setCode("Lead Organization");
-        ss.setFunctionalCode(cd);
-
-        return ss;
-    }
-
     public void testSearchWithNoResults() throws Exception{
         expect(client.search((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null);
         mocks.replayMocks();
@@ -116,5 +102,19 @@ public class CoppaStudyProviderTest extends TestCase{
         p.setPublicTitle(pub);
 
         return p;
+    }
+        
+    private StudySite coppaLeadStudySite(String localIdentifier) {
+        StudySite ss = new StudySite();
+
+        ST st = new ST();
+        st.setValue(localIdentifier);
+        ss.setLocalStudyProtocolIdentifier(st);
+
+        CD cd = new CD();
+        cd.setCode("Lead Organization");
+        ss.setFunctionalCode(cd);
+
+        return ss;
     }
 }
