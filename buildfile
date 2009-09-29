@@ -338,7 +338,7 @@ define "psc" do
       bnd.name = "PSC Mock Data Providers"
       bnd.autostart = false
       compile.with project('providers:api').and_dependencies, SPRING
-      test.with UNIT_TESTING
+      test.with UNIT_TESTING, project('domain').test_dependencies
       package(:jar)
     end
 
