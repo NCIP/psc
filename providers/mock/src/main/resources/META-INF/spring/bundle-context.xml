@@ -1202,7 +1202,7 @@
             </map>
         </property>
     </bean>
-    <bean class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockStudyProvider" id="mockStudySiteProvider">
+    <bean class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockStudySiteProvider" id="mockStudySiteProvider">
         <property name="pairs">
             <list>
                 <bean class="edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockStudySiteMapping">
