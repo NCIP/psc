@@ -18,7 +18,7 @@ public class MockStudyProvider implements StudyProvider {
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> results = new ArrayList<Study>(parameters.size());
         for (Study parameter : parameters) {
-            String nctId = parameter.getSecondaryIdentifierValue("nct");
+            String nctId = parameter.getSecondaryIdentifierValue(MockDataProviderTools.KEY_STUDY_IDENTIFIER_TYPE);
             Study found = studies.get(nctId);
             results.add(found == null ? null : found.clone());
         }
@@ -49,7 +49,7 @@ public class MockStudyProvider implements StudyProvider {
     }
 
     public String providerToken() {
-        return "mock - NOT FOR PRODUCTION";
+        return MockDataProviderTools.PROVIDER_TOKEN;
     }
 
     public void setStudies(Map<String, Study> studies) {

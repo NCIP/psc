@@ -37,7 +37,7 @@ public class MockSiteProvider implements SiteProvider {
     }
 
     public String providerToken() {
-        return "mock - NOT FOR PRODUCTION";
+        return MockDataProviderTools.PROVIDER_TOKEN;
     }
 
     private Site createSite(String assignedIdentifier) {
