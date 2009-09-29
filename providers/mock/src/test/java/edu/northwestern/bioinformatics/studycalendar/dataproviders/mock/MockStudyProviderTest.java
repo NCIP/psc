@@ -74,7 +74,29 @@ public class MockStudyProviderTest extends TestCase {
         List<Study> found = provider.search("B");
         assertNotSame("Study not cloned", mockStudies.get("B"), found.get(0));
     }
-    
+
+    public void testDetectAlignsByNctIdent() throws Exception {
+        Study param = new Study();
+        addSecondaryIdentifier(param, "nct", "8");
+        List<Study> studies = Arrays.asList(
+            createStudy("7"), createStudy("8"), createStudy("9")
+        );
+
+        Study actual = provider.detect(param, studies);
+        assertSame(actual, studies.get(1));
+    }
+
+    public void testDetectReturnsNullForNotFound() throws Exception {
+        Study param = new Study();
+        addSecondaryIdentifier(param, "secondary", "ECOG-8");
+        List<Study> studies = Arrays.asList(
+            createStudy("7"), createStudy("8"), createStudy("9")
+        );
+
+        Study actual = provider.detect(param, studies);
+        assertNull(actual);
+    }
+
     private Study createStudy(String nct) {
         Study s = new Study();
         s.setAssignedIdentifier(nct);

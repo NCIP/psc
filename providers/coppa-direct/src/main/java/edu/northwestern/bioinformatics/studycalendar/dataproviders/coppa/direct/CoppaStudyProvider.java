@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,11 @@ public class CoppaStudyProvider implements StudyProvider {
             si.setValue(entry.getValue());
             s.addSecondaryIdentifier(si);
         }
+    }
+
+    // TODO: implement this
+    public Study detect(Study param, Collection<Study> studies) {
+        throw new UnsupportedOperationException("find not implemented");
     }
 
     public String providerToken() {

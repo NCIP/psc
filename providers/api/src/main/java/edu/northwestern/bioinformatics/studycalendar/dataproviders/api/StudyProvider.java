@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.api;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,4 +35,15 @@ public interface StudyProvider extends DataProvider, SearchingProvider<Study> {
      * @param partialName A substring of the desired name
      */
     List<Study> search(String partialName);
+
+    /**
+     * Finds the one study from the list which matches the input study, according
+     * to the way this provider provides studies.  If none match, it should return
+     * null.
+     * <p>
+     * The behavior here should match the way this provider implements
+     * {@link #getStudies}, but as a query against the input collection instead of
+     * a remote service.
+     */
+    Study detect(Study param, Collection<Study> studies);
 }

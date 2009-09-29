@@ -1,12 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import static edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockDataProviderTools.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 /**
@@ -18,7 +20,7 @@ public class MockStudyProvider implements StudyProvider {
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> results = new ArrayList<Study>(parameters.size());
         for (Study parameter : parameters) {
-            String nctId = parameter.getSecondaryIdentifierValue(MockDataProviderTools.KEY_STUDY_IDENTIFIER_TYPE);
+            String nctId = parameter.getSecondaryIdentifierValue(KEY_STUDY_IDENTIFIER_TYPE);
             Study found = studies.get(nctId);
             results.add(found == null ? null : found.clone());
         }
@@ -48,9 +50,24 @@ public class MockStudyProvider implements StudyProvider {
         return false;
     }
 
-    public String providerToken() {
-        return MockDataProviderTools.PROVIDER_TOKEN;
+    public Study detect(Study param, Collection<Study> studies) {
+        String nct = param.getSecondaryIdentifierValue(KEY_STUDY_IDENTIFIER_TYPE);
+        if (nct != null) {
+            for (Study other : studies) {
+                String otherNct = other.getSecondaryIdentifierValue(KEY_STUDY_IDENTIFIER_TYPE);
+                if (nct.equals(otherNct)) {
+                    return other;
+                }
+            }
+        }
+        return null;
     }
+
+    public String providerToken() {
+        return PROVIDER_TOKEN;
+    }
+
+    ///// CONFIGURATION
 
     public void setStudies(Map<String, Study> studies) {
         this.studies = studies;
