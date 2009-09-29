@@ -5,8 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.coppa.common.LimitOffset;
+import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
+import gov.nih.nci.coppa.services.pa.StudySite;
 import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
+import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
 import org.apache.axis.types.URI;
 import org.iso._21090.II;
 import org.slf4j.Logger;
@@ -18,15 +21,19 @@ import java.util.*;
 public class CoppaStudyProvider implements StudyProvider {
     private static final String TEST_ENDPOINT =
         "http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudyProtocolService";
+    private static final String STUDY_SITE_ENDPOINT =
+        "http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudySiteService";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyProtocolServiceClient client;
+    private StudySiteServiceClient studySiteClient;
 
     public CoppaStudyProvider() {
         try {
             // Temporary
             setClient(new StudyProtocolServiceClient(TEST_ENDPOINT));
+            setStudySiteClient(new StudySiteServiceClient(STUDY_SITE_ENDPOINT));
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         } catch (RemoteException e) {
@@ -36,6 +43,11 @@ public class CoppaStudyProvider implements StudyProvider {
 
     public List<Study> getStudies(List<Study> parameters) {
         throw new UnsupportedOperationException("Method not yet implemented");
+    }
+
+    // TODO: implement this
+    public Study detect(Study param, Collection<Study> studies) {
+        throw new UnsupportedOperationException("find not implemented");
     }
 
     public List<Study> search(String partialName) {
@@ -102,18 +114,16 @@ public class CoppaStudyProvider implements StudyProvider {
             ids.put("officialTitle", p.getOfficialTitle().getValue());
         }
 
-//        try {
-//            StudySiteServiceClient sc = new StudySiteServiceClient("http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudyProtocolService");
-//            Id id = new Id();
-//            gov.nih.nci.coppa.services.pa.StudySite[] sss = sc.getByStudyProtocol(id);
-//            for(gov.nih.nci.coppa.services.pa.StudySite ss: sss) {
-//
-//                if (ss.getLocalStudyProtocolIdentifier().getValue())
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        if (p.getAssignedIdentifier() != null) {
+            Id studyProtocolId = studyProtocolIdentifier(
+                    p.getAssignedIdentifier().getExtension());
+
+            String localStudyProtocolIdentifier = searchLocalStudyProtocolIdentifier(studyProtocolId);
+
+            if (localStudyProtocolIdentifier != null) {
+                ids.put("localStudyProtocolIdentifier", localStudyProtocolIdentifier);
+            }
+        }
 
         return ids.toMap();
     }
@@ -127,9 +137,34 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    // TODO: implement this
-    public Study detect(Study param, Collection<Study> studies) {
-        throw new UnsupportedOperationException("find not implemented");
+    // TODO: StudySiteProvider might be a better place for this
+    private Id studyProtocolIdentifier(String extension) {
+        Id id = new Id();
+        id.setExtension(extension);
+        return id;
+    }
+
+    private String searchLocalStudyProtocolIdentifier(Id id) {
+        StudySite[] studySite = searchStudySiteByStudyProtocolId(id);
+        if (studySite != null) {
+            for(StudySite s: studySite) {
+                // This is how we find the Organization which is leading
+                // the StudyProtocol.
+                if (s.getFunctionalCode().getCode() == "Lead Organization" && s.getLocalStudyProtocolIdentifier() != null) {
+                    return s.getLocalStudyProtocolIdentifier().getValue();
+                }
+            }            
+        }
+        return null;
+    }
+
+    private StudySite[] searchStudySiteByStudyProtocolId(Id id) {
+        try {
+            return studySiteClient.getByStudyProtocol(id);
+        } catch (Exception e) {
+            log.error("COPPA study site search failed", e);
+            return new StudySite[0];
+        }
     }
 
     public String providerToken() {
@@ -138,5 +173,9 @@ public class CoppaStudyProvider implements StudyProvider {
 
     public void setClient(StudyProtocolServiceClient c) {
         client = c;
+    }
+
+    public void setStudySiteClient(StudySiteServiceClient s) {
+        this.studySiteClient = s;
     }
 }
