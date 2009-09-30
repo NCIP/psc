@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,6 +69,13 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
         assertEquals("State mode is different", "scheduled", stateInfo.get("name"));
         assertEquals("State date is different", "2009-04-03", stateInfo.get("date"));
         assertEquals("State reason is different", state.getReason(), stateInfo.get("reason"));
+    }
+
+    public void testStateContainsNoDate() throws Exception {
+        ScheduledActivityState saState = new Canceled();
+        JSONObject stateInfo = ScheduleRepresentationHelper.createJSONStateInfo(saState);
+        assertEquals("State mode is different", "canceled", stateInfo.get("name"));
+        assertFalse("State date should not be present", stateInfo.has("date"));
     }
     
     public void testActivityPropertyInJson() throws Exception {

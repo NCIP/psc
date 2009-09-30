@@ -33,7 +33,9 @@ public class ScheduleRepresentationHelper {
         try {
             JSONObject stateInfo = new JSONObject();
             stateInfo.put("name", state.getMode().toString());
-            stateInfo.put("date", getApiDateFormat().format(state.getDate()));
+            if (state.getDate() != null) {
+                stateInfo.put("date", getApiDateFormat().format(state.getDate()));
+            }
             stateInfo.put("reason", state.getReason());
             return stateInfo;
         } catch (JSONException e) {
