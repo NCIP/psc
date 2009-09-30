@@ -97,6 +97,25 @@ public class CoppaStudyProviderTest extends TestCase{
         assertSecondaryIdentifier(actual, "localStudyProtocolIdentifier", "Local");
     }
 
+    public void testDetectWithStudyFound() {
+        Study actual = provider.detect(pscStudy("Ext B"), asList(
+            pscStudy("Ext A"),
+            pscStudy("Ext B"),
+            pscStudy("Ext C")
+        ));
+
+        assertEquals("Wrong Study", "Ext B", actual.getSecondaryIdentifierValue("extension"));
+    }
+    
+    public void testDetectWithStudyNotFound() {
+        Study actual = provider.detect(pscStudy("Ext B"), asList(
+            pscStudy("Ext Y"),
+            pscStudy("Ext Z")
+        ));
+
+        assertNull("Should be null", actual);
+    }
+
     ///////////////// Helper Methods
     private void assertStudy(String msg, String expectedAssignedId, String expectedLongTitle, Study actual) {
         assertEquals(msg + ": wrong name",  expectedAssignedId,  actual.getAssignedIdentifier());

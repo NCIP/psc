@@ -59,7 +59,17 @@ public class CoppaStudyProvider implements StudyProvider {
 
     // TODO: implement this
     public Study detect(Study param, Collection<Study> studies) {
-        throw new UnsupportedOperationException("find not implemented");
+        String extension = param.getSecondaryIdentifierValue("extension");
+
+        if (extension != null) {
+            for (Study study : studies) {
+                if (extension.equals(study.getSecondaryIdentifierValue("extension"))) {
+                    return study;
+                }
+            }
+        }
+
+        return null;
     }
 
     public List<Study> search(String partialName) {
