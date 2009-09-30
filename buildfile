@@ -986,11 +986,13 @@ define "psc" do
       end
     end
 
-    desc "Specs for client-side javascript"
-    define "js-spec" do
-      # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
-      # circular dependency failure
-      test.using :shenandoah, :main_path => _("../src/main/webapp/js")
+    unless ENV['SHEN'] == 'no'
+      desc "Specs for client-side javascript"
+      define "js-spec" do
+        # using project('psc:web')._(:source, :main, :webapp, "js") causes a bogus
+        # circular dependency failure
+        test.using :shenandoah, :main_path => _("../src/main/webapp/js")
+      end
     end
   end
 
