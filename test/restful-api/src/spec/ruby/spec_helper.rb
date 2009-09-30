@@ -4,6 +4,17 @@
 require 'fileutils'
 require 'jruby'
 
+# Manually configure logback since it isn't finding the configuration file on its own
+begin
+  lc = Java::OrgSlf4j::LoggerFactory.getILoggerFactory();
+  conf = Java::ChQosLogbackClassicJoran::JoranConfigurator.new
+  conf.context = lc
+  lc.shutdownAndReset # beware: changed to .reset in later logbacks
+  conf.doConfigure(Java::JavaLang::System.getProperty('logback.configurationFile'))
+  # Uncomment for debugging:
+  # Java::ChQosLogbackCoreUtil::StatusPrinter.print(lc);
+end
+
 # Direct Spring to the correct classloader
 # a la http://www.ruby-forum.com/topic/153160
 Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJRubyClassLoader
