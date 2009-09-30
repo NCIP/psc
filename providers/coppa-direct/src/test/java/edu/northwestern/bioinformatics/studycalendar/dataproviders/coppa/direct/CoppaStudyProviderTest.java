@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import static edu.northwestern.bioinformatics.studycalendar.tools.StringTools.humanizeClassName;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.common.LimitOffset;
@@ -16,6 +17,7 @@ import org.iso._21090.CD;
 import org.iso._21090.II;
 import org.iso._21090.ST;
 
+import static java.util.Arrays.asList;
 import java.util.List;
 
 /**
@@ -60,6 +62,26 @@ public class CoppaStudyProviderTest extends TestCase{
         assertTrue("Incorrect number of studies returned", actual.isEmpty());
     }
 
+    public void testGetStudies() throws Exception {
+        expect(client.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext A", "Off A", "Pub A"));
+        expect(client.getStudyProtocol((Id) notNull())).andReturn(null);
+        expect(client.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext C", "Off C", "Pub C"));
+
+        expect(studySiteClient.getByStudyProtocol((Id) notNull())).andReturn(null).times(3);
+        mocks.replayMocks();
+
+        List<Study> actual = provider.getStudies(asList(
+            pscStudy("Ext A"),
+            pscStudy("Ext B"),
+            pscStudy("Ext C")
+        ));
+
+        assertEquals("Wrong number of elements", 3, actual.size());
+        assertNull  ("Should be null", actual.get(1));
+        assertEquals("Wrong element", "Ext A", actual.get(0).getAssignedIdentifier());
+        assertEquals("Wrong element", "Ext C", actual.get(2).getAssignedIdentifier());
+    }
+
     public void testCreateStudy() throws Exception {
         expect(studySiteClient.getByStudyProtocol((Id) notNull())).andReturn(new StudySite[] {
             coppaLeadStudySite("Local")
@@ -75,7 +97,7 @@ public class CoppaStudyProviderTest extends TestCase{
         assertSecondaryIdentifier(actual, "localStudyProtocolIdentifier", "Local");
     }
 
-    // Helper Methods
+    ///////////////// Helper Methods
     private void assertStudy(String msg, String expectedAssignedId, String expectedLongTitle, Study actual) {
         assertEquals(msg + ": wrong name",  expectedAssignedId,  actual.getAssignedIdentifier());
         assertEquals(msg + ": wrong ident", expectedLongTitle, actual.getLongTitle());
@@ -116,5 +138,14 @@ public class CoppaStudyProviderTest extends TestCase{
         ss.setFunctionalCode(cd);
 
         return ss;
+    }
+
+    private Study pscStudy(String coppaExtension) {
+        Study study = new Study();
+        StudySecondaryIdentifier id = new StudySecondaryIdentifier();
+        id.setType("extension");
+        id.setValue(coppaExtension);
+        study.addSecondaryIdentifier(id);
+        return study;
     }
 }

@@ -42,7 +42,19 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public List<Study> getStudies(List<Study> parameters) {
-        throw new UnsupportedOperationException("Method not yet implemented");
+        List<Study> studies = new ArrayList<Study>(parameters.size());
+        for (Study param : parameters) {
+            String extension = param.getSecondaryIdentifierValue("extension");
+            if (extension != null) {
+                Id id = studyProtocolIdentifier(extension);
+
+                StudyProtocol raw = getStudyProtocol(id);
+
+                Study found = createStudy(raw);
+                studies.add(found);
+            }
+        }
+        return studies;
     }
 
     // TODO: implement this
@@ -57,7 +69,7 @@ public class CoppaStudyProvider implements StudyProvider {
         ii.setIdentifierName(partialName);
         base.setAssignedIdentifier(ii);
 
-        StudyProtocol[] raw = searchByStudyProtocol(base);
+        StudyProtocol[] raw = searchStudyProtocols(base);
         if (raw == null) {
             return Collections.emptyList();
         } else {
@@ -69,7 +81,21 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    private StudyProtocol[] searchByStudyProtocol(StudyProtocol protocol) {
+    public String providerToken() {
+        return "coppa-direct";
+    }
+
+    //////////// Search Helper Methods
+
+    private StudyProtocol getStudyProtocol(Id id) {
+        try {
+            return client.getStudyProtocol(id);
+        } catch(RemoteException e) {
+            log.error("COPPA study protocol search failed", e);
+            return null;
+        }
+    }
+    private StudyProtocol[] searchStudyProtocols(StudyProtocol protocol) {
         LimitOffset lo = new LimitOffset();
         lo.setLimit(Integer.MAX_VALUE);
         lo.setOffset(0);
@@ -82,18 +108,23 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    // Package level for testing
+    //////////// Object creation helpers
+
     Study createStudy(StudyProtocol p) {
-        Study s = new Study();
+        Study s = null;
+        
+        if (p != null) {
+            s = new Study();
 
-        s.setAssignedIdentifier(
-            p.getAssignedIdentifier().getExtension());
+            s.setAssignedIdentifier(
+                p.getAssignedIdentifier().getExtension());
 
-        s.setLongTitle(
-            p.getOfficialTitle().getValue());
+            s.setLongTitle(
+                p.getOfficialTitle().getValue());
 
-        Map<String, String> ids = extractSecondaryIdentifiers(p);
-        addSecondaryIdentifiers(s, ids);
+            Map<String, String> ids = extractSecondaryIdentifiers(p);
+            addSecondaryIdentifiers(s, ids);
+        }
 
         return s;
     }
@@ -167,9 +198,7 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    public String providerToken() {
-        return "coppa-direct";
-    }
+    //////////// Setters and Getters
 
     public void setClient(StudyProtocolServiceClient c) {
         client = c;
