@@ -9,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.LONG_TITLE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_LONG_TITLE_NAME;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -30,7 +29,7 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         }
         if (study.getLongTitle() != null && study.getLongTitle().length() >0) {
             Element eltLongTitle = XsdElement.LONG_TITLE.create();
-            STUDY_LONG_TITLE_NAME.addTo(eltLongTitle, study.getLongTitle());
+            eltLongTitle.addText(study.getLongTitle());
             elt.add(eltLongTitle);
         }
         for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {
@@ -66,7 +65,7 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
 
         Element eltLongTitle = element.element(LONG_TITLE.xmlName());
         if (eltLongTitle != null) {
-            String longTitleName = STUDY_LONG_TITLE_NAME.from(eltLongTitle);
+            String longTitleName = eltLongTitle.getText();
             if (longTitleName != null && longTitleName.length() > 0) {
                 study.setLongTitle(longTitleName);
             }

@@ -28,7 +28,7 @@ describe "/provided-studies" do
           response.xml_attributes("study", "provider").should include("mock - NOT FOR PRODUCTION")
         end
         it "has long title" do
-          response.xml_attributes("long-title", "name").should include("Phase II Trial of Cetuximab Plus Cisplatin, 5- Fluorouracil and Radiation in Immunocompetent Patients With Anal Carcinoma")
+          response.xml_elements('//long-title').should have(9).longtitles
         end
         describe "secondary identifiers structure" do
           it "has type" do

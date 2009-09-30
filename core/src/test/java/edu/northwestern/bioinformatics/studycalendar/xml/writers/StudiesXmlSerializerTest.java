@@ -81,6 +81,6 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
         Element eltLongTitle = actual.element("long-title");
         assertNotNull("Long title should exist", eltLongTitle);
-        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.attributeValue("name"));
+        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.getText());
     }
 }

@@ -69,11 +69,7 @@
     </xsd:complexType>
 
     <!-- Elements of the template -->
-    <xsd:element name="long-title" type="psc:LongTitle"/>
-
-    <xsd:complexType name="LongTitle">
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-    </xsd:complexType>
+    <xsd:element name="long-title"/>
 
     <xsd:element name="secondary-identifier" type="psc:SecondaryIdentifier"/>
 

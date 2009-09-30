@@ -40,7 +40,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         }
         if (study.getLongTitle() != null && study.getLongTitle().length() >0) {
             Element eltLongTitle = XsdElement.LONG_TITLE.create();
-            STUDY_LONG_TITLE_NAME.addTo(eltLongTitle, study.getLongTitle());
+            eltLongTitle.addText(study.getLongTitle());
             elt.add(eltLongTitle);
         }
 
@@ -88,7 +88,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
             Element eltLongTitle = element.element(LONG_TITLE.xmlName());
             if (eltLongTitle != null) {
-                String longTitleName = STUDY_LONG_TITLE_NAME.from(eltLongTitle);
+                String longTitleName = eltLongTitle.getText();
                 if (longTitleName != null && longTitleName.length() > 0) {
                     study.setLongTitle(longTitleName);
                 }

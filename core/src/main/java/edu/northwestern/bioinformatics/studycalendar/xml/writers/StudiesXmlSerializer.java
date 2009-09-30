@@ -5,10 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdenti
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_PROVIDER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_LONG_TITLE_NAME;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -40,7 +38,7 @@ public class StudiesXmlSerializer extends AbstractStudyCalendarXmlCollectionSeri
         }
         if (study.getLongTitle() != null && study.getLongTitle().length() >0) {
             Element eltLongTitle = XsdElement.LONG_TITLE.create();
-            STUDY_LONG_TITLE_NAME.addTo(eltLongTitle, study.getLongTitle());
+            eltLongTitle.addText(study.getLongTitle());
             studyElement.add(eltLongTitle);
         }
         for (StudySecondaryIdentifier studySecondaryIdent : study.getSecondaryIdentifiers()) {

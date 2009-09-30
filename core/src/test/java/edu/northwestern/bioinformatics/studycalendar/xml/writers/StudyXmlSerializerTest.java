@@ -150,14 +150,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWithLongTitle() throws Exception {
         Element eltStudy = createStudyElement();
         Element eltLongTitle = DocumentHelper.createElement("long-title");
-        eltLongTitle.addAttribute("name", "study long title");
+        eltLongTitle.addText("study long title");
         eltStudy.add(eltLongTitle);
         expectDeserializeDataForNewElement();
         replayMocks();
 
         Study actual = serializer.readElement(eltStudy);
         verifyMocks();
-        assertEquals("Wrong Long title name", eltLongTitle.attributeValue("name"), actual.getLongTitle() );
+        assertEquals("Wrong Long title name", eltLongTitle.getText(), actual.getLongTitle() );
     }
 
     public void testReadElementWithInvalidElementName() {
@@ -253,7 +253,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
         Element eltLongTitle = actual.element("long-title");
         assertNotNull("Long title should exist", eltLongTitle);
-        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.attributeValue("name"));
+        assertEquals("Long title name does not match", study.getLongTitle(), eltLongTitle.getText());
     }
 
     public void testCreateDocumentString() throws Exception {
