@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
-import edu.nwu.bioinformatics.commons.DateUtils;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -89,7 +88,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEventsByDate(
             DateUtils.createDate(2006, Calendar.OCTOBER, 28),
             null,
-            -15, -16, -18);
+            -15, -16, -17, -18);
     }
 
     public void testGetByRangeInfiniteLow() throws Exception {
@@ -103,7 +102,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         ScheduledCalendar calendar = scheduledCalendarDao.getById(-20);
         Collection<Integer> actualIds
             = DomainObjectTools.collectIds(getDao().getEventsByDate(calendar, lo, hi));
-        assertEquals("Wrong number of matched events", expectedIds.length, actualIds.size());
+        assertEquals("Wrong number of matched events: " + actualIds, expectedIds.length, actualIds.size());
         for (int expectedId : expectedIds) {
             assertContains("Missing event", actualIds, expectedId);
         }

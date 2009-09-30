@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ContextDaoTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public abstract class ReportDaoTestCase<F extends ReportFilters, R extends Domai
 
     protected List<R> assertSearchWithResults(long... expectedIds) {
         List<R> rows = doSearch();
-        assertEquals("Wrong number of results: " + rows, expectedIds.length, rows.size());
+        assertEquals("Wrong number of results: " + DomainObjectTools.collectIds(rows), expectedIds.length, rows.size());
         for (int i = 0; i < expectedIds.length; i++) {
             long id = expectedIds[i];
             assertEquals("Wrong row " + i, id, (long) rows.get(i).getId());

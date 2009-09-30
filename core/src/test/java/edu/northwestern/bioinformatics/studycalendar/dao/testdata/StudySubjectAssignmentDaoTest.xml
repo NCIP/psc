@@ -80,14 +80,14 @@
                           current_state_date="2006-10-30" ideal_date="2008-05-02" activity_id="-100"
                           details="Nice Details!!" source_amendment_id="-18"/>
     <SCHEDULED_ACTIVITIES id="-17" scheduled_study_segment_id="-20" planned_activity_id="-6" current_state_mode_id="3"
-                          ideal_date="2008-05-09"
+                          current_state_date="2008-05-09" ideal_date="2008-05-09"
                           activity_id="-100" details="Nice Details!!" source_amendment_id="-18"/>
 
     <SCHEDULED_ACTIVITIES id="-18" scheduled_study_segment_id="-21" planned_activity_id="-6" current_state_mode_id="1"
                           current_state_date="2006-10-30" ideal_date="2008-05-04" activity_id="-100"
                           details="Nice Details!!" source_amendment_id="-18"/>
     <SCHEDULED_ACTIVITIES id="-19" scheduled_study_segment_id="-21" planned_activity_id="-6" current_state_mode_id="3"
-                          ideal_date="2008-05-06"
+                          current_state_date="2008-05-06" ideal_date="2008-05-06"
                           activity_id="-100" details="Nice Details!!" source_amendment_id="-18"/>
 
     <SCHEDULED_ACTIVITIES id="-20" scheduled_study_segment_id="-22" planned_activity_id="-6" current_state_mode_id="1"

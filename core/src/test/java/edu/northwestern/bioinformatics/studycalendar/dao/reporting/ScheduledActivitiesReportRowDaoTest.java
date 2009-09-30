@@ -1,15 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
-
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 /**
  * @author John Dzak
@@ -85,14 +88,14 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithStartDateFilter_Pos() {
         MutableRange<Date> range = new MutableRange<Date>();
-        range.setStart(DateUtils.createDate(2006, Calendar.OCTOBER, 29));
+        range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
         filters.setActualActivityDate(range);
-        assertSearchWithResults(NEG_16);
+        assertSearchWithResults(NEG_17);
     }
 
     public void testSearchWithStartDateFilter_Neg() {
         MutableRange<Date> range = new MutableRange<Date>();
-        range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
+        range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 15));
         filters.setActualActivityDate(range);
         assertSearchWithResults();
     }

@@ -198,6 +198,7 @@
             list_index="1"
             scheduled_activity_id="-10"
             mode_id="3"
+            actual_date="2006-10-22"
             reason="Called to cancel"
             grid_id="grid9"
 
@@ -249,6 +250,7 @@
             scheduled_study_segment_id="-22"
             planned_activity_id="-6"
             current_state_mode_id="3"
+            current_state_date="2006-11-01"
             ideal_date="2006-11-01"
             activity_id="-100"
             details="Nice Details!!"
