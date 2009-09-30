@@ -1,14 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import static org.easymock.EasyMock.expect;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
 
@@ -77,7 +79,6 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReplaceCollidingSourcesWhereActivitiesWithSameNameButDifferentCode() throws Exception {
-
         Activity activity = createActivity("a", "123", source0, createActivityType("Bone Scan"));
         source0.addActivity(activity);
         Source existingSource = setId(0, createNamedInstance("ICD-9", Source.class));
@@ -98,7 +99,27 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong activity name", activity0.getName(), actualSource0.getActivities().get(0).getName());
         assertEquals("Wrong activity code", activity0.getCode(), actualSource0.getActivities().get(0).getCode());
+    }
+    
+    public void testLoadAndSaveReturnsNewSourceIfNoExistingSources() throws Exception {
+        Source newSource = new Source();
+        InputStream xml = new ByteArrayInputStream(new byte[0]);
+        expect(sourceDao.getAll()).andReturn(Arrays.<Source>asList());
+        expect(serializer.readCollectionOrSingleDocument(xml)).andReturn(Arrays.asList(newSource));
 
+        replayMocks();
+        assertSame(newSource, service.loadAndSave(xml));
+        verifyMocks();
+    }
+    
+    public void testLoadAndSaveReturnsNullIfNoSources() throws Exception {
+        InputStream xml = new ByteArrayInputStream(new byte[0]);
+        expect(sourceDao.getAll()).andReturn(Arrays.<Source>asList());
+        expect(serializer.readCollectionOrSingleDocument(xml)).andReturn(Arrays.<Source>asList());
+
+        replayMocks();
+        assertNull(service.loadAndSave(xml));
+        verifyMocks();
     }
 
     private Activity assignSource(Activity activity, Source source) {

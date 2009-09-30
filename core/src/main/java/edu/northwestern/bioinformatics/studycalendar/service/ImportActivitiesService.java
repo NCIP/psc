@@ -25,7 +25,13 @@ public class ImportActivitiesService {
     public Source loadAndSave(InputStream sourcesXml) {
         Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
-        return validSources.iterator().next();
+        if (validSources.size() > 0) {
+            return validSources.iterator().next();
+        } else if (sources.size() > 0) {
+            return sources.iterator().next();
+        } else {
+            return null;
+        }
     }
 
     public Source loadAndSaveCSVFile(InputStream inputStream) {
@@ -44,6 +50,7 @@ public class ImportActivitiesService {
         return xmlSerializer.readCollectionOrSingleDocument(dataFile);
     }
 
+    // TODO: this is really inefficient if there are lots of sources
     protected List<Source> replaceCollidingSources(Collection<Source> sources) {
         List<Source> validSources = new ArrayList<Source>();
         List<Source> existingSources = sourceDao.getAll();
