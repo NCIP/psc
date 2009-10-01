@@ -111,6 +111,19 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong Long title name", eltLongTitle.getText(), actual.getLongTitle() );
     }
 
+    public void testReadElementLongTitleNormalizeWhiteSpace() throws Exception {
+        Element eltStudy = createElement("study");
+        eltStudy.addAttribute("assigned-identifier", "Id1");
+        Element eltLongTitle = DocumentHelper.createElement("long-title");
+        eltLongTitle.addText("study\n long\t title");
+        eltStudy.add(eltLongTitle);
+        replayMocks();
+
+        Study actual = serializer.readElement(eltStudy);
+        verifyMocks();
+        assertEquals("No normalize of whitespaces for long title", "study long title", actual.getLongTitle() );
+    }
+
 //    public void testReadMatchesPopulationsAsAppropriate() throws Exception {
 //        Study actual = doParse(
 //            "%s<planned-calendar><epoch name='Treatment'><study-segment name='Treatment'><period duration-quantity='4' duration-unit='day' repetitions='1' start-day='1'>" +

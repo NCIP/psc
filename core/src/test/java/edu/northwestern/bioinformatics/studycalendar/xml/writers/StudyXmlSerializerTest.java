@@ -160,6 +160,19 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong Long title name", eltLongTitle.getText(), actual.getLongTitle() );
     }
 
+    public void testReadElementLongTitleWithNormalizeWhitespace() throws Exception {
+        Element eltStudy = createStudyElement();
+        Element eltLongTitle = DocumentHelper.createElement("long-title");
+        eltLongTitle.addText("study \nlong \ttitle");
+        eltStudy.add(eltLongTitle);
+        expectDeserializeDataForNewElement();
+        replayMocks();
+
+        Study actual = serializer.readElement(eltStudy);
+        verifyMocks();
+        assertEquals("No normalize of whitespace characters for long title", "study long title", actual.getLongTitle() );
+    }
+
     public void testReadElementWithInvalidElementName() {
         expect(element.getName()).andReturn("study-snapshot").times(2);
         try {

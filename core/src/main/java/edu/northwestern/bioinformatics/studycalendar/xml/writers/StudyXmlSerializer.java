@@ -90,7 +90,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             if (eltLongTitle != null) {
                 String longTitleName = eltLongTitle.getText();
                 if (longTitleName != null && longTitleName.length() > 0) {
-                    study.setLongTitle(longTitleName);
+                    study.setLongTitle(longTitleName.replaceAll("\\s+"," "));
                 }
             }
 
