@@ -531,10 +531,6 @@ define "psc" do
       raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
     end
 
-    task :check_caaers do |task|
-      raise "CAAERS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CAAERS_HOME']
-    end
-
     task :check_ccts do |task|
       raise "CCTS_HOME not set. Cannot deploy grid service without CAAERS" unless ENV['CCTS_HOME']
     end
@@ -584,12 +580,12 @@ define "psc" do
         dep == artifact(eponym("dbunit", "2.1"))
       end
 
-      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_caaers', 'psc:grid:check_grid_tomcat'] do |task|
+      task :deploy => ['psc:grid:check_globus', 'psc:grid:check_grid_tomcat'] do |task|
         ##Delegating to caaers.
         ##Not Tested therefore commented temporarily
         ant('deploy-adverse-event-consumer-service') do |ant|
           ant.echo :message => "delegating the adverse event consumer service deployment to caaers"
-          ant.subant :buildpath => ENV['CAAERS_HOME']+"/grid/introduce/AdverseEventConsumerService1.2", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
+          ant.subant :buildpath =>  ENV['CCTS_HOME']+"/cagrid13-services/AdverseEventConsumerService-caGrid13", :antfile => "build.xml", :target => "deployTomcat", :inheritAll => "false" do |subant|
             subant.property :name => "tomcat.dir", :value => ENV['CATALINA_HOME']
             subant.property :name => "globus.webapp", :value => wsrf_dir_name
           end
