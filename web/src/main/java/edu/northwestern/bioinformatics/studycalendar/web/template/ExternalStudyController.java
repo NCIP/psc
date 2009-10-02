@@ -36,6 +36,7 @@ public class ExternalStudyController extends PscSimpleFormController {
         Map<String, Object> model = new HashMap<String, Object>();
         int id = ServletRequestUtils.getRequiredIntParameter(request, "study");
         Study study = studyDao.getById(id);
+        model.put("study", study);
         return new ModelAndView("template/externalStudy", model);
     }
 

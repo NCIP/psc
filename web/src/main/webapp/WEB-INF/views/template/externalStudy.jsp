@@ -110,7 +110,7 @@
                 method: "GET", parameters: params,
                 onSuccess: function(response) {
                      var bundleListColumns = [
-                       { key: "long_title", label: "Long Title", sortable: true , formatter:YAHOO.widget.DataTable.formatLink},
+                       { key: "long_title", label: "Long Title", sortable: true , formatter:longTitleFormatter},
                        { key: "assigned_identifier", label: "Assigned Identifier", sortable: true },
                        { key: "provider", label:"Provider", sortable:true},
                        { key: "secondary_identifiers", label: "Secondary Identifier", sortable: true, formatter: secondaryIdentifierFormatter},
@@ -127,7 +127,7 @@
                     myDataSource.responseSchema = {
                         resultsList : "studies",
                         fields : [
-                            { key: "long_title", formatter:YAHOO.widget.DataTable.formatLink},
+                            { key: "long_title", formatter:longTitleFormatter},
                             { key: "assigned_identifier"},
                             { key: "provider"},
                             { key: "secondary_identifiers", formatter: secondaryIdentifierFormatter},
@@ -151,20 +151,15 @@
 
                jQuery(elCell).append(container);
                YAHOO.util.Event.addListener( submitButton, "click", myClickHandler, oRecord);
-
            }
 
             var myClickHandler = function(event, oRecord){
                 event.stop();
-                var elt = $(event.target);
-                var parent = jQuery(elt.up());//gives us div element
-                var trParent = parent.closest('tr')
-                var tdRowChildren = trParent.children('td')
 
-                var assignedId = tdRowChildren[1].getElementsByTagName('div')[0].innerHTML
-                var provider = tdRowChildren[2].getElementsByTagName('div')[0].innerHTML
-                var secondaryIds = tdRowChildren[3].getElementsByTagName('li')
-                var studyIdentifier = "${study.assignedIdentifier}"
+                var assignedId = oRecord.getData('assigned_identifier');
+                var provider = oRecord.getData('provider');
+                var secondaryIds = oRecord.getData('secondary_identifiers');
+                var studyIdentifier = "${study.assignedIdentifier}";
 
                 var text1 = "<p class='selectedInfo'> You picked '" + assignedId + "' from '" + provider + "'. <br> Pick the identifier to use with this study in PSC: <br>";
                 var container = jQuery('#edit-notes-lightbox');
@@ -173,8 +168,16 @@
 
                 container.append(jQuery('<h1> Assigning new study identifier </h1> '))
 
-                var input1 = jQuery('<input type="radio" name="group" checked value="' + studyIdentifier +' >' )
-                var input2 = jQuery('<input type="radio" name="group" value="' + assignedId + '>')
+                var input1 = jQuery('<input class="radio" type="radio" name="group" checked value="' + studyIdentifier +' >' )
+                var input2 = jQuery('<input class="radio" type="radio" name="group" value="' + assignedId + '>')
+
+                YAHOO.util.Event.addListener( input1, "click", function(e){
+                    input1.checked = true;
+                });
+
+                YAHOO.util.Event.addListener( input2, "click", function(e){
+                    input2.checked = true;
+                });
 
                 var keepStudyId = "Keep <b>" + studyIdentifier + "</b>"
                 var keepAssignedId = "Use <b>" + assignedId + "</b> (suggested by provider)"
@@ -201,8 +204,11 @@
                 container.append(divRow1)
                 container.append(divRow2)
                 for (var i = 0; i < secondaryIds.length; i++) {
-                    var input3 = jQuery('<input type="radio" name="group" value="' + studyIdentifier + '>');
-                    var keepSecondaryId = "Use secondary identifier <b>" + secondaryIds[i].innerHTML + "</b>"
+                    var input3 = jQuery('<input class="radio" type="radio" name="group" value="' + secondaryIds[i].value + '">');
+                    YAHOO.util.Event.addListener( input3, "click", function(e){
+                        input3.checked = true;
+                    });
+                    var keepSecondaryId = "Use secondary identifier <b>" + secondaryIds[i].value + "</b>"
                     var divRow3 = jQuery('<div class="row"/>')
                     var divLabel3 = jQuery('<div class="label"/>')
                     var divValue3 = jQuery('<div class="value"/>')
@@ -234,7 +240,11 @@
                     e.stop()
                     LB.Lightbox.deactivate()
                 });
+
+                YAHOO.util.Event.addListener( submitButton, "click", processNewIdentifier, oRecord);
+
             };
+
 
          var secondaryIdentifierFormatter = function (elCell, oRecord, oColumn, oData) {
             var container = jQuery('<div class="secondaryIdDiv"/>');
@@ -296,13 +306,13 @@
 
 
            // Override the built-in formatter
-	        YAHOO.widget.DataTable.formatLink = function(elCell, oRecord, oColumn, oData) {
+	        var longTitleFormatter = function(elCell, oRecord, oColumn, oData) {
                 var title = oRecord.getData('long_title');
                 var partOfTitle;
                 if (title.length > 100) {
                     partOfTitle = title.substr(0, 100)+ "... ";
                 } else {
-                    partOfTitle = title
+                    partOfTitle = title;
                 }
                title = title + " ";
                var spanShortTitle = jQuery('<span class="short"/>').text(partOfTitle);
@@ -329,12 +339,81 @@
                });
 
                jQuery(elCell).append(showMoreLink);
-               jQuery('.long').hide();
 	        };
 
        }
 
-      
+       function processNewIdentifier(evt, oRecord){
+           evt.stop()
+           LB.Lightbox.deactivate()
+           var inputs = $('edit-notes-lightbox').getElementsByClassName('radio')
+           var value;
+           for (var i=0; i<inputs.length; i++) {
+               if (inputs[i].checked) {
+                   value = inputs[i].value
+               }
+           }
+
+           var uri = SC.relativeUri("/api/v1/studies/${study.assignedIdentifier}/template")
+
+           var params = {};
+           SC.asyncRequest(uri, {
+                method: "GET", onSuccess: function(response) {
+                    var xmlDoc = response.responseXML
+                    var xmlRoot = xmlDoc.getElementsByTagName('study').item(0)
+                    var assignedIdentifierInXml = xmlRoot.getAttribute('assigned-identifier')
+                    var providerInXml = xmlRoot.getAttribute('provider')
+
+                   xmlRoot.setAttribute('assigned-identifier', value)
+                   xmlRoot.setAttribute('provider', oRecord.getData('provider'))
+
+
+                    //remove elements
+                   var secIds = xmlDoc.getElementsByTagName('secondary-identifier')
+                   for (var i = 0; i < secIds.length; i++){
+                       xmlDoc.documentElement.removeChild(secIds[i])
+                   }
+                   var secondaryIds = oRecord.getData('secondary_identifiers');
+                   for (var j = 0; j< secondaryIds.length; j ++) {
+                       var secIdElt = xmlDoc.createElement('secondary-identifier')
+                       secIdElt.setAttribute('type', secondaryIds[i].type)
+                       secIdElt.setAttribute('value', secondaryIds[i].value)
+                       xmlRoot.appendChild(secIdElt);
+                   }
+
+                   var titleEltInXml = xmlDoc.getElementsByTagName('long-title').item(0);
+                   if (titleEltInXml != null) {
+                    xmlDoc.documentElement.removeChild(titleEltInXml)
+                   }
+
+                   var titleElt = xmlDoc.createElement('long-title');
+                   var titleFromRecord = oRecord.getData('long_title')
+                   var newTextElt=xmlDoc.createTextNode(titleFromRecord);
+
+                   titleElt.appendChild(newTextElt);
+                   xmlRoot.appendChild(titleElt)
+
+                   jQuery.ajax({
+                       url:uri,
+                       processData: false,
+                       type: 'PUT',
+                       contentType: 'text/xml',
+                       data: XML.serialize(xmlRoot),
+                       success :function() {
+                           window.location = SC.relativeUri("/pages/cal/template?study="+${study.id})
+                       }
+                   })
+
+               }
+           })
+       }
+
+       XML.serialize = function(node) {
+            if (typeof XMLSerializer != "undefined")
+                return (new XMLSerializer()).serializeToString(node) ;
+            else if (node.xml) return node.xml;
+            else throw "XML.serialize is not supported or can't serialize " + node;
+        };
 
         $(document).observe('dom:loaded', function() {
             createStudyAutocompleter();
