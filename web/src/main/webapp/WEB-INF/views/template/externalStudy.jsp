@@ -57,69 +57,49 @@
           padding: 0;
       }
 
-
-      /*.mainTable{*/
-          /*width:100%;*/
-          /*border:1em;*/
-      /*}*/
-      /*.mainForm {*/
-          /*width:100%;*/
-      /*}*/
+    </style>
+    <script type="text/javascript">
+        var studyAutocompleter;
 
 
-        /*.selectingIdDiv {*/
-            /*padding-left:33%;*/
-            /*padding-right:33%;*/
-            /*float:left;*/
-        /*}*/
-      </style>
-      <script type="text/javascript">
-       var studyAutocompleter;
-
-
-       function createStudyAutocompleter() {
+        function createStudyAutocompleter() {
             studyAutocompleter = new SC.FunctionalAutocompleter(
                 'study-autocompleter-input', 'study-autocompleter-div', studyAutocompleterChoices, {
-                    select: "subjects-name",
-                    afterUpdateElement: function(input, selected) {
-                        input.value = ""
-                        input.focus()
-                    }
+                select: "subjects-name",
+                afterUpdateElement: function(input, selected) {
+                    input.value = ""
+                    input.focus()
                 }
-            );
+            });
         }
 
         var bundleList;
 
-       function studyAutocompleterChoices(str, callback) {
-           var searchString = $F("study-autocompleter-input")
-           if (searchString == "Search for study") {
-               searchString = ""
-           }
+        function studyAutocompleterChoices(str, callback) {
+            var searchString = $F("study-autocompleter-input")
+            if (searchString == "Search for study") {
+                searchString = ""
+            }
 
-           var uri = SC.relativeUri("/api/v1/provided-studies")
-           if (searchString.blank()) {
-               return;
-           }
+            var uri = SC.relativeUri("/api/v1/provided-studies")
+            if (searchString.blank()) {
+                return;
+            }
 
-           var params = {};
-           if (!searchString.blank()) params.q = searchString;
+            var params = {};
+            if (!searchString.blank()) params.q = searchString;
 
 
             SC.asyncRequest(uri+".json", {
                 method: "GET", parameters: params,
                 onSuccess: function(response) {
-                     var bundleListColumns = [
-                       { key: "long_title", label: "Long Title", sortable: true , formatter:longTitleFormatter},
-                       { key: "assigned_identifier", label: "Assigned Identifier", sortable: true },
-                       { key: "provider", label:"Provider", sortable:true},
-                       { key: "secondary_identifiers", label: "Secondary Identifier", sortable: true, formatter: secondaryIdentifierFormatter},
-                       {key: "button", label:"Show record data", formatter:myButtonFormatter}
+                    var bundleListColumns = [
+                        { key: "long_title", label: "Long Title", sortable: true , formatter:longTitleFormatter},
+                        { key: "assigned_identifier", label: "Assigned Identifier", sortable: true },
+                        { key: "provider", label:"Provider", sortable:true},
+                        { key: "secondary_identifiers", label: "Secondary Identifier", sortable: true, formatter: secondaryIdentifierFormatter},
+                        { key: "button", label:"Show record data", formatter:myButtonFormatter}
                     ];
-
-
-//                    var myLogReader = new YAHOO.widget.LogReader();
-
 
                     var myDataSource = new YAHOO.util.DataSource(response.responseJSON);
                     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
@@ -135,23 +115,22 @@
                         ]
                     };
 
-
                     bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
                 }
             })
 
-           var myButtonFormatter = function (elCell, oRecord, oCollumn, oData) {
-               var container = jQuery('<div class="row" />')
-               var divSubmit = jQuery('<div class="submit" />')
-               var submitButton = jQuery('<input type="submit" value="Assign" />')
+            var myButtonFormatter = function (elCell, oRecord, oCollumn, oData) {
+                var container = jQuery('<div class="row" />')
+                var divSubmit = jQuery('<div class="submit" />')
+                var submitButton = jQuery('<input type="submit" value="Assign" />')
 
-               divSubmit.append(submitButton);
-               container.append(divSubmit);
-                    
+                divSubmit.append(submitButton);
+                container.append(divSubmit);
 
-               jQuery(elCell).append(container);
-               YAHOO.util.Event.addListener( submitButton, "click", myClickHandler, oRecord);
-           }
+
+                jQuery(elCell).append(container);
+                YAHOO.util.Event.addListener( submitButton, "click", myClickHandler, oRecord);
+            }
 
             var myClickHandler = function(event, oRecord){
                 event.stop();
@@ -203,6 +182,7 @@
 
                 container.append(divRow1)
                 container.append(divRow2)
+
                 for (var i = 0; i < secondaryIds.length; i++) {
                     var input3 = jQuery('<input class="radio" type="radio" name="group" value="' + secondaryIds[i].value + '">');
                     YAHOO.util.Event.addListener( input3, "click", function(e){
@@ -235,180 +215,166 @@
                 container.append(divRowForButton)
                 LB.Lightbox.activate();
 
-
                 YAHOO.util.Event.addListener( cancelButton, "click", function(e){
                     e.stop()
                     LB.Lightbox.deactivate()
                 });
 
                 YAHOO.util.Event.addListener( submitButton, "click", processNewIdentifier, oRecord);
-
             };
 
 
-         var secondaryIdentifierFormatter = function (elCell, oRecord, oColumn, oData) {
-            var container = jQuery('<div class="secondaryIdDiv"/>');
-            var list = container.append('<ul class="myUl"/>')
-            var text = "";
-            var identifiers = oRecord.getData('secondary_identifiers'), identifier = undefined, i = 0;
-            if (identifiers.length>3) {
-                for (i =0; i <3; i++) {
-                    var listItem1 = jQuery('<li class="myLi show" />');
-                    var type1 = identifiers[i].type;
-                    var value1 = identifiers[i].value;
-                    text = type1 + " : " + value1;
-                    listItem1.text(text)
-                    list.append(listItem1);
-                }
-                for (i = 3; i <identifiers.length; i++) {
-                    var listItem2 = jQuery('<li class="myLi hide" />');
-                    var type2 = identifiers[i].type;
-                    var value2 = identifiers[i].value;
-                    text = type2 + " : " + value2 ;
-                    listItem2.text(text)
-                    list.append(listItem2);
-                }
-            } else {
-                for (i = 0; i <identifiers.length; i++) {
-                    var listItem3 = jQuery('<li class="myLi show" />');
-                    var type3 = identifiers[i].type;
-                    var value3 = identifiers[i].value;
-                    text = type3 + " : " + value3 ;
-                    listItem3.text(text)
-                    list.append(listItem3);
-                }
-            }
-
-            jQuery('.hide').hide() 
-
-            if (identifiers.length >3) {
-                var showMoreLink = jQuery('<a class="more"/>').attr('href', '#').text('More').click(function (evt) {
-                   var elt = $(evt.target);
-                   var parent = jQuery(elt.up());  //gives us div element
-                    var arrayOfHiddenSecondaryIds = parent.children('.hide');
-                   if (parent.children('.hide')[0].style.display == 'none'){
-                       for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
-                           arrayOfHiddenSecondaryIds[i].show();
-                       }
-                       parent.children('.more')[0].innerHTML = 'Less';
-                   } else {
-                       for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
-                           arrayOfHiddenSecondaryIds[i].hide();
-                       }
-                       parent.children('.more')[0].innerHTML = 'More';
-                   }
-               });
-
-               container.append(showMoreLink)
-            }
-            jQuery(elCell).append(container);
-        };
-
-
-           // Override the built-in formatter
-	        var longTitleFormatter = function(elCell, oRecord, oColumn, oData) {
-                var title = oRecord.getData('long_title');
-                var partOfTitle;
-                if (title.length > 100) {
-                    partOfTitle = title.substr(0, 100)+ "... ";
+            var secondaryIdentifierFormatter = function (elCell, oRecord, oColumn, oData) {
+                var container = jQuery('<div class="secondaryIdDiv"/>');
+                var list = container.append('<ul class="myUl"/>')
+                var text = "";
+                var identifiers = oRecord.getData('secondary_identifiers'), identifier = undefined, i = 0;
+                if (identifiers.length>3) {
+                    for (i =0; i <3; i++) {
+                        var listItem1 = jQuery('<li class="myLi show" />');
+                        var type1 = identifiers[i].type;
+                        var value1 = identifiers[i].value;
+                        text = type1 + " : " + value1;
+                        listItem1.text(text)
+                        list.append(listItem1);
+                    }
+                    for (i = 3; i <identifiers.length; i++) {
+                        var listItem2 = jQuery('<li class="myLi hide" />');
+                        var type2 = identifiers[i].type;
+                        var value2 = identifiers[i].value;
+                        text = type2 + " : " + value2 ;
+                        listItem2.text(text)
+                        list.append(listItem2);
+                    }
                 } else {
-                    partOfTitle = title;
+                    for (i = 0; i <identifiers.length; i++) {
+                        var listItem3 = jQuery('<li class="myLi show" />');
+                        var type3 = identifiers[i].type;
+                        var value3 = identifiers[i].value;
+                        text = type3 + " : " + value3 ;
+                        listItem3.text(text)
+                        list.append(listItem3);
+                    }
                 }
-               title = title + " ";
-               var spanShortTitle = jQuery('<span class="short"/>').text(partOfTitle);
-               var spanLongTitle = jQuery('<span class="long"/>').text(title);
+
+                jQuery('.hide').hide();
+
+                if (identifiers.length >3) {
+                    var showMoreLink = jQuery('<a class="more"/>').attr('href', '#').text('More').click(function (evt) {
+                        var elt = $(evt.target);
+                        var parent = jQuery(elt.up());  //gives us div element
+                        var arrayOfHiddenSecondaryIds = parent.children('.hide');
+
+                        if (parent.children('.hide')[0].style.display == 'none'){
+                            for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
+                                arrayOfHiddenSecondaryIds[i].show();
+                            }
+                            parent.children('.more')[0].innerHTML = 'Less';
+                        } else {
+                            for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
+                                arrayOfHiddenSecondaryIds[i].hide();
+                            }
+                            parent.children('.more')[0].innerHTML = 'More';
+                        }
+                    });
+
+                    container.append(showMoreLink)
+                }
+                jQuery(elCell).append(container);
+            };
 
 
-               jQuery(elCell).append(spanShortTitle);
-               jQuery(elCell).append(spanLongTitle);
-               jQuery('.long').hide();
+            // Override the built-in formatter
+            var longTitleFormatter = function(elCell, oRecord, oColumn, oData) {
+                var title = oRecord.getData('long_title') + " ";
+                var partOfTitle = title.substr(0, 100)+ "... "
+                var spanShortTitle = jQuery('<span class="short"/>').text(partOfTitle);
+                var spanLongTitle = jQuery('<span class="long" style="display: none;"/>').text(title);
 
-               var showMoreLink = jQuery('<a class="more"/>').attr('href', '#').text('More').click(function (evt) {
-                   var elt = $(evt.target);
-                   var parent = jQuery(elt.up());//gives us div element
-                   if (parent.children('.short')[0].style.display == 'none'){
-                     parent.children('.short')[0].show();
-                     parent.children('.long')[0].hide();
-                     parent.children('.more')[0].innerHTML = 'More';
-                   } else {
-                       parent.children('.short')[0].hide();
-                       parent.children('.long')[0].show();
-                       parent.children('.more')[0].innerHTML = 'Less';
-                   }
+                jQuery(elCell).append(spanShortTitle);
+                jQuery(elCell).append(spanLongTitle);
 
-               });
+                var showMoreLink = jQuery('<a class="more"/>').attr('href', '#').text('More').click(function (evt) {
+                    var elt = $(evt.target);
+                    var parent = jQuery(elt.up());//gives us div element
+                    if (parent.children('.short')[0].style.display == 'none'){
+                        parent.children('.short')[0].show();
+                        parent.children('.long')[0].hide();
+                        parent.children('.more')[0].innerHTML = 'More';
+                    } else {
+                        parent.children('.short')[0].hide();
+                        parent.children('.long')[0].show();
+                        parent.children('.more')[0].innerHTML = 'Less';
+                    }
+                });
+                jQuery(elCell).append(showMoreLink);
+            };
+        }
 
-               jQuery(elCell).append(showMoreLink);
-	        };
+        function processNewIdentifier(evt, oRecord){
+            evt.stop()
+            LB.Lightbox.deactivate()
+            var inputs = $('edit-notes-lightbox').getElementsByClassName('radio')
+            var value;
+            for (var i=0; i<inputs.length; i++) {
+                if (inputs[i].checked) {
+                    value = inputs[i].value
+                }
+            }
 
-       }
+            var uri = SC.relativeUri("/api/v1/studies/${study.assignedIdentifier}/template")
 
-       function processNewIdentifier(evt, oRecord){
-           evt.stop()
-           LB.Lightbox.deactivate()
-           var inputs = $('edit-notes-lightbox').getElementsByClassName('radio')
-           var value;
-           for (var i=0; i<inputs.length; i++) {
-               if (inputs[i].checked) {
-                   value = inputs[i].value
-               }
-           }
-
-           var uri = SC.relativeUri("/api/v1/studies/${study.assignedIdentifier}/template")
-
-           var params = {};
-           SC.asyncRequest(uri, {
+            SC.asyncRequest(uri, {
                 method: "GET", onSuccess: function(response) {
                     var xmlDoc = response.responseXML
                     var xmlRoot = xmlDoc.getElementsByTagName('study').item(0)
                     var assignedIdentifierInXml = xmlRoot.getAttribute('assigned-identifier')
                     var providerInXml = xmlRoot.getAttribute('provider')
 
-                   xmlRoot.setAttribute('assigned-identifier', value)
-                   xmlRoot.setAttribute('provider', oRecord.getData('provider'))
+                    xmlRoot.setAttribute('assigned-identifier', value)
+                    xmlRoot.setAttribute('provider', oRecord.getData('provider'))
 
 
                     //remove elements
-                   var secIds = xmlDoc.getElementsByTagName('secondary-identifier')
-                   for (var i = 0; i < secIds.length; i++){
-                       xmlDoc.documentElement.removeChild(secIds[i])
-                   }
-                   var secondaryIds = oRecord.getData('secondary_identifiers');
-                   for (var j = 0; j< secondaryIds.length; j ++) {
-                       var secIdElt = xmlDoc.createElement('secondary-identifier')
-                       secIdElt.setAttribute('type', secondaryIds[i].type)
-                       secIdElt.setAttribute('value', secondaryIds[i].value)
-                       xmlRoot.appendChild(secIdElt);
-                   }
+                    var secIds = xmlDoc.getElementsByTagName('secondary-identifier')
+                    for (var i = 0; i < secIds.length; i++){
+                        xmlDoc.documentElement.removeChild(secIds[i])
+                    }
+                    var secondaryIds = oRecord.getData('secondary_identifiers');
+                    for (var j = 0; j< secondaryIds.length; j ++) {
+                        var secIdElt = xmlDoc.createElement('secondary-identifier')
+                        secIdElt.setAttribute('type', secondaryIds[i].type)
+                        secIdElt.setAttribute('value', secondaryIds[i].value)
+                        xmlRoot.appendChild(secIdElt);
+                    }
 
-                   var titleEltInXml = xmlDoc.getElementsByTagName('long-title').item(0);
-                   if (titleEltInXml != null) {
-                    xmlDoc.documentElement.removeChild(titleEltInXml)
-                   }
+                    var titleEltInXml = xmlDoc.getElementsByTagName('long-title').item(0);
+                    if (titleEltInXml != null) {
+                        xmlDoc.documentElement.removeChild(titleEltInXml)
+                    }
 
-                   var titleElt = xmlDoc.createElement('long-title');
-                   var titleFromRecord = oRecord.getData('long_title')
-                   var newTextElt=xmlDoc.createTextNode(titleFromRecord);
+                    var titleElt = xmlDoc.createElement('long-title');
+                    var titleFromRecord = oRecord.getData('long_title')
+                    var newTextElt=xmlDoc.createTextNode(titleFromRecord);
 
-                   titleElt.appendChild(newTextElt);
-                   xmlRoot.appendChild(titleElt)
+                    titleElt.appendChild(newTextElt);
+                    xmlRoot.appendChild(titleElt)
 
-                   jQuery.ajax({
-                       url:uri,
-                       processData: false,
-                       type: 'PUT',
-                       contentType: 'text/xml',
-                       data: XML.serialize(xmlRoot),
-                       success :function() {
-                           window.location = SC.relativeUri("/pages/cal/template?study="+${study.id})
-                       }
-                   })
+                    jQuery.ajax({
+                        url:uri,
+                        processData: false,
+                        type: 'PUT',
+                        contentType: 'text/xml',
+                        data: XML.serialize(xmlRoot),
+                        success :function() {
+                            window.location = SC.relativeUri("/pages/cal/template?study="+${study.id})
+                        }
+                    })
+                }
+            })
+        }
 
-               }
-           })
-       }
-
-       XML.serialize = function(node) {
+        XML.serialize = function(node) {
             if (typeof XMLSerializer != "undefined")
                 return (new XMLSerializer()).serializeToString(node) ;
             else if (node.xml) return node.xml;
