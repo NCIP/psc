@@ -82,6 +82,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty</value>
 
                 <value>edu.northwestern.bioinformatics.studycalendar.configuration.AuthenticationSystemConfigurationEntry</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.configuration.OsgiConfigurationProperty</value>
             </list>
         </property>
 
@@ -211,6 +212,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
     <bean id="storedAuthenticationSystemConfiguration" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.configuration.StoredAuthenticationSystemConfiguration"/>
+    <bean id="pscFelixPersistenceManager" parent="daoTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.configuration.PscFelixPersistenceManager"/>
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 

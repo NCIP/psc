@@ -391,7 +391,7 @@ define "psc" do
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
-      QUARTZ, SECURITY, OSGI, SLF4J.jcl,
+      QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target,
@@ -497,7 +497,7 @@ define "psc" do
         "edu.northwestern.bioinformatics.studycalendar.domain"
 
       compile.with project('utility').and_dependencies,
-        project('authentication:acegi'), SECURITY.acegi, OSGI
+        project('authentication:acegi'), SECURITY.acegi, OSGI, FELIX.configadmin
       test.using(:junit).with UNIT_TESTING,
         project('domain').and_dependencies, project('domain').test_dependencies
 

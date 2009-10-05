@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,6 @@ import java.util.Map;
 
 /**
  * Bridge between the OSGi layer and beans initialized in the host application context.
- * There is an instance
  *
  * @author Rhett Sutphin
  */
@@ -28,7 +28,7 @@ public class HostBeansImpl implements HostBeans {
     private static final Logger log = LoggerFactory.getLogger(HostBeansImpl.class);
 
     private static final Collection<Class<?>> EXPOSED_BEANS = Arrays.asList(
-        DataSource.class, PscUserDetailsService.class
+        DataSource.class, PscUserDetailsService.class, PersistenceManager.class
     );
 
     private Map<Class<?>, DeferredBeanInvoker> invokers;
@@ -65,6 +65,10 @@ public class HostBeansImpl implements HostBeans {
 
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
         invokers.get(PscUserDetailsService.class).setBean(userDetailsService);
+    }
+
+    public void setPersistenceManager(PersistenceManager persistenceManager) {
+        invokers.get(PersistenceManager.class).setBean(persistenceManager);
     }
 
     private static class DeferredBeanInvoker implements InvocationHandler {

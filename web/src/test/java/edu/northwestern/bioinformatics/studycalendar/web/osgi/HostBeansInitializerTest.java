@@ -4,7 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
-import static org.easymock.EasyMock.expect;
+import org.apache.felix.cm.PersistenceManager;
+import static org.easymock.EasyMock.*;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
@@ -50,6 +51,18 @@ public class HostBeansInitializerTest extends StudyCalendarTestCase {
 
         expectGetHostBeansFromBundleContext();
         hostBeans.setPscUserDetailsService(uds); // expect
+
+        replayMocks();
+        initializer.afterPropertiesSet();
+        verifyMocks();
+    }
+
+    public void testPersistenceManagerPassedOnOnInit() throws Exception {
+        PersistenceManager pm = registerMockFor(PersistenceManager.class);
+        initializer.setPersistenceManager(pm);
+
+        expectGetHostBeansFromBundleContext();
+        /* expect */ hostBeans.setPersistenceManager(pm);
 
         replayMocks();
         initializer.afterPropertiesSet();

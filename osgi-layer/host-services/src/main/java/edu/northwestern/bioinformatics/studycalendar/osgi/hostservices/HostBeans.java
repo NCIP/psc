@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices;
 
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import org.apache.felix.cm.PersistenceManager;
 
 import javax.sql.DataSource;
 
@@ -10,4 +11,5 @@ import javax.sql.DataSource;
 public interface HostBeans {
     void setDataSource(DataSource dataSource);
     void setPscUserDetailsService(PscUserDetailsService userDetailsService);
+    void setPersistenceManager(PersistenceManager persistenceManager);
 }

@@ -7,7 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetai
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UserDetailsService;
-import static org.easymock.EasyMock.expect;
+import org.apache.felix.cm.PersistenceManager;
+import static org.easymock.EasyMock.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
@@ -15,6 +16,7 @@ import org.springframework.osgi.mock.MockBundleContext;
 import javax.sql.DataSource;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -28,6 +30,7 @@ public class HostBeansImplTest extends TestCase {
     private HostBeansImpl impl;
     private DataSource dataSource;
     private PscUserDetailsService pscUserDetailsService;
+    private PersistenceManager persistenceManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -47,6 +50,7 @@ public class HostBeansImplTest extends TestCase {
         impl.registerServices(bundleContext);
         dataSource = mockRegistry.registerMockFor(DataSource.class);
         pscUserDetailsService = mockRegistry.registerMockFor(PscUserDetailsService.class);
+        persistenceManager = mockRegistry.registerMockFor(PersistenceManager.class);
     }
 
     public void testProxyServiceRegisteredForDataSource() throws Exception {
@@ -95,6 +99,17 @@ public class HostBeansImplTest extends TestCase {
         expect(pscUserDetailsService.loadUserByUsername("joe")).andReturn(expectedUser);
         mockRegistry.replayMocks();
         assertSame(expectedUser, actual.loadUserByUsername("joe"));
+        mockRegistry.verifyMocks();
+    }
+
+    public void testPersistenceManagerDelegatesToPersistenceManagerBean() throws Exception {
+        PersistenceManager actual = (PersistenceManager) registeredServices.get(PersistenceManager.class.getName());
+        impl.setPersistenceManager(persistenceManager);
+
+        Dictionary expected = new Hashtable();
+        expect(persistenceManager.load("abc")).andReturn(expected);
+        mockRegistry.replayMocks();
+        assertSame(expected, actual.load("abc"));
         mockRegistry.verifyMocks();
     }
 }

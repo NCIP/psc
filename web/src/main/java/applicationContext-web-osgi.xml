@@ -15,6 +15,7 @@
         <property name="membrane" ref="membrane"/>
         <property name="dataSource" ref="dataSource"/>
         <property name="pscUserDetailsService" ref="pscUserDetailsService"/>
+        <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
     </bean>
 
     <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem">

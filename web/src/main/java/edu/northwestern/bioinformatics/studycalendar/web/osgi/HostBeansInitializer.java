@@ -7,6 +7,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.apache.felix.cm.PersistenceManager;
 
 import javax.sql.DataSource;
 
@@ -21,6 +22,7 @@ public class HostBeansInitializer implements InitializingBean {
 
     private DataSource dataSource;
     private PscUserDetailsService userDetailsService;
+    private PersistenceManager persistenceManager;
 
     public void afterPropertiesSet() throws Exception {
         ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
@@ -28,6 +30,7 @@ public class HostBeansInitializer implements InitializingBean {
             HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
             beans.setDataSource(dataSource);
             beans.setPscUserDetailsService(userDetailsService);
+            beans.setPersistenceManager(persistenceManager);
         }
     }
 
@@ -53,5 +56,10 @@ public class HostBeansInitializer implements InitializingBean {
     @Required
     public void setPscUserDetailsService(PscUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    @Required
+    public void setPersistenceManager(PersistenceManager persistenceManager) {
+        this.persistenceManager = persistenceManager;
     }
 }
