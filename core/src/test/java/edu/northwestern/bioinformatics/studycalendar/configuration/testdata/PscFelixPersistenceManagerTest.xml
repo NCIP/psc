@@ -1,30 +1,30 @@
 <dataset>
     <osgi_cm_properties
-        id="1"
+        id="-1"
         service_pid="edu.nwu.psc.words"
         name="letters"
         collection_kind="ARRAY"
         kind="char"/>
-    <osgi_cm_property_values list_index="0" property_id="1" value="a"/>
-    <osgi_cm_property_values list_index="1" property_id="1" value="e"/>
-    <osgi_cm_property_values list_index="2" property_id="1" value="i"/>
-    <osgi_cm_property_values list_index="3" property_id="1" value="o"/>
-    <osgi_cm_property_values list_index="4" property_id="1" value="u"/>
-    <osgi_cm_property_values list_index="5" property_id="1" value="y"/>
+    <osgi_cm_property_values list_index="0" property_id="-1" value="a"/>
+    <osgi_cm_property_values list_index="1" property_id="-1" value="e"/>
+    <osgi_cm_property_values list_index="2" property_id="-1" value="i"/>
+    <osgi_cm_property_values list_index="3" property_id="-1" value="o"/>
+    <osgi_cm_property_values list_index="4" property_id="-1" value="u"/>
+    <osgi_cm_property_values list_index="5" property_id="-1" value="y"/>
 
     <osgi_cm_properties
-        id="2"
+        id="-2"
         service_pid="edu.nwu.psc.words"
         name="favorite"
         collection_kind="SINGLE"
         kind="String"/>
-    <osgi_cm_property_values property_id="2" value="godspeed"/>
+    <osgi_cm_property_values property_id="-2" value="godspeed"/>
 
     <osgi_cm_properties
-        id="100"
+        id="-100"
         service_pid="edu.nwu.psc.thoughts"
         name="count"
         collection_kind="SINGLE"
         kind="Long"/>
-    <osgi_cm_property_values property_id="100" value="6"/>
+    <osgi_cm_property_values property_id="-100" value="6"/>
 </dataset>
