@@ -19,6 +19,6 @@ class AddOsgiCmPersistence extends edu.northwestern.bioinformatics.bering.Migrat
 
     void down() {
         dropTable("osgi_cm_property_values");
-        dropTable("osgi_cm_properties");
+        dropTable("osgi_cm_properties", primaryKey: false);
     }
 }
