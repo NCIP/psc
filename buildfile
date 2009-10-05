@@ -1,3 +1,6 @@
+ENV['JAVA_OPTS'] ||= "-Xmx512M -XX:MaxPermSize=256M -Dcom.sun.management.jmxremote"
+puts "Using JAVA_OPTS=#{ENV['JAVA_OPTS'].inspect}"
+
 require "buildr"
 require "buildr/jetty"
 require "buildr/emma" if emma?
