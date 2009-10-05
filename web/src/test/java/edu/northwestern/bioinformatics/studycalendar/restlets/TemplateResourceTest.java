@@ -15,6 +15,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.data.Method;
 import org.restlet.resource.InputRepresentation;
 
 import java.io.InputStream;
@@ -67,12 +68,14 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testGetAndPutAllowed() throws Exception {
+        request.setMethod(Method.PUT);
         replayMocks();
         assertAllowedMethods("GET", "PUT");
     }
 
     public void testGetReturnsXml() throws Exception {
         expectSuccessfulStudyLoad();
+        expectStudyFilledOut();
         expectObjectXmlized(fullStudy);
 
         doGet();
@@ -107,10 +110,13 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testPutExistingXml() throws Exception {
+        Study updatedStudy = new Study();
+
         expectSuccessfulStudyLoad();
         InputStream in = expectPutEntity();
-        expect(importTemplateService.readAndSaveTemplate(study, in)).andReturn(study);
-        expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
+        expect(importTemplateService.readAndSaveTemplate(study, in)).andReturn(updatedStudy);
+        expect(studyService.getCompleteTemplateHistory(updatedStudy)).andReturn(fullStudy);
+        expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 
         doPut();
 
@@ -124,7 +130,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
         InputStream in = expectPutEntity();
         expect(importTemplateService.readAndSaveTemplate(null, in)).andReturn(study);
-        expect(studyXmlSerializer.createDocumentString(study)).andReturn(MOCK_XML);
+        expectStudyFilledOut();
+        expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 
         doPut();
 
@@ -159,7 +166,6 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     private void expectSuccessfulStudyLoad() {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expectStudyFilledOut();
     }
 
     private void expectStudyFilledOut() {

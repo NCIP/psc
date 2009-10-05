@@ -57,20 +57,20 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         if (base == null) {
             base = studyDao.getByGridId(studyIdent);
         }
-        if (base != null) {
+        if (base != null && request.getMethod().equals(Method.GET)) {
             return studyService.getCompleteTemplateHistory(base);
-        } else {
-            return base;
         }
+        return base;
     }
 
     @Override public boolean allowPut() { return true; }
 
     @Override
     public void storeRepresentation(Representation entity) throws ResourceException {
-        Study study;
+        Study out;
         try {
-            study = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
+            Study imported = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
+            out = studyService.getCompleteTemplateHistory(imported);
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
             throw new ResourceException(e);
@@ -78,7 +78,7 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
             log.error("Error PUTting study", e);
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
-        getResponse().setEntity(createXmlRepresentation(study));
+        getResponse().setEntity(createXmlRepresentation(out));
         if (getRequestedObject() == null) {
             getResponse().setStatus(Status.SUCCESS_CREATED);
         } else {
