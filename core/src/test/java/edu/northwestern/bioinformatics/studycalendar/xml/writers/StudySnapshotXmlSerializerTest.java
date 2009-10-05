@@ -115,7 +115,7 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element eltStudy = createElement("study");
         eltStudy.addAttribute("assigned-identifier", "Id1");
         Element eltLongTitle = DocumentHelper.createElement("long-title");
-        eltLongTitle.addText("study\n long\t title");
+        eltLongTitle.addText("\n  study\n long\t title\n  ");
         eltStudy.add(eltLongTitle);
         replayMocks();
 

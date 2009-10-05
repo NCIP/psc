@@ -163,7 +163,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementLongTitleWithNormalizeWhitespace() throws Exception {
         Element eltStudy = createStudyElement();
         Element eltLongTitle = DocumentHelper.createElement("long-title");
-        eltLongTitle.addText("study \nlong \ttitle");
+        eltLongTitle.addText("\n  study \nlong \ttitle\r  ");
         eltStudy.add(eltLongTitle);
         expectDeserializeDataForNewElement();
         replayMocks();
