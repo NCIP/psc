@@ -241,6 +241,9 @@
 
     <bean name="/cal/template/externalStudy" id="externalStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ExternalStudyController">
+        <property name="crumb.parent">
+            <ref local="displayTemplateController"/>
+        </property>
     </bean>
 
     <bean name="/dashboard/systemAdmin" id="dashboardSystemAdminController" autowire="byName"
