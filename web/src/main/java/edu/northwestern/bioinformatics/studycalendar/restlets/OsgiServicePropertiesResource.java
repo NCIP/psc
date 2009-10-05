@@ -117,7 +117,9 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
             } catch (NumberFormatException nfe) {
                 // PID is the only possibility
             }
-            for (ServiceReference reference : getBundle().getRegisteredServices()) {
+            ServiceReference[] refs = getBundle().getRegisteredServices();
+            if (refs == null) throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No services for bundle");
+            for (ServiceReference reference : refs) {
                 if (ident.equals(reference.getProperty(Constants.SERVICE_PID))) {
                     serviceReference = reference;
                     break;

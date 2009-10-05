@@ -69,6 +69,11 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid bundle ID foo");
     }
 
+    public void test404ForBundleWithoutServices() throws Exception {
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND, "No services for bundle");
+    }
+
     public void testGetForKnownServiceById() throws Exception {
         UriTemplateParameters.SERVICE_IDENTIFIER.putIn(request, "66");
         expectService(propBuilder().put(Constants.SERVICE_ID, 60L).put("prop", "A"));
