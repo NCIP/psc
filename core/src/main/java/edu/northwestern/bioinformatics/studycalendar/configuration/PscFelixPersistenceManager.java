@@ -88,6 +88,7 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
         }
     }
 
+    @Transactional(readOnly = false)
     public void delete(final String pid) throws IOException {
         // bulk delete doesn't cascade for some reason
         getHibernateTemplate().deleteAll(getProperties(pid));
