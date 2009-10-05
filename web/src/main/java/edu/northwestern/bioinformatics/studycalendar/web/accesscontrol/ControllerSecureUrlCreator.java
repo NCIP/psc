@@ -55,7 +55,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         String serviceInTargetBundle = FilterSecurityInterceptorConfigurer.class.getName();
         String servicePid = FilterSecurityInterceptorConfigurer.SERVICE_PID;
 
-        osgiLayerTools.updateConfiguration(upd, servicePid, serviceInTargetBundle);
+        osgiLayerTools.updateConfiguration(upd, servicePid);
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

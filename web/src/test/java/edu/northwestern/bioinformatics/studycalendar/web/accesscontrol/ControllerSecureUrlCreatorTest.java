@@ -1,25 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
-import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
-import edu.northwestern.bioinformatics.studycalendar.web.osgi.TransparentMembrane;
 import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
-import static org.easymock.EasyMock.*;
 import org.easymock.classextension.EasyMock;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import static org.easymock.classextension.EasyMock.*;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.osgi.mock.MockBundle;
-import org.springframework.osgi.mock.MockServiceReference;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -38,32 +30,16 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
     private ControllerSecureUrlCreator creator;
     private DefaultListableBeanFactory beanFactory;
     private BeanNameControllerUrlResolver resolver;
-    private BundleContext bundleContext;
-    private ConfigurationAdmin configurationAdmin;
-    private Configuration osgiConfiguration;
     private OsgiLayerTools osgiLayerTools;
-
-    private static final MockBundle SOCKET_BUNDLE = new MockBundle("edu.northwestern.bioinformatics.psc-authentication-socket") {
-            @Override
-            public String getLocation() {
-                return "somewhere";
-            }
-        };
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        bundleContext = registerMockFor(BundleContext.class);
-        configurationAdmin = registerMockFor(ConfigurationAdmin.class);
-        osgiConfiguration = registerMockFor(Configuration.class);
-        expect(configurationAdmin.getConfiguration(FilterSecurityInterceptorConfigurer.SERVICE_PID, SOCKET_BUNDLE.getLocation())).
-            andStubReturn(osgiConfiguration);
-        osgiConfiguration.update((Dictionary) notNull());
+        osgiLayerTools = registerMockFor(OsgiLayerTools.class);
+        osgiLayerTools.updateConfiguration((Dictionary) notNull(),
+            eq(FilterSecurityInterceptorConfigurer.SERVICE_PID));
         expectLastCall().asStub();
-        osgiLayerTools = new OsgiLayerTools();
-        osgiLayerTools.setBundleContext(bundleContext);
-        osgiLayerTools.setMembrane(new TransparentMembrane());
 
         resolver = new BeanNameControllerUrlResolver();
         resolver.setServletName(PREFIX);
@@ -148,27 +124,17 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of groups: " + Arrays.asList(multiGroup), 2, multiGroup.length);
     }
 
-    public void testProcessingFailsIfConfigurationAdminServiceNotAvailable() throws Exception {
-        try {
-            doProcess(null);
-            fail("Exception not thrown");
-        } catch (StudyCalendarSystemException scse) {
-            assertEquals("OSGi CM service not available.  Unable to update edu.northwestern.bioinformatics.studycalendar.security.filter-security-configurer.",
-                scse.getMessage());
-        }
-    }
-
     public void testProcessingUpdatesConfigurationAtEnd() throws Exception {
         registerControllerBean("pear", SingleGroupController.class);
         registerControllerBean("pome", MultiGroupController.class);
-        EasyMock.reset(osgiConfiguration);
-        osgiConfiguration.update(new MapBasedDictionary(Collections.singletonMap(
+        EasyMock.reset(osgiLayerTools);
+        osgiLayerTools.updateConfiguration(new MapBasedDictionary(Collections.singletonMap(
             FilterSecurityInterceptorConfigurer.PATH_ROLE_MAP_KEY,
             new Vector(Arrays.asList(
                 "/prefix/pome/**|STUDY_COORDINATOR SUBJECT_COORDINATOR",
                 "/prefix/pear/**|STUDY_COORDINATOR"
             )
-        ))));
+        ))), FilterSecurityInterceptorConfigurer.SERVICE_PID);
         doProcess();
     }
 
@@ -205,19 +171,6 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
     }
 
     private void doProcess() {
-        doProcess(configurationAdmin);
-    }
-
-    private void doProcess(Object expectedCMService) {
-        ServiceReference cmSR = expectedCMService == null ? null : new MockServiceReference();
-        expect(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).
-            andReturn(expectedCMService == null ? null : cmSR);
-        if (cmSR != null) {
-            expect(bundleContext.getServiceReference(FilterSecurityInterceptorConfigurer.class.getName())).
-                andReturn(new MockServiceReference(SOCKET_BUNDLE));
-            expect(bundleContext.getService(cmSR)).andReturn(expectedCMService);
-        }
-
         replayMocks();
         resolver.postProcessBeanFactory(beanFactory);
         creator.postProcessBeanFactory(beanFactory);

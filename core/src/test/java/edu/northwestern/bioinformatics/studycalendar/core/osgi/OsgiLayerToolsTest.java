@@ -2,13 +2,21 @@ package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ManagedService;
+import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.List;
+import java.util.Hashtable;
 
 /**
  * @author Rhett Sutphin
@@ -116,7 +124,87 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
         assertEquals("Should be only one service", 1, actual.size());
         verifyMocks();
     }
+
+    public void testUpdateConfiguration() throws Exception {
+        MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
+        String expectedPid = "some-pid";
+
+        ConfigurationAdmin cm = expectGetConfigurationAdmin();
+
+        MockServiceReference sr1 = createServiceReferenceWithPid("some-other-pid");
+        MockServiceReference sr2 = createServiceReferenceWithPid(expectedPid);
+        expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).
+            andReturn(new ServiceReference[] { sr1, sr2 });
+
+        Configuration conf = registerMockFor(Configuration.class);
+        expect(cm.getConfiguration(expectedPid, sr2.getBundle().getLocation())).andReturn(conf);
+        /* expect */ conf.update(expectedDict);
+
+        replayMocks();
+        tools.updateConfiguration(expectedDict, expectedPid);
+        verifyMocks();
+    }
+
+    public void testUpdateConfigurationWithUnknownPid() throws Exception {
+        MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
+
+        expectConfigurationAdminAvailable();
+
+        MockServiceReference sr1 = createServiceReferenceWithPid("pid-1");
+        MockServiceReference sr2 = createServiceReferenceWithPid("pid-2");
+        expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).
+            andReturn(new ServiceReference[] { sr1, sr2 });
+
+        replayMocks();
+        tools.updateConfiguration(expectedDict, "unknown-pid");
+        verifyMocks();
+    }
+
+    public void testUpdateConfigurationWithNoManagedServices() throws Exception {
+        MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
+
+        expectConfigurationAdminAvailable();
+
+        expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).andReturn(null);
+
+        replayMocks();
+        tools.updateConfiguration(expectedDict, "unknown-pid");
+        verifyMocks();
+    }
     
+    public void testUpdateConfigurationWithoutConfigurationAdmin() throws Exception {
+        expect(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).andReturn(null);
+
+        replayMocks();
+        try {
+            tools.updateConfiguration(new Hashtable<Object, Object>(), "some-pid");
+            fail("exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("OSGi CM service not available.  Unable to update some-pid.", scse.getMessage());
+        }
+    }
+
+    private MockServiceReference createServiceReferenceWithPid(String pid) {
+        MockServiceReference sr1 = new MockServiceReference();
+        sr1.setProperties(new MapBuilder<String, String>().put(Constants.SERVICE_PID, pid).toDictionary());
+        ((MockBundle) sr1.getBundle()).setLocation("Bundle for " + pid);
+        return sr1;
+    }
+
+    private ConfigurationAdmin expectGetConfigurationAdmin() {
+        MockServiceReference cmRef = expectConfigurationAdminAvailable();
+        ConfigurationAdmin cm = registerMockFor(ConfigurationAdmin.class);
+        expect(bundleContext.getService(cmRef)).andReturn(cm);
+        expect(membrane.farToNear(cm)).andReturn(cm);
+        return cm;
+    }
+
+    private MockServiceReference expectConfigurationAdminAvailable() {
+        MockServiceReference cmRef = new MockServiceReference();
+        expect(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).andReturn(cmRef);
+        return cmRef;
+    }
+
     private void expectServiceAvailable(StringPermuter expectedFarService, StringPermuter expectedNearService) {
         ServiceReference expectedRef = new MockServiceReference();
         expect(bundleContext.getServiceReference(SERVICE_NAME)).andReturn(expectedRef);

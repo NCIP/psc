@@ -69,7 +69,7 @@ public class InstalledAuthenticationSystem extends FilterAdapter implements Init
         Dictionary<String,String> dict = noNulls(dictProps.getDictionary());
         log.debug("Updating authentication system configuration layer with {}", dict);
         osgiLayerTools.updateConfiguration(dict,
-            CompleteAuthenticationSystem.SERVICE_PID, CompleteAuthenticationSystem.class.getName());
+            CompleteAuthenticationSystem.SERVICE_PID);
         if (storedAuthenticationSystemConfiguration != props) {
             log.debug("Updating database-persistent authentication system configuration with {}",
                 dict);

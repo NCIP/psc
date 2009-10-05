@@ -7,8 +7,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,24 +30,43 @@ public class OsgiLayerTools {
     private Membrane membrane;
     private BundleContext bundleContext;
 
-    public void updateConfiguration(Dictionary<?, ?> newProps, String servicePid, String serviceInTargetBundle) {
+    public void updateConfiguration(Dictionary<?, ?> newProps, String servicePid) {
         ServiceReference cmRef = bundleContext.getServiceReference(ConfigurationAdmin.class.getName());
         if (cmRef == null) {
             throw new StudyCalendarSystemException(
                 "OSGi CM service not available.  Unable to update %s.", servicePid);
-        } else {
-            Bundle targetBundle = bundleContext.getServiceReference(serviceInTargetBundle).getBundle();
-            log.debug("Updating configuration for bundle {} at {}", targetBundle, targetBundle.getLocation());
-            ConfigurationAdmin cm = (ConfigurationAdmin) membrane.farToNear(bundleContext.getService(cmRef));
-            try {
-                Configuration targetConfig = cm.getConfiguration(servicePid, targetBundle.getLocation());
-                log.trace("Updating {} with {}", servicePid, newProps == null ? "<no properties>" : newProps);
-                targetConfig.update(newProps);
-            } catch (IOException e) {
-                throw new StudyCalendarSystemException(
-                    "I/O problem while acquiring configuration %s to update", servicePid, e);
-            }
         }
+        Bundle targetBundle = findBundleWithPid(servicePid);
+        if (targetBundle == null) {
+            log.warn("No managed service with PID {} is available to configure", servicePid);
+            return;
+        }
+        log.debug("Updating configuration for bundle {} at {}", targetBundle, targetBundle.getLocation());
+        ConfigurationAdmin cm = (ConfigurationAdmin) membrane.farToNear(bundleContext.getService(cmRef));
+        try {
+            Configuration targetConfig = cm.getConfiguration(servicePid, targetBundle.getLocation());
+            log.trace("Updating {} with {}", servicePid, newProps == null ? "<no properties>" : newProps);
+            targetConfig.update(newProps);
+        } catch (IOException e) {
+            throw new StudyCalendarSystemException(
+                "I/O problem while acquiring configuration %s to update", servicePid, e);
+        }
+    }
+
+    private Bundle findBundleWithPid(String servicePid) {
+        try {
+            ServiceReference[] refs = bundleContext.getServiceReferences(ManagedService.class.getName(), null);
+            if (refs != null) {
+                for (ServiceReference ref : refs) {
+                    if (servicePid.equals(ref.getProperty(Constants.SERVICE_PID))) {
+                        return ref.getBundle();
+                    }
+                }
+            }
+        } catch (InvalidSyntaxException e) {
+            throw new StudyCalendarError("Not possible -- no filter provided", e);
+        }
+        return null;
     }
 
     public <T> T getRequiredService(Class<T> serviceType) {
