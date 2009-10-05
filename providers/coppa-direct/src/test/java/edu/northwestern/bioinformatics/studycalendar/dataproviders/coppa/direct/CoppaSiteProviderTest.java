@@ -113,7 +113,7 @@ public class CoppaSiteProviderTest extends TestCase {
         org.setName(n);
 
         Id id = new Id();
-        id.setRoot(OrganizationIdentifier.ORGANIZATION_II_ROOT);
+        id.setRoot("ROOT");
         id.setExtension(iiValue);
         org.setIdentifier(id);
 
