@@ -1,22 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.OsgiBundleRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Bundle;
+import org.osgi.service.metatype.MetaTypeService;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -25,6 +25,7 @@ import java.util.Enumeration;
  */
 public class OsgiBundleResource extends OsgiAdminResource {
     private Integer bundleId;
+    private OsgiLayerTools osgiLayerTools;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -45,25 +46,27 @@ public class OsgiBundleResource extends OsgiAdminResource {
         }
 
         if (MediaType.APPLICATION_JSON.includes(variant.getMediaType())) {
-            return new JsonRepresentation(bundlesJson().toString());
+            return bundlesJson();
         } else {
             return null;
         }
     }
 
-    private Object bundlesJson() throws ResourceException {
+    private Representation bundlesJson() throws ResourceException {
         if (bundleId == null) {
-            JSONArray bundles = new JSONArray();
-            for (Bundle bundle : getBundles()) {
-                bundles.put(toJsonObject(bundle));
-            }
-            return bundles;
+            return OsgiBundleRepresentation.create(getBundleContext().getBundles(), getMetaTypeService());
         } else {
-            for (Bundle b : getBundles()) {
-                if (b.getBundleId() == bundleId) return toJsonObject(b);
+            for (Bundle b : getBundleContext().getBundles()) {
+                if (b.getBundleId() == bundleId) {
+                    return OsgiBundleRepresentation.create(b, getMetaTypeService());
+                }
             }
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
         }
+    }
+
+    private MetaTypeService getMetaTypeService() {
+        return osgiLayerTools.getRequiredService(MetaTypeService.class);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -90,14 +93,10 @@ public class OsgiBundleResource extends OsgiAdminResource {
         return obj;
     }
 
-    private Bundle[] getBundles() {
-        Bundle[] bundles = getBundleContext().getBundles();
-        Arrays.sort(bundles, new Comparator<Bundle>() {
-            public int compare(Bundle b1, Bundle b2) {
-                return (int) (b1.getBundleId() - b2.getBundleId());
-            }
-        });
-        return bundles;
-    }
+    ////// CONFIGURATION
 
+    @Required
+    public void setOsgiLayerTools(OsgiLayerTools osgiLayerTools) {
+        this.osgiLayerTools = osgiLayerTools;
+    }
 }

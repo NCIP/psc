@@ -34,9 +34,9 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
 
     private void writeStudyObject(JsonGenerator generator, Study study) throws IOException {
         generator.writeStartObject();
-        nullSafeWriteStringField(generator, "assigned_identifier", study.getAssignedIdentifier());
-        nullSafeWriteStringField(generator, "provider", study.getProvider());
-        nullSafeWriteStringField(generator, "long_title", study.getLongTitle());
+        JacksonTools.nullSafeWriteStringField(generator, "assigned_identifier", study.getAssignedIdentifier());
+        JacksonTools.nullSafeWriteStringField(generator, "provider", study.getProvider());
+        JacksonTools.nullSafeWriteStringField(generator, "long_title", study.getLongTitle());
         if (!study.getSecondaryIdentifiers().isEmpty()) {
             generator.writeFieldName("secondary_identifiers");
             generator.writeStartArray();
@@ -50,15 +50,9 @@ public class StudyListJsonRepresentation extends StreamingJsonRepresentation {
 
     private void writeSecondaryIdentifier(JsonGenerator g, StudySecondaryIdentifier identifier) throws IOException {
         g.writeStartObject();
-        nullSafeWriteStringField(g, "type", identifier.getType());
-        nullSafeWriteStringField(g, "value", identifier.getValue());
+        JacksonTools.nullSafeWriteStringField(g, "type", identifier.getType());
+        JacksonTools.nullSafeWriteStringField(g, "value", identifier.getValue());
         g.writeEndObject();
-    }
-
-    private void nullSafeWriteStringField(JsonGenerator g, String fieldName, String value) throws IOException {
-        if (value != null) {
-            g.writeStringField(fieldName, value);
-        }
     }
 
     public List<Study> getStudies() {

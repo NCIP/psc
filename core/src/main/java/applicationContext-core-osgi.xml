@@ -26,6 +26,7 @@
                 <value>org.acegisecurity.context</value>
                 <value>org.acegisecurity.userdetails</value>
                 <value>org.osgi.service.cm</value>
+                <value>org.osgi.service.metatype</value>
 
                 <value>javax.sql</value>
                 <value>javax.servlet</value>

@@ -1,14 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.test.osgi.PscMockBundle;
+import static org.easymock.classextension.EasyMock.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Bundle;
+import org.osgi.service.metatype.MetaTypeService;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.springframework.osgi.mock.MockBundle;
 import org.springframework.osgi.mock.MockBundleContext;
 
 import java.io.IOException;
@@ -18,45 +20,40 @@ import java.io.IOException;
  */
 public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundleResource> {
     private MockBundleContext bundleContext;
-    private static final Bundle[] BUNDLES = {
-        mockBundle(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0", null, null),
-        mockBundle(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility",
-            Bundle.ACTIVE, "2.5.1", null, null),
-        mockBundle(3, "org.slf4j.org.apache.commons.logging", Bundle.INSTALLED, "1.5.0", null, null),
-        mockBundle(4, "org.slf4j.org.apache.log4j", Bundle.INSTALLED, "1.5.0",
-            "Apache Log4j", "One of those loggers")
-    };
-
-    private static Bundle mockBundle(int id, final String symbolicName, final int mockState, String version, String name, String description) {
-        MockBundle bundle = new MockBundle(
-            new MapBuilder<String, Object>().
-                put("Bundle-Version", version).
-                put("Bundle-Name", name).
-                put("Bundle-Description", description).
-                toDictionary()
-        ) {
-            @Override public int getState() { return mockState; }
-            @Override public String getSymbolicName() { return symbolicName; }
-        };
-        bundle.setBundleId(id);
-        return bundle;
-    }
+    private MetaTypeService metaTypeService;
+    private PscMockBundle[] bundles;
+    private OsgiLayerTools osgiLayerTools;
 
     @Override
     protected OsgiBundleResource createAuthorizedResource() {
         OsgiBundleResource resource = new OsgiBundleResource();
         resource.setBundleContext(bundleContext);
+        resource.setOsgiLayerTools(osgiLayerTools);
         return resource;
     }
 
     @Override
     protected void setUp() throws Exception {
+        bundles = new PscMockBundle[] {
+            PscMockBundle.create(1, "org.slf4j.api", Bundle.RESOLVED, "1.5.0", null, null),
+            PscMockBundle.create(6, "edu.northwestern.bioinformatics.studycalendar.psc-utility",
+                Bundle.ACTIVE, "2.5.1", null, null),
+            PscMockBundle.create(3, "org.slf4j.org.apache.commons.logging", Bundle.INSTALLED, "1.5.0", null, null),
+            PscMockBundle.create(4, "org.slf4j.org.apache.log4j", Bundle.INSTALLED, "1.5.0",
+                "Apache Log4j", "One of those loggers")
+        };
         bundleContext = new MockBundleContext() {
             @Override
             public Bundle[] getBundles() {
-                return BUNDLES;
+                return bundles;
             }
         };
+
+        metaTypeService = registerMockFor(MetaTypeService.class);
+        expect(metaTypeService.getMetaTypeInformation((Bundle) notNull())).andStubReturn(null);
+        osgiLayerTools = registerMockFor(OsgiLayerTools.class);
+        expect(osgiLayerTools.getRequiredService(MetaTypeService.class)).andStubReturn(metaTypeService);
+
         super.setUp();
     }
 
@@ -69,7 +66,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
     }
 
     public void testGetReturnsArrayWithOneEntryPerBundle() throws Exception {
-        assertEquals(BUNDLES.length, getAndReturnEntityArray().length());
+        assertEquals(bundles.length, getAndReturnEntityArray().length());
     }
 
     public void testReturnedArrayEntryObjectsDescribeBundles() throws Exception {
@@ -112,7 +109,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
         assertEquals("Metadata is for wrong bundle", actual.get("id"), 6);
         assertEquals("Metadata is for wrong bundle", actual.get("state"), "ACTIVE");
     }
-    
+
     public void test404sForUnmatchedBundleId() throws Exception {
         UriTemplateParameters.BUNDLE_ID.putIn(request, "11");
         doGet();
