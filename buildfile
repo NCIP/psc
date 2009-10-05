@@ -793,6 +793,7 @@ define "psc" do
     test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
       project('authentication:socket').test_dependencies
+    test.using :java_args => [ '-Xmx512M', '-Dcom.sun.management.jmxremote' ]
 
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
