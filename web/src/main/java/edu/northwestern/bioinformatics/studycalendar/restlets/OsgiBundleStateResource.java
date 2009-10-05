@@ -24,9 +24,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class OsgiBundleStateResource extends OsgiAdminResource {
-    private Bundle bundle;
-
+public class OsgiBundleStateResource extends OsgiSingleBundleResource {
     private static List<Integer> STOPPED_STATES = Arrays.asList(Bundle.INSTALLED, Bundle.RESOLVED, Bundle.STOPPING);
     private static List<Integer> STARTED_STATES = Arrays.asList(Bundle.ACTIVE, Bundle.STARTING);
 
@@ -34,23 +32,6 @@ public class OsgiBundleStateResource extends OsgiAdminResource {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
-
-    }
-
-    protected synchronized Bundle getBundle() throws ResourceException {
-        if (bundle == null) {
-            String bundleId = UriTemplateParameters.BUNDLE_ID.extractFrom(getRequest());
-            try {
-                bundle = getBundleContext().getBundle(Long.parseLong(bundleId));
-            } catch (NumberFormatException nfe) {
-                throw new ResourceException(
-                    Status.CLIENT_ERROR_BAD_REQUEST, "Invalid bundle ID " + bundleId, nfe);
-            }
-            if (bundle == null) {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-            }
-        }
-        return bundle;
     }
 
     @Override public boolean allowPut() { return true; }

@@ -148,8 +148,6 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
     public void testUpdateConfigurationWithUnknownPid() throws Exception {
         MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
 
-        expectConfigurationAdminAvailable();
-
         MockServiceReference sr1 = createServiceReferenceWithPid("pid-1");
         MockServiceReference sr2 = createServiceReferenceWithPid("pid-2");
         expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).
@@ -163,8 +161,6 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
     public void testUpdateConfigurationWithNoManagedServices() throws Exception {
         MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
 
-        expectConfigurationAdminAvailable();
-
         expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).andReturn(null);
 
         replayMocks();
@@ -175,6 +171,10 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
     public void testUpdateConfigurationWithoutConfigurationAdmin() throws Exception {
         expect(bundleContext.getServiceReference(ConfigurationAdmin.class.getName())).andReturn(null);
 
+        MockServiceReference sr1 = createServiceReferenceWithPid("some-pid");
+        expect(bundleContext.getServiceReferences(ManagedService.class.getName(), null)).
+            andReturn(new ServiceReference[] { sr1 });
+
         replayMocks();
         try {
             tools.updateConfiguration(new Hashtable<Object, Object>(), "some-pid");
@@ -184,11 +184,25 @@ public class OsgiLayerToolsTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testUpdateConfigurationForBundle() throws Exception {
+        MapBasedDictionary<Object, Object> expectedDict = new MapBasedDictionary<Object, Object>();
+        ServiceReference sr = createServiceReferenceWithPid("pid-1");
+
+        ConfigurationAdmin cm = expectGetConfigurationAdmin();
+        Configuration conf = registerMockFor(Configuration.class);
+        expect(cm.getConfiguration("pid-1", sr.getBundle().getLocation())).andReturn(conf);
+        /* expect */ conf.update(expectedDict);
+
+        replayMocks();
+        tools.updateConfiguration(expectedDict, sr.getBundle(), "pid-1");
+        verifyMocks();
+    }
+
     private MockServiceReference createServiceReferenceWithPid(String pid) {
-        MockServiceReference sr1 = new MockServiceReference();
-        sr1.setProperties(new MapBuilder<String, String>().put(Constants.SERVICE_PID, pid).toDictionary());
-        ((MockBundle) sr1.getBundle()).setLocation("Bundle for " + pid);
-        return sr1;
+        MockServiceReference sr = new MockServiceReference();
+        sr.setProperties(new MapBuilder<String, String>().put(Constants.SERVICE_PID, pid).toDictionary());
+        ((MockBundle) sr.getBundle()).setLocation("Bundle for " + pid);
+        return sr;
     }
 
     private ConfigurationAdmin expectGetConfigurationAdmin() {

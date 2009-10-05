@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.representations.JacksonTools.*;
 import org.codehaus.jackson.JsonGenerationException;
@@ -18,10 +17,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Representation for one or many OSGi bundles.
@@ -103,7 +98,7 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
         }
         g.writeEndArray();
 
-        writeServiceProperties(g, ref);
+        OsgiRepresentationHelper.writeServiceProperties(g, "properties", ref);
 
         if (metaTypes != null) {
             String pid = (String) ref.getProperty(Constants.SERVICE_PID);
@@ -115,36 +110,6 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
             }
         }
 
-        g.writeEndObject();
-    }
-
-    private void writeServiceProperties(JsonGenerator g, ServiceReference ref) throws IOException {
-        String[] keys = ref.getPropertyKeys();
-        if (keys == null || keys.length == 0) return;
-        Arrays.sort(keys);
-        Map<String, Object> nestedKeys = nestKeys("", Arrays.asList(keys));
-        writeServicePropertiesObject(g, ref, "properties", nestedKeys);
-    }
-
-    private Map<String, Object> nestKeys(String prefix, List<String> keys) {
-        return new KeyNester(prefix, keys).nest();
-    }
-
-    @SuppressWarnings({ "ChainOfInstanceofChecks", "RawUseOfParameterizedType", "unchecked" })
-    private void writeServicePropertiesObject(
-        JsonGenerator g, ServiceReference ref, String key, Map<String, Object> keyStructure
-    ) throws IOException {
-        g.writeObjectFieldStart(key);
-        for (Map.Entry<String, Object> entry : keyStructure.entrySet()) {
-            if (entry.getValue() instanceof String) {
-                nullSafeWritePrimitiveField(g, entry.getKey(), ref.getProperty((String) entry.getValue()));
-            } else if (entry.getValue() instanceof Map) {
-                writeServicePropertiesObject(g, ref, entry.getKey(), (Map<String, Object>) entry.getValue());
-            } else {
-                throw new StudyCalendarError("Unexpected type in #nestKeys result: " +
-                    entry.getValue().getClass().getName());
-            }
-        }
         g.writeEndObject();
     }
 
@@ -207,48 +172,4 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
         return "unknown";
     }
 
-    // damn Java's lack of closures
-    private class KeyNester {
-        private String prefix;
-        private List<String> keys;
-
-        private String subprefix = null;
-        private List<String> subcollection = new LinkedList<String>();
-        private Map<String, Object> nest;
-
-        private KeyNester(String prefix, List<String> keys) {
-            this.prefix = prefix;
-            this.keys = keys;
-        }
-
-        public Map<String, Object> nest() {
-            nest = new LinkedHashMap<String, Object>();
-            for (String key : keys) {
-                if (key.indexOf('.') < 0) {
-                    completeSubMap();
-                    nest.put(key, prefix + key);
-                } else {
-                    String[] parts = key.split("\\.", 2);
-                    if (parts[0].equals(subprefix)) {
-                        subcollection.add(parts[1]);
-                    } else {
-                        completeSubMap();
-                        subprefix = parts[0];
-                        subcollection.add(parts[1]);
-                    }
-                }
-            }
-            completeSubMap();
-            return nest;
-        }
-
-        private void completeSubMap() {
-            if (subprefix != null) {
-                // append the now-complete previous subcollection
-                nest.put(subprefix, new KeyNester(prefix + subprefix + '.', subcollection).nest());
-            }
-            subcollection.clear();
-            subprefix = null;
-        }
-    }
 }

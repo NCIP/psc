@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 

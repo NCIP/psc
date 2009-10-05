@@ -913,58 +913,117 @@
                 </doc>
                 <param style="template" name="bundle-id">
                     <doc>
-                        <html:p>
-                            The deployed ID for the bundle in question.
-                            The <html:code>osgi/bundles</html:code>
-                            resource may be used to look up these IDs.
-                        </html:p>
+                        The deployed ID for the bundle in question.
+                        The <html:code>osgi/bundles</html:code>
+                        resource may be used to look up these IDs.
                     </doc>
                 </param>
                 <method name="GET">
+                    <doc>A single JSON object describing the bundle with the given ID.</doc>
                     <response>
-                        <doc>
-                            <html:p>
-                                A single JSON object describing the bundle
-                                with the given ID.
-                            </html:p>
-                        </doc>
                         <representation mediaType="application/json"/>
                     </response>
                 </method>
                 <resource path="state">
                     <method name="GET">
+                        <doc>
+                            An object with the key <html:code>state</html:code>
+                            and the value matching one of the six bundle
+                            state constant names defined by the OSGi
+                            <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                        </doc>
                         <response>
-                            <doc>
-                                <html:p>
-                                    An object with the key <html:code>state</html:code>
-                                    and the value matching one of the six bundle
-                                    state constant names defined by the OSGi
-                                    <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
-                                </html:p>
-                            </doc>
                             <representation mediaType="application/json"/>
                         </response>
                     </method>
                     <method name="PUT">
+                        <doc>
+                            <html:p>
+                                An object with the key <html:code>state</html:code>
+                                and the value matching one of the six bundle
+                                state constant names defined by the OSGi
+                                <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+                            </html:p>
+                            <html:p>
+                                Only setting a bundle to
+                                <html:code>STARTING</html:code> or
+                                <html:code>STOPPING</html:code> is supported.
+                            </html:p>
+                        </doc>
                         <request>
-                            <doc>
-                                <html:p>
-                                    An object with the key <html:code>state</html:code>
-                                    and the value matching one of the six bundle
-                                    state constant names defined by the OSGi
-                                    <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
-                                </html:p>
-                                <html:p>
-                                    Currently, only setting a bundle to
-                                    <html:code>STARTING</html:code> or
-                                    <html:code>STOPPING</html:code> is supported.
-                                </html:p>
-                            </doc>
                             <representation mediaType="application/json"/>
                         </request>
                     </method>
                 </resource>
-            </resource>
+                <resource path="services/{service-identifier}/properties">
+                    <param style="template" name="service-identifier">
+                        <doc>
+                            <html:p>
+                                Either the service's numeric ID (i.e., the OSGi
+                                <html:tt>service.id</html:tt> property) or its string PID
+                                (i.e., <html:tt>service.pid</html:tt>).
+                            </html:p>
+                        </doc>
+                    </param>
+                    <method name="GET">
+                        <doc>
+                            <html:p>
+                                An object representing the current properties
+                                for this service.  Period-separated heirarchical keys
+                                will result in nested objects.  E.g., properties like
+                                this:
+                            </html:p>
+                            <html:ul>
+                                <html:li>a.b.c =&gt; foo</html:li>
+                                <html:li>a.b.d =&gt; bar</html:li>
+                                <html:li>a.e =&gt; baz</html:li>
+                            </html:ul>
+                            <html:p>
+                                Will result in a representation like this:
+                            </html:p>
+                            <html:blockquote>
+                                { a: { b: { c: 'foo', d: 'bar' }, e: 'baz' }
+                            </html:blockquote>
+                        </doc>
+                        <response>
+                            <representation mediaType="application/json"/>
+                        </response>
+                    </method>
+                    <method name="PUT">
+                        <doc>
+                            <html:p>
+                                A representation of the desired state of the properties
+                                for this service.  OSGi reserved properties (i.e.,
+                                <html:tt>objectClass</html:tt>
+                                and <html:tt>service.*</html:tt>) will be ignored and may
+                                be omitted.  Period-separated hierarchical keys may be
+                                represented by nested objects (as the are returned with GET)
+                                or by flat keys.  If a flat key and a series of nested keys
+                                collide, the behavior of the resource is undefined.
+                            </html:p>
+                            <html:p>
+                                This method is only valid for services which are subject to the
+                                configuration admin service (i.e., ones which export the
+                                <html:tt>ManagedService</html:tt> interface).
+                            </html:p>
+                            <html:p>
+                                The response is a representation of the properties after immediately
+                                after the update is applied. OSGi services are not required to
+                                expose all (or any) of the properties that have been set on them, so
+                                this may not exactly reflect the input properties.  Also, since
+                                property updates are asynchronous, it may not expose the new
+                                values even if the service eventually will apply them.
+                            </html:p>
+                        </doc>
+                        <request>
+                            <representation mediaType="application/json"/>
+                        </request>
+                        <response>
+                            <representation mediaType="application/json"/>
+                        </response>
+                    </method>
+                </resource>
+            </resource> <!-- bundles -->
             <method name="GET">
                 <doc>
                     <html:p>

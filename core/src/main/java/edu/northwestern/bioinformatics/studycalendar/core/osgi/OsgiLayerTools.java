@@ -31,15 +31,19 @@ public class OsgiLayerTools {
     private BundleContext bundleContext;
 
     public void updateConfiguration(Dictionary<?, ?> newProps, String servicePid) {
-        ServiceReference cmRef = bundleContext.getServiceReference(ConfigurationAdmin.class.getName());
-        if (cmRef == null) {
-            throw new StudyCalendarSystemException(
-                "OSGi CM service not available.  Unable to update %s.", servicePid);
-        }
         Bundle targetBundle = findBundleWithPid(servicePid);
         if (targetBundle == null) {
             log.warn("No managed service with PID {} is available to configure", servicePid);
             return;
+        }
+        updateConfiguration(newProps, targetBundle, servicePid);
+    }
+
+    public void updateConfiguration(Dictionary<?, ?> newProps, Bundle targetBundle, String servicePid) {
+        ServiceReference cmRef = bundleContext.getServiceReference(ConfigurationAdmin.class.getName());
+        if (cmRef == null) {
+            throw new StudyCalendarSystemException(
+                "OSGi CM service not available.  Unable to update %s.", servicePid);
         }
         log.debug("Updating configuration for bundle {} at {}", targetBundle, targetBundle.getLocation());
         ConfigurationAdmin cm = (ConfigurationAdmin) membrane.farToNear(bundleContext.getService(cmRef));

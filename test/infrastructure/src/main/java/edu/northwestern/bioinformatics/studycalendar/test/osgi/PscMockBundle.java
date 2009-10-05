@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.test.osgi;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.mock.MockBundle;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
-
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 
 /**
  * @author Rhett Sutphin
@@ -17,6 +17,10 @@ public class PscMockBundle extends MockBundle {
     private int state;
     private String symbolicName;
     private List<ServiceReference> registeredServices;
+
+    public PscMockBundle() {
+        this(new MapBasedDictionary());
+    }
 
     public PscMockBundle(Dictionary headers) {
         super(headers);
