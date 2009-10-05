@@ -57,7 +57,6 @@ public class CoppaStudyProvider implements StudyProvider {
         return studies;
     }
 
-    // TODO: implement this
     public Study detect(Study param, Collection<Study> studies) {
         String extension = param.getSecondaryIdentifierValue("extension");
 
@@ -178,7 +177,7 @@ public class CoppaStudyProvider implements StudyProvider {
         }
     }
 
-    // TODO: StudySiteProvider might be a better place for this
+    // TODO: CoppaStudySiteProvider might be a better place for this
     private Id studyProtocolIdentifier(String extension) {
         Id id = new Id();
         id.setExtension(extension);
