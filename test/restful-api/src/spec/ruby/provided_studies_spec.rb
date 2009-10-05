@@ -2,7 +2,7 @@ describe "/provided-studies" do
   before do
     get "/osgi/bundles", :as => :zelda
     @bundles = response.json
-    installed = @bundles.find { |b| b['symbolic-name'] =~ /edu.northwestern.bioinformatics.psc-providers-mock/ }
+    installed = @bundles.find { |b| b['symbolic_name'] =~ /edu.northwestern.bioinformatics.psc-providers-mock/ }
     put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }", 
       :as => :zelda, 'Content-Type' => 'application/json'
   end

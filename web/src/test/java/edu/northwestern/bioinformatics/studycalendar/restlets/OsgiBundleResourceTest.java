@@ -77,7 +77,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
         assertTrue("Array does not contain JSON objects", actual.get(2) instanceof JSONObject);
         JSONObject bundle2 = (JSONObject) actual.get(2);
         assertEquals("Missing bundle ID", 4, bundle2.get("id"));
-        assertEquals("Missing symbolic name", "org.slf4j.org.apache.log4j", bundle2.get("symbolic-name"));
+        assertEquals("Missing symbolic name", "org.slf4j.org.apache.log4j", bundle2.get("symbolic_name"));
         assertEquals("Missing version", "1.5.0", bundle2.get("version"));
         assertEquals("Missing state", "INSTALLED", bundle2.get("state"));
         assertEquals("Missing name", "Apache Log4j", bundle2.get("name"));
@@ -146,7 +146,6 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
     private String getAndReturnText() throws IOException {
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
-        String text = response.getEntity().getText();
-        return text;
+        return response.getEntity().getText();
     }
 }

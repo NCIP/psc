@@ -33,6 +33,7 @@ public class OsgiBundleResource extends OsgiAdminResource {
     }
 
     @Override
+    @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Representation represent(Variant variant) throws ResourceException {
         String idStr = UriTemplateParameters.BUNDLE_ID.extractFrom(getRequest());
         if (idStr != null) {
@@ -69,7 +70,7 @@ public class OsgiBundleResource extends OsgiAdminResource {
     private JSONObject toJsonObject(Bundle bundle) {
         JSONObject obj = new JSONObject(new MapBuilder<String, Object>().
             put("id", bundle.getBundleId()).
-            put("symbolic-name", bundle.getSymbolicName()).
+            put("symbolic_name", bundle.getSymbolicName()).
             put("state", OsgiBundleState.valueOfConstant(bundle.getState()).name()).
             toMap()
         );

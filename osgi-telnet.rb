@@ -35,8 +35,8 @@ end
 new_state = ARGV.first
 
 bundles = JSON.parse(RestClient.get(psc_url('osgi/bundles'), :accept => '*/*'))
-telnet_bundles = bundles.select { |b| (b['symbolic-name'] =~ /consoletelnet/) || (b['symbolic-name'] =~ /shell.remote/) }
-raise "Telnet bundle not present: #{bundles.collect { |b| b['symbolic-name'] }.inspect}" if telnet_bundles.empty?
+telnet_bundles = bundles.select { |b| (b['symbolic_name'] =~ /consoletelnet/) || (b['symbolic_name'] =~ /shell.remote/) }
+raise "Telnet bundle not present: #{bundles.collect { |b| b['symbolic_name'] }.inspect}" if telnet_bundles.empty?
 telnet_bundles.each do |b|
   url = psc_url("osgi/bundles/#{b['id']}/state")
   result = 
@@ -45,5 +45,5 @@ telnet_bundles.each do |b|
     else
       RestClient.get(url, :accept => '*/*')
     end
-  puts "#{b['symbolic-name']}: #{result}"
+  puts "#{b['symbolic_name']}: #{result}"
 end

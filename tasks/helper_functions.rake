@@ -84,7 +84,7 @@ def start_bundle(symbolic_name)
   bundles = 
     begin
       JSON.parse(RestClient.get(psc_api_url('osgi/bundles'), :accept => '*/*')).
-        select { |b| symbolic_name === b['symbolic-name'] }
+        select { |b| symbolic_name === b['symbolic_name'] }
     rescue => e
       warn "Starting #{symbolic_name} failed: #{e}"
       e.backtrace.each { |l| trace "  #{l}" }

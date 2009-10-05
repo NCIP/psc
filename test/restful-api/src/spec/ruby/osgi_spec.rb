@@ -16,11 +16,11 @@ describe "/osgi/bundles" do
     end
     
     def slf4j_bundle
-      response.json.find { |b| b['symbolic-name'] == 'com.springsource.slf4j.api' }
+      response.json.find { |b| b['symbolic_name'] == 'com.springsource.slf4j.api' }
     end
     
     it "has a symbolic name in the bundle description" do
-      response.json.first['symbolic-name'].should_not be_nil
+      response.json.first['symbolic_name'].should_not be_nil
     end
     
     it "has an ID in the bundle description" do
@@ -92,7 +92,7 @@ describe "/osgi/bundles" do
     
       describe "PUT" do
         it "starts a non-started bundle" do
-          installed = @bundles.find { |b| b['symbolic-name'] =~ /felix.shell.remote/ }
+          installed = @bundles.find { |b| b['symbolic_name'] =~ /felix.shell.remote/ }
           installed.should_not be_nil
           installed['state'].should == 'INSTALLED'
           put "/osgi/bundles/#{installed['id']}/state", "{ state: STARTING }", 
@@ -102,7 +102,7 @@ describe "/osgi/bundles" do
         end
       
         it "stops a started bundle" do
-          active = @bundles.find { |b| b['symbolic-name'] =~ /websso-plugin/ }
+          active = @bundles.find { |b| b['symbolic_name'] =~ /websso-plugin/ }
           active.should_not be_nil
           active['state'].should == 'ACTIVE'
           put "/osgi/bundles/#{active['id']}/state", "{ state: STOPPING }", 
