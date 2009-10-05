@@ -5,7 +5,7 @@ class AddOsgiCmPersistence extends edu.northwestern.bioinformatics.bering.Migrat
             t.addColumn("service_pid", "string", limit: 1024)
             t.addColumn("name", "string", limit: 1024)
             t.addColumn("collection_kind", "string", limit: 10)
-            t.addColumn("kind", "string", limit: 8) // since "type" is reserved
+            t.addColumn("kind", "string", limit: 10) // since "type" is reserved
         }
 
         createTable("osgi_cm_property_values") { t ->
