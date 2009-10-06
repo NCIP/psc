@@ -507,6 +507,18 @@ define "psc" do
       package(:jar)
     end
 
+    desc "Routes from the OSGi Log Service to SLF4J"
+    define 'log-adapter' do
+      bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.log.Adapter"
+      bnd.name = "PSC OSGi Log to SLF4J Adapter"
+
+      compile.with project('utility').and_dependencies, OSGI
+
+      package(:jar)
+    end
+
     define "log4j-configuration" do
       bnd.wrap!
       bnd.name = "PSC OSGi Layer log4j Configuration"
