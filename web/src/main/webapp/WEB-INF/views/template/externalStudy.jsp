@@ -328,12 +328,26 @@
                 method: "GET", onSuccess: function(response) {
                     var xmlDoc = response.responseXML
                     var xmlRoot = xmlDoc.getElementsByTagName('study').item(0)
+                    var xmlNS = xmlRoot.getAttribute('xmlns')
+
                     var assignedIdentifierInXml = xmlRoot.getAttribute('assigned-identifier')
                     var providerInXml = xmlRoot.getAttribute('provider')
 
                     xmlRoot.setAttribute('assigned-identifier', value)
                     xmlRoot.setAttribute('provider', oRecord.getData('provider'))
 
+                    var plannedCalendarElt = xmlDoc.getElementsByTagName('planned-calendar')[0];
+
+                    var titleEltInXml = xmlDoc.getElementsByTagName('long-title').item(0);
+                    if (titleEltInXml != null) {
+                        xmlDoc.documentElement.removeChild(titleEltInXml)
+                    }
+
+                    var titleElt = xmlDoc.createElement('long-title');
+                    var titleFromRecord = oRecord.getData('long_title')
+                    var newTextElt=xmlDoc.createTextNode(titleFromRecord);
+                    titleElt.appendChild(newTextElt);
+                    xmlRoot.insertBefore(titleElt, plannedCalendarElt)
 
                     //remove elements
                     var secIds = xmlDoc.getElementsByTagName('secondary-identifier')
@@ -345,27 +359,18 @@
                         var secIdElt = xmlDoc.createElement('secondary-identifier')
                         secIdElt.setAttribute('type', secondaryIds[i].type)
                         secIdElt.setAttribute('value', secondaryIds[i].value)
-                        xmlRoot.appendChild(secIdElt);
+                        xmlRoot.insertBefore(secIdElt, plannedCalendarElt)
                     }
 
-                    var titleEltInXml = xmlDoc.getElementsByTagName('long-title').item(0);
-                    if (titleEltInXml != null) {
-                        xmlDoc.documentElement.removeChild(titleEltInXml)
-                    }
-
-                    var titleElt = xmlDoc.createElement('long-title');
-                    var titleFromRecord = oRecord.getData('long_title')
-                    var newTextElt=xmlDoc.createTextNode(titleFromRecord);
-
-                    titleElt.appendChild(newTextElt);
-                    xmlRoot.appendChild(titleElt)
+                    var stringXML = XML.serialize(xmlRoot)
+                    stringXML   = stringXML.replace(/\sxmlns=""/g, " xmlns=\"" + xmlNS + "\"");
 
                     jQuery.ajax({
                         url:uri,
                         processData: false,
                         type: 'PUT',
                         contentType: 'text/xml',
-                        data: XML.serialize(xmlRoot),
+                        data: stringXML,
                         success :function() {
                             window.location = SC.relativeUri("/pages/cal/template?study="+${study.id})
                         }
@@ -375,8 +380,9 @@
         }
 
         XML.serialize = function(node) {
-            if (typeof XMLSerializer != "undefined")
+            if (typeof XMLSerializer != "undefined") {
                 return (new XMLSerializer()).serializeToString(node) ;
+            }
             else if (node.xml) return node.xml;
             else throw "XML.serialize is not supported or can't serialize " + node;
         };

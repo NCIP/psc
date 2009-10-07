@@ -52,9 +52,11 @@ public class ImportTemplateService {
 
         if (existingStudy != null) {
             studyPreProcessor.process(existingStudy);
+        } else {
+            existingStudy = new Study();
         }
 
-        Study study = studyXmlSerializer.readElement(element);
+        Study study = studyXmlSerializer.readElement(element, existingStudy);
 
         studyPostProcessor.process(study);
 

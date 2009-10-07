@@ -72,32 +72,36 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     }
 
     @SuppressWarnings({"unchecked"})
-    public Study readElement(Element element) {
+    public Study readElement(Element element){
+        throw new UnsupportedOperationException("Need to pass the base study");
+    }
+
+
+    @SuppressWarnings({"unchecked"})
+    public Study readElement(Element element, Study study) {
         validateElement(element);
 
         String key = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(element);
-        Study study = studyDao.getByAssignedIdentifier(key);
 
-        if (study == null) {
-            study = new Study();
-            study.setAssignedIdentifier(key);
-            String provider =  STUDY_PROVIDER.from(element);
-            if (provider != null && provider.length() > 0) {
-                study.setProvider(provider);
-            }
+        study.setAssignedIdentifier(key);
+        String provider =  STUDY_PROVIDER.from(element);
+        if (provider != null && provider.length() > 0) {
+            study.setProvider(provider);
+        }
 
-            Element eltLongTitle = element.element(LONG_TITLE.xmlName());
-            if (eltLongTitle != null) {
-                String longTitleName = eltLongTitle.getText();
-                if (longTitleName != null && longTitleName.length() > 0) {
-                    study.setLongTitle(longTitleName.replaceAll("\\s+"," ").trim());
-                }
+        Element eltLongTitle = element.element(LONG_TITLE.xmlName());
+        if (eltLongTitle != null) {
+            String longTitleName = eltLongTitle.getText();
+            if (longTitleName != null && longTitleName.length() > 0) {
+                study.setLongTitle(longTitleName.replaceAll("\\s+"," ").trim());
             }
+        }
 
-            for(Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {
-                study.addSecondaryIdentifier(studySecondaryIdentifierXmlSerializer.readElement(identifierElt));
-            }
-            
+        for(Element identifierElt:(List<Element>) element.elements("secondary-identifier")) {
+            study.addSecondaryIdentifier(studySecondaryIdentifierXmlSerializer.readElement(identifierElt));
+        }
+
+        if (study.getPlannedCalendar() == null) {
             Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
             PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
             if (plannedCalendarDao.getByGridId(calendar.getGridId()) != null) {

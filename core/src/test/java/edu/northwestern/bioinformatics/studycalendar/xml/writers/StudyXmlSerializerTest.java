@@ -102,10 +102,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhereElementIsNew() {
-        expectDeserializeDataForNewElement();
+        expectDeserializeCommonDataForNewElement();
         replayMocks();
 
-        Study actual = serializer.readElement(createStudyElement());
+        Study actual = serializer.readElement(createStudyElement(), study);
         verifyMocks();
 
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
@@ -119,10 +119,12 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWithProviderForNewElement() throws Exception {
         Element elt = createStudyElement();
         elt.addAttribute("provider", "study-provider");
-        expectDeserializeDataForNewElement();
+        expectDeserializeCommonDataForNewElement();
+        expectDeserializePlannedCalendar();
+        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
         replayMocks();
 
-        Study actual = serializer.readElement(elt);
+        Study actual = serializer.readElement(elt, new Study());
         verifyMocks();
         assertNotNull(actual.getProvider());
         assertEquals("Wrong provider", "study-provider", actual.getProvider());
@@ -136,11 +138,11 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element eIdentifier = DocumentHelper.createElement("secondary-identifier");
         eltStudy.add(eIdentifier);
         StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "NewType", "NewValue");
-        expectDeserializeDataForNewElement();
+        expectDeserializeCommonDataForNewElement();
         expect(xmlSerializer.readElement(eIdentifier)).andReturn(identifier);
         replayMocks();
 
-        Study actual = serializer.readElement(eltStudy);
+        Study actual = serializer.readElement(eltStudy, study);
         verifyMocks();
         assertNotNull(actual.getSecondaryIdentifiers());
         assertEquals("Wrong identifier type", "NewType", actual.getSecondaryIdentifiers().first().getType());
@@ -152,10 +154,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element eltLongTitle = DocumentHelper.createElement("long-title");
         eltLongTitle.addText("study long title");
         eltStudy.add(eltLongTitle);
-        expectDeserializeDataForNewElement();
+        expectDeserializeCommonDataForNewElement();
         replayMocks();
 
-        Study actual = serializer.readElement(eltStudy);
+        Study actual = serializer.readElement(eltStudy, study);
         verifyMocks();
         assertEquals("Wrong Long title name", eltLongTitle.getText(), actual.getLongTitle() );
     }
@@ -165,10 +167,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element eltLongTitle = DocumentHelper.createElement("long-title");
         eltLongTitle.addText("\n  study \nlong \ttitle\r  ");
         eltStudy.add(eltLongTitle);
-        expectDeserializeDataForNewElement();
+        expectDeserializeCommonDataForNewElement();
         replayMocks();
 
-        Study actual = serializer.readElement(eltStudy);
+        Study actual = serializer.readElement(eltStudy, study);
         verifyMocks();
         assertEquals("No normalize of whitespace characters for long title", "study long title", actual.getLongTitle() );
     }
@@ -177,7 +179,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.getName()).andReturn("study-snapshot").times(2);
         try {
             replayMocks();
-            serializer.readElement(element);
+            serializer.readElement(element, new Study());
             fail("Exception should be thrown");
             verifyMocks();
         } catch (StudyCalendarValidationException e) {
@@ -193,7 +195,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         try {
             replayMocks();
-            serializer.readElement(eStudy);
+            serializer.readElement(eStudy, new Study());
             fail("Exception should be thrown");
             verifyMocks();
         } catch (StudyCalendarValidationException e) {
@@ -202,16 +204,15 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementWhereElementExists() {
-        expectResolveStudy("Study A", study);
         expectDeserializeAmendments();
         expectDeserializePopulation();
         expectDesearializeDevelopmentAmendment();
         replayMocks();
 
-        Study actual = serializer.readElement(createStudyElement());
+        Study actual = serializer.readElement(createStudyElement(), study);
         verifyMocks();
 
-        assertSame("Wrong Study", study, actual);
+        assertEquals("Wrong Study", study, actual);
     }
 
     public void testCreateElement() {
@@ -330,8 +331,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(amendmentSerializer.readElement(eSecondAmendment)).andReturn(secondAmendment);
     }
 
+    private void expectDeserializeCommonDataForNewElement(){
+        expectDeserializePopulation();
+        expectDeserializeAmendments();
+        expectDesearializeDevelopmentAmendment();
+    }
+
     private void expectDeserializeDataForNewElement() {
-        expectResolveStudy("Study A", null);
+        expectResolveStudy("Study A", study);
         expectDeserializePopulation();
         expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
