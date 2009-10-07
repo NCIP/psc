@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
@@ -7,11 +8,13 @@ import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.util.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -78,6 +81,15 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
             }
             return currentUser;
         }
+    }
+
+    @Override
+    public void init(Context context, Request request, Response response) {
+        super.init(context, request, response);
+        // default to no caching
+        Series<Parameter> headers = ((HttpResponse) response).getHttpCall().getResponseHeaders();
+        headers.add("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+        headers.add("Pragma", "no-cache");
     }
 
     @Override

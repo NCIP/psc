@@ -44,6 +44,8 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
     }
 
+    @Override public boolean allowPut() { return true; }
+
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.APPLICATION_JSON)) {
@@ -66,6 +68,7 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
     }
 
     @Override
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void storeRepresentation(Representation representation) throws ResourceException {
         if (representation.getMediaType().includes(MediaType.APPLICATION_JSON)) {
             verifyPutParameters();
@@ -81,6 +84,7 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
         }
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     private Dictionary buildNewConfiguration(String text) throws ResourceException {
         Map<String, Object> flat = OsgiRepresentationHelper.flattenJsonConfiguration(text);
         Dictionary<String, Object> newProperties = new MapBasedDictionary<String, Object>();

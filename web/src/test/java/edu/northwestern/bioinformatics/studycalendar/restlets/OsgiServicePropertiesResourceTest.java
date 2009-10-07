@@ -35,7 +35,7 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
         resource.setBundleContext(bundleContext);
         return resource;
     }
-    
+
     @Override
     protected void setUp() throws Exception {
         bundleContext = registerMockFor(BundleContext.class);
@@ -46,6 +46,10 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
         bundle = new PscMockBundle();
         UriTemplateParameters.BUNDLE_ID.putIn(request, BUNDLE_ID.toString());
         expect(bundleContext.getBundle(BUNDLE_ID)).andStubReturn(bundle);
+    }
+
+    public void testPutAndGetAllowed() throws Exception {
+        assertAllowedMethods("GET", "PUT");
     }
 
     public void testSysAdminsOnlyCanGet() throws Exception {
@@ -156,7 +160,7 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
 
         assertResponseStatus(Status.SERVER_ERROR_INTERNAL, "No service.pid for managed service");
     }
-    
+
     public void testPutFiltersOutOsgiProperties() throws Exception {
         UriTemplateParameters.SERVICE_IDENTIFIER.putIn(request, "alpha");
         expectService(propBuilder().put(Constants.SERVICE_PID, "alpha"),

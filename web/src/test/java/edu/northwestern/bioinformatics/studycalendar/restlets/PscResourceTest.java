@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.restlet.data.Method.*;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -92,6 +94,14 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         t.join();
 
         assertNotSame(fromThisThread, fromOtherThread[0]);
+    }
+
+    public void testCachingIsDisabled() throws Exception {
+        doInitOnly();
+        Series<Parameter> actualHeaders = response.getHttpCall().getResponseHeaders();
+        assertEquals("no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+            actualHeaders.getValues("Cache-Control"));
+        assertEquals("no-cache", actualHeaders.getFirstValue("Pragma"));
     }
 
     public static class TestResource extends AbstractPscResource {

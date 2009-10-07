@@ -11,6 +11,8 @@
     <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
         <tags:javascriptLink name="yui/2.7.0/${script}"/>
     </c:forEach>
+    <tags:javascriptLink name="psc-tools/misc"/>
+    <tags:javascriptLink name="jquery/jquery.enumerable"/>
     <script type="text/javascript">
         YAHOO.widget.Logger.enableBrowserConsole();
 
@@ -28,7 +30,7 @@
                 INTERNAL_URI_BASE_PATH + "api/v1/osgi/bundles/" + bundleId + "/state.json",
                 {
                     success: function(o) {
-                        updateBundleRowState(rowId, bundleId, indicator);
+                        updateBundleRow(rowId, bundleId, indicator);
                     },
                     failure: function() {
                         indicator.conceal();
@@ -38,28 +40,124 @@
             );
         }
 
-        function updateBundleRowState(rowId, bundleId, indicator) {
+        function updateBundleRow(rowId, bundleId, indicator) {
             indicator.reveal();
+            getBundleInfo(bundleId, {
+                success: function(o) {
+                    var data = YAHOO.lang.JSON.parse(o.responseText);
+                    bundleList.updateRow(rowId, data);
+                    indicator.conceal();
+                },
+                failure: function(o) {
+                    indicator.conceal();
+                }
+            });
+        }
+
+        function getBundleInfo(bundleId, callbacks) {
             YAHOO.util.Connect.asyncRequest("GET",
-                INTERNAL_URI_BASE_PATH + "api/v1/osgi/bundles/" + bundleId + ".json",
-                {
-                    success: function(o) {
-                        var data = YAHOO.lang.JSON.parse(o.responseText);
-                        bundleList.updateRow(rowId, data);
-                        indicator.conceal();
+                INTERNAL_URI_BASE_PATH + "api/v1/osgi/bundles/" + bundleId + ".json", callbacks);
+        }
+
+        function configureService(clickEvt) {
+            var button = Event.element(clickEvt);
+            var serviceId = parseInt(button.id.split('-')[1]);
+            (function ($) {
+                $('#configure-service-loading-indicator').css('visibility', 'hidden')
+                $('#configure-service-loading').show();
+                $('#configure-service-fields').hide();
+                $('#configure-service-controls').data('service-id', serviceId);
+                LB.Lightbox.activate();
+                getBundleInfo(bundleList.getRecord(button.up('tr')).getData()['id'], {
+                    success: function (o) {
+                        var bundle = YAHOO.lang.JSON.parse(o.responseText);
+                        var service = $(bundle.services).select(function () {
+                            return this.properties && this.properties.service.id == serviceId;
+                        })[0];
+                        if (!service) {
+                            LB.Lightbox.deactivate();
+                            alert("Target service is no longer live for configuring");
+                            return;
+                        }
+                        $('#configure-service-name').text(service.properties.service.pid);
+                        $('#configure-service-controls').data('bundle-id', bundle.id);
+                        $('#configure-service-fields').empty();
+                        $(service.metatype.attributes).each(function (i) {
+                            var currentValue = extractDotSeparatedProperty(service.properties, this.id);
+                            if (currentValue === null || currentValue === undefined) {
+                                currentValue = "";
+                            }
+                            $('#configure-service-fields').append(
+                                "<div class='row'><div class='label'>" + this.name +
+                                "</div><div class='value'><input type='text' name='" + this.id +
+                                "' value='" + currentValue + "'></div>")
+                        });
+                        $('#configure-service-loading').hide();
+                        $('#configure-service-fields').show();
                     },
-                    failure: function(o) {
-                        indicator.conceal();
+                    failure: function (o) {
+                        alert("Could not load data for service");
+                        LB.Lightbox.deactivate();
                     }
                 });
+            }(jQuery));
+        }
 
+        function extractCurrentPropertyValue(serviceInfo, metatypeId) {
+            return extractDotSeparatedProperty(serviceInfo.properties, metatypeId);
+        }
+
+        function extractDotSeparatedProperty(object, dotSeparatedProperty) {
+            var firstDot = dotSeparatedProperty.indexOf('.');
+            if (!object) {
+                return undefined;
+            } else if (firstDot < 0) {
+                return object[dotSeparatedProperty];
+            } else {
+                var head = dotSeparatedProperty.substring(0, firstDot);
+                var rest = dotSeparatedProperty.substring(firstDot + 1);
+                return extractDotSeparatedProperty(object[head], rest);
+            }
+        }
+
+        function commitNewConfiguration() {
+            (function ($) {
+                $('#configure-service-commit-indicator').css('visibility', 'visible');
+                var newProperties = $('#configure-service-fields input').inject({}, function (h) {
+                    h[this.name] = this.value;
+                    return h;
+                });
+                var bundleId = $('#configure-service-controls').data('bundle-id');
+                var serviceId = $('#configure-service-controls').data('service-id');
+                YAHOO.util.Connect.initHeader("Content-Type", "application/json")
+                YAHOO.util.Connect.asyncRequest('PUT',
+                    psc.tools.Uris.relative("api/v1/osgi/bundles/" + bundleId + "/services/" + serviceId + "/properties"),
+                    {
+                        success: function(o) {
+                            LB.Lightbox.deactivate();
+                            $('#configure-service-commit-indicator').css('visibility', 'hidden');
+                        },
+                        failure: function() {
+                            LB.Lightbox.deactivate();
+                            $('#configure-service-commit-indicator').css('visibility', 'hidden');
+                            alert("Updating properties failed");
+                        }
+                    },
+                    YAHOO.lang.JSON.stringify(newProperties)
+                );
+            }(jQuery));
         }
 
         var bundleList;
         function setupBundleList() {
             var bundleListColumns = [
                 { key: "id", label: "ID", sortable: true },
-                { key: "name", label: "Name", sortable: true },
+                {
+                    key: "name", label: "Name", sortable: true,
+                    formatter: function (elCell, oRecord, oColumn, oData) {
+                        elCell.innerHTML = oData.replace(/\./g, ".&#8203;");
+                    }
+                },
                 {
                     key: "state", label: "State", sortable: true,
                     formatter: function(elCell, oRecord, oColumn, oData) {
@@ -79,6 +177,27 @@
                             "<input id='bundle-" + id + "-stop' class='stop' type='button' value='Stop' " + stop_disabled + ">" +
                             '<tags:activityIndicator id="bundle-' + id + '-indicator"/>';
                     }
+                },
+                {
+                    key: "services", label: "Configure Services",
+                    formatter: function (elCell, oRecord, oColumn, oData) {
+                        var bundleId = oRecord.getData()['id'];
+                        var services = oRecord.getData()['services'];
+                        elCell.innerHTML = "";
+                        if (services) {
+                            for (var i = 0 ; i < services.length ; i++) {
+                                var service = services[i];
+                                var configurable = service.metatype &&
+                                        service.interfaces.include("org.osgi.service.cm.ManagedService");
+                                if (configurable) {
+                                    elCell.innerHTML += " <input type='button' value='Configure " +
+                                                        service.properties.service.pid +
+                                                        "' class='service-configure' id='service-" +
+                                                        service.properties.service.id + "-configure' />";
+                                }
+                            }
+                        }
+                    }
                 }
             ];
 
@@ -96,6 +215,11 @@
                 $$('input.stop').each(function(stopButton) {
                     stopButton.observe("click", stopBundle);
                 });
+                $$('input.service-configure').each(function(configureButton) {
+                    configureButton.observe("click", configureService);
+                });
+                $('configure-service-cancel').observe("click", function () { LB.Lightbox.deactivate() });
+                $('configure-service-commit').observe("click", commitNewConfiguration);
             });
         }
         $(document).observe("dom:loaded", setupBundleList);
@@ -131,5 +255,16 @@
     <div id="bundle-list">
     </div>
 </laf:box>
+<div id="lightbox">
+    <h1>Configure <span id="configure-service-name"></span></h1>
+    <div id="configure-service-loading"><tags:activityIndicator id="configure-service-loading-indicator"/> Loading properties...</div>
+    <div id="configure-service-fields">
+    </div>
+    <div id="configure-service-controls" class="row submit">
+        <tags:activityIndicator id="configure-service-commit-indicator"/>
+        <input type="button" id="configure-service-commit" value="Update"/>
+        <input type="button" id="configure-service-cancel" value="Cancel"/>
+    </div>
+</div>
 </body>
 </html>

@@ -2,26 +2,25 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpRequest;
+import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.data.Preference;
+import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.core.io.FileSystemResourceLoader;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -31,8 +30,8 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     protected static final String ROOT_URI = "http://" + HOST + "/studycalendar/api/v1";
     protected static final String BASE_URI = ROOT_URI + "/the/path/to/the/resource";
 
-    protected Request request;
-    protected Response response;
+    protected HttpRequest request;
+    protected HttpResponse response;
     protected ServletCall servletCall;
     protected Context context;
     protected Application application;
@@ -48,6 +47,7 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
         servletRequest = new MockHttpServletRequest(servletContext);
         servletRequest.addHeader("Host", HOST);
+        servletRequest.setContent(new byte[0]);
         servletResponse = new MockHttpServletResponse();
 
         context = new Context();
@@ -56,10 +56,10 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
         Server server = new Server(context, Protocol.HTTP, application);
         servletCall = new ServletCall(server, servletRequest, servletResponse);
 
-        request = new Request();
+        request = new HttpRequest(context, servletCall);
         request.setRootRef(new Reference(ROOT_URI));
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
-        response = new Response(request);
+        response = new HttpResponse(servletCall, request);
     }
 
     protected void useHttpRequest() {
@@ -78,7 +78,7 @@ public abstract class RestletTestCase extends StudyCalendarTestCase {
     @SuppressWarnings({ "deprecation" }) // URLEncoder.encode is deprecated for stupid reasons
     protected void expectRequestEntityFormAttribute(String name, String value) throws IOException {
         StringBuilder form = new StringBuilder();
-        if (request.getEntity() != null) {
+        if (request.getEntity() != null && request.getEntity().getSize() > 0) {
             form.append(request.getEntity().getText()).append('&');
         }
         form.append(URLEncoder.encode(name)).
