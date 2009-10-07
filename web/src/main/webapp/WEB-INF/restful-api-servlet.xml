@@ -256,6 +256,8 @@
 
     <bean name="/osgi/bundles/{bundle-id}/state" id="osgiBundleStateResource" scope="prototype" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiBundleStateResource"/>
+    <bean name="/osgi/bundles/{bundle-id}/services/{service-identifier}/properties" id="osgiServicePropertiesResource" scope="prototype" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.OsgiServicePropertiesResource"/>
 
     <!-- AUXILIARIES -->
 
