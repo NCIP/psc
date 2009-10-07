@@ -527,6 +527,18 @@ define "psc" do
       package(:jar)
     end
 
+    desc "A bundle which exports services for testing OSGi config interfaces"
+    define "mock" do
+      bnd.wrap!
+      bnd.autostart = false
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.mock.Activator"
+      bnd.name = "PSC OSGi Layer Mock Services"
+
+      compile.with project('utility').and_dependencies, OSGI
+      package(:jar)
+    end
+
     define "integrated-tests" do
       test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies,
         project('authentication:socket').and_dependencies,
@@ -941,6 +953,12 @@ define "psc" do
         else
           warn "Could not start mock providers bundle"
         end
+      end
+
+      if start_bundle("edu.northwestern.bioinformatics.psc-osgi-layer-mock")
+        info "Started mock OSGi service bundle"
+      else
+        warn "Could not start mock OSGi service bundle"
       end
 
       if ENV['OSGI_TELNET']
