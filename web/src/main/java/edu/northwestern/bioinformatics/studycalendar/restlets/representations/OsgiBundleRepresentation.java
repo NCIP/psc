@@ -11,6 +11,8 @@ import org.osgi.service.metatype.AttributeDefinition;
 import org.osgi.service.metatype.MetaTypeInformation;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,6 +26,8 @@ import java.util.Enumeration;
  * @author Rhett Sutphin
  */
 public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private Bundle[] bundles;
     private boolean isCollection;
     private MetaTypeService metaTypeService;
@@ -59,6 +63,8 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
 
     @SuppressWarnings({ "unchecked" })
     private void writeBundle(JsonGenerator g, Bundle bundle) throws IOException {
+        log.debug("Serializing {}", bundle.getSymbolicName());
+
         g.writeStartObject();
         g.writeNumberField("id", bundle.getBundleId());
         g.writeStringField("symbolic_name", bundle.getSymbolicName());
@@ -80,9 +86,12 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
             MetaTypeInformation metaTypes = metaTypeService.getMetaTypeInformation(bundle);
             g.writeArrayFieldStart("services");
             for (ServiceReference ref : refs) {
+                log.debug("- serializing service {} with metatypes {}", ref, metaTypes);
                 writeService(g, ref, metaTypes);
             }
             g.writeEndArray();
+        } else {
+            log.debug("- no registered services");
         }
 
         g.writeEndObject();
@@ -104,6 +113,7 @@ public class OsgiBundleRepresentation extends StreamingJsonRepresentation {
             String pid = (String) ref.getProperty(Constants.SERVICE_PID);
             try {
                 ObjectClassDefinition metainfo = metaTypes.getObjectClassDefinition(pid, null);
+                log.debug("- OCD for {} is {}", pid, metainfo);
                 writeMetatype(g, metainfo);
             } catch (IllegalArgumentException iae) {
                 // there isn't metadata for this service
