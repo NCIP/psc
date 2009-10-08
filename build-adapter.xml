@@ -15,9 +15,10 @@
     <available file="${path.to.jruby.gems}/shenandoah-0.0.0" property="shenandoah.exists" />
     <available file="${path.to.jruby.gems}/facets-2.4.5" property="facets.exists" />
     <available file="${path.to.jruby.gems}/json_pure-1.1.9" property="json_pure.exists" />
+    <available file="${path.to.jruby.gems}/rest-client-1.0.3" property="rest-client.exists" />
 
  <!--Standard sub project build TARGETS -->
-    <target name="install" depends="install:buildr,install:shenandoah,install:facets,install:json_pure" description="Downloads JRuby and install require gems">
+    <target name="install" depends="install:buildr,install:shenandoah,install:facets,install:json_pure,install:rest-client" description="Downloads JRuby and install require gems">
     </target>
     <target name="install:jruby" unless="jruby.exists" description="Downloads jruby">
         <mkdir dir="${basedir}/temp/download"/>
@@ -77,6 +78,19 @@
             <arg value="json_pure"/>
             <arg value="-v"/>
             <arg value="1.1.9"/>
+            <arg value="--no-rdoc"/>
+            <arg value="--no-ri"/>
+       </exec>
+    </target>
+
+    <target name="install:rest-client" unless="rest-client.exists" depends="install:jruby" description="Downloads rest-client">
+        <exec executable="${path.to.jruby.bin}">
+            <arg value="-S"/>
+            <arg value="gem"/>
+            <arg value="install"/>
+            <arg value="rest-client"/>
+            <arg value="-v"/>
+            <arg value="1.0.3"/>
             <arg value="--no-rdoc"/>
             <arg value="--no-ri"/>
        </exec>
