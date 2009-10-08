@@ -122,8 +122,6 @@
         }
 
         var myClickHandler = function(event, oRecord){
-            event.stop();
-
             var assignedId = oRecord.getData('assigned_identifier');
             var provider = oRecord.getData('provider');
             var secondaryIds = oRecord.getData('secondary_identifiers');
@@ -136,8 +134,8 @@
 
             container.append(jQuery('<h1> Assigning new study identifier </h1> '))
 
-            var input1 = jQuery('<input class="radio" type="radio" name="group" checked value="' + studyIdentifier +' >' )
-            var input2 = jQuery('<input class="radio" type="radio" name="group" value="' + assignedId + '>')
+            var input1 = jQuery('<input class="radio" type="radio" name="group" checked value="' + studyIdentifier +'" >' )
+            var input2 = jQuery('<input class="radio" type="radio" name="group" value="' + assignedId + '">')
 
             YAHOO.util.Event.addListener( input1, "click", function(e){
                 input1.checked = true;
@@ -189,7 +187,7 @@
 
                 container.append(divRow3)
             }
-            var divRowForButton = jQuery('<div class="row/>')
+            var divRowForButton = jQuery('<div class="row"/>')
             var divClassSubmit = jQuery('<div class="submit"/>')
 
             var submitButton = jQuery('<input id="submitBtn" type="submit" value="Assign">')
@@ -205,7 +203,6 @@
             LB.Lightbox.activate();
 
             YAHOO.util.Event.addListener( cancelButton, "click", function(e){
-                e.stop()
                 LB.Lightbox.deactivate()
             });
 
@@ -256,12 +253,12 @@
 
                     if (parent.children('.hide')[0].style.display == 'none'){
                         for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
-                            arrayOfHiddenSecondaryIds[i].show();
+                            arrayOfHiddenSecondaryIds[i].style.display ='block';
                         }
                         parent.children('.more')[0].innerHTML = 'Less';
                     } else {
                         for (var i = 0; i<arrayOfHiddenSecondaryIds.length; i++){
-                            arrayOfHiddenSecondaryIds[i].hide();
+                            arrayOfHiddenSecondaryIds[i].style.display = "none";
                         }
                         parent.children('.more')[0].innerHTML = 'More';
                     }
@@ -277,7 +274,7 @@
         var longTitleFormatter = function(elCell, oRecord, oColumn, oData) {
             var title = oRecord.getData('long_title') + " ";
             var partOfTitle = title.substr(0, 100)+ "... "
-            var spanShortTitle = jQuery('<span class="short"/>').text(partOfTitle);
+            var spanShortTitle = jQuery('<span class="short" style="display: inline;"/>').text(partOfTitle);
             var spanLongTitle = jQuery('<span class="long" style="display: none;"/>').text(title);
 
             jQuery(elCell).append(spanShortTitle);
@@ -287,12 +284,12 @@
                 var elt = $(evt.target);
                 var parent = jQuery(elt.up());//gives us div element
                 if (parent.children('.short')[0].style.display == 'none'){
-                    parent.children('.short')[0].show();
-                    parent.children('.long')[0].hide();
+                    parent.children('.short')[0].style.display ='inline';
+                    parent.children('.long')[0].style.display ='none';
                     parent.children('.more')[0].innerHTML = 'More';
                 } else {
-                    parent.children('.short')[0].hide();
-                    parent.children('.long')[0].show();
+                    parent.children('.short')[0].style.display ='none';
+                    parent.children('.long')[0].style.display ='inline';
                     parent.children('.more')[0].innerHTML = 'Less';
                 }
             });
@@ -300,7 +297,6 @@
         };
 
         function processNewIdentifier(evt, oRecord){
-            evt.stop()
             LB.Lightbox.deactivate()
             var inputs = $('edit-notes-lightbox').getElementsByClassName('radio')
             var value;
@@ -418,20 +414,18 @@
   <body>
   <laf:box title="Study Manipulations" cssClass="yui-skin-sam" autopad="true">
       <laf:division>
-          <%--<form:form id="PCSelectionForm" action="${action}">--%>
             <form:errors path="*"/>
-                <div class="row">
-                     <div class="label">
-                        Find external study:
-                     </div>
-                     <div class="value">
-                            <input id="study-autocompleter-input" class="autocomplete input-hint" type="text" autocomplete="off" hint="Search for study" value=""/>
-                            <div id="study-autocompleter-div" class="autocomplete" style="display: none;"/>
-                     </div>
-                </div>
-                <div id="bundle-list" class="bundle-list">
-                    </div>
-            <%--</form:form>--%>
+            <div class="row">
+                 <div class="label">
+                    Find external study:
+                 </div>
+                 <div class="value">
+                        <input id="study-autocompleter-input" class="autocomplete input-hint" type="text" autocomplete="off" hint="Search for study" value=""/>
+                        <div id="study-autocompleter-div" class="autocomplete" style="display: none;"/>
+                 </div>
+            </div>
+            <div id="bundle-list" class="bundle-list">
+            </div>
 
             <div id="lightbox">
                 <div id="edit-notes-lightbox">
