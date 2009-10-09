@@ -64,7 +64,7 @@ public class CoppaProviderHelper {
         return r.getPlayerIdentifier();
     }
 
-    public static <T extends II> T[] tranformId(Class<T> clazz, II[] iis) {
+    public static <T extends II> T[] tranformIds(Class<T> clazz, II[] iis) {
         List<T> ids = new ArrayList<T>();
         for (II ii : iis) {
             ids.add(tranformId(clazz, ii));

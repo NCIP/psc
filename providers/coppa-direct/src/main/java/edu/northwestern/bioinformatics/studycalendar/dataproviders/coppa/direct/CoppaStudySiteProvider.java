@@ -73,7 +73,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
     }
 
     private Organization[] getOrganizationsById(II[] iis) {
-        gov.nih.nci.coppa.po.Id[] ids = tranformId(gov.nih.nci.coppa.po.Id.class, iis);
+        gov.nih.nci.coppa.po.Id[] ids = tranformIds(gov.nih.nci.coppa.po.Id.class, iis);
 
         try {
             List<Organization> orgs = new ArrayList<Organization>();
@@ -91,7 +91,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
     }
 
     private ResearchOrganization[] getResearchOrganizationsByIds(II[] iis) {
-        gov.nih.nci.coppa.po.Id[] ids = tranformId(gov.nih.nci.coppa.po.Id.class, iis);
+        gov.nih.nci.coppa.po.Id[] ids = tranformIds(gov.nih.nci.coppa.po.Id.class, iis);
         try {
             return researchOrgClient.getByIds(ids);
         } catch (RemoteException e) {
