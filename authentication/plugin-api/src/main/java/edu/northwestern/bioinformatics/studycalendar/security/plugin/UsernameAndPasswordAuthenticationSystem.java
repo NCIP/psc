@@ -20,11 +20,16 @@ import javax.servlet.Filter;
 public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAuthenticationSystem {
     public static final String LOGIN_FORM_URL = "/public/login";
     public static final String LOGIN_ERROR_URL = "/public/login?login_error=1";
+    public static final String LOGIN_TO_ROOT = "/";
 
     @Override protected AuthenticationEntryPoint createEntryPoint() {
         AuthenticationProcessingFilterEntryPoint entryPoint
             = new AuthenticationProcessingFilterEntryPoint();
-        entryPoint.setLoginFormUrl(LOGIN_FORM_URL);
+        if (usesLocalPasswords()) {
+            entryPoint.setLoginFormUrl(LOGIN_FORM_URL);
+        } else {
+            entryPoint.setLoginFormUrl(LOGIN_TO_ROOT);
+        }
         return prepareBean(getApplicationContext(), entryPoint);
     }
 
@@ -45,6 +50,7 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
      * it.
      */
     public final Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
+        System.out.println("---- creating username and password authentication request ");
         return new UsernamePasswordAuthenticationToken(username, password);
     }
 
