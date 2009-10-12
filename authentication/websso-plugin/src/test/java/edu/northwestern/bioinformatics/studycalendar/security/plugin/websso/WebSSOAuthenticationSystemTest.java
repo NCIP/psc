@@ -12,13 +12,13 @@ import org.acegisecurity.providers.cas.CasAuthenticationProvider;
  * and {@link edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem}.
  *
  * @author Saurabh Agrawal
+ * @author Kruttik Aggarwal
  * @author Rhett Sutphin
  */
 public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystemTestCase {
-    
-	protected static final String EXPECTED_HOST_KEY = "/tmp/etc.txt";
+    protected static final String EXPECTED_HOST_KEY = "/tmp/etc.txt";
     protected static final String EXPECTED_HOST_CERT = "/tmp/etc.txt";
-	private WebSSOAuthenticationSystem system;
+    private WebSSOAuthenticationSystem system;
 
     @Override
     public void setUp() throws Exception {
@@ -28,8 +28,8 @@ public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystem
     }
 
     public void testInitializeAuthManager() throws Exception {
-    	configuration.set(WebSSOAuthenticationSystem.HOST_CERT, EXPECTED_HOST_CERT);
-    	configuration.set(WebSSOAuthenticationSystem.HOST_KEY, EXPECTED_HOST_KEY);
+        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, EXPECTED_HOST_CERT);
+        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, EXPECTED_HOST_KEY);
         doValidInitialize();
         assertTrue("Wrong type", getSystem().authenticationManager() instanceof ProviderManager);
         ProviderManager manager = (ProviderManager) getSystem().authenticationManager();

@@ -88,7 +88,7 @@ CSV = [
   "net.sourceforge.javacsv:javacsv:jar:2.0"
 ]
 
-# Note that this bundle of logback-0.9.9 is not compatible, OSGi-wise, with 
+# Note that this bundle of logback-0.9.9 is not compatible, OSGi-wise, with
 # slf4j-1.5.6 below.
 LOGBACK = struct(
   :core    => "ch.qos.logback:com.springsource.ch.qos.logback.core:jar:0.9.9",
@@ -183,7 +183,7 @@ SECURITY = struct(
   :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:#{CTMS_COMMONS_VERSION}",
   :clm => "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
   :csm => psc_osgi_artifact(
-    "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00", 
+    "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
     "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
   ),
   :acegi => psc_osgi_artifact("org.acegisecurity:acegi-security:jar:1.0.7"),
@@ -275,7 +275,7 @@ GLOBUS = struct(
 )
 
 GLOBUS_AXIS_STUB_PACKAGES = %w(
-  org.apache.axis org.apache.axis.client org.apache.axis.configuration 
+  org.apache.axis org.apache.axis.client org.apache.axis.configuration
   org.apache.axis.constants
   org.apache.axis.description org.apache.axis.utils org.apache.axis.types
   org.apache.axis.message.addressing org.apache.axis.soap
@@ -290,14 +290,14 @@ COPPA_VERSION = "3.0.0.PSC000"
 COPPA = [
   # COPPA introduce-stubs
   psc_osgi_artifact(
-      artifact("gov.nih.nci.coppa:coppa-core-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-stubs.jar")), 
+      artifact("gov.nih.nci.coppa:coppa-core-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-stubs.jar")),
       "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, *"),
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-common.jar"))),
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-client.jar"))),
   psc_osgi_artifact(
-      artifact("gov.nih.nci.coppa:coppa-commons:jar:1.2.3").from(static_lib('coppa/coppa-commons-1.2.3.jar'))),      
+      artifact("gov.nih.nci.coppa:coppa-commons:jar:1.2.3").from(static_lib('coppa/coppa-commons-1.2.3.jar'))),
   # artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-jaxb-adapter:jar:0.0.0").
   #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
   artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:0.0.0").
@@ -308,15 +308,15 @@ COPPA = [
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-common.jar"))),
   psc_osgi_artifact(
-      artifact("gov.nih.nci.coppa:coppa-pa-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-client.jar"))),  
-  
+      artifact("gov.nih.nci.coppa:coppa-pa-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-client.jar"))),
+
   # Trial-and-error caGrid/globus deps
-  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-stubs", 
+  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-stubs",
     { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all",
       "Import-Package" => (%w(javax.xml.rpc javax.xml.rpc.encoding gov.nih.nci.cagrid.metadata.security)).join(",") }),
     # { "Import-Package" => (%w(javax.xml.rpc javax.xml.rpc.encoding) + GLOBUS_AXIS_STUB_PACKAGES).join(",") }),
   cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-common", {}),
-  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-client", 
+  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-client",
     { "Import-Package" => (%w(
         gov.nih.nci.cagrid.introduce.security.stubs gov.nih.nci.cagrid.introduce.security.stubs.service
         gov.nih.nci.cagrid.introduce.security.common gov.nih.nci.cagrid.metadata.security
