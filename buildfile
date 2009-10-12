@@ -597,7 +597,7 @@ define "psc" do
       package(:sources)
 
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
-      test.with(UNIT_TESTING, project('core').test_dependencies, project('database').test_dependencies, CAGRID, DBUNIT_GRID).compile.from(_('test/src/java'))
+      test.with(UNIT_TESTING, project('core').test_dependencies, project('database').test_dependencies, CAGRID_1, DBUNIT_GRID).compile.from(_('test/src/java'))
 
       test.resources.from(_('test/resources')).include('*')
       test.resources.from('src/test/resources').include('logback-test.xml')
@@ -669,7 +669,7 @@ define "psc" do
 
       # TODO: temporarily disabled testing until it works
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
-      #test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).
+      #test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID_1, DBUNIT_GRID).
       #  compile.from(_('test/src/java'));
 
       test.resources.from(_('test/resources')).include('*')
@@ -740,7 +740,7 @@ define "psc" do
       package(:sources)
 
       #Test cases are written with DBUnit 2.2, hence its added as a seperate dependency
-      test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID, DBUNIT_GRID).
+      test.with(UNIT_TESTING, project('core').test.compile.target, project('database').test_dependencies, CAGRID_1, DBUNIT_GRID).
         compile.from(_('test/src/java'))
 
       test.resources.from(_('test/resources')).include('*')

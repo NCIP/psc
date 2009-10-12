@@ -66,7 +66,7 @@ CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
 SLF4J_VERSION = "1.5.6"
-CAGRID_VERSION = "1.2"
+CAGRID_VERSION = "1.3"
 
 CTMS_COMMONS = struct(
   %w{base core laf lang web}.inject({}) do |h, a|
@@ -191,8 +191,8 @@ SECURITY = struct(
   :caaers_cas => psc_osgi_artifact(artifact("gov.nih.nci.cabig.caaers:cas-patch:jar:1.1.3").from(static_lib('caaers-1.1.3-cas-patch.jar')))
 )
 
-# This is out of date, probably
-CAGRID = [
+# This is out of date
+CAGRID_1 = [
   group(%w{
     authentication-service-client
     authentication-service-common
