@@ -9,7 +9,7 @@ GLOBUS_EXCLUDE = [
   /^commons-/, /^x(a|e|ml-)/, /junit/, /samples/, /test/, /jaxrpc/, /servlet/, /log4j/, /saaj/, /wsdl/
 ]
 GLOBUS_VERSION = "4.0.3"
-BUNDLE_VERSION = "#{GLOBUS_VERSION}.WS-CORE-PSC001"
+BUNDLE_VERSION = "#{GLOBUS_VERSION}.WS-CORE-PSC002"
 JAR_NAME = "psc-globus-all_#{BUNDLE_VERSION}.jar"
 BND_NAME = JAR_NAME.sub /jar^/, 'bnd'
 
@@ -40,9 +40,9 @@ __END__
 Export-Package: *
 Import-Package: \
  com.ibm.wsdl.extensions.soap;version="[1.6.1, 2.0.0)", \
- com.sun.jimi.core;resolution=optional, \
- com.sun.net.ssl;resolution=optional, \
- com.sun.net.ssl.internal.ssl;resolution=optional, \
+ com.sun.jimi.core;resolution:=optional, \
+ com.sun.net.ssl;resolution:=optional, \
+ com.sun.net.ssl.internal.ssl;resolution:=optional, \
  javax.activation;version="[1.1.0, 2.0.0)", \
  javax.imageio, \
  javax.imageio.metadata, \
@@ -84,7 +84,7 @@ Import-Package: \
  javax.xml.transform.dom, \
  javax.xml.transform.sax, \
  javax.xml.transform.stream, \
- org.apache.bsf;version="[2.4.0, 3.0.0)";resolution=optional, \
+ org.apache.bsf;version="[2.4.0, 3.0.0)";resolution:=optional, \
  org.apache.commons.discovery;version="[0.4.0, 1.0.0)", \
  org.apache.commons.discovery.resource;version="[0.4.0, 1.0.0)", \
  org.apache.commons.discovery.resource.classes;version="[0.4.0, 1.0.0)", \
@@ -98,13 +98,14 @@ Import-Package: \
  org.apache.commons.logging;version="[1.1.1, 2.0.0)", \
  org.apache.commons.net.pop3;version="[1.4.1, 2.0.0)", \
  org.apache.commons.net.smtp;version="[1.4.1, 2.0.0)", \
- org.exolab.castor.xml;version="[1.1.2, 2.0.0)";resolution=optional, \
+ org.exolab.castor.xml;version="[1.1.2, 2.0.0)";resolution:=optional, \
  org.omg.CORBA, \
  org.omg.CosNaming, \
  org.w3c.dom, \
  org.xml.sax, \
  org.xml.sax.ext, \
  org.xml.sax.helpers, \
- *;resolution=optional
+ *;resolution:=optional
+Bundle-Name: PSC's Globus composite bundle
 Bundle-SymbolicName: edu.northwestern.bioinformatics.osgi.org.globus.all
 Bundle-Description: Contains the contents of the lib directory for the corresponding Globus version, except for 3rd-party libs and samples

@@ -242,10 +242,10 @@ CAGRID_1 = [
 # ]
 
 GLOBUS = struct(
-  :core => Dir[static_lib("psc-globus-all*.jar")].collect { |jar|
+  :core => Dir[static_lib("psc-globus-all*.jar")].sort.collect { |jar|
       version = File.basename(jar).split('_')[1].gsub(/.jar/, '')
       artifact("org.globus:edu.northwestern.bioinformatics.osgi.org.globus.all:jar:#{version}").from(jar)
-    }.first,
+    }.last,
   :discovery  => JAKARTA_COMMONS.discovery,
   :httpclient => JAKARTA_COMMONS.httpclient,
   :codec      => JAKARTA_COMMONS.codec,
