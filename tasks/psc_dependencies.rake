@@ -297,14 +297,14 @@ GLOBUS_AXIS_STUB_PACKAGES = %w(
 )
 
 # Some of this is generic caGrid/introduce stuff -- split it out later
-COPPA_VERSION = "3.0.0.PSC000"
+COPPA_VERSION = "3.0.0.PSC001"
 # fragment client-config.wsdd (grid/globus) jars onto the globus metabundle
 # client_config_bnd = { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all" }
 COPPA = [
   # COPPA introduce-stubs
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-stubs.jar")),
-      "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, *"),
+      "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, !gov.nih.nci.cagrid.metadata.common, !gov.nih.nci.cagrid.metadata.service, *"),
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-common.jar"))),
   psc_osgi_artifact(
@@ -317,7 +317,8 @@ COPPA = [
     from(static_lib('coppa/coppa-globus-adapter-0.0.0.jar')),
 
   psc_osgi_artifact(
-      artifact("gov.nih.nci.coppa:coppa-pa-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-stubs.jar"))),
+      artifact("gov.nih.nci.coppa:coppa-pa-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-stubs.jar")),
+      "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, *"),
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-common.jar"))),
   psc_osgi_artifact(
