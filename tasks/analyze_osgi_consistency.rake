@@ -1,4 +1,3 @@
-require 'fastercsv'
 require 'md5'
 
 # Takes a set of OSGi bundle jars and looks for unresolved dependencies.
