@@ -486,6 +486,37 @@ define "psc" do
       end
     end
 
+    task :analyze_package_consistency => [:build_test_da_launcher] do
+      test_dal = _('target', 'test', 'da-launcher')
+      boot_packages = File.read("#{test_dal}/config/osgi-framework.xml").
+        grep(/org.osgi.framework.bootdelegation/).first.gsub(/<.*?>/, "").strip.split(',') +
+        ['java.*', 'javax.*', 'org.xml.sax.*', 'org.w3c.dom.*', 'org.omg.*']
+      AnalyzeOsgiConsistency.analyze_packages(Dir["#{test_dal}/**/*.jar"], boot_packages)
+    end
+
+    # Finds packages which contain classes in different bundles.
+    # Note that these are not all necessarily errors -- fragment bundles
+    # may extend packages from their associated bundles and internal-only
+    # packages may be repeated across bundles
+    task :find_duplicate_packages => [:build_test_da_launcher] do
+      Dir[_('target', 'test', 'da-launcher') + "/**/*.jar"].inject({}) { |h, jar|
+        `jar tf #{jar}`.split(/\n/).grep(/.class$/).collect { |path| 
+          path.sub(/\/[^\/]+$/, '').gsub('/', '.')
+        }.uniq.each { |package| 
+          h[package] ||= [] 
+          h[package] << jar
+        }
+        h
+      }.each_pair { |package, jars|
+        if jars.size > 1
+          puts package
+          puts '=' * package.size
+          jars.each { |jar| puts "- #{jar}"}
+          puts
+        end
+      }
+    end
+
     compile.with project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main
 
     desc "Advertises host-configured services to the OSGi layer"
