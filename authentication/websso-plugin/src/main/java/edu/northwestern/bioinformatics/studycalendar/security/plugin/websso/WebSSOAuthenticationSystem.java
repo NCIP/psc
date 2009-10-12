@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collection;
 
 /**
  * @author Kruttik Aggarwal
@@ -34,6 +35,14 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     @Override
     public String behaviorDescription() {
         return "delegates authentication to a caGrid WebSSO server (use this option for CCTS)";
+    }
+
+    @Override
+    protected Collection<ConfigurationProperty<?>> requiredConfigurationProperties() {
+        Collection<ConfigurationProperty<?>> reqd = new ArrayList<ConfigurationProperty<?>>(super.requiredConfigurationProperties());
+        reqd.add(HOST_KEY);
+        reqd.add(HOST_CERT);
+        return reqd;
     }
 
     @Override
