@@ -58,6 +58,24 @@ def ivy_artifact(repo_url, repo_group, org, mod, rev, art, bnd_props = nil)
   end
 end
 
+def merged_cagrid_bundle(org, mod, merged_art, bnd_props, *sources)
+  merged_spec = "cagrid-merged.#{org}.#{mod}:#{merged_art}:jar:#{CAGRID_VERSION}"
+  psc_osgi_artifact(merged_spec, bnd_props) { |pre_bnd|
+    temp = Tempfile.open(File.basename(pre_bnd.name))
+    ZipTask.define_task(temp.path).tap do |zip|
+      class << zip ; def needed? ; true ; end ; end
+      puts "zip=#{zip.inspect}"
+      puts "zip.name=#{zip.name}"
+      zip.include(sources, :merge => true)
+      pre_bnd.enhance [zip] do
+        mkdir_p File.dirname(pre_bnd.name)
+        puts "Renaming #{zip.name} to #{pre_bnd.name}"
+        cp zip.name, pre_bnd.name
+      end
+    end
+  }
+end
+
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
@@ -226,20 +244,15 @@ CAGRID_1 = [
   "org.globus:axis:jar:4.0.3-globus"
 ]
 
-# Removed b/c unused.  Uncomment when needed, or remove. If they turn out 
-# to be used, commit the resulting JARs under osgi/bundled-lib, too
-#  -- RMS20090923
-# CAGRID_CDS = [
-#   psc_osgi_artifact(
-#       artifact("gov.nih.nci.cagrid:cagrid-cds-client:jar:1.2"), 
-#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
-#   psc_osgi_artifact(
-#       artifact("gov.nih.nci.cagrid:cagrid-cds-stubs:jar:1.2"), 
-#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
-#   psc_osgi_artifact(
-#       artifact("gov.nih.nci.cagrid:cagrid-cds-common:jar:1.2"), 
-#       "Export-Package" => "!org.cagrid.gaards.cds, *"),
-# ]
+CAGRID = struct(
+  :all => Dir[static_lib("psc-cagrid-all*.jar")].sort.collect { |jar|
+      version = File.basename(jar).split('_')[1].gsub(/.jar/, '')
+      artifact("org.globus:edu.northwestern.bioinformatics.osgi.gov.nih.nci.cagrid.all:jar:#{version}").from(jar)
+    }.last,
+  :globus_adapter => 
+    artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC000").
+      from(static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC000.jar"))
+)
 
 GLOBUS = struct(
   :core => Dir[static_lib("psc-globus-all*.jar")].sort.collect { |jar|
@@ -310,22 +323,7 @@ COPPA = [
   psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-client.jar"))),
 
-  # Trial-and-error caGrid/globus deps
-  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-stubs",
-    { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all",
-      "Import-Package" => (%w(javax.xml.rpc javax.xml.rpc.encoding gov.nih.nci.cagrid.metadata.security)).join(",") }),
-    # { "Import-Package" => (%w(javax.xml.rpc javax.xml.rpc.encoding) + GLOBUS_AXIS_STUB_PACKAGES).join(",") }),
-  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-common", {}),
-  cagrid_lib("caGrid", "service-security-provider", "caGrid-ServiceSecurityProvider-client",
-    { "Import-Package" => (%w(
-        gov.nih.nci.cagrid.introduce.security.stubs gov.nih.nci.cagrid.introduce.security.stubs.service
-        gov.nih.nci.cagrid.introduce.security.common gov.nih.nci.cagrid.metadata.security
-        ) + GLOBUS_AXIS_STUB_PACKAGES).join(",") }),
-  cagrid_lib("caGrid", "metadata", "caGrid-metadata-common", {}),
-  cagrid_lib("caGrid", "metadata", "caGrid-metadata-data", {}),
-  cagrid_lib("caGrid", "metadata", "caGrid-metadata-security", {}),
-  artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:0.0.0").
-    from(static_lib('cagrid/cagrid-globus-adapter-0.0.0.jar'))
+  CAGRID
 ].flatten
 
 BERING = [
