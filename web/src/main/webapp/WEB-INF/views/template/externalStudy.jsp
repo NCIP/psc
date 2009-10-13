@@ -10,7 +10,7 @@
 
 <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
 <%-- TODO: move common YUI parts to a tag if they are re-used --%>
-<c:forEach items="${fn:split('yahoo-dom-event element-min datasource-debug logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+<c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
    <tags:javascriptLink name="yui/2.7.0/${script}"/>
 </c:forEach>
 
