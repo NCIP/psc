@@ -736,11 +736,18 @@
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
                 </div>
             </div>
-            <div class="row even" style="width:100%">
-                <div class="label">Long title</div>
-                <div class="value">${study.longTitle}</div>
-            </div>
-            <div class="row odd">
+            <c:choose>
+                <c:when test="${not empty study.longTitle}">
+                    <div class="row even" style="width:100%">
+                        <div class="label">Long title</div>
+                        <div class="value">${study.longTitle}</div>
+                    </div>
+                    <div class="row odd">
+                </c:when>
+                <c:otherwise>
+                    <div class="row even">
+                </c:otherwise>
+            </c:choose>
                 <div class="label">Populations</div>
                 <div class="value">
                     <ul id="populations">
@@ -762,7 +769,14 @@
                     </ul>
                 </div>
             </div>
-            <div class="row even">
+            <c:choose>
+                <c:when test="${not empty study.longTitle}">
+                    <div class="row even">
+                </c:when>
+                <c:otherwise>
+                    <div class="row odd">
+                </c:otherwise>
+            </c:choose>
                 <div class="label">Other formats</div>
                 <div class="value">
                     <ul>
