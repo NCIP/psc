@@ -250,8 +250,8 @@ CAGRID = struct(
       artifact("org.globus:edu.northwestern.bioinformatics.osgi.gov.nih.nci.cagrid.all:jar:#{version}").from(jar)
     }.last,
   :globus_adapter => 
-    artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC000").
-      from(static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC000.jar"))
+    artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC001").
+      from(static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC001.jar"))
 )
 
 GLOBUS = struct(
@@ -293,32 +293,31 @@ GLOBUS_AXIS_STUB_PACKAGES = %w(
 COPPA_VERSION = "3.0.0.PSC001"
 # fragment client-config.wsdd (grid/globus) jars onto the globus metabundle
 # client_config_bnd = { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all" }
-COPPA = [
+COPPA = struct(
   # COPPA introduce-stubs
-  psc_osgi_artifact(
+  :core_stubs => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-stubs.jar")),
       "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, !gov.nih.nci.cagrid.metadata.common, !gov.nih.nci.cagrid.metadata.service, *"),
-  psc_osgi_artifact(
+  :core_common => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-common.jar"))),
-  psc_osgi_artifact(
+  :core_client => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-core-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/CoreServices-client.jar"))),
-  psc_osgi_artifact(
+  :common => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-commons:jar:1.2.3").from(static_lib('coppa/coppa-commons-1.2.3.jar'))),
-  # artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-jaxb-adapter:jar:0.0.0").
-  #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
-  artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:0.0.0").
-    from(static_lib('coppa/coppa-globus-adapter-0.0.0.jar')),
 
-  psc_osgi_artifact(
+  :pa_stubs => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-stubs:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-stubs.jar")),
       "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, *"),
-  psc_osgi_artifact(
+  :pa_common => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-common:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-common.jar"))),
-  psc_osgi_artifact(
+  :pa_client => psc_osgi_artifact(
       artifact("gov.nih.nci.coppa:coppa-pa-services-client:jar:#{COPPA_VERSION}").from(static_lib("coppa/PAServices-client.jar"))),
 
-  CAGRID
-].flatten
+  # artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-jaxb-adapter:jar:0.0.0").
+  #   from(static_lib('coppa/coppa-jaxb-adapter-0.0.0.jar')),
+  :globus_adapter => artifact("gov.nih.nci.coppa:edu.northwestern.bioinformatics.osgi.coppa-globus-adapter:jar:3.0.0.PSC000").
+    from(static_lib('coppa/coppa-globus-adapter-3.0.0.PSC000.jar')) # version changes separately from the others since it's manually created
+)
 
 BERING = [
   "edu.northwestern.bioinformatics:bering:jar:0.7",

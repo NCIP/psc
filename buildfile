@@ -356,7 +356,7 @@ define "psc" do
         "org.apache.axis.message.addressing"
 
       compile.with project('providers:api').and_dependencies, SPRING, OSGI,
-        GLOBUS, COPPA
+        GLOBUS, CAGRID, COPPA
       test.using(:junit).with UNIT_TESTING
       package(:jar)
     end

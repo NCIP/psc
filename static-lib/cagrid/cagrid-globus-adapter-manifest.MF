@@ -1,5 +1,7 @@
 Bundle-SymbolicName: edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter
-Bundle-Name: Globus/caGrid adapter package
-Import-Package: gov.nih.nci.cagrid.introduce.security.stubs,gov.nih.nci.cagrid.introduce.security.stubs.service,gov.nih.nci.cagrid.introduce.security.stubs.client
 Fragment-Host: edu.northwestern.bioinformatics.osgi.org.globus.all
-Bundle-Version: 1.3.0.PSC000
+Bundle-Name: Globus/caGrid adapter package
+Import-Package: gov.nih.nci.cagrid.introduce.security.stubs,gov.nih.nci.cagrid.introduce.security.stubs.service
+Bundle-Version: 1.3.0.PSC001
+Bundle-Description: Makes appropriate packages from caGrid visible to Axis serializers and deserializers
+Bundle-ManifestVersion: 2

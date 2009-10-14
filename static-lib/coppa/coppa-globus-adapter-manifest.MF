@@ -1,5 +1,7 @@
 Bundle-SymbolicName: edu.northwestern.bioinformatics.osgi.coppa-globus-adapter
-Bundle-Name: Globus/COPPA adapter package
-Import-Package: gov.nih.nci.coppa.po,gov.nih.nci.coppa.po.grid.ser
 Fragment-Host: edu.northwestern.bioinformatics.osgi.org.globus.all
-Bundle-Version: 0.0.0
+Bundle-Name: Globus/COPPA adapter package
+Import-Package: gov.nih.nci.coppa.po,gov.nih.nci.coppa.services.grid.ser,gov.nih.nci.coppa.common,gov.nih.nci.coppa.services.pa
+Bundle-Version: 3.0.0.PSC000
+Bundle-Description: Makes appropriate packages from COPPA visible to Axis serializers and deserializers
+Bundle-ManifestVersion: 2
