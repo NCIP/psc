@@ -89,10 +89,9 @@ public class SiteCommandTest extends TestCase {
         doCommand("site search Frazz");
     }
 
-    public void testGetWithAResult() throws Exception {
-        expectFoundProviders(sp1);
-        expectGetOneSite(sp1, "elf", Fixtures.createSite("Z", "elf"));
-        expectOutput("bundle0", "- Site id=elf name=Z");
+    public void testSearchWithNoProviders() throws Exception {
+        expectFoundProviders();
+        expectError("No site providers active");
         doCommand("site get elf");
     }
 
@@ -104,23 +103,23 @@ public class SiteCommandTest extends TestCase {
     }
 
     public void testErrorForNoCommand() throws Exception {
-        err.println("Please specify a valid subcommand (get, search)");
+        expectError("Please specify a valid subcommand (get, search)");
         doCommand("site");
     }
 
     public void testErrorForUnknownCommand() throws Exception {
-        err.println("Please specify a valid subcommand (get, search)");
+        expectError("Please specify a valid subcommand (get, search)");
         doCommand("site foo");
     }
 
     public void testErrorForNoArg() throws Exception {
-        err.println("Please specify an argument for get");
+        expectError("Please specify an argument for get");
         doCommand("site get");
     }
 
     public void testErrorForNoProviders() throws Exception {
         expectFoundProviders();
-        err.println("No site providers active");
+        expectError("No site providers active");
         doCommand("site get arb");
     }
 
@@ -133,6 +132,12 @@ public class SiteCommandTest extends TestCase {
     private void expectOutput(String... lines) {
         for (String line : lines) {
             out.println(line);
+        }
+    }
+
+    private void expectError(String... lines) {
+        for (String line : lines) {
+            err.println(line);
         }
     }
 

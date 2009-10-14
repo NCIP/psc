@@ -31,7 +31,7 @@ public abstract class ProviderCommand<T> extends BusyBoxCommand {
             }
         }
         if (providers.isEmpty()) {
-            err.println("No site providers active");
+            err.println("No " + getName() + " providers active");
         }
         return providers;
     }

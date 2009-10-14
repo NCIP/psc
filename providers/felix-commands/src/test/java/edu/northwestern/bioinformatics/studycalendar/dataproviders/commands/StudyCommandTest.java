@@ -56,6 +56,12 @@ public class StudyCommandTest extends TestCase {
         doCommand("study get foo");
     }
 
+    public void testSearchWithNoProviders() throws Exception {
+        expectFoundProviders();
+        expectError("No study providers active");
+        doCommand("study search any");
+    }
+
     public void testSearchOutput() throws Exception {
         expectFoundProviders(sp1);
 
