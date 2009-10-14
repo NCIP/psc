@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * @author Rhett Sutphin
+ * @author John Dzak
  */
 public class CoppaSiteProvider implements SiteProvider {
     private static final String TEST_ENDPOINT =
@@ -47,24 +48,10 @@ public class CoppaSiteProvider implements SiteProvider {
 
         for (Id id: createIds(assignedIdentifiers)) {
             Organization o = searchById(id);
-            sites.add(createSite(o));
+            sites.add(o == null ? null : createSite(o));
         }
 
         return sites;
-    }
-
-    @Deprecated // TODO: implement getSites
-    public Site getSite(String assignedIdentifier) {
-        Organization example = new Organization();
-        II ii = fromAssignedIdentifier(assignedIdentifier).createII();
-        example.setIdentifier(ii);
-
-        Organization[] raw = searchByOrganization(example);
-        if (raw != null && raw.length > 0) {
-            return createSite(raw[0]);
-        } else {
-            return null;
-        }
     }
 
     public List<Site> search(String partialName) {
@@ -138,7 +125,7 @@ public class CoppaSiteProvider implements SiteProvider {
 
     public static class OrganizationIdentifier {
         public static final String ORGANIZATION_II_ROOT = "2.16.840.1.113883.3.26.4.2";
-        public String identifier;
+        private String identifier;
 
         public OrganizationIdentifier(String identifier) {
             this.identifier = identifier;

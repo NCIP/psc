@@ -6,8 +6,7 @@ import gov.nih.nci.coppa.po.Id;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.notNull;
+import static org.easymock.EasyMock.*;
 import org.iso._21090.ENON;
 import org.iso._21090.ENXP;
 import org.iso._21090.EntityNamePartType;
@@ -17,6 +16,7 @@ import java.util.List;
 
 /**
  * @author Rhett Sutphin
+ * @author John Dzak
  */
 public class CoppaSiteProviderTest extends TestCase {
     private CoppaSiteProvider provider;
@@ -38,24 +38,6 @@ public class CoppaSiteProviderTest extends TestCase {
         ENXP actualPart = crit.getName().getPart().get(0);
         assertEquals(EntityNamePartType.DEL, actualPart.getType());
         assertEquals("quux", actualPart.getValue());
-    }
-
-    public void testGetSiteReturnsNullForUnknown() throws Exception {
-        expect(client.search((Organization) notNull())).andReturn(null);
-        mocks.replayMocks();
-
-        Site actual = provider.getSite("any");
-        assertNull(actual);
-    }
-
-    public void testGetSiteReturnsSiteForKnownOrg() throws Exception {
-        expect(client.search((Organization) notNull())).andReturn(new Organization[] {
-            coppaOrganization("NU", "42")
-        });
-        mocks.replayMocks();
-
-        Site actual = provider.getSite("42");
-        assertSite("Wrong site created", "NU", "42", actual);
     }
 
     public void testSearchHandlesNullReturnedArray() throws Exception {
@@ -95,6 +77,16 @@ public class CoppaSiteProviderTest extends TestCase {
         assertEquals("Wrong number of sites", 2, actual.size());
         assertSite("Wrong site 0", "NU", "420", actual.get(0));
         assertSite("Wrong site 1", "NA", "422", actual.get(1));
+    }
+
+    public void testGetSitesReturnsNullForUnknown() throws Exception {
+        expect(client.getById((Id) notNull())).andReturn(null);
+
+        mocks.replayMocks();
+
+        List<Site> actual = provider.getSites(asList("420"));
+        assertEquals("Wrong number of entries", 1, actual.size());
+        assertNull("Wrong site 0", actual.get(0));
     }
 
     private void assertSite(String msg, String expectedName, String expectedIdent, Site actual) {
