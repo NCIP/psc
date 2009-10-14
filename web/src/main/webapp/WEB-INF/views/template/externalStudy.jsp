@@ -27,7 +27,6 @@
       .bundle-list {
           padding-top:5em;
           padding-left:1em;
-          width:100%
       }
 
       .selectedInfo {
@@ -103,7 +102,7 @@
                         ]
                     };
 
-                    bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
+                    bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource);
                 }
             })
         }
