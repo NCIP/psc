@@ -7,6 +7,12 @@
     <title>Plugins list</title>
     <tags:stylesheetLink name="admin"/>
     <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+    <style type="text/css">
+        .yui-dt-col-state_switch {
+            white-space: nowrap;
+        }
+    </style>
+
     <%-- TODO: move common YUI parts to a tag if they are re-used --%>
     <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
         <tags:javascriptLink name="yui/2.7.0/${script}"/>
