@@ -276,15 +276,8 @@ GLOBUS = struct(
   :jaxb_impl  => "com.sun.xml:com.springsource.com.sun.xml.bind:jar:2.1.7",
   :infoset    => "com.sun.xml:com.springsource.com.sun.xml.fastinfoset:jar:1.2.2",
   :staxex     => "org.jvnet.staxex:com.springsource.org.jvnet.staxex:jar:1.0.0",
-  :jimmi      => psc_osgi_artifact(
-                    artifact("com.sun.jimi:jimi:jar:1.0.0.PSC000").from(static_lib("globus/jimi-1_0.jar")),
-                    "Export-Package" => "!com.sun.jimi.core.decoder"),
-  :castor     => psc_osgi_artifact(
-                    artifact("org.exolab.castor:castor-xml:jar:1.2.0.PSC000").from(static_lib("globus/com.springsource.org.exolab.castor.xml-1.2.0.jar")),
-                    "Export-Package" => '!org.exolab.castor,!org.exolab'),
-  :bsf        => psc_osgi_artifact(
-                    artifact("org.apache.bsf:bsf:jar:2.4.0.PSC000").from(static_lib("globus/com.springsource.org.apache.bsf-2.4.0.jar")),
-                    "Export-Package" => "!org,!org.apache,!org.apache.bsf.engines")
+  :castor     => "org.codehaus.castor:com.springsource.org.castor:jar:1.2.0",
+  :bsf        => "org.apache.bsf:com.springsource.org.apache.bsf:jar:2.4.0"
 )
 
 GLOBUS_AXIS_STUB_PACKAGES = %w(
