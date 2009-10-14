@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
@@ -8,37 +9,20 @@ import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
-import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
-import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
-import org.apache.axis.types.URI;
 import org.iso._21090.II;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.framework.BundleContext;
 
-import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class CoppaStudyProvider implements StudyProvider {
-    private static final String TEST_ENDPOINT =
-        "http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudyProtocolService";
-    private static final String STUDY_SITE_ENDPOINT =
-        "http://ctms-services-pa-integration.nci.nih.gov/wsrf/services/cagrid/StudySiteService";
+    private BundleContext bundleContext;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private StudyProtocolServiceClient client;
-    private StudySiteServiceClient studySiteClient;
-
-    public CoppaStudyProvider() {
-        try {
-            // Temporary
-            setClient(new StudyProtocolServiceClient(TEST_ENDPOINT));
-            setStudySiteClient(new StudySiteServiceClient(STUDY_SITE_ENDPOINT));
-        } catch (URI.MalformedURIException e) {
-            throw new RuntimeException(e);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+    public CoppaStudyProvider(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     public List<Study> getStudies(List<Study> parameters) {
@@ -48,7 +32,7 @@ public class CoppaStudyProvider implements StudyProvider {
             if (extension != null) {
                 Id id = studyProtocolIdentifier(extension);
 
-                StudyProtocol raw = getStudyProtocol(id);
+                StudyProtocol raw = CoppaProviderHelper.getCoppaAccessor(bundleContext).getStudyProtocol(id);
 
                 Study found = createStudy(raw);
                 studies.add(found);
@@ -78,7 +62,7 @@ public class CoppaStudyProvider implements StudyProvider {
         ii.setIdentifierName(partialName);
         base.setAssignedIdentifier(ii);
 
-        StudyProtocol[] raw = searchStudyProtocols(base);
+        StudyProtocol[] raw = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, noLimit());
         if (raw == null) {
             return Collections.emptyList();
         } else {
@@ -96,25 +80,11 @@ public class CoppaStudyProvider implements StudyProvider {
 
     //////////// Search Helper Methods
 
-    private StudyProtocol getStudyProtocol(Id id) {
-        try {
-            return client.getStudyProtocol(id);
-        } catch(RemoteException e) {
-            log.error("COPPA study protocol search failed", e);
-            return null;
-        }
-    }
-    private StudyProtocol[] searchStudyProtocols(StudyProtocol protocol) {
+    private static LimitOffset noLimit() {
         LimitOffset lo = new LimitOffset();
         lo.setLimit(Integer.MAX_VALUE);
         lo.setOffset(0);
-
-        try {
-            return client.search(protocol, lo);
-        } catch(RemoteException e) {
-            log.error("COPPA study protocol search failed", e);
-            return new StudyProtocol[0];
-        }
+        return lo;
     }
 
     //////////// Object creation helpers
@@ -138,7 +108,7 @@ public class CoppaStudyProvider implements StudyProvider {
         return s;
     }
 
-    private Map<String, String> extractSecondaryIdentifiers(StudyProtocol p )  {
+    private Map<String, String> extractSecondaryIdentifiers(StudyProtocol p)  {
         MapBuilder<String, String> ids =
                 new MapBuilder<String, String>();
 
@@ -185,35 +155,16 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     private String searchLocalStudyProtocolIdentifier(Id id) {
-        StudySite[] studySite = searchStudySiteByStudyProtocolId(id);
+        StudySite[] studySite = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
         if (studySite != null) {
             for(StudySite s: studySite) {
                 // This is how we find the Organization which is leading
                 // the StudyProtocol.
-                if (s.getFunctionalCode().getCode() == "Lead Organization" && s.getLocalStudyProtocolIdentifier() != null) {
+                if ("Lead Organization".equals(s.getFunctionalCode().getCode()) && s.getLocalStudyProtocolIdentifier() != null) {
                     return s.getLocalStudyProtocolIdentifier().getValue();
                 }
             }            
         }
         return null;
-    }
-
-    private StudySite[] searchStudySiteByStudyProtocolId(Id id) {
-        try {
-            return studySiteClient.getByStudyProtocol(id);
-        } catch (Exception e) {
-            log.error("COPPA study site search failed", e);
-            return new StudySite[0];
-        }
-    }
-
-    //////////// Setters and Getters
-
-    public void setClient(StudyProtocolServiceClient c) {
-        client = c;
-    }
-
-    public void setStudySiteClient(StudySiteServiceClient s) {
-        this.studySiteClient = s;
     }
 }

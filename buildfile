@@ -346,19 +346,44 @@ define "psc" do
 
     desc "Data providers which talk to COPPA"
     define "coppa" do
-      bnd.wrap!
-      bnd.name = "PSC COPPA-based Data Providers"
-      bnd.autostart = false
-      bnd['Bundle-Activator'] =
-        "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.Activator"
-      bnd.import_packages <<
-        "org.apache.axis.types" <<
-        "org.apache.axis.message.addressing"
+      define "common" do
+        bnd.wrap!
+        bnd.name = "PSC COPPA Data Providers Common Library"
+        bnd.autostart = false
 
-      compile.with project('providers:api').and_dependencies, SPRING, OSGI,
-        GLOBUS, CAGRID, COPPA
-      test.using(:junit).with UNIT_TESTING
-      package(:jar)
+        compile.with project('providers:api').and_dependencies, SPRING, OSGI,
+          GLOBUS, CAGRID, COPPA
+        test.using(:junit).with UNIT_TESTING
+        package(:jar)
+      end
+
+      define "direct" do
+        bnd.wrap!
+        bnd.name = "PSC COPPA Direct Data Providers"
+        bnd.description = "A suite of data providers which communicate directly with COPPA"
+        bnd.autostart = false
+        bnd['Bundle-Activator'] =
+          "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
+        bnd.import_packages <<
+          "org.apache.axis.types" <<
+          "org.apache.axis.message.addressing"
+
+        compile.with project('psc:providers:coppa:common').and_dependencies
+        package(:jar)
+      end
+
+      # Pending
+      # define "ihub" do
+      #   bnd.wrap!
+      #   bnd.name = "PSC COPPA Integration Hub Data Providers"
+      #   bnd.description = "A suite of data providers which communicate with COPPA via caBIG Integration Hub"
+      #   bnd.autostart = false
+      #   bnd['Bundle-Activator'] =
+      #     "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
+      #
+      #   compile.with project('psc:providers:coppa:common').and_dependencies
+      #   package(:jar)
+      # end
     end
 
     desc "Commands for interacting with the providers from the felix console"

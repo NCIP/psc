@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.1.0">
+    <OCD name="COPPA Direct Configuration"
+         id="edu.northwestern.bioinformatics.studycalendar.coppa-direct-strategy.configuration"
+         description="Configuration properties for the COPPA direct strategy">
+        <AD id="coppa.grid.pa.baseUri" type="String" cardinality="0" name="PA Grid Service base URI"
+            description="The endpoint for the PA grid service with which this instance should talk.  Usually ends with /wsrf."/>
+        <AD id="coppa.grid.po.baseUri" type="String" cardinality="0" name="PO Grid Service base URI"
+            description="The endpoint for the PO grid service with which this instance should talk.  Usually ends with /wsrf."/>
+    </OCD>
+
+    <Designate pid="edu.northwestern.bioinformatics.studycalendar.coppa-direct-strategy">
+        <Object ocdref="edu.northwestern.bioinformatics.studycalendar.coppa-direct-strategy.configuration"/>
+    </Designate>
+</MetaData>

@@ -1,22 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import static edu.northwestern.bioinformatics.studycalendar.tools.StringTools.humanizeClassName;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaStudyProvider;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
-import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
-import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.notNull;
+import static org.easymock.EasyMock.*;
 import org.iso._21090.CD;
 import org.iso._21090.II;
 import org.iso._21090.ST;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.mock.MockServiceReference;
 
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -26,26 +25,30 @@ import java.util.List;
  */
 public class CoppaStudyProviderTest extends TestCase{
     private CoppaStudyProvider provider;
-    private StudyProtocolServiceClient client;
+    private CoppaAccessor coppaAccessor;
+    private BundleContext bundleContext;
+
     private MockRegistry mocks = new MockRegistry();
-    private StudySiteServiceClient studySiteClient;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        client = mocks.registerMockFor(StudyProtocolServiceClient.class);
-        studySiteClient = mocks.registerMockFor(StudySiteServiceClient.class);
+        bundleContext = mocks.registerMockFor(BundleContext.class);
+        coppaAccessor = mocks.registerMockFor(CoppaAccessor.class);
 
-        provider = new CoppaStudyProvider();
-        provider.setClient(client);
-        provider.setStudySiteClient(studySiteClient);
+        MockServiceReference ref = new MockServiceReference();
+        expect(bundleContext.getServiceReference(CoppaProviderHelper.ACCESSOR_SERVICE)).
+            andStubReturn(ref);
+        expect(bundleContext.getService(ref)).andStubReturn(coppaAccessor);
+
+        provider = new CoppaStudyProvider(bundleContext);
     }
 
     public void testSearchWithOneResult() throws Exception{
-        expect(client.search((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
             coppaStudyProtocol("NCI-123", "Official", "Public")
         });
-        expect(studySiteClient.getByStudyProtocol((Id) notNull())).andReturn(null);
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(null);
         mocks.replayMocks();
 
         List<Study> actual = provider.search("NCI");
@@ -55,7 +58,7 @@ public class CoppaStudyProviderTest extends TestCase{
     }
 
     public void testSearchWithNoResults() throws Exception{
-        expect(client.search((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null);
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null);
         mocks.replayMocks();
 
         List<Study> actual = provider.search("NOTHING");
@@ -64,11 +67,11 @@ public class CoppaStudyProviderTest extends TestCase{
     }
 
     public void testGetStudies() throws Exception {
-        expect(client.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext A", "Off A", "Pub A"));
-        expect(client.getStudyProtocol((Id) notNull())).andReturn(null);
-        expect(client.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext C", "Off C", "Pub C"));
+        expect(coppaAccessor.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext A", "Off A", "Pub A"));
+        expect(coppaAccessor.getStudyProtocol((Id) notNull())).andReturn(null);
+        expect(coppaAccessor.getStudyProtocol((Id) notNull())).andReturn(coppaStudyProtocol("Ext C", "Off C", "Pub C"));
 
-        expect(studySiteClient.getByStudyProtocol((Id) notNull())).andReturn(null).times(3);
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(null).times(3);
         mocks.replayMocks();
 
         List<Study> actual = provider.getStudies(asList(
@@ -84,7 +87,7 @@ public class CoppaStudyProviderTest extends TestCase{
     }
 
     public void testCreateStudy() throws Exception {
-        expect(studySiteClient.getByStudyProtocol((Id) notNull())).andReturn(new StudySite[] {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(new StudySite[] {
             coppaLeadStudySite("Local")
         });
         mocks.replayMocks();

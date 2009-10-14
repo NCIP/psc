@@ -1,15 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaAccessor;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import org.iso._21090.II;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CoppaProviderHelper {
+    public static final String ACCESSOR_SERVICE = CoppaAccessor.class.getName();
+
+    public static CoppaAccessor getCoppaAccessor(BundleContext bundleContext) {
+        ServiceReference sr = bundleContext.getServiceReference(ACCESSOR_SERVICE);
+        if (sr == null) {
+            throw new StudyCalendarSystemException("Cannot provide studies; no %s available", ACCESSOR_SERVICE);
+        }
+        return (CoppaAccessor) bundleContext.getService(sr);
+    }
+
     public static Site pscSite(Organization organization) {
         Site site = new Site();
         site.setName(organization.getName().getPart().get(0).getValue());
@@ -84,5 +98,4 @@ public class CoppaProviderHelper {
             throw new RuntimeException(e);
         }
     }
-
 }

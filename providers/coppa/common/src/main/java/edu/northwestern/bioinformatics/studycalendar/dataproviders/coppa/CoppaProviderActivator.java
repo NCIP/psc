@@ -5,19 +5,24 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProv
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.cm.ManagedService;
 
 /**
  * @author Rhett Sutphin
  */
-public class Activator implements BundleActivator {
+public abstract class CoppaProviderActivator<T extends CoppaAccessor & ManagedService> implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
-        bundleContext.registerService(SiteProvider.class.getName(), new CoppaSiteProvider(), null);
+        createCoppaAccessor().register(bundleContext);
+        bundleContext.registerService(SiteProvider.class.getName(),
+            new CoppaSiteProvider(), null);
         bundleContext.registerService(StudyProvider.class.getName(),
-            new CoppaStudyProvider(), null);
+            new CoppaStudyProvider(bundleContext), null);
         bundleContext.registerService(StudySiteProvider.class.getName(),
             new CoppaStudySiteProvider(), null);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
     }
+
+    protected abstract T createCoppaAccessor();
 }
