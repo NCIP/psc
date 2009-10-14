@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
+package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaSiteProvider;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Id;
 import gov.nih.nci.coppa.po.Organization;

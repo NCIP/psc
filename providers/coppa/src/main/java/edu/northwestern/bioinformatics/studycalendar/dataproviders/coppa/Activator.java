@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
+package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;

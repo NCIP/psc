@@ -1,8 +1,9 @@
-package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
+package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import static edu.northwestern.bioinformatics.studycalendar.tools.StringTools.humanizeClassName;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaStudyProvider;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;

@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct;
+package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -91,7 +91,7 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public String providerToken() {
-        return "coppa-direct";
+        return "coppa";
     }
 
     //////////// Search Helper Methods

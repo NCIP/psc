@@ -344,13 +344,13 @@ define "psc" do
       package(:jar)
     end
 
-    desc "Data providers which talk directly to COPPA"
-    define "coppa-direct" do
+    desc "Data providers which talk to COPPA"
+    define "coppa" do
       bnd.wrap!
       bnd.name = "PSC COPPA-based Data Providers"
       bnd.autostart = false
       bnd['Bundle-Activator'] =
-        "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
+        "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.Activator"
       bnd.import_packages <<
         "org.apache.axis.types" <<
         "org.apache.axis.message.addressing"

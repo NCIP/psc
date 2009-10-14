@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.helpers;
+package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.coppa.po.Organization;
