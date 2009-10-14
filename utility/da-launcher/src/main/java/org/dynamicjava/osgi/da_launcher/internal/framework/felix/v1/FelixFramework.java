@@ -1,13 +1,14 @@
 package org.dynamicjava.osgi.da_launcher.internal.framework.felix.v1;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Properties;
 import org.apache.felix.framework.Felix;
 import org.dynamicjava.osgi.da_launcher.internal.framework.OsgiFrameworkSettings;
 import org.dynamicjava.osgi.da_launcher.internal.framework.support.AbstractOsgiFramework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Properties;
 
 
 public class FelixFramework extends AbstractOsgiFramework {
@@ -28,8 +29,6 @@ public class FelixFramework extends AbstractOsgiFramework {
 		try {
             //starting felix directly instead of using main method of the felix Main class
             Properties configMap = getSettings().getFrameworkSpecificProperties();
-            configMap.put("felix.embedded.execution", "true");
-            configMap.put("felix.log.level", "0");
             configMap.put("org.osgi.framework.storage", getSettings().getProfileDir());
             Felix m_felix = new Felix(configMap);
             m_felix.start();
