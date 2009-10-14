@@ -43,6 +43,10 @@
           padding: 0;
       }
 
+      .lightBoxContentRow {
+          padding:1em;
+      }
+
     </style>
     <script type="text/javascript">
         var studyAutocompleter;
@@ -85,7 +89,7 @@
                         { key: "assigned_identifier", label: "Assigned Identifier", sortable: true },
                         { key: "provider", label:"Provider", sortable:true},
                         { key: "secondary_identifiers", label: "Secondary Identifier", sortable: true, formatter: secondaryIdentifierFormatter},
-                        { key: "button", label:"Show record data", formatter:myButtonFormatter}
+                        { key: "button", label: "", formatter:myButtonFormatter}
                     ];
 
                     var myDataSource = new YAHOO.util.DataSource(response.responseJSON);
@@ -98,7 +102,7 @@
                             { key: "assigned_identifier"},
                             { key: "provider"},
                             { key: "secondary_identifiers", formatter: secondaryIdentifierFormatter},
-                            { key: "button", label:"Show record data", formatter:myButtonFormatter}
+                            { key: "button", label: "", formatter:myButtonFormatter}
                         ]
                     };
 
@@ -110,7 +114,7 @@
         var myButtonFormatter = function (elCell, oRecord, oCollumn, oData) {
             var container = jQuery('<div class="row" />')
             var divSubmit = jQuery('<div class="submit" />')
-            var submitButton = jQuery('<input type="submit" value="Assign" />')
+            var submitButton = jQuery('<input type="submit" value="Associate" />')
 
             divSubmit.append(submitButton);
             container.append(divSubmit);
@@ -125,14 +129,21 @@
             var provider = oRecord.getData('provider');
             var secondaryIds = oRecord.getData('secondary_identifiers');
             var studyIdentifier = "${study.assignedIdentifier}";
+            var longTitle = oRecord.getData('long_title');
 
             var text1 = "<p class='selectedInfo'> You picked '" + assignedId + "' from '" + provider + "'. <br> Pick the identifier to use with this study in PSC: <br>";
             var container = jQuery('#edit-notes-lightbox');
 
             container.empty();
 
-            container.append(jQuery('<h1> Assigning new study identifier </h1> '))
+            container.append(jQuery('<h1>Associate with ' + assignedId + '</h1> '))
 
+            var divRow = jQuery('<div class="lightBoxContentRow" />')
+            divRow.append('You are associating this template with ' + assignedId +' using provider ' + provider+ '. That study\'s title is: \"' + longTitle +
+                                 '\".<p>Do you want to change the visible identifier for the template at the same time?')
+            container. append(divRow);
+
+            
             var input1 = jQuery('<input class="radio" type="radio" name="group" checked value="' + studyIdentifier +'" >' )
             var input2 = jQuery('<input class="radio" type="radio" name="group" value="' + assignedId + '">')
 
