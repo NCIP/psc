@@ -120,12 +120,14 @@ function createStudyControls() {
     h1.appendChild(controlBox)
 
     var renameControl = createRenameControl('study', studyId, "Set protocol identifier", 'study')
+    var externalStudyControl = createExternalStudyControl('study', studyId, "Associate with external study")
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename", onComplete:function() {hideShowReleaseTemplateButton()}
     })
 
     controlBox.appendChild(renameControl)
+    controlBox.appendChild(externalStudyControl)
 }
 
 function createAllEpochControls() {
@@ -187,6 +189,10 @@ function createRenameControl(objectType, objectId, name, nameOfTheElement) {
         name ="Set name"
     }
     return createControlAnchor("rename", name, "Change the name of this " + nameOfTheElement, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+}
+
+function createExternalStudyControl(objectType, objectId, name) {
+    return createControlAnchor("external", name, "Associate with external study ", '<c:url value="/pages/cal/template/externalStudy"/>', objectType, objectId)
 }
 
 function createDeleteControl(objectType, objectId, nameOfTheElement) {
