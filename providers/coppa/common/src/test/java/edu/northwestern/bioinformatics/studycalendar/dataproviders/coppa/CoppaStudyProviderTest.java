@@ -95,7 +95,7 @@ public class CoppaStudyProviderTest extends TestCase{
         StudyProtocol sp = coppaStudyProtocol("NCI-123", "Official", "Public");
         Study actual = provider.createStudy(sp);
 
-        assertSecondaryIdentifier(actual, "extension", "NCI-123");
+        assertSecondaryIdentifier(actual, CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, "NCI-123");
         assertSecondaryIdentifier(actual, "publicTitle", "Public");
         assertSecondaryIdentifier(actual, "officialTitle", "Official");
         assertSecondaryIdentifier(actual, "localStudyProtocolIdentifier", "Local");
@@ -108,7 +108,7 @@ public class CoppaStudyProviderTest extends TestCase{
             pscStudy("Ext C")
         ));
 
-        assertEquals("Wrong Study", "Ext B", actual.getSecondaryIdentifierValue("extension"));
+        assertEquals("Wrong Study", "Ext B", actual.getSecondaryIdentifierValue("COPPA Identifier"));
     }
     
     public void testDetectWithStudyNotFound() {
@@ -166,7 +166,7 @@ public class CoppaStudyProviderTest extends TestCase{
     private Study pscStudy(String coppaExtension) {
         Study study = new Study();
         StudySecondaryIdentifier id = new StudySecondaryIdentifier();
-        id.setType("extension");
+        id.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
         id.setValue(coppaExtension);
         study.addSecondaryIdentifier(id);
         return study;
