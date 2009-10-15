@@ -14,7 +14,7 @@ public abstract class CoppaProviderActivator<T extends CoppaAccessor & ManagedSe
     public void start(BundleContext bundleContext) throws Exception {
         createCoppaAccessor().register(bundleContext);
         bundleContext.registerService(SiteProvider.class.getName(),
-            new CoppaSiteProvider(), null);
+            new CoppaSiteProvider(bundleContext), null);
         bundleContext.registerService(StudyProvider.class.getName(),
             new CoppaStudyProvider(bundleContext), null);
         bundleContext.registerService(StudySiteProvider.class.getName(),

@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaAccessor;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
@@ -11,12 +11,14 @@ import gov.nih.nci.coppa.services.pa.StudySite;
 import gov.nih.nci.coppa.services.pa.faults.PAFault;
 import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
 import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
+import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
+import gov.nih.nci.coppa.po.Organization;
 import org.apache.axis.types.URI;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.cm.ConfigurationException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
 
     private static final String STUDY_PROTOCOL_SERVICE_RELATIVE = "/services/cagrid/StudyProtocolService";
     private static final String STUDY_SITE_SERVICE_RELATIVE = "/services/cagrid/StudySiteService";
+    private static final String ORGANIZATION_SERVICE_RELATIVE = "/services/cagrid/Organization";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -43,6 +46,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
 
     private StudyProtocolServiceClient studyProtocolServiceClient;
     private StudySiteServiceClient studySiteServiceClient;
+    private OrganizationClient organizationClient;
 
     public void register(BundleContext bundleContext) {
         registration = bundleContext.registerService(new String[] {
@@ -56,7 +60,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
         if (dictionary != null) {
             registration.setProperties(dictionary);
             initializePaClients((String) dictionary.get(PA_SERVICE_BASE_KEY));
-//            initializePoClients((String) dictionary.get(PO_SERVICE_BASE_KEY));
+            initializePoClients((String) dictionary.get(PO_SERVICE_BASE_KEY));
         }
     }
 
@@ -72,6 +76,20 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
             throw new StudyCalendarSystemException("Failed to create one of the PA client instances", e);
         } catch (RemoteException e) {
             throw new StudyCalendarSystemException("Failed to create one of the PA client instances", e);
+        }
+    }
+
+    private void initializePoClients(String poBase) {
+        if (poBase == null) {
+            throw new StudyCalendarValidationException(
+                PO_SERVICE_BASE_KEY + " not set; cannot initialize " + getClass().getName());
+        }
+        try {
+            organizationClient = new OrganizationClient(uriJoin(poBase, ORGANIZATION_SERVICE_RELATIVE));
+        } catch (URI.MalformedURIException e) {
+            throw new StudyCalendarSystemException("Failed to create one of the PO client instances", e);
+        } catch (RemoteException e) {
+            throw new StudyCalendarSystemException("Failed to create one of the PO client instances", e);
         }
     }
 
@@ -110,6 +128,24 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
         } catch (RemoteException e) {
             log.error("COPPA study site search failed", e);
             return new StudySite[0];
+        }
+    }
+
+    public Organization[] searchOrganizations(Organization criteria) {
+        try {
+            return organizationClient.search(criteria);
+        } catch (RemoteException e) {
+            log.error("COPPA organization search failed", e);
+            return new Organization[0];
+        }
+    }
+
+    public Organization getOrganization(gov.nih.nci.coppa.po.Id id) {
+        try {
+            return organizationClient.getById(id);
+        } catch (RemoteException e) {
+            log.error("COPPA organization search failed", e);
+            return null;
         }
     }
 }

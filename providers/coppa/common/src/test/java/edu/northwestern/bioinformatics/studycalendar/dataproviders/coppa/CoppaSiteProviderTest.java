@@ -1,16 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaSiteProvider;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Id;
 import gov.nih.nci.coppa.po.Organization;
-import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.notNull;
 import org.iso._21090.ENON;
 import org.iso._21090.ENXP;
 import org.iso._21090.EntityNamePartType;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.mock.MockServiceReference;
 
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -21,16 +23,21 @@ import java.util.List;
  */
 public class CoppaSiteProviderTest extends TestCase {
     private CoppaSiteProvider provider;
-    private OrganizationClient client;
     private MockRegistry mocks = new MockRegistry();
+    private CoppaAccessor coppaAccessor;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        client = mocks.registerMockFor(OrganizationClient.class);
+        BundleContext bundleContext = mocks.registerMockFor(BundleContext.class);
+        coppaAccessor = mocks.registerMockFor(CoppaAccessor.class);
 
-        provider = new CoppaSiteProvider();
-        provider.setClient(client);
+        provider = new CoppaSiteProvider(bundleContext);
+                
+        MockServiceReference ref = new MockServiceReference();
+        expect(bundleContext.getServiceReference(CoppaProviderHelper.ACCESSOR_SERVICE)).
+            andStubReturn(ref);
+        expect(bundleContext.getService(ref)).andStubReturn(coppaAccessor);
     }
 
     public void testNameSearchCriterionIsDelForPartialName() throws Exception {
@@ -42,7 +49,7 @@ public class CoppaSiteProviderTest extends TestCase {
     }
 
     public void testSearchHandlesNullReturnedArray() throws Exception {
-        expect(client.search((Organization) notNull())).andReturn(null);
+        expect(coppaAccessor.searchOrganizations((Organization) notNull())).andReturn(null);
         mocks.replayMocks();
 
         List<Site> actual = provider.search("foo");
@@ -50,7 +57,7 @@ public class CoppaSiteProviderTest extends TestCase {
     }
 
     public void testSearchReturnsCreatedSites() throws Exception {
-        expect(client.search((Organization) notNull())).andReturn(new Organization[] {
+        expect(coppaAccessor.searchOrganizations((Organization) notNull())).andReturn(new Organization[] {
             coppaOrganization("NU", "420"),
             coppaOrganization("NA", "422"),
             coppaOrganization("NO", "442")
@@ -65,10 +72,10 @@ public class CoppaSiteProviderTest extends TestCase {
     }
 
     public void testGetSitesReturnsCreatedSites() throws Exception {
-        expect(client.getById((Id) notNull())).andReturn(
+        expect(coppaAccessor.getOrganization((Id) notNull())).andReturn(
             coppaOrganization("NU", "420")
         );
-        expect(client.getById((Id) notNull())).andReturn(
+        expect(coppaAccessor.getOrganization((Id) notNull())).andReturn(
             coppaOrganization("NA", "422")
         );
 
@@ -81,7 +88,7 @@ public class CoppaSiteProviderTest extends TestCase {
     }
 
     public void testGetSitesReturnsNullForUnknown() throws Exception {
-        expect(client.getById((Id) notNull())).andReturn(null);
+        expect(coppaAccessor.getOrganization((Id) notNull())).andReturn(null);
 
         mocks.replayMocks();
 

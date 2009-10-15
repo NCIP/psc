@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import gov.nih.nci.coppa.common.LimitOffset;
+import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
@@ -24,4 +25,8 @@ public interface CoppaAccessor {
     StudyProtocol[] searchStudyProtocols(StudyProtocol criteria, LimitOffset limit);
 
     StudySite[] searchStudySitesByStudyProtocolId(Id id);
+
+    Organization[] searchOrganizations(Organization criteria);
+
+    Organization getOrganization(gov.nih.nci.coppa.po.Id id);
 }
