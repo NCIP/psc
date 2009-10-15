@@ -28,7 +28,8 @@ public class CoppaStudyProvider implements StudyProvider {
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> studies = new ArrayList<Study>(parameters.size());
         for (Study param : parameters) {
-            String extension = param.getSecondaryIdentifierValue("extension");
+            String extension = param.getSecondaryIdentifierValue(
+                CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
             if (extension != null) {
                 Id id = studyProtocolIdentifier(extension);
 
@@ -42,11 +43,12 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public Study detect(Study param, Collection<Study> studies) {
-        String extension = param.getSecondaryIdentifierValue("extension");
+        String extension = param.getSecondaryIdentifierValue(
+            CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
 
         if (extension != null) {
             for (Study study : studies) {
-                if (extension.equals(study.getSecondaryIdentifierValue("extension"))) {
+                if (extension.equals(study.getSecondaryIdentifierValue(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE))) {
                     return study;
                 }
             }
@@ -75,7 +77,7 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public String providerToken() {
-        return "coppa";
+        return CoppaProviderConstants.PROVIDER_TOKEN;
     }
 
     //////////// Search Helper Methods
@@ -113,7 +115,7 @@ public class CoppaStudyProvider implements StudyProvider {
                 new MapBuilder<String, String>();
 
         if (p.getAssignedIdentifier() != null) {
-            ids.put("extension", p.getAssignedIdentifier().getExtension());
+            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null) {

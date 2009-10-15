@@ -70,7 +70,7 @@ public class CoppaSiteProvider implements SiteProvider {
     }
 
     public String providerToken() {
-        return "coppa";
+        return CoppaProviderConstants.PROVIDER_TOKEN;
     }
 
     // package level for testing

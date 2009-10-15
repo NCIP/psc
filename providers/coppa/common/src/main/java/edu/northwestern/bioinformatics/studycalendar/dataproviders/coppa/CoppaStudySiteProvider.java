@@ -136,7 +136,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
     }
 
     public String providerToken() {
-        return "coppa";
+        return CoppaProviderConstants.PROVIDER_TOKEN;
     }
 
     public void setClient(StudySiteServiceClient client) {
