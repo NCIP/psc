@@ -5,14 +5,16 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaAccessor;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.coppa.common.LimitOffset;
+import gov.nih.nci.coppa.po.Organization;
+import gov.nih.nci.coppa.po.ResearchOrganization;
+import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
 import gov.nih.nci.coppa.services.pa.faults.PAFault;
 import gov.nih.nci.coppa.services.pa.studyprotocolservice.client.StudyProtocolServiceClient;
 import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
-import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
-import gov.nih.nci.coppa.po.Organization;
+import gov.nih.nci.coppa.services.structuralroles.researchorganization.client.ResearchOrganizationClient;
 import org.apache.axis.types.URI;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -39,6 +41,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
     private static final String STUDY_PROTOCOL_SERVICE_RELATIVE = "/services/cagrid/StudyProtocolService";
     private static final String STUDY_SITE_SERVICE_RELATIVE = "/services/cagrid/StudySiteService";
     private static final String ORGANIZATION_SERVICE_RELATIVE = "/services/cagrid/Organization";
+    private static final String RESEARCH_ORGANIZATION_ENDPOINT = "/services/cagrid/ResearchOrganization";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -47,6 +50,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
     private StudyProtocolServiceClient studyProtocolServiceClient;
     private StudySiteServiceClient studySiteServiceClient;
     private OrganizationClient organizationClient;
+    private ResearchOrganizationClient researchOrganizationClient;
 
     public void register(BundleContext bundleContext) {
         registration = bundleContext.registerService(new String[] {
@@ -86,6 +90,7 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
         }
         try {
             organizationClient = new OrganizationClient(uriJoin(poBase, ORGANIZATION_SERVICE_RELATIVE));
+            researchOrganizationClient = new ResearchOrganizationClient(uriJoin(poBase, RESEARCH_ORGANIZATION_ENDPOINT));
         } catch (URI.MalformedURIException e) {
             throw new StudyCalendarSystemException("Failed to create one of the PO client instances", e);
         } catch (RemoteException e) {
@@ -146,6 +151,15 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
         } catch (RemoteException e) {
             log.error("COPPA organization search failed", e);
             return null;
+        }
+    }
+
+    public ResearchOrganization[] getResearchOrganizations(gov.nih.nci.coppa.po.Id[] ids ) {
+        try {
+            return researchOrganizationClient.getByIds(ids);
+        } catch (RemoteException e) {
+            log.error("COPPA research organization search failed", e);
+            return new ResearchOrganization[0];
         }
     }
 }

@@ -1,20 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaStudySiteProvider;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
-import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import gov.nih.nci.coppa.services.pa.Id;
-import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
-import gov.nih.nci.coppa.services.structuralroles.researchorganization.client.ResearchOrganizationClient;
 import junit.framework.TestCase;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.notNull;
 import org.iso._21090.*;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
@@ -25,26 +24,28 @@ import java.util.List;
  */
 public class CoppaStudySiteProviderTest extends TestCase {
     private CoppaStudySiteProvider provider;
-    private StudySiteServiceClient client;
     private MockRegistry mocks = new MockRegistry();
-    private ResearchOrganizationClient researchOrgClient;
-    private OrganizationClient organizationClient;
+    private CoppaAccessor coppaAccessor;
+    private BundleContext bundleContext;
+
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        client = mocks.registerMockFor(StudySiteServiceClient.class);
-        researchOrgClient = mocks.registerMockFor(ResearchOrganizationClient.class);
-        organizationClient = mocks.registerMockFor(OrganizationClient.class);
+        bundleContext = mocks.registerMockFor(BundleContext.class);
+        coppaAccessor = mocks.registerMockFor(CoppaAccessor.class);
 
-        provider = new CoppaStudySiteProvider();
-        provider.setClient(client);
-        provider.setResearchOrganizationClient(researchOrgClient);
-        provider.setOrganizationClient(organizationClient);
+        MockServiceReference ref = new MockServiceReference();
+        expect(bundleContext.getServiceReference(CoppaProviderHelper.ACCESSOR_SERVICE)).
+            andStubReturn(ref);
+        expect(bundleContext.getService(ref)).andStubReturn(coppaAccessor);
+
+
+        provider = new CoppaStudySiteProvider(bundleContext);
     }
 
     public void testGetAssociatedSitesWithEmptyStudyList() throws Exception {
-        expect(client.getByStudyProtocol((Id) notNull())).andReturn(
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
             new gov.nih.nci.coppa.services.pa.StudySite[0]
         );
 
@@ -56,7 +57,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
     }
 
     public void testGetAssociatedSitesWithNoResults() throws Exception {
-        expect(client.getByStudyProtocol((Id) notNull())).andReturn(
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
             new gov.nih.nci.coppa.services.pa.StudySite[0]
         );
 
@@ -71,20 +72,20 @@ public class CoppaStudySiteProviderTest extends TestCase {
     }
 
     public void testGetAssociatedSitesWithResults() throws Exception {
-        expect(client.getByStudyProtocol((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
             coppaStudySite("Ext SS", coppaResearchOrg("Ext RO", "Player Ext RO"))
         });
 
-        expect(researchOrgClient.getByIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
+        expect(coppaAccessor.getResearchOrganizations((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
             coppaResearchOrg("Ext RO A", "Player Ext RO A"),
             coppaResearchOrg("Ext RO B", "Player Ext RO B")
         });
 
-        expect(organizationClient.getById((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
+        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
             coppaOrganization("Name A", "Ext O A")
         );            
 
-        expect(organizationClient.getById((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
+        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
             coppaOrganization("Name B", "Ext O B")
         );
 
