@@ -6,27 +6,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
-import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
 import gov.nih.nci.coppa.services.pa.Id;
-import gov.nih.nci.coppa.services.pa.studysiteservice.client.StudySiteServiceClient;
-import gov.nih.nci.coppa.services.structuralroles.researchorganization.client.ResearchOrganizationClient;
 import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider {
-
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    private StudySiteServiceClient client;
-    private OrganizationClient organizationClient;
-    private ResearchOrganizationClient researchOrgClient;
-
     private BundleContext bundleContext;
 
     public CoppaStudySiteProvider(BundleContext bundleContext) {
