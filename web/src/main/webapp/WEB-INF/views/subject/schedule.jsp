@@ -296,7 +296,7 @@
                             <ul>
                             <c:forEach items="${assignment.currentAeNotifications}" var="notification" varStatus="innerCounter">
                                 <li id="notifiction-${notification.gridId}" class="notification-list ${assignment.name} remove ${commons:parity(innerCounter.index)}" study="${assignment.name}">
-                                    <a href="<c:url value="${notification.message}"/>">${notification.title}</a>
+                                    <label>${notification.title}</label>
                                     <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
                                        notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
                                 </li>
