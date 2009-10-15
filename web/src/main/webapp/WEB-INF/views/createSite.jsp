@@ -12,10 +12,10 @@
             width: 35%;
         }
         div.submit {
-            text-align: right;
+            text-align: center;
         }
         form {
-            width: 20em;
+            width: 40em;
         }
     </style>
     <tags:javascriptLink name="sites/provided-sites" />
