@@ -4,12 +4,14 @@ import org.apache.commons.collections15.EnumerationUtils;
 import org.apache.felix.cm.PersistenceManager;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.osgi.framework.Constants;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -25,6 +27,9 @@ import java.util.Vector;
  */
 @Transactional(readOnly = true)
 public class PscFelixPersistenceManager extends HibernateDaoSupport implements PersistenceManager {
+    private static final Collection<String> EXCLUDED_PROPERTIES =
+        Arrays.asList("service.bundleLocation");
+
     public boolean exists(final String pid) {
         return (Boolean) getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -44,7 +49,9 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
         }
         Dictionary out = new Hashtable();
         for (OsgiConfigurationProperty property : list) {
-            out.put(property.getName(), property.getValue());
+            if (!EXCLUDED_PROPERTIES.contains(property.getName())) {
+                out.put(property.getName(), property.getValue());
+            }
         }
         return out;
     }
@@ -56,12 +63,13 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
             = getHibernateTemplate().find("from OsgiConfigurationProperty p order by p.servicePid, p.name");
         Map<String, Dictionary> byPid = new LinkedHashMap<String, Dictionary>();
         for (OsgiConfigurationProperty property : all) {
-            if (!byPid.containsKey(property.getServicePid())) {
-                byPid.put(property.getServicePid(), new Hashtable());
+            if (!EXCLUDED_PROPERTIES.contains(property.getName())) {
+                if (!byPid.containsKey(property.getServicePid())) {
+                    byPid.put(property.getServicePid(), new Hashtable());
+                }
+                byPid.get(property.getServicePid()).put(property.getName(), property.getValue());
             }
-            byPid.get(property.getServicePid()).put(property.getName(), property.getValue());
         }
-        System.out.println(byPid.values());
         return new Vector<Dictionary>(byPid.values()).elements();
     }
 
@@ -81,7 +89,7 @@ public class PscFelixPersistenceManager extends HibernateDaoSupport implements P
             }
         }
         for (String newKey : newKeys) {
-            if (!existingKeys.contains(newKey)) {
+            if (!EXCLUDED_PROPERTIES.contains(newKey) && !existingKeys.contains(newKey)) {
                 getHibernateTemplate().save(
                     OsgiConfigurationProperty.create(pid, newKey, values.get(newKey)));
             }
