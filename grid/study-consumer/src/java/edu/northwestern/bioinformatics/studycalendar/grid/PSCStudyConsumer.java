@@ -5,9 +5,11 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
@@ -19,6 +21,7 @@ import gov.nih.nci.cabig.ccts.domain.NonTreatmentEpochType;
 import gov.nih.nci.cabig.ccts.domain.OrganizationAssignedIdentifierType;
 import gov.nih.nci.cabig.ccts.domain.StudyOrganizationType;
 import gov.nih.nci.cabig.ccts.domain.StudySiteType;
+import gov.nih.nci.cabig.ccts.domain.SystemAssignedIdentifierType;
 import gov.nih.nci.cabig.ccts.domain.TreatmentEpochType;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import gov.nih.nci.ccts.grid.studyconsumer.common.StudyConsumerI;
@@ -59,7 +62,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
-
+    private static final String COPPA_INDENTIFIER_TYPE = "COPPA Identifier";
+    
     private SiteDao siteDao;
 
     private StudyService studyService;
@@ -89,8 +93,38 @@ public class PSCStudyConsumer implements StudyConsumerI {
             return;
         }
 
+        // <-- Start added for COPPA Identifier -->
+        // 1.Get the COPPA Identifier(if present in the request)
+        String coppaIdentifier = findCoppaIdentifier(studyDto);
+        boolean hasCoppaIdentifier = false;
+        if ((coppaIdentifier != null) && !coppaIdentifier.equals("")){
+        	// 2.Check if COPPA Identifier already exist in DB or not
+            // If exist then return
+        	if (studyDao.getStudySecondaryIdentifierByCoppaIdentifier("COPPA Identifier", coppaIdentifier) != null) {
+                logger.info("Already a study with the same Coppa Identifier (" + coppaIdentifier
+                        + ") exists.Returning without processing the request.");
+                return;
+            }
+        	hasCoppaIdentifier = true;
+        }
+        // <-- End added for COPPA Identifier -->
+        
         Study study = TemplateSkeletonCreatorImpl.createBase(studyDto.getShortTitleText());
         study.setAssignedIdentifier(ccIdentifier);
+        // 3.Add COPPA Identifier as secondary Identifier in Study
+        if(hasCoppaIdentifier){
+        	StudySecondaryIdentifier studySecondaryIdentifier = new StudySecondaryIdentifier();
+        	studySecondaryIdentifier.setStudy(study);
+        	// set coppa type from CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE
+        	studySecondaryIdentifier.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+        	// set value from the request
+        	studySecondaryIdentifier.setValue(coppaIdentifier);
+        	// Add coppa identifier as secondaryIndentifier in study
+        	study.addSecondaryIdentifier(studySecondaryIdentifier);
+        	// Set the provider as COPPA(CoppaProviderConstants.PROVIDER_TOKEN)
+        	study.setProvider(CoppaProviderConstants.PROVIDER_TOKEN);
+        }
+        
         study.setGridId(studyDto.getGridId());
         study.setLongTitle(studyDto.getLongTitleText());
 
@@ -102,9 +136,29 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
         studyService.save(study);
         logger.info("Created the study :" + study.getId());
-
     }
 
+	/**
+     * This method will return the COPPA identifier
+     *
+     * @param studyDto
+     * @return
+     * @throws InvalidStudyException
+     */
+    private String findCoppaIdentifier(final gov.nih.nci.cabig.ccts.domain.Study studyDto){
+        String coppaIdentifier = null;
+        if (studyDto != null) {
+            for (IdentifierType identifierType : studyDto.getIdentifier()) {
+                if (identifierType instanceof SystemAssignedIdentifierType
+                        && StringUtils.equals(identifierType.getType(), COPPA_INDENTIFIER_TYPE)) {
+                	coppaIdentifier = identifierType.getValue();
+                    break;
+                }
+            }
+        }
+        return coppaIdentifier;
+    }
+    
     /**
      * does nothing as we are already  commiting Study message by default.
      *
