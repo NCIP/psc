@@ -118,22 +118,22 @@ public class CoppaStudyProvider implements StudyProvider {
             ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
         }
 
-        if (p.getPublicTitle() != null) {
-            ids.put("publicTitle", p.getPublicTitle().getValue());
+        if (p.getPublicTitle() != null && p.getPublicTitle().getValue() != null) {
+            ids.put("Public Title", p.getPublicTitle().getValue());
         }
 
-        if (p.getOfficialTitle() != null) {
-            ids.put("officialTitle", p.getOfficialTitle().getValue());
+        if (p.getOfficialTitle() != null && p.getOfficialTitle().getValue() != null) {
+            ids.put("Official Title", p.getOfficialTitle().getValue());
         }
 
         if (p.getAssignedIdentifier() != null) {
             Id studyProtocolId = studyProtocolIdentifier(
                     p.getAssignedIdentifier().getExtension());
 
-            String localStudyProtocolIdentifier = searchLocalStudyProtocolIdentifier(studyProtocolId);
+            String leadOrgIdent = findLeadOrganizationIdentifier(studyProtocolId);
 
-            if (localStudyProtocolIdentifier != null) {
-                ids.put("localStudyProtocolIdentifier", localStudyProtocolIdentifier);
+            if (leadOrgIdent != null) {
+                ids.put("Lead Organization Identifier", leadOrgIdent);
             }
         }
 
@@ -156,8 +156,8 @@ public class CoppaStudyProvider implements StudyProvider {
         return id;
     }
 
-    private String searchLocalStudyProtocolIdentifier(Id id) {
-        StudySite[] studySite = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
+    private String findLeadOrganizationIdentifier(Id studyProtocolId) {
+        StudySite[] studySite = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(studyProtocolId);
         if (studySite != null) {
             for(StudySite s: studySite) {
                 // This is how we find the Organization which is leading

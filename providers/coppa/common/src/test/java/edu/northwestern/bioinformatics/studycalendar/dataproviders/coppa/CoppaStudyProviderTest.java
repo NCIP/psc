@@ -96,9 +96,9 @@ public class CoppaStudyProviderTest extends TestCase{
         Study actual = provider.createStudy(sp);
 
         assertSecondaryIdentifier(actual, CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, "NCI-123");
-        assertSecondaryIdentifier(actual, "publicTitle", "Public");
-        assertSecondaryIdentifier(actual, "officialTitle", "Official");
-        assertSecondaryIdentifier(actual, "localStudyProtocolIdentifier", "Local");
+        assertSecondaryIdentifier(actual, "Public Title", "Public");
+        assertSecondaryIdentifier(actual, "Official Title", "Official");
+        assertSecondaryIdentifier(actual, "Lead Organization Identifier", "Local");
     }
 
     public void testDetectWithStudyFound() {
