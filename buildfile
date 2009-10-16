@@ -1016,12 +1016,6 @@ define "psc" do
         warn "Could not start mock OSGi service bundle"
       end
 
-      if start_bundle(/coppa.ihub/)
-        info "Started COPPA iHub integration"
-      else
-        warn "Could not start COPPA iHub integration"
-      end
-
       if ENV['OSGI_TELNET']
         if start_bundle(/telnet|shell\.remote/)
           info "Started telnet bundle(s)"
