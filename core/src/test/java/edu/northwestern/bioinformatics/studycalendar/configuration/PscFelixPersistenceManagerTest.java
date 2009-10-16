@@ -138,7 +138,8 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
         Map<String, Object> inDb = getJdbcTemplate().queryForMap(
             "SELECT id FROM osgi_cm_properties WHERE name=? AND service_pid=?",
             new Object[] { BUNDLE_LOCATION_PROPERTY, pid });
-        assertEquals("Test setup failure", -101, inDb.get("ID"));
+        // The inferred type for ID is different for oracle vs. others
+        assertEquals("Test setup failure", -101, ((Number) inDb.get("ID")).intValue());
 
         Dictionary loaded = manager.load(pid);
         assertNull("Bundle location present", loaded.get(BUNDLE_LOCATION_PROPERTY));
