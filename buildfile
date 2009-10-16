@@ -11,7 +11,7 @@ require 'fileutils'
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
-VERSION_NUMBER="2.6.0.DEV"
+VERSION_NUMBER="2.6.0.RC1"
 APPLICATION_SHORT_NAME = 'psc'
 
 ###### Jetty config
