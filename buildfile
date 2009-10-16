@@ -353,7 +353,7 @@ define "psc" do
 
         compile.with project('providers:api').and_dependencies, SPRING, OSGI,
           GLOBUS, CAGRID, COPPA
-        test.using(:junit).with UNIT_TESTING
+        test.using(:junit).with UNIT_TESTING, project('domain').test_dependencies
         package(:jar)
       end
 
