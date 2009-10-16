@@ -9,7 +9,7 @@ import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
-import org.iso._21090.II;
+import org.iso._21090.ST;
 import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
@@ -60,11 +60,11 @@ public class CoppaStudyProvider implements StudyProvider {
     public List<Study> search(String partialName) {
         StudyProtocol base = new StudyProtocol();
 
-        II ii = new II();
-        ii.setIdentifierName(partialName);
-        base.setAssignedIdentifier(ii);
+        ST titleTemplate = new ST();
+        titleTemplate.setValue(partialName);
+        base.setOfficialTitle(titleTemplate);
 
-        StudyProtocol[] raw = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, noLimit());
+        StudyProtocol[] raw = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, smallLimit());
         if (raw == null) {
             return Collections.emptyList();
         } else {
@@ -82,9 +82,9 @@ public class CoppaStudyProvider implements StudyProvider {
 
     //////////// Search Helper Methods
 
-    private static LimitOffset noLimit() {
+    private static LimitOffset smallLimit() {
         LimitOffset lo = new LimitOffset();
-        lo.setLimit(Integer.MAX_VALUE);
+        lo.setLimit(40); // Limit since autocomplete might return too many.
         lo.setOffset(0);
         return lo;
     }
