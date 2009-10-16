@@ -11,6 +11,7 @@ import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider {
@@ -82,9 +83,15 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
         return studySites;
     }
 
-
+    // COPPA does not support navigating the relationships in this way.
+    // Since StudySiteConsumer will never remove a StudySite, returning empty
+    // like this is safe.
     public List<List<StudySite>> getAssociatedStudies(List<Site> sites) {
-        throw new UnsupportedOperationException("Get associated studies not implemented yet.");
+        List<List<StudySite>> none = new ArrayList<List<StudySite>>(sites.size());
+        while (none.size() < sites.size()) {
+            none.add(Collections.<StudySite>emptyList());
+        }
+        return none;
     }
 
     public String providerToken() {

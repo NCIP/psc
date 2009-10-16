@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -9,13 +10,17 @@ import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.pa.Id;
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.notNull;
-import org.iso._21090.*;
+import static org.easymock.EasyMock.*;
+import org.iso._21090.DSETII;
+import org.iso._21090.ENON;
+import org.iso._21090.ENXP;
+import org.iso._21090.EntityNamePartType;
+import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
 
@@ -99,6 +104,20 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Wrong size", 2, actual.get(0).size());
         assertEquals("Wrong name", "Name A", actual.get(0).get(0).getSite().getName());
         assertEquals("Wrong name", "Name B", actual.get(0).get(1).getSite().getName());
+    }
+
+    // since COPPA doesn't support this
+    public void testGetAssociatedStudiesReturnsListOfEmptyLists() throws Exception {
+        List<List<StudySite>> actual = provider.getAssociatedStudies(Arrays.asList(
+            Fixtures.createSite("A"),
+            Fixtures.createSite("B"),
+            Fixtures.createSite("C")
+        ));
+
+        assertEquals("Wrong number of results", 3, actual.size());
+        assertEquals("Matches for A not empty", 0, actual.get(0).size());
+        assertEquals("Matches for B not empty", 0, actual.get(1).size());
+        assertEquals("Matches for C not empty", 0, actual.get(2).size());
     }
 
     /////////////// Helper Methods
