@@ -9,7 +9,8 @@ import gov.nih.nci.coppa.services.pa.StudySite;
 import org.osgi.framework.BundleContext;
 
 /**
- * Strategy-style interface for low-level COPPA access.
+ * Strategy-style interface for low-level COPPA access.  It is possible for any of these
+ * methods to return null -- some for business reasons and some only in case of an error.
  *
  * @author Rhett Sutphin
  */

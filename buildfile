@@ -372,18 +372,18 @@ define "psc" do
         package(:jar)
       end
 
-      # Pending
-      # define "ihub" do
-      #   bnd.wrap!
-      #   bnd.name = "PSC COPPA Integration Hub Data Providers"
-      #   bnd.description = "A suite of data providers which communicate with COPPA via caBIG Integration Hub"
-      #   bnd.autostart = false
-      #   bnd['Bundle-Activator'] =
-      #     "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
-      #
-      #   compile.with project('psc:providers:coppa:common').and_dependencies
-      #   package(:jar)
-      # end
+      define "ihub" do
+        bnd.wrap!
+        bnd.name = "PSC COPPA Integration Hub Data Providers"
+        bnd.description = "A suite of data providers which communicate with COPPA via caBIG Integration Hub"
+        bnd.autostart = false
+        bnd['Bundle-Activator'] =
+          "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
+
+        compile.with project('psc:providers:coppa:common').and_dependencies, CIH
+        test.using(:junit).with UNIT_TESTING
+        package(:jar)
+      end
     end
 
     desc "Commands for interacting with the providers from the felix console"
@@ -1014,6 +1014,12 @@ define "psc" do
         info "Started mock OSGi service bundle"
       else
         warn "Could not start mock OSGi service bundle"
+      end
+
+      if start_bundle(/coppa.ihub/)
+        info "Started COPPA iHub integration"
+      else
+        warn "Could not start COPPA iHub integration"
       end
 
       if ENV['OSGI_TELNET']

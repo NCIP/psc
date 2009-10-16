@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.1.0">
+    <OCD name="COPPA iHub Configuration"
+         id="edu.northwestern.bioinformatics.studycalendar.coppa-ihub-strategy.configuration"
+         description="Configuration properties for the COPPA iHub strategy">
+        <AD id="ihub.request-processor.endpoint" type="String" cardinality="0" name="iHub Request Processor Endpoint"
+            description="The endpoint for the iHub Request Processor service"/>
+    </OCD>
+
+    <Designate pid="edu.northwestern.bioinformatics.studycalendar.coppa-ihub-strategy">
+        <Object ocdref="edu.northwestern.bioinformatics.studycalendar.coppa-ihub-strategy.configuration"/>
+    </Designate>
+</MetaData>

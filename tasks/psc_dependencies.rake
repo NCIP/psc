@@ -319,6 +319,17 @@ COPPA = struct(
     from(static_lib('coppa/coppa-globus-adapter-3.0.0.PSC000.jar')) # version changes separately from the others since it's manually created
 )
 
+CIH_VERSION = "1.2.2.PSC000"
+CIH = struct(
+  [:client, :common, :service, :stubs].inject({}) { |s, q|
+    s[q] = psc_osgi_artifact(
+      artifact("gov.nih.nci.caxchange:caxchange-request-processor-#{q}:jar:#{CIH_VERSION}").
+        from(static_lib("caxchange/CaXchangeRequestProcessor-#{q}-#{CIH_VERSION.split('.')[0, 3].join('.')}.jar")),
+      "Export-Package" => "!gov.nih.nci.cagrid.introduce.security.stubs, *"
+    ); s
+  }
+)
+
 BERING = [
   "edu.northwestern.bioinformatics:bering:jar:0.7",
   "org.codehaus.groovy:com.springsource.org.codehaus.groovy:jar:1.5.7",
