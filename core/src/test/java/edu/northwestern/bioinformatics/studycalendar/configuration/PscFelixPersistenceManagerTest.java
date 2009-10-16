@@ -10,18 +10,21 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
  * @author Rhett Sutphin
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
 public class PscFelixPersistenceManagerTest extends DaoTestCase {
     private static final String GOOD_PID = "edu.nwu.psc.words";
     private static final String BAD_PID = "edu.nwu.psc.wordle-wardle";
 
     private PscFelixPersistenceManager manager;
+    private static final String BUNDLE_LOCATION_PROPERTY = "service.bundleLocation";
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         manager = (PscFelixPersistenceManager) getApplicationContext().getBean("pscFelixPersistenceManager");
@@ -128,6 +131,38 @@ public class PscFelixPersistenceManagerTest extends DaoTestCase {
         assertEquals("Updated value not updated", "mezzanine", reloaded.get("favorite"));
         assertNull("Removed property still present", reloaded.get("letters"));
         assertEquals("New property not present", 'W', reloaded.get("first"));
+    }
+
+    public void testLoadFiltersOutBundleLocation() throws Exception {
+        String pid = "edu.nwu.psc.thoughts";
+        Map<String, Object> inDb = getJdbcTemplate().queryForMap(
+            "SELECT id FROM osgi_cm_properties WHERE name=? AND service_pid=?",
+            new Object[] { BUNDLE_LOCATION_PROPERTY, pid });
+        assertEquals("Test setup failure", -101, inDb.get("ID"));
+
+        Dictionary loaded = manager.load(pid);
+        assertNull("Bundle location present", loaded.get(BUNDLE_LOCATION_PROPERTY));
+        assertEquals("Wrong loaded contents", 1, loaded.size());
+    }
+    
+    public void testStoreFiltersOutBundleLocation() throws Exception {
+        String newPid = "edu.nwu.psc.breakfast";
+        {
+            Dictionary d = new Hashtable();
+            d.put("hash", "browns");
+            d.put("waffle", "belgian");
+            d.put(BUNDLE_LOCATION_PROPERTY, "file:/path/to/breakfast-2.0.jar");
+
+            manager.store(newPid, d);
+        }
+
+        interruptSession();
+
+        List actual = getJdbcTemplate().queryForList(
+            "SELECT id FROM osgi_cm_properties WHERE name=? AND service_pid=?",
+            new Object[] { BUNDLE_LOCATION_PROPERTY, newPid }
+        );
+        assertEquals("Should be no results: " + actual, 0, actual.size());
     }
 
     public void testModifyingALoadedDictionaryDoesNotAffectThePersistedData() throws Exception {
