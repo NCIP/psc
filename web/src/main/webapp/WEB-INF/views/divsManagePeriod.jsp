@@ -426,7 +426,7 @@
         }
         // TODO: port this to the new style
         <c:if test="${not empty selectedActivity}">
-        SC.MP.addActivityRow({
+        psc.template.mpa.ActivityRows.addSelectedActivityRow({
             name: '${selectedActivity.name}',
             code: '${selectedActivity.code}',
             source: '${selectedActivity.source.name}'
