@@ -184,6 +184,10 @@ psc.template.mpa.ActivityRows = (function ($) {
       }
     },
 
+    addSelectedActivityRow: function (activity, activityType) {
+        addActivityRow(activity,  activityType);
+    },
+
     // Exposed for testing
 
     objectifyActivityXml: function (doc) {
