@@ -789,7 +789,7 @@ define "psc" do
 
     desc "Study consumer Grid Service"
     define "study-consumer-impl", :base_dir => _('study-consumer') do
-      compile.from(_('src/java')).with project('core').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID, SLF4J, LOGBACK
+      compile.from(_('src/java')).with project('core').and_dependencies, project('psc:providers:coppa:common').and_dependencies, GLOBUS, STUDY_CONSUMER_GRID, SLF4J, LOGBACK
       resources.from(_('src/java')).include('*.xml')
       package(:jar)
       package(:sources)
