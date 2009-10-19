@@ -100,7 +100,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         if ((coppaIdentifier != null) && !coppaIdentifier.equals("")){
         	// 2.Check if COPPA Identifier already exist in DB or not
             // If exist then return
-        	if (studyDao.getStudySecondaryIdentifierByCoppaIdentifier("COPPA Identifier", coppaIdentifier) != null) {
+        	if (studyDao.getStudySecondaryIdentifierByCoppaIdentifier(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, coppaIdentifier) != null) {
                 logger.info("Already a study with the same Coppa Identifier (" + coppaIdentifier
                         + ") exists.Returning without processing the request.");
                 return;
