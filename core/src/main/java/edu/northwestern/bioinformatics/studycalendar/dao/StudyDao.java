@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.hibernate.HibernateException;
@@ -78,6 +79,28 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         return null;
     }
 
+    /**
+	 * Gets the StudySecondaryIdentifier that corresponds to the Coppa Identifier
+	 * 
+	 * @param identifierType
+	 * 				type is equal to coppa
+	 * 
+	 * @param coppaIdentifier 
+	 * 				the coppa identifier to search for
+	 * 
+	 * @return the StudySecondaryIdentifier that corresponds to given identifier and type
+	 */
+	public StudySecondaryIdentifier getStudySecondaryIdentifierByCoppaIdentifier(
+			final String identifierType, final String coppaIdentifier) {
+		List<StudySecondaryIdentifier> results = getHibernateTemplate()
+				.find("from StudySecondaryIdentifier where type=? and value=?",
+						new Object[] { identifierType, coppaIdentifier });
+		if ((results != null) && (results.size() > 0)) {
+			return results.get(0);
+		}
+		return null;
+	}
+	
     /**
      * Deletes a study
      *
