@@ -160,7 +160,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		<format property="install.time" pattern="yyyy-MM-dd-HH-mm" />
 	</tstamp>
 	<record name="${log.dir}/install-${install.time}.log" action="start" />
-
+    <mkdir dir="${download.dir}" />
 
 	<!-- Targets -->
 
@@ -185,7 +185,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		<mkdir dir="${target.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.exploded.dir}" />
-		<mkdir dir="${psc-api.dist.dir}" />
 		<mkdir dir="${psc-webapp.dist.dir}" />
 		<mkdir dir="${common.dist.dir}" />
 		<mkdir dir="${tools.dist.dir}" />
