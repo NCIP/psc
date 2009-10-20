@@ -35,67 +35,67 @@
     </target>
 
     <target name="install:buildr" unless="buildr.exists" depends="install:jruby" description="Downloads buildr">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S gem install buildr -v 1.3.3 --no-rdoc --no-ri"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S gem install buildr -v 1.3.3 --no-rdoc --no-ri"/>
         </exec>
     </target>
 
     <target name="install:shenandoah" unless="shenandoah.exists" depends="install:jruby" description="Downloads shenandoah">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
            <arg line="-S gem install shenandoah -v 0.0.0 --no-rdoc --no-ri"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S gem install shenandoah -v 0.0.0 --no-rdoc --no-ri"/>
         </exec>
     </target>
 
     <target name="install:facets" unless="facets.exists" depends="install:jruby" description="Downloads facets">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S gem install facets -v 2.4.5 --no-rdoc --no-ri"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S gem install facets -v 2.4.5 --no-rdoc --no-ri"/>
         </exec>
     </target>
 
     <target name="install:json_pure" unless="json_pure.exists" depends="install:jruby" description="Downloads json_pure">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S gem install json_pure -v 1.1.9 --no-rdoc --no-ri"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S gem install json_pure -v 1.1.9 --no-rdoc --no-ri"/>
         </exec>
     </target>
 
     <target name="install:rest-client" unless="rest-client.exists" depends="install:jruby" description="Downloads rest-client">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S gem install rest-client -v 1.0.3 --no-rdoc --no-ri"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S gem install rest-client -v 1.0.3 --no-rdoc --no-ri"/>
         </exec>
     </target>
 
     <target name="build:war" depends="install">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr build test=no"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr build test=no"/>
         </exec>
     </target>
 
     <target name="deploy:psc:grid" depends="install">
         <property environment="env"/>
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
             <env key="CATALINA_HOME" value="${env.CATALINA_HOME}"/>
             <env key="CCTS_HOME" value="${ccts.home}"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
             <env key="CATALINA_HOME" value="${env.CATALINA_HOME}"/>
             <env key="CCTS_HOME" value="${ccts.home}"/>
@@ -103,10 +103,10 @@
     </target>
     
     <target name="clean" depends="install">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr clean"/>
         </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}">
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr clean"/>
         </exec>
     </target>
