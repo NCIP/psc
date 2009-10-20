@@ -226,7 +226,7 @@
 
     <bean id="auditHistoryRepository" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository">
         <property name="auditHistoryDao">
-            <bean class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryDao" autowire="byType">
+            <bean class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryDao">
                 <property name="sessionFactory">
                     <ref local="auditSessionFactory"/>
                 </property>
