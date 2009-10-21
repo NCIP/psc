@@ -90,6 +90,11 @@
         </exec>
     </target>
 
+    <target name="deploy:psc:webapp" depends="build:war">
+        <delete dir="${tomcat.relative.path}/webapps/psc.war" />
+        <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
+    </target>
+
     <target name="deploy:psc:grid" depends="install">
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
