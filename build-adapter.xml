@@ -100,7 +100,16 @@
         <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
     </target>
 
-    <target name="deploy:psc:grid" depends="install">
+    <target name="build:grid" depends="install" description="Build psc grid services">
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
+            <arg line="-S buildr psc:grid:package test=no"/>
+        </exec>
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
+            <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:package test=no"/>
+        </exec>
+    </target>
+    
+    <target name="deploy:psc:grid" depends="install" description="Deploy psc grid services">
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
