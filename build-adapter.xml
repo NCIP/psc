@@ -102,10 +102,10 @@
 
     <target name="build:grid" depends="install" description="Build psc grid services">
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr psc:grid:registration-consumer-impl:package psc:grid:study-consumer-impl:package psc:grid:adverse-event-consumer-impl:package test=no"/>
+            <arg line="-S buildr psc:grid:package test=no"/>
         </exec>
         <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:registration-consumer-impl:package psc:grid:study-consumer-impl:package psc:grid:adverse-event-consumer-impl:package test=no"/>
+            <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:package test=no"/>
         </exec>
     </target>
     
