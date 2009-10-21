@@ -12,7 +12,9 @@
     <property name="path.to.jruby.gems" value="${jruby.binaries.relative.dir}/lib/ruby/gems/1.8/gems"/>
     <property name="unixfamily" value="Linux,Mac OS X,Mac OS,HP UX,Digital Unix"/>
     <property name="windowsfamily" value="Windows 2000,Windows 98,Windows NT,Windows Vista,Windows XP" />
-    <property file="${basedir}/build/project.properties"/>
+    <property environment="env"/>
+    <property name="tomcat.relative.path" value="${env.CATALINA_HOME}"/>
+    <property name="ccts.common.grid.src.dir" value="${env.CCTS_HOME}"/>
     <available file="${jruby.binaries.relative.dir}" property="jruby.exists" />
     <available file="${path.to.jruby.gems}/buildr-1.3.3-java" property="buildr.exists" />
     <available file="${path.to.jruby.gems}/shenandoah-0.0.0" property="shenandoah.exists" />
@@ -89,16 +91,15 @@
     </target>
 
     <target name="deploy:psc:grid" depends="install">
-        <property environment="env"/>
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
-            <env key="CATALINA_HOME" value="${env.CATALINA_HOME}"/>
-            <env key="CCTS_HOME" value="${ccts.home}"/>
+            <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
+            <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
         </exec>
         <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
-            <env key="CATALINA_HOME" value="${env.CATALINA_HOME}"/>
-            <env key="CCTS_HOME" value="${ccts.home}"/>
+            <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
+            <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
         </exec>
     </target>
     
