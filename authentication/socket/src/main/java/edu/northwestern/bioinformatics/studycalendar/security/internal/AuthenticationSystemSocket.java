@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.Filter;
@@ -21,7 +20,7 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class AuthenticationSystemSocket
-    implements AuthenticationEntryPoint, Filter, AuthenticationManager, InitializingBean
+    implements AuthenticationEntryPoint, Filter, AuthenticationManager
 {
     private AuthenticationSystemConfiguration configuration;
 
@@ -30,12 +29,6 @@ public class AuthenticationSystemSocket
     @Required
     public void setConfiguration(AuthenticationSystemConfiguration configuration) {
         this.configuration = configuration;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        // ensure that initial configuration is valid at startup,
-        // instead of waiting for the first request
-        getSystem();
     }
 
     ////// IMPLEMENTATION OF AuthenticationEntryPoint
