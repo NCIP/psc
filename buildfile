@@ -214,8 +214,9 @@ define "psc" do
         SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
         CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
       test.with UNIT_TESTING, EHCACHE,
-        project('test-infrastructure').and_dependencies,
-        project('test-infrastructure').test_dependencies
+        project('mocks').and_dependencies,
+        project('domain').and_dependencies,
+        project('domain').test_dependencies
       package(:jar)
     end
 
@@ -237,8 +238,7 @@ define "psc" do
       test.with UNIT_TESTING,
         project('authentication:local-plugin'),
         project('plugin-api').test_dependencies,
-        project('test-infrastructure').and_dependencies,
-        project('test-infrastructure').test_dependencies
+        project('domain').test_dependencies
       package(:jar)
     end
 
@@ -274,7 +274,7 @@ define "psc" do
         "org.acegisecurity.ui.logout"
       compile.with project('plugin-api').and_dependencies, SECURITY.cas,
         EHCACHE, JAKARTA_COMMONS.httpclient, HTMLPARSER
-      test.with project('plugin-api').test_dependencies
+      test.with project('plugin-api').test_dependencies, JAKARTA_COMMONS.io 
       package(:jar)
     end
 
@@ -422,7 +422,8 @@ define "psc" do
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
 
     test.with UNIT_TESTING, project('domain').test.compile.target,
-      project('database').test_dependencies
+      project('database').test_dependencies,
+      project('mocks').and_dependencies
 
     package(:jar)
     package(:sources)
@@ -1081,6 +1082,12 @@ define "psc" do
     end
   end
 
+  desc "Shared mocks for external libraries (exc. JDBC)"
+  define "mocks", :base_dir => _('test/mock') do
+    compile.using(:javac).with OSGI, SPRING_OSGI_MOCKS
+    package(:jar)
+  end
+
   desc "Empty base mocks for JDBC classes"
   define "jdbc-mock", :base_dir => _('test/jdbc-mock') do
     compile.using(:javac).from(_("src/main/java#{java6? ? '6' : '5'}"))
@@ -1090,7 +1097,8 @@ define "psc" do
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
-      project('core').and_dependencies, project('jdbc-mock')
+      project('core').and_dependencies, project('jdbc-mock'), 
+      project('mocks').and_dependencies
     test.with project('core').test_dependencies
     package(:jar)
     package(:sources)

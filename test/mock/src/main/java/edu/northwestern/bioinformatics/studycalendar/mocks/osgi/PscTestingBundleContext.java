@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.core;
+package edu.northwestern.bioinformatics.studycalendar.mocks.osgi;
 
 import org.springframework.osgi.mock.MockBundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
@@ -18,6 +18,13 @@ public class PscTestingBundleContext extends MockBundleContext {
         testingDetails = new HashMap<String, TestingBundleDetails>();
     }
 
+    /**
+     * "Registers" the object as the sole implementation of the given interface for
+     * this context.
+     * 
+     * @param serviceInterface
+     * @param instance
+     */
     public void addService(Class<?> serviceInterface, Object instance) {
         testingDetails.put(
             serviceInterface.getName(), new TestingBundleDetails(serviceInterface, instance));
