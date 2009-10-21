@@ -400,42 +400,6 @@ define "psc" do
     end
   end
 
-  desc "Core data access, serialization and non-substitutable business logic"
-  define "core" do
-    project('providers') # Have to reference this before refing project('providers:mock') in buildr 1.3.3 for some reason.  Investigate later.  RMS20090331.
-
-    resources.filter.using(:ant,
-      'application-short-name'  => APPLICATION_SHORT_NAME,
-      "buildInfo.versionNumber" => project.version,
-      "buildInfo.username"      => ENV['USER'],
-      "buildInfo.hostname"      => `hostname`.chomp,
-      "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    )
-
-    compile.with project('domain').and_dependencies,
-      project('authentication:acegi').and_dependencies,
-      project('providers:api').and_dependencies,
-      project('database').and_dependencies,
-      project('utility:osgimosis').and_dependencies,
-      XML, RESTLET.framework, FREEMARKER, CSV,
-      QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
-      CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
-
-    test.with UNIT_TESTING, project('domain').test.compile.target,
-      project('database').test_dependencies,
-      project('mocks').and_dependencies
-
-    package(:jar)
-    package(:sources)
-
-    check do
-      acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
-
-      acSetup.should include(`hostname`.chomp)
-      acSetup.should include(project.version)
-    end
-  end # core
-
   desc "Submodules related to building and deploying PSC's embedded plugin layer"
   define "osgi-layer" do
     task :da_launcher_artifacts do |task|
@@ -499,18 +463,7 @@ define "psc" do
       end
     end
 
-    task :examine => [:build_test_da_launcher, 'psc:osgi-layer:compile'] do
-      cd _("target/classes") do
-        mkdir_p _('tmp/logs')
-        deps = project.test.dependencies.collect { |p| p.to_s }
-        if ENV['WEBAPP_SIM']
-          deps = [deps, project('psc:web').and_dependencies].flatten.uniq
-        end
-        classpath = deps.collect { |d| d.to_s }.join(':')
-        puts "Classpath:\n- #{deps.join("\n- ")}"
-        system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.DaLauncherConsole #{_('target', 'test', 'da-launcher')}")
-      end
-    end
+    task :examine => :'psc:osgi-layer:console:run'
 
     task :analyze_package_consistency => [:build_test_da_launcher] do
       test_dal = _('target', 'test', 'da-launcher')
@@ -543,7 +496,23 @@ define "psc" do
       }
     end
 
-    compile.with project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main
+    define "console" do
+      compile.with SLF4J, LOGBACK, project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main, 
+        project('core').and_dependencies
+
+      task :run => [:build_test_da_launcher, 'psc:osgi-layer:console:compile'] do
+        cd _("target/classes") do
+          mkdir_p _('tmp/logs')
+          deps = project.test.dependencies.collect { |p| p.to_s }
+          if ENV['WEBAPP_SIM']
+            deps = [deps, project('psc:web').and_dependencies].flatten.uniq
+          end
+          classpath = deps.collect { |d| d.to_s }.join(':')
+          puts "Classpath:\n- #{deps.join("\n- ")}"
+          system("java -Dcatalina.home=#{_('tmp')} -cp #{classpath} edu.northwestern.bioinformatics.studycalendar.osgi.console.DaLauncherConsole #{project('osgi-layer')._('target', 'test', 'da-launcher')}")
+        end
+      end
+    end
 
     desc "Advertises host-configured services to the OSGi layer"
     define "host-services" do
@@ -605,6 +574,43 @@ define "psc" do
       test.enhance([:build_test_da_launcher])
     end
   end
+
+  desc "Core data access, serialization and non-substitutable business logic"
+  define "core" do
+    project('providers') # Have to reference this before refing project('providers:mock') in buildr 1.3.3 for some reason.  Investigate later.  RMS20090331.
+
+    resources.filter.using(:ant,
+      'application-short-name'  => APPLICATION_SHORT_NAME,
+      "buildInfo.versionNumber" => project.version,
+      "buildInfo.username"      => ENV['USER'],
+      "buildInfo.hostname"      => `hostname`.chomp,
+      "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    )
+
+    compile.with project('domain').and_dependencies,
+      project('authentication:acegi').and_dependencies,
+      project('providers:api').and_dependencies,
+      project('database').and_dependencies,
+      project('utility:osgimosis').and_dependencies,
+      project('osgi-layer:host-services').and_dependencies,
+      XML, RESTLET.framework, FREEMARKER, CSV,
+      QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
+      CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
+
+    test.with UNIT_TESTING, project('domain').test.compile.target,
+      project('database').test_dependencies,
+      project('mocks').and_dependencies
+
+    package(:jar)
+    package(:sources)
+
+    check do
+      acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
+
+      acSetup.should include(`hostname`.chomp)
+      acSetup.should include(project.version)
+    end
+  end # core
 
   ##Adding the grid module.
   desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"

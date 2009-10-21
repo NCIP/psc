@@ -1,11 +1,11 @@
-package edu.northwestern.bioinformatics.studycalendar.web.osgi;
+package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import org.apache.felix.cm.PersistenceManager;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
