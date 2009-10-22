@@ -32,7 +32,12 @@ public class PscTestingBundleContext extends MockBundleContext {
 
     @Override
     public ServiceReference getServiceReference(String s) {
-        return testingDetails.get(s).getServiceReference();
+        TestingBundleDetails details = testingDetails.get(s);
+        if (details != null) {
+            return details.getServiceReference();
+        } else {
+            return null;
+        }
     }
 
     @Override

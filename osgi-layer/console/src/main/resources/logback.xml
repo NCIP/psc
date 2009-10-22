@@ -1,0 +1,51 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d [%thread] %logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="DEBUGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>studycalendar-debug.log</file>
+        <append>false</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>studycalendar-debug.%i.log</FileNamePattern>
+            <MinIndex>1</MinIndex>
+            <MaxIndex>1</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>32MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %36logger{36} %-5level | %1X{depth} | %msg%n
+            </Pattern>
+        </layout>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <root>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DEBUGFILE"/>
+    </root>
+
+    <logger name="edu.northwestern.bioinformatics"><level value="trace"/></logger>
+    <logger name="org.hibernate.type">             <level value="trace"/></logger>
+
+    <logger name="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol"><level value="debug"/></logger>
+    <logger name="edu.northwestern.bioinformatics.studycalendar.utility.osgimosis"><level value="debug"/></logger>
+
+    <logger name="org.apache.commons.digester"><level value="info"/></logger>
+    <logger name="org.apache.catalina">        <level value="info"/></logger>
+    <logger name="org.apache.jasper">          <level value="info"/></logger>
+    <logger name="org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap"><level value="info"/></logger>
+    <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory">  <level value="info"/></logger>
+</configuration>

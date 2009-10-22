@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.osgi;
+package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
@@ -8,6 +8,8 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.apache.felix.cm.PersistenceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
@@ -17,6 +19,8 @@ import javax.sql.DataSource;
  * @author Rhett Sutphin
  */
 public class HostBeansInitializer implements InitializingBean {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private BundleContext bundleContext;
     private Membrane membrane;
 
@@ -25,18 +29,22 @@ public class HostBeansInitializer implements InitializingBean {
     private PersistenceManager persistenceManager;
 
     public void afterPropertiesSet() throws Exception {
-        ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
-        if (ref != null) {
-            HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
-            beans.setDataSource(dataSource);
-            beans.setPscUserDetailsService(userDetailsService);
-            beans.setPersistenceManager(persistenceManager);
+        if (bundleContext != null) {
+            ServiceReference ref = bundleContext.getServiceReference(HostBeans.class.getName());
+            if (ref != null) {
+                HostBeans beans = (HostBeans) membrane.farToNear(bundleContext.getService(ref));
+                beans.setDataSource(dataSource);
+                beans.setPscUserDetailsService(userDetailsService);
+                beans.setPersistenceManager(persistenceManager);
+            }
+        } else {
+            log.debug("No bundleContext set");
+            log.info("Since the OSGi layer was not started, the HostBeans bridge will not be initialized.");
         }
     }
 
     ////// CONFIGURATION
 
-    @Required
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
