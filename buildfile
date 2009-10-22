@@ -162,7 +162,7 @@ define "psc" do
     end
 
     task :create_hsqldb => :clean_hsqldb do |t|
-       psc_dir = "#{ENV['HOME']}/.psc"
+       psc_dir = "#{Java.java.lang.System.getProperty("user.home")}/.psc"
        mkdir_p psc_dir
        File.open("#{psc_dir}/#{db_name}.properties", 'w') do |f|
          f.puts( (<<-PROPERTIES).split(/\n/).collect { |row| row.strip }.join("\n") )
