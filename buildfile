@@ -566,6 +566,18 @@ define "psc" do
       package(:jar)
     end
 
+    desc "A bundle which dumps the current system properties to stdout every time it is activated"
+    define "sysprop-debug" do
+      bnd.wrap!
+      # bnd.autostart = false # eventually
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.sysprop.Activator"
+      bnd.name = "PSC System Property Dumper"
+
+      compile.with OSGI.core, JAKARTA_COMMONS.lang
+      package(:jar)
+    end
+
     define "integrated-tests" do
       test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies,
         project('authentication:socket').and_dependencies,
