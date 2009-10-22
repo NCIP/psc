@@ -1,20 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.security.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemSocket;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
-import static org.easymock.classextension.EasyMock.*;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
+import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.FilterChain;
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemSocketTest extends StudyCalendarTestCase {
+public class AuthenticationSystemSocketTest extends AuthenticationTestCase {
     private AuthenticationSystemSocket socket;
 
     private AuthenticationSystem authenticationSystem;

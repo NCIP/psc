@@ -420,6 +420,8 @@ SPRING_OSGI = struct(
   :extender => "org.springframework.osgi:org.springframework.osgi.extender:jar:1.1.3.RELEASE"
 )
 
+SPRING_OSGI_MOCKS = "org.springframework.osgi:org.springframework.osgi.mock:jar:1.1.3.RELEASE"
+
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
@@ -430,7 +432,7 @@ UNIT_TESTING = [
   CGLIB,
   "org.springframework:spring-test:jar:#{SPRING_VERSION}",
   eponym("xmlunit", "1.1"),
-  "org.springframework.osgi:org.springframework.osgi.mock:jar:1.1.3.RELEASE",
+  SPRING_OSGI_MOCKS,
   LOGBACK,
   SLF4J.jcl,
   SLF4J.jul,

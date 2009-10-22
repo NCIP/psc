@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.security.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemLogoutFilter;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -16,7 +15,7 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public class AuthenticationSystemLogoutFilterTest extends StudyCalendarTestCase {
+public class AuthenticationSystemLogoutFilterTest extends AuthenticationTestCase {
     private AuthenticationSystemLogoutFilter filter;
 
     private MockHttpServletRequest request;
