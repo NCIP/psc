@@ -564,6 +564,18 @@ define "psc" do
       package(:jar)
     end
 
+    desc "Non-PSC-specific commands for the felix shell"
+    define "felix-commands" do
+      bnd.wrap!
+      bnd['Bundle-Activator'] =
+        "edu.northwestern.bioinformatics.studycalendar.osgi.commands.Activator"
+      bnd.name = "PSC Utility Felix Commands"
+
+      compile.with FELIX.shell, OSGI.core, JAKARTA_COMMONS.lang
+      test.with UNIT_TESTING, project('utility').and_dependencies
+      package(:jar)
+    end
+
     define "integrated-tests" do
       test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies,
         project('authentication:socket').and_dependencies,
