@@ -98,7 +98,7 @@ public class CoppaStudyProvider implements StudyProvider {
             s = new Study();
 
             s.setAssignedIdentifier(
-                p.getAssignedIdentifier().getExtension());
+                p.getIdentifier().getExtension());
 
             s.setLongTitle(
                 p.getOfficialTitle().getValue());
@@ -114,8 +114,8 @@ public class CoppaStudyProvider implements StudyProvider {
         MapBuilder<String, String> ids =
                 new MapBuilder<String, String>();
 
-        if (p.getAssignedIdentifier() != null) {
-            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
+        if (p.getIdentifier() != null) {
+            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null && p.getPublicTitle().getValue() != null) {
@@ -126,9 +126,9 @@ public class CoppaStudyProvider implements StudyProvider {
             ids.put("Official Title", p.getOfficialTitle().getValue());
         }
 
-        if (p.getAssignedIdentifier() != null) {
+        if (p.getIdentifier() != null) {
             Id studyProtocolId = studyProtocolIdentifier(
-                    p.getAssignedIdentifier().getExtension());
+                    p.getIdentifier().getExtension());
 
             String leadOrgIdent = findLeadOrganizationIdentifier(studyProtocolId);
 

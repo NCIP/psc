@@ -136,7 +136,7 @@ public class CoppaStudyProviderTest extends TestCase{
 
         II ii = new II();
         ii.setExtension(extension);
-        p.setAssignedIdentifier(ii);
+        p.setIdentifier(ii);
 
         ST st = new ST();
         st.setValue(officialTitle);
