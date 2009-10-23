@@ -537,7 +537,10 @@ define "psc" do
     define "log4j-configuration" do
       bnd.wrap!
       bnd.name = "PSC OSGi Layer log4j Configuration"
-      bnd['Fragment-Host'] = 'com.springsource.org.apache.log4j'
+      bnd['Bundle-Activator'] =
+        'edu.northwestern.bioinformatics.studycalendar.osgi.log4j.Activator'
+
+      compile.with OSGI.core, LOG4J.main
 
       package(:jar)
     end
