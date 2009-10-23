@@ -68,12 +68,15 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<!-- Properties that relate to how to call build targets from sub-projects-->
 	<!-- Working directory passed to Ant tasks -->
 	<property name="psc-webapp.base.dir" value="${software.dir}" />
+    <property name="psc-grid.base.dir" value="${software.dir}" />
 
 	<!-- Build file names relative working dir above, if the basedir of the sub-project ant script is ".." you should set the *.basdir to and the build file should include the dir and build file name from the *.base.dir -->
 	<property name="psc-webapp.build.file" value="build-adapter.xml" />
+	<property name="psc-grid.build.file" value="build-adapter.xml" />
 
 	<!-- The target name that should be called from the sub-project build file -->
 	<property name="psc-webapp.build.target" value="build:war" />
+	<property name="psc-grid.build.target" value="build:grid" />
 
 	<!-- Maven comamnd line arguments, bda profile is inside profiles.xml that gets copied to ear folder before build to override exiting properties -->
 
@@ -218,21 +221,17 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		validate:pre:build,
  		clean,
  		init,
- 		build:psc-webapp
-		" >
+ 		build:psc-webapp,
+ 		build:psc-grid" >
 	</target>
 
-	<target name="build:psc-api" depends="init" description="Call api sub-projects build target to produce artifiacts">
-		<!--
-		<ant inheritAll="false" inheritRefs="false" antfile="${psc-api.build.file}"
-			target="${psc-api.build.target}"
-			dir="${psc-api.base.dir}" >
+	<target name="build:psc-grid" depends="init" description="Call grid sub-projects build target to produce artifiacts">
+	    <ant inheritAll="false" inheritRefs="false" antfile="${psc-grid.build.file}" target="${psc-grid.build.target}" dir="${psc-grid.base.dir}">
 			<property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
 		</ant>
-		-->
 	</target>
 
-	<target name="build:psc-webapp" depends="init, build:psc-api" description="Call webapp sub-projects build target to produce artifiacts">
+	<target name="build:psc-webapp" depends="init" description="Call webapp sub-projects build target to produce artifiacts">
 		<!-- setting the property in the ant call overrides the property in the sub-project allowing the artifact to be produced where needed -->
 		<ant inheritAll="false" inheritRefs="false" antfile="${psc-webapp.build.file}" target="${psc-webapp.build.target}" dir="${psc-webapp.base.dir}">
 			<property name="dist.dir" value="${psc-webapp.dist.dir}" />

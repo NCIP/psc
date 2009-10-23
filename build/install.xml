@@ -48,30 +48,33 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<!-- Generic properties -->
 	<property name="project.name" value="psc"/>
 	<property name="env.name" value="local"/>
-	<property name="log.dir" location="${basedir}/logs" />
 	<property name="working.dir" location="${basedir}/working" />
-	<property name="temp.dir" location="${working.dir}/temp" />
 
-
-	<!-- Install Time properties -->
+    <!-- Install Time properties -->
 	<!-- Source and target directories -->
-	<property name="bda-utils.dir" location="${basedir}/bda-utils" />
+    <property name="software.dir" location=".." />
+    <property name="target.dir" location="${software.dir}/target" />
+	<property name="log.dir" location="${target.dir}/logs" />
+	<property name="temp.dir" location="${target.dir}/temp" />
+	<property name="bda-utils.dir" location="${target.dir}/bda-utils" />
 	<property name="tools.dir" location="${basedir}/${tools.dist.relative.dir}" />
 	<property name="common.dir.src" location="${basedir}/${common.dist.relative.dir}" />
-	<property name="common.dir.dest" location="${working.dir}/${common.dist.relative.dir}" />
+	<property name="common.dir.dest" location="${target.dir}/${common.dist.relative.dir}" />
 	<property name="db.dir.src" location="${basedir}/${db.dist.relative.dir}" />
-	<property name="db.dir.dest" location="${working.dir}/${db.dist.relative.dir}" />
-	<property name="db-install.dir.dest" location="${working.dir}/${db-install.dist.relative.dir}" />
-	<property name="db-upgrade.dir.dest" location="${working.dir}/${db-upgrade.dist.relative.dir}" />
+	<property name="db.dir.dest" location="${target.dir}/${db.dist.relative.dir}" />
+	<property name="db-install.dir.dest" location="${target.dir}/${db-install.dist.relative.dir}" />
+	<property name="db-upgrade.dir.dest" location="${target.dir}/${db-upgrade.dist.relative.dir}" />
 	<property name="application.url" value="http://${tomcat.hostname}:${tomcat.port.http}/psc"/>
 
 	<!-- *-ds.xml and WAR -->
-	<property name="psc-webapp.dir.dist" location="${basedir}/${psc-webapp.dist.relative.dir}" />
-	<property name="psc-webapp.ds.file" value="psc-ds.xml" />
+    <property name="psc-webapp.dir.dist" location="${target.dir}/dist/exploded/${psc-webapp.dist.relative.dir}" />
 	<property name="psc-webapp.name" value="psc" />
 	<property name="psc-webapp.war.file" value="${psc-webapp.name}.war" />
 
-	<!-- Grid related properties -->
+    <!-- For psc-grid services related properties -->
+    <property name="psc-grid.base.dir" value="${software.dir}" />
+    <property name="psc-grid.build.file" value="build-adapter.xml" />
+    <property name="psc-grid.deploy.target" value="deploy:psc:grid" />
 
 	<!-- Paths -->
 	<path id="bda-utils.classpath">
@@ -543,7 +546,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		</if>
 	</target>
 
-	<target name="install:tomcat:psc-webapp" description="Deploy psc-webapp and common libraries to tomcat installation" unless="exclude.tomcat" depends="init:install,init:common">
+	<target name="install:tomcat:psc-webapp" description="Deploy psc-webapp and common libraries to tomcat installation" unless="exclude.tomcat" depends="init:install,init:common,install:post:tomcat:psc:config">
 		<delete dir="${tomcat.home}/temp"/>
 		<delete dir="${tomcat.home}/work"/>
 		<copy file="${psc-webapp.dir.dist}/${psc-webapp.war.file}" todir="${tomcat.home}/webapps" overwrite="true" />
@@ -565,6 +568,14 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 
 	<target name="install:tomcat:psc-webapp:re-configure" description="Configure psc-webapp application, copies over externalized properties or configurations that are not part of the tomcat configuration" unless="exclude.tomcat" depends="init:install,init:common">
 	</target>
+
+    <target name="install:tomcat:psc-grid" description="Deploy psc-grid to the tomcat installation" unless="exclude.tomcat" depends="init:install" >
+        <ant inheritAll="false" inheritRefs="false" antfile="${psc-grid.build.file}" target="${psc-grid.deploy.target}" dir="${psc-grid.base.dir}">
+			<property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+            <property name="tomcat.relative.path" value="${tomcat.home}"/>
+            <property name="ccts.common.grid.src.dir" value="${ccts.common.grid.src.dir}" />
+		</ant>
+    </target>
 
 	<target name="init:install" unless="upgrade.running">
 		<property name="install.running" value="true"/>
