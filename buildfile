@@ -569,7 +569,7 @@ define "psc" do
     desc "A bundle which dumps the current system properties to stdout every time it is activated"
     define "sysprop-debug" do
       bnd.wrap!
-      # bnd.autostart = false # eventually
+      bnd.autostart = false
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.sysprop.Activator"
       bnd.name = "PSC System Property Dumper"
