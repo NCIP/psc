@@ -97,7 +97,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedSites(
-            asList(new Study())
+            asList(pscStudy("Ext SS"))
         );
 
         assertEquals("Wrong size", 1, actual.size());
@@ -151,7 +151,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         Study study = new Study();
 
         StudySecondaryIdentifier i = new StudySecondaryIdentifier ();
-        i.setType("extension");
+        i.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
         i.setValue(extensionSecondaryIdentifier);
         study.addSecondaryIdentifier(i);
 
