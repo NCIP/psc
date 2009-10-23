@@ -25,27 +25,29 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
         List<List<StudySite>> results = new ArrayList<List<StudySite>>(studies.size());
 
         for (Study study : studies) {
-            String ext = study.getSecondaryIdentifierValue("extension");
-            Id id = new Id();
-            id.setExtension(ext);
-            gov.nih.nci.coppa.services.pa.StudySite[] studySites = getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
+            String ext = study.getSecondaryIdentifierValue(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+            if (ext != null) {
+                Id id = new Id();
+                id.setExtension(ext);
+                gov.nih.nci.coppa.services.pa.StudySite[] studySites = getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
 
-            if (studySites == null || studySites.length == 0) {
-                results.add(null);
-            } else {
-                II[] researchOrgIIs = getResearchOrganizationIds(studySites);
+                if (studySites == null || studySites.length == 0) {
+                    results.add(null);
+                } else {
+                    II[] researchOrgIIs = getResearchOrganizationIds(studySites);
 
-                gov.nih.nci.coppa.po.Id[] researchOrgIds = tranformIds(gov.nih.nci.coppa.po.Id.class, researchOrgIIs);
-                ResearchOrganization[] researchOrgs = getCoppaAccessor(bundleContext).getResearchOrganizations(researchOrgIds);
+                    gov.nih.nci.coppa.po.Id[] researchOrgIds = tranformIds(gov.nih.nci.coppa.po.Id.class, researchOrgIIs);
+                    ResearchOrganization[] researchOrgs = getCoppaAccessor(bundleContext).getResearchOrganizations(researchOrgIds);
 
-                II[] orgIIs = getPlayerIds(researchOrgs);
+                    II[] orgIIs = getPlayerIds(researchOrgs);
 
-                gov.nih.nci.coppa.po.Id[] orgIDs = tranformIds(gov.nih.nci.coppa.po.Id.class, orgIIs);
-                Organization[] organizations = getOrganizationsById(orgIDs);
+                    gov.nih.nci.coppa.po.Id[] orgIDs = tranformIds(gov.nih.nci.coppa.po.Id.class, orgIIs);
+                    Organization[] organizations = getOrganizationsById(orgIDs);
 
-                List<Site> sites = pscSites(organizations);
+                    List<Site> sites = pscSites(organizations);
 
-                results.add(buildStudySites(sites));
+                    results.add(buildStudySites(sites));
+                }
             }
         }
 
