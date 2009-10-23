@@ -408,19 +408,9 @@ define "psc" do
       felix_main = artifact(FELIX.main)
       equinox_main = artifact(EQUINOX.osgi)
 
-      if true # felix?
-        system_optional = [FELIX.shell_remote]
-        system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional
-        osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
-      elsif false # equinox?
-        system_optional = [FELIX.shell_remote]
-        system_bundles = EQUINOX.values - [EQUINOX.osgi] - system_optional + [FELIX.shell]
-        osgi_framework = { "osgi-framework/equinox/#{equinox_main.version.split('.')[0 .. 2].join('.')}" => [equinox_main] }
-      else
-        system_optional = [FELIX.shell_remote, KNOPFLERFISH.consoletelnet]
-        system_bundles = KNOPFLERFISH.values.reject { |a| a.to_s =~ /framework-/ } - system_optional + [FELIX.shell]
-        osgi_framework = { "osgi-framework/knopflerfish/#{knopflerfish_main.version}" => [knopflerfish_main] }
-      end
+      system_optional = [(FELIX.shell_remote unless ENV['OSGI_TELNET'] == 'yes')].compact
+      system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional
+      osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
 
       system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
         [ project('osgi-layer:log4j-configuration').packages.first ]
