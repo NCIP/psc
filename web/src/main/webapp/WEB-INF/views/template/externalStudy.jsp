@@ -316,14 +316,14 @@
                 }
             }
 
-            var uri = SC.relativeUri("/api/v1/studies/${study.assignedIdentifier}/template")
+            var assignedId = encodeURIComponent('${study.assignedIdentifier}')
+            var uri = SC.relativeUri("/api/v1/studies/" + assignedId + "/template")
 
             SC.asyncRequest(uri, {
                 method: "GET", onSuccess: function(response) {
                     var xmlDoc = response.responseXML
                     var xmlRoot = xmlDoc.getElementsByTagName('study').item(0)
                     var xmlNS = xmlRoot.getAttribute('xmlns')
-
                     var assignedIdentifierInXml = xmlRoot.getAttribute('assigned-identifier')
                     var providerInXml = xmlRoot.getAttribute('provider')
 
