@@ -48,26 +48,25 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<!-- Generic properties -->
 	<property name="project.name" value="psc"/>
 	<property name="env.name" value="local"/>
+	<property name="log.dir" location="${basedir}/logs" />
 	<property name="working.dir" location="${basedir}/working" />
+	<property name="temp.dir" location="${working.dir}/temp" />
 
     <!-- Install Time properties -->
 	<!-- Source and target directories -->
     <property name="software.dir" location=".." />
-    <property name="target.dir" location="${software.dir}/target" />
-	<property name="log.dir" location="${target.dir}/logs" />
-	<property name="temp.dir" location="${target.dir}/temp" />
-	<property name="bda-utils.dir" location="${target.dir}/bda-utils" />
+	<property name="bda-utils.dir" location="${basedir}/bda-utils" />
 	<property name="tools.dir" location="${basedir}/${tools.dist.relative.dir}" />
 	<property name="common.dir.src" location="${basedir}/${common.dist.relative.dir}" />
-	<property name="common.dir.dest" location="${target.dir}/${common.dist.relative.dir}" />
+	<property name="common.dir.dest" location="${working.dir}/${common.dist.relative.dir}" />
 	<property name="db.dir.src" location="${basedir}/${db.dist.relative.dir}" />
-	<property name="db.dir.dest" location="${target.dir}/${db.dist.relative.dir}" />
-	<property name="db-install.dir.dest" location="${target.dir}/${db-install.dist.relative.dir}" />
-	<property name="db-upgrade.dir.dest" location="${target.dir}/${db-upgrade.dist.relative.dir}" />
+	<property name="db.dir.dest" location="${working.dir}/${db.dist.relative.dir}" />
+	<property name="db-install.dir.dest" location="${working.dir}/${db-install.dist.relative.dir}" />
+	<property name="db-upgrade.dir.dest" location="${working.dir}/${db-upgrade.dist.relative.dir}" />
 	<property name="application.url" value="http://${tomcat.hostname}:${tomcat.port.http}/psc"/>
 
 	<!-- *-ds.xml and WAR -->
-    <property name="psc-webapp.dir.dist" location="${target.dir}/dist/exploded/${psc-webapp.dist.relative.dir}" />
+	<property name="psc-webapp.dir.dist" location="${basedir}/${psc-webapp.dist.relative.dir}" />
 	<property name="psc-webapp.name" value="psc" />
 	<property name="psc-webapp.war.file" value="${psc-webapp.name}.war" />
 
