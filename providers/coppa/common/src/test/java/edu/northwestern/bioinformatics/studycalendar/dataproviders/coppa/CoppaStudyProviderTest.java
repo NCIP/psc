@@ -136,6 +136,9 @@ public class CoppaStudyProviderTest extends TestCase{
 
         II ii = new II();
         ii.setExtension(extension);
+        p.setAssignedIdentifier(ii);
+
+        ii.setExtension(extension);
         p.setIdentifier(ii);
 
         ST st = new ST();
@@ -165,10 +168,17 @@ public class CoppaStudyProviderTest extends TestCase{
 
     private Study pscStudy(String coppaExtension) {
         Study study = new Study();
+
         StudySecondaryIdentifier id = new StudySecondaryIdentifier();
         id.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
         id.setValue(coppaExtension);
         study.addSecondaryIdentifier(id);
+
+        StudySecondaryIdentifier ext = new StudySecondaryIdentifier();
+        ext.setType("Extension");
+        ext.setValue(coppaExtension);
+        study.addSecondaryIdentifier(ext);
+
         return study;
     }
 }
