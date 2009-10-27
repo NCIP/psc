@@ -28,8 +28,7 @@ public class CoppaStudyProvider implements StudyProvider {
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> studies = new ArrayList<Study>(parameters.size());
         for (Study param : parameters) {
-            String extension = param.getSecondaryIdentifierValue(
-                CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+            String extension = param.getSecondaryIdentifierValue("Extension");
             if (extension != null) {
                 Id id = studyProtocolIdentifier(extension);
 
@@ -43,12 +42,11 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public Study detect(Study param, Collection<Study> studies) {
-        String extension = param.getSecondaryIdentifierValue(
-            CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+        String extension = param.getSecondaryIdentifierValue("Extension");
 
         if (extension != null) {
             for (Study study : studies) {
-                if (extension.equals(study.getSecondaryIdentifierValue(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE))) {
+                if (extension.equals(study.getSecondaryIdentifierValue("Extension"))) {
                     return study;
                 }
             }
@@ -98,7 +96,7 @@ public class CoppaStudyProvider implements StudyProvider {
             s = new Study();
 
             s.setAssignedIdentifier(
-                p.getIdentifier().getExtension());
+                p.getAssignedIdentifier().getExtension());
 
             s.setLongTitle(
                 p.getOfficialTitle().getValue());
@@ -114,8 +112,12 @@ public class CoppaStudyProvider implements StudyProvider {
         MapBuilder<String, String> ids =
                 new MapBuilder<String, String>();
 
+        if (p.getAssignedIdentifier() != null) {
+            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
+        }
+
         if (p.getIdentifier() != null) {
-            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getIdentifier().getExtension());
+            ids.put("Extension", p.getIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null && p.getPublicTitle().getValue() != null) {
