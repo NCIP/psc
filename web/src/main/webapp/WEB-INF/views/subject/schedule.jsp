@@ -163,6 +163,9 @@
         a.notification-control {
             padding:0 2px;
         }
+        a.notification-control-apply {
+            padding:0 2px;
+        }
     </style>
 
     <script type="text/javascript">
@@ -297,8 +300,11 @@
                             <c:forEach items="${assignment.currentAeNotifications}" var="notification" varStatus="innerCounter">
                                 <li id="notifiction-${notification.gridId}" class="notification-list ${assignment.name} remove ${commons:parity(innerCounter.index)}" study="${assignment.name}">
                                     <label>${notification.title}</label>
-                                    <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
-                                       notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    <%--<a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"--%>
+                                       <%--notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>--%>
+                                    <c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">
+                                        <a class="control" href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
+                                    </c:if>
                                 </li>
                             </c:forEach>
                             </ul>
