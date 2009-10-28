@@ -212,7 +212,7 @@ module Bnd
       @project
     end
   end
-end
+end unless Object.const_defined?(:Bnd)
 
 class Buildr::Project
   include Bnd

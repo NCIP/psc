@@ -3,6 +3,10 @@
 #
 # The libs are stored in osgi/bundled-lib.
 
+# Ensure that bnd.rake is already loaded.
+# This may not be necessary with buildr-1.3.5
+load File.expand_path(File.dirname(__FILE__) + "/bnd.rake")
+
 def psc_osgi_artifact(spec, bnd_props = { }, &src_mod)
   src_spec = Artifact.to_hash(spec)
   # wrapped id per SpringSource repo model
