@@ -48,6 +48,9 @@ public class CoppaStudyProviderTest extends TestCase{
         expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
             coppaStudyProtocol("NCI-123", "Official", "Public")
         });
+
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null);
+
         expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(null);
         mocks.replayMocks();
 
@@ -58,12 +61,33 @@ public class CoppaStudyProviderTest extends TestCase{
     }
 
     public void testSearchWithNoResults() throws Exception{
-        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null);
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(null).times(2);
         mocks.replayMocks();
 
         List<Study> actual = provider.search("NOTHING");
 
         assertTrue("Incorrect number of studies returned", actual.isEmpty());
+    }
+
+    public void testSearchWithMultipleResults() throws Exception {
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
+            coppaStudyProtocol("NCI-123", "Good", "Day")
+        });
+
+        expect(coppaAccessor.searchStudyProtocols((StudyProtocol) notNull(), (LimitOffset) notNull())).andReturn(new StudyProtocol[]{
+            coppaStudyProtocol("NCI-123", "Good", "Day"),
+            coppaStudyProtocol("NCI-BBB", "Good", "Night")
+        });
+
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(null).times(2);
+        
+        mocks.replayMocks();
+        
+        List<Study> actual = provider.search("Good");
+
+        assertEquals("Incorrect number of studies returned", 2, actual.size());
+        assertStudy("Wrong Study created", "NCI-123", "Good", actual.get(0));
+        assertStudy("Wrong Study created", "NCI-BBB", "Good", actual.get(1));
     }
 
     public void testGetStudies() throws Exception {

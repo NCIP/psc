@@ -9,14 +9,11 @@ import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.Id;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
+import org.iso._21090.II;
 import org.iso._21090.ST;
 import org.osgi.framework.BundleContext;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CoppaStudyProvider implements StudyProvider {
     private BundleContext bundleContext;
@@ -62,16 +59,36 @@ public class CoppaStudyProvider implements StudyProvider {
         titleTemplate.setValue(partialName);
         base.setOfficialTitle(titleTemplate);
 
-        StudyProtocol[] raw = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, smallLimit());
-        if (raw == null) {
-            return Collections.emptyList();
-        } else {
-            List<Study> results = new ArrayList<Study>(raw.length);
-            for (StudyProtocol protocol : raw) {
-                results.add(createStudy(protocol));
-            }
-            return results;
+        StudyProtocol[] raw_by_title = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, smallLimit());
+
+        base = new StudyProtocol();
+        II assignedIdTemplate = new II();
+        assignedIdTemplate.setExtension(partialName);
+        base.setAssignedIdentifier(assignedIdTemplate);
+
+        StudyProtocol[] raw_by_assigned_id = CoppaProviderHelper.getCoppaAccessor(bundleContext).searchStudyProtocols(base, smallLimit());
+
+
+        List<StudyProtocol> combined = new ArrayList<StudyProtocol>();
+        if(raw_by_title != null && raw_by_title.length > 0) {
+            combined.addAll(Arrays.asList(raw_by_title));
         }
+
+        if (raw_by_assigned_id != null && raw_by_assigned_id.length > 0) {
+            combined.addAll(Arrays.asList(raw_by_assigned_id));
+        }
+
+        Map<String, Study> dict = new HashMap<String, Study>();
+        for (StudyProtocol protocol : combined) {
+            if (protocol.getIdentifier() != null && !dict.containsKey(protocol.getIdentifier().getExtension())) {
+                dict.put(protocol.getIdentifier().getExtension(), createStudy(protocol));
+            }
+        }
+
+        List<Study> results = new ArrayList(dict.values());
+        Collections.reverse(results);
+        return results;
+
     }
 
     public String providerToken() {
