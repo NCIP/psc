@@ -299,12 +299,19 @@
                             <ul>
                             <c:forEach items="${assignment.currentAeNotifications}" var="notification" varStatus="innerCounter">
                                 <li id="notifiction-${notification.gridId}" class="notification-list ${assignment.name} remove ${commons:parity(innerCounter.index)}" study="${assignment.name}">
-                                    <label>${notification.title}</label>
-                                    <%--<a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"--%>
-                                       <%--notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>--%>
-                                    <c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">
-                                        <a class="control" href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>
-                                    </c:if>
+                                    <c:set var="message" value="${notification.message}"/>
+                                    <c:choose>
+                                        <c:when test="${fn:contains(message,'pages/cal')}">
+                                            <label>${notification.title}</label>
+                                        </c:when>
+                                        <c:otherwise><label>${notification.message} using amendment section</label></c:otherwise>
+                                    </c:choose>
+                                    <%--<label>${notification.message}</label>--%>
+                                    <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
+                                       notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
+                                    <%--<c:if test="${not (assignment.currentAmendment eq assignment.studySite.currentApprovedAmendment)}">--%>
+                                        <%--<a class="control" href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Apply</a>--%>
+                                    <%--</c:if>--%>
                                 </li>
                             </c:forEach>
                             </ul>
