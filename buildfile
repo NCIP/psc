@@ -620,7 +620,12 @@ define "psc" do
   ##Adding the grid module.
   desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"
   define "grid" do
-
+    
+    ##creating work folders for mimicking the tomcat directory structure.
+    rm_rf _('target/work-tomcat')
+    mkdir_p _('target/work-tomcat/webapps/wsrf')
+    mkdir_p _('target/work-tomcat/common/lib')
+      
     task :check_globus do |task|
       raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
     end
@@ -654,7 +659,14 @@ define "psc" do
 
     ##this will grid secure the tomcat and then deploy all the implementation.
     task :deploy_with_globus => [:deploy_globus , :deploy]
-
+    
+    ## packaging the war file by deploying the grid services on the work tomcat folder.
+    package(:war, :file => _('target/'+wsrf_dir_name+'.war')).clean.include(:from=>_('target/work-tomcat/webapps/wsrf')).enhance do
+      ENV['CATALINA_HOME']=_('target/work-tomcat').to_s
+      ENV['WSRF_DIR_NAME']='wsrf'
+      task(:deploy_with_globus).invoke
+    end
+    
     ##Project src and test compiling successfully but test cases are failing.
     desc "AdverseEvent Grid Service"
     define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
