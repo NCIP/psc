@@ -88,6 +88,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
        		Use project.propertie relative dir names becasue they are used by install also-->
 	<property name="dist.exploded.dir" value="${dist.dir}/exploded" />
 	<property name="psc-webapp.dist.dir" value="${dist.exploded.dir}/${psc-webapp.dist.relative.dir}" />
+	<property name="psc-grid.dist.dir" value="${dist.exploded.dir}/${psc-grid.dist.relative.dir}" />
 	<property name="tools.dist.dir" value="${dist.exploded.dir}/${tools.dist.relative.dir}" />
 	<property name="common.dist.dir" value="${dist.exploded.dir}/${common.dist.relative.dir}" />
 	<property name="db-install.dist.dir" value="${dist.exploded.dir}/${db-install.dist.relative.dir}" />
@@ -118,8 +119,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<property name="psc-webapp.name"  value="psc"/>
 	<property name="psc-webapp.file.name"  value="${psc-webapp.name}.war"/>
 	<property name="psc-webapp.src.dir" value="${psc-webapp.base.dir}/web/src"/>
+    <property name="psc-grid.name"  value="wsrf-psc"/>
+	<property name="psc-grid.file.name"  value="${psc-grid.name}.war"/>
 	<!-- local property for psc war -->
 	<property name="location.warfile" value="${software.dir}/web/target"/>
+	<property name="location.gridwarfile" value="${software.dir}/grid/target"/>
 
 	<!-- retrive ivy.jar.files then retrieve bda files and librarires -->
 	<property name="commonlibrary.dir" value="" />
@@ -189,6 +193,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.exploded.dir}" />
 		<mkdir dir="${psc-webapp.dist.dir}" />
+		<mkdir dir="${psc-grid.dist.dir}" />
 		<mkdir dir="${common.dist.dir}" />
 		<mkdir dir="${tools.dist.dir}" />
 		<mkdir dir="${temp.dir}" />
@@ -228,7 +233,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	<target name="build:psc-grid" depends="init" description="Call grid sub-projects build target to produce artifiacts">
 	    <ant inheritAll="false" inheritRefs="false" antfile="${psc-grid.build.file}" target="${psc-grid.build.target}" dir="${psc-grid.base.dir}">
 			<property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
+            <property name="dist.dir" value="${psc-grid.dist.dir}" />
+            <property name="ccts.common.grid.src.dir" value="${ccts.common.grid.src.dir}" />
 		</ant>
+        <!-- copied war file to exploded folder -->
+		<copy file="${location.gridwarfile}/${psc-grid.file.name}" todir="${psc-grid.dist.dir}" overwrite="true" />
 	</target>
 
 	<target name="build:psc-webapp" depends="init" description="Call webapp sub-projects build target to produce artifiacts">
