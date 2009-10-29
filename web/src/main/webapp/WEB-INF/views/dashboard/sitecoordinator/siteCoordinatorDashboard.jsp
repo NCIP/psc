@@ -164,8 +164,14 @@
                         </tr>
                         <c:forEach items="${command.grid}" var="x">
                             <tr>
-                                <th>${x.key.displayName}</th>
-
+                                <c:choose>
+                                    <c:when test="${fn:contains(x,'Study')}">
+                                       <th>${x.key.name}</th>
+                                    </c:when>
+                                    <c:otherwise>
+                                       <th>${x.key.displayName}</th>
+                                    </c:otherwise>
+                                </c:choose>
                                 <c:forEach items="${sites}" var="y">
                                     <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
                                         <td>
