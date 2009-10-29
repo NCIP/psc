@@ -273,8 +273,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		build:all,
 		dist:installer,
 		dist:src,
-		dist:gui-installer
-		">
+		dist:upgrader">
 	</target>
 
 	<target name="dist:src" description="Makes source distribution">
