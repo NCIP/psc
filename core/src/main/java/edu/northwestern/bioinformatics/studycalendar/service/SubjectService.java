@@ -307,21 +307,15 @@ public class SubjectService {
                 Integer month = relativeRecurringHoliday.getMonth();
                 int dayOfTheWeekInt = relativeRecurringHoliday.getDayOfTheWeekInteger();
                 Calendar c = Calendar.getInstance();
+                c.set(year, month, 1);
+                List<Date> dates = findRecurringHoliday(c, dayOfTheWeekInt);
+                //-1, since we start from position 0 in the list
+                Date specificDay = dates.get(numberOfTheWeek-1);
 
-                try {
-                    c.setTime(
-                        new SimpleDateFormat("dd/MM/yyyy").parse("01/" + month + '/' + year));
-                    List<Date> dates = findRecurringHoliday(c, dayOfTheWeekInt);
-                    //-1, since we start from position 0 in the list
-                    Date specificDay = dates.get(numberOfTheWeek-1);
-
-                    String originalDateFormatted = df.format(date.getTime());
-                    String holidayDateFormatted = df.format(specificDay);
-                    if (originalDateFormatted.equals(holidayDateFormatted)) {
-                        shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
-                    }
-                } catch (ParseException e) {
-                    throw new StudyCalendarSystemException(e);
+                String originalDateFormatted = df.format(date.getTime());
+                String holidayDateFormatted = df.format(specificDay);
+                if (originalDateFormatted.equals(holidayDateFormatted)) {
+                    shiftToAvoidBlackoutDate(date, event, site, blackoutDate.getDescription());
                 }
             }
         }
