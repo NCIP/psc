@@ -47,6 +47,44 @@
           padding:1em;
       }
 
+      ul {
+          padding:0;
+      }
+
+      ul.sites {
+          width:80%
+      }
+
+      ul.subjects {
+          padding-bottom:1em
+      }
+
+      li {
+          margin: 0;
+          padding-left:1em;
+          list-style:none;
+      }
+
+      label.site {
+          padding:.2em;
+          font-weight:bold;
+      }
+
+      div.row div.study {
+          float:left;
+      }
+
+      .site-coord-dash-link {
+          color:#0000cc;
+          cursor:pointer;
+          white-space:nowrap;
+      }
+
+      #errors {
+          margin-left:1em;
+          margin-bottom:1em;
+      }
+
     </style>
     <script type="text/javascript">
         var studyAutocompleter;
@@ -367,6 +405,12 @@
                         data: stringXML,
                         success :function() {
                             window.location = SC.relativeUri("/pages/cal/template?study="+${study.id})
+                        },
+                        failure: function(response) {
+                            $('errors').innerHTML = "The following error occured: " + response.responseText;
+                        },
+                        error: function(response) {
+                            $('errors').innerHTML = "The study can not be associated with this external identifier. Another study with id \"" + value + "\" already exists. Please pick another identifier.";
                         }
                     })
                 }
@@ -386,45 +430,13 @@
         })
 
       </script>
-      <style type="text/css">
-          ul {
-              padding:0;
-          }
-
-          ul.sites {
-              width:80%
-          }
-
-          ul.subjects {
-              padding-bottom:1em
-          }
-
-          li {
-              margin: 0;
-              padding-left:1em;
-              list-style:none;
-          }
-
-          label.site {
-              padding:.2em;
-              font-weight:bold;
-          }
-
-          div.row div.study {
-              float:left;
-          }
-
-          .site-coord-dash-link {
-              color:#0000cc;
-              cursor:pointer;
-              white-space:nowrap;
-          }
-      </style>
   </head>
   <body>
   <laf:box title="Study Manipulations" cssClass="yui-skin-sam" autopad="true">
       <laf:division>
-            <form:errors path="*"/>
+            <div id="errors">
+                <form:errors path="*"/>
+            </div>
             <div class="row">
                  <div class="label">
                     Find external study:
