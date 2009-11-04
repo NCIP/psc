@@ -22,7 +22,7 @@
                         </c:choose>
                         <ul style="margin-left:35%">
                             <input class="dismissNotification" style="float:left; margin-left:20px" id="dismissNotification" type="submit" onclick="dismissNotification(${value.id})" value="Dismiss"/>
-                            <c:if test="${not (value.assignment.currentAmendment eq value.assignment.studySite.currentApprovedAmendment)}">
+                            <c:if test="${fn:contains(message, 'optional') && not (value.assignment.currentAmendment eq value.assignment.studySite.currentApprovedAmendment)}">
                                 <input type="submit" value="Apply" style="float:left; margin-left:20px" onclick="location.href='<c:url value="/pages/cal/schedule/amend?assignment=${value.assignment.id}"/>'"/>
                             </c:if>
                         </ul>
