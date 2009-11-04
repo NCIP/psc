@@ -88,6 +88,15 @@ psc.schedule.preview.Controls = (function ($) {
       $('#preview-segments .remove.control :button').live('click', handleRemove);
       $('#refresh-preview-control :button').click(refresh);
       $('#schedule').bind('schedule-ready', refreshSuccessful);
+      $('#toggle-plan-days').click(function () {
+        $('.event-details.plan-day').toggle();
+        if ($(this).text().match(/Show/)) {
+          $(this).text($(this).text().replace(/Show/, 'Hide'));
+        } else {
+          $(this).text($(this).text().replace(/Hide/, 'Show'));
+        }
+        return false;
+      });
     }
   };
 }(jQuery));
