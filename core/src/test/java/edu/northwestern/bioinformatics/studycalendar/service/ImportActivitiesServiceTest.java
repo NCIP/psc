@@ -66,10 +66,10 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
         List<Source> existingSources = asList(existingSource);
 
         expect(sourceDao.getAll()).andReturn(existingSources);
-        sourceService.updateSource(existingSource, source0.getActivities());
+        sourceService.updateSource(existingSource, existingSource.getActivities());
         replayMocks();
 
-        List<Source> actualSources = service.replaceCollidingSources(sources);
+        List<Source> actualSources = service.replaceCollidingSources(existingSources);
         verifyMocks();
 
         Source actualSource0 = actualSources.get(0);
@@ -86,10 +86,10 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
         List<Source> existingSources = asList(existingSource);
 
         expect(sourceDao.getAll()).andReturn(existingSources);
-        sourceService.updateSource(existingSource, source0.getActivities());
+        sourceService.updateSource(existingSource, existingSource.getActivities());
         replayMocks();
 
-        List<Source> actualSources = service.replaceCollidingSources(sources);
+        List<Source> actualSources = service.replaceCollidingSources(existingSources);
         verifyMocks();
 
         Source actualSource0 = actualSources.get(0);
@@ -106,6 +106,7 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
         InputStream xml = new ByteArrayInputStream(new byte[0]);
         expect(sourceDao.getAll()).andReturn(Arrays.<Source>asList());
         expect(serializer.readCollectionOrSingleDocument(xml)).andReturn(Arrays.asList(newSource));
+        sourceService.updateSource(newSource, newSource.getActivities());
 
         replayMocks();
         assertSame(newSource, service.loadAndSave(xml));
