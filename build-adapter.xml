@@ -104,10 +104,12 @@
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
+            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
         <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
+            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
     </target>
     
@@ -116,11 +118,13 @@
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
+            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
         <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
             <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
+            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
     </target>
     
