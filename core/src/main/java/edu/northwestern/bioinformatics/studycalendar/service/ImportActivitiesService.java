@@ -60,6 +60,10 @@ public class ImportActivitiesService {
                 Source existingSource = existingSources.get(existingSources.indexOf(source));
                 sourceService.updateSource(existingSource, source.getActivities());
                 validSources.add(existingSource);
+            } else {
+                //means new source
+                sourceService.updateSource(source, source.getActivities());
+                validSources.add(source);
             }
         }
         return validSources;
