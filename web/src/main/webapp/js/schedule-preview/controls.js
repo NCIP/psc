@@ -83,7 +83,7 @@ psc.schedule.preview.Controls = (function ($) {
     init: function(hash) {
       p.init(hash);
       refreshList();
-
+      $('#next-segment input.date').val(psc.tools.Dates.utcToDisplayDate(new Date).toString())
       $('#next-segment #add-button').click(addSegmentFromForm);
       $('#preview-segments .remove.control :button').live('click', handleRemove);
       $('#refresh-preview-control :button').click(refresh);
