@@ -20,16 +20,6 @@
     </label>
 </div>
 
-<div class="accordionRow" style="margin-top:1em;">
-    <div class="label">Start date</div>
-    <div class="value"><input type="text" name="startDate" id="start-date-input"
-                                                           class="date" size="10"/>
-        <a href="#" id="start-date-input-calbutton">
-            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="middle"/>
-        </a>
-    </div>
-</div>
-
 <div class="accordionRow" style="margin-top:1em;" id="mode-row">
     <div class="label">When?</div>
     <div class="value">
@@ -40,6 +30,15 @@
     </div>
  </div>
 
+<div class="accordionRow" style="margin-top:1em;">
+    <div class="label">Start date</div>
+    <div class="value"><input type="text" name="startDate" id="start-date-input"
+                                                           class="date" size="10"/>
+        <a href="#" id="start-date-input-calbutton">
+            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="middle"/>
+        </a>
+    </div>
+</div>
 
 <div class="alignStudySegmentButtonInTheMiddle">
     <tags:activityIndicator id="next-studySegment-indicator"/>
