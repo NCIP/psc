@@ -163,9 +163,6 @@
         a.notification-control {
             padding:0 2px;
         }
-        a.notification-control-apply {
-            padding:0 2px;
-        }
     </style>
 
     <script type="text/javascript">
@@ -302,9 +299,14 @@
                                     <c:set var="message" value="${notification.message}"/>
                                     <c:choose>
                                         <c:when test="${fn:contains(message,'pages/cal')}">
-                                            <label>${notification.title}</label>
+                                            <a href="<c:url value="${notification.message}"/>">${notification.title}</a>
                                         </c:when>
-                                        <c:otherwise><label>${notification.message} using amendment section</label></c:otherwise>
+                                        <c:when test="${fn:contains(message, 'optional amendment')}">
+                                            <label>${notification.message} using amendment section</label>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <label>${notification.title}</label>
+                                        </c:otherwise>
                                     </c:choose>
                                     <a href="#" class="notification-control control" title="This will permanently clear this notification from the screen"
                                        notification="${notification.gridId}" assignment="${assignment.gridId}" subject="${subject.gridId}">Dismiss</a>
