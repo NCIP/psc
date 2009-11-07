@@ -99,6 +99,15 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
+    public void test403WhenUserCannotAccessSchedule() throws Exception {
+        expectGetCurrentUser();
+        expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
+        expect(authorizationService.filterAssignmentsForVisibility
+                (studySubjectAssignments,getCurrentUser())).andReturn(new ArrayList<StudySubjectAssignment>());
+        doGet();
+        assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
+    }
+
     public void testGet400WhenNoSubjectIdentifierInRequest() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName(), null);
 
