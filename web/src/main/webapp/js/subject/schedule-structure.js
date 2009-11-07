@@ -114,6 +114,9 @@ psc.subject.Schedule = function (scheduleApiResponse) {
           enhanceScheduledActivity(sa)
         });
       }
+      if (dayObject['hidden_activities']) {
+        return dayObject['hidden_activities'];
+      }
     });
 
     var minDay = psc.tools.Dates.apiDateToUtc(minDayStr);

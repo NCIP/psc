@@ -24,6 +24,7 @@ psc.namespace("subject");
         var container = $('#scheduled-activities').empty();
         jQuery.each(schedule.allDays(), function (i, day) {
           var key = dateKey(day);
+          var hiddenActivities =(schedule.days && schedule.days[key] && schedule.days[key].hidden_activities);
           var activities =
             (schedule.days && schedule.days[key] && schedule.days[key].activities);
           if (psc.subject.isToday(day) && !activities) {
@@ -38,6 +39,7 @@ psc.namespace("subject");
                 dateClass: activities[0].dateClasses(),
                 isToday: activities[0].isToday(),
                 scheduledActivities: activities,
+                hasHiddenActivities: hiddenActivities,
                 displayDate: key,
                 scheduledActivityListItems: items
               })
