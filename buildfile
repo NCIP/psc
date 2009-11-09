@@ -301,8 +301,8 @@ define "psc" do
       compile.with project('plugin-api').and_dependencies,
         project('cas-plugin').and_dependencies,
         project('domain').and_dependencies,
-        SECURITY.caaers_cas, CAGRID
-        #,GLOBUS.core
+        SECURITY.caaers_cas, CAGRID,
+        GLOBUS.core
 
       test.with project('plugin-api').test_dependencies,
         project('cas-plugin').test_dependencies,
@@ -426,7 +426,7 @@ define "psc" do
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - application_bundles - application_infrastructure - [FELIX.shell,GLOBUS.core]
+        system_bundles - application_bundles - application_infrastructure - [FELIX.shell]
 
       task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
