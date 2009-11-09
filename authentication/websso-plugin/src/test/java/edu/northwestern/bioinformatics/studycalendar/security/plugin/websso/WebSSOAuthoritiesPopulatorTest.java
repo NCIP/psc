@@ -130,15 +130,15 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
 //            actual.getAttribute("cagrid.delegated-credential.value"));
 //    }
 
-//    public void testAuthenticationFailsWithoutDelegatedCredential() throws Exception {
-//        expectedCredentialException = new Exception("Fail");
-//        try {
-//            doPopulate();
-//            fail("Exception not thrown");
-//        } catch (AuthenticationException ae) {
-//            assertTrue(ae.getMessage().startsWith("Failed to resolve delegated credential"));
-//        }
-//    }
+    public void testAuthenticationFailsWithoutDelegatedCredential() throws Exception {
+        expectedCredentialException = new Exception("Fail");
+        try {
+            doPopulate();
+            fail("Exception not thrown");
+        } catch (AuthenticationException ae) {
+            assertTrue(ae.getMessage().startsWith("Failed to resolve delegated credential"));
+        }
+    }
 
     private User doPopulate() {
         replayMocks();
