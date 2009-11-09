@@ -95,7 +95,7 @@ def application_context
       @context = Java::OrgSpringframeworkContextSupport::GenericApplicationContext.new(
         Java::OrgSpringframeworkBeansFactoryXml::XmlBeanFactory.new(
           Java::OrgSpringframeworkCoreIo::FileSystemResource.new(path),
-          Psc::Core::StudyCalendarApplicationContextBuilder.getDeployedApplicationContext()
+          Psc::Core::StudyCalendarTestCoreApplicationContextBuilder.getApplicationContext()
         )
       )
     end
