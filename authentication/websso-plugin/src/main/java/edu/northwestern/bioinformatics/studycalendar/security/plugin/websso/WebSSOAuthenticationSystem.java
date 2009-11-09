@@ -1,17 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem;
+import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperty;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.Collection;
 
 /**
  * @author Kruttik Aggarwal
@@ -74,5 +77,21 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     @Override
     public ConfigurationProperties configurationProperties() {
         return DefaultConfigurationProperties.union(super.configurationProperties(), WEBSSO_PROPERTIES);
+    }
+
+    @Override
+    public void validate(Configuration config) throws StudyCalendarValidationException {
+        super.validate(config);
+
+        validateIsReadableFilename(config, HOST_KEY);
+        validateIsReadableFilename(config, HOST_CERT);
+    }
+
+    private void validateIsReadableFilename(Configuration config, ConfigurationProperty<String> property) {
+        String value = config.get(property);
+        File f = new File(value);
+        if (!f.canRead()) {
+            throw new StudyCalendarValidationException("%s '%s' is not readable", property.getName(), value);
+        }
     }
 }

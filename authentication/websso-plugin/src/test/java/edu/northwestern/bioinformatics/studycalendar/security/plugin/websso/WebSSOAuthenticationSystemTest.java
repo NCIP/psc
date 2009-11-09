@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.CasBasedAuthenticationSystemTestCase;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.caaers.web.security.cas.CaaersCasProxyTicketValidator;
 import org.acegisecurity.providers.ProviderManager;
 import org.acegisecurity.providers.cas.CasAuthenticationProvider;
+
+import java.io.File;
 
 /**
  * This only tests the differences between
@@ -17,8 +19,7 @@ import org.acegisecurity.providers.cas.CasAuthenticationProvider;
  * @author Rhett Sutphin
  */
 public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystemTestCase {
-    private static final String EXPECTED_HOST_KEY = "/tmp/key-etc.txt";
-    private static final String EXPECTED_HOST_CERT = "/tmp/cert-etc.txt";
+    private File expectedHostKey, expectedHostCert;
 
     private WebSSOAuthenticationSystem system;
 
@@ -27,13 +28,21 @@ public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystem
         super.setUp();
         system = new WebSSOAuthenticationSystem();
         system.setBundleContext(bundleContext);
+
+        expectedHostKey = File.createTempFile("host", "key");
+        expectedHostCert = File.createTempFile("host", "cert");
+    }
+
+    @Override
+    @SuppressWarnings({ "ResultOfMethodCallIgnored" })
+    protected void tearDown() throws Exception {
+        expectedHostKey.delete();
+        expectedHostCert.delete();
+        super.tearDown();
     }
 
     public void testInitializeAuthManager() throws Exception {
-        configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
-        configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
-        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, EXPECTED_HOST_CERT);
-        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, EXPECTED_HOST_KEY);
+        setMinimumValidConfiguration();
         doValidInitialize();
         assertTrue("Wrong type", getSystem().authenticationManager() instanceof ProviderManager);
         ProviderManager manager = (ProviderManager) getSystem().authenticationManager();
@@ -50,29 +59,44 @@ public class WebSSOAuthenticationSystemTest extends CasBasedAuthenticationSystem
     }
 
     public void testHostKeyRequired() throws Exception {
-        configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
-        configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
-        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, EXPECTED_HOST_CERT);
+        setMinimumValidConfiguration();
+        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, null);
+        assertValidationFailure("Host key is required for the selected authentication system");
+    }
+
+    public void testHostCertRequired() throws Exception {
+        setMinimumValidConfiguration();
+        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, null);
+        assertValidationFailure("Host certificate is required for the selected authentication system");
+    }
+
+    public void testHostKeyMustBeReadable() throws Exception {
+        setMinimumValidConfiguration();
+        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, "/an/invalid/file");
+        assertValidationFailure("Host key '/an/invalid/file' is not readable");
+    }
+
+    public void testHostCertMustBeReadable() throws Exception {
+        setMinimumValidConfiguration();
+        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, "/an/invalid/file");
+        assertValidationFailure("Host certificate '/an/invalid/file' is not readable");
+    }
+
+    private void assertValidationFailure(String expectedMessage) {
         try {
             getSystem().validate(configuration);
-            fail("Exception not thrown");
+            fail("Validation exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Host key is required for the selected authentication system",
+            assertEquals(expectedMessage,
                     scve.getMessage());
         }
     }
 
-    public void testHostCertRequired() throws Exception {
+    private void setMinimumValidConfiguration() {
         configuration.set(CasAuthenticationSystem.SERVICE_URL, EXPECTED_SERVICE_URL);
         configuration.set(CasAuthenticationSystem.APPLICATION_URL, EXPECTED_APP_URL);
-        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, EXPECTED_HOST_KEY);
-        try {
-            getSystem().validate(configuration);
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Host certificate is required for the selected authentication system",
-                    scve.getMessage());
-        }
+        configuration.set(WebSSOAuthenticationSystem.HOST_CERT, expectedHostCert.getAbsolutePath());
+        configuration.set(WebSSOAuthenticationSystem.HOST_KEY, expectedHostKey.getAbsolutePath());
     }
 
     @Override
