@@ -14,7 +14,6 @@
     <property name="windowsfamily" value="Windows 2000,Windows 98,Windows NT,Windows Vista,Windows XP" />
     <property environment="env"/>
     <property name="tomcat.relative.path" value="${env.CATALINA_HOME}"/>
-    <property name="ccts.common.grid.src.dir" value="${env.CCTS_HOME}"/>
     <available file="${jruby.binaries.relative.dir}" property="jruby.exists" />
     <available file="${path.to.jruby.gems}/buildr-1.3.3-java" property="buildr.exists" />
     <available file="${path.to.jruby.gems}/shenandoah-0.0.0" property="shenandoah.exists" />
@@ -82,6 +81,25 @@
     </target>
 
     <target name="build:war" depends="install">
+        <condition property="ccts.war.file">
+            <isset property="ccts.common.grid.src.dir"/>
+        </condition>
+        <antcall target="ccts.psc.war"/>
+        <antcall target="psc.war" />
+    </target>
+
+    <target name="ccts.psc.war" if="ccts.war.file">
+        <echo message="Building PSC in CCTS mode" />
+        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
+            <arg line="-S buildr build CCTS_WAR=yes test=no"/>
+        </exec>
+        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
+            <arg line="/c ${path.to.jruby.bat} -S buildr build CCTS_WAR=yes test=no"/>
+        </exec>
+    </target>
+
+    <target name="psc.war" unless="ccts.war.file">
+        <echo message="Building PSC in standalone mode" />
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr build test=no"/>
         </exec>
