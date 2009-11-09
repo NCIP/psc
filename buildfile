@@ -284,7 +284,9 @@ define "psc" do
       bnd.name = "PSC caGrid WebSSO Auth Plugin"
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.Activator"
+      bnd.import_packages.clear
       bnd.import_packages <<
+        "!org.globus.gsi" << "*" <<
         "org.springframework.beans.factory.config;version=2.5" <<
         "org.springframework.cache.ehcache;version=2.5" <<
         "org.acegisecurity.providers.cas" <<
@@ -302,7 +304,7 @@ define "psc" do
         project('cas-plugin').and_dependencies,
         project('domain').and_dependencies,
         SECURITY.caaers_cas, CAGRID,
-        GLOBUS.core
+        GLOBUS.core, GLOBUS_UNDUPLICABLE
 
       test.with project('plugin-api').test_dependencies,
         project('cas-plugin').test_dependencies,
@@ -380,7 +382,7 @@ define "psc" do
         bnd['Bundle-Activator'] =
           "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
 
-        compile.with project('psc:providers:coppa:common').and_dependencies, CIH
+        compile.with project('psc:providers:coppa:common').and_dependencies, CIH, GLOBUS_UNDUPLICABLE
         test.using(:junit).with UNIT_TESTING
         package(:jar)
       end
@@ -426,7 +428,7 @@ define "psc" do
         collect { |p| p.and_dependencies }.flatten.uniq.
         select { |a| Buildr::Artifact === a }.
         reject { |a| a.to_s =~ /org.osgi/ }.reject { |a| a.to_s =~ /sources/ } -
-        system_bundles - application_bundles - application_infrastructure - [FELIX.shell]
+        system_bundles - application_bundles - application_infrastructure - [FELIX.shell] - GLOBUS_UNDUPLICABLE.values
 
       task.values = osgi_framework.merge(
         "bundles/system-bundles" => system_bundles,
@@ -916,6 +918,12 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
+      # In the CCTS environment, the unduplicable libs must be on the container's
+      # common lib path; in standalone mode they are included in the war to allow
+      # use of WebSSO without (even more) container configuration.
+      unless env_true?('CCTS_WAR')
+        war.libs += GLOBUS_UNDUPLICABLE.values
+      end
       war.enhance ["psc:osgi-layer:da_launcher_artifacts", "psc:web:compile_sass"] do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })

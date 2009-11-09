@@ -16,6 +16,10 @@ def set_db_name(name)
   $db_name
 end
 
+def env_true?(name)
+  ENV[name] && ENV[name] =~ /(^y)|(yes)|(true)/i
+end
+
 def emma?
   ENV['EMMA']
 end

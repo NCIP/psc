@@ -280,13 +280,17 @@ GLOBUS = struct(
   :bsf        => "org.apache.bsf:com.springsource.org.apache.bsf:jar:2.4.0"
 )
 
-GLOBUS_AXIS_STUB_PACKAGES = %w(
-  org.apache.axis org.apache.axis.client org.apache.axis.configuration
-  org.apache.axis.constants
-  org.apache.axis.description org.apache.axis.utils org.apache.axis.types
-  org.apache.axis.message.addressing org.apache.axis.soap
-  org.globus.axis.util javax.xml.namespace org.w3c.dom
-  org.ietf.jgss
+# These are the globus dependencies which cannot be duplicated within the same JVM
+# per http://cagrid.org/display/knowledgebase/GSSAPI+-+Bad+Certificate+Error+Solution .
+# Therefore they are not in the OSGi layer and may or may not be bundled into the WAR.
+GLOBUS_UNDUPLICABLE = struct(
+  :cog_jglobus => artifact("org.globus:cog-jglobus:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/cog-jglobus.jar")),
+  :cryptix_asn1 => artifact("cryptix:cryptix_asn1:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/cryptix-asn1.jar")),
+  :cryptix => artifact("cryptix:cryptix:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/cryptix.jar")),
+  :cryptix32 => artifact("cryptix:cryptix32:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/cryptix32.jar")),
+  :bouncycastle => artifact("org.bouncycastle:jce-jdk13:jar:1.25.0").from(static_lib("globus-4.0.3/jce-jdk13-125.jar")),
+  :jgss => artifact("org.ietf:jgss:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/jgss.jar")),
+  :puretls => artifact("com.claymoresystems:puretls:jar:4.0.3.WS-CORE").from(static_lib("globus-4.0.3/puretls.jar"))
 )
 
 # Some of this is generic caGrid/introduce stuff -- split it out later
