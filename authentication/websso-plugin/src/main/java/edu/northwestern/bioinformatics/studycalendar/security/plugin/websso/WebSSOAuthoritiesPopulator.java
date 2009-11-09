@@ -66,14 +66,14 @@ public class WebSSOAuthoritiesPopulator implements CasAuthoritiesPopulator {
         User user = pscUserDetailsService.loadUserByUsername(username);
         copySimpleAttributes(responseAttributes, user);
 
-//        String epr = responseAttributes.get(DELEGATION_SERVICE_EPR_RESPONSE_KEY);
-//        try {
-//            user.addAttribute(DELEGATED_CREDENTIAL_USER_ATTRIBUTE,
-//                createDelegatedCredentialAcquirer(epr).acquire());
-//        } catch (Exception e) {
-//            log.error("Could not retrieve user credential from CDS service using reference \n" + epr, e);
-//            throw new BadCredentialsException("Failed to resolve delegated credential", e);
-//        }
+        String epr = responseAttributes.get(DELEGATION_SERVICE_EPR_RESPONSE_KEY);
+        try {
+            user.addAttribute(DELEGATED_CREDENTIAL_USER_ATTRIBUTE,
+                createDelegatedCredentialAcquirer(epr).acquire());
+        } catch (Exception e) {
+            log.error("Could not retrieve user credential from CDS service using reference \n" + epr, e);
+            throw new BadCredentialsException("Failed to resolve delegated credential", e);
+        }
         return user;
     }
 

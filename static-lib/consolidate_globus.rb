@@ -4,12 +4,14 @@ require 'fileutils'
 include FileUtils::Verbose
 
 GLOBUS_LOCATION = ENV['GLOBUS_LOCATION'] or raise "No GLOBUS_LOCATION"
-# Exclude shared libraries, test & sample code
 GLOBUS_EXCLUDE = [
-  /^commons-/, /^x(a|e|ml-)/, /junit/, /samples/, /test/, /jaxrpc/, /servlet/, /log4j/, /saaj/, /wsdl/
+  # Exclude shared libraries, test & sample code
+  /^commons-/, /^x(a|e|ml-)/, /junit/, /samples/, /test/, /jaxrpc/, /servlet/, /log4j/, /saaj/, /wsdl/,
+  # Exclude JCE-dependent security code per http://cagrid.org/display/knowledgebase/GSSAPI+-+Bad+Certificate+Error+Solution
+  /^cog-jglobus/, /^cryptix/, /^jce-jdk13-125/, /^jgss/, /^puretls/
 ]
 GLOBUS_VERSION = "4.0.3"
-BUNDLE_VERSION = "#{GLOBUS_VERSION}.WS-CORE-PSC002"
+BUNDLE_VERSION = "#{GLOBUS_VERSION}.WS-CORE-PSC003"
 JAR_NAME = "psc-globus-all_#{BUNDLE_VERSION}.jar"
 BND_NAME = JAR_NAME.sub /jar^/, 'bnd'
 
@@ -108,4 +110,4 @@ Import-Package: \
  *;resolution:=optional
 Bundle-Name: PSC's Globus composite bundle
 Bundle-SymbolicName: edu.northwestern.bioinformatics.osgi.org.globus.all
-Bundle-Description: Contains the contents of the lib directory for the corresponding Globus version, except for 3rd-party libs and samples
+Bundle-Description: Contains the contents of the lib directory for the corresponding Globus version, except for 3rd-party libs, tests, samples, and JCE-using security code

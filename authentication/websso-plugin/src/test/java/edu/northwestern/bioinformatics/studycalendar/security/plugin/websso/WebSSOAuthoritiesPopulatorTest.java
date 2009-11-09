@@ -9,6 +9,7 @@ import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.userdetails.UserDetails;
 import static org.easymock.EasyMock.expect;
+import org.globus.gsi.GlobusCredential;
 
 import java.security.PrivateKey;
 
@@ -30,8 +31,8 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
             "</ns1:DelegatedCredentialReference>\n" +
             "$CAGRID_SSO_EMAIL_ID^jo@example.com";
     private static final String USERNAME = "jo";
-//    private static final GlobusCredential EXPECTED_CREDENTIAL =
-//        new GlobusCredential((PrivateKey) null, null);
+    private static final GlobusCredential EXPECTED_CREDENTIAL =
+        new GlobusCredential((PrivateKey) null, null);
 
     private WebSSOAuthoritiesPopulator populator;
     private PscUserDetailsService pscUserDetailsService;
@@ -124,21 +125,21 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         );
     }
 
-//    public void testDelegatedCredentialAcquired() throws Exception {
-//        User actual = doPopulate();
-//        assertSame(EXPECTED_CREDENTIAL,
-//            actual.getAttribute("cagrid.delegated-credential.value"));
-//    }
+    public void testDelegatedCredentialAcquired() throws Exception {
+        User actual = doPopulate();
+        assertSame(EXPECTED_CREDENTIAL,
+            actual.getAttribute("cagrid.delegated-credential.value"));
+    }
 
-//    public void testAuthenticationFailsWithoutDelegatedCredential() throws Exception {
-//        expectedCredentialException = new Exception("Fail");
-//        try {
-//            doPopulate();
-//            fail("Exception not thrown");
-//        } catch (AuthenticationException ae) {
-//            assertTrue(ae.getMessage().startsWith("Failed to resolve delegated credential"));
-//        }
-//    }
+    public void testAuthenticationFailsWithoutDelegatedCredential() throws Exception {
+        expectedCredentialException = new Exception("Fail");
+        try {
+            doPopulate();
+            fail("Exception not thrown");
+        } catch (AuthenticationException ae) {
+            assertTrue(ae.getMessage().startsWith("Failed to resolve delegated credential"));
+        }
+    }
 
     private User doPopulate() {
         replayMocks();
@@ -157,11 +158,11 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
             this.expectedException = expected;
         }
 
-//        @Override
-//        protected GlobusCredential acquire() throws Exception {
-//            if (expectedException != null) throw expectedException;
-//            return EXPECTED_CREDENTIAL;
-//        }
+        @Override
+        protected GlobusCredential acquire() throws Exception {
+            if (expectedException != null) throw expectedException;
+            return EXPECTED_CREDENTIAL;
+        }
 
         public String getActualXml() {
             return actualXml;
