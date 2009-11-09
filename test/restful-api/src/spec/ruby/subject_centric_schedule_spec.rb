@@ -283,10 +283,17 @@ describe "/subjects/{subject-identifier}/schedules" do
     end
     
     it "doesn't give schedule for invalid subject" do
-      get "subjects/ID002/schedules", :as => :erin  
+      get "/subjects/ID002/schedules", :as => :erin  
       response.status_code.should == 404
       response.status_message.should == "Not Found"
     end
+    
+    it "gives 403 status if user doesn't have access to the subject's schedule" do
+      get "/subjects/ID001/schedules", :as => :darlene 
+      response.status_code.should == 403
+      response.status_message.should == "Forbidden"
+    end
+  
   end
   
 end
