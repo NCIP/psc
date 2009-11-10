@@ -231,14 +231,21 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 	</target>
 
 	<target name="build:psc-grid" depends="init" description="Call grid sub-projects build target to produce artifiacts">
-	    <ant inheritAll="false" inheritRefs="false" antfile="${psc-grid.build.file}" target="${psc-grid.build.target}" dir="${psc-grid.base.dir}">
+        <condition property="ccts.mode">
+            <isset property="ccts.common.grid.src.dir"/>
+        </condition>
+        <antcall target="build:psc-grid:ccts"/>
+	</target>
+
+    <target  name="build:psc-grid:ccts" description="Make grid service war file if ccts mode" if="ccts.mode">
+        <ant inheritAll="false" inheritRefs="false" antfile="${psc-grid.build.file}" target="${psc-grid.build.target}" dir="${psc-grid.base.dir}">
 			<property name="env.GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
             <property name="dist.dir" value="${psc-grid.dist.dir}" />
             <property name="ccts.common.grid.src.dir" value="${ccts.common.grid.src.dir}" />
 		</ant>
         <!-- copied war file to exploded folder -->
 		<copy file="${location.gridwarfile}/${psc-grid.file.name}" todir="${psc-grid.dist.dir}" overwrite="true" />
-	</target>
+    </target>
 
 	<target name="build:psc-webapp" depends="init" description="Call webapp sub-projects build target to produce artifiacts">
 		<!-- setting the property in the ant call overrides the property in the sub-project allowing the artifact to be produced where needed -->
