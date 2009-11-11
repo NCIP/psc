@@ -918,12 +918,6 @@ define "psc" do
     package(:war, :file => _('target/psc.war')).tap do |war|
       war.libs -= artifacts(CONTAINER_PROVIDED)
       war.libs -= war.libs.select { |artifact| artifact.respond_to?(:classifier) && artifact.classifier == 'sources' }
-      # In the CCTS environment, the unduplicable libs must be on the container's
-      # common lib path; in standalone mode they are included in the war to allow
-      # use of WebSSO without (even more) container configuration.
-      unless env_true?('CCTS_WAR')
-        war.libs += GLOBUS_UNDUPLICABLE.values
-      end
       war.enhance ["psc:osgi-layer:da_launcher_artifacts", "psc:web:compile_sass"] do
         task("psc:osgi-layer:da_launcher_artifacts").values.each do |path, artifacts|
           war.path("WEB-INF/da-launcher").path(path).include(artifacts.collect { |a| a.invoke; a.name })
@@ -1013,7 +1007,9 @@ define "psc" do
         info "- Exploding libs"
         libdir = t.target + '/WEB-INF/lib'
         mkdir_p libdir
-        war_package.libs.each do |lib|
+        main_libs = war_package.libs
+        main_libs += GLOBUS_UNDUPLICABLE.values if env_true?('WEBSSO')
+        main_libs.each do |lib|
           cp lib.to_s, libdir
         end
         info "- Exploding DA Launcher libs"
