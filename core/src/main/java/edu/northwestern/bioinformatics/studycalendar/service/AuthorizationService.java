@@ -1,13 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +73,65 @@ public class AuthorizationService {
         for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
             Study study = it.next();
             if (!isTemplateVisible(visibleTo, study)) it.remove();
+        }
+        return filtered;
+    }
+
+    /**
+     * Returns a copy of the given list of study subject assignmnents containing only those which should be
+     * visible to the given user role.
+     *
+     * @param studySites
+     * @param assignments
+     * @return
+     * @throws Exception
+     */
+    public List<StudySubjectAssignment> filterStudySubjectAssignmentsByStudySite(List<StudySite> studySites, List<StudySubjectAssignment> assignments) {
+        List <StudySubjectAssignment> filtered = new ArrayList<StudySubjectAssignment>();
+        for (StudySubjectAssignment ssa : assignments) {
+            if (studySites.contains(ssa.getStudySite())){
+                filtered.add(ssa);
+            }
+        }
+        return filtered;
+    }
+
+    /**
+     * Returns a copy of the given list of study sites containing only those which should be
+     * visible to the given user role.
+     *
+     * @param studySites
+     * @param visibleTo
+     * @return
+     * @throws Exception
+     */
+    public List<StudySite> filterStudySitesForVisibility (List<StudySite> studySites, UserRole visibleTo) {
+        List<StudySite> filtered = new ArrayList<StudySite>();
+        for (StudySite studySite : studySites) {
+            if (visibleTo.getStudySites().contains(studySite)){
+                filtered.add(studySite);
+            }
+        }
+        return filtered;
+    }
+
+    /**
+     * Returns a copy of the given list of studies containing only those which should be
+     * visible to the given user role.
+     *
+     * @param studies
+     * @param visibleTo
+     * @return
+     * @throws Exception
+     */
+    public List<StudySite> filterStudySitesForVisibilityFromStudiesList (List<Study> studies, UserRole visibleTo) {
+        List<StudySite> filtered = new ArrayList<StudySite>();
+        for (Study study : studies) {
+            for (StudySite studySite: study.getStudySites()) {
+                if (visibleTo.getStudySites().contains(studySite)){
+                    filtered.add(studySite);
+                }
+            }
         }
         return filtered;
     }

@@ -9,13 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -57,6 +52,9 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private List<User> users = new ArrayList<User>();
     private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
     private Study study;
+    private Site site;
+    private StudySite studySite;
+    private List<StudySite> studySites = new ArrayList<StudySite>();
 
     @Override
     protected void setUp() throws Exception {
@@ -73,8 +71,11 @@ public class ScheduleControllerTest extends ControllerTestCase {
         paService = new SubjectCoordinatorDashboardService();
 
         study = setId(100, Fixtures.createBasicTemplate());
+        site = Fixtures.createSite("Site");
+        studySite = Fixtures.createStudySite(study, site);
         studies.add(study);
         ownedStudies.add(study);
+        studySites.add(studySite);
 
         studyDao = registerDaoMockFor(StudyDao.class);
         userDao = registerDaoMockFor(UserDao.class);
@@ -111,6 +112,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
         expect(studyDao.getAll()).andReturn(studies);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(studySites);
+        expect(authorizationService.filterStudySubjectAssignmentsByStudySite(studySites, studySubjectAssignments)).andReturn(studySubjectAssignments);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 
         replayMocks();

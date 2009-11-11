@@ -4,12 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -73,23 +69,27 @@ public class DisplayTemplateController extends PscAbstractController {
 
         if (study.isReleased()) {
             User user = applicationSecurityManager.getUser();
-            List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
-            Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();
+            List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
+            //todo -- not sure what role the canAssignSubjects is playing
+            Boolean canAssignSubjects = !subjectAssignableStudySites.isEmpty();
 
             List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
 
-            for(StudySubjectAssignment currentAssignment: assignments) {
+            List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(subjectAssignableStudySites, assignments);
+            for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
                 if (currentAssignment.getEndDateEpoch() == null)
-                    onStudyAssignments.add(currentAssignment);                                                                                                                                                                             
+                    onStudyAssignments.add(currentAssignment);
                 else
                     offStudyAssignments.add(currentAssignment);
             }
+
             model.put("assignments", assignments);
             model.put("canAssignSubjects", canAssignSubjects);
             model.put("offStudyAssignments", offStudyAssignments);
             model.put("onStudyAssignments", onStudyAssignments);
+            model.put("subjectAssignableStudySites", subjectAssignableStudySites);
         }
 
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();

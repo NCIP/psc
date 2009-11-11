@@ -6,14 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -60,11 +53,13 @@ public class ScheduleController extends PscSimpleFormController {
         User user = applicationSecurityManager.getFreshUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<StudySite> ownedStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
+        List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(ownedStudySites, studySubjectAssignments);
 
         // show notifications on dashboard
         List<Notification> notifications = new ArrayList<Notification>();
-        for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
+        for (StudySubjectAssignment studySubjectAssignment : filteredAssignmnetns) {
             notifications.addAll(studySubjectAssignment.getNotifications());
         }
 
@@ -72,12 +67,13 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("numberOfDays", 7);
         model.put("userName", user);
         model.put("ownedStudies", ownedStudies);
+        model.put("ownedStudySites", ownedStudySites);
         model.put("colleguesStudies", getMapOfColleagueUsersAndStudySites(ownedStudies));
-        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studySubjectAssignments, 7));
-        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studySubjectAssignments));
+        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(filteredAssignmnetns, 7));
+        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(filteredAssignmnetns));
         model.put("activityTypes", activityTypeDao.getAll());
 
-        Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(studySubjectAssignments);
+        Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(filteredAssignmnetns);
         model.put("notificationsSubjectMap", subjectNotificationsMap);
         model.put("notifications",notifications);
        

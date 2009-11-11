@@ -92,22 +92,22 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         return sitesToDisplay;
     }
 
+    //todo - might want to return List<StudySite> instead
     private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
         String userName = applicationSecurityManager.getUserName();
         User user = applicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<StudySite> filteredStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
 
         User colleagueUser = userDao.getById(colleagueId);
         List<Site> sitesToDisplay = getSitesToDisplay(userName, colleagueUser.getName());
-
         List<Study> colleaguesStudies = new ArrayList<Study>();
         for (Site site : sitesToDisplay) {
             List<StudySite> studySites= site.getStudySites();
             for (StudySite studySite : studySites) {
-                Study study = studySite.getStudy();
-                if (ownedStudies.contains(study)) {
-                    colleaguesStudies.add(study);
+                if (filteredStudySites.contains(studySite)) {
+                    colleaguesStudies.add(studySite.getStudy());
                 }
             }
         }
