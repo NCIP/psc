@@ -81,25 +81,6 @@
     </target>
 
     <target name="build:war" depends="install">
-        <condition property="ccts.war.file">
-            <isset property="ccts.common.grid.src.dir"/>
-        </condition>
-        <antcall target="ccts.psc.war"/>
-        <antcall target="psc.war" />
-    </target>
-
-    <target name="ccts.psc.war" if="ccts.war.file">
-        <echo message="Building PSC in CCTS mode" />
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr build CCTS_WAR=yes test=no"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr build CCTS_WAR=yes test=no"/>
-        </exec>
-    </target>
-
-    <target name="psc.war" unless="ccts.war.file">
-        <echo message="Building PSC in standalone mode" />
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr build test=no"/>
         </exec>

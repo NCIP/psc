@@ -37,7 +37,7 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
 
     @Override
     public String behaviorDescription() {
-        return "delegates authentication to a caGrid WebSSO server (use this option for CCTS)";
+        return "delegates authentication to a caGrid WebSSO server (use this option for CCTS); requires additional container configuration";
     }
 
     @Override
