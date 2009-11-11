@@ -106,6 +106,9 @@ public class AuthorizationService {
      * @throws Exception
      */
     public List<StudySite> filterStudySitesForVisibility (List<StudySite> studySites, UserRole visibleTo) {
+        if (visibleTo == null) {
+            return Collections.emptyList();
+        }
         List<StudySite> filtered = new ArrayList<StudySite>();
         for (StudySite studySite : studySites) {
             if (visibleTo.getStudySites().contains(studySite)){
@@ -125,6 +128,9 @@ public class AuthorizationService {
      * @throws Exception
      */
     public List<StudySite> filterStudySitesForVisibilityFromStudiesList (List<Study> studies, UserRole visibleTo) {
+        if (visibleTo == null) {
+            return Collections.emptyList();
+        }
         List<StudySite> filtered = new ArrayList<StudySite>();
         for (Study study : studies) {
             for (StudySite studySite: study.getStudySites()) {
