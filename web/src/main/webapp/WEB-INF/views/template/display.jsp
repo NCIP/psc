@@ -820,7 +820,7 @@
                             </div>
                         </div>
 
-                        <c:forEach items="${study.studySites}" var="studySite" varStatus="studySiteStatus">
+                        <c:forEach items="${subjectAssignableStudySites}" var="studySite" varStatus="studySiteStatus">
                             <div class="row">
                                 <div class="label" >
                                     ${studySite.site.name}

@@ -154,51 +154,52 @@
                         <div class="content" style="display: none">
                             <laf:division>
                                 <ul class="noMargin" >
-                                    <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
+                                    <c:forEach items="${ownedStudySites}" var="studySites" varStatus="studySiteStatus">
+                                        <c:if test="${studySites.study.id == study.id}">
+                                            <li class="noMargin ">
+                                                 <h3 class="site">${studySites.site.name} </h3>
+                                                 <c:if test="${configuration.map.enableAssigningSubject}">
+                                                     <ul class="controls">
+                                                         <c:choose>
+                                                             <c:when test="${empty studySites.unapprovedAmendments}">
+                                                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
+                                                             </c:when>
+                                                             <c:otherwise>
+                                                                 This template has not been approved yet
+                                                             </c:otherwise>
+                                                         </c:choose>
+                                                    </ul>
+                                                </c:if>
+                                                <c:forEach items="${studySites.studySubjectAssignments}" var="listOfSubjects" varStatus="listOfSubjectsStatus">
+                                                    <c:choose>
+                                                        <c:when test="${not empty listOfSubjects}">
+                                                         <li class="subject">
 
-                                        <li class="noMargin ">
-                                             <h3 class="site">${studySites.site.name} </h3>
-                                             <c:if test="${configuration.map.enableAssigningSubject}">
-                                                 <ul class="controls">
-                                                     <c:choose>
-                                                         <c:when test="${empty studySites.unapprovedAmendments}">
-                                                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
-                                                         </c:when>
-                                                         <c:otherwise>
-                                                             This template has not been approved yet
-                                                         </c:otherwise>
-                                                     </c:choose>
-                                                </ul>
-                                            </c:if>
-                                            <c:forEach items="${studySites.studySubjectAssignments}" var="listOfSubjects" varStatus="listOfSubjectsStatus">
-                                                <c:choose>
-                                                    <c:when test="${not empty listOfSubjects}">
-                                                     <li class="subject">
-
-                                                         <%--should display only subjects that are on the study, for that using all those checkings (if subject has any scheduled or conditional activities)--%>
-                                                         <c:set var="isAnyActivityAssigned" value="false"/>
-                                                         <c:forEach items="${listOfSubjects.scheduledCalendar.scheduledStudySegments}" var="studySegmentsAssignment">
-                                                            <c:forEach items="${studySegmentsAssignment.activities}" var="activity">
-                                                                <c:if test="${activity.currentState.mode eq 'scheduled' or activity.currentState.mode eq 'conditional'}">
-                                                                    <c:set var="isAnyActivityAssigned" value="true"/>
-                                                                </c:if>
-                                                             </c:forEach>
-                                                           </c:forEach>
-                                                         <c:if test="${isAnyActivityAssigned}">
-                                                             <%--<a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">--%>
-                                                             <a href="<c:url value="/pages/subject?subject=${listOfSubjects.subject.id}"/>" class="primary">
-                                                                ${listOfSubjects.subject.firstName}
-                                                                ${listOfSubjects.subject.lastName}
-                                                             </a>
-                                                         </c:if>
-                                                     </li>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <h3>You have no subjects on this study</h3>
-                                                </c:otherwise>
-                                                </c:choose>
-                                            </c:forEach>
-                                        </li>
+                                                             <%--should display only subjects that are on the study, for that using all those checkings (if subject has any scheduled or conditional activities)--%>
+                                                             <c:set var="isAnyActivityAssigned" value="false"/>
+                                                             <c:forEach items="${listOfSubjects.scheduledCalendar.scheduledStudySegments}" var="studySegmentsAssignment">
+                                                                <c:forEach items="${studySegmentsAssignment.activities}" var="activity">
+                                                                    <c:if test="${activity.currentState.mode eq 'scheduled' or activity.currentState.mode eq 'conditional'}">
+                                                                        <c:set var="isAnyActivityAssigned" value="true"/>
+                                                                    </c:if>
+                                                                 </c:forEach>
+                                                               </c:forEach>
+                                                             <c:if test="${isAnyActivityAssigned}">
+                                                                 <%--<a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">--%>
+                                                                 <a href="<c:url value="/pages/subject?subject=${listOfSubjects.subject.id}"/>" class="primary">
+                                                                    ${listOfSubjects.subject.firstName}
+                                                                    ${listOfSubjects.subject.lastName}
+                                                                 </a>
+                                                             </c:if>
+                                                         </li>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <h3>You have no subjects on this study</h3>
+                                                    </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </li>
+                                        </c:if>
                                     </c:forEach>
                                 </ul>
                             </laf:division>
