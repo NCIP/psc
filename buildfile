@@ -611,7 +611,7 @@ define "psc" do
       project('providers:api').and_dependencies,
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,
-      project('osgi-layer:host-services').and_dependencies,
+      project('psc:osgi-layer:host-services').and_dependencies,
       XML, RESTLET.framework, FREEMARKER, CSV,
       QUARTZ, SECURITY, OSGI, SLF4J.jcl, FELIX.configadmin,
       CONTAINER_PROVIDED, SPRING_WEB # tmp for mail
