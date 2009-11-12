@@ -29,7 +29,7 @@ class Revision
 
   def base_path
     if paths.first =~ %r{^/trunk}
-      '^/trunk'
+      '/trunk'
     elsif paths.first =~ %r{^(/branches/releases/[^/]+)}
       $1
     else
@@ -38,7 +38,7 @@ class Revision
   end
 
   def message
-    @xml.css('msg').first.content
+    @xml.css('msg').first.content.strip
   end
 
   def port_message
