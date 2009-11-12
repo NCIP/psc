@@ -14,8 +14,9 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class CasDirectAuthenticationProvider implements AuthenticationProvider {
-    private DirectLoginHttpFacade loginFacade;
     private UserDetailsService userDetailsService;
+    private String serviceUrl;
+    private String loginUrl;
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public boolean supports(Class aClass) {
@@ -32,7 +33,9 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
         }
 
         try {
-            boolean loginSucceeded = executeDirectAuthentication(authentication);
+            DirectLoginHttpFacade http = createLoginFacade();
+
+            boolean loginSucceeded = executeDirectAuthentication(http, authentication);
             if (loginSucceeded) {
                 String username = getUsername(authentication);
                 return new CasDirectUsernamePasswordAuthenticationToken(
@@ -50,25 +53,41 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
         }
     }
 
+    protected DirectLoginHttpFacade createLoginFacade() {
+        return new DirectLoginHttpFacade(serviceUrl, loginUrl);
+    }
+
     protected String getUsername(Authentication authentication) {
         return (String) authentication.getPrincipal();
     }
 
-    protected boolean executeDirectAuthentication(Authentication authentication) throws IOException {
-        LoginFormReader form = new LoginFormReader(loginFacade.getForm());
-        return loginFacade.postCredentials(new MapBuilder<String, String>().
+    protected boolean executeDirectAuthentication(DirectLoginHttpFacade http, Authentication authentication) throws IOException {
+        LoginFormReader form = new LoginFormReader(http.getForm());
+        return http.postCredentials(new MapBuilder<String, String>().
             put("username", (String) authentication.getPrincipal()).
             put("password", (String) authentication.getCredentials()).
             put("lt", form.getLoginTicket()).
             toMap());
     }
 
-    public void setDirectLoginHttpFacade(DirectLoginHttpFacade directLoginHttpFacade) {
-        this.loginFacade = directLoginHttpFacade;
+    public String getServiceUrl() {
+        return serviceUrl;
     }
 
-    public DirectLoginHttpFacade getDirectLoginHttpFacade() {
-        return loginFacade;
+    public void setServiceUrl(String serviceUrl) {
+        this.serviceUrl = serviceUrl;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    public UserDetailsService getUserDetailsService() {
+        return userDetailsService;
     }
 
     public void setUserDetailsService(UserDetailsService userDetailsService) {

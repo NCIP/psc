@@ -13,6 +13,7 @@ import java.util.Map;
 
 /**
  * Encapsulates uses of the not-very-mockable HTTPClient library for this module.
+ * One instance per authentication cycle.
  *
  * @author Rhett Sutphin
  */
@@ -20,6 +21,12 @@ public class DirectLoginHttpFacade {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private HttpClient httpClient;
     private String loginUrl, serviceUrl;
+
+    public DirectLoginHttpFacade(String loginUrl, String serviceUrl) {
+        this.loginUrl = loginUrl;
+        this.serviceUrl = serviceUrl;
+        this.httpClient = new HttpClient();
+    }
 
     /**
      * Contacts the CAS server and GETs its login form, returning the content as a string.

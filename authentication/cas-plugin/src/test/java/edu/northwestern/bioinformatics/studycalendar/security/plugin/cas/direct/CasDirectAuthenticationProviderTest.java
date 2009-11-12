@@ -36,8 +36,12 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
         loginFacade = registerMockFor(DirectLoginHttpFacade.class);
         userDetailsService = registerMockFor(UserDetailsService.class);
 
-        provider = new CasDirectAuthenticationProvider();
-        provider.setDirectLoginHttpFacade(loginFacade);
+        provider = new CasDirectAuthenticationProvider() {
+            @Override
+            protected DirectLoginHttpFacade createLoginFacade() {
+                return loginFacade;
+            }
+        };
         provider.setUserDetailsService(userDetailsService);
     }
 

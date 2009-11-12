@@ -103,8 +103,8 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
                 manager.getProviders().get(0) instanceof CasDirectAuthenticationProvider);
         CasDirectAuthenticationProvider provider = (CasDirectAuthenticationProvider) manager.getProviders().get(0);
 
-        assertEquals("Wrong service URL", expectedServiceUrl(), provider.getDirectLoginHttpFacade().getServiceUrl());
-        assertEquals("Wrong login URL", expectedLoginUrl(), provider.getDirectLoginHttpFacade().getLoginUrl());
+        assertEquals("Wrong service URL", expectedServiceUrl(), provider.getServiceUrl());
+        assertEquals("Wrong login URL", expectedLoginUrl(), provider.getLoginUrl());
     }
     
     public void testAllowDirectCasDefaultsToFalse() throws Exception {

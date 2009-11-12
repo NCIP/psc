@@ -74,16 +74,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="casDirectAuthenticationProvider" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.CasDirectAuthenticationProvider">
-        <property name="directLoginHttpFacade" ref="directLoginHttpFacade"/>
         <property name="userDetailsService" ref="pscUserDetailsService"/>
-    </bean>
-
-    <bean id="directLoginHttpFacade" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct.DirectLoginHttpFacade">
-        <property name="httpClient" ref="httpClient"/>
         <property name="serviceUrl" value="${cas.local.url}"/>
         <property name="loginUrl" value="${cas.server.url.login}"/>
     </bean>
-
-    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient" lazy-init="true"/>
 </beans>
