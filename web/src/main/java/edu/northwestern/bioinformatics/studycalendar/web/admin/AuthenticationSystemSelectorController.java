@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationPropertyEditor;
@@ -34,6 +35,7 @@ public class AuthenticationSystemSelectorController
 
     public AuthenticationSystemSelectorController() {
         setCrumb(new DefaultCrumb("Configure authentication system"));
+        setValidator(new ValidatableValidator());
     }
 
     @Override
@@ -46,11 +48,10 @@ public class AuthenticationSystemSelectorController
             installedAuthenticationSystem);
     }
 
-    // TODO: ?
-//    @Override
-//    protected boolean suppressBinding(HttpServletRequest request) {
-//        return !isSubmit(request);
-//    }
+    @Override
+    protected boolean suppressBinding(HttpServletRequest request) {
+        return !isSubmit(request);
+    }
 
     private boolean isSubmit(HttpServletRequest request) {
         return !"GET".equals(request.getMethod());
