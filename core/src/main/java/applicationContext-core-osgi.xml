@@ -20,7 +20,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.dataproviders.api</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain</value>
-
+                <value>edu.northwestern.bioinformatics.studycalendar</value>
+                <value>org.springframework.validation</value>
                 <value>gov.nih.nci.cabig.ctms.tools.configuration</value>
                 <value>org.acegisecurity</value>
                 <value>org.acegisecurity.context</value>
@@ -44,6 +45,18 @@
                 </entry>
                 <entry key="org.acegisecurity.AuthenticationException">
                     <list>
+                        <null/>
+                    </list>
+                </entry>
+                <entry key="edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException">
+                    <list>
+                        <null/>
+                        <null/>
+                    </list>
+                </entry>
+                <entry key="org.springframework.validation.BindException">
+                    <list>
+                        <null/>
                         <null/>
                     </list>
                 </entry>
