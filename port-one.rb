@@ -99,6 +99,12 @@ if $? != 0
   exit(1)
 end
 
+unless HL.agree("Did the merge succeed?")
+  puts "Correct the problems and then commit using"
+  puts "  #{rev.commit_cmd}"
+  exit(1)
+end
+
 puts rev.commit_cmd
 system(rev.commit_cmd)
 if $? != 0
