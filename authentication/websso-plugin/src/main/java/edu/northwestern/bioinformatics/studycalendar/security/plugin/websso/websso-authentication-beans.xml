@@ -22,4 +22,11 @@
         <property name="serviceProperties" ref="serviceProperties"/>
         <property name="trustStore" value="${cas.server.trustStore}"/>
     </bean>
+
+    <bean id="webssoDirectAuthenticationProvider" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.security.plugin.websso.direct.WebSSODirectAuthenticationProvider">
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
+        <property name="serviceUrl" value="${cas.local.url}"/>
+        <property name="loginUrl" value="${cas.server.url.login}"/>
+    </bean>
 </beans>
