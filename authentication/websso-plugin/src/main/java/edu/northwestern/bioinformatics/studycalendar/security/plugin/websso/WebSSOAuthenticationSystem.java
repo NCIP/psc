@@ -67,6 +67,11 @@ public class WebSSOAuthenticationSystem extends CasAuthenticationSystem {
     }
 
     @Override
+    protected String getDirectAuthenticationProviderBeanName() {
+        return "webssoDirectAuthenticationProvider";
+    }
+
+    @Override
     protected Properties createContextProperties() {
         Properties properties = super.createContextProperties();
         nullSafeSetProperty(properties, "websso.hostkey.path",   getConfiguration().get(HOST_KEY));
