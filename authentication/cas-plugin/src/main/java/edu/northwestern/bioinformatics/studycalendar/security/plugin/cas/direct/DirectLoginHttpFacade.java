@@ -3,8 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +28,9 @@ public class DirectLoginHttpFacade {
     public DirectLoginHttpFacade(String loginUrl, String serviceUrl) {
         this.loginUrl = loginUrl;
         this.serviceUrl = serviceUrl;
-        this.httpClient = new HttpClient();
+        HttpClientParams params = new HttpClientParams();
+        params.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        this.httpClient = new HttpClient(params);
     }
 
     /**
@@ -34,7 +39,9 @@ public class DirectLoginHttpFacade {
     public String getForm() throws IOException {
         log.trace("GETting {} to obtain login ticket", loginUrl);
         GetMethod get = initMethod(new GetMethod(loginUrl));
-        get.getParams().setParameter("service", serviceUrl);
+        get.setQueryString(new NameValuePair[] {
+            new NameValuePair("service", getServiceUrl())
+        });
         try {
             httpClient.executeMethod(get);
             if (get.getStatusCode() == HttpStatus.SC_OK) {
