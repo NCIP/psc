@@ -41,7 +41,7 @@ public class LoginFormReader {
             "The CAS login form is missing the lt input which is required by the CAS protocol");
     }
 
-    private Document getDocument() {
+    protected synchronized Document getDocument() {
         if (document == null) {
             InputSource source = new InputSource(new StringReader(body));
             try {

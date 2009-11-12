@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Encapsulates uses of the not-very-mockable HTTPClient library for this module.
@@ -46,16 +47,13 @@ public class DirectLoginHttpFacade {
      *
      * @return true when the credentials are accepted, otherwise false
      */
-    public boolean postCredentials(
-        String username, String password, String loginTicket
-    ) throws IOException {
+    public boolean postCredentials(Map<String, String> postParameters) throws IOException {
         log.trace("POSTing to {} for direct CAS authentication", loginUrl);
 
-        PostMethod post = initMethod(new PostMethod(loginUrl));
-        post.setParameter("username", username);
-        post.setParameter("password", password);
-        post.setParameter("lt", loginTicket);
-        post.setParameter("service", serviceUrl);
+        PostMethod post = createLoginPostMethod();
+        for (Map.Entry<String, String> postParam : postParameters.entrySet()) {
+            post.setParameter(postParam.getKey(), postParam.getValue());
+        }
 
         try {
             httpClient.executeMethod(post);
@@ -77,13 +75,23 @@ public class DirectLoginHttpFacade {
         return false;
     }
 
-    private <T extends HttpMethodBase> T initMethod(T method) {
+    protected PostMethod createLoginPostMethod() {
+        PostMethod method = new PostMethod(getLoginUrl());
+        method.setParameter("service", getServiceUrl());
+        return initMethod(method);
+    }
+
+    protected <T extends HttpMethodBase> T initMethod(T method) {
         method.setFollowRedirects(false);
         method.setRequestHeader("User-Agent", "PSC-DirectCAS");
         return method;
     }
 
     ////// CONFIGURATION
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
 
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;

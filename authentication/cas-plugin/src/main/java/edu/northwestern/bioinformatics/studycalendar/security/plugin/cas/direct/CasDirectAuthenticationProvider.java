@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationServiceException;
@@ -31,15 +32,12 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
         }
 
         try {
-            LoginFormReader form = new LoginFormReader(loginFacade.getForm());
-            boolean loginSucceeded = loginFacade.postCredentials(
-                (String) authentication.getPrincipal(),
-                (String) authentication.getCredentials(),
-                form.getLoginTicket());
+            boolean loginSucceeded = executeDirectAuthentication(authentication);
             if (loginSucceeded) {
+                String username = getUsername(authentication);
                 return new CasDirectUsernamePasswordAuthenticationToken(
-                    authentication.getPrincipal(), "[REMOVED PASSWORD]",
-                    userDetailsService.loadUserByUsername((String) authentication.getPrincipal()).getAuthorities()
+                    username, "[REMOVED PASSWORD]",
+                    userDetailsService.loadUserByUsername(username).getAuthorities()
                 );
             } else {
                 throw new BadCredentialsException(
@@ -50,6 +48,19 @@ public class CasDirectAuthenticationProvider implements AuthenticationProvider {
         } catch (CasDirectException cde) {
             throw new AuthenticationServiceException("Direct CAS login failed", cde);
         }
+    }
+
+    protected String getUsername(Authentication authentication) {
+        return (String) authentication.getPrincipal();
+    }
+
+    protected boolean executeDirectAuthentication(Authentication authentication) throws IOException {
+        LoginFormReader form = new LoginFormReader(loginFacade.getForm());
+        return loginFacade.postCredentials(new MapBuilder<String, String>().
+            put("username", (String) authentication.getPrincipal()).
+            put("password", (String) authentication.getCredentials()).
+            put("lt", form.getLoginTicket()).
+            toMap());
     }
 
     public void setDirectLoginHttpFacade(DirectLoginHttpFacade directLoginHttpFacade) {
