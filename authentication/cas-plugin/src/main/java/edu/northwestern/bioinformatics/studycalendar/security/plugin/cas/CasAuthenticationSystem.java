@@ -120,7 +120,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         List<AuthenticationProvider> providers = new ArrayList<AuthenticationProvider>(2);
         if (getConfiguration().get(ALLOW_DIRECT_CAS)) {
             log.debug("Initializing CAS plugin with direct CAS support");
-            providers.add((AuthenticationProvider) casContext.getBean("casDirectAuthenticationProvider"));
+            providers.add((AuthenticationProvider) casContext.getBean(getDirectAuthenticationProviderBeanName()));
         }
         providers.add((AuthenticationProvider) casContext.getBean("casAuthenticationProvider"));
         return AuthenticationSystemTools.createProviderManager(getApplicationContext(), providers);
@@ -165,6 +165,10 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     protected String getTicketValidatorBeanName() {
         return "casProxyTicketValidator";
+    }
+
+    protected String getDirectAuthenticationProviderBeanName() {
+        return "casDirectAuthenticationProvider";
     }
 
     protected static String absoluteClasspathResourceNameFor(String relative , Class root) {

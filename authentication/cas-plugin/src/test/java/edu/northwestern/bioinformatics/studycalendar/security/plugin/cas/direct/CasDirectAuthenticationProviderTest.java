@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.direct
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
@@ -13,8 +14,10 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import static org.easymock.EasyMock.expect;
+import org.easymock.IExpectationSetters;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -86,7 +89,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     public void testFailedPostResultsInNoAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='the-ticket'/>");
-        expect(loginFacade.postCredentials(USERNAME, PASSWORD, "the-ticket")).andReturn(false);
+        expectPostCredentials(USERNAME, PASSWORD, "the-ticket").andReturn(false);
 
         try {
             doAuthenticate();
@@ -98,7 +101,10 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     public void testErrorInPostResultsInNoAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='the-ticket'/>");
-        expect(loginFacade.postCredentials(USERNAME, PASSWORD, "the-ticket")).
+        String username = USERNAME;
+        String password = PASSWORD;
+        String ticket = "the-ticket";
+        expectPostCredentials(username, password, ticket).
             andThrow(new IOException("Bad post"));
 
         try {
@@ -112,7 +118,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
 
     public void testSuccessfulPostResultsInGoodAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='some-ticket'/>");
-        expect(loginFacade.postCredentials(USERNAME, PASSWORD, "some-ticket")).andReturn(true);
+        expectPostCredentials(USERNAME, PASSWORD, "some-ticket").andReturn(true);
         expect(userDetailsService.loadUserByUsername(USERNAME)).
             andReturn(Fixtures.createUser(USERNAME, Role.SUBJECT_COORDINATOR));
 
@@ -129,7 +135,7 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
     
     public void testNoSuchUserResultsInNoAuthentication() throws Exception {
         expect(loginFacade.getForm()).andReturn("<input name='lt' value='some-ticket'/>");
-        expect(loginFacade.postCredentials(USERNAME, PASSWORD, "some-ticket")).andReturn(true);
+        expectPostCredentials(USERNAME, PASSWORD, "some-ticket").andReturn(true);
         expect(userDetailsService.loadUserByUsername(USERNAME)).
             andThrow(new UsernameNotFoundException(USERNAME));
 
@@ -139,6 +145,13 @@ public class CasDirectAuthenticationProviderTest extends AuthenticationTestCase 
         } catch (BadCredentialsException bce) {
             assertContains(bce.getMessage(), USERNAME);
         }
+    }
+
+    private IExpectationSetters<Boolean> expectPostCredentials(String username, String password, String ticket) throws IOException {
+        Map<String, String> parameters = new MapBuilder<String, String>().
+            put("username", username).put("password", password).put("lt", ticket).
+            toMap();
+        return expect(loginFacade.postCredentials(parameters));
     }
 
     private Authentication doAuthenticate() {
