@@ -50,6 +50,8 @@ public class AuthenticationSystemSelectorController
 
     @Override
     protected boolean suppressBinding(HttpServletRequest request) {
+        // This prevents validation from happening during the AJAX request which loads the
+        // configuration property fields.
         return !isSubmit(request);
     }
 
