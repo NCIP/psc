@@ -407,15 +407,10 @@ EQUINOX = struct(
 )
 
 DYNAMIC_JAVA = struct(
-  # TODO: there's a dynamicjava.org maven repo now
-  :da_launcher => artifact("org.dynamicjava:da-launcher:jar:1.1.1").from(static_lib('da-launcher-1.1.1.jar')),
-  :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
-)
-
-PSC_DA_LAUNCHER = struct(
-  :bundle_building_utils => artifact("org.dynamicjava:bundle-building-utils:jar:1.0.2").from(static_lib('bundle-building-utils-1.0.2.jar')),
-  :bundler => artifact("org.dynamicjava:bundler:jar:1.0.1").from(static_lib('bundler-1.0.1.jar')),
-  :osgi_commons => artifact("org.dynamicjava:osgi-commons:jar:1.1.2").from(static_lib('osgi-commons-1.1.2.jar'))
+  :da_launcher => "org.dynamicjava.osgi:da-launcher:jar:1.1.2",
+  :osgi_commons => "org.dynamicjava.osgi:osgi-commons:jar:1.1.3",
+  :bundle_building_utils => "org.dynamicjava.osgi:bundle-building-utils:jar:1.0.2",
+  :bundler => "org.dynamicjava.osgi:bundler:jar:1.0.1"
 )
 
 SPRING_OSGI = struct(

@@ -71,14 +71,6 @@ define "psc" do
       package(:jar)
       package(:sources)
     end
-
-    desc "Psc own implementations for the da-launcher"
-    define "da-launcher" do
-      project.version = "1.1.1"
-      compile.with PSC_DA_LAUNCHER, OSGI, FELIX, EQUINOX, KNOPFLERFISH, CONTAINER_PROVIDED
-      package(:jar)
-      package(:sources)
-    end
   end
 
   desc "The domain classes for PSC"
@@ -489,7 +481,7 @@ define "psc" do
     end
 
     define "console" do
-      compile.with SLF4J, LOGBACK, project('utility:da-launcher'), PSC_DA_LAUNCHER, FELIX.main, 
+      compile.with SLF4J, LOGBACK, DYNAMIC_JAVA, FELIX.main, 
         project('core').and_dependencies
 
       task :run => [:build_test_da_launcher, 'psc:osgi-layer:console:compile'] do
@@ -572,7 +564,7 @@ define "psc" do
     end
 
     define "integrated-tests" do
-      test.using(:junit).with UNIT_TESTING, project('utility:da-launcher').and_dependencies,
+      test.using(:junit).with UNIT_TESTING, DYNAMIC_JAVA,
         project('authentication:socket').and_dependencies,
         project('authentication:cas-plugin').and_dependencies,
         project('web').and_dependencies,
@@ -895,8 +887,8 @@ define "psc" do
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
       project('osgi-layer:host-services').and_dependencies,
-      SPRING_WEB, RESTLET, WEB, project('utility:da-launcher'),
-      FELIX.main, DYNAMIC_JAVA.osgi_commons
+      SPRING_WEB, RESTLET, WEB, DYNAMIC_JAVA,
+      FELIX.main
 
     test.with project('test-infrastructure').and_dependencies,
       project('test-infrastructure').test_dependencies,
