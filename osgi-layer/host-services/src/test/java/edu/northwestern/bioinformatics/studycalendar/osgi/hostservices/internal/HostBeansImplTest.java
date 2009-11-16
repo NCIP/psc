@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
@@ -8,7 +7,7 @@ import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.felix.cm.PersistenceManager;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
@@ -68,17 +67,11 @@ public class HostBeansImplTest extends TestCase {
         assertTrue(service instanceof UserDetailsService);
     }
 
-    public void testDeferredProxyServicesThrowAnExceptionIfInvokedEarly() throws Exception {
-        Object service = registeredServices.get("javax.sql.DataSource");
-        DataSource proxied = (DataSource) service;
-        try {
-            proxied.getConnection();
-            fail("Exception not thrown");
-        } catch (StudyCalendarSystemException expected) {
-            assertEquals(
-                "Cannot invoke method on host bean javax.sql.DataSource because it is not available yet",
-                expected.getMessage());
-        }
+    public void testDeferredProxyServicesUseDefaultsIfCalledEarly() throws Exception {
+        DataSource proxied = (DataSource) registeredServices.get("javax.sql.DataSource");
+        assertNull(proxied.getConnection());
+        assertEquals(0, proxied.getLoginTimeout());
+        assertFalse(proxied.equals("anything"));
     }
 
     public void testDataSourceDelegatesToDataSourceBean() throws Exception {
