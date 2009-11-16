@@ -29,7 +29,7 @@
         <get src="${jruby.src.url}" dest="${jruby.dest.file}"/>
         <unzip dest="${download}" src="${jruby.dest.file}" />
         <echo message="Downloaded JRuby sucessfully"/>
-        <exec executable="chmod">
+        <exec executable="chmod" os="${unixfamily}" failonerror="true">
             <arg line="u+x ${path.to.jruby.bin}"/>
         </exec>
         <delete dir="${jruby.dest.file}"/>
