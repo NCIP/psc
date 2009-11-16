@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
 import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
 import org.apache.felix.cm.PersistenceManager;
@@ -81,8 +80,11 @@ public class HostBeansImpl implements HostBeans {
 
         public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (bean == null) {
-                throw new StudyCalendarSystemException(
-                    "Cannot invoke method on host bean %s because it is not available yet", className);
+                Object rv = defaultReturnValue(method);
+                log.debug(
+                    "Cannot invoke method {} on host bean {} because it is not available yet.  Returning default value {}.",
+                    new Object[] { method.getName(), className, rv });
+                return rv;
             } else {
                 log.trace("Invoking {} on {}@{}", new Object[] { method, bean.getClass(), System.identityHashCode(bean) });
                 try {
@@ -90,6 +92,18 @@ public class HostBeansImpl implements HostBeans {
                 } catch (InvocationTargetException ite) {
                     throw ite.getCause();
                 }
+            }
+        }
+
+        private Object defaultReturnValue(Method method) {
+            if (method.getReturnType().isPrimitive()) {
+                if (method.getReturnType() == Boolean.TYPE) {
+                    return false;
+                } else {
+                    return 0;
+                }
+            } else {
+                return null;
             }
         }
 
