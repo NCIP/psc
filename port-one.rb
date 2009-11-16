@@ -27,6 +27,10 @@ class Revision
     @paths ||= @xml.css('path').collect { |p| p.content }
   end
 
+  def local_paths
+    paths.collect { |p| p.sub(/^#{base_path}\//, '') }
+  end
+
   def base_path
     if paths.first =~ %r{^/trunk}
       '/trunk'
@@ -54,7 +58,7 @@ class Revision
   end
 
   def commit_cmd
-    "svn commit -m \"#{port_message.gsub(/"/, '\\"')}\""
+    "svn commit -m \"#{port_message.gsub(/"/, '\\"')}\" \"#{local_paths.join('" "')}\""
   end
 end
 
@@ -63,6 +67,23 @@ class WorkingCopy
     cmd = "svn info --xml"
     $stderr.puts "Executing `#{cmd}` to get working copy info" if ENV['VERBOSE']
     @xml = Nokogiri::XML(`#{cmd}`)
+  end
+
+  def local_changes
+    @local_changes ||= begin
+      cmd = "svn status --xml"
+      $stderr.puts "Executing `#{cmd}` to determine if the WC is clean" if ENV['VERBOSE']
+      Nokogiri::XML(`#{cmd}`).css('entry').collect { |entry| entry['path'] }
+    end
+  end
+
+  # Determines if there are any locally modified files which are also modified in the given revision
+  def conflicts(revision)
+    self.local_changes & revision.local_paths
+  end
+
+  def same_branch?(revision)
+    self.local_path == revision.base_path
   end
 
   def url
@@ -84,10 +105,21 @@ end
 
 wc = WorkingCopy.new
 unless wc.at_root?
-  raise "This script must be run from the root of a PSC trunk or branch checkout; not #{wc.local_path}."
+  puts "This script must be run from the root of a PSC trunk or branch checkout; not #{wc.local_path}."
+  exit(3)
 end
 
 rev = Revision.new(REV_N)
+conflicts = wc.conflicts(rev)
+unless conflicts.empty?
+  puts "The following file#{conflicts.size == 1 ? ' is' : 's are'} modified both locally and in the revision to be merged:\n- #{conflicts.join("\n- ")}\nCommit or revert the local modifications before proceeding."
+  exit(3)
+end
+if wc.same_branch?(rev)
+  puts "Revision #{REV_N} and this WC are both from the same branch (#{wc.local_path})."
+  exit(3)
+end
+
 unless HL.agree("About to run:\n  #{rev.merge_cmd}\n  #{rev.commit_cmd}\nContinue?")
   exit(0)
 end
