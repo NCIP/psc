@@ -23,7 +23,7 @@ Java::JavaLang::Thread.current_thread.context_class_loader = JRuby.runtime.getJR
 module Psc
   %w(domain domain.delta core service).each do |pkg|
     class_eval <<-RUBY
-      module #{pkg.split('.').map(&:capitalize).join('::')}
+      module #{pkg.split('.').map { |n| n.capitalize }.join('::')}
         include_package 'edu.northwestern.bioinformatics.studycalendar.#{pkg}'
       end
     RUBY
