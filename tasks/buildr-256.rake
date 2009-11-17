@@ -15,11 +15,10 @@ module Buildr::TestFramework::JRubyBased
         end
         require 'rubygems'
         begin
-          Kernel.gem name, version
+          Kernel.send :gem, name, version
         rescue LoadError, Gem::LoadError => e
-          #{'puts "Gem #{name} (#{version}) not found.  Installing.  (Message: #{e.message}.)"' if Buildr.application.options.trace}
+          #{'puts "Gem #{name} (#{version}) not found.  Installing.  (Message: #{e.message.strip}.)"' if Buildr.application.options.trace}
           require 'rubygems/gem_runner'
-          Gem.manage_gems
           args = ['install', name, '--version', version, '--no-ri', '--no-rdoc'] + args
           begin
             Gem::GemRunner.new.run(args)
@@ -31,7 +30,7 @@ module Buildr::TestFramework::JRubyBased
               raise e
             end
           end
-          Kernel.gem name, version
+          Kernel.send :gem, name, version
         end
      end
     }
