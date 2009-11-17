@@ -4,3 +4,4 @@ gems:
 - haml ~>2.2.0
 - json_pure
 - rest-client
+jruby: 1.4.0 # Oddly, this does not require that jruby 1.4.0 be installed -- just that _some_ version be installed
