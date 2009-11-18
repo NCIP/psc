@@ -617,41 +617,29 @@
 					showMonthSetup()
 					hideMonthSetup()
 				}
-
 			}
 
             function studyManipulationSetup(){
                 $('admin-options').show()
             }
 
+            //todo - move all the creations into edit.js.jsp and remove this method
+            function studySegmentHideSetup() {
+                $$('.deletePeriod').each(function(a){
+                    a.hide()
+                })
+            
+                $$('.editPeriod').each(function(a){
+                    a.hide()
+                })
 
-            function deletePeriodPopup(periodId, periodName) {
-                var message = "Are you sure you want to delete the period '" + periodName +
-                        "'?  This will permanently remove it and its events. " +
-                        "\n\nThis action cannot be undone."
-                if (window.confirm(message)) {//Boolean variable. Sets to true if user pressed "OK" versus "Cancel."
-                   deletePeriod(periodId)
-                    return true;
-                } else {
-                  return false;
-                }
+                $$('.addPeriod').each(function(a){
+                    a.hide()
+                })
+                $('cycle').hide()
+                $('populations').hide()
             }
 
-            // TODO: this method must go in edit.js with everything else
-            function deletePeriod(periodId) {
-
-                var formdata = "";
-                formdata = formdata + "period=" + periodId + "&";
-                formdata = formdata+ "studySegment=" + ${studySegment.base.id} + "&";
-
-                href = '<c:url value="/pages/cal/deletePeriod"/>?period=' + periodId + "&studySegment=" + ${studySegment.base.id}
-                var lastRequest = new Ajax.Request(href,
-                {
-                    postBody: formdata
-                });
-
-                return true;
-            }
             // Temporary.  Validation should really be on the server side.
             function isCorrectCycleLength() {
                 var cycleLength = document.getElementById("cycleLength").value;
@@ -688,6 +676,7 @@
             </c:if>
 
             function generalSetup() {
+                studySegmentHideSetup();
                 epochsAreaSetup();
                 studyManipulationSetup();
             }

@@ -1,12 +1,26 @@
 <%@page contentType="text/javascript" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 function createAllStudySegmentControls() {
+    console.log("----- this function ever gets called? - 1")
     $$('#epochs li.studySegment').each(function(li) {
         createStudySegmentControls(li)
     })
     $$('#epochs ul').each(function(ul) {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
+
+    //todo - move the buttons creation to this class for 2.7
+    $$('.deletePeriod').each(function(a){
+        createDeletePeriodControls(a)
+    })
+    $$('.editPeriod').each(function(a){
+        displayControl(a)
+    })
+    $$('.addPeriod').each(function(a){
+        displayControl(a)
+    })
+    $('cycle').show()
+    $('populations').show()
 }
 
 function createStudySegmentControls(studySegmentItem) {
@@ -42,6 +56,44 @@ function createStudySegmentControls(studySegmentItem) {
     controlBox.appendChild(moveDownControl)
 
     updateStudySegmentControlVisibility('studySegment-' + studySegmentId + '-item')
+}
+
+//todo - won't need this method when the buttons' creation is moved to this class
+function displayControl(element){
+    element.show()
+}
+
+function createDeletePeriodControls(periodItem) {
+    var periodId = periodItem.id.substring('deletePeriod-'.length)
+    var periodName = periodItem.title
+    var studySegmentId = periodItem.readAttribute('studySegmentId')
+    periodItem.show();
+    var href = '<c:url value="/pages/cal/deletePeriod"/>?period=' + periodId + "&studySegment=" + studySegmentId
+     Event.observe(periodItem, "click", deletePeriod(function() {
+            return "Are you sure you want to delete the period '" + periodName +
+                "'?  This will permanently remove it and its events. " +
+                "\n\nThis action cannot be undone."
+        }, periodId, studySegmentId, href
+    ))
+}
+
+function deletePeriod(confirmMessageFn, periodId, studySegmentId, link) {
+    return function(e) {
+       Event.stop(e);
+        if (window.confirm(confirmMessageFn())) {
+            var formdata = "";
+            formdata = formdata + "period=" + periodId + "&";
+            formdata = formdata+ "studySegment=" + studySegmentId + "&";
+            $('epochs-indicator').reveal()
+            new Ajax.Request(link, {
+                postBody: formdata,
+                onComplete: function() {
+                    $('epochs-indicator').conceal()
+                }
+            })
+            return true;
+        }
+    }
 }
 
 function updateStudySegmentControlVisibility(studySegmentItem) {

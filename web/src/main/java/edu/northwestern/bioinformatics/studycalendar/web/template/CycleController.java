@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 * @author Jalpa Patel
  * Date: Aug 26, 2008
  */
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class CycleController extends PscAbstractCommandController<CycleCommand> {
     private StudySegmentDao studySegmentDao;
     private TemplateService templateService;

@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -34,6 +36,7 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class EditPopulationController extends PscSimpleFormController {
     private PopulationDao populationDao;
     private PopulationService populationService;
