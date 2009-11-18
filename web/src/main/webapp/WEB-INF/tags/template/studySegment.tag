@@ -31,7 +31,7 @@
     </c:if>
     <p class="controls">
         <c:if test="${editable}">
-            <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">Add period</a>
+            <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control addPeriod">Add period</a>
         </c:if>
         <c:if test="${not empty studySegment.months}">
             <a id="show_button" href="#" class = "control">Show All</a>
@@ -79,7 +79,11 @@
             </tr>
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
-                    <c:if test="${editable}"><td class="controls"><a class="control" href="<c:url value="/pages/cal/editPeriod?period=${period.id}"/>">Edit</a></td></c:if>
+                    <c:if test="${editable}">
+                        <td class="controls">
+                            <a class="control editPeriod" href="<c:url value="/pages/cal/editPeriod?period=${period.id}"/>">Edit</a>
+                        </td>
+                    </c:if>
                     <th class="row" style="white-space:nowrap; text-decoration:none;">
                             ${fn:replace(period.name, " ", "&nbsp;")}
                     </th>
@@ -101,7 +105,8 @@
                     </c:forEach>
                     <c:if test="${editable}">
                         <td class="controls">
-                            <a class="control" style="cursor:pointer;" onclick="return deletePeriodPopup(${period.id}, '${period.name}')" >Delete</a>
+                            <a href="#" class="control deletePeriod" id="deletePeriod-${period.id}" title="${period.name}" studySegmentId="${studySegment.base.id}" style="cursor:pointer;">Delete</a>
+                            <%--<a class="control period" style="cursor:pointer;" onclick="return deletePeriodPopup(${period.id}, '${period.name}')" >Delete</a>--%>
                         </td>
                     </c:if>
                 </tr>

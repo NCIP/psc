@@ -2,14 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class DeletePeriodController extends PscSimpleFormController {
     private PeriodDao periodDao;
     private AmendmentService amendmentService;
