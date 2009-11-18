@@ -584,7 +584,7 @@ define "psc" do
       "buildInfo.username"      => ENV['USER'],
       "buildInfo.hostname"      => `hostname`.chomp,
       "buildInfo.timestamp"     => Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    )
+    ).exclude "**/.DS_Store"
 
     compile.with project('domain').and_dependencies,
       project('authentication:acegi').and_dependencies,
