@@ -379,58 +379,91 @@
 			{
 				var continue1 = true
 
-				days[num].getElementsByClassName('day').each(function(e){
-
-					if (isDayPresent($(e)) && continue1){
+				var array = days[num].getElementsByClassName('day')
+                for (var i= 0; i< array.length; i++){
+                    var elem = array[i];
+                    if (isDayPresent($(elem)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
+                }
 
-				})
+//              days[num].getElementsByClassName('day').each(function(e){
+//
+//					if (isDayPresent($(e)) && continue1){
+//					continue1 = true
+//					}
+//					else continue1 = false
+//
+//				})
 				return continue1
 			}
 			function isMonthHidden(num)
 			{
 				var continue1 = true
-
-				days[num].getElementsByClassName('day').each(function(e){
-
-					if (!isDayPresent($(e)) && continue1){
+                var array = days[num].getElementsByClassName('day')
+                for (var i=0; i< array.length; i++) {
+                    var elem = array[i]
+                    if (!isDayPresent($(elem)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
-
-				})
+                }
+//				days[num].getElementsByClassName('day').each(function(e){
+//
+//					if (!isDayPresent($(e)) && continue1){
+//					continue1 = true
+//					}
+//					else continue1 = false
+//
+//				})
 				return continue1
 			}
 			function quickSlideAndShow(elementArray, options)
 			{
 				var eA = elementArray
 				var effects = []
-				eA.each(function(e) {
-					effects = effects.concat([
-						new Effect.BlindDown(e, {sync:true}),
-			        	new Effect.Appear(e, {sync:true})
-					])
-				})
+                for (var i = 0; i < eA.length; i++) {
+                    var elem = eA[i];
 
-			   	 	new Effect.Parallel(
-				       	effects,
-						$H(options).merge({
-					         duration: 1.0
-					    }).toObject()
-					);
+
+                    effects = effects.concat([
+                        new Effect.BlindDown(elem, {sync:true}),
+                        new Effect.Appear(elem, {sync:true})
+                    ]);
+                }
+
+//				eA.each(function(e) {
+//					effects = effects.concat([
+//						new Effect.BlindDown(e, {sync:true}),
+//			        	new Effect.Appear(e, {sync:true})
+//					]);
+//				});
+
+                new Effect.Parallel(
+                    effects,
+                    $H(options).merge({
+                         duration: 1.0
+                    }).toObject()
+                );
 			}
 			function quickSlideAndHide(elementArray, options)
 			{
 				var eA = elementArray
 				var effects = []
-				eA.each(function(e) {
-					effects = effects.concat([
-						new Effect.BlindUp(e, {sync:true}),
-			        	new Effect.Fade(e, {sync:true})
+                for (var i=0; i< eA.length; i++) {
+                    var elem = eA[i]
+                    effects = effects.concat([
+						new Effect.BlindUp(elem, {sync:true}),
+			        	new Effect.Fade(elem, {sync:true})
 					])
-				})
+                }
+//				eA.each(function(e) {
+//					effects = effects.concat([
+//						new Effect.BlindUp(e, {sync:true}),
+//			        	new Effect.Fade(e, {sync:true})
+//					])
+//				})
 
 			   	 	new Effect.Parallel(
 				       	effects,
@@ -586,8 +619,10 @@
             function epochsAreaSetup() {
                 registerSelectStudySegmentHandlers()
                 <c:if test="${not empty developmentRevision}">
-                    createAllStudySegmentControls()
-                    createAllEpochControls()
+                    if (typeof createAllStudySegmentControls == 'function')
+                            createAllStudySegmentControls()
+                    if (typeof createAllEpochControls == 'function')
+                        createAllEpochControls()
                 </c:if>
             }
 			function arrowSetup(){
@@ -636,7 +671,10 @@
                 $$('.addPeriod').each(function(a){
                     a.hide()
                 })
-                $('cycle').hide()
+
+                if ($('cycle') != null) {
+                    $('cycle').hide()
+                }
                 $('populations').hide()
             }
 
@@ -691,10 +729,14 @@
 
             function loadFunctionsForDevelopmentRevision() {
                 generalSetup();
-                createStudyControls();
-                createAddEpochControl();
-                addToBeginSentence();
-                hideShowReleaseTemplateButton();
+                if(typeof createStudyControls == 'function')
+                    createStudyControls();
+                if(typeof createAddEpochControl == 'function')
+                    createAddEpochControl();
+                if(typeof addToBeginSentence == 'function')
+                    addToBeginSentence();
+                if(typeof hideShowReleaseTemplateButton == 'function')
+                    hideShowReleaseTemplateButton();
                 arrowsHideShowSetup();
                 showChangesSetup()
             }
