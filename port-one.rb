@@ -58,7 +58,7 @@ class Revision
   end
 
   def commit_cmd
-    "svn commit -m \"#{port_message.gsub(/"/, '\\"')}\" \"#{local_paths.join('" "')}\""
+    "svn commit -N -m \"#{port_message.gsub(/"/, '\\"')}\" . \"#{local_paths.join('" "')}\""
   end
 end
 
@@ -144,3 +144,7 @@ if $? != 0
   system("svn revert -R .")
   exit(2)
 end
+
+update_cmd = "svn update -N ."
+puts update_cmd
+system(update_cmd)
