@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.List;
 
 /**
  * Access strategy for COPPA which talks directly to a COPPA implementation.
@@ -126,7 +128,16 @@ public class DirectCoppaAccessor implements CoppaAccessor, ManagedService {
 
     public StudySite[] searchStudySitesByStudyProtocolId(Id id) {
         try {
-            return studySiteServiceClient.getByStudyProtocol(id);
+            StudySite all[] = studySiteServiceClient.getByStudyProtocol(id);
+
+            List<StudySite> valid = new ArrayList<StudySite>(all.length);
+            for(StudySite studySite: all) {
+                if (!studySite.getStatusCode().getCode().equalsIgnoreCase("Nullified")) {
+                    valid.add(studySite);
+                }
+            }
+
+            return valid.toArray(new StudySite[0]);
         } catch (PAFault e) {
             log.error("COPPA study site search failed", e);
             return new StudySite[0];
