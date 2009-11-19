@@ -1158,12 +1158,17 @@ define "psc" do
         project('test-infrastructure').compile.dependencies,
         project('test-infrastructure').test.compile.dependencies
       ).using(
-        :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '>1.1.3', 'icalendar' => '1.1.0' },
-        :requires => %w(spec http static_data template).collect { |help| _("src/spec/ruby/#{help}_helper.rb") },
+        :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '>1.1.3', 'icalendar' => '1.1.0', 'haml' => '~>2.2.0' },
+        :requires => 
+          %w(spec http static_data template).collect { |help| _("src/spec/ruby/#{help}_helper.rb") } +
+          [_("src/spec/ruby/request_logger_formatter.rb")],
         :properties => {
           'applicationContext.path' => File.join(test.resources.target.to_s, "applicationContext.xml"),
           'logback.configurationFile' => File.join(test.resources.target.to_s, "logback-test.xml")
-        }
+        },
+        :format => [
+          "RequestLoggerFormatter:#{_('reports/rspec/requests.html')}"
+        ]
       )
     test.resources.filter.using(:ant, :'resources.target' => test.resources.target.to_s)
 

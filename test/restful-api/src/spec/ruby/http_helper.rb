@@ -58,8 +58,9 @@ module HttpHelper
   end
 
   def execute_request!(relative_uri, options)
+    uri = full_uri(relative_uri, options.delete(:params))
+    options[:proxy] = RequestLoggerFormatter.proxy_url
     begin
-      uri = full_uri(relative_uri, options.delete(:params))
       PscTest.log("#{options[:method]} #{uri} with options #{options.inspect}")
       OpenURI.open_uri uri, options do |f|
         @response = Response.new(f)
@@ -112,8 +113,8 @@ module HttpHelper
     def xml_elements(xpath)
       xml_doc.root.elements.to_a(xpath)
     end
-    
-    # Finds the value for the named attribute on every instance of the named 
+
+    # Finds the value for the named attribute on every instance of the named
     # element in the response document
     def xml_attributes(element_name, attribute_name)
       xml_elements("//#{element_name}").collect { |s| s.attributes[attribute_name] }
@@ -123,17 +124,17 @@ module HttpHelper
       content_type.should == 'text/xml'
       @rexml_doc ||= REXML::Document.new(entity)
     end
-    
+
     def json
       content_type.should == 'application/json'
       @json ||= JSON.parse(entity)
     end
-    
+
     def ics
       content_type.should == 'text/calendar'
       @ics ||= Icalendar.parse(entity)
     end
-    
+
     def calendar
       ics.first
     end

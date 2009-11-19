@@ -1,0 +1,172 @@
+<html>
+<head>
+  <title>PSC RESTful API Integration Test HTTP Log</title>
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.0r4/build/reset/reset-min.css">
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.0r4/build/fonts/fonts-min.css">
+  <style type="text/css">
+    body {
+      font-family: Helvetica, sans-serif;
+    }
+
+    h1 {
+      font-size: 153.9%;
+      background-color: #666;
+      color: white;
+      padding: 0.5em;
+    }
+
+    h2 {
+      margin: 0.5em 0;
+      font-size: 116%;
+      border-bottom: 1px solid #666;
+    }
+
+    .group {
+      border-top: 3px double #333;
+      clear: both;
+    }
+
+    .example {
+      margin: 1em;
+      clear: both;
+      font-size: 108%;
+    }
+
+    .example .source {
+      font-size: 85%;
+      margin-left: 1%;
+      color: #999;
+    }
+
+    code, pre {
+      font-family: "Inconsolata", "Andale Mono", "Bitstream Vera Sans Mono", monospace;
+    }
+
+    .example .cycle {
+      margin: 0.5em 2em;
+      border-top: 1px dotted #ccc;
+      clear: both;
+    }
+
+    .example .cycle.first {
+      border-top-width: 0;
+    }
+
+    .example .command {
+      margin: 0.5em 0;
+    }
+
+    .example .http {
+      float: left;
+      width: 45%;
+      margin: 0.5% 1.5%;
+      border: 1px solid #999;
+      position: relative;
+    }
+
+    .example .http h3 {
+      font-size: 77%;
+      padding: 0.5% 1%;
+      background-color: #999;
+      color: #fff;
+      position: absolute;
+      right: 0px;
+      top: -1px;
+      -webkit-transform: rotate(-90deg);
+      -webkit-transform-origin: top right;
+      -moz-transform: rotate(-90deg);
+      -moz-transform-origin: top right;
+    }
+
+    .example .content {
+      padding: 1%;
+      overflow: auto;
+      max-height: 12em;
+    }
+
+    .example .content:first-line {
+      font-weight: bold;
+    }
+  </style>
+
+  <style type="text/css" media="print" id="print-css">
+    code, pre {
+      font-family: monospace;
+    }
+
+    .example {
+      margin: 1em 0;
+    }
+
+    .example .cycle {
+      margin: 0.5em 0;
+      border-width: 1px 0 1px 0;
+    }
+
+    .example .cycle.first {
+      border-top-width: 1px; /* Override */
+    }
+
+    .example .command {
+      margin: 0.5em;
+    }
+
+    .example .http {
+      float: none;
+      width: auto;
+      border-width: 0;
+      margin: 0.5em 0;
+    }
+
+    .example .http h3 {
+      position: static;
+      -webkit-transform: none;
+      -moz-transform: none;
+    }
+
+    .example .content {
+      padding: 0;
+      margin: 0.5em;
+      overflow: visible;
+      max-height: auto;
+    }
+  </style>
+
+  <style type="text/css">
+    #print-preview {
+      float: right;
+      margin: 0.5em;
+      padding: 3px;
+      border: 2px solid #006;
+      text-decoration: none;
+      background-color: #039;
+      color: #eee;
+      font-size: 85%;
+    }
+
+    #print-preview.on {
+      border-style: inset;
+    }
+
+    #print-preview.off {
+      border-style: outset;
+    }
+  </style>
+
+  <style type="text/css" media="print">
+    #print-preview { display: none; }
+  </style>
+
+  <script language="javascript">
+    function togglePrintPreview() {
+      var printCSS = document.getElementById('print-css');
+      printCSS.media = printCSS.media == 'print' ? 'all' : 'print';
+      var control = document.getElementById('print-preview');
+      control.className = printCSS.media == 'print' ? 'off' : 'on';
+    }
+  </script>
+</head>
+<body>
+  <a id="print-preview" class="off" href="javascript:togglePrintPreview()" style="display: none">Print Preview<br/>(Firefox Only)</a>
+
+  <h1>PSC RESTful API Integration Test HTTP Log</h1>
