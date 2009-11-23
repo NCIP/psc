@@ -167,6 +167,30 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testGetNewStudyName() {
+        Study study1 = createNamedInstance("[ABC 1000]", Study.class);
+        Study study2 = createNamedInstance("[ABC temp]", Study.class);
+        Study study3 = createNamedInstance("[ABC 1001]", Study.class);
+
+        List<Study> studies = new ArrayList<Study>();
+        studies.add(study1);
+        studies.add(study2);
+        studies.add(study3);
+
+        List<Study> filteredStudies = new ArrayList<Study>();
+        filteredStudies.add(study1);
+        filteredStudies.add(study3);
+
+        expect(service.getStudyDao().searchStudiesByAssignedIdentifier("[ABC %]")).andReturn(studies);
+
+        replayMocks();
+        String studyName = service.getNewStudyName();
+        verifyMocks();
+
+        assertNotNull("New study name is null", studyName);
+        assertEquals("Expected new study name is not the same", "[ABC 1002]", studyName);
+    }
+
     public void testCreateInDesignStudyFromExamplePlanTree() throws Exception {
         Study example = Fixtures.createBasicTemplate();
         PlannedCalendar expectedPC = example.getPlannedCalendar();
