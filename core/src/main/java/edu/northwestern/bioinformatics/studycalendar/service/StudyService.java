@@ -209,11 +209,17 @@ public class StudyService {
         String templateName = "[ABC 1000]";
 
         List<Study> studies = getStudyDao().searchStudiesByAssignedIdentifier("[ABC %]");
-        Collections.sort(studies, new StudyTemporaryNameComparator());
-        if (studies.size() == 0) {
+        List<Study> filteredStudies = new ArrayList<Study>();
+        for(Study study: studies) {
+            if (study.getAssignedIdentifier().matches("\\[ABC \\d\\d\\d\\d\\]")) {
+                filteredStudies.add(study);
+            }
+        }
+        Collections.sort(filteredStudies, new StudyTemporaryNameComparator());
+        if (filteredStudies.size() == 0) {
             return templateName;
         }
-        Study study = studies.get(0);
+        Study study = filteredStudies.get(0);
         String studyName = study.getName();
         String numericPartSupposedly = studyName.substring(studyName.indexOf(" ") + 1, studyName.lastIndexOf("]"));
         int newNumber = 1000;
