@@ -269,6 +269,23 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledActivity(2006, MAY,   23, 5, events.get(10));
     }
 
+    public void testUnmatchedStudySegmentThrowsException() throws Exception {
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        Amendment expectedAmendment = new Amendment();
+        assignment.setCurrentAmendment(expectedAmendment);
+        expect(amendmentService.getAmendedNode(studySegment, expectedAmendment)).andReturn(null);
+
+        replayMocks();
+        try {
+            service.scheduleStudySegment(
+            assignment, studySegment, DateUtils.createDate(2005, SEPTEMBER, 1), NextStudySegmentMode.IMMEDIATE);
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("Could not find a node " +studySegment +" in the target study", scse.getMessage());
+        }
+        verifyMocks();
+    }
+
     public void testScheduleImmediateNextStudySegment() throws Exception {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar calendar = new ScheduledCalendar();

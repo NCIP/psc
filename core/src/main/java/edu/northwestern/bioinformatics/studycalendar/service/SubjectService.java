@@ -93,6 +93,11 @@ public class SubjectService {
 
         Amendment sourceAmendment = assignment.getCurrentAmendment();
         StudySegment amendedSegment = amendmentService.getAmendedNode(studySegment, sourceAmendment);
+
+        if (amendedSegment == null) {
+            throw new StudyCalendarSystemException
+                    ("Could not find a node %s in the target study", studySegment);
+        }
         Integer studySegmentStartDay = studySegment.getDayRange().getStartDay();
 
         ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
