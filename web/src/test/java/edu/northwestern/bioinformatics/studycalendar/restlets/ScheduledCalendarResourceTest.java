@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
@@ -15,6 +16,7 @@ import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
+import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 
 import java.io.IOException;
@@ -38,6 +40,8 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
     private NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer;
     private SubjectService subjectService;
+    private TemplateService templateService;
+    private Study study;
 
     @Override
     protected void setUp() throws Exception {
@@ -45,13 +49,19 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
 
         serializer = registerMockFor(ScheduledCalendarXmlSerializer.class);
         subjectService = registerMockFor(SubjectService.class);
+        templateService = registerMockFor(TemplateService.class);
         scheduledSegmentSerializer = registerMockFor(ScheduledStudySegmentXmlSerializer.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         nextScheduledStudySegmentSerializer = registerMockFor(NextScheduledStudySegmentXmlSerializer.class);
 
         calendar = new ScheduledCalendar();
-        assigment = setGridId(ASSIGNMENT_IDENTIFIER, createAssignment(calendar));
+        Subject subject = Fixtures.createSubject("Perry", "Duglas");
+        study = Fixtures.createSingleEpochStudy("EC golf", "Treatment");
+        Site site = Fixtures.createSite("NU");
+        StudySubjectAssignment assignment = Fixtures.createAssignment(study,site,subject);
+        assignment.setScheduledCalendar(calendar);
+        assigment = setGridId(ASSIGNMENT_IDENTIFIER, assignment);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
         request.getAttributes().put(UriTemplateParameters.ASSIGNMENT_IDENTIFIER.attributeName(), ASSIGNMENT_IDENTIFIER);
@@ -62,6 +72,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         ScheduledCalendarResource resource = new ScheduledCalendarResource();
         resource.setXmlSerializer(serializer);
         resource.setSubjectService(subjectService);
+        resource.setTemplateService(templateService);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         resource.setStudyDao(studyDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
@@ -107,12 +118,13 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
 
     public void testPostXmlForScheduledSegment() throws Exception {
         NextScheduledStudySegment nextSgmtSchdScheduled = new NextScheduledStudySegment();
-        nextSgmtSchdScheduled.setStudySegment(createNamedInstance("Screening", StudySegment.class));
+        StudySegment studySegment = createNamedInstance("Screening", StudySegment.class);
+        nextSgmtSchdScheduled.setStudySegment(studySegment);
         nextSgmtSchdScheduled.setStartDate(createDate(Calendar.JANUARY, 13, 2007));
         nextSgmtSchdScheduled.setMode(NextStudySegmentMode.IMMEDIATE);
 
         ScheduledStudySegment schSegment = new ScheduledStudySegment();
-
+        expect(templateService.findStudy(studySegment)).andReturn(study);
         expectResolvedSubjectAssignment();
         expectReadXmlFromRequestAs(nextSgmtSchdScheduled);
         expect(subjectService.scheduleStudySegment(assigment, nextSgmtSchdScheduled.getStudySegment(), nextSgmtSchdScheduled.getStartDate(), nextSgmtSchdScheduled.getMode()))
@@ -122,10 +134,35 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertEquals("Result not success", 201, response.getStatus().getCode());
     }
 
+    public void testPostXmlForUnmatchedScheduledSegmentForStudy() throws Exception {
+        NextScheduledStudySegment nextSgmtSchdScheduled = new NextScheduledStudySegment();
+        StudySegment studySegment = createNamedInstance("Screening", StudySegment.class);
+        nextSgmtSchdScheduled.setStudySegment(studySegment);
+        nextSgmtSchdScheduled.setStartDate(createDate(Calendar.JANUARY, 13, 2007));
+        nextSgmtSchdScheduled.setMode(NextStudySegmentMode.IMMEDIATE);
+
+        expect(templateService.findStudy(studySegment)).andReturn(new Study());
+        expectResolvedSubjectAssignment();
+        expectReadXmlFromRequestAs(nextSgmtSchdScheduled);
+        doPost();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void test400ForUnsupportedEntityContentType() throws Exception {
+        request.setEntity("wrong type", MediaType.TEXT_PLAIN);
+        NextScheduledStudySegment nextSgmtSchdScheduled = new NextScheduledStudySegment();
+        StudySegment studySegment = createNamedInstance("Screening", StudySegment.class);
+        nextSgmtSchdScheduled.setStudySegment(studySegment);
+        expectResolvedSubjectAssignment();
+
+        doPost();
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
     ////// Expect methods
 
     private void expectResolvedSubjectAssignment() {
-        expect(studyDao.getByAssignedIdentifier("EC golf")).andReturn(new Study());
+        expect(studyDao.getByAssignedIdentifier("EC golf")).andReturn(study);
         expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(assigment);
     }
 
