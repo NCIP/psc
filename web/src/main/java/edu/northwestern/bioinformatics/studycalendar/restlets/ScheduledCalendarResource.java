@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
@@ -34,6 +35,8 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     private ScheduledStudySegmentXmlSerializer scheduledStudySegmentSerializer;
     private NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer;
     private SubjectService subjectService;
+    private TemplateService templateService;
+    private Study study;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -50,10 +53,13 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     @Override
-    protected ScheduledCalendar loadRequestedObject(Request request) {
+    protected ScheduledCalendar loadRequestedObject(Request request) throws ResourceException {
         String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
-        Study study = studyDao.getByAssignedIdentifier(studyIdent);
-        if (study == null) return null;
+        study = studyDao.getByAssignedIdentifier(studyIdent);
+        
+        if (study == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Study " +studyIdent +" is not found");
+        }
 
         String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
@@ -93,6 +99,10 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
 
+            if (!study.equals(templateService.findStudy(scheduled.getStudySegment()))) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "StudySegment with identifier " + scheduled.getStudySegment().getGridId()+" is not part of study " +study.getNaturalKey());
+            }
+
             ScheduledStudySegment scheduledSegment = store(scheduled);
 
             getResponse().setEntity(
@@ -102,7 +112,8 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
             getResponse().setStatus(Status.SUCCESS_CREATED);
 
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+            throw new ResourceException(
+                Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type: " + entity.getMediaType());
         }
     }
 
@@ -136,5 +147,10 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Required
     public void setSubjectService(SubjectService subjectService) {
         this.subjectService = subjectService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }
