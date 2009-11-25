@@ -15,24 +15,14 @@
     <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
     <c:if test="${editable || not empty studySegment.base.cycleLength}">
         <form:form method="post" id="cycle-form" action="${cycleUrl}">
-            <div id="cycle">
-                <c:choose>
-                    <c:when test="${editable}">
-                        <h5 id="cycleError"></h5>
-                        Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
-                        <input type="submit" value="Update" id="cycleButton"/>
-                    </c:when>
-                    <c:when test="${not empty studySegment.base.cycleLength}">
-                        The cycle length of this segment is ${studySegment.base.cycleLength} days.
-                    </c:when>
-                </c:choose>
+            <div id="cycle" editable=${editable} studySegmentCycleLength=${studySegment.base.cycleLength}>
+                <c:if test="${not editable && not empty studySegment.base.cycleLength}">
+                    The cycle length of this segment is ${studySegment.base.cycleLength} days.
+                </c:if>
             </div>
         </form:form>
     </c:if>
-    <p class="controls">
-        <c:if test="${editable}">
-            <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control addPeriod">Add period</a>
-        </c:if>
+    <p class="controls addPeriod" studySegmentId=${studySegment.base.id}>
         <c:if test="${not empty studySegment.months}">
             <a id="show_button" href="#" class = "control">Show All</a>
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
@@ -80,9 +70,7 @@
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
                     <c:if test="${editable}">
-                        <td class="controls">
-                            <a class="control editPeriod" href="<c:url value="/pages/cal/editPeriod?period=${period.id}"/>">Edit</a>
-                        </td>
+                        <td class="controls editPeriod" periodId=${period.id}/>
                     </c:if>
                     <th class="row" style="white-space:nowrap; text-decoration:none;">
                             ${fn:replace(period.name, " ", "&nbsp;")}
@@ -104,10 +92,7 @@
 
                     </c:forEach>
                     <c:if test="${editable}">
-                        <td class="controls">
-                            <a href="#" class="control deletePeriod" id="deletePeriod-${period.id}" title="${period.name}" studySegmentId="${studySegment.base.id}" style="cursor:pointer;">Delete</a>
-                            <%--<a class="control period" style="cursor:pointer;" onclick="return deletePeriodPopup(${period.id}, '${period.name}')" >Delete</a>--%>
-                        </td>
+                        <td class="controls deletePeriod" periodId="${period.id}" periodName="${period.name}" studySegmentId="${studySegmentId.base.id}" />
                     </c:if>
                 </tr>
             </c:forEach>

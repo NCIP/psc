@@ -234,6 +234,10 @@
                 margin: 1em;
                 text-align: right
             }
+
+            .h2ForCycle {
+                font-weight:normal;
+            }
         </style>
 
         <c:if test="${not empty developmentRevision}">
@@ -658,41 +662,25 @@
                 $('admin-options').show()
             }
 
-            //todo - move all the creations into edit.js.jsp and remove this method
-            function studySegmentHideSetup() {
-                $$('.deletePeriod').each(function(a){
-                    a.hide()
-                })
-            
-                $$('.editPeriod').each(function(a){
-                    a.hide()
-                })
-
-                $$('.addPeriod').each(function(a){
-                    a.hide()
-                })
-
-                if ($('cycle') != null) {
-                    $('cycle').hide()
-                }
-                $('populations').hide()
-            }
-
             // Temporary.  Validation should really be on the server side.
             function isCorrectCycleLength() {
-                var cycleLength = document.getElementById("cycleLength").value;
                 var isCorrectInput = true;
-                if ((cycleLength != "" && cycleLength <=0) || (isNaN(cycleLength))
-                     ||(cycleLength.indexOf(".")>0) || (cycleLength.indexOf(",") > 0)) {
-                isCorrectInput = false;
-                document.getElementById("cycleError").innerHTML = "Cycle Length must be a positive number.";
-             }
+                if ($('cycleLength ') != null) {
+                    var cycleLength = document.getElementById("cycleLength").value;
+
+                    if ((cycleLength != null && (cycleLength != "" && cycleLength <=0) || (isNaN(cycleLength)) ||(cycleLength.indexOf(".")>0) || (cycleLength.indexOf(",") > 0))) {
+                        isCorrectInput = false;
+                        document.getElementById("cycleError").innerHTML = "Cycle Length must be a positive number.";
+                    }
+                }
             return isCorrectInput;
             }
 
             function updateCycleError() {
                  if (isCorrectCycleLength()){
-                document.getElementById("cycleError").innerHTML = "";
+                    if ($('cycleLength ') != null) {
+                        document.getElementById("cycleError").innerHTML = "";
+                    }
                 }
             }
 
@@ -714,7 +702,6 @@
             </c:if>
 
             function generalSetup() {
-                studySegmentHideSetup();
                 epochsAreaSetup();
                 studyManipulationSetup();
             }
@@ -781,22 +768,13 @@
             </c:choose>
                 <div class="label">Populations</div>
                 <div class="value">
-                    <ul id="populations">
+                    <ul>
                         <c:forEach items="${study.populations}" var="population">
-                            <li>
-                                <c:if test="${!canNotViewPopulations}">
-                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
-                                            ${population.abbreviation}: ${population.name}
-                                    </a>
-                                </c:if>
-                                <c:if test="${canNotViewPopulations}">${population.abbreviation}: ${population.name}</c:if>
+                            <li class="population" canNotViewPopulations="${canNotViewPopulations}" populationName="${population.name}" populationAbbreviation="${population.abbreviation}" populationId="${population.id}">
+                                <c:if test="${canNotViewPopulations}"> ${population.abbreviation}: ${population.name}</c:if>
                             </li>
                         </c:forEach>
-                        <li class="controls">
-                            <c:if test="${study.inInitialDevelopment || study.inAmendmentDevelopment}">
-                                <a class="control" href="<c:url value="/pages/cal/template/population?study=${study.id}"/>">Add</a>
-                            </c:if>
-                        </li>
+                        <li class="controls addPopulationButton" studyId='${study.id}' studyInInitialDevelopment='${study.inInitialDevelopment}' studyInAmendmentDevelopment='${study.inAmendmentDevelopment}'/>
                     </ul>
                 </div>
             </div>
@@ -913,7 +891,6 @@
                                         <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
                                     </c:forEach>
                                 </select>
-                                <%--<a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>--%>
                                 <a class="control" href="<c:url value="/pages/subject"/>" id="offstudy-go-to-schedule-control">Go</a>
                             </li>
                             </security:secureOperation>

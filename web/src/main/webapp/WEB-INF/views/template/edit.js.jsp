@@ -1,7 +1,6 @@
 <%@page contentType="text/javascript" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 function createAllStudySegmentControls() {
-    console.log("----- this function ever gets called? - 1")
     $$('#epochs li.studySegment').each(function(li) {
         createStudySegmentControls(li)
     })
@@ -9,18 +8,20 @@ function createAllStudySegmentControls() {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
 
-    //todo - move the buttons creation to this class for 2.7
-    $$('.deletePeriod').each(function(a){
-        createDeletePeriodControls(a)
+    $$('.deletePeriod').each(function(td) {
+        deletePeriodControls(td);
     })
-    $$('.editPeriod').each(function(a){
-        displayControl(a)
+
+    $$('.editPeriod').each(function(td){
+        editPeriodControls(td)
     })
-    $$('.addPeriod').each(function(a){
-        displayControl(a)
+
+    addPeriodControl()
+    displayCycleControl();
+    $$('.population').each(function(liItem) {
+        displayPopulations(liItem);
     })
-    $('cycle').show()
-    $('populations').show()
+    populationAddButtonCreate()
 }
 
 function createStudySegmentControls(studySegmentItem) {
@@ -58,14 +59,9 @@ function createStudySegmentControls(studySegmentItem) {
     updateStudySegmentControlVisibility('studySegment-' + studySegmentId + '-item')
 }
 
-//todo - won't need this method when the buttons' creation is moved to this class
-function displayControl(element){
-    element.show()
-}
-
 function createDeletePeriodControls(periodItem) {
-    var periodId = periodItem.id.substring('deletePeriod-'.length)
-    var periodName = periodItem.title
+    var periodId = periodItem.readAttribute('periodId')
+    var periodName = periodItem.readAttribute('periodName')
     var studySegmentId = periodItem.readAttribute('studySegmentId')
     periodItem.show();
     var href = '<c:url value="/pages/cal/deletePeriod"/>?period=' + periodId + "&studySegment=" + studySegmentId
@@ -95,6 +91,71 @@ function deletePeriod(confirmMessageFn, periodId, studySegmentId, link) {
         }
     }
 }
+
+function displayPopulations(liItem) {
+    var studyId = ${param.study}
+    var canNotViewPopulations = liItem.readAttribute('canNotViewPopulations');
+    var populationName = liItem.readAttribute('populationName');
+    var populationAbbreviation = liItem.readAttribute('populationAbbreviation');
+    var populationId = liItem.readAttribute('populationId');
+    if (canNotViewPopulations) {
+        var href ='<c:url value="/pages/cal/template/population"/>?study=' + studyId + "&population=" + populationId;
+        var aLink = Builder.node("a", {href: href});
+        aLink.innerHTML = populationAbbreviation + ': ' + populationName;
+        liItem.appendChild(aLink);
+    }
+}
+
+function populationAddButtonCreate() {
+    var studyId = ${param.study};
+    var populationLI = $$('.addPopulationButton')[0];
+    var addPopulationHref = '<c:url value="/pages/cal/template/population?study="/>' + studyId;
+    var addPopulationLink = Builder.node("a", {className: 'control', href: addPopulationHref});
+    addPopulationLink.innerHTML='Add';
+    populationLI.appendChild(addPopulationLink);
+}
+
+function displayCycleControl() {
+    var cycleDiv = $('cycle');
+    var studySegmentCycleLength = cycleDiv.readAttribute('studySegmentCycleLength');
+    var h5Elt = Builder.node("h5", {id: "cycleError"});
+    cycleDiv.appendChild(h5Elt);
+    var inputElt = Builder.node("input", {id: "cycleLength", name: "cycleLength", value: studySegmentCycleLength, size: "5"});
+    var paragraph1 = Builder.node("h2", {className: 'h2ForCycle'});
+    paragraph1.innerHTML='Cycle length ';
+    paragraph1.appendChild(inputElt);
+    paragraph1.innerHTML= paragraph1.innerHTML + ' days';
+    var submitBtn = Builder.node("input", {id: "cycleButton", name: "cycleLength", value: "Update", type: "submit"});
+    paragraph1.appendChild(submitBtn);
+    cycleDiv.appendChild(paragraph1);
+}
+
+function deletePeriodControls(tdItem) {
+    var aLinkPeriodId = tdItem.readAttribute('periodId');
+    var aLinkPeriodName = tdItem.readAttribute('periodName');
+    var aLinkPeriodstudySegmentId = tdItem.readAttribute('studySegmentId');
+    var aLink = Builder.node("a", {className: 'control', periodName: aLinkPeriodName, periodId: aLinkPeriodId, studySegmentId: aLinkPeriodstudySegmentId, href: '#'});
+    aLink.innerHTML='Delete';
+    tdItem.appendChild(aLink);
+    createDeletePeriodControls(aLink);
+}
+
+function editPeriodControls(tdItem) {
+    var aLinkPeriodId = tdItem.readAttribute('periodId');
+    var href ='<c:url value="/pages/cal/editPeriod?period="/>' + aLinkPeriodId;
+    var aLink = Builder.node("a", {className: 'control', href: href});
+    aLink.innerHTML='Edit';
+    tdItem.appendChild(aLink);
+}
+
+function addPeriodControl() {
+    var pItem= $$('.addPeriod')[0];
+    var studySegmentId = pItem.readAttribute('studySegmentId');
+    var href = '<c:url value="/pages/cal/newPeriod?studySegment="/>' + studySegmentId;
+    var aLink = Builder.node("a", {className: 'control', href: href});
+    aLink.innerHTML="Add period";
+    pItem.insertBefore(aLink, pItem.firstChild);
+}      
 
 function updateStudySegmentControlVisibility(studySegmentItem) {
     var thisStudySegment = $(studySegmentItem)
