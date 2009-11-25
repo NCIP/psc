@@ -91,6 +91,21 @@ describe "/schedule" do
       response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment2")
       response.xml_attributes("scheduled-study-segment", "study-segment-id").should include("segment1")      
     end
+
+    it "doesn't allow to schedule unmatched studysegment for study" do
+      @study2 = PscTest::Fixtures.createSingleEpochStudy("NU481", "Treatment", ["segment_A", "segment_B"].to_java(:String)) 
+      @amend_date2 = PscTest.createDate(2008, 12, 10)          
+      @amendment2 = PscTest::Fixtures.createAmendment("am2", @amend_date2)
+      @study2.planned_calendar.epochs.first.study_segments[0].grid_id = "s1" 
+      @study2.amendment = @amendment2
+      application_context['studyService'].save(@study2)
+      
+      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27", 
+      'study-segment-id' => "s1", 'mode' => "immediate")
+      post "/studies/NU480/schedules/assignment1", @next_assignment2_xml, :as => :juno
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+    end
         
   end
           
