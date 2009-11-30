@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -21,6 +22,8 @@ import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
+import org.restlet.ext.json.JsonRepresentation;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,11 +41,13 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     private Subject subject;
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private NowFactory nowFactory;
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
 
     public void setUp() throws Exception {
         super.setUp();
         xmlSerializer = registerMockFor(StudySubjectAssignmentXmlSerializer.class);
         authorizationService = registerMockFor(AuthorizationService.class);
+        scheduleRepresentationHelper = registerMockFor(ScheduleRepresentationHelper.class);
         subjectDao = registerDaoMockFor(SubjectDao.class);
         subject = createSubject("1111", "Perry", "Duglas", createDate(1980, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
         subject.setId(11);
@@ -72,6 +77,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         resource.setSubjectDao(subjectDao);
         resource.setAuthorizationService(authorizationService);
         resource.setNowFactory(nowFactory);
+        resource.setScheduleRepresentationHelper(scheduleRepresentationHelper);
         return resource;
     }
 
@@ -121,6 +127,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
+        expect(scheduleRepresentationHelper.createJSONRepresentation(studySubjectAssignments, new ArrayList<StudySubjectAssignment>())).andReturn(new JsonRepresentation(new JSONObject()));
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
@@ -128,7 +135,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         assertEquals("Result is not of right content type", MediaType.APPLICATION_JSON, response.getEntity().getMediaType());
     }
 
-        public void testGetICSCalendarRepresentation() throws Exception {
+    public void testGetICSCalendarRepresentation() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".ics",SUBJECT_IDENTIFIER);
         expectGetCurrentUser();
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);

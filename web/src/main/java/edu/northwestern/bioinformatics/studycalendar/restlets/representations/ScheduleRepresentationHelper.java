@@ -1,16 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +15,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Representation;
 import org.restlet.ext.json.JsonRepresentation;
+import org.springframework.beans.factory.annotation.Required;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +27,9 @@ import java.util.List;
 // TODO: this is split from the Resources that use it along an odd seam -- the two resources still have a
 // bunch of duplicated code related to building the whole object
 public class ScheduleRepresentationHelper {
+    private TemplateService templateService;
+    private NowFactory nowFactory;
+
     public static JSONObject createJSONStateInfo(ScheduledActivityState state) throws ResourceException{
         try {
             JSONObject stateInfo = new JSONObject();
@@ -83,14 +84,13 @@ public class ScheduleRepresentationHelper {
         }
     }
 
-    public static JSONObject createJSONScheduledActivity(ScheduledActivity sa) throws ResourceException {
+    public JSONObject createJSONScheduledActivity(ScheduledActivity sa) throws ResourceException {
         try {
             JSONObject jsonSA = new JSONObject();
             if (sa.getGridId() != null) {
                 jsonSA.put("id", sa.getGridId());
             }
-            jsonSA.put("study", sa.getScheduledStudySegment().getStudySegment()
-                                   .getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier());
+            jsonSA.put("study", templateService.findAncestor(sa.getScheduledStudySegment().getStudySegment(), PlannedCalendar.class).getStudy().getName());
             jsonSA.put("study_segment", sa.getScheduledStudySegment().getName());
             jsonSA.put("ideal_date", getApiDateFormat().format(sa.getIdealDate()));
             if (sa.getPlannedActivity() != null && sa.getPlannedActivity().getPlanDay() != null) {
@@ -131,7 +131,7 @@ public class ScheduleRepresentationHelper {
                 .put("name", assignment.getName()).toMap());
     }
 
-    public static JSONObject createJSONScheduledActivities(Boolean hidden_activities, List<ScheduledActivity> scheduledActivities) throws ResourceException{
+    public JSONObject createJSONScheduledActivities(Boolean hidden_activities, List<ScheduledActivity> scheduledActivities) throws ResourceException{
         try {
             JSONObject jsonScheduledActivities = new JSONObject();
             if (hidden_activities != null) {
@@ -149,7 +149,7 @@ public class ScheduleRepresentationHelper {
 	    }
     }
 
-    public static JSONObject createJSONStudySegment(ScheduledStudySegment segment) throws ResourceException {
+    public JSONObject createJSONStudySegment(ScheduledStudySegment segment) throws ResourceException {
         try {
             JSONObject jsonSegment = new JSONObject();
             jsonSegment.put("name", segment.getName());
@@ -171,12 +171,11 @@ public class ScheduleRepresentationHelper {
             jsonPlannedSegment.put("name", segment.getStudySegment().getName());
             jsonPlannedSegmentInfo.put("segment", jsonPlannedSegment);
             JSONObject jsonEpoch = new JSONObject();
-            jsonEpoch.put("id", segment.getStudySegment().getEpoch().getGridId());
-            jsonEpoch.put("name", segment.getStudySegment().getEpoch().getName());
+            jsonEpoch.put("id", templateService.findAncestor(segment.getStudySegment(),Epoch.class).getGridId());
+            jsonEpoch.put("name", templateService.findAncestor(segment.getStudySegment(),Epoch.class).getName());
             jsonPlannedSegmentInfo.put("epoch", jsonEpoch);
             JSONObject jsonStudy =  new JSONObject();
-            jsonStudy.put("assigned_identifier", segment.getStudySegment().getEpoch().
-                                               getPlannedCalendar().getStudy().getAssignedIdentifier());
+            jsonStudy.put("assigned_identifier", templateService.findAncestor(segment.getStudySegment(), PlannedCalendar.class).getStudy().getAssignedIdentifier());
             jsonPlannedSegmentInfo.put("study", jsonStudy);
             jsonSegment.put("planned", jsonPlannedSegmentInfo);
             return jsonSegment;
@@ -185,21 +184,23 @@ public class ScheduleRepresentationHelper {
         }
     }
 
-    public static Representation createJSONRepresentation(SubjectCentricSchedule schedule, List<StudySubjectAssignment> visibleAssignments)
+    public Representation createJSONRepresentation(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments )
             throws ResourceException  {
+        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
+            visibleAssignments, hiddenAssignments, nowFactory);
         JSONObject jsonData = new JSONObject();
         try {
             JSONObject dayWiseActivities = new JSONObject();
             for (ScheduleDay scheduleDay : schedule.getDays()) {
                 if (!scheduleDay.getActivities().isEmpty()) {
                     dayWiseActivities.put(getApiDateFormat().format(scheduleDay.getDate()),
-                           ScheduleRepresentationHelper.createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
+                           createJSONScheduledActivities(scheduleDay.getHasHiddenActivities(), scheduleDay.getActivities()));
                 }
             }
             JSONArray studySegments = new JSONArray();
             for (StudySubjectAssignment studySubjectAssignment: visibleAssignments) {
                 for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
-                    studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
+                    studySegments.put(createJSONStudySegment(scheduledStudySegment));
                 }
             }
             jsonData.put("days", dayWiseActivities);
@@ -208,5 +209,15 @@ public class ScheduleRepresentationHelper {
 	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
         return new JsonRepresentation(jsonData);
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
+
+    @Required
+    public void setNowFactory(NowFactory nowFactory) {
+        this.nowFactory = nowFactory;
     }
 }

@@ -7,6 +7,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 
 import java.util.List;
@@ -18,8 +19,10 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Status;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
+import org.restlet.ext.json.JsonRepresentation;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IExpectationSetters;
+import org.json.JSONObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 
@@ -34,10 +37,12 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private NowFactory nowFactory;
     private StudySite studySite;
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
     public void setUp() throws Exception {
         super.setUp();
         userService = registerMockFor(UserService.class);
         studySiteService = registerMockFor(StudySiteService.class);
+        scheduleRepresentationHelper = registerMockFor(ScheduleRepresentationHelper.class);
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), USERNAME);
         Role role = SUBJECT_COORDINATOR;
         user = Fixtures.createUser(USERNAME, role);
@@ -66,6 +71,7 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         resource.setStudySiteService(studySiteService);
         resource.setXmlSerializer(xmlSerializer);
         resource.setNowFactory(nowFactory);
+        resource.setScheduleRepresentationHelper(scheduleRepresentationHelper);
         return resource;
     }
 
@@ -102,6 +108,8 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName()+".json", USERNAME);
         expectGetCurrentUser();
         expect(userService.getUserByName(USERNAME)).andReturn(user);
+        expect(scheduleRepresentationHelper.createJSONRepresentation(studySubjectAssignments,
+                new ArrayList<StudySubjectAssignment>())).andReturn(new JsonRepresentation(new JSONObject()));
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
