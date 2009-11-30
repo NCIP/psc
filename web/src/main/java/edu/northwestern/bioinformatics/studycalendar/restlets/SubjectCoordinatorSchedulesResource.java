@@ -31,6 +31,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     private User user;
     private NowFactory nowFactory;
     private StudySiteService studySiteService;
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -91,19 +92,19 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     public Representation represent(Variant variant) throws ResourceException {
         List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment> (getAllObjects());
         if (!assignments.isEmpty()) {
-            SubjectCentricSchedule schedule = new SubjectCentricSchedule(assignments, new ArrayList<StudySubjectAssignment>(), nowFactory);
             if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
                 return createXmlRepresentation(assignments);
             } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-                return ScheduleRepresentationHelper.createJSONRepresentation(schedule, assignments);
+                return scheduleRepresentationHelper.createJSONRepresentation(assignments,new ArrayList<StudySubjectAssignment>());
             } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
-                return createICSRepresentation(schedule);
+                return createICSRepresentation(assignments,new ArrayList<StudySubjectAssignment>());
             }
         }
         return null;
     }
 
-    public Representation createICSRepresentation(SubjectCentricSchedule schedule) {
+    public Representation createICSRepresentation(List<StudySubjectAssignment> assignments, List<StudySubjectAssignment> hiddenAssignments) {
+        SubjectCentricSchedule schedule = new SubjectCentricSchedule(assignments, hiddenAssignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
             ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(),
@@ -128,6 +129,11 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    @Required
+    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
+        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
     }
 
     private  User getAuthenticatedUser() {

@@ -47,6 +47,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     private AmendedTemplateHelper helper;
     private SubjectService subjectService;
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -150,11 +151,11 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
             SortedMap<Date,List<ScheduledActivity>> activities =  new TreeMap<Date,List<ScheduledActivity>>();
             for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
                 activities.putAll(scheduledStudySegment.getActivitiesByDate());
-                studySegments.put(ScheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
+                studySegments.put(scheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
             }
             for (Date date : activities.keySet()) {
                  dayWiseActivities.put(getApiDateFormat().format(date),
-                                ScheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
+                                scheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
             }
             jsonData.put("days", dayWiseActivities);
             jsonData.put("study_segments", studySegments);
@@ -175,4 +176,8 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
         this.helper = amendedTemplateHelper;
     }
 
+    @Required
+    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
+        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
+    }
 }

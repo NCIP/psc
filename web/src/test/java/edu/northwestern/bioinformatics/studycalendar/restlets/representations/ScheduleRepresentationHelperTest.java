@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,9 +24,14 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     private List<ActivityProperty> properties;
     private List<ScheduledActivity> scheduledActivities;
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+
 
     public void setUp() throws Exception {
         super.setUp();
+        TemplateService templateService;templateService = new TemplateService();
+        scheduleRepresentationHelper =  new ScheduleRepresentationHelper();
+        scheduleRepresentationHelper.setTemplateService(templateService);
         ActivityType activityType = createActivityType("Type1");
         activity = createActivity("activity1", activityType);
         properties = new ArrayList<ActivityProperty>();
@@ -102,7 +109,7 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
 
     public void testScheduledActivityInJson() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Grid Id is different", sa.getGridId(), jsonSA.get("id"));
         assertEquals("Study is different", sa.getScheduledStudySegment().getStudySegment().
                 getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier(), jsonSA.get("study"));
@@ -112,19 +119,19 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
 
     public void testScheduledActivityIncludesAssignmentName() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Missing assignment name",
             "S", ((JSONObject) jsonSA.get("assignment")).get("name"));
     }
 
     public void testScheduledActivityIncludesAssignmentId() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Missing assignment name",
             "GRID-ASSIGN", ((JSONObject) jsonSA.get("assignment")).get("id"));
     }
 
     public void testScheduledActivityCurrentState() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         JSONObject currentState = (JSONObject) jsonSA.get("current_state");
         assertNotNull("current state is missing", currentState);
         assertEquals("current state reason incorrect", "Just moved by 4 days", currentState.get("reason"));
@@ -134,35 +141,35 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
 
     public void testScheduledActivityStateHistoryContainsAllStates() throws Exception {
         assertEquals(2,
-            ((JSONArray) ScheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history")).length());
+            ((JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history")).length());
     }
 
     public void testScheduledActivityStateHistoryStartsWithInitial() throws Exception {
-        JSONArray history = (JSONArray) ScheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
+        JSONArray history = (JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
         JSONObject first = (JSONObject) history.get(0);
         assertEquals("Incorrect date", "2009-04-07", first.get("date"));
     }
-    
+
     public void testScheduledActivityStateHistoryEndsWithCurrent() throws Exception {
-        JSONArray history = (JSONArray) ScheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
+        JSONArray history = (JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
         JSONObject first = (JSONObject) history.get(1);
         assertEquals("Incorrect date", "2009-04-03", first.get("date"));
     }
 
     public void testScheduleDayWiseActivitiesInJson() throws Exception {
-        JSONObject jsonScheduleActivities =  ScheduleRepresentationHelper.createJSONScheduledActivities(true, scheduledActivities);
+        JSONObject jsonScheduleActivities =  scheduleRepresentationHelper.createJSONScheduledActivities(true, scheduledActivities);
         assertEquals("no of elements is different", 2,jsonScheduleActivities.length());
         assertEquals("has no hidden activities", true, jsonScheduleActivities.get("hidden_activities"));
     }
 
     public void testWhenHiddenActivitiesIsNull() throws Exception {
-        JSONObject jsonScheduleActivities =  ScheduleRepresentationHelper.createJSONScheduledActivities(null, scheduledActivities);
+        JSONObject jsonScheduleActivities =  scheduleRepresentationHelper.createJSONScheduledActivities(null, scheduledActivities);
         assertTrue(jsonScheduleActivities.isNull("hidden_activities"));
         assertEquals("no of elements is different", 1,jsonScheduleActivities.length());
     }
 
     public void testScheduledStudySegmentsInJson() throws Exception {
-        JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
         assertEquals("has different name", scheduledSegment.getName(), jsonSegment.get("name"));
         assertEquals("missing ID", scheduledSegment.getGridId(), jsonSegment.get("id"));
 
@@ -185,36 +192,36 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
 
     public void testScheduledSegmentIncludesAssignmentName() throws Exception {
-        JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
         assertEquals("Missing assignment name", "S",
             ((JSONObject) jsonSegment.get("assignment")).get("name"));
     }
 
     public void testScheduledSegmentIncludesAssignmentId() throws Exception {
-        JSONObject jsonSegment = ScheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
         assertEquals("Missing assignment id", "GRID-ASSIGN",
             ((JSONObject) jsonSegment.get("assignment")).get("id"));
     }
 
     public void testDetailsInJson() throws Exception {
         sa.setDetails("Detail");
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Missing details", "Detail", jsonSA.get("details"));
     }
 
     public void testMissingDetailsInJson() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertTrue(jsonSA.isNull("details"));
     }
 
     public void testConditionalInJson() throws Exception {
         sa.getPlannedActivity().setCondition("Conditional Details");
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Missing conditions", "Conditional Details", jsonSA.get("condition"));
     }
 
     public void testLabelsInJson() throws Exception {
-        JSONObject jsonSA = ScheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
         assertEquals("Missing labels", "label1 label2", jsonSA.get("labels"));
     }
 }

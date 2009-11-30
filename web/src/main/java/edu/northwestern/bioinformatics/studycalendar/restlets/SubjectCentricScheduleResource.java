@@ -40,6 +40,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private Subject subject;
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -81,21 +82,19 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
                 hiddenAssignments.remove(visibleAssignment);
         }
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
-            visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visibleAssignments);
-        }
-        else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return ScheduleRepresentationHelper.createJSONRepresentation(schedule, visibleAssignments);
-        }
-        else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
-            return  createICSRepresentation(schedule);
+        } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
+            return scheduleRepresentationHelper.createJSONRepresentation(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments));
+        } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
+            return  createICSRepresentation(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments));
         }
         return null;
     }
 
-    public Representation createICSRepresentation(SubjectCentricSchedule schedule) {
+    public Representation createICSRepresentation(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments) {
+        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
+            visibleAssignments, hiddenAssignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
             ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(), scheduleDay.getActivities(), getApplicationBaseUrl(), false);
@@ -124,5 +123,10 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    @Required
+    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
+        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
     }
 }
