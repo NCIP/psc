@@ -14,3 +14,5 @@ out
 .DS_Store
 osgi/bnd-tmp
 .DS_Store
+*.pyc
+*.pickle
