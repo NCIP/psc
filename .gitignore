@@ -9,6 +9,7 @@ tools/tomcat/tomcat.properties
 database/hsqldb
 reports
 tmp
+temp
 out
 .DS_Store
 osgi/bnd-tmp
