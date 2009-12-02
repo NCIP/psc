@@ -4,14 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -40,6 +37,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     private StudySegment studySegment;
     private ActivityType a1;
     private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
+    private User user;
 
     @Override
     protected void setUp() throws Exception {
@@ -69,11 +67,14 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setTemplateService(templateService);
         controller.setActivityTypeDao(activityTypeDao);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
 
         a1 = Fixtures.createActivityType("LAB_TEST");
         activityTypes.add(a1);
 
         request.addParameter("period", "15");
+        user = createUser("jimbo", Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
+        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
     }
 
     private ModelAndView doHandle() throws Exception {
@@ -100,6 +101,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
 
     public void testModelIncludesGrid() throws Exception {
         Map model = doHandle().getModel();
+
         assertNotNull("Missing grid", model.get("grid"));
         assertTrue(model.get("grid") instanceof PeriodActivitiesGrid);
         PeriodActivitiesGrid grid = (PeriodActivitiesGrid) model.get("grid");

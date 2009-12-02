@@ -36,9 +36,11 @@
     <tags:resigTemplate id="new_notes_row_template">
         <tr class="new-row unused activity">
             <td>
-                <a class="notes-edit" href="#notes-edit">
-                    View/Edit
-                </a>
+                <c:if test="${hasRightsToEdit}">
+                    <a class="notes-edit" href="#notes-edit">
+                        View/Edit
+                    </a>
+                </c:if>
                 <div class="notes-content">
                     <span class="details note" style="display: none"></span>
                     <span class="condition note" style="display: none"></span>
@@ -97,10 +99,94 @@
     <tags:sassLink name="manage-period-activities"/>
     <style type="text/css">
         .days table { width: <%= Math.min(40, ((Period) request.getAttribute("period")).getDuration().getQuantity() * 4) %>em; }
+
+        td.noHover {
+            background-color: white;
+         }
+        .action-add #days tr.activity td.noHover:hover {
+            background-color:white;
+            cursor:inherit;
+        }
+
+        #tools-section #tool-palette li.noHover{
+            background-color:#CCCCCC;
+            border-right:1px solid #444444;
+            cursor:pointer;
+            height:2em;
+            width:2em;
+        }
+
+        #tools-section #tool-palette li.noHover:hover{
+            background-color:#CCCCCC;
+            cursor: inherit;
+        }
+
+        li.noHover img {
+            display:block;
+            left:50%;
+            margin-left:-8px;
+            margin-top:-8px;
+            position:absolute;
+            top:50%;
+        }
+
+        .activities-input a.noHover:hover{
+            background-color:#CCCCCC;
+            cursor:inherit;
+        }
+
+        a.noHover:hover {
+            background-color:#CCCCCC;
+            border:1px solid #999999;
+            color:#444444 !important;
+            margin:0 2px;
+            padding:2px;}
+
+        a.noHover {
+            background-color:#CCCCCC;
+            border:1px solid #999999;
+            color:#444444 !important;
+            margin:0 2px;
+            padding:2px;
+        }
+
     </style>
 
     <script type="text/javascript">
         psc.template.mpa.Actions.collectionUri = '${collectionResource}';
+
+        $(document).observe('dom:loaded', function() {
+            if (${not hasRightsToEdit}) {
+                toggleDisabled($('activities-input'));
+                toggleDisabled($('tool-palette'))
+                toggleDisabled($('days'))
+                disableHovers()
+            }
+        })
+
+        function disableHovers() {
+            $$('.cell').each(function(liItem) {
+                liItem.className="noHover"
+            })
+
+            $('add-tool').addClassName('noHover');
+            $('move-tool').className = 'noHover';
+            $('delete-tool').className = 'noHover';
+            $('newActivityLink').addClassName('noHover');
+        }
+
+        function toggleDisabled(el) {
+            try {
+                el.disabled = true;
+            }
+            catch(E){}
+
+            if (el.childNodes && el.childNodes.length > 0) {
+                for (var x = 0; x < el.childNodes.length; x++) {
+                    toggleDisabled(el.childNodes[x]);
+                }
+            }
+        }
     </script>
 </head>
 <body>
@@ -325,9 +411,11 @@
                     <c:forEach items="${typeAndRows.value}" var="row">
                         <tr class="activity">
                             <td>
-                                <a class='notes-edit' href='#notes-edit'>
-                                    View/Edit
-                                </a>
+                                <c:if test="${hasRightsToEdit}">
+                                    <a id="notes-edit" class='notes-edit' href='#notes-edit'>
+                                        View/Edit
+                                    </a>
+                                </c:if>
                                 <div class='notes-content'>
                                     <span class='note details' style='display: none'>
                                         ${row.details}
@@ -399,8 +487,14 @@
         </select>
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
                hint="With this name or code"/>
-
-        <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}"/>">Create new activity</a>
+        <c:choose>
+            <c:when test="${hasRightsToEdit}">
+                <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}" /> />">Create new activity</a>
+            </c:when>
+            <c:otherwise>
+                <a id="newActivityLink" class="control" onclick="return false"/>Create new activity</a>
+            </c:otherwise>
+        </c:choose>
 
         <div style="position: relative">
             <div id="activities-autocompleter-div" class="autocomplete" style="display: none"></div>

@@ -1,13 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -16,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Breadcrum
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -23,16 +18,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.STUDY_COORDINATOR)
+//@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ManagePeriodActivitiesController extends PscAbstractController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
@@ -41,6 +32,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
     private DaoFinder daoFinder;
     private SourceDao sourceDao;
     private ActivityTypeDao activityTypeDao;
+    private ApplicationSecurityManager applicationSecurityManager;
 
     public ManagePeriodActivitiesController() {
         setCrumb(new Crumb());
@@ -71,7 +63,15 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         if (selectedActivityId != null) {
             model.put("selectedActivity", activityDao.getById(selectedActivityId));
         }
-
+        Set<UserRole> userRoles = applicationSecurityManager.getUser().getUserRoles();
+        Boolean hasRightsToEdit = false;
+        for (UserRole userRole: userRoles) {
+            if (userRole.getRole().equals(Role.STUDY_COORDINATOR)) {
+                hasRightsToEdit = true;
+            }
+        }
+        model.put("hasRightsToEdit", hasRightsToEdit);
+        
         model.put("activitySources", sourceDao.getAll());
         model.put("activityTypes", activityTypeDao.getAll());
         Amendment amendment = study.getDevelopmentAmendment();
@@ -128,6 +128,11 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
     }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }    
 
     private static class Crumb extends DefaultCrumb {
         @Override
