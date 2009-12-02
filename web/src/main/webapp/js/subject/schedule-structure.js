@@ -121,10 +121,11 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
     var minDay = psc.tools.Dates.apiDateToUtc(minDayStr);
     var maxDay = psc.tools.Dates.apiDateToUtc(maxDayStr);
-
-    var dayCount = (maxDay.getTime() - minDay.getTime()) / psc.tools.Dates.ONE_DAY;
-    for (var i = 0 ; i <= dayCount ; i += 1) {
-      days.push(new Date(minDay.getTime() + i * psc.tools.Dates.ONE_DAY));
+    if (maxDay != null){
+      var dayCount = (maxDay.getTime() - minDay.getTime()) / psc.tools.Dates.ONE_DAY;
+      for (var i = 0 ; i <= dayCount ; i += 1) {
+        days.push(new Date(minDay.getTime() + i * psc.tools.Dates.ONE_DAY));
+      }
     }
     
     if (scheduleApiResponse['study_segments']) {

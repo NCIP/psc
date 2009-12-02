@@ -7,8 +7,12 @@ psc.namespace("tools");
 psc.tools.Dates = (function () {
   return {
     apiDateToUtc: function (apiDate) {
-      var pieces = apiDate.split('-')
-      return new Date(Date.UTC(pieces[0], pieces[1] - 1, pieces[2]));
+      if (apiDate != null) {
+        var pieces = apiDate.split('-')
+        return new Date(Date.UTC(pieces[0], pieces[1] - 1, pieces[2]));
+      } else {
+        return null;
+      }
     },
 
     displayDateToUtc: function (humanReadableDate) {
