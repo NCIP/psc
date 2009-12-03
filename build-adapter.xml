@@ -15,15 +15,13 @@
     <property environment="env"/>
     <property name="tomcat.relative.path" value="${env.CATALINA_HOME}"/>
     <available file="${jruby.binaries.relative.dir}" property="jruby.exists" />
-    <available file="${path.to.jruby.gems}/buildr-1.3.3-java" property="buildr.exists" />
-    <available file="${path.to.jruby.gems}/shenandoah-0.0.0" property="shenandoah.exists" />
-    <available file="${path.to.jruby.gems}/facets-2.4.5" property="facets.exists" />
-    <available file="${path.to.jruby.gems}/json_pure-1.1.9" property="json_pure.exists" />
-    <available file="${path.to.jruby.gems}/rest-client-1.0.3" property="rest-client.exists" />
 
  <!--Standard sub project build TARGETS -->
-    <target name="install" depends="install:buildr,install:shenandoah,install:facets,install:json_pure,install:rest-client" description="Downloads JRuby and install require gems">
+    <target name="install"
+        depends="install:gem:buildr,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
+        description="Downloads JRuby and installs required gems">
     </target>
+
     <target name="install:jruby" unless="jruby.exists" description="Downloads jruby">
         <mkdir dir="${basedir}/temp/download"/>
         <get src="${jruby.src.url}" dest="${jruby.dest.file}"/>
@@ -35,49 +33,68 @@
         <delete dir="${jruby.dest.file}"/>
     </target>
 
-    <target name="install:buildr" unless="buildr.exists" depends="install:jruby" description="Downloads buildr">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S gem install buildr -v 1.3.3 --no-rdoc --no-ri"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S gem install buildr -v 1.3.3 --no-rdoc --no-ri"/>
-        </exec>
+    <macrodef name="jruby" description="Executes a command using the jruby script">
+        <attribute name="line" description="the command line to pass to jruby (not including jruby itself)"/>
+        <element name="envs" implicit="yes" optional="true"/>
+        <sequential>
+            <echo>jruby @{line}</echo>
+            <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
+                <arg line="@{line}"/>
+                <envs/>
+            </exec>
+            <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
+                <arg line="/c ${path.to.jruby.bat} @{line}"/>
+                <envs/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <!-- The two gem macros have to be separate because ant doesn't let you macrodef targets -->
+    <macrodef name="gem_available">
+        <attribute name="name"/>
+        <attribute name="path" default="@{name}-${gems.@{name}.version}"
+            description="the path within the jruby gems directory where the gem will be if it is already installed"/>
+        <sequential>
+            <echo level="verbose">gem_available name=@{name} path=@{path}</echo>
+            <available file="${path.to.jruby.gems}/@{path}" property="@{name}.exists"/>
+        </sequential>
+    </macrodef>
+    <macrodef name="install_gem">
+        <attribute name="name"/>
+        <sequential>
+            <echo level="verbose">install_gem name=@{name} version=${gems.@{name}.version}</echo>
+            <jruby line="-S gem install @{name} -v ${gems.@{name}.version} --no-rdoc --no-ri"/>
+        </sequential>
+    </macrodef>
+
+    <property name="gems.buildr.version" value="1.3.3"/>
+    <gem_available name="buildr" path="buildr-1.3.3-java"/>
+    <target name="install:gem:buildr" unless="buildr.exists" depends="install:jruby" description="Installs buildr gem">
+        <install_gem name="buildr"/>
     </target>
 
-    <target name="install:shenandoah" unless="shenandoah.exists" depends="install:jruby" description="Downloads shenandoah">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-           <arg line="-S gem install shenandoah -v 0.0.0 --no-rdoc --no-ri"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S gem install shenandoah -v 0.0.0 --no-rdoc --no-ri"/>
-        </exec>
+    <property name="gems.shenandoah.version" value="0.0.0"/>
+    <gem_available name="shenandoah"/>
+    <target name="install:gem:shenandoah" unless="shenandoah.exists" depends="install:jruby" description="Installs shenandoah gem">
+        <install_gem name="shenandoah"/>
     </target>
 
-    <target name="install:facets" unless="facets.exists" depends="install:jruby" description="Downloads facets">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S gem install facets -v 2.4.5 --no-rdoc --no-ri"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S gem install facets -v 2.4.5 --no-rdoc --no-ri"/>
-        </exec>
+    <property name="gems.facets.version" value="2.4.5"/>
+    <gem_available name="facets"/>
+    <target name="install:gem:facets" unless="facets.exists" depends="install:jruby" description="Installs facets gem">
+        <install_gem name="facets"/>
     </target>
 
-    <target name="install:json_pure" unless="json_pure.exists" depends="install:jruby" description="Downloads json_pure">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S gem install json_pure -v 1.1.9 --no-rdoc --no-ri"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S gem install json_pure -v 1.1.9 --no-rdoc --no-ri"/>
-        </exec>
+    <property name="gems.json_pure.version" value="1.1.9"/>
+    <gem_available name="json_pure"/>
+    <target name="install:gem:json_pure" unless="json_pure.exists" depends="install:jruby" description="Installs json_pure gem">
+        <install_gem name="json_pure"/>
     </target>
 
-    <target name="install:rest-client" unless="rest-client.exists" depends="install:jruby" description="Downloads rest-client">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S gem install rest-client -v 1.0.3 --no-rdoc --no-ri"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S gem install rest-client -v 1.0.3 --no-rdoc --no-ri"/>
-        </exec>
+    <property name="gems.rest-client.version" value="1.0.3"/>
+    <gem_available name="rest-client"/>
+    <target name="install:gem:rest-client" unless="rest-client.exists" depends="install:jruby" description="Installs rest-client gem">
+        <install_gem name="rest-client"/>
     </target>
 
     <target name="build:war" depends="install">
@@ -111,7 +128,7 @@
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
     </target>
-    
+
     <target name="deploy:psc:grid" depends="install" description="Deploy psc grid services">
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
@@ -126,7 +143,7 @@
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </exec>
     </target>
-    
+
     <target name="clean" depends="install">
         <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
             <arg line="-S buildr clean"/>
