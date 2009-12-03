@@ -323,7 +323,7 @@
         </div>
 
         <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Ammendments </a></h3>
+            <h3><a class="accordionHeader" href="#">Amendments </a></h3>
         </div>
         <div class="accordion-content">
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
