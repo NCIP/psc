@@ -39,7 +39,8 @@
         <sequential>
             <echo>jruby @{line}</echo>
             <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-                <arg line="@{line}"/>
+                <!-- Xms override works around a jruby bug.  See PSC issue #881 for details. -->
+                <arg line="-J-Xms256M @{line}"/>
                 <envs/>
             </exec>
             <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
