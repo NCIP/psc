@@ -98,12 +98,7 @@
     </target>
 
     <target name="build:war" depends="install">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr build test=no"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr build test=no"/>
-        </exec>
+        <jruby line="-S buildr build test=no"/>
     </target>
 
     <target name="deploy:psc:webapp" description="Deploy pre-built war file">
@@ -117,40 +112,22 @@
     </target>
 
     <target name="build:grid" depends="install" description="Build psc grid services">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no"/>
+        <jruby line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no">
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no"/>
-            <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
-            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </exec>
+        </jruby>
     </target>
 
     <target name="deploy:psc:grid" depends="install" description="Deploy psc grid services">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
+        <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc">
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc"/>
-            <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
-            <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
-            <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
-        </exec>
+        </jruby>
     </target>
 
     <target name="clean" depends="install">
-        <exec executable="${path.to.jruby.bin}" os="${unixfamily}" failonerror="true">
-            <arg line="-S buildr clean"/>
-        </exec>
-        <exec executable="cmd" dir="." os="${windowsfamily}" failonerror="true">
-            <arg line="/c ${path.to.jruby.bat} -S buildr clean"/>
-        </exec>
+        <jruby line="-S buildr clean"/>
     </target>
 
     <target name="clean-download">
