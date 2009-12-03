@@ -175,7 +175,7 @@ Screw.Unit(function () {
       it("includes currentDate()", function () {
         expect(sched.days['2008-04-25'].activities[0].currentDate()).to(equal_utc_date, new Date(Date.UTC(2008, 3, 25)));
       });
-      
+
       describe("dateClasses()", function () {
         it("includes the actual date class", function () {
           expect(sched.days['2008-04-25'].activities[0].dateClasses()).to(match, 'date-2008-04-25');
@@ -193,6 +193,17 @@ Screw.Unit(function () {
       it("includes studyClass()", function () {
         expect(sched.days['2008-04-25'].activities[0].studyClass()).to(equal, 'study-NU_1400');
       });
+
+      describe("isNull()", function () {
+        before(function () {
+           response["days"]={};
+        });
+
+        it("returns null when dates are null", function() {
+          expect(sched.days).to(equal, {});
+        });
+                    
+      })
       
       describe("isOpen()", function () {
         var open = [['scheduled', 1], ['conditional', 2]];
@@ -300,6 +311,12 @@ Screw.Unit(function () {
             date: '2008-04-25', index: 5,
             expected: 'scheduled-activity na closed'
           }
+//          ,
+//          {
+//            describe: 'for a null scheduled activity',
+//            date: null, index: 0,
+//            expected: 'null'
+//          }
         ];
         
         jQuery.each(expectations, function (idx, item) {
@@ -372,7 +389,12 @@ Screw.Unit(function () {
       describe("startDate()", function () {
         it("is the UTC Date version of the response start date", function () {
           expect(a.startDate()).to(equal_utc_date, new Date(Date.UTC(2009, 3, 22)));
-        })
+        });
+
+        it("returns null when converts null to a UTC date", function () {
+        expect( psc.tools.Dates.apiDateToUtc(null)).to(
+          equal, null);
+        });
       });
 
       describe("stopDate()", function () {

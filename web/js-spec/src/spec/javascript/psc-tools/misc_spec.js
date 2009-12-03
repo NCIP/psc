@@ -9,6 +9,11 @@ Screw.Unit(function () {
           equal_utc_date, new Date(Date.UTC(2009, 4, 1)));
       });
 
+      it("returns null when converts null to a UTC date", function () {
+        expect(psc.tools.Dates.apiDateToUtc(null)).to(
+          equal, null);
+      });
+
       it("converts display date 06/23/2009 to a UTC date", function () {
         expect(psc.tools.Dates.displayDateToUtc("06/23/2009")).to(
           equal_utc_date, new Date(Date.UTC(2009, 5, 23)));
