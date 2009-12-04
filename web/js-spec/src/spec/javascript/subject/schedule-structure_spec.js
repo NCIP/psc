@@ -193,17 +193,6 @@ Screw.Unit(function () {
       it("includes studyClass()", function () {
         expect(sched.days['2008-04-25'].activities[0].studyClass()).to(equal, 'study-NU_1400');
       });
-
-      describe("isNull()", function () {
-        before(function () {
-           response["days"]={};
-        });
-
-        it("returns null when dates are null", function() {
-          expect(sched.days).to(equal, {});
-        });
-                    
-      })
       
       describe("isOpen()", function () {
         var open = [['scheduled', 1], ['conditional', 2]];
@@ -311,12 +300,6 @@ Screw.Unit(function () {
             date: '2008-04-25', index: 5,
             expected: 'scheduled-activity na closed'
           }
-//          ,
-//          {
-//            describe: 'for a null scheduled activity',
-//            date: null, index: 0,
-//            expected: 'null'
-//          }
         ];
         
         jQuery.each(expectations, function (idx, item) {
@@ -353,7 +336,7 @@ Screw.Unit(function () {
       before(function () {
         sched = new psc.subject.Schedule({ 'days': { '2009-04-03': {}, '2009-04-08': {} } })
       });
-      
+
       it("contains all days", function () {
         expect(sched.allDays()).to(have_length, 6)
       });
@@ -366,6 +349,19 @@ Screw.Unit(function () {
         expect(sched.allDays()[4]).to(equal_utc_date, new Date(Date.UTC(2009, 3, 7)));
         expect(sched.allDays()[5]).to(equal_utc_date, new Date(Date.UTC(2009, 3, 8)));
       });
+
+      describe("with no days", function () {
+        var response = { "days": { } };
+
+        before(function () {
+          sched = new psc.subject.Schedule(response);
+        });
+
+        it("returns null when dates are null", function() {
+          expect(sched.days).to(equal, {});
+        });
+
+      })
     });
 
     describe("segment enhancements", function () {
@@ -389,11 +385,6 @@ Screw.Unit(function () {
       describe("startDate()", function () {
         it("is the UTC Date version of the response start date", function () {
           expect(a.startDate()).to(equal_utc_date, new Date(Date.UTC(2009, 3, 22)));
-        });
-
-        it("returns null when converts null to a UTC date", function () {
-        expect( psc.tools.Dates.apiDateToUtc(null)).to(
-          equal, null);
         });
       });
 
