@@ -5,11 +5,11 @@ from xml.dom.minidom import parseString
 class TestBuildResult:
     def setUp(self):
         f = open('sample-rss.xml')
-        self.results = read_rss(f.read())
+        self.results = read_rss(f.read(), History('test'))
         f.close()
 
-    def payload(self, i):
-        return parseString(self.results[i].payload())
+    def actual_payload(self, i):
+        return parseString(payload(self.results[i]))
 
     def test_result_count(self):
         eq_(len(self.results), 10)
@@ -37,16 +37,16 @@ class TestBuildResult:
             self.results[2].message())
 
     def test_payload_doc_elt_is_run(self):
-        eq_("run", self.payload(3).documentElement.tagName)
+        eq_("run", self.actual_payload(3).documentElement.tagName)
 
     def test_payload_result_is_zero_for_success(self):
-        eq_("0", self.payload(0).getElementsByTagName('result').item(0).firstChild.data)
+        eq_("0", self.actual_payload(0).getElementsByTagName('result').item(0).firstChild.data)
 
     def test_payload_result_is_one_for_failure(self):
-        eq_("1", self.payload(4).getElementsByTagName('result').item(0).firstChild.data)
+        eq_("1", self.actual_payload(4).getElementsByTagName('result').item(0).firstChild.data)
 
     def test_payload_log_element_is_hexbinary_encoded(self):
-        log = self.payload(3).getElementsByTagName('log').item(0)
+        log = self.actual_payload(3).getElementsByTagName('log').item(0)
         eq_("hexBinary", log.getAttribute("encoding"))
         eq_("52656d6f7465", log.firstChild.data[0:12])
 
