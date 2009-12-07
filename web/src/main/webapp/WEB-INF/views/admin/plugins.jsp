@@ -38,7 +38,10 @@
                     success: function(o) {
                         updateBundleRow(rowId, bundleId, indicator);
                     },
-                    failure: function() {
+                    failure: function(o) {
+                        alert("Changing bundle " + bundleId + " state to " + newState + 
+                          " failed: " + o.status + " " + o.statusText + 
+                          "\n\n" + o.responseText);
                         indicator.conceal();
                     }
                 },
@@ -55,6 +58,9 @@
                     indicator.conceal();
                 },
                 failure: function(o) {
+                    alert("Updating row display for " + bundleId + 
+                      " failed: " + o.status + " " + o.statusText + 
+                      "\n\n" + o.responseText);
                     indicator.conceal();
                 }
             });
