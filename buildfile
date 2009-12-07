@@ -366,7 +366,9 @@ define "psc" do
         bnd.autostart = false
         bnd['Bundle-Activator'] =
           "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
+        bnd.import_packages.clear
         bnd.import_packages <<
+          "!org.globus.gsi" << "*" <<
           "org.apache.axis.types" <<
           "org.apache.axis.message.addressing"
 
@@ -381,6 +383,9 @@ define "psc" do
         bnd.autostart = false
         bnd['Bundle-Activator'] =
           "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
+        bnd.import_packages.clear
+        bnd.import_packages <<
+          "!org.globus.gsi" << "*"
 
         compile.with project('psc:providers:coppa:common').and_dependencies, CIH, GLOBUS_UNDUPLICABLE
         test.using(:junit).with UNIT_TESTING
@@ -1008,7 +1013,7 @@ define "psc" do
         libdir = t.target + '/WEB-INF/lib'
         mkdir_p libdir
         main_libs = war_package.libs
-        main_libs += GLOBUS_UNDUPLICABLE.values if env_true?('WEBSSO')
+        main_libs += GLOBUS_UNDUPLICABLE.values if (env_true?('WEBSSO') || env_true?('GLOBUS'))
         main_libs.each do |lib|
           cp lib.to_s, libdir
         end
