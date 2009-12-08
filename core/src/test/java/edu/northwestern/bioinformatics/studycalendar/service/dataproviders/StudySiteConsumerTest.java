@@ -58,7 +58,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         nu123.setProvider("alpha");
         nu123.setLastRefresh(INITIAL_REFRESH);
 
-        expect(tools.getServices(StudySiteProvider.class)).andReturn(providers);
+        expect(tools.getServices(StudySiteProvider.class)).andReturn(providers).anyTimes();
     }
 
     public void testNewStudySiteAddedOnRefresh() {
@@ -107,6 +107,32 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         assertEquals("Wrong Site", "NU", results.get(0).getSite().getName());
     }
 
+    public void testLastRefreshTimestampWhenRefreshed() {
+        associate(nu123, nu);
+
+        expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
+            createBasicStudySite(null, nu)
+        )));
+
+        replayMocks();
+        List<StudySite> results = consumer.refresh(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong Last Refresh Time", NOW, results.get(0).getLastRefresh());
+    }
+
+    public void testLastRefreshTimestampWhenNotRefreshed() {
+        Timestamp NOW_MINUS_A_SECOND = DateTools.createTimestamp(2009, Calendar.JANUARY, 6, 3, 4, 4);
+        StudySite s = associate(nu123, nu);
+        s.setLastRefresh(NOW_MINUS_A_SECOND);
+
+        replayMocks();
+        List<StudySite> results = consumer.refresh(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong Last Refresh Time", NOW_MINUS_A_SECOND , results.get(0).getLastRefresh());
+    }
+
 
 
     ///// Helper Methods
@@ -115,6 +141,8 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         StudySite ss = Fixtures.createStudySite(study, site);
         ss.setStudy(study);
         ss.setSite(site);
+        ss.setLastRefresh(INITIAL_REFRESH);
+        ss.setProvider("alpha");
         return ss;
     }
 
