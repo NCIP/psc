@@ -14,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +28,7 @@ public class SourceSerializer {
     private final static String ACTIVITY_SOURCE = "Source";
 
     private static final String[] COLUMNS = new String[] {
-        ACTIVITY_NAME, ACTIVITY_TYPE, ACTIVITY_CODE, ACTIVITY_DESCRIPTION, ACTIVITY_SOURCE
+        ACTIVITY_NAME, ACTIVITY_TYPE, ACTIVITY_CODE, ACTIVITY_DESCRIPTION
     };
 
     private SourceDao sourceDao;
@@ -46,13 +43,15 @@ public class SourceSerializer {
         CsvWriter writer = new CsvWriter(out, delimiter);
 
         try {
+            writer.write(ACTIVITY_SOURCE);
+            writer.write(source.getName());
+            writer.endRecord();
             writer.writeRecord(COLUMNS);
             for (Activity activity : source.getActivities()) {
                 writer.write(activity.getName());
                 writer.write(activity.getType().getNaturalKey());
                 writer.write(activity.getCode());
                 writer.write(activity.getDescription());
-                writer.write(source.getNaturalKey());
                 writer.endRecord();
             }
             writer.close();
@@ -64,16 +63,26 @@ public class SourceSerializer {
     }
 
     public Source readDocument(InputStream inputStream) {
-        Source source = null;
         List<Activity> activitiesToAddAndRemove = new ArrayList<Activity>();
+        Source source = null;
+        String sourceName = null;
+        boolean isOutdatedFormat = true;
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CsvReader reader = new CsvReader(inputStreamReader);
-
             reader.readHeaders();
-            //primitive check for the correct header for CSV files
-            if (reader.getHeaderCount() != 5 && !reader.getHeader(0).equals(ACTIVITY_NAME)){
+
+            if(reader.getHeaderCount() == 2) {
+                isOutdatedFormat = false;
+                String firstColumn = reader.getHeader(0);
+                if (!firstColumn.equals(ACTIVITY_SOURCE)) {
+                    throw new StudyCalendarValidationException(" The file format might be incorrect - Please verify the content of the file for source portion along with the selected extention");
+                }
+                sourceName = reader.getHeader(1);
+
+                reader.readHeaders();
+            } else if (reader.getHeaderCount() != 5 && !reader.getHeader(0).equals(ACTIVITY_NAME)){
                 throw new StudyCalendarValidationException(" The file format might be incorrect - Please verify the content of the file along with the selected extention");
             }
             while (reader.readRecord()) {
@@ -81,7 +90,10 @@ public class SourceSerializer {
                 String type = reader.get(ACTIVITY_TYPE);
                 String code = reader.get(ACTIVITY_CODE);
                 String desc = reader.get(ACTIVITY_DESCRIPTION);
-                String sourceName = reader.get(ACTIVITY_SOURCE);
+                if (isOutdatedFormat) {
+                    logger.info("******* Depricated csv file format is used for sources *******");
+                    sourceName = reader.get(ACTIVITY_SOURCE);
+                }
 
                 Activity activity = new Activity();
                 if (!StringUtils.isBlank(name)) {
@@ -108,7 +120,7 @@ public class SourceSerializer {
                         "Activity type %s is invalid. Please choose from this list: %s.",
                         type, activityTypeDao.getAll());
                 }
-                if (source != null) {
+                if (isOutdatedFormat) {
                     if (!StringUtils.equals(sourceName, source.getName())) {
                         throw new StudyCalendarValidationException(
                             "All activities must belong to same source. %s and %s are not same source.",

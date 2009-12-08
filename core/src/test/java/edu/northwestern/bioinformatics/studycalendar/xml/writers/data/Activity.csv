@@ -1,4 +1,4 @@
-Name,Type,Code,Description,Source,
+Name,Type,Code,Description,Source
 Activity1,Other,Code1,,TestSource
 Activity2,Intervention,Code2,"A2 also has frob, bar, and zap",TestSource
 Activity3,Other,Code3,"A3

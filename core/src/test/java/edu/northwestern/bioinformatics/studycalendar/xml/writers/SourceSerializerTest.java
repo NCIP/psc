@@ -13,10 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
@@ -28,8 +25,9 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     private Activity act1, act2, act3;
     private static final char CSV_DELIM = ',';
     private static final char XLS_DELIM = '\t';
-    private static final String CSV_HEADER = "Name,Type,Code,Description,Source";
-    private static final String XLS_HEADER = "Name\tType\tCode\tDescription\tSource";
+    private static final String CSV_HEADER = "Name,Type,Code,Description";
+    private static final String XLS_HEADER = "Name\tType\tCode\tDescription";
+    private static final String ACTIVITY_SOURCE = "Source";
 
     private ActivityType other, intervention;
 
@@ -69,29 +67,30 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     public void testCsvForActivityWithDescriptionWithCommas() throws Exception {
         Source oneAct = Fixtures.createSource("Src", act2);
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = CSV_HEADER + "\nActivity2,INTERVENTION,Code2,\"A2 also has frob, bar, and zap\",Src\n";
+        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nActivity2,INTERVENTION,Code2,\"A2 also has frob, bar, and zap\"\n";
         assertEquals(expected, doc);
     }
 
     public void testCsvForActivityWithDescriptionWithNewlines() throws Exception {
         Source oneAct = Fixtures.createSource("Src", act3);
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = CSV_HEADER + "\nActivity3,OTHER,Code3,\"A3\nhas a long\ndescription\",Src\n";
+        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nActivity3,OTHER,Code3,\"A3\nhas a long\ndescription\"\n";
         assertEquals(expected, doc);
     }
 
     public void testCsvForActivityWithDescriptionWithQuotes() throws Exception {
         Source oneAct = Fixtures.createSource("Src", createActivity("A", "A", null, other, "aka \"Alpha\""));
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = CSV_HEADER + "\nA,OTHER,A,\"aka \"\"Alpha\"\"\",Src\n";
+        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nA,OTHER,A,\"aka \"\"Alpha\"\"\"\n";
         assertEquals(expected, doc);
     }
 
     public void testWillUseOtherDelimiter() throws Exception {
         String document = serializer.createDocumentString(source, XLS_DELIM);
         String[] rows = document.split("\n");
-        assertEquals("Header incorrect", XLS_HEADER, rows[0]);
-        assertEquals("Wrong first row", "Activity1\tOTHER\tCode1\t\tTestSource", rows[1]);
+        assertEquals("Source header is incorrect", ACTIVITY_SOURCE +"\t"+SOURCE_NAME, rows[0]);
+        assertEquals("Column header is incorrect", XLS_HEADER, rows[1]);
+        assertEquals("Wrong first row", "Activity1\tOTHER\tCode1\t", rows[2]);
     }
 
     public void testCsvWithMultipleRows() throws Exception {
@@ -101,7 +100,7 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
             createActivity("C"),
             createActivity("D")
         ), CSV_DELIM);
-        assertEquals("Wrong number of rows:\n" + doc, 4 + 1, doc.split("\n").length);
+        assertEquals("Wrong number of rows:\n" + doc, 4 + 2, doc.split("\n").length);
     }
 
     public void testReadActivityWithEscapedQuotes() throws Exception {
@@ -131,7 +130,33 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
         expect(sourceDao.getByName(anotherSource.getName())).andReturn(anotherSource).anyTimes();
         expect(activityTypeDao.getByName("Other")).andReturn(other).anyTimes();
         expect(activityTypeDao.getByName("Intervention")).andReturn(intervention).anyTimes();
-//        sourceDao.save(anotherSource);
+        replayMocks();
+
+        Source importedSource = serializer.readDocument(validDocStream);
+        verifyMocks();
+        assertNotNull("sources must not be null", importedSource);
+
+        List<Activity> activities = importedSource.getActivities();
+        assertEquals("Document contains 3 activities", Integer.valueOf(3), Integer.valueOf(activities.size()));
+
+        for (Activity activity : activities) {
+            if (StringUtils.equals(activity.getName(), act1.getName())) {
+                assertActivitiesEqual(act1, activity);
+            } else if (StringUtils.equals(activity.getName(), act2.getName())) {
+                assertActivitiesEqual(act2, activity);
+            } else if (StringUtils.equals(activity.getName(), act3.getName())) {
+                assertActivitiesEqual(act3, activity);
+            } else {
+                assertFalse("Activity must exists in source" + activity.toString(), true);
+            }
+        }
+    }
+
+
+    public void testActivitiesInNewFormatImportCSV() throws Exception {
+        InputStream validDocStream = new FileInputStream(new File(dataDir, "New-format-for-activities.csv"));
+        expect(activityTypeDao.getByName("Other")).andReturn(other).anyTimes();
+        expect(activityTypeDao.getByName("Intervention")).andReturn(intervention).anyTimes();
         replayMocks();
 
         Source importedSource = serializer.readDocument(validDocStream);
@@ -311,7 +336,7 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
 
     private void assertActivitiesEqual(Activity expected, Activity actual) {
         assertEquals("name must be same", expected.getName(), actual.getName());
-        assertEquals("source must be same", expected.getSource(), actual.getSource());
+//        assertEquals("source must be same", expected.getSource(), actual.getSource());
         assertEquals("code must be same", expected.getCode(), actual.getCode());
         assertEquals("desc must be same", expected.getDescription(), actual.getDescription());
         assertEquals("type must be same", expected.getType(), actual.getType());

@@ -38,12 +38,13 @@ public class ImportActivitiesService {
         Source source = sourceSerializer.readDocument(inputStream);
         List<Activity> activitiesToAddOrRemove = source.getActivities();
         String sourceName = source.getName();
-        source = sourceDao.getByName(sourceName);
-        if (source == null) {
-            throw new StudyCalendarValidationException("source %s does not exist.", sourceName);
+        Source existingSource = sourceDao.getByName(sourceName);
+        if (existingSource == null) {
+            sourceDao.save(source);
+            existingSource = source;
         }
-        sourceService.updateSource(source, activitiesToAddOrRemove);
-        return source;
+        sourceService.updateSource(existingSource, activitiesToAddOrRemove);
+        return existingSource;
     }
 
     protected Collection<Source> readData(InputStream dataFile) {

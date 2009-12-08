@@ -43,9 +43,7 @@
         }
 
         #newActivity {
-            /*margin: 1em 0;*/
             background-color: #ddd;
-            /*padding: 0.5em;*/
         }
 
         #activityName label {
@@ -79,6 +77,7 @@
                 $('sources').selectedIndex = 0
             }
             registerEventHandlers()
+            enableExportOptions()
         }
 
 
@@ -148,8 +147,8 @@
         }
 
         function enableExportOptions(){
-            var selectValue = $('sources').options[$('sources').selectedIndex].value
-            if(selectValue == "select" || selectValue == "selectAll") {
+            var selectedSourceId = $('sources').options[$('sources').selectedIndex].value
+            if(selectedSourceId == "select" || selectedSourceId == "selectAll") {
                 $('exportOptions').style.display = "none"
                 $('exportActivitiesLinkXML').style.display = "none"
                 $('exportActivitiesLinkCSV').style.display = "none"
