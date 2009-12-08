@@ -4,13 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.Refreshab
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class StudySiteConsumer extends AbstractConsumer {
     @Override protected Class<StudySiteProvider> providerType() { return StudySiteProvider.class; }
@@ -58,7 +56,7 @@ public class StudySiteConsumer extends AbstractConsumer {
                     List<StudySite> fromProvider = allFromProvider.get(i);
 
                     provisionInstances(fromProvider, provider);
-                    associateStudy(fromProvider, study);
+                    associateWithStudy(fromProvider, study);
                     updateTimestamps(existing, providerName);
 
                     List<StudySite> merged = union(existing, fromProvider);
@@ -68,7 +66,7 @@ public class StudySiteConsumer extends AbstractConsumer {
             }
 
             List<Study> toUpdateflat = flatten(new ArrayList(toUpdate.values()));
-            List<Study> notUpdated = minus(in, toUpdateflat);
+            List<Study> notUpdated = (List<Study>) CollectionUtils.subtract(in, toUpdateflat);
 
             for (Study study : notUpdated) {
                 results.add(in.indexOf(study), study.getStudySites());
@@ -79,18 +77,21 @@ public class StudySiteConsumer extends AbstractConsumer {
 
         private void updateTimestamps(List<StudySite> in, String providerName) {
             for (StudySite s : in) {
-                if (s.getProvider().equals(providerName)) {
-                    s.setLastRefresh(getNowFactory().getNowTimestamp());
-                }
+                updateTimestamp(providerName, s);
             }
         }
 
-        private void associateStudy(List<StudySite> fromProviderStudySites, Study study) {
+        private void updateTimestamp(String providerName, StudySite s) {
+            if (s.getProvider().equals(providerName)) {
+                s.setLastRefresh(getNowFactory().getNowTimestamp());
+            }
+        }
+
+        private void associateWithStudy(List<StudySite> fromProviderStudySites, Study study) {
             for (StudySite ss : fromProviderStudySites) {
                 ss.setStudy(study);
             }
         }
-
 
         protected void provisionInstances(List<StudySite> in, StudySiteProvider provider) {
             for (StudySite studySite : in) {
@@ -140,7 +141,9 @@ public class StudySiteConsumer extends AbstractConsumer {
 
             return result;
         }
-        
+
+
+        ///// Collection Helpers
         private <T> List<T> union(List<T> first, List<T> second) {
             List<T> merged = new ArrayList<T>(first);
             for (T ss : second) {
@@ -149,16 +152,6 @@ public class StudySiteConsumer extends AbstractConsumer {
                 }
             }
             return merged;
-        }
-
-        private <T> List<T> minus(List<T> left, List<T> right) {
-            List<T> result = new ArrayList<T>(left);
-            for (T item : right) {
-                if (result.contains(item)) {
-                    result.remove(item);
-                }
-            }
-            return result;
         }
 
         private <T> List<T> flatten(List<List<T>> in) {
