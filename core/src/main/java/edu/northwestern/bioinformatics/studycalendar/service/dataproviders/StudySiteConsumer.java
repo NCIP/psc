@@ -85,34 +85,6 @@ public class StudySiteConsumer extends AbstractConsumer {
             }
         }
 
-        private <T> List<T> union(List<T> first, List<T> second) {
-            List<T> merged = new ArrayList<T>(first);
-            for (T ss : second) {
-                if (!merged.contains(ss)) {
-                    merged.add(ss);
-                }
-            }
-            return merged;
-        }
-
-        private <T> List<T> minus(List<T> left, List<T> right) {
-            List<T> result = new ArrayList<T>(left);
-            for (T item : right) {
-                if (result.contains(item)) {
-                    result.remove(item);
-                }
-            }
-            return result;
-        }
-
-        private <T> List<T> flatten(List<List<T>> in) {
-            List<T> result = new ArrayList<T>();
-            for (List<T> studies : in) {
-                result = union(result, studies);
-            }
-            return result;
-        }
-
         private void associateStudy(List<StudySite> fromProviderStudySites, Study study) {
             for (StudySite ss : fromProviderStudySites) {
                 ss.setStudy(study);
@@ -168,109 +140,33 @@ public class StudySiteConsumer extends AbstractConsumer {
 
             return result;
         }
-            /**
-     * Generic search implementation which subclasses may expose if appropriate.
-     * @see edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SearchingProvider
-     */
-//    @SuppressWarnings({ "unchecked" })
-//    protected List<D> doSearch(String partialName) {
-//        if (!SearchingProvider.class.isAssignableFrom(providerType())) {
-//            throw new StudyCalendarError("%s is not a %s.  Search won't work.",
-//                providerType().getSimpleName(), SearchingProvider.class.getSimpleName());
-//        }
-//
-//        List<P> providers = getOsgiLayerTools().getServices(providerType());
-//        List<D> found = new ArrayList<D>();
-//        for (P provider : providers) {
-//            List<D> providerMatches = ((SearchingProvider<D>) provider).search(partialName);
-//            if (providerMatches != null) {
-//                for (D match : providerMatches) {
-//                    found.add(provisionInstance(match, provider));
-//                }
-//            }
-//        }
-//        return found;
-//    }
-//        private void updateAssociated(List<Study> in) {
-//            Map<String, List<Study>> toUpdate = findToUpdate(in);
-//            for (String providerToken : toUpdate.keySet()) {
-//                refreshFromProvider(providers.get(providerToken), toUpdate.get(providerToken));
-//            }
-//        }
+        
+        private <T> List<T> union(List<T> first, List<T> second) {
+            List<T> merged = new ArrayList<T>(first);
+            for (T ss : second) {
+                if (!merged.contains(ss)) {
+                    merged.add(ss);
+                }
+            }
+            return merged;
+        }
 
-//        private Map<String, List<Study>> findToUpdate(List<Study> source) {
-//            Map<String, List<Study>> toUpdate = new HashMap<String, List<Study>>();
-//
-//            Timestamp now = getNowFactory().getNowTimestamp();
-//            for (Study item : source) {
-//                String providerName = item.getProvider();
-//                if (providerName == null) continue;
-//                if (shouldRefresh(item, now)) {
-//                    if (!toUpdate.containsKey(providerName)) {
-//                        toUpdate.put(providerName, new ArrayList<Study>());
-//                    }
-//                    toUpdate.get(providerName).add(item);
-//                }
-//            }
-//
-//            return toUpdate;
-//        }
-//
-//        private boolean shouldRefresh(Study providable, Timestamp now) {
-//            StudySiteProvider dataProvider = providers.get(providable.getProvider());
-//            if (!(dataProvider instanceof RefreshableProvider)) return false;
-//            Integer interval = ((RefreshableProvider) dataProvider).getRefreshInterval();
-//            if (interval == null || interval < 0) return false;
-//            interval = 1000 * interval; // convert to ms
-//            long lastRefresh = providable.getLastRefresh() == null ? 0 : providable.getLastRefresh().getTime();
-//            long timeSince = now.getTime() - lastRefresh;
-//            log.debug("{}ms since last refresh", timeSince);
-//            if (timeSince < interval) {
-//                log.debug(" - within refresh interval {}ms; skipping", interval);
-//                return false;
-//            } else {
-//                log.debug(" - greater than refresh interval {}ms; refreshing", interval);
-//                return true;
-//            }
-//        }
+        private <T> List<T> minus(List<T> left, List<T> right) {
+            List<T> result = new ArrayList<T>(left);
+            for (T item : right) {
+                if (result.contains(item)) {
+                    result.remove(item);
+                }
+            }
+            return result;
+        }
 
-//        protected void refreshFromProvider(StudySiteProvider provider, List<Study> currentVersions) {
-//            List<StudySite> newVersions;
-//            try {
-//                newVersions = loadNewVersions(provider, currentVersions);
-//            } catch (RuntimeException re) {
-//                log.error("Refreshing " + currentVersions.size() + ' ' +
-//                    providerType().getSimpleName() + " instance(s) from " + provider.providerToken() +
-//                    "failed", re);
-//                log.debug("Specifically, the provider was trying to refresh {}", currentVersions);
-//                return;
-//            }
-//
-//            if (newVersions == null) {
-//                log.error(
-//                    "Provider {} violated protocol by returning null.  Ignoring.",
-//                    provider.providerToken());
-//            } else if (newVersions.size() != currentVersions.size()) {
-//                log.error(
-//                    "Provider {} violated protocol returning the wrong number of results ({} when expecting {}).  Ignoring.",
-//                    new Object[] { provider.providerToken(), newVersions.size(), currentVersions.size() });
-//                newVersions = null;
-//            }
-//
-//            if (newVersions != null) {
-//                updateInstances(currentVersions, newVersions, provider);
-//            }
-//        }
-//
-//        private void updateInstances(List<Study> currentVersions, List<D> newVersions, StudySiteProvider provider) {
-//            for (ListIterator<D> lit = currentVersions.listIterator(); lit.hasNext();) {
-//                D current = lit.next();
-//                D newVersion = newVersions.get(lit.previousIndex());
-//                if (newVersion != null) {
-//                    provisionInstance(newVersion, provider);
-//                    updateInstanceInPlace(current, newVersion);
-//                }
-//            }
-//        }
+        private <T> List<T> flatten(List<List<T>> in) {
+            List<T> result = new ArrayList<T>();
+            for (List<T> studies : in) {
+                result = union(result, studies);
+            }
+            return result;
+        }
     }
 }

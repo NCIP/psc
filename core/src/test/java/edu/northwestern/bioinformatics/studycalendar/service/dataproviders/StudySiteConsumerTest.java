@@ -21,6 +21,7 @@ import java.util.List;
 
 public class StudySiteConsumerTest extends StudyCalendarTestCase {
     private static final Timestamp NOW = DateTools.createTimestamp(2009, Calendar.JANUARY, 6, 3, 4, 5);
+    private static final Timestamp NOW_MINUS_A_SECOND = DateTools.createTimestamp(2009, Calendar.JANUARY, 6, 3, 4, 4);
     private static final Timestamp INITIAL_REFRESH = DateTools.createTimestamp(2007, Calendar.APRIL, 1);
 
     private OsgiLayerTools tools;
@@ -90,7 +91,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         List<StudySite> results = consumer.refresh(nu123);
         verifyMocks();
 
-        assertEquals("Wrong Number of Sites", 1, results.size());
+        assertEquals("Wrong Number of Study Sites", 1, results.size());
         assertEquals("Wrong Site", "NU", results.get(0).getSite().getName());
     }
 
@@ -103,7 +104,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         List<StudySite> results = consumer.refresh(nu123);
         verifyMocks();
 
-        assertEquals("Wrong Number of Sites", 1, results.size());
+        assertEquals("Wrong Number of Study Sites", 1, results.size());
         assertEquals("Wrong Site", "NU", results.get(0).getSite().getName());
     }
 
@@ -121,8 +122,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         assertEquals("Wrong Last Refresh Time", NOW, results.get(0).getLastRefresh());
     }
 
-    public void testLastRefreshTimestampWhenNotRefreshed() {
-        Timestamp NOW_MINUS_A_SECOND = DateTools.createTimestamp(2009, Calendar.JANUARY, 6, 3, 4, 4);
+    public void testLastRefreshTimestampIsNotUpdated() {
         StudySite s = associate(nu123, nu);
         s.setLastRefresh(NOW_MINUS_A_SECOND);
 
@@ -131,6 +131,18 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong Last Refresh Time", NOW_MINUS_A_SECOND , results.get(0).getLastRefresh());
+    }
+
+    public void testRefreshHappensWhenNoStudySitesExist() {
+        expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
+            createBasicStudySite(null, nu)
+        )));
+        replayMocks();
+        List<StudySite> results = consumer.refresh(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong Number of Study Sites", 1, results.size());
+        assertEquals("Wrong Site", "NU", results.get(0).getSite().getName());
     }
 
 
@@ -145,11 +157,6 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         ss.setProvider("alpha");
         return ss;
     }
-
-    
-            //        fromA.setProvider("alpha");
-//        fromA.setLastRefresh(INITIAL_REFRESH);
-
 
     public static StudySite createBasicStudySite(Study study, Site site) {
         StudySite studySite = new StudySite();
