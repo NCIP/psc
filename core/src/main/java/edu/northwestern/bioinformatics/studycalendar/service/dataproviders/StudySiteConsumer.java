@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.service.dataproviders;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
+import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StudySiteConsumer extends AbstractConsumer {
     @Override protected Class<StudySiteProvider> providerType() { return StudySiteProvider.class; }
@@ -17,97 +23,132 @@ public class StudySiteConsumer extends AbstractConsumer {
         return refresh(asList(in)).get(0);
     }
 
-    public List<List<StudySite>> refresh(List<Study> in) {
-        return new StudySpecificRefresh().execute(in);
+    public List<List<StudySite>> refresh(List<Study> in, Object... o) {     // Variable Object argument is a hack to fix my overloading problem with generics
+        return new StudyBasedStudySiteRefresh().execute(in);
     }
 
-    private class StudySpecificRefresh {
+    public List<StudySite> refresh(Site in) {
+        return refresh(asList(in)).get(0);
+    }
+
+    public List<List<StudySite>> refresh(List<Site> in) {
+        return new SiteBasedStudySiteRefresh().execute(in);
+    }
+
+    private class SiteBasedStudySiteRefresh extends AssociationRefresh<Site, StudySite, StudySiteProvider> {
+        protected List<List<StudySite>> loadNewVersions(StudySiteProvider provider, List<Site> targetedStudy) {
+            return provider.getAssociatedStudies(targetedStudy);
+        }
+
+        protected List<StudySite> getAssociated(Site base) {
+            return base.getStudySites();
+        }
+
+        protected void associateWithBase(List<StudySite> newInstances, Site site) {
+            for (StudySite ss : newInstances) {
+                ss.setSite(site);
+            }
+        }
+    }
+
+    private class StudyBasedStudySiteRefresh extends AssociationRefresh<Study, StudySite, StudySiteProvider> {
         protected List<List<StudySite>> loadNewVersions(StudySiteProvider provider, List<Study> targetedStudy) {
             return provider.getAssociatedSites(targetedStudy);
         }
-        
-        protected void updateInstanceInPlace(StudySite current, StudySite newVersion) {
+
+        protected List<StudySite> getAssociated(Study base) {
+            return base.getStudySites();
+        }
+
+        protected void associateWithBase(List<StudySite> newInstances, Study study) {
+            for (StudySite ss : newInstances) {
+                ss.setStudy(study);
+            }
+        }
+    }
+
+    private abstract class AssociationRefresh<B, A extends Providable, P extends DataProvider> {
+        protected abstract List<List<A>> loadNewVersions(P provider, List<B> base);
+        protected abstract List<A> getAssociated(B base);
+        protected abstract void associateWithBase(List<A> associations, B base);
+
+        protected void updateInstanceInPlace(A current, A newVersion) {
             current.setLastRefresh(newVersion.getLastRefresh());
         }
 
-
         // TODO: Refactor Me, everything below this line is a duplication of AbstractConsumer
-        private Map<String, StudySiteProvider> providers;
+        private Map<String, P> providers;
 
-        protected StudySpecificRefresh() {
+        protected AssociationRefresh() {
             providers = getProviders();
         }
 
         @SuppressWarnings({ "unchecked" })
-        public List<List<StudySite>> execute(List<Study> in) {
-            List<List<StudySite>> results = new ArrayList<List<StudySite>>();
+        public List<List<A>> execute(List<B> in) {
+            List<List<A>> results = new ArrayList<List<A>>();
 
-            Map<String, List<Study>> toUpdate = findInstancesToUpdate(in);
+            Map<String, List<B>> toUpdate = findInstancesToUpdate(in);
 
             for (String providerName : toUpdate.keySet()) {
-                StudySiteProvider provider = (StudySiteProvider) getProvider(providerName);
+                P provider = (P) getProvider(providerName);
                 
-                List<List<StudySite>> allFromProvider = loadNewVersions(provider, toUpdate.get(providerName));
+                List<List<A>> allFromProvider = loadNewVersions(provider, toUpdate.get(providerName));
 
-                List<Study> studiesToUpdate = toUpdate.get(providerName);
-                for (int i = 0; i < studiesToUpdate .size(); i++) {
-                    Study study = studiesToUpdate.get(i);
-                    List<StudySite> existing = studiesToUpdate.get(i).getStudySites();
-                    List<StudySite> fromProvider = allFromProvider.get(i);
+                List<B> associationsToUpdate = toUpdate.get(providerName);
+                for (int i = 0; i < associationsToUpdate .size(); i++) {
+                    B base = associationsToUpdate.get(i);
+                    List<A> existing = getAssociated(associationsToUpdate.get(i));
+                    List<A> fromProvider = allFromProvider.get(i);
 
                     provisionInstances(fromProvider, provider);
-                    associateWithStudy(fromProvider, study);
+                    associateWithBase(fromProvider, base);
                     updateTimestamps(existing, providerName);
 
-                    List<StudySite> merged = union(existing, fromProvider);
-                    results.add(in.indexOf(study), merged);
+                    List<A> merged = union(existing, fromProvider);
+                    results.add(in.indexOf(base), merged);
                 }
 
             }
 
-            List<Study> toUpdateflat = flatten(new ArrayList(toUpdate.values()));
-            List<Study> notUpdated = (List<Study>) CollectionUtils.subtract(in, toUpdateflat);
+            List<B> toUpdateflat = flatten(new ArrayList<List<B>>(toUpdate.values()));
+            List<B> notUpdated = (List<B>) CollectionUtils.subtract(in, toUpdateflat);
 
-            for (Study study : notUpdated) {
-                results.add(in.indexOf(study), study.getStudySites());
+            for (B base : notUpdated) {
+                results.add(in.indexOf(base), getAssociated(base));
             }
 
             return results;
         }
 
-        private void updateTimestamps(List<StudySite> in, String providerName) {
-            for (StudySite s : in) {
+        private void updateTimestamps(List<A> in, String providerName) {
+            for (A s : in) {
                 updateTimestamp(providerName, s);
             }
         }
 
-        private void updateTimestamp(String providerName, StudySite s) {
-            if (s.getProvider().equals(providerName)) {
-                s.setLastRefresh(getNowFactory().getNowTimestamp());
+        private void updateTimestamp(String providerName, A a) {
+            if (a.getProvider().equals(providerName)) {
+                a.setLastRefresh(getNowFactory().getNowTimestamp());
             }
         }
 
-        private void associateWithStudy(List<StudySite> fromProviderStudySites, Study study) {
-            for (StudySite ss : fromProviderStudySites) {
-                ss.setStudy(study);
+
+
+        protected void provisionInstances(List<A> in, P provider) {
+            for (A association : in) {
+                provisionInstance(association, provider);
             }
         }
 
-        protected void provisionInstances(List<StudySite> in, StudySiteProvider provider) {
-            for (StudySite studySite : in) {
-                provisionInstance(studySite, provider);
-            }
-        }
-
-        private boolean shouldRefresh(List<StudySite> providables, StudySiteProvider dataProvider, Timestamp now) {
+        private boolean shouldRefresh(List<A> providables, P dataProvider, Timestamp now) {
             boolean result = false;
-            for (StudySite providable : providables) {
+            for (A providable : providables) {
                 result = result || shouldRefresh(providable, dataProvider, now);
             }
             return result;
         }
 
-        private boolean shouldRefresh(StudySite providable, StudySiteProvider dataProvider, Timestamp now) {
+        private boolean shouldRefresh(A providable, P dataProvider, Timestamp now) {
             if (!(dataProvider instanceof RefreshableProvider)) return false;
             Integer interval = ((RefreshableProvider) dataProvider).getRefreshInterval();
             if (interval == null || interval < 0) return false;
@@ -124,17 +165,17 @@ public class StudySiteConsumer extends AbstractConsumer {
             }
         }
 
-        private Map<String, List<Study>> findInstancesToUpdate(List <Study> in) {
-            Map<String, List<Study>> result = new HashMap<String, List<Study>>();
+        private Map<String, List<B>> findInstancesToUpdate(List <B> in) {
+            Map<String, List<B>> result = new HashMap<String, List<B>>();
 
-            for (StudySiteProvider provider : providers.values()) {
-                for (Study study : in) {
+            for (P provider : providers.values()) {
+                for (B base : in) {
                     Timestamp now = getNowFactory().getNowTimestamp();
-                    if (study.getStudySites().size() == 0 || shouldRefresh(study.getStudySites(), provider, now)) {
+                    if (getAssociated(base).size() == 0 || shouldRefresh(getAssociated(base), provider, now)) {
                         if (result.get(provider.providerToken()) == null) {
-                            result.put(provider.providerToken(), new ArrayList<Study>());
+                            result.put(provider.providerToken(), new ArrayList<B>());
                         }
-                        result.get(provider.providerToken()).add(study);
+                        result.get(provider.providerToken()).add(base);
                     }
                 }
             }

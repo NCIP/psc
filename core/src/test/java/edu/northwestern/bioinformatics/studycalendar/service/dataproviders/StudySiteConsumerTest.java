@@ -145,7 +145,26 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         assertEquals("Wrong Site", "NU", results.get(0).getSite().getName());
     }
 
+    //// Site Based Refresh
+    public void testSiteBasedNewStudySiteAddedOnRefresh() {
+        associate(nu123, nu);
 
+        Study nci999 = Fixtures.createNamedInstance("NCI999", Study.class);
+
+        expect(providerA.getAssociatedStudies(asList(nu))).andReturn(asList(asList(
+            createBasicStudySite(nu123, null),
+            createBasicStudySite(nci999, null)
+        )));
+
+        replayMocks();
+        List<StudySite> results = consumer.refresh(nu);
+        verifyMocks();
+
+        assertEquals("Wrong Number of Sites", 2, results.size());
+
+        assertEquals("Wrong Site", "NU123", results.get(0).getStudy().getName());
+        assertEquals("Wrong Site", "NCI999", results.get(1).getStudy().getName());
+    }
 
     ///// Helper Methods
 
