@@ -212,6 +212,10 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         return false;
     }
 
+    public boolean usesLocalLoginScreen() {
+        return false;
+    }
+
     private void validateRequiredConfigurationProperties(Configuration config) {
         if (requiredConfigurationProperties() != null) {
             for (ConfigurationProperty<?> prop : requiredConfigurationProperties()) {
