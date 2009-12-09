@@ -300,7 +300,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
                 StudySite studySite = null;
                 if (studyOrganizationType instanceof StudySiteType) {
                     studySite = new StudySite();
-                    studySite.setSite(fetchSite(studyOrganizationType.getHealthcareSite(0).getNciInstituteCode()));
+                    studySite.setSite(fetchSite(studyOrganizationType));
                     studySite.setStudy(study);
                     studySite.setGridId(studyOrganizationType.getGridId());
                 }
@@ -322,15 +322,19 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @param assignedIdentifier
      * @return
      */
-    private Site fetchSite(final String assignedIdentifier) throws StudyCreationException {
+    private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
 
+    	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
         Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+        
         if (site == null) {
-
-            String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
-            throw getStudyCreationException(message);
+        	assignedIdentifier = studyOrganizationType.getGridId();
+        	site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+        	if (site == null) {
+        		String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
+        		throw getStudyCreationException(message);
+        	}
         }
-
         return site;
     }
 
