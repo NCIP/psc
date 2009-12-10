@@ -255,7 +255,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         if (epochTypes != null) {
             for (int i = 0; i < epochTypes.length; i++) {
                 EpochType epochType = epochTypes[i];
-                if (epochType instanceof NonTreatmentEpochType) {
+                if (epochType instanceof NonTreatmentEpochType || ((TreatmentEpochType) epochType).getArm() == null || ((TreatmentEpochType) epochType).getArm().length == 0)  {
                     TemplateSkeletonCreatorImpl.addEpoch(study, i, Epoch.create(epochType.getName()));
                 } else if (epochType instanceof TreatmentEpochType) {
                     TemplateSkeletonCreatorImpl.addEpoch(study, i,
