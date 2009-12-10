@@ -88,4 +88,8 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
     public boolean usesLocalPasswords() {
         throw new UnsupportedOperationException("usesLocalPasswords not implemented");
     }
+
+    public boolean usesLocalLoginScreen() {
+        throw new UnsupportedOperationException("usesLocalLoginScreen not implemented");
+    }
 }
