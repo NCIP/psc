@@ -255,7 +255,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         if (epochTypes != null) {
             for (int i = 0; i < epochTypes.length; i++) {
                 EpochType epochType = epochTypes[i];
-                if (epochType instanceof NonTreatmentEpochType) {
+                if (epochType instanceof NonTreatmentEpochType || ((TreatmentEpochType) epochType).getArm() == null || ((TreatmentEpochType) epochType).getArm().length == 0)  {
                     TemplateSkeletonCreatorImpl.addEpoch(study, i, Epoch.create(epochType.getName()));
                 } else if (epochType instanceof TreatmentEpochType) {
                     TemplateSkeletonCreatorImpl.addEpoch(study, i,
@@ -325,15 +325,17 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
 
     	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
-        Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
-        
-        if (site == null) {
-        	assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
-        	site = siteDao.getByAssignedIdentifier(assignedIdentifier);
-        	if (site == null) {
-        		String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
-        		throw getStudyCreationException(message);
-        	}
+    	Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+
+    	if (site == null) {
+    		assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
+    		if((assignedIdentifier != null) && !(assignedIdentifier.equals(""))){
+    			site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+    		}
+    		if (site == null) {
+    			String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
+    			throw getStudyCreationException(message);
+    		}
         }
 
         return site;
