@@ -51,9 +51,4 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
     public Authentication createTokenAuthenticationRequest(String token) {
         return null;
     }
-
-    @Override
-    public boolean usesLocalLoginScreen() {
-        return true;
-    }
 }

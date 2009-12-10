@@ -153,13 +153,6 @@ public interface AuthenticationSystem {
      */
     boolean usesLocalPasswords();
 
-    /**
-     * Does this authentication system use PSC's internal login screen?  If not, attempts to
-     * access it will redirect to the root to allow the auth system's filters to process them.
-     * @see UsernameAndPasswordAuthenticationSystem
-     */
-    boolean usesLocalLoginScreen();
-
     interface ServiceKeys {
         String NAME = "name";
         String BEHAVIOR_DESCRIPTION = "behaviorDescription";
