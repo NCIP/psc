@@ -160,15 +160,15 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
         String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
         StudySite studySite = findStudySite(study, siteNCICode);
         if (studySite == null) {
-        	siteNCICode = registration.getStudySite().getHealthcareSite(0).getGridId();
-        	if((siteNCICode != null) && !(siteNCICode.equals(""))){
-        		studySite = findStudySite(study, siteNCICode);
-        	}
-        	if (studySite == null){
+//        	siteNCICode = registration.getStudySite().getHealthcareSite(0).getGridId();
+//        	if((siteNCICode != null) && !(siteNCICode.equals(""))){
+//        		studySite = findStudySite(study, siteNCICode);
+//        	}
+//        	if (studySite == null){
         		String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
         		+ "' is not associated to a site identified by NCI code :'" + siteNCICode + "'";
         		throw getInvalidRegistrationException(message);
-        	}
+ //       	}
 
         }
         String mrn = findMedicalRecordNumber(registration.getParticipant());
