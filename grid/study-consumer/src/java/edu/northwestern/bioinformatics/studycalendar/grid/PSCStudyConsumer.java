@@ -325,15 +325,17 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
 
     	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
-        Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
-        
-        if (site == null) {
-        	assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
-        	site = siteDao.getByAssignedIdentifier(assignedIdentifier);
-        	if (site == null) {
-        		String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
-        		throw getStudyCreationException(message);
-        	}
+    	Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+
+    	if (site == null) {
+    		assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
+    		if((assignedIdentifier != null) && !(assignedIdentifier.equals(""))){
+    			site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+    		}
+    		if (site == null) {
+    			String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
+    			throw getStudyCreationException(message);
+    		}
         }
 
         return site;
