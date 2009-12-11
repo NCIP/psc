@@ -68,15 +68,14 @@ public class ActivityController extends PscAbstractController {
 
         Integer numberOfPages = getNumberOfPagesFromList(activities);
         activities = sortListBasedOnRequest(activities, sortOrderEnum, sortItem);
-
         Integer indexSecondBorder = index + pageIncrementor;
-
         //the condition below is for the "previous" event
         if (index < 0) {
             indexSecondBorder = (-1)*indexSecondBorder;
             index= indexSecondBorder - pageIncrementor;
         }
 
+        model.put("selectedPage", index);
         //happens only if we have a large amount of activities (> 100 in our case)
         if (activities.size() > pageIncrementor) {
             model.put("index", indexSecondBorder);

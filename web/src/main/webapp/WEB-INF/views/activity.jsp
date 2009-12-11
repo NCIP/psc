@@ -63,6 +63,14 @@
             display:none
         }
 
+        #bottomsTop input.pageNumberSelected, #bottomsBottom input.pageNumberSelected {
+            background-color:lightskyblue;
+        }
+
+        #bottomsTop input.pageNumberDefault, #bottomsBottom input.pageNumberDefault {
+            background-color:#3876C1;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -73,8 +81,10 @@
             var indicator = $('myIndicator')
             indicator.conceal()
             var input = $('sources').options[$('sources').selectedIndex].value
-            if (input == null) {
+            if (input == null || input == "select") {
                 $('sources').selectedIndex = 0
+            } else {
+                loadActivities()
             }
             registerEventHandlers()
             enableExportOptions()
@@ -385,17 +395,6 @@
             </div>
             <div id="newActivity" style="margin-bottom:10px;"></div>
             <div id="bottomsTop">
-                <c:if test="${showPrev}">
-                    <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="< Previous" onclick="displayNext(${-index})"/>
-                </c:if>
-                <c:if test="${numberOfPages != null}">
-                    <c:forEach begin="1" end="${numberOfPages}" var="pageNumber" varStatus="pageNumberStatus">
-                        <input type="button" id="pageNumber" name="pageNumber" value="${pageNumber}" onclick="displayNext(${pageNumber *100 - 100})"/>
-                    </c:forEach>
-                </c:if>
-                <c:if test="${showNext}">
-                    <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next >" onclick="displayNext(${index})"/>
-                </c:if>
 
             </div>
             <div id="myTable">
@@ -404,14 +403,6 @@
             </div>
 
             <div id="bottomsBottom">
-                <c:if test="${showPrev}">
-                    <input type="button" id="prevActivityPageButton" name="prevActivityPageButton" value="< Previous" onclick="displayNext(${-index})"/>
-                </c:if>
-
-                <c:if test="${showNext}">
-                    <input type="button" id="nextActivityPageButton" name="nextActivityPageButton" value="Next >" onclick="displayNext(${index})"/>
-                </c:if>
-
             </div>
 
 
