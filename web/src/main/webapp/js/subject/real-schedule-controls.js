@@ -88,11 +88,7 @@ psc.subject.RealScheduleControls = (function ($) {
     },
 
     'scheduled': function (sa) {
-      if (sa.isOpen()) {
-        return 'scheduled';
-      } else {
-        return null;
-      }
+      return 'scheduled';
     },
     
     'canceled-or-na': function (sa) {
