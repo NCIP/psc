@@ -27,13 +27,7 @@ import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -148,11 +142,14 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
             JSONObject jsonData = new JSONObject();
             JSONObject dayWiseActivities = new JSONObject();
             JSONArray studySegments = new JSONArray();
-            SortedMap<Date,List<ScheduledActivity>> activities =  new TreeMap<Date,List<ScheduledActivity>>();
+            List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
+
             for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
-                activities.putAll(scheduledStudySegment.getActivitiesByDate());
+                scheduledActivities.addAll(scheduledStudySegment.getActivities());
                 studySegments.put(scheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
             }
+            SortedMap<Date,List<ScheduledActivity>> activities =  createActivitiesByDate(scheduledActivities);
+            
             for (Date date : activities.keySet()) {
                  dayWiseActivities.put(getApiDateFormat().format(date),
                                 scheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
@@ -161,9 +158,21 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
             jsonData.put("study_segments", studySegments);
             return new JsonRepresentation(jsonData);
         } catch (JSONException e) {
-            // TODO: this is major bad: swallowing exception
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
 	    }
+    }
+
+    public SortedMap<Date, List<ScheduledActivity>> createActivitiesByDate(List<ScheduledActivity> scheduledActivities) {
+        SortedMap<Date, List<ScheduledActivity>> byDate = new TreeMap<Date, List<ScheduledActivity>>();
+        Collections.sort(scheduledActivities);
+        for (ScheduledActivity scheduledActivity : scheduledActivities) {
+            Date key = scheduledActivity.getActualDate();
+            if (!byDate.containsKey(key)) {
+                byDate.put(key, new ArrayList<ScheduledActivity>());
+            }
+            byDate.get(key).add(scheduledActivity);
+        }
+        return byDate;
     }
 
     @Required
