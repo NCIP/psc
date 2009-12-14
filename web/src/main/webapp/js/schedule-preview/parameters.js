@@ -6,7 +6,7 @@ psc.schedule.preview.Parameters = (function ($) {
   var pending = false;
 
   function findPairKey(pair) {
-    var found;
+    var found = null;
     $.each(query.get('segment'), function (prop, val) {
       if (val == pair.segment && query.get('start_date[' + prop + ']') === pair.start_date) {
         found = prop;
@@ -56,7 +56,7 @@ psc.schedule.preview.Parameters = (function ($) {
 
     remove: function(pair) {
       var key = findPairKey(pair);
-      if (key) {
+      if (key != null) {
         query.REMOVE('segment[' + key + ']');
         query.REMOVE('start_date[' + key + ']');
       }
