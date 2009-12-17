@@ -79,6 +79,8 @@ public class StudySiteService {
         return siteLists;
     }
 
+    
+
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;

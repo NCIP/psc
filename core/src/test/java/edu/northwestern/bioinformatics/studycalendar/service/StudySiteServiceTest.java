@@ -20,8 +20,8 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private User user;
     private Site nu, mayo;
     private List<StudySite> studySites;
-    private Study nu123, nu789, all999;
-    private StudySite studySite0, studySite1, studySite2, studySite3;
+    private Study nu123, all999;
+    private StudySite studySite0, studySite1, studySite2;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -37,15 +37,13 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         mayo = createNamedInstance("Mayo Clinic" , Site.class);
 
         nu123 = createNamedInstance("NU123", Study.class);
-        nu789 = createNamedInstance("NU789", Study.class);
         all999 = createNamedInstance("ALL999", Study.class);
 
         studySite0 = createStudySite(nu123, nu);
-        studySite1 = createStudySite(nu789, nu);
-        studySite2 = createStudySite(all999, nu);
-        studySite3 = createStudySite(all999, mayo);
+        studySite1 = createStudySite(all999, nu);
+        studySite2 = createStudySite(all999, mayo);
 
-        studySites = asList(studySite0, studySite1, studySite2, studySite3);
+        studySites = asList(studySite0, studySite1, studySite2);
 
         user  = createNamedInstance("John", User.class);
         UserRole role = createUserRole(user, Role.SUBJECT_COORDINATOR, nu, mayo);
@@ -60,20 +58,19 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong Study Site", studySite0, actualStudySites.get(0));
         assertEquals("Wrong Study Site", studySite1, actualStudySites.get(1));
         assertEquals("Wrong Study Site", studySite2, actualStudySites.get(2));
-        assertEquals("Wrong Study Site", studySite3, actualStudySites.get(3));
     }
 
     public void testGetStudySitesForSubjectCoordinatorFromSite() {
         List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, mayo);
         assertEquals("Wrong number of Study Sites", 1, actualStudySites.size());
-        assertEquals("Wrong Study Site", studySite3, actualStudySites.get(0));
+        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(0));
     }
 
     public void testGetStudySitesForSubjectCoordinatorFromStudy() {
         List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, all999);
         assertEquals("Wrong number of Study Sites", 2, actualStudySites.size());
-        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(0));
-        assertEquals("Wrong Study Site", studySite3, actualStudySites.get(1));
+        assertEquals("Wrong Study Site", studySite1, actualStudySites.get(0));
+        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(1));
     }
     
     public void testGetSiteLists() throws Exception {
@@ -137,6 +134,10 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
         assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
     }
+
+//    public void testRefreshAssociatedSites() {
+//        List<Study> actual = service.refreshAssociatedSites()
+//    }
 
     private ProtectionGroup pg(String name) {
         ProtectionGroup mayoPG = new ProtectionGroup();
