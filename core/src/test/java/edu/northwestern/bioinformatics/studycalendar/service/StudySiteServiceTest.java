@@ -3,11 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.EasyMock.expect;
 
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +26,18 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private List<StudySite> studySites;
     private Study nu123, all999;
     private StudySite studySite0, studySite1, studySite2;
+    private StudySiteConsumer studySiteConsumer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         siteService = registerMockFor(SiteService.class);
+        studySiteConsumer = registerMockFor(StudySiteConsumer.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new StudySiteService();
         service.setSiteService(siteService);
+        service.setStudySiteConsumer(studySiteConsumer);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
 
         nu = createNamedInstance("Northwestern", Site.class);
@@ -74,13 +81,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     }
     
     public void testGetSiteLists() throws Exception {
-        ProtectionGroup nuPG = pg("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        ProtectionGroup mayoPG = pg("edu.northwestern.bioinformatics.studycalendar.domain.Site.2");
-
-        expect(authorizationManager.getSites()).andReturn(asList(nuPG, mayoPG));
-
-        expect(siteService.getById(1)).andReturn(nu);
-        expect(siteService.getById(2)).andReturn(mayo);
+        expectAuthManagerToReturnSites(nu, mayo);
         replayMocks();
 
         Map<String, List<Site>> results = service.getSiteLists(nu123);
@@ -135,9 +136,40 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
     }
 
-//    public void testRefreshAssociatedSites() {
-//        List<Study> actual = service.refreshAssociatedSites()
-//    }
+    public void testRefreshAssociatedSites() {
+        Site uic = createNamedInstance("UIC" , Site.class);
+        StudySite provided = createStudySite(all999, uic);
+
+        expect(studySiteConsumer.refresh(all999)).andReturn(asList(provided, studySite1));
+
+        expectAuthManagerToReturnSites(nu, mayo);
+        replayMocks();
+        
+        List<Site> actual = service.refreshAssociatedSites(all999);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 3, actual.size());
+
+        assertContains(actual, nu);
+        assertContains(actual, uic);
+        assertContains(actual, mayo);
+    }
+
+    ////// Helpers
+    private void expectAuthManagerToReturnSites(Site... sites) {
+        List<ProtectionGroup> pgs = new ArrayList<ProtectionGroup>();
+
+        for (int i=0; i< sites.length; i++) {
+            Site site = setId(i, sites[i]);
+
+            ProtectionGroup pg = pg(createExternalObjectId(site));
+            pgs.add(pg);
+
+            expect(siteService.getById(i)).andReturn(site);
+        }
+
+        expect(authorizationManager.getSites()).andReturn(pgs);
+    }
 
     private ProtectionGroup pg(String name) {
         ProtectionGroup mayoPG = new ProtectionGroup();

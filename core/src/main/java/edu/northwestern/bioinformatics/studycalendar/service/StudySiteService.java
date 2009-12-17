@@ -3,19 +3,18 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.parseExternalObjectId;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.apache.commons.collections15.ListUtils;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StudySiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
     private SiteService siteService;
-
+    private StudySiteConsumer studySiteConsumer;
 
     public static final String STUDY_IS_NULL = "Study is null";
 
@@ -64,7 +63,7 @@ public class StudySiteService {
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
         for (ProtectionGroup sitePG : allSitePGs) {
             String pgName = sitePG.getProtectionGroupName();
-            Integer id = DomainObjectTools.parseExternalObjectId(pgName);
+            Integer id = parseExternalObjectId(pgName);
             Site site = siteService.getById(id);
             if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
             availableSites.add(site);
@@ -79,7 +78,26 @@ public class StudySiteService {
         return siteLists;
     }
 
-    
+
+    public List<Site> refreshAssociatedSites(Study study) {
+        Set<Site> updated = new LinkedHashSet<Site>();
+
+        List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
+        for (StudySite studySite : fromConsumer) {
+            updated.add(studySite.getSite());
+        }
+
+        List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
+        for (ProtectionGroup sitePG : allSitePGs) {
+            String pgName = sitePG.getProtectionGroupName();
+            Integer id = parseExternalObjectId(pgName);
+            Site site = siteService.getById(id);
+            if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
+            updated.add(site);
+        }
+
+        return new ArrayList<Site>(updated);
+    }
 
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
@@ -89,5 +107,9 @@ public class StudySiteService {
     @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    public void setStudySiteConsumer(StudySiteConsumer studySiteConsumer) {
+        this.studySiteConsumer = studySiteConsumer;
     }
 }
