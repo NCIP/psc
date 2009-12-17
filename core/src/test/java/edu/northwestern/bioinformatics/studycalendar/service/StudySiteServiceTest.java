@@ -99,12 +99,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
     }
 
-    private ProtectionGroup pg(String name) {
-        ProtectionGroup mayoPG = new ProtectionGroup();
-        mayoPG.setProtectionGroupName(name);
-        return mayoPG;
-    }
-
     public void testGetSiteListsRequiresStudy() throws Exception {
         try {
             service.getSiteLists(null);
@@ -142,5 +136,11 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         List<Site> actualAvailableSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
         assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
         assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
+    }
+
+    private ProtectionGroup pg(String name) {
+        ProtectionGroup mayoPG = new ProtectionGroup();
+        mayoPG.setProtectionGroupName(name);
+        return mayoPG;
     }
 }
