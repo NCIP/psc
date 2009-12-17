@@ -2,25 +2,25 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.util.ObjectSetUtil;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
-import static java.util.Arrays.asList;
 import java.util.*;
+import static java.util.Arrays.asList;
 
 /**
  * @author Rhett Sutphin
@@ -41,7 +41,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private UserRole siteCoordinatorRole;
     private UserRole subjectCoordinatorRole;
     private DeletableDomainObjectDao domainObjectDao;
-    private SiteService siteService;
 
     @Override
     protected void setUp() throws Exception {
@@ -56,7 +55,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
-        siteService = registerMockFor(SiteService.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
@@ -67,7 +65,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setAuthorizationService(authorizationService);
-        service.setSiteService(siteService);
+
 
         user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
@@ -419,81 +417,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
         }
-    }
-
-    public void testGetSiteLists() throws Exception {
-        Map<String, List> siteLists = new HashMap<String, List>();
-        List<Site> availableSites = new ArrayList<Site>();
-        List<Site> assignedSites = new ArrayList<Site>();
-
-        Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-
-        List<ProtectionGroup> allSitePGs = new ArrayList<ProtectionGroup>();
-        expect(authorizationManager.getSites()).andReturn(allSitePGs);
-
-        for (ProtectionGroup site : allSitePGs) {
-            Site protectionGroupName = null;
-            expect(siteDao.getByName(site.getProtectionGroupName())).andReturn(protectionGroupName);
-            availableSites.add(protectionGroupName);
-        }
-        for (StudySite ss : studyTemplate1.getStudySites()) {
-            assignedSites.add(ss.getSite());
-        }
-        availableSites = (List) ObjectSetUtil.minus(availableSites, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
-
-        replayMocks();
-        Map<String, List<Site>> siteListsToCompare;
-        siteListsToCompare = service.getSiteLists(studyTemplate1);
-        verifyMocks();
-        assertEquals(siteLists,siteListsToCompare);
-
-        try {
-            service.getSiteLists(null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            ise.getMessage();
-        }
-    }
-
-    public void testGetSiteListsRequiresStudy() throws Exception {
-        try {
-            service.getSiteLists(null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetSitesListsWithSameSiteAvailableAndAssigned() throws Exception {
-        Study study = createNamedInstance("Mayo Study", Study.class);
-        study.addSite(createNamedInstance("Mayo Clinic", Site.class));
-
-        ProtectionGroup expectedAvailableSitePG0 =
-                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
-        ProtectionGroup expectedAvailableSitePG1 =
-                createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        List<ProtectionGroup> exptectedAvailableSitePGs = asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
-        expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
-        Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
-        Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
-        expect(siteService.getById(0)).andReturn(expectedAvailableSite0);
-        expect(siteService.getById(1)).andReturn(expectedAvailableSite1);
-        replayMocks();
-
-        Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);
-        verifyMocks();
-
-        assertEquals("There should be assigned and available sites", 2, assignedAndAvailableSites.size());
-
-        List<Site> actualAssignedSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS);
-        assertEquals("Wrong number of assigned sites", 1, actualAssignedSites.size());
-        assertEquals("Wrong assigned site", "Mayo Clinic", actualAssignedSites.get(0).getName());
-
-        List<Site> actualAvailableSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
-        assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
-        assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
     }
 
     public void testRemoveMultipleTemplates() throws Exception {

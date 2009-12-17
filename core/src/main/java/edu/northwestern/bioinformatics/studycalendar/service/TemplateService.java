@@ -3,25 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
@@ -31,25 +17,14 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import org.apache.commons.collections15.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This service provides methods for:
@@ -73,7 +48,6 @@ public class TemplateService {
     private UserRoleDao userRoleDao;
     private AuthorizationService authorizationService;
     private DaoFinder daoFinder;
-    private SiteService siteService;
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
@@ -220,31 +194,6 @@ public class TemplateService {
                 }
             }
         }
-    }
-
-    public Map<String, List<Site>> getSiteLists(Study studyTemplate) {
-        if (studyTemplate == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        Map<String, List<Site>> siteLists = new HashMap<String, List<Site>>();
-        List<Site> availableSites = new ArrayList<Site>();
-        List<Site> assignedSites = new ArrayList<Site>();
-        List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
-        for (ProtectionGroup sitePG : allSitePGs) {
-            String pgName = sitePG.getProtectionGroupName();
-            Integer id = DomainObjectTools.parseExternalObjectId(pgName);
-            Site site = siteService.getById(id);
-            if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
-            availableSites.add(site);
-        }
-        for (StudySite ss : studyTemplate.getStudySites()) {
-            assignedSites.add(ss.getSite());
-        }
-        availableSites = ListUtils.subtract(availableSites, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
-
-        return siteLists;
     }
 
     public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
@@ -636,10 +585,5 @@ public class TemplateService {
     @Required
     public void setAuthorizationService(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 }

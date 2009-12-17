@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
@@ -30,6 +31,7 @@ public class AssignSiteController extends PscSimpleFormController {
     private TemplateService templateService;
     private StudyDao studyDao;
     private SiteDao siteDao;
+    private StudySiteService studySiteService;
 
     public AssignSiteController() {
         setCommandClass(AssignSiteCommand.class);
@@ -47,7 +49,7 @@ public class AssignSiteController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List<Site>> userLists = templateService.getSiteLists(study);
+        Map<String, List<Site>> userLists = studySiteService.getSiteLists(study);
         refdata.put("study", study);
         refdata.put("assignedSites", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS));
         refdata.put("availableSites", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS));
@@ -92,4 +94,8 @@ public class AssignSiteController extends PscSimpleFormController {
         this.templateService = templateService;
     }
 
+    @Required
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
+    }
 }
