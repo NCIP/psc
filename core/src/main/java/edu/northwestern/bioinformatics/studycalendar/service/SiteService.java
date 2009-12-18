@@ -62,7 +62,7 @@ public class SiteService {
     
     public Site createOrUpdateSite(Site site) {
         siteDao.save(site);
-        if (site.getId() == null || authorizationManager.getPGByName(createExternalObjectId(site)) == null) {
+        if (site.getId() == null || authorizationManager.getProtectionGroup(site) == null) {
             // no need to update the protection group when you update the site because the protection group are created by class name+id which never changes.
             saveSiteProtectionGroup(site);
         }
@@ -74,12 +74,12 @@ public class SiteService {
     }
 
     public void assignProtectionGroup(Site site, User user, Role role) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+        ProtectionGroup sitePG = authorizationManager.getProtectionGroup(site);
         authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmGroup());
     }
 
     public void removeProtectionGroup(Site site, User user) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+        ProtectionGroup sitePG = authorizationManager.getProtectionGroup(site);
         authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 

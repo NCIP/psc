@@ -215,8 +215,7 @@ public class TemplateService {
             for (StudySite studySite : studySites) {
 
                 if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                    String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
-                    ProtectionGroup studySitePG = authorizationManager.getPGByName(studySitePGName);
+                    ProtectionGroup studySitePG = authorizationManager.getProtectionGroup(studySite);
                     authorizationManager.removeProtectionGroupUsers(userIds, studySitePG);
                 }
             }

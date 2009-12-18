@@ -13,8 +13,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.notNull;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
@@ -317,7 +319,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite0);
         ProtectionGroup expectedPG = createProtectionGroup(1L, studySitePGName);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(expectedPG);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(expectedPG);
         authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
         replayMocks();
 
@@ -429,7 +431,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite1);
         ProtectionGroup studySitePG= new ProtectionGroup();
         studySitePG.setProtectionGroupId(1l);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(studySitePG);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(studySitePG);
         authorizationManager.removeProtectionGroupUsers(userIds, studySitePG);
 
         replayMocks();

@@ -1,24 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import static org.easymock.EasyMock.notNull;
 import static org.easymock.classextension.EasyMock.expect;
 
-import java.util.Arrays;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -59,7 +57,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCreateSite() throws Exception {
         siteDao.save(nu);
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
         authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         replayMocks();
 
@@ -86,7 +84,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
         ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(expectedPG);
         authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
         replayMocks();
 
@@ -112,7 +110,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Role role = SUBJECT_COORDINATOR;
         ProtectionGroup pg = createProtectionGroup((long) mayo.getId(), DomainObjectTools.createExternalObjectId(mayo));
 
-        expect(authorizationManager.getPGByName(pg.getProtectionGroupName())).andReturn(pg);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(pg);
         authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), pg, role.csmGroup());
         replayMocks();
         service.assignProtectionGroup(mayo, user, role);
@@ -142,7 +140,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCreateOrMergeSiteForCreateSite() throws Exception {
         siteDao.save(nu);
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
         authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         replayMocks();
 
@@ -157,7 +155,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site newSite = new Site();
         newSite.setName("new Name");
         siteDao.save(nu);
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(new ProtectionGroup());
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(new ProtectionGroup());
         expect(siteDao.getById(1)).andReturn(nu);
         expect(siteConsumer.refresh(nu)).andReturn(nu);
 

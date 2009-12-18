@@ -101,7 +101,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
      * @return null or site Protection Group
      */
     @SuppressWarnings({ "unchecked" })
-    public ProtectionGroup getPGByName(String name) {
+    private ProtectionGroup getPGByName(String name) {
         ProtectionGroup requiredProtectionGroup = null;
 
         ProtectionGroup protectionGroupSearch = new ProtectionGroup();
