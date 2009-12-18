@@ -42,6 +42,18 @@ public class StudyCalendarAuthorizationManager implements Serializable {
 
     private UserProvisioningManager userProvisioningManager;
 
+    public ProtectionGroup createProtectionGroup(DomainObject o) {
+        String id = DomainObjectTools.createExternalObjectId(o);
+        ProtectionGroup exists = getPGByName(id);
+        if (exists == null) {
+            createProtectionGroup(id);
+            exists = getPGByName(id);
+        } else {
+            log.debug("PG already exists for " + id + "... skipping create");
+        }
+        return exists;
+    }
+
     public void createProtectionGroup(String newProtectionGroup) {
         try {
             ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
@@ -77,6 +89,12 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return siteList;
     }
 
+
+    public ProtectionGroup getProtectionGroup(DomainObject d) {
+        String id = DomainObjectTools.createExternalObjectId(d);
+        return getPGByName(id);
+    }
+
     /**
      * Method to retrieve a site protection group
      * @param name
@@ -91,16 +109,11 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroupSearch);
         List<ProtectionGroup> protectionGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
 
-        if (protectionGroupList.size() > 0) {
+        if (protectionGroupList != null && protectionGroupList.size() > 0) {
             requiredProtectionGroup = protectionGroupList.get(0);
 
         }
         return requiredProtectionGroup;
-    }
-
-    public ProtectionGroup getProtectionGroup(DomainObject d) {
-        String id = DomainObjectTools.createExternalObjectId(d);
-        return getPGByName(id);
     }
 
 

@@ -136,10 +136,10 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         expect(userProvisioningManager.getObjects((SearchCriteria) notNull())).andReturn(asList(siteA_PG));
         replayMocks();
 
-        ProtectionGroup pg = manager.getProtectionGroup(siteA);
+        ProtectionGroup actual = manager.getProtectionGroup(siteA);
         verifyMocks();
 
-        assertEquals("Wrong Protection Group", "edu.northwestern.bioinformatics.studycalendar.domain.Site.22", pg.getProtectionGroupName());
+        assertEquals("Wrong Protection Group", "edu.northwestern.bioinformatics.studycalendar.domain.Site.22", actual.getProtectionGroupName());
     }
 
     private ProtectionGroup pg(String s) {
@@ -147,16 +147,37 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         pg.setProtectionGroupName(s);
         return pg;
     }
-//
-//    public void testCreateProtectionGroupWhenPGExist() {
-//        Site site = manager.createProtectionGroup(DomainObject site);
-//                // skip & log if already exists
-//    }
-//
-//    public void testCreateProtectionGroups() {
-//        List<Site> sites = manager.createProtectionGroup(DomainObject site);
-//
-//    }
+
+    public void testCreateProtectionGroups() throws Exception {
+        siteA = Fixtures.setId(22, siteA);
+        ProtectionGroup siteA_PG = pg("edu.northwestern.bioinformatics.studycalendar.domain.Site.22");
+
+        expect(userProvisioningManager.getObjects((SearchCriteria) notNull())).andReturn(null);
+
+        userProvisioningManager.createProtectionGroup((ProtectionGroup) notNull());
+
+        expect(userProvisioningManager.getObjects((SearchCriteria) notNull())).andReturn(asList(siteA_PG));
+        replayMocks();
+
+        ProtectionGroup actual = manager.createProtectionGroup(siteA);
+        verifyMocks();
+
+        assertEquals("Wrong Protection Group", "edu.northwestern.bioinformatics.studycalendar.domain.Site.22", actual.getProtectionGroupName());
+    }
+
+    public void testCreateProtectionGroupWhenPGExist() {
+        siteA = Fixtures.setId(22, siteA);
+        ProtectionGroup siteA_PG = pg("edu.northwestern.bioinformatics.studycalendar.domain.Site.22");
+
+        expect(userProvisioningManager.getObjects((SearchCriteria) notNull())).andReturn(asList(siteA_PG));
+
+        replayMocks();
+
+        ProtectionGroup actual = manager.createProtectionGroup(siteA);
+        verifyMocks();
+
+        assertEquals("Wrong Protection Group", "edu.northwestern.bioinformatics.studycalendar.domain.Site.22", actual.getProtectionGroupName());
+    }
 
     public void testIsGroupEqualToRole() {
         StudyCalendarAuthorizationManager us = new StudyCalendarAuthorizationManager();
