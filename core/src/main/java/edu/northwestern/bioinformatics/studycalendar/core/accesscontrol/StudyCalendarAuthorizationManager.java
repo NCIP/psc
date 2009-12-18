@@ -54,7 +54,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return exists;
     }
 
-    public void createProtectionGroup(String newProtectionGroup) {
+    private void createProtectionGroup(String newProtectionGroup) {
         try {
             ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
             requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);

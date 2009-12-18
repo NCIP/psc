@@ -70,7 +70,7 @@ public class SiteService {
     }
 
     protected void saveSiteProtectionGroup(final Site site) {
-        authorizationManager.createProtectionGroup(createExternalObjectId(site));
+        authorizationManager.createProtectionGroup(site);
     }
 
     public void assignProtectionGroup(Site site, User user, Role role) throws Exception {

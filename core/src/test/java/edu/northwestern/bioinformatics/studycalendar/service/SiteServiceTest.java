@@ -58,7 +58,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testCreateSite() throws Exception {
         siteDao.save(nu);
         expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
-        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
+            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
+        );
         replayMocks();
 
         Site siteCreated = service.createOrUpdateSite(nu);
@@ -68,14 +70,13 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSaveSiteProtectionGroup() throws Exception {
-        Site site = new Site();
-        site.setId(1);
-        String groupName = "edu.northwestern.bioinformatics.studycalendar.domain.Site.1";
-        authorizationManager.createProtectionGroup(groupName);
+        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
+            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
+        );
         replayMocks();
 
 
-        service.saveSiteProtectionGroup(site);
+        service.saveSiteProtectionGroup(nu);
         verifyMocks();
     }
 
@@ -141,7 +142,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testCreateOrMergeSiteForCreateSite() throws Exception {
         siteDao.save(nu);
         expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
-        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
+            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
+        );
         replayMocks();
 
 

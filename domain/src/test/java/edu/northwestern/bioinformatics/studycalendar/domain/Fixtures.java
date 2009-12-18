@@ -505,11 +505,17 @@ public class Fixtures {
         return userRole;
     }
 
+    public static ProtectionGroup createProtectionGroup(String aName) {
+        ProtectionGroup pg = new ProtectionGroup();
+        pg.setProtectionGroupName(aName);
+        return pg;
+    }
+
+
     public static ProtectionGroup createProtectionGroup(Long aId, String aName) {
-        ProtectionGroup myProtectionGroup = new ProtectionGroup();
-        myProtectionGroup.setProtectionGroupName(aName);
-        myProtectionGroup.setProtectionGroupId(aId);
-        return myProtectionGroup;
+        ProtectionGroup pg = createProtectionGroup(aName);
+        pg.setProtectionGroupId(aId);
+        return pg;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
