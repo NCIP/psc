@@ -430,33 +430,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testCannotRemoveStudySiteWithAssociatedAssignments() throws Exception {
-        Study study = createNamedInstance("ECOG 1234", Study.class);
-        Site site1 = setId(1, createNamedInstance("Mayo", Site.class));
-        Site site2 = createNamedInstance("Dartmouth", Site.class);
-        StudySite notInUse = setId(10, createStudySite(study, site1));
-        StudySite inUse = setId(11, createStudySite(study, site2));
-        inUse.getStudySubjectAssignments().add(new StudySubjectAssignment());
-
-        siteDao.save(site1);
-        studyDao.save(study);
-        expectLastCall().anyTimes();
-        authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(notInUse));
-        replayMocks();
-
-        try {
-            service.removeTemplateFromSites(study, asList(site1, site2));
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are subject(s) assigned", scve.getMessage());
-        }
-        verifyMocks();
-
-        List<Site> remainingSites = study.getSites();
-        assertEquals("Removable site not removed", 1, remainingSites.size());
-        assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
-    }
-
     public void testFindParentWhenImmediatelyAvailable() throws Exception {
         Study study = createBasicTemplate();
         assertSame(study.getPlannedCalendar(),

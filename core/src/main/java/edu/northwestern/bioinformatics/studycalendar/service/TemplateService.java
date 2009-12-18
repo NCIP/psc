@@ -12,7 +12,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -108,51 +107,6 @@ public class TemplateService {
         }
 
         return user;
-    }
-
-    public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
-        List<StudySite> studySites = studyTemplate.getStudySites();
-        List<StudySite> toRemove = new LinkedList<StudySite>();
-        List<Site> cannotRemove = new LinkedList<Site>();
-        for (Site site : sites) {
-            for (StudySite studySite : studySites) {
-                if (studySite.getSite().equals(site)) {
-                    if (studySite.isUsed()) {
-                        cannotRemove.add(studySite.getSite());
-                    } else {
-                        try {
-                            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (Exception e) {
-                            throw new StudyCalendarSystemException(e);
-                        }
-                        toRemove.add(studySite);
-                    }
-                }
-            }
-        }
-        for (StudySite studySite : toRemove) {
-            Site siteAssoc = studySite.getSite();
-            siteAssoc.getStudySites().remove(studySite);
-            siteDao.save(siteAssoc);
-            Study studyAssoc = studySite.getStudy();
-            studyAssoc.getStudySites().remove(studySite);
-            studyDao.save(studyAssoc);
-        }
-        if (cannotRemove.size() > 0) {
-            StringBuilder msg = new StringBuilder("Cannot remove ")
-                    .append(StringUtils.pluralize(cannotRemove.size(), "site"))
-                    .append(" (");
-            for (Iterator<Site> it = cannotRemove.iterator(); it.hasNext();) {
-                Site site = it.next();
-                msg.append(site.getName());
-                if (it.hasNext()) msg.append(", ");
-            }
-            msg.append(") from study ").append(studyTemplate.getName())
-                    .append(" because there are subject(s) assigned");
-            throw new StudyCalendarValidationException(msg.toString());
-        }
     }
 
     public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {

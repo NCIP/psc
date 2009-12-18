@@ -1,11 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.parseExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
+import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.apache.commons.collections15.ListUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -21,6 +25,8 @@ public class StudySiteService {
     public static final String SITE_IS_NULL = "Site is null";
     public static final String STUDY_IS_NULL = "Study is null";
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
+    private SiteDao siteDao;
+    private StudyDao studyDao;
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -129,6 +135,51 @@ public class StudySiteService {
         }
     }
 
+    public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
+        List<StudySite> studySites = studyTemplate.getStudySites();
+        List<StudySite> toRemove = new LinkedList<StudySite>();
+        List<Site> cannotRemove = new LinkedList<Site>();
+        for (Site site : sites) {
+            for (StudySite studySite : studySites) {
+                if (studySite.getSite().equals(site)) {
+                    if (studySite.isUsed()) {
+                        cannotRemove.add(studySite.getSite());
+                    } else {
+                        try {
+                            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
+                        } catch (RuntimeException e) {
+                            throw e;
+                        } catch (Exception e) {
+                            throw new StudyCalendarSystemException(e);
+                        }
+                        toRemove.add(studySite);
+                    }
+                }
+            }
+        }
+        for (StudySite studySite : toRemove) {
+            Site siteAssoc = studySite.getSite();
+            siteAssoc.getStudySites().remove(studySite);
+            siteDao.save(siteAssoc);
+            Study studyAssoc = studySite.getStudy();
+            studyAssoc.getStudySites().remove(studySite);
+            studyDao.save(studyAssoc);
+        }
+        if (cannotRemove.size() > 0) {
+            StringBuilder msg = new StringBuilder("Cannot remove ")
+                    .append(StringUtils.pluralize(cannotRemove.size(), "site"))
+                    .append(" (");
+            for (Iterator<Site> it = cannotRemove.iterator(); it.hasNext();) {
+                Site site = it.next();
+                msg.append(site.getName());
+                if (it.hasNext()) msg.append(", ");
+            }
+            msg.append(") from study ").append(studyTemplate.getName())
+                    .append(" because there are subject(s) assigned");
+            throw new StudyCalendarValidationException(msg.toString());
+        }
+    }
+
 
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
@@ -146,5 +197,13 @@ public class StudySiteService {
 
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 }

@@ -1,22 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.api.PlannedCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Required;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -27,7 +24,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     private PlannedCalendarDao plannedCalendarDao;
     private TemplateSkeletonCreator defaultTemplateCreator;
     private SiteDao siteDao;
-    private TemplateService templateService;
+    private StudySiteService studySiteService;
 
     public DefaultPlannedCalendarService() {
         defaultTemplateCreator = TemplateSkeletonCreator.BASIC;
@@ -77,7 +74,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
                 toRemove.add(targetSite);
             }
         }
-        if (toRemove.size() > 0) templateService.removeTemplateFromSites(target, toRemove);
+        if (toRemove.size() > 0) studySiteService.removeTemplateFromSites(target, toRemove);
     }
 
     private List<Site> loadOrCreate(List<Site> parameterSites) {
@@ -138,8 +135,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
         this.siteDao = siteDao;
     }
 
-
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 }
