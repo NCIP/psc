@@ -82,21 +82,32 @@ public class StudySiteService {
     public List<Site> refreshAssociatedSites(Study study) {
         Set<Site> updated = new LinkedHashSet<Site>();
 
-        List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
-        for (StudySite studySite : fromConsumer) {
-            updated.add(studySite.getSite());
-        }
+        updated.addAll(getAssociatedSitesFromConsumer(study));
+        updated.addAll(getAssociatedSitesFromAuthorizationManager());
 
+        return new ArrayList<Site>(updated);
+    }
+
+    private Set<Site> getAssociatedSitesFromAuthorizationManager() {
+        Set<Site> results = new HashSet<Site>();
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
         for (ProtectionGroup sitePG : allSitePGs) {
             String pgName = sitePG.getProtectionGroupName();
             Integer id = parseExternalObjectId(pgName);
             Site site = siteService.getById(id);
             if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
-            updated.add(site);
+            results.add(site);
         }
+        return results;
+    }
 
-        return new ArrayList<Site>(updated);
+    private Set<Site> getAssociatedSitesFromConsumer(Study study) {
+        Set<Site> results = new HashSet<Site>();
+        List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
+        for (StudySite studySite : fromConsumer) {
+            results.add(studySite.getSite());
+        }
+        return results;
     }
 
     @Required
