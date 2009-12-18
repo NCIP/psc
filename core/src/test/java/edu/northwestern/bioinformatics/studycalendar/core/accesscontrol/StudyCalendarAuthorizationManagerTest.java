@@ -129,6 +129,35 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         verifyMocks();
     }
 
+    public void testGetProtectionGroup() {
+        siteA = Fixtures.setId(22, siteA);
+        ProtectionGroup siteA_PG = pg("edu.northwestern.bioinformatics.studycalendar.domain.Site.22");
+
+        expect(userProvisioningManager.getObjects((SearchCriteria) notNull())).andReturn(asList(siteA_PG));
+        replayMocks();
+
+        ProtectionGroup pg = manager.getProtectionGroup(siteA);
+        verifyMocks();
+
+        assertEquals("Wrong Protection Group", "edu.northwestern.bioinformatics.studycalendar.domain.Site.22", pg.getProtectionGroupName());
+    }
+
+    private ProtectionGroup pg(String s) {
+        ProtectionGroup pg = new ProtectionGroup();
+        pg.setProtectionGroupName(s);
+        return pg;
+    }
+//
+//    public void testCreateProtectionGroupWhenPGExist() {
+//        Site site = manager.createProtectionGroup(DomainObject site);
+//                // skip & log if already exists
+//    }
+//
+//    public void testCreateProtectionGroups() {
+//        List<Site> sites = manager.createProtectionGroup(DomainObject site);
+//
+//    }
+
     public void testIsGroupEqualToRole() {
         StudyCalendarAuthorizationManager us = new StudyCalendarAuthorizationManager();
         assertTrue(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.STUDY_COORDINATOR));

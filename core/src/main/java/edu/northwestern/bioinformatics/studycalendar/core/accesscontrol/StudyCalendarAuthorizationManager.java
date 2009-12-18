@@ -5,30 +5,19 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroupRoleContext;
-import gov.nih.nci.security.authorization.domainobjects.Role;
-import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
-import gov.nih.nci.security.dao.RoleSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
-import gov.nih.nci.security.dao.UserSearchCriteria;
+import gov.nih.nci.security.authorization.domainobjects.*;
+import gov.nih.nci.security.dao.*;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Facade which provides PSC-specific access to CSM.  No business logic should be included
@@ -108,6 +97,12 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         }
         return requiredProtectionGroup;
     }
+
+    public ProtectionGroup getProtectionGroup(DomainObject d) {
+        String id = DomainObjectTools.createExternalObjectId(d);
+        return getPGByName(id);
+    }
+
 
     @SuppressWarnings({ "unchecked" })
     public List<User> getUsersForGroup(String groupName) {
