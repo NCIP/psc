@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.parseExternalObjectId;
@@ -14,9 +15,12 @@ import java.util.*;
 public class StudySiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
     private SiteService siteService;
+    private StudySiteDao studySiteDao;
     private StudySiteConsumer studySiteConsumer;
 
+    public static final String SITE_IS_NULL = "Site is null";
     public static final String STUDY_IS_NULL = "Study is null";
+    public static final String SITES_LIST_IS_NULL = "Sites List is null";
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -110,6 +114,22 @@ public class StudySiteService {
         return results;
     }
 
+    public void assignTemplateToSites(Study studyTemplate, List<Site> sites) {
+        if (studyTemplate == null) {
+            throw new IllegalArgumentException(STUDY_IS_NULL);
+        }
+        if (sites == null) {
+            throw new IllegalArgumentException(SITES_LIST_IS_NULL);
+        }
+        for (Site site : sites) {
+            StudySite ss = new StudySite();
+            ss.setStudy(studyTemplate);
+            ss.setSite(site);
+            studySiteDao.save(ss);
+        }
+    }
+
+
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
@@ -122,5 +142,9 @@ public class StudySiteService {
 
     public void setStudySiteConsumer(StudySiteConsumer studySiteConsumer) {
         this.studySiteConsumer = studySiteConsumer;
+    }
+
+    public void setStudySiteDao(StudySiteDao studySiteDao) {
+        this.studySiteDao = studySiteDao;
     }
 }

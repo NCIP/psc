@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
@@ -10,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.checkOrder;
+import org.easymock.classextension.EasyMock;
+import org.easymock.IArgumentMatcher;
 
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
@@ -27,16 +31,19 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private Study nu123, all999;
     private StudySite studySite0, studySite1, studySite2;
     private StudySiteConsumer studySiteConsumer;
+    private StudySiteDao studySiteDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         siteService = registerMockFor(SiteService.class);
+        studySiteDao = registerDaoMockFor(StudySiteDao.class);
         studySiteConsumer = registerMockFor(StudySiteConsumer.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new StudySiteService();
         service.setSiteService(siteService);
+        service.setStudySiteDao(studySiteDao);
         service.setStudySiteConsumer(studySiteConsumer);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
 
@@ -155,6 +162,44 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, mayo);
     }
 
+
+    public void testAssignTemplateToSites() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        Site site1 = createNamedInstance("aaa", Site.class);
+        Site site2 = createNamedInstance("bbb", Site.class);
+        List<Site> sitesTest = asList(site1, site2);
+
+        checkOrder(studySiteDao, true);
+
+        studySiteDao.save(studySiteEq(study, site1));
+        studySiteDao.save(studySiteEq(study, site2));
+
+        replayMocks();
+        service.assignTemplateToSites(study, sitesTest);
+        verifyMocks();
+    }
+
+    public void testAssignTemplateToSitesRequiresStudy() throws Exception {
+        Site site1 = createNamedInstance("aaa", Site.class);
+        List<Site> sitesTest = asList(site1);
+        try {
+            service.assignTemplateToSites(null, sitesTest);
+            fail("Expected IllegalArgumentException. Null object is passed instead of study ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testAssignTemplateToSitesRequiresSitesList() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        try {
+            service.assignTemplateToSites(study, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of sitesTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(StudySiteService.SITES_LIST_IS_NULL, ise.getMessage());
+        }
+    }
+
     ////// Helpers
     private void expectAuthManagerToReturnSites(Site... sites) {
         List<ProtectionGroup> pgs = new ArrayList<ProtectionGroup>();
@@ -175,5 +220,37 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         ProtectionGroup mayoPG = new ProtectionGroup();
         mayoPG.setProtectionGroupName(name);
         return mayoPG;
+    }
+
+    ////// CUSTOM MATCHERS
+    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
+        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
+        return null;
+    }
+
+    private static class StudySiteMatcher implements IArgumentMatcher {
+        private Study expectedStudy;
+        private Site expectedSite;
+
+        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
+            this.expectedStudy = expectedStudy;
+            this.expectedSite = expectedSite;
+        }
+
+        public boolean matches(Object object) {
+            StudySite actual = (StudySite) object;
+
+            if (expectedStudy.equals(actual.getStudy())) {
+                if (expectedSite.equals(actual.getSite())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
+        }
     }
 }

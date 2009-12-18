@@ -62,7 +62,7 @@ public class AssignSiteController extends PscSimpleFormController {
         AssignSiteCommand assignCommand = (AssignSiteCommand) oCommand;
         Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
         if (assignCommand.getAssign()) {
-            templateService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
+            studySiteService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
         } else {
             try {
                 templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());

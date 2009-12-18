@@ -51,28 +51,12 @@ public class TemplateService {
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
-    public static final String SITES_LIST_IS_NULL = "Sites List is null";
     public static final String STUDY_IS_NULL = "Study is null";
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    public void assignTemplateToSites(Study studyTemplate, List<Site> sites) {
-        if (studyTemplate == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (sites == null) {
-            throw new IllegalArgumentException(SITES_LIST_IS_NULL);
-        }
-        for (Site site : sites) {
-            StudySite ss = new StudySite();
-            ss.setStudy(studyTemplate);
-            ss.setSite(site);
-            studySiteDao.save(ss);
-        }
-    }
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
             Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user

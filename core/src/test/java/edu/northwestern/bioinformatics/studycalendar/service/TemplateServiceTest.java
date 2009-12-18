@@ -12,14 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.notNull;
-import org.easymock.IArgumentMatcher;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.checkOrder;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import static org.easymock.EasyMock.*;
 
 import java.util.*;
 import static java.util.Arrays.asList;
@@ -72,43 +67,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
         subjectCoordinatorRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
-    }
-
-    public void testAssignTemplateToSites() throws Exception {
-        Study study = createNamedInstance("sldfksdfjk", Study.class);
-        Site site1 = createNamedInstance("aaa", Site.class);
-        Site site2 = createNamedInstance("bbb", Site.class);
-        List<Site> sitesTest = asList(site1, site2);
-
-        checkOrder(studySiteDao, true);
-
-        studySiteDao.save(studySiteEq(study, site1));
-        studySiteDao.save(studySiteEq(study, site2));
-
-        replayMocks();
-        service.assignTemplateToSites(study, sitesTest);
-        verifyMocks();
-    }
-
-    public void testAssignTemplateToSitesRequiresStudy() throws Exception {
-        Site site1 = createNamedInstance("aaa", Site.class);
-        List<Site> sitesTest = asList(site1);
-        try {
-            service.assignTemplateToSites(null, sitesTest);
-            fail("Expected IllegalArgumentException. Null object is passed instead of study ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testAssignTemplateToSitesRequiresSitesList() throws Exception {
-        Study study = createNamedInstance("sldfksdfjk", Study.class);
-        try {
-            service.assignTemplateToSites(study, null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of sitesTest ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.SITES_LIST_IS_NULL, ise.getMessage());
-        }
     }
 
     public void testAssignTemplateToSubjectCoordinatorRequiresSite() throws Exception {
@@ -660,38 +618,5 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setGridId(sameGridId);
 
         assertSame(expectedNode, service.findEquivalentChild(study, parameter));
-    }
-
-    ////// CUSTOM MATCHERS
-
-    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
-        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
-        return null;
-    }
-
-    private static class StudySiteMatcher implements IArgumentMatcher {
-        private Study expectedStudy;
-        private Site expectedSite;
-
-        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
-            this.expectedStudy = expectedStudy;
-            this.expectedSite = expectedSite;
-        }
-
-        public boolean matches(Object object) {
-            StudySite actual = (StudySite) object;
-
-            if (expectedStudy.equals(actual.getStudy())) {
-                if (expectedSite.equals(actual.getSite())) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public void appendTo(StringBuffer sb) {
-            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
-        }
     }
 }
