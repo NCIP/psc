@@ -120,19 +120,27 @@ public class StudySiteService {
         return results;
     }
 
-    public void assignTemplateToSites(Study studyTemplate, List<Site> sites) {
-        if (studyTemplate == null) {
+    public void assignTemplateToSites(Study study, List<Site> sites) {
+        if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
         if (sites == null) {
             throw new IllegalArgumentException(SITES_LIST_IS_NULL);
         }
         for (Site site : sites) {
-            StudySite ss = new StudySite();
-            ss.setStudy(studyTemplate);
-            ss.setSite(site);
-            studySiteDao.save(ss);
+            createStudySite(study, site);
         }
+    }
+
+    private StudySite createStudySite(Study study, Site site) {
+        StudySite result = null;
+        if (study != null && site != null) {
+            result = new StudySite();
+            result.setStudy(study);
+            result.setSite(site);
+            studySiteDao.save(result);
+        }
+        return result;
     }
 
     public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {

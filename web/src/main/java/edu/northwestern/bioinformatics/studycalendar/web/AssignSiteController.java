@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -28,7 +27,6 @@ import java.util.Map;
  */
 @AccessControl(roles = Role.STUDY_ADMIN)
 public class AssignSiteController extends PscSimpleFormController {
-    private TemplateService templateService;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteService studySiteService;
@@ -65,7 +63,7 @@ public class AssignSiteController extends PscSimpleFormController {
             studySiteService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
         } else {
             try {
-                templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
+                studySiteService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
             } catch (StudyCalendarValidationException scve) {
                 scve.rejectInto(errors);
             }
@@ -87,11 +85,6 @@ public class AssignSiteController extends PscSimpleFormController {
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
-    }
-
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
     }
 
     @Required
