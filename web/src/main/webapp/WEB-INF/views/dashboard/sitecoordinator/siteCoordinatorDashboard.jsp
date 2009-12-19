@@ -4,9 +4,17 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+    <tags:javascriptLink name="resig-templates" />
 <c:url var="action" value="${submitUrl}"/>
 <c:set var="isAssignByStudy"
        value="${submitUrl == '/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy'}"/>
+<tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+<%-- TODO: move common YUI parts to a tag if they are re-used --%>
+<c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+   <tags:javascriptLink name="yui/2.7.0/${script}"/>
+</c:forEach>
+
+
 
 <html>
 <head>
@@ -30,22 +38,53 @@
             })
         }
 
-        var activitiesAutocompleter;
-
         function createAutocompleter() {
-            if (${not empty studies}) {
-                activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input', 'studies-autocompleter-div', '<c:url value="/pages/cal/search/fragment/searchStudies"/>',
-                {
-                    method: 'get',
-                    paramName: 'searchText',
-                    afterUpdateElement:updateStudy,
-                    revertOnEsc:true
-                });
-            }
+             new SC.FunctionalAutocompleter(
+                 'studies-autocompleter-input', 'studies-autocompleter-div', studyAutocompleterChoices, {
+                     afterUpdateElement: function(input, selected) {
+                         location.href = "${action}?selected=" + selected.id
+                          input.value = ""
+                          input.focus()
+                     }
+                 }
+             );
+         }
+
+        function studyAutocompleterChoices(str, callback) {
+              studyAutocompleterChoiceProcessing(function(data) {
+              var lis = data.map(function(study) {
+                        var id = study.id
+                        var name = study.assigned_identifier
+                        var listItem = "<li id='"  + id + "'>" + name + "</li>";
+                        return listItem
+              }).join("\n");
+
+              callback("<ul>\n" + lis + "\n</ul>");
+            });
         }
 
-        function updateStudy(input, li) {
-            location.href = "${action}?selected=" + li.id
+       function studyAutocompleterChoiceProcessing(callback) {
+            var searchString = $F("studies-autocompleter-input")
+            if (searchString == "Search for study") {
+                searchString = ""
+            }
+
+            var uri = SC.relativeUri("/api/v1/studies")
+            if (searchString.blank()) {
+                return;
+            }
+
+            var params = {};
+            if (!searchString.blank()) {
+                params.q = searchString;
+            }
+
+            SC.asyncRequest(uri+".json", {
+                method: "GET", parameters: params,
+                onSuccess: function(response) {
+                    callback(response.responseJSON.studies)
+                }
+            })
         }
 
 

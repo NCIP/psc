@@ -42,37 +42,6 @@
             margin-top: 2em;
         }
 
-        div.autocomplete {
-            position:absolute;
-            width:400px;
-            background-color:white;
-            border:1px solid #ccc;
-            margin:0px;
-            padding:0px;
-            font-size:0.8em;
-            text-align:left;
-            max-height:200px;
-            overflow:auto;
-        }
-
-        div.autocomplete ul {
-            list-style-type:none;
-            margin:0px;
-            padding:0px;
-        }
-
-        div.autocomplete ul li.selected {
-            background-color: #EAF2FB;
-        }
-
-        div.autocomplete ul li {
-            list-style-type:none;
-            display:block;
-            margin:0;
-            padding:2px;
-            cursor:pointer;
-        }
-
         div.mainDiv {
             width:100%;
             margin-top: 0%;
@@ -114,38 +83,61 @@
 
     <script type="text/javascript">
 
-        var activitiesAutocompleter;
 
-        function resetActivitiesAutocompleter() {
-            activitiesAutocompleter.reset();
-
-            $('selected-study').style.display = 'none';
-            $('selected-study-itself').innerHTML= "";
-            $('selected-study-itself').href= "";
-        }
 
 
         function createAutocompleter() {
-            if (${not empty releasedAndAssignedTemplate}){
-                activitiesAutocompleter = new Ajax.ResetableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/fragment/releasedTemplates"/>',
-                {
-                    method: 'get',
-                    paramName: 'searchText',
-                    afterUpdateElement:updateActivity,
-                    revertOnEsc:true
-                });
+             new SC.FunctionalAutocompleter(
+                 'studies-autocompleter-input', 'studies-autocompleter-div', studyAutocompleterChoices, {
+                     afterUpdateElement: function(input, selected) {
+                         $('selected-study').style.display = 'inline';
+                          $('selected-study-itself').innerHTML= selected.innerHTML;
+                          $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + selected.id;
+
+                         input.value = ""
+                         input.focus()
+                     }
+                 }
+             );
+         }
+
+        function studyAutocompleterChoices(str, callback) {
+              studyAutocompleterChoiceProcessing(function(data) {
+              var lis = data.map(function(study) {
+                        var id = study.id
+                        var name = study.assigned_identifier
+                        var listItem = "<li id='"  + id + "'>" + name + "</li>";
+                        return listItem
+              }).join("\n");
+
+              callback("<ul>\n" + lis + "\n</ul>");
+            });
+        }
+
+       function studyAutocompleterChoiceProcessing(callback) {
+            var searchString = $F("studies-autocompleter-input")
+            if (searchString == "Search for study") {
+                searchString = ""
             }
+
+            var uri = SC.relativeUri("/api/v1/studies")
+            if (searchString.blank()) {
+                return;
+            }
+
+            var params = {};
+            if (!searchString.blank()) {
+                params.q = searchString;
+            }
+
+            SC.asyncRequest(uri+".json", {
+                method: "GET", parameters: params,
+                onSuccess: function(response) {
+                    callback(response.responseJSON.studies)
+                }
+            })
         }
-
-        function updateActivity(input, li) {
-            $('selected-study').style.display = 'inline';
-            $('selected-study-itself').innerHTML= li.innerHTML;
-            $('selected-study-itself').href= '<c:url value="/pages/cal/template?study="/>' + li.id;
-
-        }
-
-
-
+        
         function disableDivs() {
             var L1 = $('L1');
             if (L1 != null) {

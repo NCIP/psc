@@ -599,15 +599,9 @@
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
 
-    <bean name="/cal/search/fragment/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
-
     <bean name="/cal/search/fragment/inDevelopmentAndReleasedTemplates" id="searchTemplatesControllers"
           autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchTemplatesController"/>
-
-    <bean name="/cal/search/fragment/searchStudies" id="searchStudiesController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
 
     <bean name="/ping" id="pingController" class="edu.northwestern.bioinformatics.studycalendar.web.PingController"/>
 
