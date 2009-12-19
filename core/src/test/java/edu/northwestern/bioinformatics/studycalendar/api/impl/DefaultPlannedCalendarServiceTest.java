@@ -158,7 +158,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         addSite(loadedStudy, 2);
         expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
-        studySiteService.removeTemplateFromSites(loadedStudy, Arrays.asList(loadedStudy.getSites().get(1)));
+        studySiteService.removeStudyFromSites(loadedStudy, Arrays.asList(loadedStudy.getSites().get(1)));
         expectRegisterMain(loadedStudy);
         // mock verification is sufficient
     }

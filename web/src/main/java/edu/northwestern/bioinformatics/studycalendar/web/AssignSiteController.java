@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -38,6 +37,11 @@ public class AssignSiteController extends PscSimpleFormController {
     }
 
     @Override
+     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
+        return new AssignSiteCommand(studyDao);
+    }
+
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         getControllerTools().registerDomainObjectEditor(binder, "assignedSites", siteDao);
         getControllerTools().registerDomainObjectEditor(binder, "availableSites", siteDao);
@@ -60,19 +64,12 @@ public class AssignSiteController extends PscSimpleFormController {
         AssignSiteCommand assignCommand = (AssignSiteCommand) oCommand;
         Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
         if (assignCommand.getAssign()) {
-            studySiteService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
+            studySiteService.assignStudyToSites(assignedStudy, assignCommand.getAvailableSites());
         } else {
-            try {
-                studySiteService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
-            } catch (StudyCalendarValidationException scve) {
-                scve.rejectInto(errors);
-            }
+            studySiteService.removeStudyFromSites(assignedStudy, assignCommand.getAssignedSites());
         }
-        if (errors.hasErrors()) {
-            return showForm(request, response, errors);
-        } else {
-            return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
-        }
+
+        return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     ////// CONFIGURATION

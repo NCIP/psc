@@ -1,17 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.parseExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.apache.commons.collections15.ListUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.*;
@@ -25,8 +23,7 @@ public class StudySiteService {
     public static final String SITE_IS_NULL = "Site is null";
     public static final String STUDY_IS_NULL = "Study is null";
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
-    private SiteDao siteDao;
-    private StudyDao studyDao;
+    private final Log logger = LogFactory.getLog(getClass());
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -120,7 +117,7 @@ public class StudySiteService {
         return results;
     }
 
-    public void assignTemplateToSites(Study study, List<Site> sites) {
+    public void assignStudyToSites(Study study, List<Site> sites) {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -143,49 +140,39 @@ public class StudySiteService {
         return result;
     }
 
-    public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
-        List<StudySite> studySites = studyTemplate.getStudySites();
-        List<StudySite> toRemove = new LinkedList<StudySite>();
-        List<Site> cannotRemove = new LinkedList<Site>();
+    public void removeStudyFromSites(Study study, List<Site> sites) {
         for (Site site : sites) {
-            for (StudySite studySite : studySites) {
-                if (studySite.getSite().equals(site)) {
-                    if (studySite.isUsed()) {
-                        cannotRemove.add(studySite.getSite());
-                    } else {
-                        try {
-                            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (Exception e) {
-                            throw new StudyCalendarSystemException(e);
-                        }
-                        toRemove.add(studySite);
-                    }
+            StudySite found = StudySite.findStudySite(study, site);
+            if (found != null) {
+                if (!found.isUsed()) {
+                    removeStudySite(found);
+                } else {
+                    logger.debug("Cannot remove the study site with id " + found.getId() + " because it is currently being used.");
                 }
             }
         }
-        for (StudySite studySite : toRemove) {
-            Site siteAssoc = studySite.getSite();
-            siteAssoc.getStudySites().remove(studySite);
-            siteDao.save(siteAssoc);
-            Study studyAssoc = studySite.getStudy();
-            studyAssoc.getStudySites().remove(studySite);
-            studyDao.save(studyAssoc);
+    }
+
+
+    private void removeStudySite(StudySite removing) {
+        try {
+            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(removing));
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new StudyCalendarSystemException(e);
         }
-        if (cannotRemove.size() > 0) {
-            StringBuilder msg = new StringBuilder("Cannot remove ")
-                    .append(StringUtils.pluralize(cannotRemove.size(), "site"))
-                    .append(" (");
-            for (Iterator<Site> it = cannotRemove.iterator(); it.hasNext();) {
-                Site site = it.next();
-                msg.append(site.getName());
-                if (it.hasNext()) msg.append(", ");
+
+        Site site = removing.getSite();
+        Study study = removing.getStudy();
+        site.getStudySites().remove(removing);
+        study.getStudySites().remove(removing);
+        if (removing.getUserRoles() != null) {
+            for (UserRole r : removing.getUserRoles()) {
+                r.getStudySites().remove(removing);
             }
-            msg.append(") from study ").append(studyTemplate.getName())
-                    .append(" because there are subject(s) assigned");
-            throw new StudyCalendarValidationException(msg.toString());
-        }
+        }        
+        studySiteDao.delete(removing);
     }
 
 
@@ -205,13 +192,5 @@ public class StudySiteService {
 
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
-    }
-
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
-
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
     }
 }

@@ -1,11 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -17,12 +22,46 @@ public class AssignSiteCommand implements Validatable {
     private Boolean assign;
     private List<Site> assignedSites;
     private List<Site> availableSites;
+    private StudyDao studyDao;
+
+    public AssignSiteCommand(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
 
     public void validate(Errors errors) {
         if (getAssign() && getAvailableSites().isEmpty()) {
             errors.reject("error.please.select.an.available.site");
         } else if (!getAssign() && getAssignedSites().isEmpty()) {
             errors.reject("error.please.select.an.assigned.site");
+        }
+
+        if (getStudyId() != null) {
+            Study study = studyDao.getById(getStudyId());
+
+            List<StudySite> cantRemove = new ArrayList<StudySite>();
+            for (Site site : getAssignedSites()) {
+                StudySite found = StudySite.findStudySite(study, site);
+                if (found != null && found.isUsed()) {
+                    cantRemove.add(found);
+                }
+            }
+
+            if (cantRemove.size() > 0) {
+                StringBuilder msg = new StringBuilder();
+                for (Iterator<StudySite> it = cantRemove.iterator(); it.hasNext();) {
+                    Site site = it.next().getSite();
+                    msg.append(site.getName());
+                    if (it.hasNext()) msg.append(", ");
+                }
+
+                errors.reject("error.cannot.remove.site.from.study.because.subjects.assigned", new Object[] {
+                        cantRemove.size(),
+                        cantRemove.size() > 1? "sites" : "site",
+                        msg,
+                        study.getName()},
+                        "Error removing assigned sites."
+                );
+            }
         }
     }
 

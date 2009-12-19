@@ -74,7 +74,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
                 toRemove.add(targetSite);
             }
         }
-        if (toRemove.size() > 0) studySiteService.removeTemplateFromSites(target, toRemove);
+        if (toRemove.size() > 0) studySiteService.removeStudyFromSites(target, toRemove);
     }
 
     private List<Site> loadOrCreate(List<Site> parameterSites) {

@@ -1,28 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
-import java.util.*;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.List;
+import java.util.Map;
 
 public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySiteService service;
@@ -36,22 +32,16 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySite studySite0, studySite1, studySite2;
     private StudySiteConsumer studySiteConsumer;
     private StudySiteDao studySiteDao;
-    private SiteDao siteDao;
-    private StudyDao studyDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        siteDao = registerDaoMockFor(SiteDao.class);
-        studyDao = registerDaoMockFor(StudyDao.class);
         siteService = registerMockFor(SiteService.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         studySiteConsumer = registerMockFor(StudySiteConsumer.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new StudySiteService();
-        service.setSiteDao(siteDao);
-        service.setStudyDao(studyDao);
         service.setSiteService(siteService);
         service.setStudySiteDao(studySiteDao);
         service.setStudySiteConsumer(studySiteConsumer);
@@ -185,7 +175,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         studySiteDao.save(studySiteEq(study, site2));
 
         replayMocks();
-        service.assignTemplateToSites(study, sitesTest);
+        service.assignStudyToSites(study, sitesTest);
         verifyMocks();
     }
 
@@ -193,7 +183,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         Site site1 = createNamedInstance("aaa", Site.class);
         List<Site> sitesTest = asList(site1);
         try {
-            service.assignTemplateToSites(null, sitesTest);
+            service.assignStudyToSites(null, sitesTest);
             fail("Expected IllegalArgumentException. Null object is passed instead of study ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
@@ -203,7 +193,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     public void testAssignTemplateToSitesRequiresSitesList() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         try {
-            service.assignTemplateToSites(study, null);
+            service.assignStudyToSites(study, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of sitesTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(StudySiteService.SITES_LIST_IS_NULL, ise.getMessage());
@@ -218,68 +208,18 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         StudySite inUse = setId(11, createStudySite(study, site2));
         inUse.getStudySubjectAssignments().add(new StudySubjectAssignment());
 
-        siteDao.save(site1);
-        studyDao.save(study);
-        expectLastCall().anyTimes();
         authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(notInUse));
+        studySiteDao.delete(notInUse);
         replayMocks();
 
-        try {
-            service.removeTemplateFromSites(study, asList(site1, site2));
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are subject(s) assigned", scve.getMessage());
-        }
+        service.removeStudyFromSites(study, asList(site1, site2));
         verifyMocks();
 
         List<Site> remainingSites = study.getSites();
         assertEquals("Removable site not removed", 1, remainingSites.size());
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
     }
-         public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
-        List<StudySite> studySites = studyTemplate.getStudySites();
-        List<StudySite> toRemove = new LinkedList<StudySite>();
-        List<Site> cannotRemove = new LinkedList<Site>();
-        for (Site site : sites) {
-            for (StudySite studySite : studySites) {
-                if (studySite.getSite().equals(site)) {
-                    if (studySite.isUsed()) {
-                        cannotRemove.add(studySite.getSite());
-                    } else {
-                        try {
-                            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (Exception e) {
-                            throw new StudyCalendarSystemException(e);
-                        }
-                        toRemove.add(studySite);
-                    }
-                }
-            }
-        }
-        for (StudySite studySite : toRemove) {
-            Site siteAssoc = studySite.getSite();
-            siteAssoc.getStudySites().remove(studySite);
-            siteDao.save(siteAssoc);
-            Study studyAssoc = studySite.getStudy();
-            studyAssoc.getStudySites().remove(studySite);
-            studyDao.save(studyAssoc);
-        }
-        if (cannotRemove.size() > 0) {
-            StringBuilder msg = new StringBuilder("Cannot remove ")
-                    .append(StringUtils.pluralize(cannotRemove.size(), "site"))
-                    .append(" (");
-            for (Iterator<Site> it = cannotRemove.iterator(); it.hasNext();) {
-                Site site = it.next();
-                msg.append(site.getName());
-                if (it.hasNext()) msg.append(", ");
-            }
-            msg.append(") from study ").append(studyTemplate.getName())
-                    .append(" because there are subject(s) assigned");
-            throw new StudyCalendarValidationException(msg.toString());
-        }
-    }
+    
     ////// Helpers
     private void expectAuthManagerToReturnSites(Site... sites) {
         List<ProtectionGroup> pgs = new ArrayList<ProtectionGroup>();
