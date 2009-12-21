@@ -7,13 +7,15 @@ import java.util.SortedSet;
  */
 public class SortedSetEncapsulator implements Encapsulator {
     private Membrane membrane;
+    private ClassLoader nearClassLoader;
 
-    public SortedSetEncapsulator(Membrane membrane) {
+    public SortedSetEncapsulator(Membrane membrane, ClassLoader nearClassLoader) {
         this.membrane = membrane;
+        this.nearClassLoader = nearClassLoader;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public Object encapsulate(Object far) {
-        return new EncapsulatedSortedSet((SortedSet) far, membrane);
+        return new EncapsulatedSortedSet((SortedSet) far, membrane, nearClassLoader);
     }
 }

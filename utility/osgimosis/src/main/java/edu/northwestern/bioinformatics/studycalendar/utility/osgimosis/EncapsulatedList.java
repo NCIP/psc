@@ -7,12 +7,12 @@ import java.util.ListIterator;
 /**
  * @author Jalpa Patel
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
 public class EncapsulatedList<E> extends EncapsulatedCollection<E> implements List<E> {
     private List farList;
 
-    public EncapsulatedList(List farList, Membrane membrane) {
-        super(farList, membrane);
+    public EncapsulatedList(List farList, Membrane membrane, ClassLoader nearClassLoader) {
+        super(farList, membrane, nearClassLoader);
         this.farList = farList;
     }
 
@@ -30,11 +30,11 @@ public class EncapsulatedList<E> extends EncapsulatedCollection<E> implements Li
     }
 
     public E get(int index) {
-        return (E) getMembrane().farToNear(getFarList().get(index));
+        return (E) farToNear(getFarList().get(index));
     }
 
     public E set(int index, E element) {
-        return (E) getMembrane().farToNear(getFarList().set(index, nearToFar(element)));
+        return (E) farToNear(getFarList().set(index, nearToFar(element)));
     }
 
     public void add(int index, E element) {
@@ -42,7 +42,7 @@ public class EncapsulatedList<E> extends EncapsulatedCollection<E> implements Li
     }
 
     public E remove(int index) {
-        return (E)getMembrane().farToNear(getFarList().remove(index));
+        return (E) farToNear(getFarList().remove(index));
     }
 
     public int indexOf(Object o) {
@@ -62,11 +62,11 @@ public class EncapsulatedList<E> extends EncapsulatedCollection<E> implements Li
     }
 
     private EncapsulatedListIterator<E> encapsulateListIterator(ListIterator farIterator) {
-        return new EncapsulatedListIterator<E>(farIterator, getMembrane(), guessFarLoader());
+        return new EncapsulatedListIterator<E>(farIterator, getMembrane(), getNearClassLoader(), guessFarLoader());
     }
 
     public List<E> subList(int fromIndex, int toIndex) {
         List farSubList = getFarList().subList(fromIndex, toIndex);
-        return new EncapsulatedList<E>(farSubList, getMembrane());
+        return new EncapsulatedList<E>(farSubList, getMembrane(), getNearClassLoader());
     }
 }

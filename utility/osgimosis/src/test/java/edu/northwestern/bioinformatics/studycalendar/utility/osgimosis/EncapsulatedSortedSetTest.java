@@ -4,14 +4,16 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.De
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PeopleByName;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
  */
+@SuppressWarnings({ "RawUseOfParameterizedType" })
 public class EncapsulatedSortedSetTest extends EncapsulatedCollectionTestCase {
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     private SortedSet farSet;
@@ -27,7 +29,7 @@ public class EncapsulatedSortedSetTest extends EncapsulatedCollectionTestCase {
         farSet.add(farPerson("Polo"));
         farSet.add(farPerson("Alexander"));
         farSet.add(farPerson("Vespucci"));
-        encapsulated = new EncapsulatedSortedSet<Person>(farSet, membrane);
+        encapsulated = new EncapsulatedSortedSet<Person>(farSet, membrane, defaultClassLoader());
         nearPolo = new DefaultPerson("Polo", "traveler");
         nearAlexander = new DefaultPerson("Alexander", "traveler");
         nearVespucci = new DefaultPerson("Vespucci", "traveler");
@@ -66,5 +68,12 @@ public class EncapsulatedSortedSetTest extends EncapsulatedCollectionTestCase {
     public void testList() throws Exception {
         Person actual = encapsulated.last();
         assertEquals("Wrong first", "Vespucci", actual.getName());
+    }
+
+    public void testReverseFirst() throws Exception {
+        SortedSet<Person> nearSet = new TreeSet<Person>(Arrays.asList(nearPolo));
+        EncapsulatedSortedSet reverse = new EncapsulatedSortedSet(nearSet, membrane, loaderA);
+        Object far0 = reverse.first();
+        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader());
     }
 }

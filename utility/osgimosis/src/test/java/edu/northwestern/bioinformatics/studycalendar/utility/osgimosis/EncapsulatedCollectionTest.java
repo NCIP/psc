@@ -3,8 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -25,7 +23,7 @@ public class EncapsulatedCollectionTest extends EncapsulatedCollectionTestCase {
             farPerson("Polo"),
             farPerson("Alexander")
         ));
-        encapsulated = new EncapsulatedCollection<Person>(farCollection, membrane);
+        encapsulated = new EncapsulatedCollection<Person>(farCollection, membrane, defaultClassLoader());
         nearPolo = new DefaultPerson("Polo", "traveler");
         nearAlexander = new DefaultPerson("Alexander", "traveler");
         nearVespucci = new DefaultPerson("Vespucci", "traveler");

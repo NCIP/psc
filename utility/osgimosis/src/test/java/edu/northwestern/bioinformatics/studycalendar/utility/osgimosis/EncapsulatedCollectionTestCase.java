@@ -13,8 +13,12 @@ public abstract class EncapsulatedCollectionTestCase extends OsgimosisTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        membrane = new Membrane(Thread.currentThread().getContextClassLoader(),
+        membrane = new Membrane(defaultClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
+    }
+
+    protected ClassLoader defaultClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

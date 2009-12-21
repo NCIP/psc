@@ -1,22 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.FinalPerson;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.NonDefaultPerson;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PrivatePerson;
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.ProtectedPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.*;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
 import java.awt.*;
 import java.lang.reflect.Array;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -209,6 +200,18 @@ public class MembraneTest extends OsgimosisTestCase {
         Person[] nearArray = (Person[]) near;
         assertEquals("Wrong length", 2, nearArray.length);
         assertTrue("Contents are wrong type", nearArray[0] instanceof Person);
+    }
+    
+    public void testProxyCanReceiveCollection() throws Exception {
+        List<Person> people = Arrays.<Person>asList(new DefaultPerson("Joe", "everyman"), new DefaultPerson("Jo", "another-one"));
+        Person result = bridgedPersonService().pickOne(people);
+        assertEquals("Wrong person picked", "Jo", result.getName());
+    }
+
+    public void testProxyCanReceiveArray() throws Exception {
+        Person[] people = new Person[] { new DefaultPerson("Joe", "everyman"), new DefaultPerson("Jo", "another-one") };
+        Person result = bridgedPersonService().pickOne(people);
+        assertEquals("Wrong person picked", "Joe", result.getName());
     }
 
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

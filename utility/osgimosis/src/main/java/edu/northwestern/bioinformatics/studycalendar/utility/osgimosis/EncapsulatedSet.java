@@ -7,7 +7,7 @@ import java.util.Set;
  */
 @SuppressWarnings({ "RawUseOfParameterizedType" })
 public class EncapsulatedSet<T> extends EncapsulatedCollection<T> implements Set<T> {
-    public EncapsulatedSet(Set farSet, Membrane membrane) {
-        super(farSet, membrane);
+    public EncapsulatedSet(Set farSet, Membrane membrane, ClassLoader nearClassLoader) {
+        super(farSet, membrane, nearClassLoader);
     }
 }

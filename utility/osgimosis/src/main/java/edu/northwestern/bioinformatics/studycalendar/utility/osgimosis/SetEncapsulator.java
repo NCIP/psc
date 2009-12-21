@@ -7,13 +7,15 @@ import java.util.Set;
  */
 public class SetEncapsulator implements Encapsulator {
     private Membrane membrane;
+    private ClassLoader nearClassLoader;
 
-    public SetEncapsulator(Membrane membrane) {
+    public SetEncapsulator(Membrane membrane, ClassLoader nearClassLoader) {
         this.membrane = membrane;
+        this.nearClassLoader = nearClassLoader;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public Object encapsulate(Object far) {
-        return new EncapsulatedSet((Set) far, membrane);
+        return new EncapsulatedSet((Set) far, membrane, nearClassLoader);
     }
 }

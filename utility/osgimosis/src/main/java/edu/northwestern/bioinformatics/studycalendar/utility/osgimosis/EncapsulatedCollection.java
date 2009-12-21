@@ -16,10 +16,12 @@ public class EncapsulatedCollection<E> implements Collection<E> {
 
     private Collection farCollection;
     private Membrane membrane;
+    private ClassLoader nearClassLoader;
 
-    public EncapsulatedCollection(Collection farCollection, Membrane membrane) {
+    public EncapsulatedCollection(Collection farCollection, Membrane membrane, ClassLoader nearClassLoader) {
         this.farCollection = farCollection;
         this.membrane = membrane;
+        this.nearClassLoader = nearClassLoader;
     }
 
     private Collection getFarCollection() {
@@ -39,7 +41,7 @@ public class EncapsulatedCollection<E> implements Collection<E> {
     }
 
     public Iterator<E> iterator() {
-        return new EncapsulatedIterator<E>(farCollection.iterator(), membrane);
+        return new EncapsulatedIterator<E>(farCollection.iterator(), membrane, getNearClassLoader());
     }
 
     public Object[] toArray() {
@@ -120,8 +122,16 @@ public class EncapsulatedCollection<E> implements Collection<E> {
         return membrane;
     }
 
+    protected ClassLoader getNearClassLoader() {
+        return nearClassLoader;
+    }
+
     protected Object nearToFar(Object element) {
         return membrane.traverse(element, guessFarLoader());
+    }
+
+    protected Object farToNear(Object element) {
+        return membrane.traverse(element, getNearClassLoader());
     }
 
     protected ClassLoader guessFarLoader() {

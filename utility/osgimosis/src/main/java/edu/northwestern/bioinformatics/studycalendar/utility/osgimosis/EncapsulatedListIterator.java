@@ -5,12 +5,12 @@ import java.util.ListIterator;
 /**
  * @author Jalpa Patel
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
 public class EncapsulatedListIterator<E> extends EncapsulatedIterator<E> implements ListIterator<E> {
     private ClassLoader farClassLoader;
 
-    public EncapsulatedListIterator(ListIterator<?> farIterator, Membrane membrane, ClassLoader farClassLoader) {
-        super(farIterator, membrane);
+    public EncapsulatedListIterator(ListIterator<?> farIterator, Membrane membrane, ClassLoader nearClassLoader, ClassLoader farClassLoader) {
+        super(farIterator, membrane, nearClassLoader);
         this.farClassLoader = farClassLoader;
     }
 
@@ -23,7 +23,7 @@ public class EncapsulatedListIterator<E> extends EncapsulatedIterator<E> impleme
     }
 
     public E previous() {
-        return (E) getMembrane().farToNear(getFarListIterator().previous());
+        return (E) farToNear(getFarListIterator().previous());
     }
 
     public int nextIndex() {

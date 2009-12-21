@@ -8,10 +8,12 @@ import java.util.Iterator;
 public class EncapsulatedIterator<T> implements Iterator<T> {
     private Iterator<?> farIterator;
     private Membrane membrane;
+    private ClassLoader nearClassLoader;
 
-    public EncapsulatedIterator(Iterator<?> farIterator, Membrane membrane) {
+    public EncapsulatedIterator(Iterator<?> farIterator, Membrane membrane, ClassLoader nearClassLoader) {
         this.farIterator = farIterator;
         this.membrane = membrane;
+        this.nearClassLoader = nearClassLoader;
     }
 
     public boolean hasNext() {
@@ -20,7 +22,7 @@ public class EncapsulatedIterator<T> implements Iterator<T> {
 
     @SuppressWarnings({ "unchecked" })
     public T next() {
-        return (T) getMembrane().farToNear(farIterator.next());
+        return (T) farToNear(farIterator.next());
     }
 
     public void remove() {
@@ -31,7 +33,15 @@ public class EncapsulatedIterator<T> implements Iterator<T> {
         return farIterator;
     }
 
+    protected ClassLoader getNearClassLoader() {
+        return nearClassLoader;
+    }
+
     protected Membrane getMembrane() {
         return membrane;
+    }
+
+    protected Object farToNear(Object element) {
+        return getMembrane().traverse(element, nearClassLoader);
     }
 }

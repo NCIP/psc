@@ -64,6 +64,14 @@ public class PersonServiceImpl implements PersonService {
         return new TitledPerson(title, person);
     }
 
+    public Person pickOne(List<Person> people) {
+        return people.get(people.size() - 1);
+    }
+
+    public Person pickOne(Person[] people) {
+        return people[0];
+    }
+
     public Person same(Person person) {
         return person;
     }

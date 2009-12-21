@@ -1,18 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
-import junit.framework.TestCase;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.util.ListIterator;
-
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Jalpa Patel
  */
+@SuppressWarnings({ "RawUseOfParameterizedType" })
 public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
     private List<Object> farList;
     private EncapsulatedList<Person> encapsulated;
@@ -25,7 +24,7 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
             farPerson("Polo"),
             farPerson("Alexander")
         ));
-        encapsulated = new EncapsulatedList<Person>(farList, membrane);
+        encapsulated = new EncapsulatedList<Person>(farList, membrane, Thread.currentThread().getContextClassLoader());
         nearPolo = new DefaultPerson("Polo", "traveler");
         nearAlexander = new DefaultPerson("Alexander", "traveler");
         nearVespucci = new DefaultPerson("Vespucci", "traveler");
@@ -142,4 +141,10 @@ public class EncapsulatedListTest extends EncapsulatedCollectionTestCase {
         assertEquals("Item not expected", 1, listIterator.nextIndex());
     }
 
+    public void testReverseGet() throws Exception {
+        List<Person> nearList = Arrays.<Person>asList(nearPolo);
+        EncapsulatedList reverse = new EncapsulatedList(nearList, membrane, loaderA);
+        Object far0 = reverse.get(0);
+        assertEquals("Far object is in wrong CL", loaderA, far0.getClass().getClassLoader());
+    }
 }

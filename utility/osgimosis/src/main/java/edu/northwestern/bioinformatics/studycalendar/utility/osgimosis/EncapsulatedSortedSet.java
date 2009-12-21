@@ -10,8 +10,8 @@ import java.util.Comparator;
 public class EncapsulatedSortedSet<T> extends EncapsulatedSet<T> implements SortedSet<T> {
     private SortedSet farSet;
 
-    public EncapsulatedSortedSet(SortedSet farCollection, Membrane membrane) {
-        super(farCollection, membrane);
+    public EncapsulatedSortedSet(SortedSet farCollection, Membrane membrane, ClassLoader nearClassLoader) {
+        super(farCollection, membrane, nearClassLoader);
         this.farSet = farCollection;
     }
 
@@ -20,27 +20,27 @@ public class EncapsulatedSortedSet<T> extends EncapsulatedSet<T> implements Sort
     }
 
     public Comparator<? super T> comparator() {
-        return (Comparator) getMembrane().farToNear(getFarSortedSet().comparator());
+        return (Comparator) farToNear(getFarSortedSet().comparator());
     }
 
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        return (SortedSet<T>) getMembrane().farToNear(
+        return (SortedSet<T>) farToNear(
             getFarSortedSet().subSet(nearToFar(fromElement), nearToFar(toElement)));
     }
 
     public SortedSet<T> headSet(T toElement) {
-        return (SortedSet<T>) getMembrane().farToNear(getFarSortedSet().headSet(nearToFar(toElement)));
+        return (SortedSet<T>) farToNear(getFarSortedSet().headSet(nearToFar(toElement)));
     }
 
     public SortedSet<T> tailSet(T fromElement) {
-        return (SortedSet<T>) getMembrane().farToNear(getFarSortedSet().tailSet(nearToFar(fromElement)));
+        return (SortedSet<T>) farToNear(getFarSortedSet().tailSet(nearToFar(fromElement)));
     }
 
     public T first() {
-        return (T) getMembrane().farToNear(getFarSortedSet().first());
+        return (T) farToNear(getFarSortedSet().first());
     }
 
     public T last() {
-        return (T) getMembrane().farToNear(getFarSortedSet().last());
+        return (T) farToNear(getFarSortedSet().last());
     }
 }
