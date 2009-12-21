@@ -7,13 +7,15 @@ import java.util.Collection;
  */
 public class CollectionEncapsulator implements Encapsulator {
     private Membrane membrane;
+    private ClassLoader nearClassLoader;
 
-    public CollectionEncapsulator(Membrane membrane) {
+    public CollectionEncapsulator(Membrane membrane, ClassLoader nearClassLoader) {
         this.membrane = membrane;
+        this.nearClassLoader = nearClassLoader;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public Object encapsulate(Object far) {
-        return new EncapsulatedCollection((Collection) far, membrane);
+        return new EncapsulatedCollection((Collection) far, membrane, nearClassLoader);
     }
 }

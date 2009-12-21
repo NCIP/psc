@@ -20,7 +20,7 @@ public class EncapsulatedListIteratorTest extends EncapsulatedCollectionTestCase
             farPerson("Polo"), farPerson("Alexander"), farPerson("Polo")
         ));
         farIterator = farList.listIterator();
-        iterator = new EncapsulatedListIterator<Person>(farIterator, membrane, loaderA);
+        iterator = new EncapsulatedListIterator<Person>(farIterator, membrane, defaultClassLoader(), loaderA);
     }
 
     public void testHasPreviousWhenHas() throws Exception {

@@ -20,6 +20,8 @@ public interface PersonService {
     int[] createNameLengths();
 
     Person setTitle(String title, Person person);
+    Person pickOne(List<Person> people);
+    Person pickOne(Person[] people);
 
     Person same(Person person);
 

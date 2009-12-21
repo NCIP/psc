@@ -38,13 +38,13 @@ public class DefaultEncapsulatorCreator {
 
     public Encapsulator create() {
         if (List.class.isAssignableFrom(farClass)) {
-            return new ListEncapsulator(membrane);
+            return new ListEncapsulator(membrane, nearClassLoader);
         } else if (SortedSet.class.isAssignableFrom(farClass)) {
-            return new SortedSetEncapsulator(membrane);
+            return new SortedSetEncapsulator(membrane, nearClassLoader);
         } else if (Set.class.isAssignableFrom(farClass)) {
-            return new SetEncapsulator(membrane);
+            return new SetEncapsulator(membrane, nearClassLoader);
         } else if (Collection.class.isAssignableFrom(farClass)) {
-            return new CollectionEncapsulator(membrane);
+            return new CollectionEncapsulator(membrane, nearClassLoader);
         } else if (farClass.isArray()) {
             log.trace(" - Encapsulating array with components {}", farClass.getComponentType());
             Encapsulator componentEncapsulator = new DefaultEncapsulatorCreator(
