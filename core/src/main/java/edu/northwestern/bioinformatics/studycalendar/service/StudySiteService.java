@@ -4,9 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.parseExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import static org.apache.commons.collections.CollectionUtils.collect;
+import static org.apache.commons.collections.CollectionUtils.intersection;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections15.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,16 +66,10 @@ public class StudySiteService {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
         Map<String, List<Site>> siteLists = new HashMap<String, List<Site>>();
-        List<Site> availableSites = new ArrayList<Site>();
+        
+        List<Site> availableSites = siteService.getAll();
+
         List<Site> assignedSites = new ArrayList<Site>();
-        List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
-        for (ProtectionGroup sitePG : allSitePGs) {
-            String pgName = sitePG.getProtectionGroupName();
-            Integer id = parseExternalObjectId(pgName);
-            Site site = siteService.getById(id);
-            if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
-            availableSites.add(site);
-        }
         for (StudySite ss : studyTemplate.getStudySites()) {
             assignedSites.add(ss.getSite());
         }
@@ -87,57 +82,47 @@ public class StudySiteService {
 
 
     public List<Site> refreshAssociatedSites(Study study) {
-        Set<Site> updated = new LinkedHashSet<Site>();
+        Set<Site> combined = new LinkedHashSet<Site>();
 
-        updated.addAll(getAssociatedSitesFromConsumer(study));
-        updated.addAll(getAssociatedSitesFromAuthorizationManager());
+        combined.addAll(getAssociatedSitesFromConsumer(study));
+        combined.addAll(getAssociatedSitesFromSiteService(study));
 
-        return new ArrayList<Site>(updated);
+        // Automatically save new StudySite associations
+        List<StudySite> saved = assignStudyToSites(study, new ArrayList<Site>(combined));
+
+        return collectSites(saved);
     }
 
-    private Set<Site> getAssociatedSitesFromAuthorizationManager() {
+    private Set<Site> getAssociatedSitesFromSiteService(Study study) {
         Set<Site> results = new HashSet<Site>();
-        List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
-        for (ProtectionGroup sitePG : allSitePGs) {
-            String pgName = sitePG.getProtectionGroupName();
-            Integer id = parseExternalObjectId(pgName);
-            Site site = siteService.getById(id);
-            if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
-            results.add(site);
+        for (StudySite ss : study.getStudySites()) {
+            results.add(ss.getSite());
         }
         return results;
     }
 
+    @SuppressWarnings({"unchecked"})
     private Set<Site> getAssociatedSitesFromConsumer(Study study) {
-        Set<Site> results = new HashSet<Site>();
         List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
-        for (StudySite studySite : fromConsumer) {
-            results.add(studySite.getSite());
+        List<Site> sitesFromConsumer = collectSites(fromConsumer);
+        List<Site> availableSites = siteService.getAll();
+        return new HashSet<Site>(intersection(sitesFromConsumer, availableSites));
+    }
+
+    public List<StudySite> assignStudyToSites(Study study, List<Site> sites) {
+        if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL); }
+        if (sites == null) { throw new IllegalArgumentException(SITES_LIST_IS_NULL); }
+
+        List<StudySite> results = new ArrayList<StudySite>();
+        for (Site site : sites) {
+            StudySite studySite = StudySite.findStudySite(study, site);
+            if (studySite == null) {
+                studySite = new StudySite(study, site);
+                studySiteDao.save(studySite);
+            }
+            results.add(studySite);
         }
         return results;
-    }
-
-    public void assignStudyToSites(Study study, List<Site> sites) {
-        if (study == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (sites == null) {
-            throw new IllegalArgumentException(SITES_LIST_IS_NULL);
-        }
-        for (Site site : sites) {
-            createStudySite(study, site);
-        }
-    }
-
-    private StudySite createStudySite(Study study, Site site) {
-        StudySite result = null;
-        if (study != null && site != null) {
-            result = new StudySite();
-            result.setStudy(study);
-            result.setSite(site);
-            studySiteDao.save(result);
-        }
-        return result;
     }
 
     public void removeStudyFromSites(Study study, List<Site> sites) {
@@ -152,7 +137,6 @@ public class StudySiteService {
             }
         }
     }
-
 
     private void removeStudySite(StudySite removing) {
         try {
@@ -171,10 +155,24 @@ public class StudySiteService {
             for (UserRole r : removing.getUserRoles()) {
                 r.getStudySites().remove(removing);
             }
-        }        
+        }
         studySiteDao.delete(removing);
     }
 
+
+    ///// Collect Helpers
+    @SuppressWarnings({"unchecked"})
+    private List<Site> collectSites(List<StudySite> fromConsumer) {
+        return new ArrayList<Site>( collect(fromConsumer, new Transformer() {
+            public Object transform(Object o) {
+                if (o instanceof StudySite) {
+                    return ((StudySite) o).getSite();
+                }
+                return null;
+            }
+        })
+        );
+    }
 
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
@@ -186,10 +184,12 @@ public class StudySiteService {
         this.siteService = siteService;
     }
 
+    @Required
     public void setStudySiteConsumer(StudySiteConsumer studySiteConsumer) {
         this.studySiteConsumer = studySiteConsumer;
     }
 
+    @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
     }

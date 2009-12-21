@@ -5,17 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
-import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +84,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     }
     
     public void testGetSiteLists() throws Exception {
-        expectAuthManagerToReturnSites(nu, mayo);
+        expect(siteService.getAll()).andReturn(asList(nu, mayo));
         replayMocks();
 
         Map<String, List<Site>> results = service.getSiteLists(nu123);
@@ -117,16 +113,9 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         Study study = createNamedInstance("Mayo Study", Study.class);
         study.addSite(createNamedInstance("Mayo Clinic", Site.class));
 
-        ProtectionGroup expectedAvailableSitePG0 =
-                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
-        ProtectionGroup expectedAvailableSitePG1 =
-                createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        List<ProtectionGroup> exptectedAvailableSitePGs = asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
-        expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
         Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
         Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
-        expect(siteService.getById(0)).andReturn(expectedAvailableSite0);
-        expect(siteService.getById(1)).andReturn(expectedAvailableSite1);
+        expect(siteService.getAll()).andReturn(asList(expectedAvailableSite0, expectedAvailableSite1));
         replayMocks();
 
         Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);
@@ -145,11 +134,12 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
     public void testRefreshAssociatedSites() {
         Site uic = createNamedInstance("UIC" , Site.class);
-        StudySite provided = createStudySite(all999, uic);
+        StudySite provided = new StudySite(all999, uic);
 
         expect(studySiteConsumer.refresh(all999)).andReturn(asList(provided, studySite1));
+        expect(siteService.getAll()).andReturn(asList(nu, uic, mayo));
+        studySiteDao.save(provided);
 
-        expectAuthManagerToReturnSites(nu, mayo);
         replayMocks();
         
         List<Site> actual = service.refreshAssociatedSites(all999);
@@ -161,7 +151,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, uic);
         assertContains(actual, mayo);
     }
-
 
     public void testAssignTemplateToSites() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
@@ -218,28 +207,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         List<Site> remainingSites = study.getSites();
         assertEquals("Removable site not removed", 1, remainingSites.size());
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
-    }
-    
-    ////// Helpers
-    private void expectAuthManagerToReturnSites(Site... sites) {
-        List<ProtectionGroup> pgs = new ArrayList<ProtectionGroup>();
-
-        for (int i=0; i< sites.length; i++) {
-            Site site = setId(i, sites[i]);
-
-            ProtectionGroup pg = pg(createExternalObjectId(site));
-            pgs.add(pg);
-
-            expect(siteService.getById(i)).andReturn(site);
-        }
-
-        expect(authorizationManager.getSites()).andReturn(pgs);
-    }
-
-    private ProtectionGroup pg(String name) {
-        ProtectionGroup mayoPG = new ProtectionGroup();
-        mayoPG.setProtectionGroupName(name);
-        return mayoPG;
     }
 
     ////// CUSTOM MATCHERS

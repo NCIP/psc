@@ -37,6 +37,12 @@ public class StudySite extends AbstractProvidableDomainObject implements Seriali
         amendmentApprovals = new ArrayList<AmendmentApproval>();
     }
 
+    public StudySite(Study study, Site site) {
+        super();
+        this.study = study;
+        this.site = site;
+    }
+
     ////// LOGIC
 
     @Transient
