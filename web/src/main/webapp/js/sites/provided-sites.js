@@ -1,5 +1,6 @@
 if (!window.SC) { window.SC = { } }
 if (!SC.RP) { SC.PS = { } }
+var bundleList;
 
 Object.extend(SC.PS, {
   getProvidedSites : function() {
@@ -7,63 +8,15 @@ Object.extend(SC.PS, {
   },
 
   providedSitesChoices: function(str,callback) {
-    SC.PS.findNextSites(function(data) {
-       SC.PS.deleteSiteTableRows();
-       if (data.length>0) {
-          SC.PS.createSiteTableRows();
-       }
-       var lis = data.map(function(site) {
-           return resigTemplate("new_site_data_row", site)
-       }).join("\n")
-       $('provided-sites-table').insert({ bottom:lis});
-       data.each(function(site){
-         SC.PS.addSiteControl(site)
-       })
+      SC.PS.findNextSitesUpdated (function(data) {
     })
   },
 
-  addSiteControl: function(site) {
-      if (!$('existing-site-name-'+site.name) || !$('existing-assigned-identifier-'+site.identifier)) {
-         var newControl = resigTemplate("new_site_control", site)
-         $('provider-'+site.identifier).insert({ after: newControl })
-      } else {
-         var blankCell = document.createElement("td")
-         $('provider-'+site.identifier).insert({ after: blankCell })
-      }
-  },
-
-  deleteSiteTableRows: function() {
-    var siteTable = $('provided-sites-table')
-    var rowLength = siteTable.rows.length
-    if (rowLength >0) {
-       var i = rowLength -1 ;
-       while (i >= 0){
-           siteTable.deleteRow(i)
-           i = i-1;
-       }
-    }
-  },
-
-  createSiteTableRows: function() {
-    var siteTable = $('provided-sites-table')
-    var siteHeadData = ["Site Name","Assigned Identifier","Provider","Controls "]
-    var newCell
-    var newTHEAD = siteTable.createTHead()
-    var newRow = newTHEAD.insertRow(-1)
-    for (var i = 0; i < siteHeadData.length; i++) {
-        newCell = newRow.insertCell(i)
-        newCell.innerHTML = siteHeadData[i]
-    }
-  },
-
-  addNewSite: function(siteId) {
+  addNewSite: function(name, assignedId, provider) {
     var href = SC.relativeUri("/pages/admin/manage/newProvidedSite")
-    var name = $('site-name-'+siteId).innerHTML.strip()
-    var assignedIdentifier = $('assigned-identifier-'+siteId).innerHTML.strip()
-    var provider = $('provider-'+siteId).innerHTML.strip()
     var params = { }
     params.name = name
-    params.assignedIdentifier = assignedIdentifier
+    params.assignedIdentifier = assignedId
     params.provider = provider
     SC.asyncRequest(href, {
        method: 'POST',
@@ -106,6 +59,77 @@ Object.extend(SC.PS, {
          receiver(sites)
        }
     })
+  },
+
+  findNextSitesUpdated: function(receiver) {
+    var searchString = $F("site-name")
+    var uri = SC.relativeUri("/api/v1/provided-sites")
+
+    if (searchString.blank()) {
+       receiver([]);
+       return;
+    }
+    var params = { };
+    if (!searchString.blank()) params.q = searchString;
+    $('provided-site-search-indicator').reveal()
+    SC.asyncRequest(uri+".json", {
+       method: "GET",
+       parameters: params,
+       onSuccess: function(response) {
+         $('provided-site-search-indicator').conceal()
+
+         var bundleListColumns = [
+           { key: "site_name", label: "Site Name", sortable: true},
+           { key: "assigned_identifier", label: "Assigned Identifier", sortable: true},
+           { key: "provider", label: "Provider", sortable: true},
+           { key: "button", label: "Controls", sortable:true, formatter:myButtonFormatter}
+         ];
+
+         var myDataSource = new YAHOO.util.DataSource(response.responseJSON);
+         myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+
+         myDataSource.responseSchema = {
+             resultsList : "sites",
+             fields : [
+                 { key: "site_name"},
+                 { key: "assigned_identifier"},
+                 { key: "provider"},
+                 { key: "button", formatter:myButtonFormatter}
+             ]
+         };
+
+         bundleList = new YAHOO.widget.DataTable("site-response", bundleListColumns, myDataSource);
+         receiver(response)
+       }
+    })
+
+    var myButtonFormatter = function (elCell, oRecord, oColumn, oData) {
+      var siteName = oRecord.getData('site_name');
+      siteName = siteName.replace(/\s/g, "_");
+      var siteId = oRecord.getData('assigned_identifier');
+      var existingSiteName = 'existing-site-name-'+siteName;
+      var existingSiteAssignedId = 'existing-assigned-identifier-'+siteId;
+      if (!$(existingSiteName) || !$(existingSiteAssignedId)) {
+        var container = jQuery('<div class="row" />')
+        var divSubmit = jQuery('<div class="submit" />')
+        var submitButton = jQuery('<input type="submit" value="Create" />')
+
+        divSubmit.append(submitButton);
+        container.append(divSubmit);
+
+
+        jQuery(elCell).append(container);
+        YAHOO.util.Event.addListener( submitButton, "click", myClickHandler, oRecord);
+      }
+    }
+
+    var myClickHandler = function(event, oRecord){
+        var assignedId = oRecord.getData('assigned_identifier');
+        var provider = oRecord.getData('provider');
+        var name = oRecord.getData('site_name');
+
+        SC.PS.addNewSite(name, assignedId, provider);
+    };
   }
 })
 $(document).observe('dom:loaded', function() {

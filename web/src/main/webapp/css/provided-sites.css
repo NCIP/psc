@@ -9,9 +9,9 @@ table.provided-sites-table  td, table.provided-sites-table  th {
     height:16pt;
 }
 div.site-response {
-    overflow: auto;
-    width :80%;
-    height: 400px;
+    /*overflow: auto;*/
+    /*width :80%;*/
+    /*height: 400px;*/
     position :relative;
     margin-left: 11em;
 }

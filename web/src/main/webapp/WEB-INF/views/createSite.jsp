@@ -2,6 +2,15 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
+<tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+<%-- TODO: move common YUI parts to a tag if they are re-used --%>
+<c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+   <tags:javascriptLink name="yui/2.7.0/${script}"/>
+</c:forEach>
+
 
 <html>
 <head>
@@ -41,7 +50,7 @@
 </head>
 <body>
 
-<laf:box title="${action} site">
+<laf:box title="${action} site" cssClass="yui-skin-sam"  autopad="true">
     <laf:division>
         <form:form method="post">
             <form:errors path="*"/>
@@ -60,12 +69,10 @@
             <tags:activityIndicator id="provided-site-search-indicator"/>
         </form:form>
         <c:forEach items="${sites}" var="site">
-             <input id="existing-site-name-${site.name}" type="hidden"/>
+             <input id="existing-site-name-${fn:replace(site.name, " ", "_")}" type="hidden"/>
              <input id="existing-assigned-identifier-${site.assignedIdentifier}" type="hidden"/>
         </c:forEach>
-        <div class="site-response">
-             <table id="provided-sites-table" class="provided-sites-table" cellspacing="0" cellpadding="0" border="1"></table>
-        </div>
+        <div class="site-response" id="site-response"/>
     </laf:division>
 </laf:box>
 </body>
