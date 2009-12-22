@@ -4,11 +4,11 @@
 <%@attribute name="appShortName" required="true" %>
 <%@attribute name="url"%>
 <%@attribute name="urlTemplateProperty"%>
-<%@attribute name="subjectAssigmnent"  type="edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment" %>
+<%@attribute name="subjectAssignment"  type="edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment" %>
 <c:set var="href">
     <c:choose>
         <c:when test="${not empty url}">${url}</c:when>
-        <c:when test="${not empty subjectAssigmnent}"><tags:urlFromTemplate subjectAssignment="${subjectAssigmnent}" property="${urlTemplateProperty}"/></c:when>
+        <c:when test="${not empty subjectAssignment}"><tags:urlFromTemplate subjectAssignment="${subjectAssignment}" property="${urlTemplateProperty}"/></c:when>
         <c:when test="${not empty urlTemplateProperty}"><tags:urlFromTemplate property="${urlTemplateProperty}"/></c:when>
         <c:otherwise>
             javascript:alert("Developer error: externalLink requires either url or urlTemplateProperty")

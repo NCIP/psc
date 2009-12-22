@@ -505,15 +505,15 @@
                         </div>
                         <div class="value">
                             <c:if test="${ctmsAvail}">
-                                <tags:externalLink appShortName="ctms" subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="patientPageUrl"
+                                <tags:externalLink appShortName="ctms" subjectAssignment="${subjectAssignment}" urlTemplateProperty="patientPageUrl"
                                                    cssClass="control">${configuration.map.ctmsName} record</tags:externalLink>
                             </c:if>
                             <c:if test="${caaersAvail}">
-                                <tags:externalLink appShortName="caaers"  subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="caAERSBaseUrl"
+                                <tags:externalLink appShortName="caaers"  subjectAssignment="${subjectAssignment}" urlTemplateProperty="caAERSBaseUrl"
                                                    cssClass="control">adverse events</tags:externalLink>
                             </c:if>
                             <c:if test="${labViewerAvail}">
-                                <tags:externalLink appShortName="labviewer" subjectAssigmnent="${subjectAssignment}" urlTemplateProperty="labViewerBaseUrl"
+                                <tags:externalLink appShortName="labviewer" subjectAssignment="${subjectAssignment}" urlTemplateProperty="labViewerBaseUrl"
                                                    cssClass="control">lab results</tags:externalLink>
                             </c:if>
                         </div>
