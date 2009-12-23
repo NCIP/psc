@@ -1074,7 +1074,7 @@ define "psc" do
 
     desc "Prints a list of the bundles in the dev webapp with their IDs"
     task :'list-dev-bundles' do
-      felix_runtime_dir = _('target/dev-webapp/WEB-INF/da-launcher/runtime/profile')
+      felix_runtime_dir = _('target/dev-webapp/WEB-INF/da-launcher/runtime/cache')
       if File.exist?(felix_runtime_dir)
         Dir["#{felix_runtime_dir}/bundle*"].collect { |b| b.scan(/bundle(\d+)/)[0][0].to_i }.sort.each do |bundle_id|
           location_file = "#{felix_runtime_dir}/bundle#{bundle_id}/bundle.location"
