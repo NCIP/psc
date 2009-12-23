@@ -63,9 +63,7 @@
             </div>
             <tags:activityIndicator id="provided-site-search-indicator"/>
         </form:form>
-        <div class="site-response">
-            <table id="provided-sites-table" class="provided-sites-table" cellspacing="0" cellpadding="0" border="1"></table>
-        </div>
+        <div class="site-response"/>
     </laf:division>
 </laf:box>
 

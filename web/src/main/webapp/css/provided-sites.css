@@ -1,22 +1,4 @@
-table.provided-sites-table  {
-    width: 100%;
-    border: 1px;
-    background-color:#ddd ;
-}
-table.provided-sites-table  td, table.provided-sites-table  th {
-    white-space: nowrap;
-    padding: 1px;
-    height:16pt;
-}
 div.site-response {
-    /*overflow: auto;*/
-    /*width :80%;*/
-    /*height: 400px;*/
     position :relative;
     margin-left: 11em;
-}
-table.provided-sites-table   thead{
-    font-weight: bold;
-    color: white;
-    background-color: navy;
 }
