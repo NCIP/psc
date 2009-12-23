@@ -172,7 +172,6 @@
             $('add-tool').addClassName('noHover');
             $('move-tool').className = 'noHover';
             $('delete-tool').className = 'noHover';
-            $('newActivityLink').addClassName('noHover');
         }
 
         function toggleDisabled(el) {
@@ -487,14 +486,11 @@
         </select>
         <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
                hint="With this name or code"/>
-        <c:choose>
-            <c:when test="${hasRightsToEdit}">
-                <a id="newActivityLink" class="control" href="<c:url value="/pages/newActivity?returnToPeriod=${period.id}" /> />">Create new activity</a>
-            </c:when>
-            <c:otherwise>
-                <a id="newActivityLink" class="control" onclick="return false"/>Create new activity</a>
-            </c:otherwise>
-        </c:choose>
+        
+        <tags:restrictedItem url="/pages/newActivity" queryString="returnToPeriod=${period.id}" cssClass="control">
+          Create new activity
+        </tags:restrictedItem>
+        
 
         <div style="position: relative">
             <div id="activities-autocompleter-div" class="autocomplete" style="display: none"></div>
