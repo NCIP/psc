@@ -3,7 +3,7 @@ if (!SC.RP) { SC.PS = { } }
 
 Object.extend(SC.PS, {
   getProvidedSites : function() {
-      SC.PS.providedSites = new Form.Element.Observer('site-name', 0.4, SC.PS.providedSitesChoices);
+      SC.PS.providedSites = new Form.Element.Observer('site-name', 1, SC.PS.providedSitesChoices);
   },
 
   providedSitesChoices: function(str,callback) {
