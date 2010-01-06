@@ -21,7 +21,7 @@ Java.classpath.concat([
   "org.mortbay.jetty:jsp-api-2.1:jar:#{Buildr::Jetty::VERSION}",
   "org.mortbay.jetty:jsp-2.1:jar:#{Buildr::Jetty::VERSION}"
 ])
-jetty.url = "http://localhost:7200"
+jetty.url = jetty_url
 
 ###### PROJECT
 

@@ -9,7 +9,7 @@ describe "/docs" do
     it "returns contains the full URIs for resources" do
       get "/docs"
       response.status_code.should == 200
-      response.entity.should =~ %r{http://localhost:7200/psc/api/v1/studies}
+      response.entity.should =~ %r{#{psc_url}/api/v1/studies}
     end
   end
   
@@ -24,7 +24,7 @@ describe "/docs" do
     end
     
     it "contains the actual URI for the application in the resources" do
-      response.entity.should =~ %r{http://localhost:7200/psc/api/v1}
+      response.entity.should =~ %r{#{psc_url}/api/v1}
     end
   end
   

@@ -17,7 +17,7 @@ require 'rubygems'
 require 'restclient'
 require 'json'
 
-PSC_HOST = "localhost:7200"
+PSC_HOST = "localhost:#{ENV['JETTY_PORT'] || 7200}
 RestClient.log = 'stdout'
 
 def user_settings

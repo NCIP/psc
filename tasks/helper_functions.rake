@@ -79,8 +79,16 @@ def user_settings
   end
 end
 
+def jetty_url(user=nil, pass=nil)
+  credentials = (user && pass) ? "#{user}:#{pass}@" : nil
+  port = ENV['JETTY_PORT'] || 7200
+
+  "http://#{credentials}localhost:#{port}"
+end
+
 def psc_api_url(resource)
-  "http://#{user_settings['psc']['dev_admin']['username']}:#{user_settings['psc']['dev_admin']['password']}@localhost:7200/psc/api/v1/#{resource}"
+  url = jetty_url(user_settings['psc']['dev_admin']['username'], user_settings['psc']['dev_admin']['password'])
+  "#{url}/psc/api/v1/#{resource}"
 end
 
 # starts up an OSGi bundle in the deployed webapp

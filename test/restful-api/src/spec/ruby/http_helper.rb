@@ -32,13 +32,18 @@ module HttpHelper
     execute_request!(relative_uri, options)
   end
 
+  def psc_url
+    "http://localhost:#{ENV['JETTY_PORT'] || 7200}/psc"
+  end
+
   # TODO: parameterize
   def full_uri(relative, params=nil)
     qs =
       if params
         params.map { |k, v| "#{CGI.escape k}=#{CGI.escape v}" }.join("&")
       end
-    "http://localhost:7200/psc/api/v1#{relative}" + (qs ? "?#{qs}" : "")
+          
+    "#{psc_url}/api/v1#{relative}" + (qs ? "?#{qs}" : "")
   end
 
   def psc_xml(root_name, root_attributes={}, &block)
