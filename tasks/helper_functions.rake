@@ -54,7 +54,7 @@ def db_deps
   [
     DB.postgresql,
     DB.hsqldb,
-    (DB.oracle if ENV['ORACLE'])
+    (DB.oracle if env_true?('ORACLE'))
   ].compact
 end
 

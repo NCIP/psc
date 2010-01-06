@@ -1180,8 +1180,14 @@ define "psc" do
 
     dist_dir = "target/dist/bin"
     mkdir_p _("#{dist_dir}/conf-samples")
-    cp _("db/datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
+
     cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
+    # Ensure oracle driver is present in war
+    unless `jar tf #{_(dist_dir, 'psc.war')}` =~ /ojdbc/
+      fail "Oracle JDBC driver not present in war.  Distributions must be built with ORACLE=yes."
+    end
+
+    cp _("db/datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
     puts `svn export https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
 
     pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
