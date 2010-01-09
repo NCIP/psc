@@ -1203,7 +1203,7 @@ define "psc" do
 
     cp project('web').packages.select { |p| p.type == :war }.to_s, _("#{dist_dir}/psc.war")
     # Ensure oracle driver is present in war
-    unless `jar tf #{_(dist_dir, 'psc.war')}` =~ /ojdbc/
+    unless `jar tf '#{_(dist_dir, 'psc.war')}'` =~ /ojdbc/
       fail "Oracle JDBC driver not present in war.  Distributions must be built with ORACLE=yes."
     end
 
