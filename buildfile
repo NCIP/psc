@@ -1208,7 +1208,7 @@ define "psc" do
     end
 
     cp _("db/datasource.properties.example"), _("#{dist_dir}/conf-samples/datasource.properties")
-    puts `svn export https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc #{_("#{dist_dir}/psc_install.doc")}`
+    puts `svn export https://ncisvn.nci.nih.gov/svn/psc/documents/PSC_Install_Guide.doc '#{_("#{dist_dir}/psc_install.doc")}'`
 
     pkg_name = "psc-#{VERSION_NUMBER.sub(/.RELEASE/, '')}"
 
