@@ -13,7 +13,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="properties" ref="casConfiguration"/>
     </bean>
 
-    <bean id="casEntryPoint" class="org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint">
+    <bean id="casEntryPoint" class="edu.northwestern.bioinformatics.studycalendar.security.plugin.cas.NoJsessionidEntryPoint">
         <property name="loginUrl" value="${cas.server.url.login}"/>
         <property name="serviceProperties" ref="serviceProperties"/>
     </bean>

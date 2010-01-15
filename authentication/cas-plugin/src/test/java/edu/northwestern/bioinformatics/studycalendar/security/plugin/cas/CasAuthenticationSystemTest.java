@@ -12,7 +12,6 @@ import org.acegisecurity.providers.cas.populator.DaoCasAuthoritiesPopulator;
 import org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy;
 import org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator;
 import org.acegisecurity.ui.cas.CasProcessingFilter;
-import org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint;
 import org.acegisecurity.ui.cas.ServiceProperties;
 import org.acegisecurity.ui.logout.LogoutFilter;
 import org.apache.commons.lang.StringUtils;
@@ -60,8 +59,8 @@ public class CasAuthenticationSystemTest extends CasBasedAuthenticationSystemTes
     public void testInitializeEntryPoint() throws Exception {
         doValidInitialize();
 
-        assertTrue("Wrong entry point type", getSystem().entryPoint() instanceof CasProcessingFilterEntryPoint);
-        CasProcessingFilterEntryPoint entryPoint = (CasProcessingFilterEntryPoint) getSystem().entryPoint();
+        assertTrue("Wrong entry point type", getSystem().entryPoint() instanceof NoJsessionidEntryPoint);
+        NoJsessionidEntryPoint entryPoint = (NoJsessionidEntryPoint) getSystem().entryPoint();
         assertEquals("Wrong CAS URL", expectedLoginUrl(), entryPoint.getLoginUrl());
         assertCorrectServiceProperties(entryPoint.getServiceProperties());
     }
