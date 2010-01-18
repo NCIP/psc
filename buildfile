@@ -1245,4 +1245,22 @@ namespace :ci do
     class << task; attr_accessor :dir; end
     task.dir = task.prerequisites.first.to_s
   end
+
+  desc "Fakes that the unit tests where already run"
+  task :fake_unit_tests_already_run do
+    timestamp = Time.now + (60 * 60 * 3)  # Fake out must be well in the future because when a task is invoked, it's
+                                          # dependencies are compiled too, which sets their modified timestamp.
+    Project.projects.each do |p|
+      report_to = File.join(p.base_dir, 'reports', 'junit')
+      FileUtils.mkdir_p(report_to)
+      last_successful_run = File.join(report_to, 'last_successful_run')
+      FileUtils.touch(last_successful_run)
+      File.utime(timestamp, timestamp, last_successful_run)
+    end
+  end
+
+  desc "Continuous integration test build"
+  task :integration => ['fake_unit_tests_already_run'] do
+    task('integration').invoke
+  end
 end
