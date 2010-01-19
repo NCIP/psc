@@ -36,10 +36,9 @@
 
         function hideEmptyLists(studyId, siteId) {
             var studySiteId = studyId + '_' + siteId;
-            if($(studySiteId).descendants().size() < 1) {
+            if($(studySiteId).childElements().size() < 1) {
                 $(studySiteId).ancestors().each(function(a) {
                     if (a.match('li.study')) {
-
                         var studies = a.up();
                         var site = studies.up();
                         var sites = site.up();
@@ -170,6 +169,7 @@
                             <c:forEach items="${assignableUsers}" var="user">
                                 <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.displayName}</option>
                             </c:forEach>
+                            <option value="unassigned" <c:if test="${'unassigned' == selectedId}">selected</c:if>>unassigned</option>
                         </select>
                     </div>
                 </div>
