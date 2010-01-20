@@ -13,7 +13,7 @@ public class AssignSubjectToSubjectCoordinatorByUserCommand {
     private User subjectCoordinator;
     private Study study;
     private Site site;
-    private User selected;
+    private String selected;
 
     public void assignSubjectsToSubjectCoordinator() {
         StudySite studySite = findStudySite(study, site);
@@ -48,7 +48,7 @@ public class AssignSubjectToSubjectCoordinatorByUserCommand {
         this.site = site;
     }
 
-    public void setSelected(User selected) {
+    public void setSelected(String selected) {
         this.selected = selected;
     }
 
@@ -68,7 +68,7 @@ public class AssignSubjectToSubjectCoordinatorByUserCommand {
         return site;
     }
 
-    public User getSelected() {
+    public String getSelected() {
         return selected;
     }
 }

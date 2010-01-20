@@ -44,30 +44,53 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     private SiteDao siteDao;
     private ApplicationSecurityManager applicationSecurityManager;
 
+    private String subjectCoordinatorIdString = null;
+    private Integer subjectCoordinatorId = null;
+    private User subjectCoordinator = null;
+    private final String UNASSIGNED = "unassigned";
+
     public AssignSubjectToSubjectCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/assignSubjectToSubjectCoordinator");
         setSuccessView("studyList");
     }
 
+    //We have to remember 3 cases to process here: when selected is null, when selected is "unassigned" and when selected is actually the existing user
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();
 
         User siteCoordinator = getSiteCoordinator();
 
-        Integer subjectCoordinatorId = ServletRequestUtils.getIntParameter(request, "selected");
-        User subjectCoordinator = null;
-        if (subjectCoordinatorId != null ) {
-            subjectCoordinator = userDao.getById(subjectCoordinatorId);
-        }
+        subjectCoordinatorIdString = ServletRequestUtils.getStringParameter(request, "selected");
+        Map<Site, Map<Study, List<Subject>>> displayMap = null;
+        Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = null;
 
-        Map<Site, Map<Study, List<Subject>>> displayMap = buildDisplayMap(subjectCoordinator);
-        Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
+        if (subjectCoordinatorIdString != null) {
+            if (subjectCoordinatorIdString.equals(UNASSIGNED)) {
+            displayMap = buildDisplayMap(siteCoordinator, true);
+            studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMapForUnassigned(siteCoordinator);
+            } else {
+                subjectCoordinatorId = Integer.parseInt(subjectCoordinatorIdString);
+                if (subjectCoordinatorId != null) {
+                    subjectCoordinator = userDao.getById(subjectCoordinatorId);
+
+                    displayMap = buildDisplayMap(subjectCoordinator, false);
+                    studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
+                }
+            }
+        } else {
+            displayMap = buildDisplayMap(null, false);
+            studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(null);
+        }
 
         refData.put("displayMap", displayMap);
         refData.put("subjectCoordinatorStudySites", studySiteParticipCoordMap);
         refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
-        refData.put("selectedId", subjectCoordinatorId);
-        
+        if (subjectCoordinatorIdString!= null && subjectCoordinatorIdString.equals(UNASSIGNED)) {
+            refData.put("selectedId", "unassigned");
+        } else {
+            refData.put("selectedId", subjectCoordinatorId);
+        }
+
         return refData;
     }
 
@@ -86,12 +109,16 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         AssignSubjectToSubjectCoordinatorByUserCommand command = (AssignSubjectToSubjectCoordinatorByUserCommand) o;
 
         command.assignSubjectsToSubjectCoordinator();
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("study", command.getStudy());
         model.put("site", command.getSite());
-        model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), command.getSelected()));
 
+        if (subjectCoordinatorIdString != null && !subjectCoordinatorIdString.equals(UNASSIGNED)) {
+            model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), subjectCoordinator, false));
+        } else if (subjectCoordinatorIdString != null && subjectCoordinatorIdString.equals(UNASSIGNED)) {
+            model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), getSiteCoordinator(), true));
+        }
         return new ModelAndView("dashboard/sitecoordinator/ajax/displaySubjects", model);
     }
 
@@ -106,42 +133,94 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         return applicationSecurityManager.getFreshUser();
     }
                                                                                                                 
-    protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User subjectCoordinator) {
+    protected Map<Site, Map<Study, List<Subject>>> buildDisplayMap(User user, Boolean isForUnassigned) {
         Map<Site, Map<Study, List<Subject>>> displayMap = new TreeMap<Site, Map<Study, List<Subject>>>(new NamedComparator());
-
-
-            if (subjectCoordinator != null ) {
-
-                List<StudySite> studySites = studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoordinator);
-
-                for (StudySite studySite : studySites) {
-                    Site site = studySite.getSite();
-                    Study study = studySite.getStudy();
-
-                    List<Subject> studySubjects = buildSubjects(studySite, subjectCoordinator);
-
-                    if (studySubjects.size() > 0) {
-                        if (!displayMap.containsKey(site)) {
-                            displayMap.put(site, new TreeMap<Study, List<Subject>>(new NamedComparator()));
-                        }
-
-                        if (!displayMap.get(site).containsKey(study)) {
-                            displayMap.get(site).put(study, new ArrayList<Subject>());
-                        }
-
-                        displayMap.get(site).get(study).addAll(studySubjects);
+        if (user != null) {
+            List<StudySite> studySitesForSiteCoordinator = studySiteService.getAllStudySitesForSubjectCoordinator(user);
+            for (StudySite studySite: studySitesForSiteCoordinator){
+                Study study= studySite.getStudy();
+                Site site = studySite.getSite();
+                List<Subject> studySubjects = buildSubjects(studySite, user, isForUnassigned);
+                if (studySubjects.size() > 0) {
+                    if (!displayMap.containsKey(site)) {
+                        displayMap.put(site, new TreeMap<Study, List<Subject>>(new NamedComparator()));
                     }
+                    if (!displayMap.get(site).containsKey(study)) {
+                        displayMap.get(site).put(study, new ArrayList<Subject>());
+                    }
+                    displayMap.get(site).get(study).addAll(studySubjects);
                 }
+
             }
+        }
         return displayMap;
     }
 
-    protected List<Subject> buildSubjects(StudySite studySite, User subjectCoordinator) {
+    protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMapForUnassigned(User siteCoordinator) {
+        Map<Study, Map<Site, List<User>>> studySiteSubjectCoordinatorMap = new HashMap<Study, Map<Site, List<User>>>();
+        List<User> otherStudySiteSubjectCoords = new ArrayList<User>();
+        List<User> allUsers = userService.getSiteCoordinatorsAssignableUsers(siteCoordinator);
+        for (User user: allUsers) {
+            List<StudySite> allStudySitesPerUser = studySiteService.getAllStudySitesForSubjectCoordinator(user);
+            for (StudySite studySite: allStudySitesPerUser){
+                List<StudySubjectAssignment> allStudySubjectAssignmentsPerUser = studySite.getStudySubjectAssignments();
+                boolean unassigned = false;
+                for (StudySubjectAssignment ssa: allStudySubjectAssignmentsPerUser){
+                    User subjCoord = ssa.getSubjectCoordinator();
+                    if (subjCoord == null){
+                        unassigned= true;
+                    }
+                }
+                if (unassigned) {
+                    if (! otherStudySiteSubjectCoords.contains(user)){
+                        otherStudySiteSubjectCoords.add(user);
+                    }
+                    Collections.sort(otherStudySiteSubjectCoords, new NamedComparator());
+                    if (!studySiteSubjectCoordinatorMap.containsKey(studySite.getStudy())) {
+                        studySiteSubjectCoordinatorMap.put(studySite.getStudy(), new HashMap<Site, List<User>>());
+                    }
+                    studySiteSubjectCoordinatorMap.get(studySite.getStudy()).put(studySite.getSite(), otherStudySiteSubjectCoords);
+                }
+            }
+        }
+        return studySiteSubjectCoordinatorMap;
+    }
+
+
+    protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMap(User subjectCoordinator) {
+        Map<Study ,Map<Site, List<User>>> studySiteSubjectCoordinatorMap = new HashMap<Study ,Map<Site, List<User>>>();
+
+        if (subjectCoordinator != null ) {
+            List<StudySite> studySites = studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoordinator);
+            for (StudySite studySite : studySites) {
+                List<User> otherStudySiteSubjectCoords = new ArrayList<User>();
+                List<UserRole> userRoles = studySite.getUserRoles();
+                for (UserRole userRole : userRoles ) {
+                    User user = userRole.getUser();
+                    if (!user.equals(subjectCoordinator)) {
+                        otherStudySiteSubjectCoords.add(user);
+                    }
+                }
+                Collections.sort(otherStudySiteSubjectCoords, new NamedComparator());
+                if (!studySiteSubjectCoordinatorMap.containsKey(studySite.getStudy())) {
+                    studySiteSubjectCoordinatorMap.put(studySite.getStudy(), new HashMap<Site, List<User>>());
+                }
+                studySiteSubjectCoordinatorMap.get(studySite.getStudy()).put(studySite.getSite(), otherStudySiteSubjectCoords);
+            }
+        }
+        return studySiteSubjectCoordinatorMap;
+    }
+
+    public List<Subject> buildSubjects(StudySite studySite, User subjectCoordinator, Boolean isForUnassigned) {
         List<Subject> studySubjects = new ArrayList<Subject>();
         if (studySite != null ) {
             for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                 Subject subject = assignment.getSubject();
-                if (assignment.getSubjectCoordinator().equals(subjectCoordinator) && !assignment.isExpired()) {
+                if (assignment.getSubjectCoordinator() != null && !isForUnassigned) {
+                    if (assignment.getSubjectCoordinator().equals(subjectCoordinator) && !assignment.isExpired()) {
+                        studySubjects.add(subject);
+                    }
+                } else if (assignment.getSubjectCoordinator() == null && isForUnassigned){
                     studySubjects.add(subject);
                 }
             }
@@ -153,32 +232,6 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
             }
         });
         return studySubjects;
-    }
-
-    protected Map<Study, Map<Site, List<User>>> buildStudySiteSubjectCoordinatorMap(User subjectCoordinator) {
-        Map<Study ,Map<Site, List<User>>> studySiteSubjectCoordinatorMap = new HashMap<Study ,Map<Site, List<User>>>();
-
-            if (subjectCoordinator != null ) {
-
-                List<StudySite> studySites = studySiteService.getAllStudySitesForSubjectCoordinator(subjectCoordinator);
-
-                for (StudySite studySite : studySites) {
-                    List<User> otherStudySiteSubjectCoords = new ArrayList<User>();
-                    List<UserRole> userRoles = studySite.getUserRoles();
-                    for (UserRole userRole : userRoles ) {
-                        User user = userRole.getUser();
-                        if (!user.equals(subjectCoordinator)) {
-                            otherStudySiteSubjectCoords.add(user);
-                        }
-                    }
-                    Collections.sort(otherStudySiteSubjectCoords, new NamedComparator());
-                    if (!studySiteSubjectCoordinatorMap.containsKey(studySite.getStudy())) {
-                        studySiteSubjectCoordinatorMap.put(studySite.getStudy(), new HashMap<Site, List<User>>());
-                    }
-                    studySiteSubjectCoordinatorMap.get(studySite.getStudy()).put(studySite.getSite(), otherStudySiteSubjectCoords);
-                }
-            }
-        return studySiteSubjectCoordinatorMap;
     }
 
     public void setUserDao(UserDao userDao) {
