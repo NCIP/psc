@@ -19,7 +19,7 @@ psc.tools.AsyncUpdater = function(updateFn, comparableValueFn) {
 
   function needsUpdate() {
     return (requestedValue && self.comparableValueFn(requestedValue) !== self.comparableValueFn(currentValue))
-        || (requestedValue === null && currentValue !== null);
+        || (requestedValue == null && currentValue != null);
   }
 
   function updater() {

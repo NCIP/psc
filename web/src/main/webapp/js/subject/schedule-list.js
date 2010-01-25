@@ -50,6 +50,7 @@ psc.namespace("subject");
         psc.subject.ScheduleList.FocusHandler.init();
       }
 
+      buildDayPixelRanges();
       $('#schedule-error').hide();
       $('.loading').fadeOut().hide();
     }
@@ -59,6 +60,23 @@ psc.namespace("subject");
         append("Problem loading schedule data: " + message).show();
 
       $('.loading').fadeOut();
+    }
+
+    /* Creates an index of the positions of each day block to make it easier to search for what's visible */
+    function buildDayPixelRanges() {
+      var currentOffset = $('#schedule').scrollTop();
+      this.dayPixelRanges = $('#scheduled-activities > div.day').collect(function () {
+        var header = $(this).find("h3");
+        var blockTop = $(this).position().top;
+        return {
+          date: $(this).data('date'),
+          absolutePixelRange: {
+            // count as "visible" if any part of the date header is visible
+            start: blockTop + header.position().top + header.height() + currentOffset,
+            stop: blockTop + $(this).height() + currentOffset
+          }
+        };
+      });
     }
 
     return {
@@ -76,9 +94,9 @@ psc.namespace("subject");
         var programaticallyScrolling = false;
 
         var hoverAnimator = new psc.tools.AsyncUpdater(function (dateStr) {
-          $('#scheduled-activities .day').removeClass('hover-date');
+          $('#scheduled-activities div.day.hover-date').removeClass('hover-date');
           if (dateStr) {
-            $('#scheduled-activities .date-' + dateStr).addClass('hover-date');
+            $('#scheduled-activities div.date-' + dateStr).addClass('hover-date');
           }
         });
 
@@ -124,7 +142,7 @@ psc.namespace("subject");
             }
           } else {
             var nextVisibleBlock;
-            $('#scheduled-activities > .day').each(function (i, dayBlock) {
+            $('#scheduled-activities > div.day').each(function (i, dayBlock) {
               if (date < $(dayBlock).data('date')) {
                 nextVisibleBlock = $(dayBlock);
                 return false;
@@ -146,23 +164,26 @@ psc.namespace("subject");
           }
         }
 
-        function visibleRange() {
+        function visibleDayRange() {
           var min, max;
           var scheduleBlockHeight = $('#schedule').height();
-          $('#scheduled-activities > .day').each(function (i, dayBlock) {
-            var header = $(dayBlock).find("h3");
-            if (!min && ($(dayBlock).position().top + header.position().top + header.height() > 0)) {
-              min = $(dayBlock).data('date');
-            } else if ($(dayBlock).position().top + $(dayBlock).height() > scheduleBlockHeight) {
-              max = $(dayBlock).data('date');
+          var scheduleScroll = $('#schedule').scrollTop();
+          $(this.dayPixelRanges).each(function (i, dayInfo) {
+            if (!min && (dayInfo.absolutePixelRange.start - scheduleScroll > 0)) {
+              min = dayInfo.date;
+            } else if ((dayInfo.absolutePixelRange.stop - scheduleScroll) > scheduleBlockHeight) {
+              max = dayInfo.date;
             }
+
             if (min && max) {
               return false;
             }
           });
+
           if (!max) {
             max = $('#scheduled-activities > .day:last-child').data('date');
           }
+
           if (min && max) {
             return new psc.tools.Range(min, max);
           } else {
@@ -172,7 +193,7 @@ psc.namespace("subject");
 
         function fireFocusChanged(evt) {
           if (!programaticallyScrolling) {
-            var span = visibleRange();
+            var span = visibleDayRange();
             psc.subject.ScheduleData.focusDate(span.start, SOURCE_NAME, span);
           }
         }
