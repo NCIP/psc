@@ -64,7 +64,6 @@ psc.namespace("subject");
 
     /* Creates an index of the positions of each day block to make it easier to search for what's visible */
     function buildDayPixelRanges() {
-//      console.time("buildDayPixelRanges");
       var currentOffset = $('#schedule').scrollTop();
       this.dayPixelRanges = $('#scheduled-activities > div.day').collect(function () {
         var header = $(this).find("h3");
@@ -78,7 +77,6 @@ psc.namespace("subject");
           }
         };
       });
-//      console.timeEnd("buildDayPixelRanges");
     }
 
     return {
@@ -96,13 +94,9 @@ psc.namespace("subject");
         var programaticallyScrolling = false;
 
         var hoverAnimator = new psc.tools.AsyncUpdater(function (dateStr) {
-//          console.time("Remove hover-date");
           $('#scheduled-activities div.day.hover-date').removeClass('hover-date');
-//          console.timeEnd("Remove hover-date");
           if (dateStr) {
-//            console.time("Add hover-date");
             $('#scheduled-activities div.date-' + dateStr).addClass('hover-date');
-//            console.timeEnd("Add hover-date");
           }
         });
 
@@ -173,25 +167,6 @@ psc.namespace("subject");
         function visibleDayRange() {
           var min, max;
           var scheduleBlockHeight = $('#schedule').height();
-          /*
-          $('#scheduled-activities > .day').each(function (i, dayBlock) {
-            var header = $(dayBlock).find("h3");
-            if (!min && ($(dayBlock).position().top + header.position().top + header.height() > 0)) {
-              min = $(dayBlock).data('date');
-            } else if ($(dayBlock).position().top + $(dayBlock).height() > scheduleBlockHeight) {
-              max = $(dayBlock).data('date');
-            }
-            if (min && max) {
-              return false;
-            }
-          });
-          */
-          /*
-           dayInfo = {
-             date: ...
-             absolutePixelRange: ...
-           }
-           */
           var scheduleScroll = $('#schedule').scrollTop();
           $(this.dayPixelRanges).each(function (i, dayInfo) {
             if (!min && (dayInfo.absolutePixelRange.start - scheduleScroll > 0)) {
