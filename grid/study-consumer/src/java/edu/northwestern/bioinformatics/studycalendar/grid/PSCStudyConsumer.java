@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
@@ -48,7 +49,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Assumptions: 1. Site should already be existing in DB..
+ *  1. If Site does not exist DB, we will create it.
  *
  * @author <a href="mailto:saurabh.agrawal@semanticbits.com>Saurabh Agrawal</a>
  */
@@ -67,6 +68,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private SiteDao siteDao;
 
     private StudyService studyService;
+    
+    private SiteService siteService;
 
     private StudyDao studyDao;
 
@@ -302,8 +305,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
                     studySite = new StudySite();
                     studySite.setSite(fetchSite(studyOrganizationType));
                     studySite.setStudy(study);
-                    studySite.setGridId(studyOrganizationType.getGridId());
-                }
+                    studySite.setGridId(studyOrganizationType.getGridId());                  
+                } 
                 studySites.add(studySite);
             }
         }
@@ -317,29 +320,54 @@ public class PSCStudyConsumer implements StudyConsumerI {
     }
 
     /**
-     * Fetches the site from the DB
+     * Fetches the site from the DB or creates the site
      *
-     * @param assignedIdentifier
+     * @param studyOrganizationType
      * @return
      */
     private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
 
     	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
+    	String siteName = studyOrganizationType.getHealthcareSite(0).getName();
         Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
         
         if (site == null) {
-    		assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
-    		if((assignedIdentifier != null) && !(assignedIdentifier.equals(""))){
-    			site = siteDao.getByAssignedIdentifier(assignedIdentifier);
+        	logger.info("No site exist in DB with assignedIdentifier: " + assignedIdentifier);
+    		String gridIdAssignedIdentifier = studyOrganizationType.getHealthcareSite(0).getGridId();
+    		if((gridIdAssignedIdentifier == null) || (gridIdAssignedIdentifier.equals(""))){
+    			logger.info("Site created with assignedIdentifier: " + assignedIdentifier);
+    			site = createSite(assignedIdentifier, siteName, false);		
+    		}else{
+    			site = siteDao.getByAssignedIdentifier(gridIdAssignedIdentifier);
     		}
     		if (site == null) {
-    			String message = "No site exists  assignedIdentifier :" + assignedIdentifier;
-    			throw getStudyCreationException(message);
+    			// create the site if its not in DB
+    			logger.info("Site created with remote assignedIdentifier: " + gridIdAssignedIdentifier);
+    			site = createSite(gridIdAssignedIdentifier, siteName, true);
     		}
         }
         return site;
     }
 
+    /**
+     * Creates the site in the DB
+     *
+     * @param assignedIdentifier
+     * @param siteName
+     * @return
+     */
+   private Site createSite(String assignedIdentifier, String siteName, boolean isRemote){
+	   Site site = new Site();
+       site.setName(siteName);
+       site.setAssignedIdentifier(assignedIdentifier);
+       if(isRemote){
+    	   site.setProvider(CoppaProviderConstants.PROVIDER_TOKEN);
+       }
+       // Save it to DB
+       siteService.createOrUpdateSite(site);
+       return site;	   
+   }
+   
     /**
      * This method will return the identifier specified by Coordinating center to this study.
      *
@@ -399,8 +427,13 @@ public class PSCStudyConsumer implements StudyConsumerI {
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
     }
-
+    
     @Required
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
+
+	@Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
