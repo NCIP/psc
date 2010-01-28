@@ -166,7 +166,6 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 			<filter token="application.url" value="${application.url}"/>
 			<filter token="database.url" value="${database.url}"/>
 			<filter token="database.user" value="${database.user}"/>
-			<filter token="database.password" value="${database.password}"/>
 			<filter token="database.system.url" value="${database.system.url}"/>
 			<!-- added internal properties that may be used in a filtered copy -->
 			<filter token="database.driver" value="${database.driver}"/>
@@ -178,7 +177,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 			<filter token="env.LOGNAME" value="${env.LOGNAME}"/>
 			<filter token="env.JAVA_HOME" value="${env.JAVA_HOME}"/>
 			<filter token="project.name" value="project.name"/>
-			<filter token="" value=""/>
+            <!-- properties added to handle sensitive properties for AHP issues-->
+            <filter token="database.password" value="${database.password}" />
+            <filter token="tomcat.ssl.keystore.pass" value="${tomcat.ssl.keystore.pass}" />
+            <filter token="database.system.password" value="${database.system.password}" />
+
 		</filterset>
 
 		<!-- Added to convert location to file and path -->
