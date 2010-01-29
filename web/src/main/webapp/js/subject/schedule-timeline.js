@@ -225,9 +225,9 @@ psc.namespace("subject");
         
         var hoverAnimator = new psc.tools.AsyncUpdater(function (offsetPx) {
           if (offsetPx) {
-            $('#schedule-timeline .hover-date').show().css('left', offsetPx + "px");
+            $('#schedule-timeline div.hover-date').show().css('left', offsetPx + "px");
           } else {
-            $('#schedule-timeline .hover-date').hide();
+            $('#schedule-timeline div.hover-date').hide();
           }
         });
         
@@ -244,7 +244,7 @@ psc.namespace("subject");
         }
         
         function mouseHoverMove(evt) {
-          hoverDateByLocation(parseInt(this.style.left), 
+          hoverDateByLocation(parseInt(this.style.left),
             evt.clientX - $('#schedule-timeline').offset().left);
         }
         
@@ -322,7 +322,7 @@ psc.namespace("subject");
           if (internalPositionUpdating() && !programaticallyScrolling) {
             var band = timeline.getBand(BAND_ACTIVITIES);
             psc.subject.ScheduleData.focusDate(
-              band.getCenterVisibleDate(), 
+              band.getCenterVisibleDate(),
               SOURCE_NAME,
               new psc.tools.Range(band.getMinVisibleDate(), band.getMaxVisibleDate())
             );
@@ -331,20 +331,20 @@ psc.namespace("subject");
         
         return {
           init: function () {
-            var hoverBandsSelector = $.map([BAND_SEGMENTS, BAND_ACTIVITIES], function (i) { 
-              return "#timeline-band-" + i 
+            var hoverBandsSelector = $.map([BAND_SEGMENTS, BAND_ACTIVITIES], function (i) {
+              return "#timeline-band-" + i
             }).join(", ");
             $(hoverBandsSelector).mousemove(mouseHoverMove).mouseout(mouseHoverStop);
             timeline.getBand(BAND_ACTIVITIES).addOnScrollListener(hoverBand);
-            
+
             $('#schedule-timeline').
               mouseover(startScrollingByMouse).
               mouseout(stopScrollingByMouse);
-            $('.timeline-band-input input').
+            $('div.timeline-band-input input').
               focus(startScrollingByKeyboard).
               blur(stopScrollingByKeyboard);
             timeline.getBand(BAND_ACTIVITIES).addOnScrollListener(focusChangedByScroll);
-            
+
             $('#schedule').bind('hover-date-changed', hoverEvent);
             $('#schedule').bind('focus-date-changed', recenter);
           }
