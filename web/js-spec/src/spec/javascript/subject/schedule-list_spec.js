@@ -4,6 +4,7 @@ require_main('psc-tools/misc.js');
 require_main('resig-templates.js');
 require_main('subject/schedule-structure.js');
 require_main('subject/schedule-list.js');
+require_main('jquery/jquery.enumerable.js');
 
 Screw.Unit(function () {
   (function ($) {
@@ -31,9 +32,9 @@ Screw.Unit(function () {
         before(function () {
           $('.loading').show();
           $('#schedule-error').show();
-          
+
           oldSchedDataModule = psc.subject.ScheduleData;
-          
+
           sa = {
             id: "etc",
             current_state: {
@@ -46,11 +47,11 @@ Screw.Unit(function () {
             study: "NU 09A0"
           };
         });
-        
+
         after(function () {
           psc.subject.ScheduleData = oldSchedDataModule;
         });
-        
+
         describe("with a schedule", function () {
           before(function () {
             psc.subject.ScheduleData = {
@@ -64,10 +65,10 @@ Screw.Unit(function () {
                 });
               }
             };
-            
+
             $('#schedule').trigger('schedule-ready');
           });
-          
+
           it("appends to #scheduled-activities", function () {
             expect($('#scheduled-activities #fake_day_2009-05-01').length).to(equal, 1);
           });
@@ -80,7 +81,7 @@ Screw.Unit(function () {
             expect($('#schedule-error').css('display')).to(equal, 'none');
           });
         });
-        
+
         describe("without a schedule", function () {
           before(function () {
             psc.subject.ScheduleData = {
@@ -88,14 +89,14 @@ Screw.Unit(function () {
                 return null;
               }
             };
-           
+
             $('#schedule').trigger('schedule-ready');
           });
-          
+
           it("hides the loading screen", function () {
             expect($('.loading').css('display')).to(equal, 'none');
           });
-          
+
           it("hides the error", function () {
             expect($('#schedule-error').css('display')).to(equal, 'none');
           });
