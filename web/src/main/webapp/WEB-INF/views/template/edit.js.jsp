@@ -8,6 +8,14 @@ function createAllStudySegmentControls() {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
 
+    $$('.population').each(function(liItem) {
+        displayPopulations(liItem);
+    })
+    populationAddButtonCreate()
+}
+
+//have to call this function separately in selectStudySegment.jsp        
+function epochControlls() {
     $$('.deletePeriod').each(function(td) {
         deletePeriodControls(td);
     })
@@ -18,10 +26,6 @@ function createAllStudySegmentControls() {
 
     addPeriodControl()
     displayCycleControl();
-    $$('.population').each(function(liItem) {
-        displayPopulations(liItem);
-    })
-    populationAddButtonCreate()
 }
 
 function createStudySegmentControls(studySegmentItem) {

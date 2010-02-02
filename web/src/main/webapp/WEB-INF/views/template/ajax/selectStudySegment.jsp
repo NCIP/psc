@@ -14,4 +14,6 @@ initializeNewStudySegment()
 </jsgen:replaceHtml>
 <c:if test="${not empty developmentRevision}">
     hideShowReleaseTemplateButton()
+    epochControlls()
 </c:if>
+ 

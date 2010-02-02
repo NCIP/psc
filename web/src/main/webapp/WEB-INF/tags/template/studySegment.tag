@@ -70,7 +70,7 @@
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
                     <c:if test="${editable}">
-                        <td class="controls editPeriod" periodId=${period.id}/>
+                        <td class="controls editPeriod" periodId="${period.id}" />
                     </c:if>
                     <th class="row" style="white-space:nowrap; text-decoration:none;">
                             ${fn:replace(period.name, " ", "&nbsp;")}
@@ -92,7 +92,7 @@
 
                     </c:forEach>
                     <c:if test="${editable}">
-                        <td class="controls deletePeriod" periodId="${period.id}" periodName="${period.name}" studySegmentId="${studySegmentId.base.id}" />
+                        <td class="controls deletePeriod" periodId="${period.id}" periodName="${period.name}" studySegmentId="${studySegment.base.id}" />
                     </c:if>
                 </tr>
             </c:forEach>
