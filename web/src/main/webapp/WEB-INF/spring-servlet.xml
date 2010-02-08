@@ -373,22 +373,16 @@
 
     <bean name="/cal/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
-        <property name="crumb.parent">
-            <ref local="displayTemplateController"/>
-        </property>
     </bean>
+
     <bean name="/cal/schedule/select" id="selectScheduledStudySegmentController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
         <property name="parameterName" value="studySegment"/>
         <property name="viewName" value="schedule/ajax/selectScheduledStudySegment"/>
         <property name="dao" ref="scheduledStudySegmentDao"/>
     </bean>
-    <bean name="/cal/schedule/nextStudySegment" id="scheduleNextStudySegmentController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextStudySegmentController"/>
     <bean name="/cal/schedule/batch" id="batchRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchRescheduleController"/>
-    <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
 
     <bean name="/cal/schedule/amend" id="changeAmendmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangeAmendmentController">
@@ -402,10 +396,6 @@
         <property name="crumb.parent">
             <ref local="subjectCentricScheduleController"/>
         </property>
-    </bean>
-
-    <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">
     </bean>
 
 
