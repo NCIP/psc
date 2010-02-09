@@ -91,6 +91,13 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertResponseIsCreatedXml();
     }
 
+    public void testGetXmlForNoStudy() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("EC golf")).andReturn(null);
+
+        doGet();
+        assertEquals("Result not 404", 404, response.getStatus().getCode());
+    }
+
     public void testGetICSCalendarForScheduledStudies() throws IOException {
         expectResolvedSubjectAssignment();
         request.setResourceRef(String.format("%s/studies/%s/schedules/%s.ics", ROOT_URI, STUDY_IDENTIFIER_ENCODED, ASSIGNMENT_IDENTIFIER));
