@@ -45,7 +45,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
             objectLoadException = e;
         }
         setAvailable(requestedObject != null || objectLoadException != null);
-        if (isAvailable()) {
+        if (requestedObject != null) {
             log.debug("Request {} maps to {}", request.getResourceRef(), requestedObject);
         } else {
             log.debug("Request {} does not map to an existing domain object", request.getResourceRef());
@@ -63,9 +63,9 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
-            return createXmlRepresentation(requestedObject);
+            return createXmlRepresentation(getRequestedObject());
         } else if (variant.getMediaType() == MediaType.TEXT_CALENDAR) {
-            return createCalendarRepresentation(requestedObject);
+            return createCalendarRepresentation(getRequestedObject());
         } else {
             return null;
         }
