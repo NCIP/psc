@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
@@ -49,6 +50,14 @@ public class ScheduledCalendarXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong id", "schedule-grid-0", actual.attributeValue("id"));
         assertEquals("Wrong assignment id", "assignment-grid-0", actual.attributeValue("assignment-id"));
         assertEquals("Wrong scheduled study segment size", 2, actual.elements().size());
+    }
+
+    public void testCreateElementFromNull() throws Exception {
+        try {
+            serializer.createElement(null);
+        } catch (StudyCalendarSystemException actual) {
+            assertEquals("scheduledCalendar is required", actual.getMessage());
+        }
     }
 
     public void testReadElement() {

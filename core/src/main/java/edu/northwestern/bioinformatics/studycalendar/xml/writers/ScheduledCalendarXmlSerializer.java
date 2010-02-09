@@ -8,6 +8,7 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SCH
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_CALENDAR;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_CALENDARS;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -22,6 +23,10 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlSeri
 
     @Override
     public Element createElement(ScheduledCalendar scheduledCalendar) {
+        if (scheduledCalendar == null) {
+            throw new StudyCalendarSystemException("scheduledCalendar is required");
+        }
+
         Element elt = SCHEDULED_CALENDAR.create();
         if (scheduledCalendar.getGridId() != null)
             SCHEDULED_CALENDAR_ID.addTo(elt, scheduledCalendar.getGridId());
