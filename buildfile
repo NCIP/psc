@@ -495,6 +495,7 @@ define "psc" do
           deps = project.test.dependencies.collect { |p| p.to_s }
           if ENV['WEBAPP_SIM']
             deps = [deps, project('psc:web').and_dependencies].flatten.uniq
+            deps += GLOBUS_UNDUPLICABLE.values if (env_true?('WEBSSO') || env_true?('GLOBUS'))
           end
           classpath = deps.collect { |d| d.to_s }.join(':')
           puts "Classpath:\n- #{deps.join("\n- ")}"
