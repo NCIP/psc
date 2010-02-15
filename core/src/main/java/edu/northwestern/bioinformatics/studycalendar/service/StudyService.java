@@ -342,7 +342,9 @@ public class StudyService {
         Study complete = source.transientClone();
         Amendment current = complete.getAmendment();
         for (int i = 1; i < snapshots.size(); i++) {
-            current.setPreviousAmendment(snapshots.get(i).getAmendment());
+            Amendment previousAmendment = snapshots.get(i).getAmendment();
+            current.setPreviousAmendment(previousAmendment);
+            current = previousAmendment;
         }
         return complete;
     }

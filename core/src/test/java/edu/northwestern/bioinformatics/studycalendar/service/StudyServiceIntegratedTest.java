@@ -412,4 +412,25 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
             "Wrong number of study segments in treatment epoch of initial template: " + treatment.getStudySegments(),
             3, treatment.getStudySegments().size());
     }
+
+    public void testFullTemplateHistoryIncludesAllAmendments() throws Exception {
+        int id = saveBasicSkeleton();
+        {
+            Study reloaded = studyDao.getById(id);
+            Amendment a1 = Fixtures.createAmendment("A1", DateTools.createDate(2007, Calendar.APRIL, 6));
+            reloaded.setDevelopmentAmendment(a1);
+            amendmentService.amend(reloaded);
+            Amendment a2 = Fixtures.createAmendment("A2", DateTools.createDate(2007, Calendar.APRIL, 7));
+            reloaded.setDevelopmentAmendment(a2);
+            amendmentService.amend(reloaded);
+            Amendment a3 = Fixtures.createAmendment("A3", DateTools.createDate(2007, Calendar.APRIL, 8));
+            reloaded.setDevelopmentAmendment(a3);
+            amendmentService.amend(reloaded);
+        }
+
+        interruptSession();
+        Study fullHistory = service.getCompleteTemplateHistory(studyDao.getById(id));
+        assertEquals("Wrong number of amendments", 3, fullHistory.getAmendmentsList().size());
+        assertEquals("Wrong previous amendment key", "2007-04-07~A2", fullHistory.getAmendment().getPreviousAmendment().getNaturalKey());
+    }
 }
