@@ -1,17 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import org.apache.commons.collections15.CollectionUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -20,7 +13,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -41,7 +33,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     private AmendedTemplateHelper helper;
     private SubjectService subjectService;
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private TemplateService templateService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -138,28 +130,13 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     }
 
     private Representation createJSONRepresentation(ScheduledCalendar scheduledCalendar) throws ResourceException {
-        try {
-            JSONObject jsonData = new JSONObject();
-            JSONObject dayWiseActivities = new JSONObject();
-            JSONArray studySegments = new JSONArray();
-            List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
+        List<ScheduledActivity> scheduledActivities = new ArrayList<ScheduledActivity>();
+        for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
+            scheduledActivities.addAll(scheduledStudySegment.getActivities());
+        }
 
-            for (ScheduledStudySegment scheduledStudySegment: scheduledCalendar.getScheduledStudySegments()) {
-                scheduledActivities.addAll(scheduledStudySegment.getActivities());
-                studySegments.put(scheduleRepresentationHelper.createJSONStudySegment(scheduledStudySegment));
-            }
-            SortedMap<Date,List<ScheduledActivity>> activities =  createActivitiesByDate(scheduledActivities);
-            
-            for (Date date : activities.keySet()) {
-                 dayWiseActivities.put(getApiDateFormat().format(date),
-                                scheduleRepresentationHelper.createJSONScheduledActivities(null, activities.get(date)));
-            }
-            jsonData.put("days", dayWiseActivities);
-            jsonData.put("study_segments", studySegments);
-            return new JsonRepresentation(jsonData);
-        } catch (JSONException e) {
-	        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, e);
-	    }
+        SortedMap<Date,List<ScheduledActivity>> activities =  createActivitiesByDate(scheduledActivities);
+        return new ScheduleRepresentationHelper(activities, scheduledCalendar.getScheduledStudySegments(), templateService);
     }
 
     public SortedMap<Date, List<ScheduledActivity>> createActivitiesByDate(List<ScheduledActivity> scheduledActivities) {
@@ -186,7 +163,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
     }
 
     @Required
-    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
-        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
-    }
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }    
 }

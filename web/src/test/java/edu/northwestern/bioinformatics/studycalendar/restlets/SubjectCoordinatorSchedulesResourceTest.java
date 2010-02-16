@@ -37,12 +37,11 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private NowFactory nowFactory;
     private StudySite studySite;
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+
     public void setUp() throws Exception {
         super.setUp();
         userService = registerMockFor(UserService.class);
         studySiteService = registerMockFor(StudySiteService.class);
-        scheduleRepresentationHelper = registerMockFor(ScheduleRepresentationHelper.class);
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName(), USERNAME);
         Role role = SUBJECT_COORDINATOR;
         user = Fixtures.createUser(USERNAME, role);
@@ -71,7 +70,6 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         resource.setStudySiteService(studySiteService);
         resource.setXmlSerializer(xmlSerializer);
         resource.setNowFactory(nowFactory);
-        resource.setScheduleRepresentationHelper(scheduleRepresentationHelper);
         return resource;
     }
 
@@ -103,13 +101,12 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
     }
+
     public void testGetJSONRepresentation() throws Exception {
         user.setStudySubjectAssignments(studySubjectAssignments);
         request.getAttributes().put(UriTemplateParameters.USERNAME.attributeName()+".json", USERNAME);
         expectGetCurrentUser();
         expect(userService.getUserByName(USERNAME)).andReturn(user);
-        expect(scheduleRepresentationHelper.createJSONRepresentation(studySubjectAssignments,
-                new ArrayList<StudySubjectAssignment>())).andReturn(new JsonRepresentation(new JSONObject()));
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
@@ -140,7 +137,6 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsCreatedXml();
-
     }
 
     public void testGet404WhenNoAssignmentsFoundForColleage() throws Exception {

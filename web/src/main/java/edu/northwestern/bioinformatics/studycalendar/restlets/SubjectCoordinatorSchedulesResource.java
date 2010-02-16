@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
@@ -31,7 +32,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     private User user;
     private NowFactory nowFactory;
     private StudySiteService studySiteService;
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private TemplateService templateService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -95,7 +96,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
             if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
                 return createXmlRepresentation(assignments);
             } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-                return scheduleRepresentationHelper.createJSONRepresentation(assignments,new ArrayList<StudySubjectAssignment>());
+                 return new ScheduleRepresentationHelper(assignments, new ArrayList<StudySubjectAssignment>(), nowFactory, templateService );
             } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
                 return createICSRepresentation(assignments,new ArrayList<StudySubjectAssignment>());
             }
@@ -132,8 +133,8 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     }
 
     @Required
-    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
-        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
     private  User getAuthenticatedUser() {

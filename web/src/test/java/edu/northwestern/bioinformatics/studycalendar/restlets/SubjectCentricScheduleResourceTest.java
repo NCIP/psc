@@ -77,7 +77,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         resource.setSubjectDao(subjectDao);
         resource.setAuthorizationService(authorizationService);
         resource.setNowFactory(nowFactory);
-        resource.setScheduleRepresentationHelper(scheduleRepresentationHelper);
         return resource;
     }
 
@@ -127,7 +126,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
-        expect(scheduleRepresentationHelper.createJSONRepresentation(studySubjectAssignments, new ArrayList<StudySubjectAssignment>())).andReturn(new JsonRepresentation(new JSONObject()));
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();

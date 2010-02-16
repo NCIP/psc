@@ -1,138 +1,239 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import static org.easymock.EasyMock.expect;
+
 import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
 
 
 /**
  * @author Jalpa Patel
  */
-public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
+public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase{
     private ScheduledActivity sa;
     private ScheduledActivityState state;
     private Activity activity;
-    private ScheduledStudySegment scheduledSegment;
     private List<ActivityProperty> properties;
     private List<ScheduledActivity> scheduledActivities;
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private StringWriter out;
+    private Epoch epoch;
+    private PlannedCalendar calendar;
+    private ScheduledStudySegment scheduledSegment;
 
+    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private TemplateService templateService;
+    private JsonGenerator generator;
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void setUp() throws Exception {
         super.setUp();
-        TemplateService templateService;templateService = new TemplateService();
-        scheduleRepresentationHelper =  new ScheduleRepresentationHelper();
-        scheduleRepresentationHelper.setTemplateService(templateService);
-        ActivityType activityType = createActivityType("Type1");
-        activity = createActivity("activity1", activityType);
-        properties = new ArrayList<ActivityProperty>();
-        properties.add(createActivityProperty("URI", "text", "activity defination"));
-        properties.add(createActivityProperty("URI", "template", "activity uri"));
 
+        NowFactory nowFactory = new StaticNowFactory();
+        templateService = registerMockFor(TemplateService.class);
         Study study = createSingleEpochStudy("S", "Treatment");
         Site site = createSite("site");
         Subject subject = createSubject("First", "Last");
-        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
+
+        calendar = new PlannedCalendar();
+        epoch = Epoch.create("Treatment", "A", "B", "C");
         epoch.setGridId("E");
-        StudySegment studySegment = epoch.getStudySegments().get(0);
+        calendar.addEpoch(epoch);
+        calendar.setGridId("calendarGridId");
+        calendar.setId(15);
+        study.setPlannedCalendar(calendar);
+
+        StudySegment studySegment = createNamedInstance("Screening", StudySegment.class);
         studySegment.setGridId("S");
+        studySegment.setId(100);
+        studySegment.setEpoch(epoch);
         Period p = createPeriod(3, 7, 1);
         studySegment.addPeriod(p);
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
-
+        StudySubjectAssignment ssa = createAssignment(study,site,subject);
         state = new Scheduled();
         state.setDate(DateTools.createDate(2009, Calendar.APRIL, 3));
         state.setReason("Just moved by 4 days");
         sa = createScheduledActivity(pa, 2009, Calendar.APRIL, 7, state);
+        sa.setGridId("1111");
         sa.setIdealDate(DateTools.createDate(2009, Calendar.APRIL, 7));
+        sa.setScheduledStudySegment(scheduledSegment);
 
+        out = new StringWriter();
+        generator = new JsonFactory().createJsonGenerator(out);
+
+        ActivityType activityType = createActivityType("Type1");
+        activity = createActivity("activity1", activityType);
+
+        properties = new ArrayList<ActivityProperty>();
+        ActivityProperty prop1 = createActivityProperty("URI", "text", "activity defination");
+        properties.add(prop1);
+        properties.add(createActivityProperty("URI", "template", "activity uri"));
         SortedSet<String> labels = new TreeSet<String>();
         labels.add("label1");
         labels.add("label2");
         sa.setLabels(labels);
-
+        sa.setActivity(activity);
         scheduledActivities =  new ArrayList<ScheduledActivity>();
         scheduledActivities.add(sa);
-        sa.setGridId("1111");
+
         scheduledSegment = createScheduledStudySegment(studySegment, DateTools.createDate(2009, Calendar.APRIL, 3));
         scheduledSegment.setGridId("GRID-SEG");
         scheduledCalendar.addStudySegment(scheduledSegment);
-        scheduledCalendar.setAssignment(setGridId("GRID-ASSIGN", createAssignment(study, site, subject)));
+        scheduledCalendar.setAssignment(setGridId("GRID-ASSIGN", ssa));
         sa.setScheduledStudySegment(scheduledSegment);
+
+
+
+        ssa.getScheduledCalendar().addStudySegment(createScheduledStudySegment(createDate(2006, Calendar.APRIL, 1), 365));
+        scheduleRepresentationHelper = new ScheduleRepresentationHelper(Arrays.asList(ssa), Collections.<StudySubjectAssignment>emptyList(), nowFactory, templateService);
     }
 
     public void testStateInfoInJson() throws Exception {
-        JSONObject stateInfo = ScheduleRepresentationHelper.createJSONStateInfo(state);
-        assertEquals("State mode is different", "scheduled", stateInfo.get("name"));
-        assertEquals("State date is different", "2009-04-03", stateInfo.get("date"));
-        assertEquals("State reason is different", state.getReason(), stateInfo.get("reason"));
+
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            replayMocks();
+                ScheduleRepresentationHelper.createJSONStateInfo(generator, state);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject stateInfo = outputAsObject();
+
+        assertEquals("State mode is different", "scheduled", stateInfo.getJSONObject("activities").get("name"));
+        assertEquals("State date is different", "2009-04-03", stateInfo.getJSONObject("activities").get("date"));
+        assertEquals("State reason is different", state.getReason(), stateInfo.getJSONObject("activities").get("reason"));
     }
 
     public void testStateContainsNoDate() throws Exception {
         ScheduledActivityState saState = new Canceled();
-        JSONObject stateInfo = ScheduleRepresentationHelper.createJSONStateInfo(saState);
-        assertEquals("State mode is different", "canceled", stateInfo.get("name"));
-        assertFalse("State date should not be present", stateInfo.has("date"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            replayMocks();
+                ScheduleRepresentationHelper.createJSONStateInfo(generator, saState);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject stateInfo = outputAsObject();
+        assertEquals("State mode is different", "canceled", stateInfo.getJSONObject("activities").get("name"));
+        assertFalse("State date should not be present", stateInfo.getJSONObject("activities").has("date"));
     }
-    
+
     public void testActivityPropertyInJson() throws Exception {
         ActivityProperty ap = createActivityProperty("URI","text","activity defination");
-        JSONObject apJson = ScheduleRepresentationHelper.createJSONActivityProperty(ap);
-        assertEquals("Namespace is different", ap.getNamespace(), apJson.get("namespace"));
-        assertEquals("Name is different", ap.getName(), apJson.get("name"));
-        assertEquals("Value is different", ap.getValue(), apJson.get("value"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            replayMocks();
+                ScheduleRepresentationHelper.createJSONActivityProperty(generator, ap);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject apJson = outputAsObject();
+
+        assertEquals("Namespace is different", ap.getNamespace(), apJson.getJSONObject("activities").get("namespace"));
+        assertEquals("Name is different", ap.getName(), apJson.getJSONObject("activities").get("name"));
+        assertEquals("Value is different", ap.getValue(), apJson.getJSONObject("activities").get("value"));
     }
-    
+
     public void testActivityInJson() throws Exception {
         activity.setProperties(properties);
-        JSONObject activityJson = ScheduleRepresentationHelper.createJSONActivity(activity);
-        assertEquals("No of elements are different", 3, activityJson.length());
-        assertEquals("Activity name is different", activity.getName(), activityJson.get("name"));
-        assertEquals("Activity Type is different", activity.getType().getName(), activityJson.get("type"));
-        assertEquals("no of elements is different", 2,((JSONArray)activityJson.get("properties")).length());
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            replayMocks();
+                ScheduleRepresentationHelper.createJSONActivity(generator, activity);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject activityJson = outputAsObject();
+        assertEquals("No of elements are different", 3, activityJson.getJSONObject("activities").length());
+        assertEquals("Activity name is different", activity.getName(), activityJson.getJSONObject("activities").get("name"));
+        assertEquals("Activity Type is different", activity.getType().getName(), activityJson.getJSONObject("activities").get("type"));
+        assertEquals("no of elements is different", 2,((JSONArray)activityJson.getJSONObject("activities").get("properties")).length());
     }
 
     public void testActivityWhenPropertiesAreEmpty() throws Exception {
-        JSONObject activityJson = ScheduleRepresentationHelper.createJSONActivity(activity);
-        assertEquals("No of elements are different", 2, activityJson.length());
-        assertTrue(activityJson.isNull("properties"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            replayMocks();
+                ScheduleRepresentationHelper.createJSONActivity(generator, activity);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject activityJson = outputAsObject();
+        assertEquals("No of elements are different", 2, activityJson.getJSONObject("activities").length());
+        assertTrue(activityJson.getJSONObject("activities").isNull("properties"));
     }
 
     public void testScheduledActivityInJson() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        assertEquals("Grid Id is different", sa.getGridId(), jsonSA.get("id"));
+
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonSA = outputAsObject();
+
+        assertEquals("Grid Id is different", sa.getGridId(), jsonSA.getJSONObject("activities").get("id"));
         assertEquals("Study is different", sa.getScheduledStudySegment().getStudySegment().
-                getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier(), jsonSA.get("study"));
-        assertEquals("Study Segment is different", sa.getScheduledStudySegment().getName(), jsonSA.get("study_segment"));
-        assertEquals("Ideal Date is different", "2009-04-07", jsonSA.get("ideal_date"));
-        assertEquals("Planned day is different", "6", jsonSA.get("plan_day"));
+                getEpoch().getPlannedCalendar().getStudy().getAssignedIdentifier(), jsonSA.getJSONObject("activities").get("study"));
+        assertEquals("Study Segment is different", sa.getScheduledStudySegment().getName(), jsonSA.getJSONObject("activities").get("study_segment"));
+        assertEquals("Ideal Date is different", "2009-04-07", jsonSA.getJSONObject("activities").get("ideal_date"));
+        assertEquals("Planned day is different", "6", jsonSA.getJSONObject("activities").get("plan_day"));
     }
 
     public void testScheduledActivityIncludesAssignmentName() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonSA = outputAsObject();
         assertEquals("Missing assignment name",
-            "S", ((JSONObject) jsonSA.get("assignment")).get("name"));
+           "S" , ((JSONObject) jsonSA.getJSONObject("activities").get("assignment")).get("name"));
     }
 
     public void testScheduledActivityIncludesAssignmentId() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonSA = outputAsObject();
         assertEquals("Missing assignment name",
-            "GRID-ASSIGN", ((JSONObject) jsonSA.get("assignment")).get("id"));
+            "GRID-ASSIGN", ((JSONObject) jsonSA.getJSONObject("activities").get("assignment")).get("id"));
     }
 
     public void testScheduledActivityCurrentState() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        JSONObject currentState = (JSONObject) jsonSA.get("current_state");
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();       
+        JSONObject jsonSA = outputAsObject();
+        JSONObject currentState = (JSONObject) jsonSA.getJSONObject("activities").get("current_state");
         assertNotNull("current state is missing", currentState);
         assertEquals("current state reason incorrect", "Just moved by 4 days", currentState.get("reason"));
         assertEquals("current state date incorrect", "2009-04-03", currentState.get("date"));
@@ -140,36 +241,85 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
 
     public void testScheduledActivityStateHistoryContainsAllStates() throws Exception {
-        assertEquals(2,
-            ((JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history")).length());
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        JSONArray history = actual.getJSONObject("activities").getJSONArray("state_history");
+        assertEquals(2, history.length());
     }
 
     public void testScheduledActivityStateHistoryStartsWithInitial() throws Exception {
-        JSONArray history = (JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
+      generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        JSONArray history = actual.getJSONObject("activities").getJSONArray("state_history");
         JSONObject first = (JSONObject) history.get(0);
         assertEquals("Incorrect date", "2009-04-07", first.get("date"));
     }
 
     public void testScheduledActivityStateHistoryEndsWithCurrent() throws Exception {
-        JSONArray history = (JSONArray) scheduleRepresentationHelper.createJSONScheduledActivity(sa).get("state_history");
+      generator.writeStartObject();
+        generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        JSONArray history = actual.getJSONObject("activities").getJSONArray("state_history");
         JSONObject first = (JSONObject) history.get(1);
         assertEquals("Incorrect date", "2009-04-03", first.get("date"));
     }
 
     public void testScheduleDayWiseActivitiesInJson() throws Exception {
-        JSONObject jsonScheduleActivities =  scheduleRepresentationHelper.createJSONScheduledActivities(true, scheduledActivities);
-        assertEquals("no of elements is different", 2,jsonScheduleActivities.length());
-        assertEquals("has no hidden activities", true, jsonScheduleActivities.get("hidden_activities"));
+        generator.writeStartObject();
+            generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivities(generator, true, scheduledActivities);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonScheduleActivities = outputAsObject();
+        assertEquals("no of elements is different", 1,jsonScheduleActivities.length());
+        assertTrue("has no hidden activities", new Boolean((String)jsonScheduleActivities.getJSONObject("activities").get("hidden_activities")));
     }
 
+
     public void testWhenHiddenActivitiesIsNull() throws Exception {
-        JSONObject jsonScheduleActivities =  scheduleRepresentationHelper.createJSONScheduledActivities(null, scheduledActivities);
+        generator.writeStartObject();
+            generator.writeFieldName("activities");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONScheduledActivities(generator, null, scheduledActivities);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject jsonScheduleActivities = outputAsObject();
         assertTrue(jsonScheduleActivities.isNull("hidden_activities"));
         assertEquals("no of elements is different", 1,jsonScheduleActivities.length());
     }
 
     public void testScheduledStudySegmentsInJson() throws Exception {
-        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        generator.writeStartObject();
+            generator.writeFieldName("study_segments");
+
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), Epoch.class)).andReturn(epoch);
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+            replayMocks();
+                scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+            verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        JSONObject jsonSegment = actual.getJSONObject("study_segments");
         assertEquals("has different name", scheduledSegment.getName(), jsonSegment.get("name"));
         assertEquals("missing ID", scheduledSegment.getGridId(), jsonSegment.get("id"));
 
@@ -192,36 +342,106 @@ public class ScheduleRepresentationHelperTest extends StudyCalendarTestCase{
     }
 
     public void testScheduledSegmentIncludesAssignmentName() throws Exception {
-        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
-        assertEquals("Missing assignment name", "S",
-            ((JSONObject) jsonSegment.get("assignment")).get("name"));
+        generator.writeStartObject();
+        generator.writeFieldName("assignment");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), Epoch.class)).andReturn(epoch);
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing assignment name", "Treatment: Screening",
+            (actual.getJSONObject("assignment")).get("name"));
+    }
+
+    public void testCreateJSONStudySegment() throws Exception {
+        generator.writeStartObject();
+            generator.writeFieldName("study_segments");
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), Epoch.class)).andReturn(epoch);
+            expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertTrue("Missing key", actual.has("study_segments"));
+        assertTrue("Missing properties", actual.getJSONObject("study_segments").has("id"));
+        assertTrue("Missing properties", actual.getJSONObject("study_segments").has("name"));
     }
 
     public void testScheduledSegmentIncludesAssignmentId() throws Exception {
-        JSONObject jsonSegment = scheduleRepresentationHelper.createJSONStudySegment(scheduledSegment);
+        generator.writeStartObject();
+        generator.writeFieldName("study_segments");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), Epoch.class)).andReturn(epoch);
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONStudySegment(generator, scheduledSegment);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
         assertEquals("Missing assignment id", "GRID-ASSIGN",
-            ((JSONObject) jsonSegment.get("assignment")).get("id"));
+            ((JSONObject) actual.getJSONObject("study_segments").get("assignment")).get("id"));
     }
 
     public void testDetailsInJson() throws Exception {
         sa.setDetails("Detail");
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        assertEquals("Missing details", "Detail", jsonSA.get("details"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing details", "Detail", actual.getJSONObject("activities").get("details"));
     }
 
     public void testMissingDetailsInJson() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        assertTrue(jsonSA.isNull("details"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertTrue(actual.getJSONObject("activities").isNull("details"));
     }
 
     public void testConditionalInJson() throws Exception {
         sa.getPlannedActivity().setCondition("Conditional Details");
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        assertEquals("Missing conditions", "Conditional Details", jsonSA.get("condition"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing conditions", "Conditional Details", actual.getJSONObject("activities").get("condition"));
     }
 
     public void testLabelsInJson() throws Exception {
-        JSONObject jsonSA = scheduleRepresentationHelper.createJSONScheduledActivity(sa);
-        assertEquals("Missing labels", "label1 label2", jsonSA.get("labels"));
+        generator.writeStartObject();
+        generator.writeFieldName("activities");
+        expect(templateService.findAncestor(scheduledSegment.getStudySegment(), PlannedCalendar.class)).andReturn(calendar);
+        replayMocks();
+            scheduleRepresentationHelper.createJSONScheduledActivity(generator, sa);
+        verifyMocks();
+        generator.writeEndObject();
+        JSONObject actual = outputAsObject();
+        assertEquals("Missing labels", "label1 label2", actual.getJSONObject("activities").get("labels"));
+    }
+
+    private JSONObject outputAsObject() throws IOException {
+        generator.close();
+        try {
+            return new JSONObject(out.toString());
+        } catch (JSONException e) {
+            log.info("Generated JSON: {}", out.toString());
+            fail("Generated JSON is not valid: " + e.getMessage());
+            return null; // Unreachable
+        }
     }
 }

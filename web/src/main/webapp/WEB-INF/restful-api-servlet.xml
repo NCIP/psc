@@ -211,9 +211,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">
     </bean>
 
-    <bean id="scheduleRepresentationHelper" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper"/>
-
     <bean name="/subjects/{subject-identifier}/schedules/activities"
           id="batchUpdatesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BatchUpdatesResource">

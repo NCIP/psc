@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
@@ -40,7 +40,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private Subject subject;
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
+    private TemplateService templateService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -85,7 +85,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visibleAssignments);
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return scheduleRepresentationHelper.createJSONRepresentation(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments));
+            return new ScheduleRepresentationHelper(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory, templateService );
         } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
             return  createICSRepresentation(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments));
         }
@@ -126,7 +126,7 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     }
 
     @Required
-    public void setScheduleRepresentationHelper(ScheduleRepresentationHelper scheduleRepresentationHelper) {
-        this.scheduleRepresentationHelper = scheduleRepresentationHelper;
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }
