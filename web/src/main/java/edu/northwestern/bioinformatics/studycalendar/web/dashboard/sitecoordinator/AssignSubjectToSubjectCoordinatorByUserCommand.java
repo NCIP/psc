@@ -14,6 +14,7 @@ public class AssignSubjectToSubjectCoordinatorByUserCommand {
     private Study study;
     private Site site;
     private String selected;
+    private final String UNASSIGNED = "unassigned";
 
     public void assignSubjectsToSubjectCoordinator() {
         StudySite studySite = findStudySite(study, site);
@@ -70,5 +71,9 @@ public class AssignSubjectToSubjectCoordinatorByUserCommand {
 
     public String getSelected() {
         return selected;
+    }
+
+    public boolean isUnassigned(String subjectCoordinatorIdString){
+        return subjectCoordinatorIdString.equals(UNASSIGNED);
     }
 }
