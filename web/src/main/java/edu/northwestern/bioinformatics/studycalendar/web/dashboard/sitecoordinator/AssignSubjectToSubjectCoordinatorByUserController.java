@@ -44,10 +44,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     private SiteDao siteDao;
     private ApplicationSecurityManager applicationSecurityManager;
 
-    private String subjectCoordinatorIdString = null;
-    private Integer subjectCoordinatorId = null;
-    private User subjectCoordinator = null;
-    private final String UNASSIGNED = "unassigned";
+
 
     public AssignSubjectToSubjectCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/assignSubjectToSubjectCoordinator");
@@ -57,42 +54,43 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     //We have to remember 3 cases to process here: when selected is null, when selected is "unassigned" and when selected is actually the existing user
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();
-
+        AssignSubjectToSubjectCoordinatorByUserCommand command = new AssignSubjectToSubjectCoordinatorByUserCommand();
         User siteCoordinator = getSiteCoordinator();
+        String subjectCoordinatorIdString = ServletRequestUtils.getStringParameter(request, "selected");
+        Integer subjectCoordinatorId = null;
 
-        subjectCoordinatorIdString = ServletRequestUtils.getStringParameter(request, "selected");
         Map<Site, Map<Study, List<Subject>>> displayMap = null;
-        Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = null;
+         Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = null;
 
-        if (subjectCoordinatorIdString != null) {
-            if (subjectCoordinatorIdString.equals(UNASSIGNED)) {
-            displayMap = buildDisplayMap(siteCoordinator, true);
-            studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMapForUnassigned(siteCoordinator);
-            } else {
-                subjectCoordinatorId = Integer.parseInt(subjectCoordinatorIdString);
-                if (subjectCoordinatorId != null) {
-                    subjectCoordinator = userDao.getById(subjectCoordinatorId);
+         if (subjectCoordinatorIdString != null) {
+             if (command.isUnassigned(subjectCoordinatorIdString)) {
+                displayMap = buildDisplayMap(siteCoordinator, true);
+                studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMapForUnassigned(siteCoordinator);
+             } else {
+                 subjectCoordinatorId = Integer.parseInt(subjectCoordinatorIdString);
+                 if (subjectCoordinatorId != null) {
+                     User subjectCoordinator = userDao.getById(subjectCoordinatorId);
+                     command.setSubjectCoordinator(subjectCoordinator);
+                     displayMap = buildDisplayMap(subjectCoordinator, false);
+                     studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
+                 }
+             }
+         } else {
+             displayMap = buildDisplayMap(null, false);
+             studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(null);
+         }
 
-                    displayMap = buildDisplayMap(subjectCoordinator, false);
-                    studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
-                }
-            }
-        } else {
-            displayMap = buildDisplayMap(null, false);
-            studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(null);
-        }
+         refData.put("displayMap", displayMap);
+         refData.put("subjectCoordinatorStudySites", studySiteParticipCoordMap);
+         refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
+         if (subjectCoordinatorIdString!= null && command.isUnassigned(subjectCoordinatorIdString)) {
+             refData.put("selectedId", "unassigned");
+         } else {
+             refData.put("selectedId", subjectCoordinatorId);
+         }
 
-        refData.put("displayMap", displayMap);
-        refData.put("subjectCoordinatorStudySites", studySiteParticipCoordMap);
-        refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
-        if (subjectCoordinatorIdString!= null && subjectCoordinatorIdString.equals(UNASSIGNED)) {
-            refData.put("selectedId", "unassigned");
-        } else {
-            refData.put("selectedId", subjectCoordinatorId);
-        }
-
-        return refData;
-    }
+         return refData;
+     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
@@ -113,10 +111,11 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("study", command.getStudy());
         model.put("site", command.getSite());
-
-        if (subjectCoordinatorIdString != null && !subjectCoordinatorIdString.equals(UNASSIGNED)) {
+        if (command.getSelected() != null && !command.isUnassigned(command.getSelected())) {
+            Integer subjectCoordinatorId = Integer.parseInt(command.getSelected());
+            User subjectCoordinator = userDao.getById(subjectCoordinatorId);
             model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), subjectCoordinator, false));
-        } else if (subjectCoordinatorIdString != null && subjectCoordinatorIdString.equals(UNASSIGNED)) {
+        } else if (command.getSelected() != null && command.isUnassigned(command.getSelected())) {
             model.put("subjects", buildSubjects(findStudySite(command.getStudy(), command.getSite()), getSiteCoordinator(), true));
         }
         return new ModelAndView("dashboard/sitecoordinator/ajax/displaySubjects", model);
