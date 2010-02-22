@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -61,5 +62,14 @@ public class MockSiteProviderTest extends TestCase {
         assertEquals("Wrong number of hits", 1, actual.size());
         assertEquals("Wrong site", "MN026", actual.get(0).getAssignedIdentifier());
         assertEquals("Mayo Clinic Cancer Center", actual.get(0).getName());
+    }
+
+    @SuppressWarnings({"ConstantConditions"})
+    public void testIsRefreshable() throws Exception {
+        assertTrue(provider instanceof RefreshableProvider);
+    }
+
+    public void testRefreshesEveryFifteenSeconds() throws Exception {
+        assertEquals(15, (int) provider.getRefreshInterval());
     }
 }
