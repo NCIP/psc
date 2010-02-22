@@ -2,23 +2,27 @@ package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.nwu.bioinformatics.commons.ThrowableUtils;
 import edu.nwu.bioinformatics.commons.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
  */
 public class ExceptionMailMessage extends StudyCalendarMailMessage {
+    private static final Logger log = LoggerFactory.getLogger(ExceptionMailMessage.class);
+
     private static final String DISPLAY_NULL = "[null]";
 
     private HttpServletRequest request;
@@ -85,7 +89,7 @@ public class ExceptionMailMessage extends StudyCalendarMailMessage {
     private Collection<String> convertCollection(Collection collection) {
         Collection<String> converted = new ArrayList<String>(collection.size());
         for (Object o : collection) {
-            converted.add(o == null ? DISPLAY_NULL : o.toString());
+            converted.add(safeToString(o));
         }
         return converted;
     }
@@ -161,7 +165,7 @@ public class ExceptionMailMessage extends StudyCalendarMailMessage {
         public static StringElement create(String name, Object value) {
             return new StringElement(
                 name,
-                value == null ? DISPLAY_NULL : value.toString(),
+                safeToString(value),
                 value == null ? null : value.getClass().getName()
             );
         }
@@ -174,6 +178,15 @@ public class ExceptionMailMessage extends StudyCalendarMailMessage {
 
         protected Collection<String> getFilteredPasswordValue() {
             return Arrays.asList(FILTERED_PASSWORD_VALUE);
+        }
+    }
+
+    private static String safeToString(Object value) {
+        try {
+            return value == null ? DISPLAY_NULL : value.toString();
+        } catch (Throwable th) {
+            log.warn("Error while generating exception mail message", th);
+            return String.format("[error extracting value: %s: %s]", th.getClass().getName(), th.getMessage());
         }
     }
 }

@@ -44,6 +44,19 @@ public class ExceptionMailMessageTest extends MailMessageTestCase<ExceptionMailM
         assertContains(msg, "\nApplication attributes:\n");
     }
 
+    public void testFailingStringificationDoesNotPreventRendering() throws Exception {
+        request.setAttribute("bad_one", new ToStringFailer("I have bad news"));
+
+        String msg = getMessageText();
+        assertContains(msg, "\n    bad_one\n        [error extracting value: java.lang.RuntimeException: I have bad news]\n");
+    }
+
+    public void testFailingStringificationOfCollectionElementDoesNotPreventRendering() throws Exception {
+        request.setAttribute("bad_one", Arrays.asList("happy", new ToStringFailer("I refuse"), "happy"));
+        String msg = getMessageText();
+        assertContains(msg, "\n    bad_one\n        happy\n        [error extracting value: java.lang.RuntimeException: I refuse]\n        happy\n");
+    }
+
     public void testParametersIncluded() {
         request.addParameter("Lethem", "Fortress of Solitude");
         request.addParameter("Dick", new String[] { "Ubik", "Valis", "The Man in the High Castle" });
@@ -154,4 +167,16 @@ public class ExceptionMailMessageTest extends MailMessageTestCase<ExceptionMailM
         return getMailMessageFactory().createExceptionMailMessage(exception, request);
     }
 
+    private static class ToStringFailer {
+        private String msg;
+
+        private ToStringFailer(String msg) {
+            this.msg = msg;
+        }
+
+        @Override
+        public String toString() {
+            throw new RuntimeException(msg);
+        }
+    }
 }
