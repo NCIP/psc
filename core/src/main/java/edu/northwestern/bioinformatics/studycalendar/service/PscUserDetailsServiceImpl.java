@@ -5,10 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetai
 import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of Acegi's {@UserDetailsService} for PSC.
  */
+@Transactional(readOnly = true)
 public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     private UserService userService;
 
