@@ -341,6 +341,9 @@ define "psc" do
       bnd.wrap!
       bnd.name = "PSC Mock Data Providers"
       bnd.autostart = false
+      bnd.import_packages <<
+        "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+        "gov.nih.nci.cabig.ctms.domain"
       compile.with project('providers:api').and_dependencies, SPRING
       test.with UNIT_TESTING, project('domain').test_dependencies
       package(:jar)
@@ -352,6 +355,9 @@ define "psc" do
         bnd.wrap!
         bnd.name = "PSC COPPA Data Providers Common Library"
         bnd.autostart = false
+        bnd.import_packages <<
+          "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+          "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('providers:api').and_dependencies, SPRING, OSGI,
           GLOBUS, CAGRID, COPPA
@@ -370,7 +376,9 @@ define "psc" do
         bnd.import_packages <<
           "!org.globus.gsi" << "*" <<
           "org.apache.axis.types" <<
-          "org.apache.axis.message.addressing"
+          "org.apache.axis.message.addressing" <<
+          "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+          "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('psc:providers:coppa:common').and_dependencies
         package(:jar)
@@ -385,7 +393,9 @@ define "psc" do
           "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub.Activator"
         bnd.import_packages.clear
         bnd.import_packages <<
-          "!org.globus.gsi" << "*"
+          "!org.globus.gsi" << "*" <<
+          "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+          "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('psc:providers:coppa:common').and_dependencies, CIH, GLOBUS_UNDUPLICABLE
         test.using(:junit).with UNIT_TESTING
