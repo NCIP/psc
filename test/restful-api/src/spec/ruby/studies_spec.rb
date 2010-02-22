@@ -69,8 +69,8 @@ describe "/studies" do
 
     describe "with assigned sites" do
       before do
-        application_context['templateService'].assignTemplateToSites(@nu480, [northwestern])
-        application_context['templateService'].assignTemplateToSites(@ecog170, [northwestern, mayo])
+        application_context['studySiteService'].assignStudyToSites(@nu480, [northwestern])
+        application_context['studySiteService'].assignStudyToSites(@ecog170, [northwestern, mayo])
       end
 
       it "shows appropriate released studies released to an NU site coord" do
