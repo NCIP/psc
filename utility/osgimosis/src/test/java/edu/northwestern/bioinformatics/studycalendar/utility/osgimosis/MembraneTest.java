@@ -1,13 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.utility.osgimosis;
 
-import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.*;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.DefaultPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.FinalPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.NonDefaultPerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.Person;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonProblem;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PersonService;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.PrivatePerson;
+import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.ProtectedPerson;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PersonServiceImpl;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people.impl.PieMaker;
 
 import java.awt.*;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -18,13 +30,17 @@ public class MembraneTest extends OsgimosisTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        membrane = new Membrane(Thread.currentThread().getContextClassLoader(),
+        membrane = new Membrane(defaultClassLoader(),
             "edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.people");
+    }
+
+    private ClassLoader defaultClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
     }
 
     public void testClassesAreIncompatibleWithoutBridging() throws Exception {
         Class<?> cFromA = classFromLoader(DefaultPerson.class, loaderA);
-        Class<?> iFromB = classFromLoader(Person.class, getClass().getClassLoader());
+        Class<?> iFromB = classFromLoader(Person.class, defaultClassLoader());
 
         assertFalse("Class and interface should be incompatible", iFromB.isAssignableFrom(cFromA));
     }
@@ -192,7 +208,7 @@ public class MembraneTest extends OsgimosisTestCase {
         assertTrue("Wrapped object should be an array: " + near.getClass().getName(),
             near.getClass().isArray());
         assertEquals("Wrapped object should be from context loader",
-            Thread.currentThread().getContextClassLoader(),
+            defaultClassLoader(),
             near.getClass().getClassLoader());
         assertTrue("Wrapped object should an array of Person: " + near.getClass().getName(),
             near instanceof Person[]);
@@ -212,6 +228,20 @@ public class MembraneTest extends OsgimosisTestCase {
         Person[] people = new Person[] { new DefaultPerson("Joe", "everyman"), new DefaultPerson("Jo", "another-one") };
         Person result = bridgedPersonService().pickOne(people);
         assertEquals("Wrong person picked", "Joe", result.getName());
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
+    public void testBridgingTheSameKindOfCollectionBothWaysWorks() throws Exception {
+        List fromA = new ArrayList(); fromA.add(classFromLoader(DefaultPerson.class, loaderA).newInstance());
+        List fromDefault = new ArrayList(); fromDefault.add(new DefaultPerson());
+        Object inDefaultFromA = membrane.traverse(fromA, defaultClassLoader());
+        Object inAFromDefault = membrane.traverse(fromDefault, loaderA);
+
+        Method get = List.class.getMethod("get", Integer.TYPE);
+        assertSame("Item from A not proxied into default CL", defaultClassLoader(),
+            get.invoke(inDefaultFromA, 0).getClass().getClassLoader());
+        assertSame("Item from default CL not proxied into A", loaderA,
+            get.invoke(inAFromDefault, 0).getClass().getClassLoader());
     }
 
     private PersonService bridgedPersonService() throws InstantiationException, IllegalAccessException, ClassNotFoundException {

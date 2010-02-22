@@ -7,7 +7,6 @@ import org.slf4j.MDC;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +23,14 @@ public class Membrane {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private Collection<String> sharedPackages;
-    private Map<Class, Encapsulator> encapsulators;
+    private Map<EncapsulatorCacheKey, Encapsulator> encapsulators;
 
     private BidirectionalObjectStore cache;
     private ClassLoader nearClassLoader;
     private Map<String, Object[]> proxyConstructorParams;
 
     public Membrane() {
-        this.encapsulators = new IdentityHashMap<Class, Encapsulator>();
+        this.encapsulators = new HashMap<EncapsulatorCacheKey, Encapsulator>();
         this.cache = new BidirectionalObjectStore();
         this.proxyConstructorParams = new HashMap<String, Object[]>();
     }
@@ -151,13 +150,15 @@ public class Membrane {
     }
 
     private Encapsulator getEncapsulator(Object toEncapsulate, ClassLoader toEncapsulateFor, ClassLoader toEncapsulateBackTo) {
-        if (!encapsulators.containsKey(toEncapsulate.getClass())) {
-            log.trace(" - Creating new Encapsulator",
-                toEncapsulate.getClass().getName(), toEncapsulateFor);
-            encapsulators.put(toEncapsulate.getClass(), new DefaultEncapsulatorCreator(
+        EncapsulatorCacheKey key = new EncapsulatorCacheKey(toEncapsulate.getClass().getName(), toEncapsulateFor, toEncapsulateBackTo);
+        if (!encapsulators.containsKey(key)) {
+            log.trace(" - Creating new Encapsulator");
+            encapsulators.put(key, new DefaultEncapsulatorCreator(
                 this, toEncapsulate.getClass(), toEncapsulateFor, toEncapsulateBackTo, proxyConstructorParams).create());
+        } else {
+            log.trace(" - Using cached Encapsulator");
         }
-        return encapsulators.get(toEncapsulate.getClass());
+        return encapsulators.get(key);
     }
 
     ////// CONFIGURATION
@@ -190,5 +191,34 @@ public class Membrane {
             append('@').
             append(Integer.toHexString(System.identityHashCode(this))).
             toString();
+    }
+
+    private static class EncapsulatorCacheKey {
+        private String className;
+        private ClassLoader clFor, clBackTo;
+
+        private EncapsulatorCacheKey(String className, ClassLoader clFor, ClassLoader clBackTo) {
+            this.className = className;
+            this.clFor = clFor;
+            this.clBackTo = clBackTo;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof EncapsulatorCacheKey)) return false;
+
+            EncapsulatorCacheKey that = (EncapsulatorCacheKey) o;
+
+            return clBackTo == that.clBackTo && clFor == that.clFor && className.equals(that.className);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = className != null ? className.hashCode() : 0;
+            result = 31 * result + (clFor != null ? clFor.hashCode() : 0);
+            result = 31 * result + (clBackTo != null ? clBackTo.hashCode() : 0);
+            return result;
+        }
     }
 }
