@@ -126,6 +126,7 @@ public abstract class AbstractConsumer<D extends Providable, P extends DataProvi
 
         protected AbstractRefresh() {
             providers = getProviders();
+            log.debug("{} provider(s) live", providers.size());
         }
 
         public List<D> execute(List<D> in) {
@@ -137,6 +138,8 @@ public abstract class AbstractConsumer<D extends Providable, P extends DataProvi
         }
 
         private Map<String, List<D>> findToUpdate(List<D> source) {
+            log.debug("Looking for instances to update from a list of {} source item(s)", source.size());
+
             Map<String, List<D>> toUpdate = new HashMap<String, List<D>>();
 
             Timestamp now = getNowFactory().getNowTimestamp();
@@ -173,6 +176,8 @@ public abstract class AbstractConsumer<D extends Providable, P extends DataProvi
         }
 
         protected void refreshFromProvider(P provider, List<D> currentVersions) {
+            log.debug("Attempting to update {} instances from provider '{}'", currentVersions.size(), provider.providerToken());
+
             List<D> newVersions;
             try {
                 newVersions = loadNewVersions(provider, currentVersions);
