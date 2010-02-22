@@ -142,4 +142,9 @@ public class EncapsulatedCollection<E> implements Collection<E> {
             return farCollection.iterator().next().getClass().getClassLoader();
         }
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ':' + getFarCollection().toString();
+    }
 }

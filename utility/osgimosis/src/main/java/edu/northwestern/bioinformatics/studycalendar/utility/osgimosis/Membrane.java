@@ -89,6 +89,15 @@ public class Membrane {
             }
 
             log.trace(" - Into {}", newCounterpartClassLoader);
+            log.trace("   (using {} as the reverse)", newCounterpartReverseClassLoader);
+            if (log.isTraceEnabled()) {
+                StackTraceElement[] stacktrace;
+                try { throw new RuntimeException(); } catch (RuntimeException re) { stacktrace = re.getStackTrace(); }
+                log.trace(" - At {}", stacktrace[0]);
+                for (int i = 1; i < stacktrace.length; i++) {
+                    log.trace("      {}", stacktrace[i]);
+                }
+            }
             if (cache.get(object) == null) {
                 try {
                     Encapsulator encapsulator = getEncapsulator(object, newCounterpartClassLoader, newCounterpartReverseClassLoader);
@@ -159,7 +168,7 @@ public class Membrane {
     }
 
     public void setSharedPackages(Collection<String> sharedPackages) {
-        log.trace("sharedPackages={}", nearClassLoader);
+        log.trace("sharedPackages={}", sharedPackages);
         this.sharedPackages = sharedPackages;
     }
 
