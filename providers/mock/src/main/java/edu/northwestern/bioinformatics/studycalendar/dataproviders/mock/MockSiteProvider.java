@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.SiteProvider;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class MockSiteProvider implements SiteProvider {
+public class MockSiteProvider implements SiteProvider, RefreshableProvider {
     private Map<String, String> sites;
 
     public Site getSite(String assignedIdentifier) {
@@ -38,6 +39,10 @@ public class MockSiteProvider implements SiteProvider {
 
     public String providerToken() {
         return MockDataProviderTools.PROVIDER_TOKEN;
+    }
+
+    public Integer getRefreshInterval() {
+        return 15;
     }
 
     private Site createSite(String assignedIdentifier) {
