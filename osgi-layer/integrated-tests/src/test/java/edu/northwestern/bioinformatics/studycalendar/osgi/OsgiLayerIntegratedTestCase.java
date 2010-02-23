@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class OsgiLayerIntegratedTestCase extends TestCase {
+public abstract class OsgiLayerIntegratedTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
