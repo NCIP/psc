@@ -365,25 +365,6 @@ define "psc" do
         package(:jar)
       end
 
-      define "direct" do
-        bnd.wrap!
-        bnd.name = "PSC COPPA Direct Data Providers"
-        bnd.description = "A suite of data providers which communicate directly with COPPA"
-        bnd.autostart = false
-        bnd['Bundle-Activator'] =
-          "edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.direct.Activator"
-        bnd.import_packages.clear
-        bnd.import_packages <<
-          "!org.globus.gsi" << "*" <<
-          "org.apache.axis.types" <<
-          "org.apache.axis.message.addressing" <<
-          "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
-          "gov.nih.nci.cabig.ctms.domain"
-
-        compile.with project('psc:providers:coppa:common').and_dependencies
-        package(:jar)
-      end
-
       define "ihub" do
         bnd.wrap!
         bnd.name = "PSC COPPA Integration Hub Data Providers"
