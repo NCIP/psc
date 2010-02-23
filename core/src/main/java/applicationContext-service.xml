@@ -99,6 +99,7 @@
     <bean id="pscUserDetailsService"
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl">
         <property name="userService" ref="userService"/>
+        <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <!-- DATA PROVIDERS -->

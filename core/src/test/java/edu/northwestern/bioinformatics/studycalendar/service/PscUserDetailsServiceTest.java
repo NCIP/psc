@@ -3,14 +3,18 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.acegisecurity.DisabledException;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
     private User user;
     private UserService userService;
+    private PlatformTransactionManager transactionManager;
     private PscUserDetailsServiceImpl service;
 
     @Override
@@ -18,9 +22,17 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
         super.setUp();
 
         userService = registerMockFor(UserService.class);
+        transactionManager = registerMockFor(PlatformTransactionManager.class);
+
+        DefaultTransactionStatus status = new DefaultTransactionStatus(null, true, true, true, true, null);
+        expect(transactionManager.getTransaction((TransactionDefinition) notNull())).
+            andStubReturn(status);
+        transactionManager.rollback(status);
+        expectLastCall().asStub();
 
         service = new PscUserDetailsServiceImpl();
         service.setUserService(userService);
+        service.setTransactionManager(transactionManager);
 
         user = Fixtures.createUser(1, "John", 1L, true);
     }
