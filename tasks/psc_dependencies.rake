@@ -294,7 +294,7 @@ GLOBUS_UNDUPLICABLE = struct(
 )
 
 # Some of this is generic caGrid/introduce stuff -- split it out later
-COPPA_VERSION = "3.0.0.PSC001"
+COPPA_VERSION = "3.1.0.PSC001"
 # fragment client-config.wsdd (grid/globus) jars onto the globus metabundle
 # client_config_bnd = { "Fragment-Host" => "edu.northwestern.bioinformatics.osgi.org.globus.all" }
 COPPA = struct(
