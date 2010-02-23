@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>psc.schedule.preview.Controls | JavaScript Testing Results</title>
+  <link rel="stylesheet" href="/screw.css" type="text/css" charset="utf-8" />
+
+  <script type="text/javascript">
+    window.location.hash = 'cleared'; // ensure that the hash doesn't contain anything in particular on test start
+  </script>
+  <script type="text/javascript" src="/shenandoah/browser-runner.js"></script>
+</head>
+<body>
+<div id="overlay" style="display: none;"></div>
+    <div id="lightbox">
+        <div id="edit-property-lightbox">
+
+            <h1>Editing Activity Uri</h1>
+            <div class="row">
+                <div class="label">
+                    <label for="edit-property-textValue">Text</label>
+                </div>
+                <div class="value">
+                    <input type="text" class="text" id="edit-property-textValue" hint="None" size="30"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <label for="edit-property-templateValue">Template</label>
+                </div>
+                <div class="value">
+                    <input type="text" class="text" id="edit-property-templateValue" hint="None" size="30" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">URI</div>
+                <div class="value" id="uriProperties">
+                    <table width="100%" id="propertyTable" class="propertyTable">
+
+                    </table>
+                </div>
+                <div class="value"><a class="newUriBtn" id="newUriBtn" href='#newUriBtn'>New Uri</a></div>
+            </div>
+
+            <div class="row">
+                <div class="submit">
+                    <input type="button" value="Done" id="edit-property-done"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

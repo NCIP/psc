@@ -22,7 +22,7 @@ Object.extend(SC.AP, {
     var rowClass = SC.AP.findSelectIndexClass(property)
     SC.AP.PROPERTY_OBSERVERS = { }
     $w ("templateValue textValue").each(function(propertyType) {
-        var propertySpan = $(property).select("." + propertyType).first();
+        var propertySpan = $(property).up().down('.' + propertyType, 0);
         var propertyInput = $('edit-property-' + propertyType);
         propertyInput.value = propertySpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
         SC.applyInputHint(propertyInput)
@@ -54,17 +54,17 @@ Object.extend(SC.AP, {
 
     var oldUri = $('oldUri ' +rowClass);
     if (oldUri != null) {
-       var keyValue = $(oldUri).select('.listKey').first().value
+       var keyValue = $(oldUri).up().down('.listKey', 0).value
        SC.AP.addValues(keyValue, "existingUri")
     }
 
     var newId = $('newUri ' +rowClass);
     if (newId != null) {
-       if (!$(newId).select('.textValue').first().innerHTML.empty()
-           && !$(newId).select('.templateValue').first().innerHTML.empty()) {
-           $(newId).select(".textName").first().update("Text: ")
-           $(newId).select(".templateName").first().update("Template: ")
-           newId.select(".property-edit").first().style.display = 'inline'
+       if (!$(newId).up().down('.textValue', 0).innerHTML.empty()
+           && !$(newId).up().down('.templateValue', 0).innerHTML.empty()) {
+           $(newId).up().down(".textName", 0).update("Text: ")
+           $(newId).up().down(".templateName", 0).update("Template: ")
+           newId.up().down(".property-edit", 0).style.display = 'inline'
            SC.AP.addValues(rowIndex, "newUri")
        } else {
            $('propertyTable').deleteRow(rowIndex);
