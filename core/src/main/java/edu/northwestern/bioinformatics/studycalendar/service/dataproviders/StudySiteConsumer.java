@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 public class StudySiteConsumer extends AbstractConsumer {
     @Override protected Class<StudySiteProvider> providerType() { return StudySiteProvider.class; }
+    private final Log logger = LogFactory.getLog(getClass());
 
     public List<StudySite> refresh(Study in) {
         return refresh(asList(in)).get(0);
@@ -97,12 +100,18 @@ public class StudySiteConsumer extends AbstractConsumer {
                 List<B> associationsToUpdate = toUpdate.get(providerName);
                 for (int i = 0; i < associationsToUpdate .size(); i++) {
                     B base = associationsToUpdate.get(i);
-                    List<A> existing = getAssociated(associationsToUpdate.get(i));
+                    List<A> existing = getAssociated(base);
                     List<A> fromProvider = allFromProvider.get(i);
+
 
                     provisionInstances(fromProvider, provider);
                     associateWithBase(fromProvider, base);
                     updateTimestamps(existing, providerName);
+
+                    logger.debug("Found " + fromProvider + " study sites instances from the provider.");
+                    for(A a : fromProvider) {
+                        logger.debug("- " + a.toString());
+                    }
 
                     List<A> merged = union(existing, fromProvider);
                     results.add(in.indexOf(base), merged);
@@ -165,6 +174,13 @@ public class StudySiteConsumer extends AbstractConsumer {
             }
         }
 
+        /**
+         * Returns a Map with the keys being the provider token and the
+         * values being a list of object for which we need to refresh the associations.
+         *
+         * @param   in  the list of objects to check if they have been refreshed
+         * @return      the image at the specified URL
+         */
         private Map<String, List<B>> findInstancesToUpdate(List <B> in) {
             Map<String, List<B>> result = new HashMap<String, List<B>>();
 

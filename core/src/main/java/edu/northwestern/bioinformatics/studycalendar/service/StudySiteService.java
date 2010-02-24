@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import static org.apache.commons.collections.CollectionUtils.collect;
-import static org.apache.commons.collections.CollectionUtils.intersection;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections15.ListUtils;
 import org.apache.commons.logging.Log;
@@ -104,9 +103,22 @@ public class StudySiteService {
     @SuppressWarnings({"unchecked"})
     private Set<Site> getAssociatedSitesFromConsumer(Study study) {
         List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
+
+        logger.debug("Found " + fromConsumer.size() + " provided study sites associated with study " + study.getName() + ".");
+        for (StudySite s : fromConsumer) {
+            logger.debug("- Study: " + s.getStudy().getName() + " Site: " + s.getSite().getAssignedIdentifier());
+        }
+
         List<Site> sitesFromConsumer = collectSites(fromConsumer);
         List<Site> availableSites = siteService.getAll();
-        return new HashSet<Site>(intersection(sitesFromConsumer, availableSites));
+
+        logger.debug("Found " + availableSites.size() + " sites avaialable.");
+        for (Site s : availableSites) {
+            logger.debug("- Site: " + s.getName());
+        }
+
+        logger.debug("Found " + intersection(availableSites, sitesFromConsumer).size() + " intersecting available and provider sites.");
+        return new HashSet<Site>(intersection(availableSites, sitesFromConsumer));
     }
 
     public List<StudySite> assignStudyToSites(Study study, List<Site> sites) {
@@ -172,6 +184,21 @@ public class StudySiteService {
             }
         })
         );
+    }
+
+    private List<Site> intersection(List<Site> left, List<Site> right) {
+        List<Site> results = new ArrayList<Site>();
+        for (Site l : left) {
+            for (Site r : right) {
+                if (l != null && r != null) {
+                    if (l.getAssignedIdentifier().equals(r.getAssignedIdentifier())) {
+                        results.add(l);
+                    }
+                }
+
+            }
+        }
+        return results;
     }
 
     @Required

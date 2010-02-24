@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCal
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
@@ -133,12 +134,16 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRefreshAssociatedSites() {
-        Site uic = createNamedInstance("UIC" , Site.class);
-        StudySite provided = new StudySite(all999, uic);
+        Site uicTemplate = new Site();
+        uicTemplate.setAssignedIdentifier("UIC");   // Sites returned from the provider only have assignedIdentifier set
+        StudySite fromProvider = new StudySite(all999, uicTemplate);
 
-        expect(studySiteConsumer.refresh(all999)).andReturn(asList(provided, studySite1));
+        Site uic = createSite("UIC", "UIC");
+        StudySite fromService = new StudySite(all999, uic); // Site service will return sites w/ name and assigned identifier
+
+        expect(studySiteConsumer.refresh(all999)).andReturn(asList(fromProvider, studySite1));
         expect(siteService.getAll()).andReturn(asList(nu, uic, mayo));
-        studySiteDao.save(provided);
+        studySiteDao.save(fromService);
 
         replayMocks();
         
