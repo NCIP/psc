@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
@@ -26,7 +27,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private Site nu, mayo;
     private List<StudySite> studySites;
     private Study nu123, all999;
-    private StudySite studySite0, studySite1, studySite2;
+    private StudySite nu_nu123, nu_all999, mayo_all999;
     private StudySiteConsumer studySiteConsumer;
     private StudySiteDao studySiteDao;
 
@@ -50,11 +51,11 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         nu123 = createNamedInstance("NU123", Study.class);
         all999 = createNamedInstance("ALL999", Study.class);
 
-        studySite0 = createStudySite(nu123, nu);
-        studySite1 = createStudySite(all999, nu);
-        studySite2 = createStudySite(all999, mayo);
+        nu_nu123 = createStudySite(nu123, nu);
+        nu_all999 = createStudySite(all999, nu);
+        mayo_all999 = createStudySite(all999, mayo);
 
-        studySites = asList(studySite0, studySite1, studySite2);
+        studySites = asList(nu_nu123, nu_all999, mayo_all999);
 
         user  = createNamedInstance("John", User.class);
         UserRole role = createUserRole(user, Role.SUBJECT_COORDINATOR, nu, mayo);
@@ -66,22 +67,22 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     public void testGetAllStudySitesForSubjectCoordinator() {
         List<StudySite> actualStudySites = service.getAllStudySitesForSubjectCoordinator(user);
         assertEquals("Wrong number of Study Sites", studySites.size(), actualStudySites.size());
-        assertEquals("Wrong Study Site", studySite0, actualStudySites.get(0));
-        assertEquals("Wrong Study Site", studySite1, actualStudySites.get(1));
-        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(2));
+        assertEquals("Wrong Study Site", nu_nu123, actualStudySites.get(0));
+        assertEquals("Wrong Study Site", nu_all999, actualStudySites.get(1));
+        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(2));
     }
 
     public void testGetStudySitesForSubjectCoordinatorFromSite() {
         List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, mayo);
         assertEquals("Wrong number of Study Sites", 1, actualStudySites.size());
-        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(0));
+        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(0));
     }
 
     public void testGetStudySitesForSubjectCoordinatorFromStudy() {
         List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, all999);
         assertEquals("Wrong number of Study Sites", 2, actualStudySites.size());
-        assertEquals("Wrong Study Site", studySite1, actualStudySites.get(0));
-        assertEquals("Wrong Study Site", studySite2, actualStudySites.get(1));
+        assertEquals("Wrong Study Site", nu_all999, actualStudySites.get(0));
+        assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(1));
     }
     
     public void testGetSiteLists() throws Exception {
@@ -134,16 +135,23 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRefreshAssociatedSites() {
-        Site uicTemplate = new Site();
-        uicTemplate.setAssignedIdentifier("UIC");   // Sites returned from the provider only have assignedIdentifier set
-        StudySite fromProvider = new StudySite(all999, uicTemplate);
+        Site uicSkel = createSite(null, "UIC"); // Sites returned from the consumer only with assignedIdentifier
+        StudySite fromProvider = new StudySite(all999, uicSkel);
+        fromProvider.setProvider("alpha");
 
-        Site uic = createSite("UIC", "UIC");
-        StudySite fromService = new StudySite(all999, uic); // Site service will return sites w/ name and assigned identifier
+        Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
 
-        expect(studySiteConsumer.refresh(all999)).andReturn(asList(fromProvider, studySite1));
-        expect(siteService.getAll()).andReturn(asList(nu, uic, mayo));
-        studySiteDao.save(fromService);
+        expect(studySiteConsumer.refresh(all999)).andReturn(asList(
+            fromProvider, nu_all999
+        ));
+
+        expect(siteService.getAll()).andReturn(asList(
+            nu, uic, mayo
+        ));
+
+        StudySite fullStudySite = new StudySite(all999, uic);
+        fullStudySite.setProvider("alpha");
+        studySiteDao.save(providedStudySiteEq(fullStudySite));
 
         replayMocks();
         
@@ -214,6 +222,43 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
     }
 
+    public void testRefreshStudySitesUsingStudy() throws Exception {
+        Site uicSkel = createSite(null, "UIC"); // Sites returned from the consumer only with assignedIdentifier
+        Study all999Skel = new Study();
+        all999Skel.setAssignedIdentifier("ALL999");
+
+        Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
+
+        expect(studySiteConsumer.refresh(all999)).andReturn(asList(
+            createProvidedStudySite(all999Skel, uicSkel, "alpha"),
+            nu_all999
+        ));
+
+        expect(siteService.getAll()).andReturn(asList(
+            nu, uic, mayo
+        ));
+
+        StudySite uic_all999 = createProvidedStudySite(all999Skel, uicSkel, "alpha");
+        studySiteDao.save(providedStudySiteEq(uic_all999));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySites(all999);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 3, actual.size());
+
+        assertContains(actual, uic_all999);
+        assertContains(actual, nu_all999);
+        assertContains(actual, mayo_all999);
+    }
+
+    private StudySite createProvidedStudySite(Study study, Site site, String providerName) {
+        StudySite studySite = createStudySite(study,  site);
+        studySite.setProvider(providerName);
+        return studySite;
+    }
+
     ////// CUSTOM MATCHERS
     private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
         EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
@@ -243,6 +288,37 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         public void appendTo(StringBuffer sb) {
             sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
+        }
+    }
+
+    private static StudySite providedStudySiteEq(StudySite expected) {
+        EasyMock.reportMatcher(new ProvidedStudySiteMatcher(expected));
+        return null;
+    }
+
+    private static class ProvidedStudySiteMatcher implements IArgumentMatcher {
+        private StudySite expected;
+
+        public ProvidedStudySiteMatcher(StudySite expected) {
+            this.expected = expected;
+        }
+
+        public boolean matches(Object object) {
+            StudySite actual = (StudySite) object;
+
+            if (!expected.equals(actual)) {
+                return false;
+            }
+
+            if (expected.getProvider() != null ? !expected.getProvider().equals(actual.getProvider()) : actual.getProvider() != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("StudySite =").append(expected.toString()).append("Provider =").append(expected.getProvider());
         }
     }
 }

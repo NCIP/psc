@@ -5,7 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCal
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
+import org.apache.commons.collections.CollectionUtils;
 import static org.apache.commons.collections.CollectionUtils.collect;
+import static org.apache.commons.collections.CollectionUtils.subtract;
+import static org.apache.commons.collections.CollectionUtils.union;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections15.ListUtils;
 import org.apache.commons.logging.Log;
@@ -81,15 +85,8 @@ public class StudySiteService {
 
 
     public List<Site> refreshAssociatedSites(Study study) {
-        Set<Site> combined = new LinkedHashSet<Site>();
-
-        combined.addAll(getAssociatedSitesFromConsumer(study));
-        combined.addAll(getAssociatedSitesFromSiteService(study));
-
-        // Automatically save new StudySite associations
-        List<StudySite> saved = assignStudyToSites(study, new ArrayList<Site>(combined));
-
-        return collectSites(saved);
+        List<StudySite> updated = refreshStudySites(study);
+        return collectSites(updated);
     }
 
     private Set<Site> getAssociatedSitesFromSiteService(Study study) {
@@ -171,11 +168,59 @@ public class StudySiteService {
         studySiteDao.delete(removing);
     }
 
+    @SuppressWarnings({"unchecked"})
+    protected List<StudySite> refreshStudySites(Study study) {
+        List<StudySite> existing = study.getStudySites();
+        List<StudySite> provided = studySiteConsumer.refresh(study);
+
+
+        Collection unsaved = subtract(provided, existing);
+
+        logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
+        logger.debug("- " + unsaved);
+        
+        final List<Site> allSites = siteService.getAll();
+        Collection qualifying = CollectionUtils.select(unsaved, new Predicate(){
+            public boolean evaluate(Object o) {
+                StudySite s  = (StudySite) o;
+
+                return allSites.contains(s.getSite());
+            }
+        });
+
+        logger.debug("There are" + allSites.size() + " sites total.");
+        logger.debug("- " + allSites);
+
+
+        logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
+        logger.debug("- " + qualifying);
+
+        // Enhance the provided StudySite instance with the already persisted Site instance. We must
+        // do this because the StudySite instance returned from the provider will only have assignedIdentifier
+        // populated.
+        Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
+            public Object transform(Object o) {
+                StudySite s  = (StudySite) o;
+                int i = allSites.indexOf(s.getSite());
+                s.setSite(allSites.get(i));
+                return s;
+            }
+        });
+
+        for (StudySite s : enhanced) {
+            StudySite ss = new StudySite(s.getStudy(), s.getSite());
+            ss.setProvider(s.getProvider());
+            ss.setLastRefresh(s.getLastRefresh());
+            studySiteDao.save(ss);
+        }
+
+        return new ArrayList<StudySite>(union(existing, enhanced));
+    }
 
     ///// Collect Helpers
     @SuppressWarnings({"unchecked"})
-    private List<Site> collectSites(List<StudySite> fromConsumer) {
-        return new ArrayList<Site>( collect(fromConsumer, new Transformer() {
+    private List<Site> collectSites(List<StudySite> in) {
+        return new ArrayList<Site>( collect(in, new Transformer() {
             public Object transform(Object o) {
                 if (o instanceof StudySite) {
                     return ((StudySite) o).getSite();
@@ -192,6 +237,8 @@ public class StudySiteService {
             for (Site r : right) {
                 if (l != null && r != null) {
                     if (l.getAssignedIdentifier().equals(r.getAssignedIdentifier())) {
+                        l.setProvider(r.getProvider());
+                        l.setLastRefresh(r.getLastRefresh());
                         results.add(l);
                     }
                 }

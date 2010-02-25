@@ -3,10 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.dataproviders;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
-import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +44,7 @@ public class StudySiteConsumer extends AbstractConsumer {
             return base.getStudySites();
         }
 
-        protected void associateWithBase(List<StudySite> newInstances, Site site) {
+        protected void enhanceInstances(List<StudySite> newInstances, Site site) {
             for (StudySite ss : newInstances) {
                 ss.setSite(site);
             }
@@ -63,17 +60,17 @@ public class StudySiteConsumer extends AbstractConsumer {
             return base.getStudySites();
         }
 
-        protected void associateWithBase(List<StudySite> newInstances, Study study) {
+        protected void enhanceInstances(List<StudySite> newInstances, Study study) {
             for (StudySite ss : newInstances) {
                 ss.setStudy(study);
             }
         }
     }
 
-    private abstract class AssociationRefresh<B, A extends Providable, P extends DataProvider> {
+    private abstract class AssociationRefresh<B extends Providable, A extends Providable, P extends DataProvider> {
         protected abstract List<List<A>> loadNewVersions(P provider, List<B> base);
         protected abstract List<A> getAssociated(B base);
-        protected abstract void associateWithBase(List<A> associations, B base);
+        protected abstract void enhanceInstances(List<A> associations, B base);
 
         protected void updateInstanceInPlace(A current, A newVersion) {
             current.setLastRefresh(newVersion.getLastRefresh());
@@ -105,15 +102,16 @@ public class StudySiteConsumer extends AbstractConsumer {
 
 
                     provisionInstances(fromProvider, provider);
-                    associateWithBase(fromProvider, base);
+                    enhanceInstances(fromProvider, base);
                     updateTimestamps(existing, providerName);
 
-                    logger.debug("Found " + fromProvider + " study sites instances from the provider.");
+                    logger.debug("Found " + fromProvider.size() + " study sites instances from the provider.");
                     for(A a : fromProvider) {
                         logger.debug("- " + a.toString());
                     }
 
                     List<A> merged = union(existing, fromProvider);
+                    logger.debug("Found " + merged.size() + " study sites instances total.");
                     results.add(in.indexOf(base), merged);
                 }
 
@@ -136,7 +134,7 @@ public class StudySiteConsumer extends AbstractConsumer {
         }
 
         private void updateTimestamp(String providerName, A a) {
-            if (a.getProvider().equals(providerName)) {
+            if (a.getProvider() != null && a.getProvider().equals(providerName)) {
                 a.setLastRefresh(getNowFactory().getNowTimestamp());
             }
         }
@@ -145,6 +143,7 @@ public class StudySiteConsumer extends AbstractConsumer {
 
         protected void provisionInstances(List<A> in, P provider) {
             for (A association : in) {
+                log.debug("- provisioning study site {}", association.toString());
                 provisionInstance(association, provider);
             }
         }
