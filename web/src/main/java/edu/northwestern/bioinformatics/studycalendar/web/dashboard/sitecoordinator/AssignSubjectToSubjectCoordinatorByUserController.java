@@ -24,8 +24,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.BindException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +54,7 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         setSuccessView("studyList");
     }
 
-    //We have to remember 3 cases to process here: when selected is null, when selected is "unassigned" and when selected is actually the existing user
+    //We have to remember 2 cases to process here: when selected is "unassigned" and when selected is actually the existing user
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refData = new HashMap<String, Object>();
         AssignSubjectToSubjectCoordinatorByUserCommand command = new AssignSubjectToSubjectCoordinatorByUserCommand();
@@ -62,28 +65,23 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
         Map<Site, Map<Study, List<Subject>>> displayMap = null;
          Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = null;
 
-         if (subjectCoordinatorIdString != null) {
-             if (command.isUnassigned(subjectCoordinatorIdString)) {
-                displayMap = buildDisplayMap(siteCoordinator, true);
-                studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMapForUnassigned(siteCoordinator);
-             } else {
-                 subjectCoordinatorId = Integer.parseInt(subjectCoordinatorIdString);
-                 if (subjectCoordinatorId != null) {
-                     User subjectCoordinator = userDao.getById(subjectCoordinatorId);
-                     command.setSubjectCoordinator(subjectCoordinator);
-                     displayMap = buildDisplayMap(subjectCoordinator, false);
-                     studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
-                 }
-             }
+         if (command.isUnassigned(subjectCoordinatorIdString)) {
+            displayMap = buildDisplayMap(siteCoordinator, true);
+            studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMapForUnassigned(siteCoordinator);
          } else {
-             displayMap = buildDisplayMap(null, false);
-             studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(null);
+             subjectCoordinatorId = Integer.parseInt(subjectCoordinatorIdString);
+             if (subjectCoordinatorId != null) {
+                 User subjectCoordinator = userDao.getById(subjectCoordinatorId);
+                 command.setSubjectCoordinator(subjectCoordinator);
+                 displayMap = buildDisplayMap(subjectCoordinator, false);
+                 studySiteParticipCoordMap = buildStudySiteSubjectCoordinatorMap(subjectCoordinator);
+             }
          }
 
          refData.put("displayMap", displayMap);
          refData.put("subjectCoordinatorStudySites", studySiteParticipCoordMap);
          refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
-         if (subjectCoordinatorIdString!= null && command.isUnassigned(subjectCoordinatorIdString)) {
+         if (command.isUnassigned(subjectCoordinatorIdString)) {
              refData.put("selectedId", "unassigned");
          } else {
              refData.put("selectedId", subjectCoordinatorId);
@@ -91,6 +89,22 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
 
          return refData;
      }
+
+    //taking care of the case, when selected is null.
+    @Override
+    protected ModelAndView showForm(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindException e) throws Exception {
+        String subjectCoordinatorIdString = ServletRequestUtils.getStringParameter(httpServletRequest, "selected");
+        User siteCoordinator = getSiteCoordinator();
+
+        if (subjectCoordinatorIdString == null) {
+             User coordinator =  userService.getSiteCoordinatorsAssignableUsers(siteCoordinator).get(0);
+             String selected = coordinator.getId().toString();
+             RedirectView rv = new RedirectView("/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser?selected=" + selected, true);
+            return new ModelAndView(rv);
+         } else {
+            return super.showForm(httpServletRequest, httpServletResponse, e);
+        }
+    }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);

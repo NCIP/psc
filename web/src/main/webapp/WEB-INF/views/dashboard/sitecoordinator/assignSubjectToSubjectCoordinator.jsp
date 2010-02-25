@@ -13,9 +13,6 @@
       <script type="text/javascript">
         function registerSelector() {
             var aElement = $('selector')
-            if ("${selectedId}" == null || "${selectedId}" == "") {
-                location.href = "${action}?selected=" + aElement[0].value;
-            }
             Event.observe(aElement, "change", function(e) {
                 Event.stop(e)
                 location.href = "${action}?selected=" + aElement.value;
