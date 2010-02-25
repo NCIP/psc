@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
@@ -16,7 +15,6 @@ import static org.easymock.classextension.EasyMock.checkOrder;
 
 import static java.util.Arrays.asList;
 import java.util.List;
-import java.util.Map;
 
 public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySiteService service;
@@ -83,55 +81,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of Study Sites", 2, actualStudySites.size());
         assertEquals("Wrong Study Site", nu_all999, actualStudySites.get(0));
         assertEquals("Wrong Study Site", mayo_all999, actualStudySites.get(1));
-    }
-    
-    public void testGetSiteLists() throws Exception {
-        expect(siteService.getAll()).andReturn(asList(nu, mayo));
-        replayMocks();
-
-        Map<String, List<Site>> results = service.getSiteLists(nu123);
-        verifyMocks();
-
-        List<Site> assigned = results.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS);
-        assertEquals(1, assigned.size());
-        assertEquals("Wrong Site", nu, assigned.get(0));
-
-        List<Site> available = results.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
-        assertEquals(1, available.size());
-        assertEquals("Wrong Site", mayo, available.get(0));
-
-    }
-
-    public void testGetSiteListsRequiresStudy() throws Exception {
-        try {
-            service.getSiteLists(null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetSitesListsWithSameSiteAvailableAndAssigned() throws Exception {
-        Study study = createNamedInstance("Mayo Study", Study.class);
-        study.addSite(createNamedInstance("Mayo Clinic", Site.class));
-
-        Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
-        Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
-        expect(siteService.getAll()).andReturn(asList(expectedAvailableSite0, expectedAvailableSite1));
-        replayMocks();
-
-        Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);
-        verifyMocks();
-
-        assertEquals("There should be assigned and available sites", 2, assignedAndAvailableSites.size());
-
-        List<Site> actualAssignedSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS);
-        assertEquals("Wrong number of assigned sites", 1, actualAssignedSites.size());
-        assertEquals("Wrong assigned site", "Mayo Clinic", actualAssignedSites.get(0).getName());
-
-        List<Site> actualAvailableSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
-        assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
-        assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
     }
 
     public void testRefreshAssociatedSites() {

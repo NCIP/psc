@@ -6,17 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import org.apache.commons.collections.CollectionUtils;
-import static org.apache.commons.collections.CollectionUtils.collect;
-import static org.apache.commons.collections.CollectionUtils.subtract;
-import static org.apache.commons.collections.CollectionUtils.union;
+import static org.apache.commons.collections.CollectionUtils.*;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections15.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class StudySiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
@@ -62,25 +61,6 @@ public class StudySiteService {
             }
         }
         return availableStudySites;
-    }
-
-    public Map<String, List<Site>> getSiteLists(Study studyTemplate) {
-        if (studyTemplate == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        Map<String, List<Site>> siteLists = new HashMap<String, List<Site>>();
-        
-        List<Site> availableSites = siteService.getAll();
-
-        List<Site> assignedSites = new ArrayList<Site>();
-        for (StudySite ss : studyTemplate.getStudySites()) {
-            assignedSites.add(ss.getSite());
-        }
-        availableSites = ListUtils.subtract(availableSites, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
-
-        return siteLists;
     }
 
 
@@ -141,9 +121,10 @@ public class StudySiteService {
 
     @SuppressWarnings({"unchecked"})
     protected List<StudySite> refreshStudySites(Study study) {
+        if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
+
         List<StudySite> existing = study.getStudySites();
         List<StudySite> provided = studySiteConsumer.refresh(study);
-
 
         Collection unsaved = subtract(provided, existing);
 
