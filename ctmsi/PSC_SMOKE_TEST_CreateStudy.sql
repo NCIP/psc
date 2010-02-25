@@ -1,0 +1,11 @@
+insert into sites (id, name, version, assigned_identifier) values (-1, 'National Cancer Institute', 0, 'NCI');
+insert into activities (id, name, activity_type_id, source_id, code) values (-1, 'Sample Activity', 1, 1, 'SAMPLE_ACTIVITY');
+insert into amendments (id, name, mandatory, amendment_date) values(-1, '[Original]', true, current_date);
+insert into studies (id, assigned_identifier, amendment_id, load_status) values (-1, 'SMOKE_TEST', -1, 1) ;
+insert into planned_calendars(id, study_id) values (-1, -1);
+insert into epochs (id, name, planned_calendar_id, list_index) values (-1, 'Treatment', -1, 0);
+insert into study_segments (id, name, epoch_id) values (-1, 'Arm A', -1);						
+insert into periods (id, name, study_segment_id, start_day, duration_quantity, duration_unit, repetitions) values (-1, 'Sample Period',-1, 1, 1, 'day', 1);
+insert into planned_activities (id, activity_id, period_id, day) values (-1, -1,-1, 1);
+insert into study_sites (id, site_id, study_id) values (-1, -1, -1);
+insert into amendment_approvals (id, amendment_id, study_site_id) values (-1, -1, -1);
