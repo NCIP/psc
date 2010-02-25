@@ -89,35 +89,6 @@ public class StudySiteService {
         return collectSites(updated);
     }
 
-    private Set<Site> getAssociatedSitesFromSiteService(Study study) {
-        Set<Site> results = new HashSet<Site>();
-        for (StudySite ss : study.getStudySites()) {
-            results.add(ss.getSite());
-        }
-        return results;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private Set<Site> getAssociatedSitesFromConsumer(Study study) {
-        List<StudySite> fromConsumer = studySiteConsumer.refresh(study);
-
-        logger.debug("Found " + fromConsumer.size() + " provided study sites associated with study " + study.getName() + ".");
-        for (StudySite s : fromConsumer) {
-            logger.debug("- Study: " + s.getStudy().getName() + " Site: " + s.getSite().getAssignedIdentifier());
-        }
-
-        List<Site> sitesFromConsumer = collectSites(fromConsumer);
-        List<Site> availableSites = siteService.getAll();
-
-        logger.debug("Found " + availableSites.size() + " sites avaialable.");
-        for (Site s : availableSites) {
-            logger.debug("- Site: " + s.getName());
-        }
-
-        logger.debug("Found " + intersection(availableSites, sitesFromConsumer).size() + " intersecting available and provider sites.");
-        return new HashSet<Site>(intersection(availableSites, sitesFromConsumer));
-    }
-
     public List<StudySite> assignStudyToSites(Study study, List<Site> sites) {
         if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL); }
         if (sites == null) { throw new IllegalArgumentException(SITES_LIST_IS_NULL); }
@@ -229,23 +200,6 @@ public class StudySiteService {
             }
         })
         );
-    }
-
-    private List<Site> intersection(List<Site> left, List<Site> right) {
-        List<Site> results = new ArrayList<Site>();
-        for (Site l : left) {
-            for (Site r : right) {
-                if (l != null && r != null) {
-                    if (l.getAssignedIdentifier().equals(r.getAssignedIdentifier())) {
-                        l.setProvider(r.getProvider());
-                        l.setLastRefresh(r.getLastRefresh());
-                        results.add(l);
-                    }
-                }
-
-            }
-        }
-        return results;
     }
 
     @Required
