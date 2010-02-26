@@ -64,7 +64,12 @@
         }
 
         function showSubjectsInfo() {
-            $('subjects-info').show()
+            var selectedElt = $('selector').value
+            if (selectedElt != 'unassigned') {
+                $('subjects-info').show()
+            } else {
+                $('unassigned-subject-info').show()
+            }
         }
 
         function selectAllParticipantsCheckbox(studyValues) {
@@ -149,6 +154,10 @@
               cursor:pointer;
               white-space:nowrap;
           }
+
+          .unassigned {
+              font-weight:bold;
+          }
       </style>
   </head>
   <body>
@@ -163,16 +172,18 @@
                      </div>
                      <div class="value">
                         <select id="selector">
+                            <option class="unassigned" value="unassigned" <c:if test="${'unassigned' == selectedId}">selected</c:if>><b>unassigned</b></option>
                             <c:forEach items="${assignableUsers}" var="user">
                                 <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.displayName}</option>
                             </c:forEach>
-                            <option value="unassigned" <c:if test="${'unassigned' == selectedId}">selected</c:if>>unassigned</option>
+
                         </select>
                     </div>
                 </div>
             </form:form>
             <br/>
             <label id="subjects-info" style="display:none">No subjects assigned to this subject coordinator.</label>
+            <label id="unassigned-subject-info" style="display:none">All subjects have been assigned to subject coordinators.</label>
         </laf:division>
         <c:if test="${fn:length(displayMap) > 0}">
             <c:forEach items="${displayMap}" var="site">
