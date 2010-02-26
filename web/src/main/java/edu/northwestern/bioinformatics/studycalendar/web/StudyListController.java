@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -26,6 +29,7 @@ public class StudyListController extends PscAbstractController {
     private TemplateService templateService;
     private UserDao userDao;
     private ApplicationSecurityManager applicationSecurityManager;
+    private StudySiteService studySiteService;
 
     public StudyListController() {
         setCrumb(new DefaultCrumb("Studies"));
@@ -33,8 +37,9 @@ public class StudyListController extends PscAbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<Study> studies = studyDao.getAll();
-        log.debug("{} studies found total", studies.size());
+        List<List<StudySite>> studySiteLists = studySiteService.refreshStudySites(studyDao.getAll());
+        List<Study> studies = collectStudies(studySiteLists);
+
         User user = applicationSecurityManager.getUser();
 
         List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
@@ -54,6 +59,19 @@ public class StudyListController extends PscAbstractController {
         model.put("inDevelopmentTemplates", inDevelopmentTemplates);
 
         return new ModelAndView("studyList", model);
+    }
+
+    private List<Study> collectStudies(List<List<StudySite>> studySiteLists) {
+        List<Study> result = new ArrayList<Study>();
+        for (List<StudySite> studySites : studySiteLists) {
+            for (StudySite studySite : studySites) {
+                Study study = studySite.getStudy();
+                if (!result.contains(study)) {
+                    result.add(study);
+                }
+            }
+        }
+        return result;
     }
 
 
@@ -77,5 +95,10 @@ public class StudyListController extends PscAbstractController {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 }

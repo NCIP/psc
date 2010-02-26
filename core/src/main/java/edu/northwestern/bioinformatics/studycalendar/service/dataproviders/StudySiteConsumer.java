@@ -99,7 +99,7 @@ public class StudySiteConsumer extends AbstractConsumer {
                     B base = associationsToUpdate.get(i);
                     List<A> existing = getAssociated(base);
                     List<A> fromProvider = allFromProvider.get(i);
-
+                    if (fromProvider == null) {fromProvider = new ArrayList<A>();}
 
                     provisionInstances(fromProvider, provider);
                     enhanceInstances(fromProvider, base);

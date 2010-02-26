@@ -119,8 +119,18 @@ public class StudySiteService {
         studySiteDao.delete(removing);
     }
 
+    // TODO: Refactor me.  This method and refreshStudySites should be combined for peformance reasons.
+    public List<List<StudySite>> refreshStudySites(List<Study> studies) {
+        List<List<StudySite>> results = new ArrayList<List<StudySite>>();
+        for (Study study : studies) {
+            List<StudySite> updated = refreshStudySites(study);
+            results.add(updated);
+        }
+        return results;
+    }
+
     @SuppressWarnings({"unchecked"})
-    protected List<StudySite> refreshStudySites(Study study) {
+    protected List<StudySite> refreshStudySites(final Study study) {
         if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
 
         List<StudySite> existing = study.getStudySites();
@@ -147,23 +157,25 @@ public class StudySiteService {
         logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
         logger.debug("- " + qualifying);
 
-        // Enhance the provided StudySite instance with the already persisted Site instance. We must
-        // do this because the StudySite instance returned from the provider will only have assignedIdentifier
-        // populated.
+        // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
+        // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
+        // valid Site from SiteService. 
         Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
             public Object transform(Object o) {
                 StudySite s  = (StudySite) o;
-                int i = allSites.indexOf(s.getSite());
-                s.setSite(allSites.get(i));
-                return s;
+                Site site = allSites.get(allSites.indexOf(s.getSite()));
+
+                StudySite e = new StudySite(study, site);
+                e.getStudy().addStudySite(e);
+                e.getSite().addStudySite(e);
+                e.setProvider(s.getProvider());
+                e.setLastRefresh(s.getLastRefresh());
+                return e;
             }
         });
 
         for (StudySite s : enhanced) {
-            StudySite ss = new StudySite(s.getStudy(), s.getSite());
-            ss.setProvider(s.getProvider());
-            ss.setLastRefresh(s.getLastRefresh());
-            studySiteDao.save(ss);
+            studySiteDao.save(s);
         }
 
         return new ArrayList<StudySite>(union(existing, enhanced));

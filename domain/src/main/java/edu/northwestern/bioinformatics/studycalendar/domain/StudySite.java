@@ -39,7 +39,7 @@ public class StudySite extends AbstractProvidableDomainObject implements Seriali
     }
 
     public StudySite(Study study, Site site) {
-        super();
+        this();
         this.study = study;
         this.site = site;
     }
