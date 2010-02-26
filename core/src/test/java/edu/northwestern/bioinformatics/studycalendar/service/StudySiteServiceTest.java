@@ -90,9 +90,9 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
 
-        expect(studySiteConsumer.refresh(all999)).andReturn(asList(
+        expect(studySiteConsumer.refresh(asList(all999))).andReturn(asList(asList(
             fromProvider, nu_all999
-        ));
+        )));
 
         expect(siteService.getAll()).andReturn(asList(
             nu, uic, mayo
@@ -178,10 +178,10 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
 
-        expect(studySiteConsumer.refresh(all999)).andReturn(asList(
+        expect(studySiteConsumer.refresh(asList(all999))).andReturn(asList(asList(
             createProvidedStudySite(all999Skel, uicSkel, "alpha"),
             nu_all999
-        ));
+        )));
 
         expect(siteService.getAll()).andReturn(asList(
             nu, uic, mayo

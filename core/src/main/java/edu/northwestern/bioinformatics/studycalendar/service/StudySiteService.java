@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.List;
 
@@ -119,66 +120,73 @@ public class StudySiteService {
         studySiteDao.delete(removing);
     }
 
-    // TODO: Refactor me.  This method and refreshStudySites should be combined for peformance reasons.
-    public List<List<StudySite>> refreshStudySites(List<Study> studies) {
-        List<List<StudySite>> results = new ArrayList<List<StudySite>>();
-        for (Study study : studies) {
-            List<StudySite> updated = refreshStudySites(study);
-            results.add(updated);
-        }
-        return results;
-    }
-
     @SuppressWarnings({"unchecked"})
     protected List<StudySite> refreshStudySites(final Study study) {
         if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
+        return refreshStudySites(asList(study)).get(0);
+    }
 
-        List<StudySite> existing = study.getStudySites();
-        List<StudySite> provided = studySiteConsumer.refresh(study);
+    @SuppressWarnings({"unchecked"})
+    public List<List<StudySite>> refreshStudySites(final List<Study> studies) {
+        if (studies == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
 
-        Collection unsaved = subtract(provided, existing);
+        List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
 
-        logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
-        logger.debug("- " + unsaved);
-        
         final List<Site> allSites = siteService.getAll();
-        Collection qualifying = CollectionUtils.select(unsaved, new Predicate(){
-            public boolean evaluate(Object o) {
-                StudySite s  = (StudySite) o;
+        final List<List<StudySite>> allProvided = studySiteConsumer.refresh(studies);
+        
+        for (int i = 0; i < studies.size(); i++) {
+            final Study study = studies.get(i);
+            List<StudySite> provided = allProvided.get(i);
 
-                return allSites.contains(s.getSite());
+            List<StudySite> existing = study.getStudySites();
+
+
+            Collection unsaved = subtract(provided, existing);
+
+            logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
+            logger.debug("- " + unsaved);
+
+            Collection qualifying = CollectionUtils.select(unsaved, new Predicate(){
+                public boolean evaluate(Object o) {
+                    StudySite s  = (StudySite) o;
+
+                    return allSites.contains(s.getSite());
+                }
+            });
+
+            logger.debug("There are" + allSites.size() + " sites total.");
+            logger.debug("- " + allSites);
+
+
+            logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
+            logger.debug("- " + qualifying);
+
+            // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
+            // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
+            // valid Site from SiteService.
+            Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
+                public Object transform(Object o) {
+                    StudySite s  = (StudySite) o;
+                    Site site = allSites.get(allSites.indexOf(s.getSite()));
+
+                    StudySite e = new StudySite(study, site);
+                    e.getStudy().addStudySite(e);
+                    e.getSite().addStudySite(e);
+                    e.setProvider(s.getProvider());
+                    e.setLastRefresh(s.getLastRefresh());
+                    return e;
+                }
+            });
+
+            for (StudySite s : enhanced) {
+                studySiteDao.save(s);
             }
-        });
 
-        logger.debug("There are" + allSites.size() + " sites total.");
-        logger.debug("- " + allSites);
-
-
-        logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
-        logger.debug("- " + qualifying);
-
-        // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
-        // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
-        // valid Site from SiteService. 
-        Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
-            public Object transform(Object o) {
-                StudySite s  = (StudySite) o;
-                Site site = allSites.get(allSites.indexOf(s.getSite()));
-
-                StudySite e = new StudySite(study, site);
-                e.getStudy().addStudySite(e);
-                e.getSite().addStudySite(e);
-                e.setProvider(s.getProvider());
-                e.setLastRefresh(s.getLastRefresh());
-                return e;
-            }
-        });
-
-        for (StudySite s : enhanced) {
-            studySiteDao.save(s);
+            refreshed.add(new ArrayList<StudySite>(union(existing, enhanced)));
         }
 
-        return new ArrayList<StudySite>(union(existing, enhanced));
+        return refreshed;
     }
 
     ///// Collect Helpers
