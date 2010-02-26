@@ -90,16 +90,12 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
          return refData;
      }
 
-    //taking care of the case, when selected is null.
+    //taking care of the case, when selected is null. We defaulting it to "unassigned"
     @Override
     protected ModelAndView showForm(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, BindException e) throws Exception {
         String subjectCoordinatorIdString = ServletRequestUtils.getStringParameter(httpServletRequest, "selected");
-        User siteCoordinator = getSiteCoordinator();
-
         if (subjectCoordinatorIdString == null) {
-             User coordinator =  userService.getSiteCoordinatorsAssignableUsers(siteCoordinator).get(0);
-             String selected = coordinator.getId().toString();
-             RedirectView rv = new RedirectView("/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser?selected=" + selected, true);
+            RedirectView rv = new RedirectView("/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser?selected=unassigned", true);
             return new ModelAndView(rv);
          } else {
             return super.showForm(httpServletRequest, httpServletResponse, e);
