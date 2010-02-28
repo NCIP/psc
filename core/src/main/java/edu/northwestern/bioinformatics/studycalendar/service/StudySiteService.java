@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
@@ -28,6 +29,7 @@ public class StudySiteService {
     public static final String STUDY_IS_NULL = "Study is null";
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
     private final Log logger = LogFactory.getLog(getClass());
+    private StudyDao studyDao;
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -189,6 +191,19 @@ public class StudySiteService {
         return refreshed;
     }
 
+    public StudySite getStudySite(String studyAssignedId, String siteAssignedId) {
+        Study study = studyDao.getByAssignedIdentifier(studyAssignedId);
+        if (study != null) {
+            List<StudySite> studySites = refreshStudySites(study);
+            for (StudySite studySite : studySites) {
+                if (studySite.getSite().getAssignedIdentifier().equals(siteAssignedId)) {
+                    return studySite;
+                }
+            }
+        }
+        return null;
+    }
+
     ///// Collect Helpers
     @SuppressWarnings({"unchecked"})
     private List<Site> collectSites(List<StudySite> in) {
@@ -221,5 +236,10 @@ public class StudySiteService {
     @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 }

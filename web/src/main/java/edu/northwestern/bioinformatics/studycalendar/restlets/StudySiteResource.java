@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -20,12 +19,10 @@ import org.springframework.beans.factory.annotation.Required;
  * @author Rhett Sutphin
  */
 public class StudySiteResource extends AbstractRemovableStorableDomainObjectResource<StudySite> {
-    private StudyDao studyDao;
-    private SiteDao siteDao;
-
     private Study study;
     private Site site;
     private StudySiteDao studySiteDao;
+    private StudySiteService studySiteService;
 
 
     public void init(Context context, Request request, Response response) {
@@ -36,13 +33,20 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     protected StudySite loadRequestedObject(Request request) {
-        study = studyDao.getByAssignedIdentifier(UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByAssignedIdentifier(UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request));
-        if (study == null || site == null) {
-            return null;
-        } else {
-            return study.getStudySite(site);
+        String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
+
+        StudySite studySite = studySiteService.getStudySite(studyIdentifier, siteIdentifier);
+
+        if (studySite != null) {
+            study = studySite.getStudy();
+            site = studySite.getSite();
+            if (study != null && site != null) {
+                return studySite;
+            }
         }
+
+        return null;
     }
 
     protected void validateEntity(Representation entity) throws ResourceException {
@@ -78,17 +82,12 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     ////// CONFIGURATION
 
     @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
-
-    @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
+    }
+
+    @Required
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 }
