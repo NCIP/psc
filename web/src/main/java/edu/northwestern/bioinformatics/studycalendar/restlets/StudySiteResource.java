@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -19,6 +21,9 @@ import org.springframework.beans.factory.annotation.Required;
  * @author Rhett Sutphin
  */
 public class StudySiteResource extends AbstractRemovableStorableDomainObjectResource<StudySite> {
+    private StudyDao studyDao;
+    private SiteDao siteDao;
+
     private Study study;
     private Site site;
     private StudySiteDao studySiteDao;
@@ -36,17 +41,18 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
 
+        // Refresh provided StudySites before Study and Site are loaded in-case eager
+        // loading is enabled for the two.
         StudySite studySite = studySiteService.getStudySite(studyIdentifier, siteIdentifier);
 
-        if (studySite != null) {
-            study = studySite.getStudy();
-            site = studySite.getSite();
-            if (study != null && site != null) {
-                return studySite;
-            }
-        }
+        study = studyDao.getByAssignedIdentifier(studyIdentifier);
+        site = siteDao.getByAssignedIdentifier(siteIdentifier);
 
-        return null;
+        if (study == null || site == null) {
+            return null;
+        } else {
+            return studySite;
+        }
     }
 
     protected void validateEntity(Representation entity) throws ResourceException {
@@ -80,6 +86,16 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     ////// CONFIGURATION
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
 
     @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {

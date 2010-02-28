@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -24,6 +25,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     private Site site;
     private StudySite studySite;
     private StudySiteDao studySiteDao;
+    private StudySiteService studySiteService;
 
     @Override
     public void setUp() throws Exception {
@@ -34,6 +36,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
+        studySiteService = registerMockFor(StudySiteService.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER_ENCODED);
@@ -48,6 +51,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setStudySiteDao(studySiteDao);
+        res.setStudySiteService(studySiteService);
         return res;
     }
 
@@ -189,6 +193,11 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(expectedStudy);
         expect(siteDao.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
+        if (expectedStudy != null && expectedSite != null) {
+            expect(studySiteService.getStudySite(STUDY_IDENT, SITE_IDENTIFIER)).andReturn(studySite);
+        } else {
+            expect(studySiteService.getStudySite(STUDY_IDENT, SITE_IDENTIFIER)).andReturn(null);
+        }
     }
 
     private void expectRequestHasIgnoredEntity() {
