@@ -85,7 +85,7 @@ public class StudySiteConsumer extends AbstractConsumer {
 
         @SuppressWarnings({ "unchecked" })
         public List<List<A>> execute(List<B> in) {
-            List<List<A>> results = new ArrayList<List<A>>();
+            List<List<A>> results = new ArrayList<List<A>>(in.size() * providers.size());
 
             Map<String, List<B>> toUpdate = findInstancesToUpdate(in);
 
@@ -149,10 +149,18 @@ public class StudySiteConsumer extends AbstractConsumer {
         }
 
         private boolean shouldRefresh(List<A> providables, P dataProvider, Timestamp now) {
+            if (!(dataProvider instanceof RefreshableProvider)) return false;
+
             boolean result = false;
-            for (A providable : providables) {
-                result = result || shouldRefresh(providable, dataProvider, now);
+
+            if (providables.size() == 0) {
+                result = true;
+            } else {
+                for (A providable : providables) {
+                   result = result || shouldRefresh(providable, dataProvider, now);
+                }
             }
+
             return result;
         }
 
@@ -186,7 +194,7 @@ public class StudySiteConsumer extends AbstractConsumer {
             for (P provider : providers.values()) {
                 for (B base : in) {
                     Timestamp now = getNowFactory().getNowTimestamp();
-                    if (getAssociated(base).size() == 0 || shouldRefresh(getAssociated(base), provider, now)) {
+                    if (shouldRefresh(getAssociated(base), provider, now)) {
                         if (result.get(provider.providerToken()) == null) {
                             result.put(provider.providerToken(), new ArrayList<B>());
                         }

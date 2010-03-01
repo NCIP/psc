@@ -14,6 +14,7 @@ import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -65,7 +66,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         nu123.setProvider("alpha");
         nu123.setLastRefresh(INITIAL_REFRESH);
 
-        expect(tools.getServices(StudySiteProvider.class)).andReturn(providers).anyTimes();
+//        ;
     }
 
     private Site createSiteSkel(String assignedIdentifier) {
@@ -74,9 +75,14 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         return s;
     }
 
+    private void expectProviders(List<StudySiteProvider> providers) {
+        expect(tools.getServices(StudySiteProvider.class)).andReturn(providers).anyTimes();
+    }
+
     public void testNewStudySiteAddedOnRefresh() {
         associate(nu123, nu);
 
+        expectProviders(providers);
         expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
             createBasicStudySite(null, nuSkel),
             createBasicStudySite(null, uicSkel)
@@ -98,6 +104,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     public void testNoDuplicateStudySitesOnRefresh() {
         associate(nu123, nu);
 
+        expectProviders(providers);
         expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
             createBasicStudySite(null, nuSkel)
         )));
@@ -113,6 +120,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     public void testDeletedStudySiteExistsOnRefresh() {
         associate(nu123, nu);
 
+        expectProviders(providers);
         expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(Collections.<StudySite>emptyList()));
 
         replayMocks();
@@ -126,6 +134,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     public void testLastRefreshTimestampWhenRefreshed() {
         associate(nu123, nu);
 
+        expectProviders(providers);
         expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
             createBasicStudySite(null, nuSkel)
         )));
@@ -141,6 +150,8 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         StudySite s = associate(nu123, nu);
         s.setLastRefresh(NOW_MINUS_A_SECOND);
 
+        expectProviders(providers);
+
         replayMocks();
         List<StudySite> results = consumer.refresh(nu123);
         verifyMocks();
@@ -149,6 +160,8 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     }
 
     public void testRefreshHappensWhenNoStudySitesExist() {
+        expectProviders(providers);
+
         expect(providerA.getAssociatedSites(asList(nu123))).andReturn(asList(asList(
             createBasicStudySite(null, nuSkel)
         )));
@@ -160,6 +173,32 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         assertEquals("Wrong Site", "NU", results.get(0).getSite().getAssignedIdentifier());
     }
 
+    public void testRefreshWithStudyNotFromProvider() {
+        Study notFromProvider = createStudySkel("Not From Provider");
+
+        expect(providerA.getAssociatedSites(asList(notFromProvider, nu123))).andReturn(asList(
+                new ArrayList<StudySite>(),
+                asList(createBasicStudySite(null, nuSkel))
+        ));
+
+        StudySiteProvider providerB = registerMockFor(NonRefreshableStudySiteProvider.class);
+        expect(providerB.providerToken()).andReturn("Non Refreshable Provider").anyTimes();
+        expectProviders(asList(providerA, providerB));
+
+        replayMocks();
+        List<List<StudySite>> results = consumer.refresh(asList(notFromProvider, nu123));
+        verifyMocks();
+
+        assertEquals("Wrong Number of Study Sites Lists", 2, results.size());
+
+        List<StudySite> ss0 = results.get(0);
+        assertEquals("Wrong Number of Study Sites", 0, ss0.size());
+
+        List<StudySite> ss1 = results.get(1);
+        assertEquals("Wrong Number of Study Sites", 1, ss1.size());
+        assertEquals("Wrong Site", "NU", ss1.get(0).getSite().getAssignedIdentifier());
+    }
+
     //// Site Based Refresh
     public void testSiteBasedNewStudySiteAddedOnRefresh() {
         associate(nu123, nu);
@@ -167,6 +206,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         Study nu123Skel = createStudySkel("NU123");
         Study nci999Skel = createStudySkel("NCI999");
 
+        expectProviders(providers);
         expect(providerA.getAssociatedStudies(asList(nu))).andReturn(asList(asList(
             createBasicStudySite(nu123Skel, null),
             createBasicStudySite(nci999Skel, null)
@@ -208,4 +248,5 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
 
     ///// Stub interface
     private interface RefreshableStudySiteProvider extends StudySiteProvider, RefreshableProvider { }
+    private interface NonRefreshableStudySiteProvider extends StudySiteProvider { }
 }
