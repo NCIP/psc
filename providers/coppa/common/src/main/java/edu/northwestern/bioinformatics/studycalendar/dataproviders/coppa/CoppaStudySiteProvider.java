@@ -49,6 +49,8 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
 
                     results.add(buildStudySites(sites));
                 }
+            } else {
+                results.add(Collections.EMPTY_LIST);
             }
         }
 
