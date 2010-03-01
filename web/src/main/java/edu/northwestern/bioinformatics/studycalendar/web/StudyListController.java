@@ -11,15 +11,16 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -37,8 +38,12 @@ public class StudyListController extends PscAbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        List studies = studyDao.getAll();
+
         List<List<StudySite>> studySiteLists = studySiteService.refreshStudySites(studyDao.getAll());
-        List<Study> studies = collectStudies(studySiteLists);
+        List<Study> refreshedStudies = collectStudies(studySiteLists);
+
+        List<Study> combined = (List<Study>) CollectionUtils.union(studies, refreshedStudies);
 
         User user = applicationSecurityManager.getUser();
 
