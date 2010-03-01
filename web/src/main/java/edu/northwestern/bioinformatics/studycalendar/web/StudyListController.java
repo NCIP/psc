@@ -36,14 +36,14 @@ public class StudyListController extends PscAbstractController {
         setCrumb(new DefaultCrumb("Studies"));
     }
 
-    @Override
+    @Override   
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List studies = studyDao.getAll();
+        List<Study> studies = studyDao.getAll();
 
         List<List<StudySite>> studySiteLists = studySiteService.refreshStudySites(studyDao.getAll());
         List<Study> refreshedStudies = collectStudies(studySiteLists);
 
-        List<Study> combined = (List<Study>) CollectionUtils.union(studies, refreshedStudies);
+        studies = (List<Study>) CollectionUtils.union(studies, refreshedStudies);
 
         User user = applicationSecurityManager.getUser();
 
