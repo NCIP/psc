@@ -106,6 +106,17 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Wrong name", "Name B", actual.get(0).get(1).getSite().getName());
     }
 
+    public void testGetAssociatedSitesWithBlankStudy() {
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedSites(
+            asList(new Study())
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 0, actual.get(0).size());
+    }
+
     // since COPPA doesn't support this
     public void testGetAssociatedStudiesReturnsListOfEmptyLists() throws Exception {
         List<List<StudySite>> actual = provider.getAssociatedStudies(Arrays.asList(
