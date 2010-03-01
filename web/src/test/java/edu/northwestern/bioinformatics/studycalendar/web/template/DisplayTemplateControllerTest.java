@@ -11,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -20,11 +23,8 @@ import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Calendar;
 import static java.util.Collections.singletonList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -41,8 +41,10 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private AmendmentService amendmentService;
     private StaticNowFactory nowFactory;
     private StudyConsumer studyConsumer;
+    private TemplateService templateService;
 
     private Study study;
+    private List<Study> studies = new ArrayList<Study>();
     private Site site;
     private StudySite studySite;
     private StudySegment seg1, seg0a, seg0b;
@@ -58,9 +60,11 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         amendmentService = registerMockFor(AmendmentService.class);
         studyConsumer = registerMockFor(StudyConsumer.class);
         nowFactory = new StaticNowFactory();
+        templateService = registerMockFor(TemplateService.class);
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setAssignedIdentifier(STUDY_NAME);
+        studies.add(study);
         seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
         seg1 =  study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
@@ -85,12 +89,24 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setApplicationSecurityManager(applicationSecurityManager);
         controller.setNowFactory(nowFactory);
         controller.setStudyConsumer(studyConsumer);
+        controller.setTemplateService(templateService);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
 
         subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord, "asdf");
+
+        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
+        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
+        releasedTemplates.add(new ReleasedTemplate(study, true));
+        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
+        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
+
+        expect(templateService.getInDevelopmentTemplates(studies, subjectCoord)).andReturn(inDevelopment);
+        expect(templateService.getPendingTemplates(studies, subjectCoord)).andReturn(pendingTemplates);
+        expect(templateService.getReleasedAndAssignedTemplates(studies, subjectCoord)).andReturn(releasedAndAssignedTemplates);
+        expect(templateService.getReleasedTemplates(studies, subjectCoord)).andReturn(releasedTemplates);
 
         expect(authorizationService.filterStudySitesForVisibility(study.getStudySites(), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(studySite)).anyTimes();

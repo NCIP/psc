@@ -8,9 +8,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.*;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -20,6 +20,7 @@ import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.restlet.data.Status;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,6 +41,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private NowFactory nowFactory;
     private AuthorizationService authorizationService;
     private StudyConsumer studyConsumer;
+    private TemplateService templateService;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -57,49 +59,62 @@ public class DisplayTemplateController extends PscAbstractController {
         int studyId = loaded.getId();
         
         Study study = selectAmendmentAndReviseStudy(loaded, selectedAmendmentId, model);
+        List<Study> studies = new ArrayList<Study>();
+        studies.add(study);
 
-        StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
+        User user = applicationSecurityManager.getUser();
+        List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
+        List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
+        List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
+        List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
 
-        getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
-        model.put("studySegment", new StudySegmentTemplate(studySegment));
+        if (!inDevelopmentTemplates.isEmpty() || !releasedTemplates.isEmpty() || !pendingTemplates.isEmpty() || !releasedAndAssignedTemplates.isEmpty()) {
+            StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
 
-        Boolean canNotViewPopulations = study.isReleased() && selectedAmendmentId==null ;
-        model.put("canNotViewPopulations", canNotViewPopulations);
+            getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
+            model.put("studySegment", new StudySegmentTemplate(studySegment));
 
-        if (study.isReleased()) {
-            User user = applicationSecurityManager.getUser();
-            List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
-            //todo -- not sure what role the canAssignSubjects is playing
-            Boolean canAssignSubjects = !subjectAssignableStudySites.isEmpty();
+            Boolean canNotViewPopulations = study.isReleased() && selectedAmendmentId==null ;
+            model.put("canNotViewPopulations", canNotViewPopulations);
 
-            List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
-            List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
-            List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
+            if (study.isReleased()) {
+                List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
+                //todo -- not sure what role the canAssignSubjects is playing
+                Boolean canAssignSubjects = !subjectAssignableStudySites.isEmpty();
 
-            List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(subjectAssignableStudySites, assignments);
-            for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
-                if (currentAssignment.getEndDateEpoch() == null)
-                    onStudyAssignments.add(currentAssignment);
-                else
-                    offStudyAssignments.add(currentAssignment);
+                List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
+                List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
+                List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
+
+                List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(subjectAssignableStudySites, assignments);
+                for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
+                    if (currentAssignment.getEndDateEpoch() == null)
+                        onStudyAssignments.add(currentAssignment);
+                    else
+                        offStudyAssignments.add(currentAssignment);
+                }
+
+                model.put("assignments", assignments);
+                model.put("canAssignSubjects", canAssignSubjects);
+                model.put("offStudyAssignments", offStudyAssignments);
+                model.put("onStudyAssignments", onStudyAssignments);
+                model.put("subjectAssignableStudySites", subjectAssignableStudySites);
             }
 
-            model.put("assignments", assignments);
-            model.put("canAssignSubjects", canAssignSubjects);
-            model.put("offStudyAssignments", offStudyAssignments);
-            model.put("onStudyAssignments", onStudyAssignments);
-            model.put("subjectAssignableStudySites", subjectAssignableStudySites);
+            List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+            model.put("epochs", epochs);
+            if(study.getAmendment()!=null && study.getDevelopmentAmendment()!=null) {
+                model.put("disableAddAmendment", study.getAmendment().getReleasedDate());
+            }
+            model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
+
+            return new ModelAndView("template/display", model);
+
+        } else {
+            response.sendError(Status.CLIENT_ERROR_FORBIDDEN.getCode(),
+                "Authenticated account is not authorized for this resource and method");
+            return null;
         }
-
-        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
-        model.put("epochs", epochs);
-        if(study.getAmendment()!=null && study.getDevelopmentAmendment()!=null) {
-            model.put("disableAddAmendment", study.getAmendment().getReleasedDate());
-        }
-
-        model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
-
-        return new ModelAndView("template/display", model);
     }
 
     public Study getStudyByTheIdentifier(String studyStringIdentifier){
@@ -219,6 +234,11 @@ public class DisplayTemplateController extends PscAbstractController {
     @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
     private static class Crumb extends DefaultCrumb {
