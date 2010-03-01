@@ -5,11 +5,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,13 +161,12 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        
+        if (!(o instanceof Site)) return false;
 
         Site site = (Site) o;
 
-        if (name != null ? !name.equals(site.name) : site.name != null) {
+        if (getAssignedIdentifier() != null ? !getAssignedIdentifier().equals(site.getAssignedIdentifier()) : site.getAssignedIdentifier()!= null) {
             return false;
         }
 

@@ -5,12 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import static org.easymock.EasyMock.expect;
@@ -28,23 +24,23 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private PlannedCalendarDao plannedCalendarDao;
     private SiteDao siteDao;
-    private TemplateService templateService;
 
     private Study parameterStudy;
     private Study loadedStudy;
+    private StudySiteService studySiteService;
 
     protected void setUp() throws Exception {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
         plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
-        templateService = registerMockFor(TemplateService.class);
+        studySiteService = registerMockFor(StudySiteService.class);
 
         service = new DefaultPlannedCalendarService();
         service.setStudyDao(studyDao);
         service.setPlannedCalendarDao(plannedCalendarDao);
         service.setSiteDao(siteDao);
-        service.setTemplateService(templateService);
+        service.setStudySiteService(studySiteService);
 
         parameterStudy = Fixtures.createNamedInstance("S1", Study.class);
         parameterStudy.setGridId("UNIQUE!");
@@ -162,7 +158,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         addSite(loadedStudy, 2);
         expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
-        templateService.removeTemplateFromSites(loadedStudy, Arrays.asList(loadedStudy.getSites().get(1)));
+        studySiteService.removeStudyFromSites(loadedStudy, Arrays.asList(loadedStudy.getSites().get(1)));
         expectRegisterMain(loadedStudy);
         // mock verification is sufficient
     }

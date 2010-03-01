@@ -1,15 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -27,14 +27,20 @@ import java.util.Map;
  */
 @AccessControl(roles = Role.STUDY_ADMIN)
 public class AssignSiteController extends PscSimpleFormController {
-    private TemplateService templateService;
     private StudyDao studyDao;
     private SiteDao siteDao;
+    private SiteService siteService;
+    private StudySiteService studySiteService;
 
     public AssignSiteController() {
         setCommandClass(AssignSiteCommand.class);
         setValidator(new ValidatableValidator());
         setFormView("assignSite");
+    }
+
+    @Override
+     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
+        return new AssignSiteCommand(studyDao);
     }
 
     @Override
@@ -47,10 +53,10 @@ public class AssignSiteController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List<Site>> userLists = templateService.getSiteLists(study);
+        List<Site> assigned = studySiteService.refreshAssociatedSites(study);
         refdata.put("study", study);
-        refdata.put("assignedSites", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS));
-        refdata.put("availableSites", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS));
+        refdata.put("assignedSites", assigned);
+        refdata.put("availableSites", CollectionUtils.subtract(siteService.getAll(), assigned));
         refdata.put("action", "Assign");
         return refdata;
     }
@@ -60,19 +66,12 @@ public class AssignSiteController extends PscSimpleFormController {
         AssignSiteCommand assignCommand = (AssignSiteCommand) oCommand;
         Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
         if (assignCommand.getAssign()) {
-            templateService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
+            studySiteService.assignStudyToSites(assignedStudy, assignCommand.getAvailableSites());
         } else {
-            try {
-                templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
-            } catch (StudyCalendarValidationException scve) {
-                scve.rejectInto(errors);
-            }
+            studySiteService.removeStudyFromSites(assignedStudy, assignCommand.getAssignedSites());
         }
-        if (errors.hasErrors()) {
-            return showForm(request, response, errors);
-        } else {
-            return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
-        }
+
+        return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     ////// CONFIGURATION
@@ -88,8 +87,12 @@ public class AssignSiteController extends PscSimpleFormController {
     }
 
     @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
+    }
 }

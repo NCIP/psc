@@ -1,22 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import static org.easymock.EasyMock.notNull;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import static java.util.Arrays.asList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +42,8 @@ public class StudyListControllerTest extends ControllerTestCase {
     private Study incomplete;
     private Study both;
     private List<Study> allStudies;
+    private StudySiteService studySiteService;
+    private List<List<StudySite>> allStudySites;
 
     @Override
     protected void setUp() throws Exception {
@@ -47,10 +52,12 @@ public class StudyListControllerTest extends ControllerTestCase {
         studyDao = registerDaoMockFor(StudyDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         templateService = registerMockFor(TemplateService.class);
+        studySiteService = registerMockFor(StudySiteService.class);
 
         controller.setStudyDao(studyDao);
         controller.setUserDao(userDao);
         controller.setTemplateService(templateService);
+        controller.setStudySiteService(studySiteService);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
         user = createUser("jimbo");
@@ -67,8 +74,14 @@ public class StudyListControllerTest extends ControllerTestCase {
         both.setDevelopmentAmendment(new Amendment());
         both.setAmendment(new Amendment());
 
-        allStudies = Arrays.asList(incomplete, complete, both);
+        allStudies = asList(incomplete, complete, both);
+        allStudySites = asList(
+                asList(createStudySite(incomplete, null)),
+                asList(createStudySite(complete, null)),
+                asList(createStudySite(both, null))
+        );
         expect(studyDao.getAll()).andReturn(allStudies).anyTimes();
+        expect(studySiteService.refreshStudySites((List<Study>) notNull())).andReturn(allStudySites).anyTimes();
 
 //        expect(templateService.filterForVisibility(allStudies, null))
 //            .andReturn(Collections.<Study>emptyList()).anyTimes();
@@ -102,8 +115,8 @@ public class StudyListControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
-        assertDevelopmentTemplateList(Arrays.asList(incomplete, both), mv);
-        assertReleasedTemplateList(Arrays.asList(complete, both), new boolean[] { true, true }, mv);
+        assertDevelopmentTemplateList(asList(incomplete, both), mv);
+        assertReleasedTemplateList(asList(complete, both), new boolean[] { true, true }, mv);
         assertEquals("studyList", mv.getViewName());
     }
 
@@ -128,7 +141,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         verifyMocks();
 
         assertDevelopmentTemplateList(Collections.<Study>emptyList(), mv);
-        assertReleasedTemplateList(Arrays.asList(complete, both), new boolean[] { true, false }, mv);
+        assertReleasedTemplateList(asList(complete, both), new boolean[] { true, false }, mv);
     }
     
     public void testModelForSiteCoordinator() throws Exception {
@@ -151,7 +164,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         verifyMocks();
 
         assertDevelopmentTemplateList(Collections.<Study>emptyList(), mv);
-        assertReleasedTemplateList(Arrays.asList(complete, both), new boolean[] { false, false }, mv);
+        assertReleasedTemplateList(asList(complete, both), new boolean[] { false, false }, mv);
     }
 
     @SuppressWarnings({ "unchecked" })

@@ -1,20 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class MockStudySiteProvider implements StudySiteProvider {
+public class MockStudySiteProvider implements StudySiteProvider, RefreshableProvider {
     private List<MockStudySiteMapping> pairs;
 
     public List<List<StudySite>> getAssociatedSites(List<Study> studies) {
@@ -89,6 +90,11 @@ public class MockStudySiteProvider implements StudySiteProvider {
         }
         return sites;
     }
+
+    public Integer getRefreshInterval() {
+        return 15;
+    }
+
 
     ////// CONFIGURATION
 

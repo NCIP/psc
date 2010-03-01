@@ -5,30 +5,19 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroupRoleContext;
-import gov.nih.nci.security.authorization.domainobjects.Role;
-import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
-import gov.nih.nci.security.dao.RoleSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
-import gov.nih.nci.security.dao.UserSearchCriteria;
+import gov.nih.nci.security.authorization.domainobjects.*;
+import gov.nih.nci.security.dao.*;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Facade which provides PSC-specific access to CSM.  No business logic should be included
@@ -53,7 +42,19 @@ public class StudyCalendarAuthorizationManager implements Serializable {
 
     private UserProvisioningManager userProvisioningManager;
 
-    public void createProtectionGroup(String newProtectionGroup) {
+    public ProtectionGroup createProtectionGroup(DomainObject o) {
+        String id = DomainObjectTools.createExternalObjectId(o);
+        ProtectionGroup exists = getPGByName(id);
+        if (exists == null) {
+            createProtectionGroup(id);
+            exists = getPGByName(id);
+        } else {
+            log.debug("PG already exists for " + id + "... skipping create");
+        }
+        return exists;
+    }
+
+    private void createProtectionGroup(String newProtectionGroup) {
         try {
             ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
             requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
@@ -88,13 +89,19 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return siteList;
     }
 
+
+    public ProtectionGroup getProtectionGroup(DomainObject d) {
+        String id = DomainObjectTools.createExternalObjectId(d);
+        return getPGByName(id);
+    }
+
     /**
      * Method to retrieve a site protection group
      * @param name
      * @return null or site Protection Group
      */
     @SuppressWarnings({ "unchecked" })
-    public ProtectionGroup getPGByName(String name) {
+    private ProtectionGroup getPGByName(String name) {
         ProtectionGroup requiredProtectionGroup = null;
 
         ProtectionGroup protectionGroupSearch = new ProtectionGroup();
@@ -102,12 +109,13 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroupSearch);
         List<ProtectionGroup> protectionGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
 
-        if (protectionGroupList.size() > 0) {
+        if (protectionGroupList != null && protectionGroupList.size() > 0) {
             requiredProtectionGroup = protectionGroupList.get(0);
 
         }
         return requiredProtectionGroup;
     }
+
 
     @SuppressWarnings({ "unchecked" })
     public List<User> getUsersForGroup(String groupName) {

@@ -1,11 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import org.apache.commons.lang.StringUtils;
+import static org.easymock.EasyMock.expect;
 import org.springframework.validation.BindException;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 /**
@@ -14,13 +19,20 @@ import static java.util.Collections.singletonList;
 public class AssignSiteCommandTest extends StudyCalendarTestCase {
     private AssignSiteCommand command;
     private Site site;
+    private Study nu123;
+    private StudyDao studyDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        command = new AssignSiteCommand();
+        studyDao = registerDaoMockFor(StudyDao.class);
+        command = new AssignSiteCommand(studyDao);
 
         site = createNamedInstance("Northwestern University", Site.class);
+        nu123 = setId(-22, createNamedInstance("NU123", Study.class));
+
+        command.setStudyId(nu123.getId());
+        expect(studyDao.getById(nu123.getId())).andReturn(nu123);
     }
 
     public void testValidateWithAvailableSiteSelected() {
@@ -57,8 +69,21 @@ public class AssignSiteCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong error code", "error.please.select.an.assigned.site", errors.getGlobalError().getCode());
     }
 
+    public void testValidateWithUsedStudySite() {
+        StudySite studySite = createStudySite(nu123, site);
+        studySite.setStudySubjectAssignments(asList(new StudySubjectAssignment()));
+
+        unassignSite();
+        
+        BindException errors = validateAndReturnErrors();
+
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.cannot.remove.site.from.study.because.subjects.assigned", errors.getGlobalError().getCode());
+    }
+
     ////// Helper Methods
     private BindException validateAndReturnErrors() {
+        replayMocks();
         BindException errors = new BindException(command, StringUtils.EMPTY);
         command.validate(errors);
         verifyMocks();

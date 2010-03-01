@@ -2,25 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.util.ObjectSetUtil;
 import static org.easymock.EasyMock.*;
-import org.easymock.IArgumentMatcher;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.checkOrder;
 
-import static java.util.Arrays.asList;
 import java.util.*;
+import static java.util.Arrays.asList;
 
 /**
  * @author Rhett Sutphin
@@ -41,7 +38,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private UserRole siteCoordinatorRole;
     private UserRole subjectCoordinatorRole;
     private DeletableDomainObjectDao domainObjectDao;
-    private SiteService siteService;
 
     @Override
     protected void setUp() throws Exception {
@@ -56,7 +52,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
-        siteService = registerMockFor(SiteService.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
@@ -67,48 +62,11 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setAuthorizationService(authorizationService);
-        service.setSiteService(siteService);
+
 
         user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
         subjectCoordinatorRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
-    }
-
-    public void testAssignTemplateToSites() throws Exception {
-        Study study = createNamedInstance("sldfksdfjk", Study.class);
-        Site site1 = createNamedInstance("aaa", Site.class);
-        Site site2 = createNamedInstance("bbb", Site.class);
-        List<Site> sitesTest = asList(site1, site2);
-
-        checkOrder(studySiteDao, true);
-
-        studySiteDao.save(studySiteEq(study, site1));
-        studySiteDao.save(studySiteEq(study, site2));
-
-        replayMocks();
-        service.assignTemplateToSites(study, sitesTest);
-        verifyMocks();
-    }
-
-    public void testAssignTemplateToSitesRequiresStudy() throws Exception {
-        Site site1 = createNamedInstance("aaa", Site.class);
-        List<Site> sitesTest = asList(site1);
-        try {
-            service.assignTemplateToSites(null, sitesTest);
-            fail("Expected IllegalArgumentException. Null object is passed instead of study ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testAssignTemplateToSitesRequiresSitesList() throws Exception {
-        Study study = createNamedInstance("sldfksdfjk", Study.class);
-        try {
-            service.assignTemplateToSites(study, null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of sitesTest ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.SITES_LIST_IS_NULL, ise.getMessage());
-        }
     }
 
     public void testAssignTemplateToSubjectCoordinatorRequiresSite() throws Exception {
@@ -319,7 +277,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite0);
         ProtectionGroup expectedPG = createProtectionGroup(1L, studySitePGName);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(expectedPG);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(expectedPG);
         authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
         replayMocks();
 
@@ -421,81 +379,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testGetSiteLists() throws Exception {
-        Map<String, List> siteLists = new HashMap<String, List>();
-        List<Site> availableSites = new ArrayList<Site>();
-        List<Site> assignedSites = new ArrayList<Site>();
-
-        Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-
-        List<ProtectionGroup> allSitePGs = new ArrayList<ProtectionGroup>();
-        expect(authorizationManager.getSites()).andReturn(allSitePGs);
-
-        for (ProtectionGroup site : allSitePGs) {
-            Site protectionGroupName = null;
-            expect(siteDao.getByName(site.getProtectionGroupName())).andReturn(protectionGroupName);
-            availableSites.add(protectionGroupName);
-        }
-        for (StudySite ss : studyTemplate1.getStudySites()) {
-            assignedSites.add(ss.getSite());
-        }
-        availableSites = (List) ObjectSetUtil.minus(availableSites, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
-        siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
-
-        replayMocks();
-        Map<String, List<Site>> siteListsToCompare;
-        siteListsToCompare = service.getSiteLists(studyTemplate1);
-        verifyMocks();
-        assertEquals(siteLists,siteListsToCompare);
-
-        try {
-            service.getSiteLists(null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            ise.getMessage();
-        }
-    }
-
-    public void testGetSiteListsRequiresStudy() throws Exception {
-        try {
-            service.getSiteLists(null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetSitesListsWithSameSiteAvailableAndAssigned() throws Exception {
-        Study study = createNamedInstance("Mayo Study", Study.class);
-        study.addSite(createNamedInstance("Mayo Clinic", Site.class));
-
-        ProtectionGroup expectedAvailableSitePG0 =
-                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
-        ProtectionGroup expectedAvailableSitePG1 =
-                createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        List<ProtectionGroup> exptectedAvailableSitePGs = asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
-        expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
-        Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
-        Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
-        expect(siteService.getById(0)).andReturn(expectedAvailableSite0);
-        expect(siteService.getById(1)).andReturn(expectedAvailableSite1);
-        replayMocks();
-
-        Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);
-        verifyMocks();
-
-        assertEquals("There should be assigned and available sites", 2, assignedAndAvailableSites.size());
-
-        List<Site> actualAssignedSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS);
-        assertEquals("Wrong number of assigned sites", 1, actualAssignedSites.size());
-        assertEquals("Wrong assigned site", "Mayo Clinic", actualAssignedSites.get(0).getName());
-
-        List<Site> actualAvailableSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
-        assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
-        assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
-    }
-
     public void testRemoveMultipleTemplates() throws Exception {
         String userId = "123";
         Site site1 = setId(123, createNamedInstance("site1", Site.class));
@@ -506,7 +389,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite1);
         ProtectionGroup studySitePG= new ProtectionGroup();
         studySitePG.setProtectionGroupId(1l);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(studySitePG);
+        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(studySitePG);
         authorizationManager.removeProtectionGroupUsers(userIds, studySitePG);
 
         replayMocks();
@@ -545,33 +428,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
         }
-    }
-
-    public void testCannotRemoveStudySiteWithAssociatedAssignments() throws Exception {
-        Study study = createNamedInstance("ECOG 1234", Study.class);
-        Site site1 = setId(1, createNamedInstance("Mayo", Site.class));
-        Site site2 = createNamedInstance("Dartmouth", Site.class);
-        StudySite notInUse = setId(10, createStudySite(study, site1));
-        StudySite inUse = setId(11, createStudySite(study, site2));
-        inUse.getStudySubjectAssignments().add(new StudySubjectAssignment());
-
-        siteDao.save(site1);
-        studyDao.save(study);
-        expectLastCall().anyTimes();
-        authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(notInUse));
-        replayMocks();
-
-        try {
-            service.removeTemplateFromSites(study, asList(site1, site2));
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are subject(s) assigned", scve.getMessage());
-        }
-        verifyMocks();
-
-        List<Site> remainingSites = study.getSites();
-        assertEquals("Removable site not removed", 1, remainingSites.size());
-        assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
     }
 
     public void testFindParentWhenImmediatelyAvailable() throws Exception {
@@ -735,38 +591,5 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setGridId(sameGridId);
 
         assertSame(expectedNode, service.findEquivalentChild(study, parameter));
-    }
-
-    ////// CUSTOM MATCHERS
-
-    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
-        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
-        return null;
-    }
-
-    private static class StudySiteMatcher implements IArgumentMatcher {
-        private Study expectedStudy;
-        private Site expectedSite;
-
-        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
-            this.expectedStudy = expectedStudy;
-            this.expectedSite = expectedSite;
-        }
-
-        public boolean matches(Object object) {
-            StudySite actual = (StudySite) object;
-
-            if (expectedStudy.equals(actual.getStudy())) {
-                if (expectedSite.equals(actual.getSite())) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public void appendTo(StringBuffer sb) {
-            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
-        }
     }
 }

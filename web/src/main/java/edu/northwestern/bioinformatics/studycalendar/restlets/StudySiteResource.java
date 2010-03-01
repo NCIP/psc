@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -26,6 +27,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     private Study study;
     private Site site;
     private StudySiteDao studySiteDao;
+    private StudySiteService studySiteService;
 
 
     public void init(Context context, Request request, Response response) {
@@ -36,12 +38,20 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     protected StudySite loadRequestedObject(Request request) {
-        study = studyDao.getByAssignedIdentifier(UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByAssignedIdentifier(UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request));
+        String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        String siteIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
+
+        // Refresh provided StudySites before Study and Site are loaded in-case eager
+        // loading is enabled for the two.
+        StudySite studySite = studySiteService.getStudySite(studyIdentifier, siteIdentifier);
+
+        study = studyDao.getByAssignedIdentifier(studyIdentifier);
+        site = siteDao.getByAssignedIdentifier(siteIdentifier);
+
         if (study == null || site == null) {
             return null;
         } else {
-            return study.getStudySite(site);
+            return studySite;
         }
     }
 
@@ -90,5 +100,10 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
+    }
+
+    @Required
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 }
