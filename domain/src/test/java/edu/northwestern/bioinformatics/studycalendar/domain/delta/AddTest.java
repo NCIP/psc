@@ -5,7 +5,9 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -341,5 +343,83 @@ public class AddTest extends TestCase {
 
         after.siblingDeleted(delta, toDel, 1, 0, NOW);
         assertEquals(5, (int) after.getIndex());
+    }
+
+    public void testEqualsWhenSameIndexAndSameChild() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E", "S1", "s2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E", "S1", "s2");
+        add2.setChild(epoch2);
+        add2.setIndex(1);
+        assertEquals("Adds are not equals", add1, add2);
+    }
+    
+    public void testEqualsWhenDifferentIndexAndSameChild() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E", "S1", "s2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E", "S1", "s2");
+        add2.setChild(epoch2);
+        add2.setIndex(2);
+        assertNotEquals("Adds are equals", add1, add2);
+    }
+
+    public void testEqualsWhenSameIndexAndDifferentChildName() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E1", "S1", "s2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E2", "S1", "s2");
+        add2.setChild(epoch2);
+        add2.setIndex(1);
+        assertNotEquals("Adds are equals", add1, add2);
+    }
+
+    public void testEqualsWhenSameIndexAndDifferentChildInstance() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E1", "S1", "s2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        StudySegment segment1 = createNamedInstance("Segment1", StudySegment.class);
+        add2.setChild(segment1);
+        add2.setIndex(1);
+        assertNotEquals("Adds are equals", add1, add2);
+    }
+
+    public void testDeepEqualsForDifferentIndex() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E1", "S1", "S2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E1", "S1", "S2");
+        add2.setChild(epoch2);
+        add2.setIndex(2);
+
+        Differences differences = add1.deepEquals(add2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Add are equals", "index 1 differs to 2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentChildName() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E1", "S1", "S2");
+        add1.setChild(epoch1);
+        add1.setIndex(1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E2", "S1", "S2");
+        add2.setChild(epoch2);
+        add2.setIndex(1);
+
+        Differences differences = add1.deepEquals(add2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("Add are equals", "Epoch name E1 differs to E2", differences.getChildDifferences().get("child").getMessages().get(0));
     }
 }

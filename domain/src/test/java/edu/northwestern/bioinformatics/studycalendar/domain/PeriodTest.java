@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.*;
@@ -297,5 +298,93 @@ public class PeriodTest extends DomainTestCase {
         period.addPlannedActivity(pa1);
         period.addPlannedActivity(pa2);
         assertNull(period.findNaturallyMatchingChild("Zip"));
+    }
+    
+    public void testEqualsWhenPeriodsHaveSameAttributes() throws Exception {
+        Period p1 = createPeriod("Test", 7, 28, 4);
+        Period p2 = createPeriod("Test", 7, 28, 4);
+        assertEquals("Periods are not equals", p1, p2);
+    }
+
+    public void testEqualsWhenPeriodsHaveDifferentName() throws Exception {
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test2", 7, 28, 4);
+        assertNotEquals("Periods are equals", p1, p2);
+    }
+
+    public void testEqualsWhenPeriodsHaveDifferentDuration() throws Exception {
+        Period p1 = createPeriod("Test", 7, 30, 4);
+        Period p2 = createPeriod("Test", 7, 28, 4);
+        assertNotEquals("Periods are equals", p1, p2);
+    }
+
+    public void testDeepEqualsForDifferentRepetitions() throws Exception {
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test1", 7, 28, 5);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Periods are equals", "Period repetitions 4 differs to 5", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentName() throws Exception {
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test2", 7, 28, 4);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Periods are equals", "Period name Test1 differs to Test2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentStartDay() throws Exception {
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test1", 8, 28, 4);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Periods are equals", "Period start day 7 differs to 8", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentDurationUnit() throws Exception {
+        Period p1 = createPeriod("Test1", 7, Duration.Unit.day, 10, 4);
+        Period p2 = createPeriod("Test1", 7, Duration.Unit.week, 10, 4);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("Periods are equals", "duration unit day differs to week",
+                differences.getChildDifferences().get("Period Test1").getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentDurationQuantity() throws Exception {
+        Period p1 = createPeriod("Test1", 7, Duration.Unit.day, 10, 4);
+        Period p2 = createPeriod("Test1", 7, Duration.Unit.day, 15, 4);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("Periods are equals", "duration quantity 10 differs to 15",
+                differences.getChildDifferences().get("Period Test1").getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentNoOfPlannedActivities() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("Activity1", 1);
+        PlannedActivity pa2 = createPlannedActivity("Activity2", 5);
+        PlannedActivity pa3 = createPlannedActivity("Activity3", 8);
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test1", 7, 28, 4);
+        p1.addPlannedActivity(pa1);
+        p2.addPlannedActivity(pa2);
+        p2.addPlannedActivity(pa3);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Periods are equals", "total no.of planned actvities 1 differs to 2",
+                differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentPlannedActivities() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("Activity", 1);
+        PlannedActivity pa2 = createPlannedActivity("Activity", 5);
+        Period p1 = createPeriod("Test1", 7, 28, 4);
+        Period p2 = createPeriod("Test1", 7, 28, 4);
+        p1.addPlannedActivity(pa1);
+        p2.addPlannedActivity(pa2);
+        Differences differences =  p1.deepEquals(p2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("Periods are equals", "PlannedActivity day 1 differs to 5",
+                differences.getChildDifferences().get("Period Test1").getMessages().get(0));
     }
 }

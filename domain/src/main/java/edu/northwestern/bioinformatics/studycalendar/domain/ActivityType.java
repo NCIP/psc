@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
@@ -59,6 +60,24 @@ public class ActivityType extends AbstractMutableDomainObject
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("not an instance of activity type");
+            return differences;
+        }
+
+        ActivityType activityType = (ActivityType) o;
+
+        if (name != null ? !name.equals(activityType.name) : activityType.name != null) {
+            differences.addMessage(String.format("ActivityType name %s differs to %s", name, activityType.name));
+        }
+
+        return differences;
     }
 
 

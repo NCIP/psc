@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -255,5 +254,91 @@ public class AmendmentTest extends TestCase {
         Amendment amendment = Fixtures.createAmendments("C", "B", "A");
         amendment.setMemoryOnly(true);
         assertTrue(amendment.getPreviousAmendment().isMemoryOnly());
+    }
+
+    public void testFindMatchingDelta() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Epoch epoch1 = new Epoch();
+        epoch1.setGridId("epoch1");
+        Delta<Epoch> delta1 = Delta.createDeltaFor(epoch1);
+        delta1.setGridId("delta1");
+        a1.addDelta(delta1);
+        Delta actualDelta = a1.getMatchingDelta("delta1", "epoch1", delta1.getClass());
+        assertNotNull("Delta not found", actualDelta);
+    }
+
+    public void testEqualsWhenAmendmentNameAndDateIsEquals() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        assertEquals("Amendments are not equals", a1, a2);
+    }
+
+    public void testEqualsWhenAmendmentNameAreNotEquals() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment1", DateTools.createDate(2007, Calendar.APRIL, 6));
+        assertNotEquals("Amendments are not equals", a1, a2);
+    }
+
+    public void testEqualsWhenAmendmentDateAreNotEquals() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment", DateTools.createDate(2008, Calendar.APRIL, 6));
+        assertNotEquals("Amendments are not equals", a1, a2);
+    }
+
+    public void testDeepEqualsWhenNoOfDeltaAreDifferent() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        a1.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
+        a2.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
+        a2.addDelta(Delta.createDeltaFor(new Epoch(),
+            PropertyChange.create("name", "A", "B"), Add.create(new StudySegment())));
+        Differences differences = a1.deepEquals(a2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Amendment are Equals", "No. of deltas 1 do not match to 2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsWhenNoDeltaFoundInAmendment() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Epoch epoch1 = new Epoch();
+        epoch1.setGridId("epoch1");
+        Delta<Epoch> delta1 = Delta.createDeltaFor(epoch1);
+        delta1.setGridId("delta1");
+        delta1.addChanges(PropertyChange.create("name", "A", "B"), Add.create(new StudySegment()));
+        a1.addDelta(delta1);
+        StudySegment segment1 =  new StudySegment();
+        segment1.setGridId("segment1");
+        Delta<StudySegment> delta2 = Delta.createDeltaFor(segment1);
+        delta2.setGridId("delta1");
+        delta2.addChanges(PropertyChange.create("name", "A", "B"), Add.create(new StudySegment()));
+        a2.addDelta(delta2);
+        Differences differences = a1.deepEquals(a2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Amendments are equals", "No matching delta found in released amendment", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsWhenDeltaAreNotEquals() throws Exception {
+        Amendment a1 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Amendment a2 = Fixtures.createAmendment("Amendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Epoch epoch1 = new Epoch();
+        epoch1.setName("Epoch");
+        epoch1.setGridId("GridId1");
+        Delta<Epoch> delta1 = Delta.createDeltaFor(epoch1);
+        delta1.setGridId("delta1");
+        delta1.addChanges(PropertyChange.create("name", "A", "C"), Add.create(new StudySegment()));
+        a1.addDelta(delta1);
+        Epoch epoch2 = new Epoch();
+        epoch2.setName("Epoch");
+        epoch2.setGridId("GridId1");
+        Delta<Epoch> delta2 = Delta.createDeltaFor(epoch2);
+        delta2.setGridId("delta1");
+        delta2.addChanges(PropertyChange.create("name", "A", "B"), Add.create(new StudySegment()));
+        a2.addDelta(delta2);
+        Differences differences = a1.deepEquals(a2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        String actualMessage =  differences.getChildDifferences().get("Delta(0)").getChildDifferences().get("Change property").getMessages().get(0);
+        assertEquals("Amendments are equals", "new value C differs to B", actualMessage);
     }
 }

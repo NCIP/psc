@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -306,4 +310,67 @@ public class ReorderTest extends TestCase {
         reorder.setOldIndex(old);
         reorder.setNewIndex(newI);
     }
+
+    public void testEqualsWhenOldIndexAndNewIndexAreEquals() throws Exception {
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        assertEquals("Reorders are not equals", reorder1, reorder2);
+    }
+    
+    public void testEqualsWhenIndexesAreNotEquals() throws Exception {
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,3);
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        assertNotEquals("Reorders are equals", reorder1, reorder2);
+    }
+
+    public void testEqualsWhenChildNameAreDifferent() throws Exception {
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment2", StudySegment.class), 2,1);
+        assertNotEquals("Reorders are equals", reorder1, reorder2);
+    }
+
+    public void testEqualsWhenChildNodesAreDifferent() throws Exception {
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,1);
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Epoch1", Epoch.class), 2,1);
+        assertNotEquals("Reorders are equals", reorder1, reorder2);
+    }
+    
+    public void testDeepEqualsWhenIndexAreNotEquals() throws Exception {
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 2,3);
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(),
+                createNamedInstance("Segment1", StudySegment.class), 1,2);
+        Differences differences = reorder1.deepEquals(reorder2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("newIndex 3 differs to 2", differences.getMessages().get(0));
+        assertEquals("oldIndex 2 differs to 1", differences.getMessages().get(1));
+    }
+
+    public void testDeepEqualsWhenChildNodeAreNotEquals() throws Exception {
+        Epoch e1 = Epoch.create("E1","S1","S2");
+        e1.setGridId("e1");
+        Reorder reorder1 =  createReorderWithProperties(new Reorder(), e1, 1,2);
+        Epoch e2 = Epoch.create("E2","S1","S2");
+        e1.setGridId("e2");
+        Reorder reorder2 =  createReorderWithProperties(new Reorder(), e2, 1,2);
+        Differences differences = reorder1.deepEquals(reorder2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("for different child", differences.getMessages().get(0));
+    }
+
+    private Reorder createReorderWithProperties(Reorder reorder, Child<?> child, int oldId, int newId) {
+        reorder.setChild(child);
+        reorder.setOldIndex(oldId);
+        reorder.setNewIndex(newId);
+        return reorder;
+    }
+
 }

@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
@@ -289,6 +291,64 @@ public class PlannedActivityTest extends TestCase {
     public void testEffectiveWeightWithNoWeightIsZero() throws Exception {
         pa0.setWeight(null);
         assertEquals(0, pa0.getEffectiveWeight());
+    }
+
+    public void testDeepEqualsForDifferentActivity() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("a1", 1);
+        PlannedActivity pa2 = createPlannedActivity("a2", 1);
+        Differences differences = pa1.deepEquals(pa2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("PlannedActivity is not different", "Activity name a1 differs to a2",
+                differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentDay() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("A", 1);
+        PlannedActivity pa2 = createPlannedActivity("A", 2);
+        Differences differences = pa1.deepEquals(pa2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("PlannedActivity is not different", "PlannedActivity day 1 differs to 2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentLabels() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("A", 1);
+        PlannedActivity pa2 = createPlannedActivity("A", 1);
+        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label", 5);
+        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label", 3);
+        pa1.addPlannedActivityLabel(pal1);
+        pa2.addPlannedActivityLabel(pal2);
+        Differences differences = pa1.deepEquals(pa2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("PlannedActivity is not different","label repetition number 5 differs to 3",
+                differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentNoOfLabels() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("A", 1);
+        PlannedActivity pa2 = createPlannedActivity("A", 1);
+        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label1", 5);
+        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label2", 3);
+        PlannedActivityLabel pal3 = Fixtures.createPlannedActivityLabel("Label3", 3);
+        pa1.addPlannedActivityLabel(pal1);
+        pa2.addPlannedActivityLabel(pal2);
+        pa2.addPlannedActivityLabel(pal3);
+        Differences differences = pa1.deepEquals(pa2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("PlannedActivity is not different","total no. of planned activity labels 1 differs to 2",
+                differences.getMessages().get(0));
+    }
+    
+    public void testDeepEqualsForDifferentPopulation() throws Exception {
+        PlannedActivity pa1 = createPlannedActivity("A", 1);
+        PlannedActivity pa2 = createPlannedActivity("A", 1);
+        Population p1 = Fixtures.createPopulation("N1", "name");
+        Population p2 = Fixtures.createPopulation("N2", "name");
+        pa1.setPopulation(p1);
+        pa2.setPopulation(p2);
+        Differences differences = pa1.deepEquals(pa2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("PlannedActivity is not different", "Population abbreviation N1 differs to N2", differences.getChildDifferences().get("PlannedActivity").getMessages().get(0));
+
     }
 
     private PlannedActivity createPlannedActivityInPeriod(int periodStartDay, int paDay) {

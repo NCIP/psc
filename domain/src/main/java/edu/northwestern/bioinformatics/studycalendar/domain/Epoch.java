@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -115,4 +116,61 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
     public void setName(String name) {
         this.name = name;
     }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof Epoch)) {
+            differences.addMessage("not an instance of epoch");
+            return differences;
+        }
+
+        Epoch epoch = (Epoch) o;
+
+        if (name != null ? !name.equals(epoch.name) : epoch.name != null) {
+            differences.addMessage(String.format("Epoch name %s differs to %s", name, epoch.name));
+        }
+
+        if (getStudySegments() != null &&
+                epoch.getStudySegments() != null) {
+            if (getStudySegments().size() != epoch.getStudySegments().size()) {
+                differences.addMessage(String.format("total no. of StudySegment %d differs to %d",
+                        getStudySegments().size(), epoch.getStudySegments().size()));
+            } else {
+                for (int i=0; i<getStudySegments().size(); i++) {
+                    StudySegment ss1 =  getStudySegments().get(i);
+                    StudySegment ss2 =  epoch.getStudySegments().get(i);
+                    Differences segmentDifferences = ss1.deepEquals(ss2);
+                    if (segmentDifferences.hasDifferences()) {
+                       differences.addChildDifferences(String.format("Epoch %s", name),
+                               segmentDifferences);
+                    }
+                }
+            }
+
+        }
+        return differences;
+    }
+
+    //Object methods
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Epoch)) return false;
+
+        Epoch epoch = (Epoch) o;
+        if (name != null ? !name.equals(epoch.name) : epoch.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+
 }

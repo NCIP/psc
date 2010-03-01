@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.apache.commons.collections.comparators.NullComparator;
@@ -92,6 +93,27 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
     @Transient
     public Study getParent() {
         return getStudy();
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof Population)) {
+            differences.addMessage("not an instance of Population");
+            return differences;
+        }
+
+        Population that = (Population) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            differences.addMessage(String.format("Population name %s differs to %s", name, that.name));
+        }
+
+        if (abbreviation != null ? !abbreviation.equals(that.abbreviation) : that.abbreviation != null) {
+            differences.addMessage(String.format("Population abbreviation %s differs to %s", abbreviation, that.abbreviation));
+        }
+
+        return differences;
     }
 
     @Override

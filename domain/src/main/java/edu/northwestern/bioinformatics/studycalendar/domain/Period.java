@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -197,6 +198,54 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     public void setPlannedActivities(List<PlannedActivity> plannedActivities) {
         setChildren(plannedActivities);
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences = new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof Period)) {
+            differences.addMessage("not an instance of period");
+            return differences;
+        }
+
+        Period period = (Period) o;
+
+        if (repetitions != period.repetitions) {
+            differences.addMessage(String.format("Period repetitions %d differs to %d", repetitions, period.repetitions));
+        }
+
+        if (name != null ? !name.equals(period.name) : period.name != null){
+            differences.addMessage(String.format("Period name %s differs to %s", name, period.name));
+        }
+
+        if (startDay != null ? !startDay.equals(period.startDay) : period.startDay != null) {
+            differences.addMessage(String.format("Period start day %d differs to %d", startDay, period.startDay));
+        }
+        String prefix = String.format("Period %s", name);
+        if (duration != null && period.duration != null) {
+            Differences durationDifferences = duration.deepEquals(period.duration);
+            if (durationDifferences.hasDifferences()) {
+               differences.addChildDifferences(prefix, durationDifferences);
+            }
+        }
+
+        if (getPlannedActivities() != null && period.getPlannedActivities() != null) {
+            if (getPlannedActivities().size() != period.getPlannedActivities().size()) {
+                differences.addMessage(String.format("total no.of planned actvities %d differs to %d",
+                        getPlannedActivities().size(), period.getPlannedActivities().size()));
+            } else {
+                for (int i=0; i<getPlannedActivities().size(); i++) {
+                    PlannedActivity pa1 = getPlannedActivities().get(i);
+                    PlannedActivity pa2 = period.getPlannedActivities().get(i);
+                    Differences paDifferences = pa1.deepEquals(pa2);
+                    if (paDifferences.hasDifferences()) {
+                        differences.addChildDifferences(prefix, paDifferences);
+                    }
+                }
+            }
+        }
+
+        return differences;
     }
 
     ////// OBJECT METHODS

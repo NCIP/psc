@@ -1,19 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -130,4 +122,77 @@ public class DeltaTest extends DomainTestCase {
         assertNotNull(actual);
         assertEquals("Wrong class", expectedClass, actual.getClass());
     }
+
+    public void testEqualsWhenDeltaNodeAreEquals() throws Exception {
+        Delta<Epoch> delta1 = Delta.createDeltaFor(new Epoch());
+        Delta<Epoch> delta2 = Delta.createDeltaFor(new Epoch());
+        assertEquals("Deltas are not equals", delta1, delta2);
+    }
+
+    public void testEqualsWhenDeltaNodeAreNotEquals() throws Exception {
+        Delta<Epoch> delta1 = Delta.createDeltaFor(new Epoch());
+        Delta<Period> delta2 = Delta.createDeltaFor(new Period());
+        assertNotEquals("Deltas are equals", delta1, delta2);
+    }
+
+    public void testDeepEqualsWhenDeltaChangesAreEquals() throws Exception {
+        PropertyChange change = PropertyChange.create("name", "A", "Aprime");
+        List<Change> changesList1 =  new ArrayList<Change>();
+        changesList1.add(change);
+        Delta<Epoch> delta1 = Delta.createDeltaFor(new Epoch());
+        delta1.setChangesInternal(changesList1);
+        List<Change> changesList2 =  new ArrayList<Change>();
+        changesList2.add(change);
+        Delta<Epoch> delta2 = Delta.createDeltaFor(new Epoch());
+        delta2.setChangesInternal(changesList2);
+        Differences differences =  delta1.deepEquals(delta2);
+        assertTrue(differences.getMessages().isEmpty());
+    }
+
+    public void testdeepEqualsWhenNoOfDeltaChangesAreNotEquals() throws Exception {
+        PropertyChange change = PropertyChange.create("name", "A", "B");
+        PropertyChange change1 = PropertyChange.create("name", "A", "C");
+        Delta<Epoch> delta1 = Delta.createDeltaFor(new Epoch());
+        delta1.addChanges(change);
+        Delta<Epoch> delta2 = Delta.createDeltaFor(new Epoch());
+        delta2.addChanges(change, change1);
+        Differences differences =  delta1.deepEquals(delta2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Deltas are equals", "total no. of changes of delta 1 differs to 2", differences.getMessages().get(0));
+    }
+
+    public void testdeepEqualsWhenDeltaAddChangesAreNotEquals() throws Exception {
+        Add add1 = new Add();
+        Epoch epoch1 = Epoch.create("E1", "S1", "s2");
+        add1.setChild(epoch1);
+        Add add2 = new Add();
+        Epoch epoch2 = Epoch.create("E2", "S1", "s2");
+        add2.setChild(epoch2);
+        Delta<Epoch> delta1 = Delta.createDeltaFor(new Epoch());
+        delta1.addChanges(PropertyChange.create("name", "A", "B"), Add.create(new StudySegment()), add1);
+        Delta<Epoch> delta2 = Delta.createDeltaFor(new Epoch());
+        delta2.addChanges(PropertyChange.create("name", "A", "B"), Add.create(new StudySegment()), add2);
+        Differences differences =  delta1.deepEquals(delta2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        String actualMessage = differences.getChildDifferences().get("Add").getChildDifferences().get("child").getMessages().get(0);
+        assertEquals("Deltas are equals", "Epoch name E1 differs to E2", actualMessage);
+    }
+
+    public void testDeepEqualsWhenDeltaNodeAreNotEqual() throws Exception {
+        Epoch epoch1 = new Epoch();
+        epoch1.setName("Epoch1");
+        epoch1.setGridId("GridId1");
+        Delta<Epoch> delta1 = Delta.createDeltaFor(epoch1);
+        delta1.setGridId("delta1");
+        Epoch epoch2 = new Epoch();
+        epoch2.setName("Epoch1");
+        epoch2.setGridId("GridId2");
+        Delta<Epoch> delta2 = Delta.createDeltaFor(epoch2);
+        delta2.setGridId("delta1");
+        Differences differences =  delta1.deepEquals(delta2);
+        assertFalse(differences.getMessages().isEmpty());
+        String actualMessage =  differences.getMessages().get(0);
+        assertEquals("Deltas are equals", "for different node", actualMessage);
+    }
+
 }

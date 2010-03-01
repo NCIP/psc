@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
@@ -72,5 +73,21 @@ public class PopulationTest extends TestCase {
         assertNotNull(clone.getName());
         assertNotNull(clone.getAbbreviation());
         assertTrue(clone.isMemoryOnly());
+    }
+
+    public void testDeepEqualsForDifferentName() throws Exception {
+        Population p1 = Fixtures.createPopulation("N", "name1");
+        Population p2 = Fixtures.createPopulation("N", "name2");
+        Differences differences = p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Population is not different", "Population name name1 differs to name2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentAbbreviation() throws Exception {
+        Population p1 = Fixtures.createPopulation("N1", "name");
+        Population p2 = Fixtures.createPopulation("N2", "name");
+        Differences differences = p1.deepEquals(p2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Population is not different", "Population abbreviation N1 differs to N2", differences.getMessages().get(0));
     }
 }

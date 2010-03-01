@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
@@ -175,6 +176,61 @@ public class Activity extends AbstractMutableDomainObject
 
     public void setProperties(List<ActivityProperty> properties) {
         this.properties = properties;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("not an instance of activity");
+            return differences;
+        }
+        Activity activity = (Activity) o;
+
+        if (name != null ? !name.equals(activity.name) : activity.name != null) {
+            differences.addMessage(String.format("Activity name %s differs to %s", name, activity.name));
+        }
+
+        if (code != null ? !code.equals(activity.code) : activity.code != null) {
+            differences.addMessage(String.format("Activity code %s differs to %s", code, activity.code));
+        }
+
+        if (description != null ? !description.equals(activity.description) : activity.description != null) {
+            differences.addMessage(String.format("Activity description %s differs %s", description, activity.description));
+        }
+
+        String prefix = String.format("Activity %s", name);
+
+        if (source != null && activity.getSource()!= null) {
+            Differences sourceDifferences = source.deepEquals(activity.getSource());
+            if (sourceDifferences.hasDifferences()) {
+                differences.addChildDifferences(prefix, sourceDifferences);
+            }
+        }
+
+        if (activityType !=null && activity.getType() != null) {
+            Differences typeDifferences = activityType.deepEquals(activity.getType());
+            if (typeDifferences.hasDifferences()) {
+                differences.addChildDifferences(prefix, typeDifferences);
+            }
+        }
+
+        if (getProperties() != null && activity.getProperties() != null) {
+            if (getProperties().size() != activity.getProperties().size()) {
+                differences.addMessage(String.format("total no. of activity properties %d differs to %d",
+                        getProperties().size(), activity.getProperties().size()));
+            } else {
+                for (int i=0; i<getProperties().size(); i++) {
+                    ActivityProperty ap1 =  getProperties().get(i);
+                    ActivityProperty ap2 = activity.getProperties().get(i);
+                    Differences propertyDifferences = ap1.deepEquals(ap2);
+                    if (propertyDifferences.hasDifferences()) {
+                        differences.addChildDifferences(prefix, propertyDifferences);
+                    }
+                }
+            }
+        }
+        return differences;
     }
 
     ////// OBJECT METHODS

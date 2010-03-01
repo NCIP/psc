@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 
 import javax.persistence.Column;
@@ -97,6 +98,30 @@ public class PropertyChange extends Change {
             .append(" from ").append(getOldValue()).append(" to ").append(getNewValue())
             .append(']')
             .toString();
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("Object is not instance of " +getClass());
+            return differences;
+        }
+
+        PropertyChange that = (PropertyChange) o;
+
+        if (newValue != null ? !newValue.equals(that.newValue) : that.newValue != null) {
+            differences.addMessage(String.format("new value %s differs to %s", newValue, that.newValue));
+        }
+
+        if (oldValue != null ? !oldValue.equals(that.oldValue) : that.oldValue != null) {
+            differences.addMessage(String.format("old value %s differs to %s", oldValue, that.oldValue));
+        }
+
+        if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) {
+            differences.addMessage(String.format("property %s differs to %s", propertyName, that.propertyName));
+        }
+        return differences;
     }
 
     public boolean equals(Object o) {

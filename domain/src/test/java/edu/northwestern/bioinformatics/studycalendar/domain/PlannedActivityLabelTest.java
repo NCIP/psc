@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertOrder;
 import junit.framework.TestCase;
 
@@ -97,4 +98,21 @@ public class PlannedActivityLabelTest extends TestCase {
         assertFalse(pal0.appliesToRepetition(4));
         assertTrue(pal0.appliesToRepetition(3));
     }
+
+    public void testDeepEqualsForDifferentLabel() throws Exception {
+        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label1", 5);
+        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label2", 5);
+        Differences differences = pal1.deepEquals(pal2);
+        assertNotNull(differences.getMessages());
+        assertEquals("Planned Activity Labels are equals", "label label1 differs to label2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentRepetitionNo() throws Exception {
+        PlannedActivityLabel pal1 = Fixtures.createPlannedActivityLabel("Label", 5);
+        PlannedActivityLabel pal2 = Fixtures.createPlannedActivityLabel("Label", 8);
+        Differences differences = pal1.deepEquals(pal2);
+        assertNotNull(differences.getMessages());
+        assertEquals("Planned Activity Labels are equals", "label repetition number 5 differs to 8", differences.getMessages().get(0));
+    }
+
 }

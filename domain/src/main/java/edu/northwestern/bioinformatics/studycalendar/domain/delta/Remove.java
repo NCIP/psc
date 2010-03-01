@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -31,6 +32,25 @@ public class Remove extends ChildrenChange {
     @Transient
     public boolean isNoop() {
         return false;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("object is not an instance of Remove");
+            return differences;
+        }
+
+        Remove remove = (Remove) o;
+
+        if (getChild() != null && remove.getChild() != null) {
+            if (getChild().getGridId() != null ? !getChild().getGridId().equals(remove.getChild().getGridId())
+                    : remove.getChild().getGridId() != null) {
+                differences.addMessage("for different child");
+            }
+        }
+        return differences;
     }
 
     @Override

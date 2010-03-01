@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -103,6 +104,34 @@ public class Reorder extends ChildrenChange {
 
     public void setOldIndex(Integer oldIndex) {
         this.oldIndex = oldIndex;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("object is not an instance of Reorder");
+            return differences;
+        }
+
+        Reorder reorder = (Reorder) o;
+
+        if (getChild() != null && reorder.getChild() != null) {
+            if (getChild().getGridId() != null ? !getChild().getGridId().equals(reorder.getChild().getGridId())
+                    : reorder.getChild().getGridId() != null) {
+                differences.addMessage("for different child");
+            }
+        }
+
+        if (newIndex != null ? !newIndex.equals(reorder.newIndex) : reorder.newIndex != null) {
+            differences.addMessage(String.format("newIndex %d differs to %d", newIndex, reorder.newIndex));
+        }
+
+        if (oldIndex != null ? !oldIndex.equals(reorder.oldIndex) : reorder.oldIndex != null) {
+            differences.addMessage(String.format("oldIndex %d differs to %d", oldIndex, reorder.oldIndex));
+        }
+
+        return differences;
     }
 
     ////// OBJECT METHODS

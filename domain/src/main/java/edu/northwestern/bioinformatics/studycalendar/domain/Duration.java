@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.Type;
@@ -67,6 +68,25 @@ public class Duration implements Comparable<Duration>, Cloneable {
 
     public void setUnit(Unit unit) {
        this.unit = unit;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences = new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("not valid duration");
+            return differences;
+        }
+
+        final Duration duration = (Duration) o;
+
+        if (quantity != null ? !quantity.equals(duration.quantity) : duration.quantity != null) {
+            differences.addMessage(String.format("duration quantity %d differs to %d", quantity, duration.quantity));
+        }
+        if (unit != duration.unit) {
+            differences.addMessage(String.format("duration unit %s differs to %s", unit, duration.unit));
+        }
+        return differences;
     }
 
     // Object methods

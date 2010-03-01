@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.EmptyDayRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -17,9 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -122,5 +121,58 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
 
     public void setCycleLength(Integer cycleLength) {
         this.cycleLength = cycleLength;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof StudySegment)){
+            differences.addMessage("not an instance of StudySegment");
+            return differences;
+        }
+
+        StudySegment studySegment = (StudySegment) o;
+        if (name != null ? !name.equals(studySegment.name) : studySegment.name != null) {
+            differences.addMessage(String.format("StudySegment name %s differs to %s", name, studySegment.name));
+        }
+
+
+        if (getPeriods() != null && studySegment.getPeriods() != null) {
+            if (getPeriods().size() != studySegment.getPeriods().size()) {
+                differences.addMessage(String.format("total no.of periods %d differs to %d",
+                        getPeriods().size(), studySegment.getPeriods().size()));
+            } else {
+                Iterator iterator1 = getPeriods().iterator();
+                Iterator iterator2 = studySegment.getPeriods().iterator();
+                while (iterator1.hasNext() && iterator2.hasNext()) {
+                    Period period1 = (Period)iterator1.next();
+                    Period period2 = (Period)iterator2.next();
+                    Differences periodDifferences = period1.deepEquals(period2);
+                    if (periodDifferences.hasDifferences()) {
+                        differences.addChildDifferences(String.format("StudySegment %s", name), periodDifferences);
+                    }
+                }
+            }
+        }
+
+        return differences; 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StudySegment)) return false;
+
+        StudySegment studySegment = (StudySegment) o;
+        if (name != null ? !name.equals(studySegment.name) : studySegment.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = (name != null ? name.hashCode() : 0);
+        return result;
     }
 }

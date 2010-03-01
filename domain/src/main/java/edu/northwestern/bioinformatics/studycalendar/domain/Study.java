@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -309,6 +310,10 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
     @Transient
     public boolean isDetached() {
         return false;
+    }
+
+    public Differences deepEquals(Object o) {
+        return new Differences();
     }
 
     ////// BEAN PROPERTIES

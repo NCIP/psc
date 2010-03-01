@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.tools.FormatTools.formatDate;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
@@ -295,6 +296,43 @@ public class Amendment
         return result;
     }
 
+    public Differences deepEquals(Object o) {
+        Differences differences = new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("object is not an instance of Amendment");
+            return differences;
+        }
+        Amendment amendment = (Amendment) o;
+
+        if (getDate() != null ? !date.equals(amendment.getDate()) : amendment.getDate() != null) {
+            differences.addMessage("amendment date " + getDate() +" does not match to " +amendment.getDate());
+        }
+
+        if (name != null ? !name.equals(amendment.name) : amendment.name != null) {
+            differences.addMessage("amendment name " + name +" does not match to " +amendment.name);
+        }
+
+        if (deltas.size() != amendment.getDeltas().size()) {
+            differences.addMessage("No. of deltas " +deltas.size()+" do not match to " +amendment.getDeltas().size());
+        } else {
+            int index = 0;
+            for (Delta delta: amendment.getDeltas()) {
+                Delta matchingDelta = getMatchingDelta(delta.getGridId(), delta.getNode().getGridId(), delta.getClass());
+                if (matchingDelta != null) {
+                    Differences deltaDifferences = matchingDelta.deepEquals(delta);
+                    if (deltaDifferences.hasDifferences()) {
+                        differences.addChildDifferences("Delta(".concat(Integer.toString(index)).concat(")"), deltaDifferences);
+                    }
+                    index++;
+                } else {
+                differences.addMessage("No matching delta found in released amendment");
+                }
+            }
+        }
+        return differences;
+    }
+
     @Override
     public Amendment clone() {
         try {
@@ -316,6 +354,17 @@ public class Amendment
     public Delta getMatchingDelta(String gridId, String nodeId) {
         for (Delta delta : this.getDeltas()) {
             if (delta.getGridId().equals(gridId) && delta.getNode() != null && delta.getNode().getGridId().equals(nodeId)) {
+                return delta;
+            }
+        }
+        return null;
+    }
+
+    @Transient
+    public Delta getMatchingDelta(String gridId, String nodeId, Class klass) {
+        for (Delta delta :  this.getDeltas()) {
+            if (delta.getGridId().equals(gridId) && delta.getClass().equals(klass) &&
+                delta.getNode() != null && delta.getNode().getGridId().equals(nodeId)) {
                 return delta;
             }
         }

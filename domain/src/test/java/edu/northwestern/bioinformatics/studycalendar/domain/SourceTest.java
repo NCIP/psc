@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import junit.framework.TestCase;
 
 /**
@@ -23,5 +24,20 @@ public class SourceTest extends TestCase {
 
         Source clone = source.transientClone();
         assertEquals("Should have no activities", 0, clone.getActivities().size());
+    }
+
+    public void testDeepEqualsForSameSourceName() throws Exception {
+        Source source1 = createSource("Source");
+        Source source2 = createSource("Source");
+        Differences differences = source1.deepEquals(source2);
+        assertTrue("Activiy source is different", differences.getMessages().isEmpty());
+    }
+
+    public void testDeepEqualsForDifferentActivityTypeName() throws Exception {
+        Source source1 = createSource("Source1");
+        Source source2 = createSource("Source2");
+        Differences differences = source1.deepEquals(source2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Activiy source is not different", "Source name Source1 differs to Source2", differences.getMessages().get(0));
     }
 }

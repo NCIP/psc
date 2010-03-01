@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -55,6 +56,9 @@ public abstract class Change
      */
     @Transient
     public abstract boolean isNoop();
+
+    @Transient
+    public abstract Differences deepEquals(Object o);
 
     /**
      * Integrate the change embodied in this object into the given {@link Delta}.

@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import org.easymock.EasyMock;
 
 /**
@@ -86,5 +88,41 @@ public class EpochTest extends DomainTestCase {
     public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
         Epoch e = Epoch.create("E", "A1", "A2");
         assertNull(e.findNaturallyMatchingChild("A0"));
+    }
+
+    public void testEqualsWhenSameName() throws Exception {
+        Epoch e1 = Epoch.create("E", "A1", "A2");
+        Epoch e2 = Epoch.create("E", "A3", "A4");
+        assertEquals("Epochs are not equals", e1, e2);
+    }
+    
+    public void testEqualsWhenDifferentName() throws Exception {
+        Epoch e1 = Epoch.create("E1", "A1", "A2");
+        Epoch e2 = Epoch.create("E2", "A3", "A4");
+        assertNotEquals("Epochs are equals", e1, e2);
+    }
+
+    public void testDeepEqualsWhenDifferentName() throws Exception {
+        Epoch e1 = Epoch.create("E1", "A1", "A2");
+        Epoch e2 = Epoch.create("E2", "A3", "A4");
+        Differences differences = e1.deepEquals(e2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("Epoch name E1 differs to E2", differences.getMessages().get(0));
+    }
+    
+    public void testDeepEqualsForDifferentNoOfStudySegments() throws Exception {
+        Epoch e1 = Epoch.create("E1", "A1", "A2");
+        Epoch e2 = Epoch.create("E1", "A1");
+        Differences differences = e1.deepEquals(e2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("total no. of StudySegment 2 differs to 1", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentStudySegments() throws Exception {
+        Epoch e1 = Epoch.create("E1", "A1", "A2");
+        Epoch e2 = Epoch.create("E1", "A1", "A4");
+        Differences differences = e1.deepEquals(e2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("StudySegment name A2 differs to A4", differences.getChildDifferences().get("Epoch E1").getMessages().get(0));
     }
 }

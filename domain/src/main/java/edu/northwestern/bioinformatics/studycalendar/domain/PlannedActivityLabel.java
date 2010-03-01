@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.tools.BeanPropertyListComparator;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -113,6 +114,28 @@ public class PlannedActivityLabel extends AbstractMutableDomainObject
     public void setLabel(String label) {
         this.label = normalizeLabel(label);
     }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof PlannedActivityLabel)) {
+            differences.addMessage("not an instance of PlannedActivityLabel");
+            return differences;
+        }
+
+        PlannedActivityLabel that = (PlannedActivityLabel) o;
+
+        if (label != null ? !label.equals(that.label) : that.label != null) {
+            differences.addMessage(String.format("label %s differs to %s", label, that.label));
+        }
+
+        if (repetitionNumber != null ? !repetitionNumber.equals(that.repetitionNumber) : that.repetitionNumber != null) {
+            differences.addMessage(String.format("label repetition number %d differs to %d", repetitionNumber, that.repetitionNumber));
+        }
+
+        return differences;
+    }
+
 
     ////// OBJECT METHODS
 

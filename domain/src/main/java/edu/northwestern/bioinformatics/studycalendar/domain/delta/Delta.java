@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -201,5 +202,55 @@ public abstract class Delta<T extends Changeable>
         } catch (CloneNotSupportedException e) {
             throw new StudyCalendarError("Clone is supported", e);
         }
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (!(o instanceof Delta)) {
+            differences.addMessage("object is not instance of " +getClass());
+            return differences;
+        }
+
+        Delta delta = (Delta) o;
+        if (getNode() != null && delta.getNode() != null) {
+            if (getNode().getGridId() != null ? !getNode().getGridId().equals(delta.getNode().getGridId())
+                    : delta.getNode().getGridId() != null) {
+                differences.addMessage("for different node");
+            }
+        }
+
+        if (getChanges().size() != delta.getChanges().size()) {
+            differences.addMessage(String.format("total no. of changes of delta %d differs to %d",
+                        getChanges().size(), delta.getChanges().size()));
+        } else {
+            for (int i=0; i<getChanges().size(); i++) {
+                Change change =  getChanges().get(i);
+                Change matchingChange = (Change)delta.getChanges().get(i);
+                Differences changeDifferences = change.deepEquals(matchingChange);
+                if (changeDifferences.hasDifferences()) {
+                    differences.addChildDifferences(change.getAction().getDisplayName(), changeDifferences);
+                }
+            }
+        }
+        return differences;
+    }
+    
+    //Object Methods
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Delta)) return false;
+
+        Delta delta = (Delta) o;
+        if (node != null ? !node.equals(delta.node) : delta.node != null) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = node != null ? node.hashCode() : 0;
+        return result;
     }
 }

@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.Cascade;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.IndexColumn;
@@ -100,5 +100,9 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
             study.setPlannedCalendar(this);
         }
         setParent(study);
+    }
+    
+    public Differences deepEquals(Object o) {
+        return new Differences();
     }
 }

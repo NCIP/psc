@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainAssertions.assertDayRange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
 /**
  * @author Moses Hohman
@@ -118,5 +120,51 @@ public class StudySegmentTest extends DomainTestCase {
     public void testFindMatchingChildSegmentWhenNotPresent() throws Exception {
         Epoch e = Epoch.create("E", "A1", "A2");
         assertNull(e.findNaturallyMatchingChild("A0"));
+    }
+    
+    public void testEqualsWhenSameName() throws Exception {
+        StudySegment s1 = createNamedInstance("Segment", StudySegment.class);
+        StudySegment s2 = createNamedInstance("Segment", StudySegment.class);
+        assertEquals("StudySegments are not equals", s1, s2);
+    }
+    
+    public void testEqualsWhenNotSameName() throws Exception {
+        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("Segment2", StudySegment.class);
+        assertNotEquals("StudySegments are equals", s1, s2);
+    }
+
+    public void testDeepEqualsForDifferentName() throws Exception {
+        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("Segment2", StudySegment.class);
+        Differences differences =  s1.deepEquals(s2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("StudySegments are equals", "StudySegment name Segment1 differs to Segment2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentNoOfPeriods() throws Exception {
+        Period p1 = createPeriod("P1", 4, 7, 1);
+        Period p2 = createPeriod("P2", 4, 7, 1);
+        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("Segment1", StudySegment.class);
+        s1.addPeriod(p1);
+        s2.addPeriod(p1);
+        s2.addPeriod(p2);
+        Differences differences =  s1.deepEquals(s2);
+        assertFalse(differences.getMessages().isEmpty());
+        assertEquals("StudySegments are equals", "total no.of periods 1 differs to 2", differences.getMessages().get(0));
+    }
+
+    public void testDeepEqualsForDifferentPeriod() throws Exception {
+        Period p1 = createPeriod("P1", 4, 7, 1);
+        Period p2 = createPeriod("P2", 4, 7, 1);
+        StudySegment s1 = createNamedInstance("Segment1", StudySegment.class);
+        StudySegment s2 = createNamedInstance("Segment1", StudySegment.class);
+        s1.addPeriod(p1);
+        s2.addPeriod(p2);
+        Differences differences =  s1.deepEquals(s2);
+        assertFalse(differences.getChildDifferences().isEmpty());
+        assertEquals("StudySegments are equals", "Period name P1 differs to P2",
+                differences.getChildDifferences().get("StudySegment Segment1").getMessages().get(0));
     }
 }

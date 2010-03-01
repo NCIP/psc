@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -71,6 +72,23 @@ public class Source extends AbstractMutableDomainObject
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("not an instance of source");
+        }
+
+        Source source = (Source) o;
+
+        if (name != null ? !name.equals(source.name) : source.name != null) {
+            differences.addMessage(String.format("Source name %s differs to %s", name, source.name));
+        }
+
+        return differences;
     }
 
     public boolean equals(Object o) {

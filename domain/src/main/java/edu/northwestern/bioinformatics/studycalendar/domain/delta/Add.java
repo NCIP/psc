@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -99,6 +100,29 @@ public class Add extends ChildrenChange {
         if (index != null ? !index.equals(add.index) : add.index != null) return false;
 
         return true;
+    }
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || getClass() != o.getClass()) {
+            differences.addMessage("object is not an instance of Add");
+            return differences;
+        }
+
+        Add add = (Add) o;
+
+        if (index != null ? !index.equals(add.index) : add.index != null) {
+            differences.addMessage(String.format("index %d differs to %d", index, add.index));
+        }
+
+        if (getChild() != null) {
+            Differences childDifferences = getChild().deepEquals(add.getChild());
+            if (childDifferences.hasDifferences()) {
+                differences.addChildDifferences("child", childDifferences);
+            }
+        }
+        return differences;
     }
 
     @Override

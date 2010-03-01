@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
@@ -16,10 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -284,6 +282,66 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
 
 	}
+
+    public Differences deepEquals(Object o) {
+        Differences differences =  new Differences();
+        if (this == o) return differences;
+        if (o == null || !(o instanceof PlannedActivity)) {
+            differences.addMessage("not an instance of PlannedActivity");
+            return differences;
+        }
+
+        PlannedActivity that = (PlannedActivity) o;
+        if (activity != null && that.activity != null) {
+            Differences activityDifferences = activity.deepEquals(that.activity);
+            if (activityDifferences.hasDifferences()) {
+                differences.addChildDifferences("PlannedActivity", activityDifferences);
+            }
+        }
+
+        if (condition != null ? !condition.equals(that.condition) : that.condition != null) {
+            differences.addMessage(String.format("PlannedActivity condition %s differs to %s", condition, that.condition));
+        }
+
+        if (day != null ? !day.equals(that.day) : that.day != null) {
+            differences.addMessage(String.format("PlannedActivity day %d differs to %d", day, that.day));
+        }
+
+        if (weight != null ? !weight.equals(that.weight) : that.weight != null) {
+            differences.addMessage(String.format("PlannedActivity weight %d differs to %d", weight, that.weight));
+        }
+
+        if (details != null ? !details.equals(that.details) : that.details != null) {
+            differences.addMessage(String.format("PlannedActivity details %s differs to %s", details, that.details));
+        }
+
+        if (population != null && that.population != null) {
+            Differences populationDifferences = population.deepEquals(that.population);
+            if (populationDifferences.hasDifferences()) {
+                differences.addChildDifferences("PlannedActivity", populationDifferences);
+            }
+        }
+
+        if (getPlannedActivityLabels() != null &&
+                that.getPlannedActivityLabels() != null) {
+            if (getPlannedActivityLabels().size() != that.getPlannedActivityLabels().size()) {
+                differences.addMessage(String.format("total no. of planned activity labels %d differs to %d",
+                        getPlannedActivityLabels().size(), that.getPlannedActivityLabels().size()));
+            } else {
+                Iterator iterator1 = getPlannedActivityLabels().iterator();
+                Iterator iterator2 = that.getPlannedActivityLabels().iterator();
+                while (iterator1.hasNext() && iterator2.hasNext()) {
+                    PlannedActivityLabel label1 = (PlannedActivityLabel)iterator1.next();
+                    PlannedActivityLabel label2 = (PlannedActivityLabel)iterator2.next();
+                    Differences labelDifferences = label1.deepEquals(label2);
+                    if (labelDifferences.hasDifferences()) {
+                        differences.addChildDifferences("PlannedActivity", labelDifferences);
+                    }
+                }
+            }
+        }
+        return differences;
+    }
 
 	@Override
 	public boolean equals(Object o) {

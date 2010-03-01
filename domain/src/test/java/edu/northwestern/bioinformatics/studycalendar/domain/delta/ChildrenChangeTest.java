@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import junit.framework.TestCase;
 
 import java.util.Date;
@@ -36,6 +37,10 @@ public class ChildrenChangeTest extends TestCase {
         @Override
         public boolean isNoop() {
             throw new UnsupportedOperationException("isNoop not implemented");
+        }
+
+        public Differences deepEquals(Object o) {
+            throw new UnsupportedOperationException("deepEquals not implemented"); 
         }
 
         @Override

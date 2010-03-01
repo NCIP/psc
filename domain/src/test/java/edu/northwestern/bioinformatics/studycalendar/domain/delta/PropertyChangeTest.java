@@ -5,7 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.UniquelyKeyed;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -118,5 +120,44 @@ public class PropertyChangeTest extends TestCase {
         assertTrue("Test assumption failure", newValue instanceof NaturallyKeyed);
         assertEquals("Fixtures Source|codec",
             PropertyChange.create("dc", null, newValue).getNewValue());
+    }
+
+    public void testEqualsWhenPropertyChangeHasSameAttributes() throws Exception {
+        PropertyChange change1 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        PropertyChange change2 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        assertEquals("PropertyChanges are not equals", change1, change2);
+    }
+
+    public void testEqualsWhenPropertyChangeHasDifferentPropertyName() throws Exception {
+        PropertyChange change1 = createPropertyChange(new PropertyChange(), "duration.quantity", "6", "3");
+        PropertyChange change2 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        assertNotEquals("PropertyChanges are equals", change1, change2);
+    }
+
+    public void testEqualsWhenPropertyChangeHasDifferentOldValue() throws Exception {
+        PropertyChange change1 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        PropertyChange change2 = createPropertyChange(new PropertyChange(), "startDay", "6", "4");
+        assertNotEquals("PropertyChanges are equals", change1, change2);
+    }
+
+    public void testEqualsWhenPropertyChangeHasDifferentNewValue() throws Exception {
+        PropertyChange change1 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        PropertyChange change2 = createPropertyChange(new PropertyChange(), "startDay", "7", "3");
+        assertNotEquals("PropertyChanges are equals", change1, change2);
+    }
+
+    public void testDeepEqualswhenPropertyChangeHasDifferentPropertyName() throws Exception {
+        PropertyChange change1 = createPropertyChange(new PropertyChange(), "duration.quantity", "6", "3");
+        PropertyChange change2 = createPropertyChange(new PropertyChange(), "startDay", "6", "3");
+        Differences differences = change1.deepEquals(change2);
+        assertNotNull(differences.getMessages());
+        assertEquals("PropertyChanges are Equals", "property duration.quantity differs to startDay",differences.getMessages().get(0));
+    }
+
+   private PropertyChange createPropertyChange(PropertyChange change, String prpertyName, String newValue, String oldValue) {
+        change.setPropertyName(prpertyName);
+        change.setNewValue(newValue);
+        change.setOldValue(oldValue);
+        return change;
     }
 }
