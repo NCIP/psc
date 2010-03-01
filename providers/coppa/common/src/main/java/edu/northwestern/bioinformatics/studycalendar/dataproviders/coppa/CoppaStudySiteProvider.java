@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider {
+public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider, RefreshableProvider {
     private BundleContext bundleContext;
 
     public CoppaStudySiteProvider(BundleContext bundleContext) {
@@ -98,5 +99,9 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
 
     public String providerToken() {
         return CoppaProviderConstants.PROVIDER_TOKEN;
+    }
+
+    public Integer getRefreshInterval() {
+        return 15;
     }
 }
