@@ -70,6 +70,7 @@
     <PLANNED_CALENDARS id="-101" study_id="-101"/>
     <EPOCHS id="-101" planned_calendar_id="-101" name="Don't care"/>
     <STUDY_SEGMENTS id="-101" epoch_id="-101" name="Don't care"/>
+    <STUDY_SEGMENTS id="-200" epoch_id="-101" name="Test"/>
     <PERIODS id="-101" version="0" study_segment_id="-101" name="Don't care" duration_quantity="1" duration_unit="day"/>
 
     <AMENDMENTS id="-180" amendment_date="2007-01-01"/>
