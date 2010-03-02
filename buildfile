@@ -331,6 +331,7 @@ define "psc" do
       bnd.autostart = false
       bnd.import_packages <<
         "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+        "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
         "gov.nih.nci.cabig.ctms.domain"
       compile.with project('providers:api').and_dependencies, SPRING
       test.with UNIT_TESTING, project('domain').test_dependencies
@@ -345,6 +346,7 @@ define "psc" do
         bnd.autostart = false
         bnd.import_packages <<
           "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+          "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
           "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('providers:api').and_dependencies, SPRING, OSGI,
@@ -364,6 +366,7 @@ define "psc" do
         bnd.import_packages <<
           "!org.globus.gsi" << "*" <<
           "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
+          "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
           "gov.nih.nci.cabig.ctms.domain"
 
         compile.with project('psc:providers:coppa:common').and_dependencies, CIH, GLOBUS_UNDUPLICABLE

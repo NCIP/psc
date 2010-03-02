@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -95,6 +96,15 @@ public class MockStudyProviderTest extends TestCase {
 
         Study actual = provider.detect(param, studies);
         assertNull(actual);
+    }
+
+    @SuppressWarnings({"ConstantConditions"})
+    public void testIsRefreshable() throws Exception {
+        assertTrue(provider instanceof RefreshableProvider);
+    }
+
+    public void testRefreshesEveryFifteenSeconds() throws Exception {
+        assertEquals(15, (int) provider.getRefreshInterval());
     }
 
     private Study createStudy(String nct) {

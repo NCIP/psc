@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.mock;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.mock.MockDataProviderTools.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * @author Rhett Sutphin
  */
-public class MockStudyProvider implements StudyProvider {
+public class MockStudyProvider implements StudyProvider, RefreshableProvider {
     private Map<String, Study> studies;
 
     public List<Study> getStudies(List<Study> parameters) {
@@ -65,6 +66,10 @@ public class MockStudyProvider implements StudyProvider {
 
     public String providerToken() {
         return PROVIDER_TOKEN;
+    }
+
+    public Integer getRefreshInterval() {
+        return 15;
     }
 
     ///// CONFIGURATION
