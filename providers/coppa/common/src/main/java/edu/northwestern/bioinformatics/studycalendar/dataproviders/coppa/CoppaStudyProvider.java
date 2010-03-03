@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
+import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
@@ -25,7 +26,7 @@ public class CoppaStudyProvider implements StudyProvider {
     public List<Study> getStudies(List<Study> parameters) {
         List<Study> studies = new ArrayList<Study>(parameters.size());
         for (Study param : parameters) {
-            String extension = param.getSecondaryIdentifierValue("Extension");
+            String extension = param.getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE);
             if (extension != null) {
                 Id id = studyProtocolIdentifier(extension);
 
@@ -39,11 +40,11 @@ public class CoppaStudyProvider implements StudyProvider {
     }
 
     public Study detect(Study param, Collection<Study> studies) {
-        String extension = param.getSecondaryIdentifierValue("Extension");
+        String extension = param.getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE);
 
         if (extension != null) {
             for (Study study : studies) {
-                if (extension.equals(study.getSecondaryIdentifierValue("Extension"))) {
+                if (extension.equals(study.getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE))) {
                     return study;
                 }
             }
@@ -130,19 +131,15 @@ public class CoppaStudyProvider implements StudyProvider {
                 new MapBuilder<String, String>();
 
         if (p.getAssignedIdentifier() != null) {
-            ids.put(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
-        }
-
-        if (p.getIdentifier() != null) {
-            ids.put("Extension", p.getIdentifier().getExtension());
+            ids.put(COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null && p.getPublicTitle().getValue() != null) {
-            ids.put("Public Title", p.getPublicTitle().getValue());
+            ids.put(COPPA_STUDY_PUBLIC_TITLE_TYPE, p.getPublicTitle().getValue());
         }
 
         if (p.getOfficialTitle() != null && p.getOfficialTitle().getValue() != null) {
-            ids.put("Official Title", p.getOfficialTitle().getValue());
+            ids.put(COPPA_STUDY_OFFICIAL_TITLE_TYPE, p.getOfficialTitle().getValue());
         }
 
         if (p.getIdentifier() != null) {
@@ -152,7 +149,7 @@ public class CoppaStudyProvider implements StudyProvider {
             String leadOrgIdent = findLeadOrganizationIdentifier(studyProtocolId);
 
             if (leadOrgIdent != null) {
-                ids.put("Lead Organization Identifier", leadOrgIdent);
+                ids.put(COPPA_LEAD_ORGANIZATION_IDENTIFIER_TYPE, leadOrgIdent);
             }
         }
 

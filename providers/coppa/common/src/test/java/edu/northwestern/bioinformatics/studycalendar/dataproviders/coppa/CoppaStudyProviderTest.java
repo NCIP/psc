@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
+import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import static edu.northwestern.bioinformatics.studycalendar.tools.StringTools.humanizeClassName;
@@ -57,7 +58,12 @@ public class CoppaStudyProviderTest extends TestCase{
         List<Study> actual = provider.search("NCI");
 
         assertEquals("Incorrect number of studies returned", 1, actual.size());
-        assertStudy("Wrong study created", "NCI-123", "Official", actual.get(0));
+
+        Study actual0 = actual.get(0);
+        assertStudy("Wrong study created", "NCI-123", "Official", actual0);
+        assertSecondaryIdentifier(actual0, COPPA_STUDY_IDENTIFIER_TYPE, "NCI-123");
+        assertSecondaryIdentifier(actual0, COPPA_STUDY_PUBLIC_TITLE_TYPE, "Public");
+        assertSecondaryIdentifier(actual0, COPPA_STUDY_OFFICIAL_TITLE_TYPE, "Official");
     }
 
     public void testSearchWithNoResults() throws Exception{
@@ -119,10 +125,10 @@ public class CoppaStudyProviderTest extends TestCase{
         StudyProtocol sp = coppaStudyProtocol("NCI-123", "Official", "Public");
         Study actual = provider.createStudy(sp);
 
-        assertSecondaryIdentifier(actual, CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, "NCI-123");
-        assertSecondaryIdentifier(actual, "Public Title", "Public");
-        assertSecondaryIdentifier(actual, "Official Title", "Official");
-        assertSecondaryIdentifier(actual, "Lead Organization Identifier", "Local");
+        assertSecondaryIdentifier(actual, COPPA_STUDY_IDENTIFIER_TYPE, "NCI-123");
+        assertSecondaryIdentifier(actual, COPPA_STUDY_PUBLIC_TITLE_TYPE, "Public");
+        assertSecondaryIdentifier(actual, COPPA_STUDY_OFFICIAL_TITLE_TYPE, "Official");
+        assertSecondaryIdentifier(actual, COPPA_LEAD_ORGANIZATION_IDENTIFIER_TYPE, "Local");
     }
 
     public void testDetectWithStudyFound() {
@@ -194,14 +200,9 @@ public class CoppaStudyProviderTest extends TestCase{
         Study study = new Study();
 
         StudySecondaryIdentifier id = new StudySecondaryIdentifier();
-        id.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+        id.setType(COPPA_STUDY_IDENTIFIER_TYPE);
         id.setValue(coppaExtension);
         study.addSecondaryIdentifier(id);
-
-        StudySecondaryIdentifier ext = new StudySecondaryIdentifier();
-        ext.setType("Extension");
-        ext.setValue(coppaExtension);
-        study.addSecondaryIdentifier(ext);
 
         return study;
     }
