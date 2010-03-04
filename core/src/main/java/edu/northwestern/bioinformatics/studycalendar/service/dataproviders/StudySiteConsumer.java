@@ -9,11 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class StudySiteConsumer extends AbstractConsumer {
     @Override protected Class<StudySiteProvider> providerType() { return StudySiteProvider.class; }
@@ -36,8 +33,8 @@ public class StudySiteConsumer extends AbstractConsumer {
     }
 
     private class SiteBasedStudySiteRefresh extends AssociationRefresh<Site, StudySite, StudySiteProvider> {
-        protected List<List<StudySite>> loadNewVersions(StudySiteProvider provider, List<Site> targetedStudy) {
-            return provider.getAssociatedStudies(targetedStudy);
+        protected List<List<StudySite>> loadNewVersions(StudySiteProvider provider, List<Site> targetSites) {
+            return provider.getAssociatedStudies(targetSites);
         }
 
         protected List<StudySite> getAssociated(Site base) {
@@ -48,6 +45,24 @@ public class StudySiteConsumer extends AbstractConsumer {
             for (StudySite ss : newInstances) {
                 ss.setSite(site);
             }
+        }
+
+        protected List<StudySite> merge(List<StudySite> existing, List<StudySite> provided) {
+            List<StudySite> merged = new ArrayList<StudySite>(provided);
+
+            for (StudySite e : existing) {
+                boolean contains = false;
+                for (StudySite p : provided) {
+                    if (e.getStudy().getSecondaryIdentifiers() == null ? p.getStudy().getSecondaryIdentifiers() == null : e.getStudy().getSecondaryIdentifiers().equals(p.getStudy().getSecondaryIdentifiers())) {
+                        contains = true;
+                    }
+                }
+                if (!contains) {
+                    merged.add(e);
+                }
+            }
+
+            return merged;
         }
     }
 
@@ -65,12 +80,17 @@ public class StudySiteConsumer extends AbstractConsumer {
                 ss.setStudy(study);
             }
         }
+
+        protected List<StudySite> merge(List<StudySite> existing, List<StudySite> provided) {
+            return union(existing, provided);
+        }
     }
 
     private abstract class AssociationRefresh<B extends Providable, A extends Providable, P extends DataProvider> {
         protected abstract List<List<A>> loadNewVersions(P provider, List<B> base);
         protected abstract List<A> getAssociated(B base);
         protected abstract void enhanceInstances(List<A> associations, B base);
+        protected abstract List<A> merge(List<A> existing, List<A> provided);
 
         protected void updateInstanceInPlace(A current, A newVersion) {
             current.setLastRefresh(newVersion.getLastRefresh());
@@ -110,7 +130,8 @@ public class StudySiteConsumer extends AbstractConsumer {
                         logger.debug("- " + a.toString());
                     }
 
-                    List<A> merged = union(existing, fromProvider);
+                    List<A> merged = merge(existing, fromProvider);
+
                     logger.debug("Found " + merged.size() + " study sites instances total.");
                     results.add(in.indexOf(base), merged);
                 }
@@ -208,7 +229,7 @@ public class StudySiteConsumer extends AbstractConsumer {
 
 
         ///// Collection Helpers
-        private <T> List<T> union(List<T> first, List<T> second) {
+        protected <T> List<T> union(List<T> first, List<T> second) {
             List<T> merged = new ArrayList<T>(first);
             for (T ss : second) {
                 if (!merged.contains(ss)) {

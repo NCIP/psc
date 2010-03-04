@@ -1,21 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.pa.Id;
 import junit.framework.TestCase;
-import static org.easymock.EasyMock.*;
-import org.iso._21090.DSETII;
-import org.iso._21090.ENON;
-import org.iso._21090.ENXP;
-import org.iso._21090.EntityNamePartType;
-import org.iso._21090.II;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.notNull;
+import org.iso._21090.*;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
@@ -73,7 +67,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         ));
 
         assertEquals("Wrong results size", 1, actual.size());
-        assertNull("Wrong element", actual.get(0));
+        assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
     public void testGetAssociatedSitesWithResults() throws Exception {
@@ -131,6 +125,64 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Matches for C not empty", 0, actual.get(2).size());
     }
 
+    public void testGetAssociatedStudiesWithEmptySiteList() throws Exception {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
+            new gov.nih.nci.coppa.services.pa.StudySite[0]
+        );
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedSites(new ArrayList<Study>());
+
+        assertEquals("Wrong results size", 0, actual.size());
+
+    }
+
+    public void testGetAssociatedStudiesWithNoResults() throws Exception {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
+            new gov.nih.nci.coppa.services.pa.StudySite[0]
+        );
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(asList(
+            pscSite("Ext A")
+        ));
+
+        assertEquals("Wrong results size", 1, actual.size());
+        assertEquals("Wrong element", 0, actual.get(0).size());
+    }
+
+    public void testGetAssociatedStudiesWithResults() throws Exception {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+            coppaStudySite("Ext SS", coppaResearchOrg("Ext RO", "Player Ext RO"))
+        });
+
+        expect(coppaAccessor.getResearchOrganizations((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
+            coppaResearchOrg("Ext RO A", "Player Ext RO A"),
+            coppaResearchOrg("Ext RO B", "Player Ext RO B")
+        });
+
+        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
+            coppaOrganization("Name A", "Ext O A")
+        );
+
+        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
+            coppaOrganization("Name B", "Ext O B")
+        );
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedSites(
+            asList(pscStudy("Ext SS"))
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 2, actual.get(0).size());
+        assertEquals("Wrong name", "Name A", actual.get(0).get(0).getSite().getName());
+        assertEquals("Wrong name", "Name B", actual.get(0).get(1).getSite().getName());
+    }
+
     /////////////// Helper Methods
     private gov.nih.nci.coppa.services.pa.StudySite coppaStudySite(String extension, ResearchOrganization organizations) {
         gov.nih.nci.coppa.services.pa.StudySite studySite =
@@ -167,6 +219,12 @@ public class CoppaStudySiteProviderTest extends TestCase {
         study.addSecondaryIdentifier(i);
 
         return study;
+    }
+
+    private Site pscSite(String identifier) {
+        Site site = new Site();
+        site.setAssignedIdentifier(identifier);
+        return site;
     }
 
      private Organization coppaOrganization(String name, String iiValue) {

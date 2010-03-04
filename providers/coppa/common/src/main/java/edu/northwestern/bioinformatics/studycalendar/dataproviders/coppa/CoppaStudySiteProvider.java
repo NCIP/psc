@@ -14,6 +14,7 @@ import org.osgi.framework.BundleContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static java.util.Collections.*;
 
 public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider, RefreshableProvider {
     private BundleContext bundleContext;
@@ -33,7 +34,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                 gov.nih.nci.coppa.services.pa.StudySite[] studySites = getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
 
                 if (studySites == null || studySites.length == 0) {
-                    results.add(null);
+                    results.add(EMPTY_LIST);
                 } else {
                     II[] researchOrgIIs = getResearchOrganizationIds(studySites);
 
@@ -50,7 +51,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                     results.add(buildStudySites(sites));
                 }
             } else {
-                results.add(Collections.EMPTY_LIST);
+                results.add(EMPTY_LIST);
             }
         }
 
