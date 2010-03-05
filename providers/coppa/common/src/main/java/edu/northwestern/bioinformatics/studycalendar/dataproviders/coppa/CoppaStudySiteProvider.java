@@ -4,20 +4,25 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.Refreshab
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.pa.Id;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import static java.util.Collections.EMPTY_LIST;
 import java.util.List;
-import static java.util.Collections.*;
 
 public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider, RefreshableProvider {
     private BundleContext bundleContext;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public CoppaStudySiteProvider(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -89,15 +94,61 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
         return studySites;
     }
 
-    // COPPA does not support navigating the relationships in this way.
-    // Since StudySiteConsumer will never remove a StudySite, returning empty
-    // like this is safe.
     public List<List<StudySite>> getAssociatedStudies(List<Site> sites) {
-        List<List<StudySite>> none = new ArrayList<List<StudySite>>(sites.size());
-        while (none.size() < sites.size()) {
-            none.add(Collections.<StudySite>emptyList());
+        List<List<StudySite>> results = new ArrayList<List<StudySite>>(sites.size());
+
+        for (Site s : sites) {
+
+            List<StudySite> provided = null;
+
+            if (isNotBlank(s.getAssignedIdentifier())) {
+
+                gov.nih.nci.coppa.po.Id orgId = new gov.nih.nci.coppa.po.Id();
+                orgId.setExtension(s.getAssignedIdentifier());
+                orgId.setRoot("2.16.840.1.113883.3.26.4.2");
+
+                ResearchOrganization[] ros = getCoppaAccessor(bundleContext).getResearchOrganizationsByPlayerIds(new gov.nih.nci.coppa.po.Id[]{orgId});
+
+                if (ros != null && ros[0] != null) {
+
+                    provided = new ArrayList<StudySite>();
+
+                    for (II roII : ros[0].getIdentifier().getItem()) {
+                        if (!roII.getIdentifierName().equals("NCI Research Organization identifier")) {
+                            break;
+                        }
+
+                        gov.nih.nci.coppa.services.pa.StudySite param = new gov.nih.nci.coppa.services.pa.StudySite();
+                        param.setResearchOrganization(roII);
+
+                        LimitOffset l = new LimitOffset();
+                        l.setLimit(250);
+
+                        gov.nih.nci.coppa.services.pa.StudySite[] raw = getCoppaAccessor(bundleContext).searchStudySitesByStudySite(param, l);
+
+                        if (raw != null && raw.length > 0) {
+
+                            for (gov.nih.nci.coppa.services.pa.StudySite coppaStudySite : raw) {
+
+                                String coppaProtocolId = coppaStudySite.getStudyProtocolIdentifier().getExtension();
+
+                                StudySecondaryIdentifier ssid = new StudySecondaryIdentifier();
+                                ssid.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+                                ssid.setValue(coppaProtocolId);
+
+                                Study study = new Study();
+                                study.addSecondaryIdentifier(ssid);
+
+                                StudySite transformed = new StudySite(study, null);
+                                provided.add(transformed);
+                            }
+                        }
+                    }
+                }
+            }
+            results.add(provided);
         }
-        return none;
+        return results;
     }
 
     public String providerToken() {

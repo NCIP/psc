@@ -28,6 +28,10 @@ public interface CoppaAccessor {
 
     StudySite[] searchStudySitesByStudyProtocolId(Id id);
 
+    StudySite[] searchStudySitesByStudySite(StudySite s, LimitOffset l);
+
+    ResearchOrganization[] getResearchOrganizationsByPlayerIds(gov.nih.nci.coppa.po.Id[] ids );
+
     Organization[] searchOrganizations(Organization criteria);
 
     Organization getOrganization(gov.nih.nci.coppa.po.Id id);

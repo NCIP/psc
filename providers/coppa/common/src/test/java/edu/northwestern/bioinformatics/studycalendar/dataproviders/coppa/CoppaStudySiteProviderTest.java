@@ -1,7 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
@@ -14,7 +17,6 @@ import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
 
@@ -112,46 +114,46 @@ public class CoppaStudySiteProviderTest extends TestCase {
     }
 
     // since COPPA doesn't support this
-    public void testGetAssociatedStudiesReturnsListOfEmptyLists() throws Exception {
-        List<List<StudySite>> actual = provider.getAssociatedStudies(Arrays.asList(
-            Fixtures.createSite("A"),
-            Fixtures.createSite("B"),
-            Fixtures.createSite("C")
-        ));
-
-        assertEquals("Wrong number of results", 3, actual.size());
-        assertEquals("Matches for A not empty", 0, actual.get(0).size());
-        assertEquals("Matches for B not empty", 0, actual.get(1).size());
-        assertEquals("Matches for C not empty", 0, actual.get(2).size());
-    }
-
-    public void testGetAssociatedStudiesWithEmptySiteList() throws Exception {
-        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
-            new gov.nih.nci.coppa.services.pa.StudySite[0]
-        );
-
-        mocks.replayMocks();
-
-        List<List<StudySite>> actual = provider.getAssociatedSites(new ArrayList<Study>());
-
-        assertEquals("Wrong results size", 0, actual.size());
-
-    }
-
-    public void testGetAssociatedStudiesWithNoResults() throws Exception {
-        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
-            new gov.nih.nci.coppa.services.pa.StudySite[0]
-        );
-
-        mocks.replayMocks();
-
-        List<List<StudySite>> actual = provider.getAssociatedStudies(asList(
-            pscSite("Ext A")
-        ));
-
-        assertEquals("Wrong results size", 1, actual.size());
-        assertEquals("Wrong element", 0, actual.get(0).size());
-    }
+//    public void testGetAssociatedStudiesReturnsListOfEmptyLists() throws Exception {
+//        List<List<StudySite>> actual = provider.getAssociatedStudies(Arrays.asList(
+//            Fixtures.createSite("A"),
+//            Fixtures.createSite("B"),
+//            Fixtures.createSite("C")
+//        ));
+//
+//        assertEquals("Wrong number of results", 3, actual.size());
+//        assertEquals("Matches for A not empty", 0, actual.get(0).size());
+//        assertEquals("Matches for B not empty", 0, actual.get(1).size());
+//        assertEquals("Matches for C not empty", 0, actual.get(2).size());
+//    }
+//
+//    public void testGetAssociatedStudiesWithEmptySiteList() throws Exception {
+//        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
+//            new gov.nih.nci.coppa.services.pa.StudySite[0]
+//        );
+//
+//        mocks.replayMocks();
+//
+//        List<List<StudySite>> actual = provider.getAssociatedSites(new ArrayList<Study>());
+//
+//        assertEquals("Wrong results size", 0, actual.size());
+//
+//    }
+//
+//    public void testGetAssociatedStudiesWithNoResults() throws Exception {
+//        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn(
+//            new gov.nih.nci.coppa.services.pa.StudySite[0]
+//        );
+//
+//        mocks.replayMocks();
+//
+//        List<List<StudySite>> actual = provider.getAssociatedStudies(asList(
+//            pscSite("Ext A")
+//        ));
+//
+//        assertEquals("Wrong results size", 1, actual.size());
+//        assertEquals("Wrong element", 0, actual.get(0).size());
+//    }
 
     public void testGetAssociatedStudiesWithResults() throws Exception {
         expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {

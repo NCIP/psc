@@ -13,7 +13,8 @@ import org.apache.axis.types.URI;
 public enum PoOperation implements HubOperation {
     GET_ORGANIZATION(   "getById", Organization.class,                 OrganizationClient.class),
     ORGANIZATION_SEARCH("search",  Organization[].class,               OrganizationClient.class),
-    GET_RESEARCH_ORGANIZATIONS("getByIds", ResearchOrganization.class, ResearchOrganizationClient.class)
+    GET_RESEARCH_ORGANIZATIONS("getByIds", ResearchOrganization[].class, ResearchOrganizationClient.class),
+    GET_RESEARCH_ORGANIZATIONS_BY_PLAYER_IDS("getByPlayerIds", ResearchOrganization[].class, ResearchOrganizationClient.class)
     ;
 
     private String operationName;
