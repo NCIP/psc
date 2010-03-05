@@ -34,6 +34,11 @@
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
+    <bean name="/reports/scheduled-activities"
+          id="reportsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ReportsResource">
+    </bean>
+
     <bean name="/studies"
           id="studiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
