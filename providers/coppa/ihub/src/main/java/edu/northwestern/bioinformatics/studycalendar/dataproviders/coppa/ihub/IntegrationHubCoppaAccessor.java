@@ -5,8 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.services.pa.StudyProtocol;
 import gov.nih.nci.coppa.services.pa.StudySite;
-import gov.nih.nci.coppa.po.Organization;
-import gov.nih.nci.coppa.po.ResearchOrganization;
+import gov.nih.nci.coppa.po.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -62,6 +61,18 @@ public class IntegrationHubCoppaAccessor implements CoppaAccessor, ManagedServic
     public StudySite[] searchStudySitesByStudyProtocolId(gov.nih.nci.coppa.services.pa.Id id) {
         return (StudySite[]) executor.execute(endpoint, new IntegrationHubCoppaTask(
             PaOperation.GET_STUDY_SITES_BY_PROTOCOL, id
+        ));
+    }
+
+    public StudySite[] searchStudySitesByStudySite(StudySite s, LimitOffset l) {
+       return (StudySite[]) executor.execute(endpoint, new IntegrationHubCoppaTask(
+            PaOperation.SEARCH_STUDY_SITES_BY_STUDY_SITE, s, l
+       ));
+    }
+
+    public ResearchOrganization[] getResearchOrganizationsByPlayerIds(Id[] ids) {
+        return (ResearchOrganization[]) executor.execute(endpoint, new IntegrationHubCoppaTask(
+            PoOperation.GET_RESEARCH_ORGANIZATIONS_BY_PLAYER_IDS, ids
         ));
     }
 

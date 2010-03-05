@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.*;
+import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.COPPA_STUDY_ASSIGNED_IDENTIFIER_TYPE;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
@@ -130,8 +131,12 @@ public class CoppaStudyProvider implements StudyProvider {
         MapBuilder<String, String> ids =
                 new MapBuilder<String, String>();
 
+        if (p.getIdentifier() != null) {
+            ids.put(COPPA_STUDY_IDENTIFIER_TYPE, p.getIdentifier().getExtension());
+        }
+
         if (p.getAssignedIdentifier() != null) {
-            ids.put(COPPA_STUDY_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
+            ids.put(COPPA_STUDY_ASSIGNED_IDENTIFIER_TYPE, p.getAssignedIdentifier().getExtension());
         }
 
         if (p.getPublicTitle() != null && p.getPublicTitle().getValue() != null) {

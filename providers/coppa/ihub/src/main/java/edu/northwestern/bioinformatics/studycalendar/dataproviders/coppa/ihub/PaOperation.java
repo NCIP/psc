@@ -11,9 +11,10 @@ import org.apache.axis.types.URI;
  * @author Rhett Sutphin
  */
 public enum PaOperation implements HubOperation {
-    GET_STUDY_PROTOCOL(         "getStudyProtocol",   StudyProtocol.class,   StudyProtocolServiceClient.class),
-    STUDY_PROTOCOL_SEARCH(      "search",             StudyProtocol[].class, StudyProtocolServiceClient.class),
-    GET_STUDY_SITES_BY_PROTOCOL("getByStudyProtocol", StudySite[].class,     StudySiteServiceClient.class);
+    GET_STUDY_PROTOCOL(              "getStudyProtocol",  StudyProtocol.class,   StudyProtocolServiceClient.class),
+    STUDY_PROTOCOL_SEARCH(           "search",            StudyProtocol[].class, StudyProtocolServiceClient.class),
+    GET_STUDY_SITES_BY_PROTOCOL(     "getByStudyProtocol",StudySite[].class,     StudySiteServiceClient.class),
+    SEARCH_STUDY_SITES_BY_STUDY_SITE("search",            StudySite[].class,     StudySiteServiceClient.class);
 
     private String operationName;
     private Class<?> responseType;
