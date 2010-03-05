@@ -84,4 +84,27 @@ public class StudySecondaryIdentifier extends AbstractMutableDomainObject implem
             throw new StudyCalendarError("Clone is supported", e);
         }
     }
+
+    @Override
+     public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StudySecondaryIdentifier)) return false;
+
+        StudySecondaryIdentifier id = (StudySecondaryIdentifier) o;
+
+        if (type != null ? !type.equals(id.getType()) : id.getType() != null)
+            return false;
+        if (value != null ? !value.equals(id.getValue()) : id.getValue() != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type != null ? type.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
+    }
+
 }

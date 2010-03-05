@@ -1,7 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNegative;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertPositive;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -42,5 +46,26 @@ public class StudySecondaryIdentifierTest extends DomainTestCase {
         addSecondaryIdentifier(s, "B", "7");
         StudySecondaryIdentifier clone = s.getSecondaryIdentifiers().first().clone();
         assertNull("Parent ref not removed", clone.getStudy());
+    }
+
+    public void testEquals() {
+        StudySecondaryIdentifier identA1 = createStudyIdentifier("A", "1");
+        StudySecondaryIdentifier identA1Too = createStudyIdentifier("A", "1");
+        assertEquals("Identifiers are not equal", identA1,  identA1Too);
+
+    }
+
+    public void testSetEquals() {
+        Set<StudySecondaryIdentifier> identsA = new HashSet<StudySecondaryIdentifier>();
+        Set<StudySecondaryIdentifier> identsB = new HashSet<StudySecondaryIdentifier>();
+
+        StudySecondaryIdentifier identA1 = createStudyIdentifier("A", "1");
+        identsA.add(identA1);
+
+        StudySecondaryIdentifier identA1Too = createStudyIdentifier("A", "1");
+        identsB.add(identA1Too);
+        
+        assertEquals("Identifiers are not equal", identsA,  identsB);
+
     }
 }
