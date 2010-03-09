@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
 
 public class StudySiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
@@ -30,6 +31,7 @@ public class StudySiteService {
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
     private final Log logger = LogFactory.getLog(getClass());
     private StudyDao studyDao;
+    private StudyService studyService;
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -191,6 +193,126 @@ public class StudySiteService {
         return refreshed;
     }
 
+    @SuppressWarnings({"unchecked"})
+    protected List<StudySite> refreshStudySitesForSite(final Site site) {
+        if (site == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
+        return refreshStudySitesForSites(asList(site)).get(0);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<List<StudySite>> refreshStudySitesForSites(final List<Site> sites) {
+        if (sites == null) { throw new IllegalArgumentException(SITE_IS_NULL);}
+
+        List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
+
+        final List<Study> allStudies = studyDao.getAll();
+        final List<List<StudySite>> allProvided = studySiteConsumer.refresh(sites);
+
+        for (int i = 0; i < sites.size(); i++) {
+            final Site site = sites.get(i);
+            List<StudySite> provided = allProvided.get(i);
+
+            List<StudySite> existing = site.getStudySites();
+
+            Collection<StudySite> unsaved = CollectionUtilsPlus.nonmatching(provided, existing, StudySecondaryIdentifierMatcher.instance());
+
+            Collection<StudySite> qualifying = CollectionUtilsPlus.matching(unsaved, allStudies, StudySecondaryIdentifierMatcher.instance());
+
+
+            // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
+            // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
+            // valid Site from SiteService.
+            Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
+                public Object transform(Object o) {
+                    StudySite s  = (StudySite) o;
+                    Study study = (Study) CollectionUtilsPlus.matching(allStudies, asList(s.getStudy()), StudySecondaryIdentifierMatcher.instance()).iterator().next();
+
+                    StudySite e = new StudySite(study, site);
+                    e.getStudy().addStudySite(e);
+                    e.getSite().addStudySite(e);
+                    e.setProvider(s.getProvider());
+                    e.setLastRefresh(s.getLastRefresh());
+                    return e;
+                }
+            });
+
+            for (StudySite s : enhanced) {
+                studySiteDao.save(s);
+            }
+
+            refreshed.add(new ArrayList<StudySite>(union(existing, enhanced)));
+        }
+
+        return refreshed;
+    }
+
+    private static class CollectionUtilsPlus {
+        public static Collection matching(Collection lefts, Collection rights, CollectionMatcher matcher) {
+            Collection matching = new ArrayList();
+
+            for (Object l : lefts) {
+                boolean match = false;
+                for (Object r : rights) {
+                    if (l != null && r != null && matcher.compare(l, r)) {
+                        match = true;
+                    }
+                }
+                if (match) {
+                    matching.add(l);
+                }
+            }
+            return matching;
+        }
+
+        public static Collection nonmatching(Collection lefts, Collection rights, CollectionMatcher matcher) {
+            Collection matching = new ArrayList();
+
+            for (Object l : lefts) {
+                boolean match = false;
+                for (Object r : rights) {
+                    if (l != null && r != null && matcher.compare(l, r)) {
+                        match = true;
+                    }
+                }
+                if (!match) {
+                    matching.add(l);
+                }
+            }
+            return matching;
+        }
+    }
+
+    private interface CollectionMatcher {
+        public boolean compare(Object o1, Object o2);
+    }
+
+    private static class StudySecondaryIdentifierMatcher implements CollectionMatcher {
+
+        public static StudySecondaryIdentifierMatcher instance() {
+            return new StudySecondaryIdentifierMatcher();
+        }
+
+        public boolean compare(Object o1, Object o2) {
+            SortedSet<StudySecondaryIdentifier> s1 = resolveStudySecondaryIdentifier(o1);
+            SortedSet<StudySecondaryIdentifier> s2 = resolveStudySecondaryIdentifier(o2);
+
+            if (s1 == null || s2 == null) return false;
+
+            return s1 == null ? s2 == null : s1.equals(s2);
+        }
+
+        private static SortedSet<StudySecondaryIdentifier> resolveStudySecondaryIdentifier(Object o) {
+
+            if (o instanceof Study) {
+                return ((Study) o).getSecondaryIdentifiers();
+            } else if (o instanceof StudySite) {
+                return resolveStudySecondaryIdentifier(((StudySite) o).getStudy());
+            }
+            return null;
+        }
+    }
+
+
     public StudySite getStudySite(String studyAssignedId, String siteAssignedId) {
         Study study = studyDao.getByAssignedIdentifier(studyAssignedId);
         if (study != null) {
@@ -218,6 +340,7 @@ public class StudySiteService {
         );
     }
 
+
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
@@ -242,4 +365,6 @@ public class StudySiteService {
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
+
+
 }

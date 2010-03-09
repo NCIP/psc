@@ -4,6 +4,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.create
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -28,16 +29,19 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySite nu_nu123, nu_all999, mayo_all999;
     private StudySiteConsumer studySiteConsumer;
     private StudySiteDao studySiteDao;
+    private StudyDao studyDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
+        studyDao = registerDaoMockFor(StudyDao.class);
         siteService = registerMockFor(SiteService.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         studySiteConsumer = registerMockFor(StudySiteConsumer.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new StudySiteService();
+        service.setStudyDao(studyDao);
         service.setSiteService(siteService);
         service.setStudySiteDao(studySiteDao);
         service.setStudySiteConsumer(studySiteConsumer);
@@ -171,39 +175,116 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
     }
 
-    public void testRefreshStudySitesUsingStudy() throws Exception {
-        Site uicSkel = createSite(null, "UIC"); // Sites returned from the consumer only with assignedIdentifier
-        Study all999Skel = new Study();
-        all999Skel.setAssignedIdentifier("ALL999");
+    public void testRefreshStudySitesUsingStudyReturningExistingStudySites() throws Exception {
+        Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
 
-        Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
-
-        expect(studySiteConsumer.refresh(asList(all999))).andReturn(asList(asList(
-            createProvidedStudySite(all999Skel, uicSkel, "alpha"),
-            nu_all999
+        expect(studySiteConsumer.refresh(asList(nu123))).andReturn(asList(asList(
+            providedStudySite(nu123, nuProvided, "alpha")
         )));
 
         expect(siteService.getAll()).andReturn(asList(
-            nu, uic, mayo
+            nu, mayo
         ));
-
-        StudySite uic_all999 = createProvidedStudySite(all999Skel, uicSkel, "alpha");
-        studySiteDao.save(providedStudySiteEq(uic_all999));
 
         replayMocks();
 
-        List<StudySite> actual = service.refreshStudySites(all999);
+        List<StudySite> actual = service.refreshStudySites(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 1, actual.size());
+
+        assertContains(actual, nu_nu123);
+    }
+
+    public void testRefreshStudySitesUsingStudyReturningNewStudySites() throws Exception {
+        Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
+        Site mayoProvided = createSite(null, "Mayo Clinic");
+
+        expect(studySiteConsumer.refresh(asList(nu123))).andReturn(asList(asList(
+            providedStudySite(nu123, nuProvided, "alpha"),
+            providedStudySite(nu123, mayoProvided, "alpha")
+        )));
+
+        expect(siteService.getAll()).andReturn(asList(
+            nu, mayo
+        ));
+
+        StudySite mayo_nu123 = providedStudySite(nu123, mayo, "alpha");
+        studySiteDao.save(providedStudySiteEq(
+            mayo_nu123
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySites(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 2, actual.size());
+
+        assertContains(actual, nu_nu123);
+        assertContains(actual, mayo_nu123);
+    }
+
+    public void testRefreshStudySitesUsingSiteAndReceivingExistingStudySite() throws Exception {
+        Study nu123Provided = new Study();
+        addSecondaryIdentifier(nu123Provided , "Mock Provider Identifier", "NU123");
+
+        expect(studySiteConsumer.refresh(asList(nu))).andReturn(asList(asList(
+            providedStudySite(nu123Provided , nu, "alpha")
+        )));
+
+        expect(studyDao.getAll()).andReturn(asList(
+            all999, nu123
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForSite(nu);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 2, actual.size());
+
+        assertContains(actual, nu_nu123);
+        assertContains(actual, nu_all999);
+    }
+
+    public void testRefreshStudySitesUsingSiteAndReceivingNewStudySite() throws Exception {
+        Study nu123Provided = new Study();
+        addSecondaryIdentifier(nu123Provided, "Mock Provider Identifier", "NU123");
+
+        Study wo222Provided = new Study();
+        addSecondaryIdentifier(wo222Provided, "Mock Provider Identifier", "WO222");
+
+        expect(studySiteConsumer.refresh(asList(nu))).andReturn(asList(asList(
+            providedStudySite(nu123Provided , nu, "alpha"),
+            providedStudySite(wo222Provided, nu, "alpha")
+        )));
+
+        Study wo222 = createNamedInstance("WOOOOOOO", Study.class);
+        addSecondaryIdentifier(wo222, "Mock Provider Identifier", "WO222");
+
+        expect(studyDao.getAll()).andReturn(asList(
+            wo222, nu123
+        ));
+
+        StudySite nu_wo222 = providedStudySite(wo222, nu, "alpha");
+        studySiteDao.save(providedStudySiteEq(nu_wo222));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForSite(nu);
         verifyMocks();
 
         assertEquals("Wrong number of sites", 3, actual.size());
 
-        assertContains(actual, uic_all999);
+        assertContains(actual, nu_nu123);
         assertContains(actual, nu_all999);
-        assertContains(actual, mayo_all999);
+        assertContains(actual, nu_wo222);
     }
 
-    private StudySite createProvidedStudySite(Study study, Site site, String providerName) {
-        StudySite studySite = createStudySite(study,  site);
+    ////// HELPER METHODS
+    private StudySite providedStudySite(Study study, Site site, String providerName) {
+        StudySite studySite = new StudySite(study,  site);
         studySite.setProvider(providerName);
         return studySite;
     }
