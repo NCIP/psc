@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.Refreshab
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.apache.commons.collections.CollectionUtils;
+import static org.apache.commons.collections.CollectionUtils.intersection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,7 @@ public class StudySiteConsumer extends AbstractConsumer {
             for (StudySite e : existing) {
                 boolean contains = false;
                 for (StudySite p : provided) {
-                    if (e.getStudy().getSecondaryIdentifiers() == null ? p.getStudy().getSecondaryIdentifiers() == null : e.getStudy().getSecondaryIdentifiers().equals(p.getStudy().getSecondaryIdentifiers())) {
+                    if (e.getStudy().getSecondaryIdentifiers() == null ? p.getStudy().getSecondaryIdentifiers() == null : !intersection(e.getStudy().getSecondaryIdentifiers(), p.getStudy().getSecondaryIdentifiers()).isEmpty()) {
                         contains = true;
                     }
                 }
@@ -105,7 +106,9 @@ public class StudySiteConsumer extends AbstractConsumer {
 
         @SuppressWarnings({ "unchecked" })
         public List<List<A>> execute(List<B> in) {
-            List<List<A>> results = new ArrayList<List<A>>(in.size() * providers.size());
+            List<List<A>> results = new ArrayList<List<A>>();
+            logger.debug("in.size: " + in.size());
+            logger.debug("providers.size: " + providers.size());
 
             Map<String, List<B>> toUpdate = findInstancesToUpdate(in);
 
@@ -132,7 +135,7 @@ public class StudySiteConsumer extends AbstractConsumer {
 
                     List<A> merged = merge(existing, fromProvider);
 
-                    logger.debug("Found " + merged.size() + " study sites instances total.");
+                    filloutWithNulls(results, in.indexOf(base));
                     results.add(in.indexOf(base), merged);
                 }
 
@@ -146,6 +149,13 @@ public class StudySiteConsumer extends AbstractConsumer {
             }
 
             return results;
+        }
+
+        private void filloutWithNulls(List<List<A>> results, int i) {
+            if (results.size() < i) {
+                results.add(null);
+                filloutWithNulls(results, i);
+            }
         }
 
         private void updateTimestamps(List<A> in, String providerName) {

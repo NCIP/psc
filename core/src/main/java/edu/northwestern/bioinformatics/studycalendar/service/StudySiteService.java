@@ -125,7 +125,7 @@ public class StudySiteService {
     }
 
     @SuppressWarnings({"unchecked"})
-    protected List<StudySite> refreshStudySites(final Study study) {
+    public List<StudySite> refreshStudySites(final Study study) {
         if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
         return refreshStudySites(asList(study)).get(0);
     }
@@ -194,7 +194,7 @@ public class StudySiteService {
     }
 
     @SuppressWarnings({"unchecked"})
-    protected List<StudySite> refreshStudySitesForSite(final Site site) {
+    public List<StudySite> refreshStudySitesForSite(final Site site) {
         if (site == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
         return refreshStudySitesForSites(asList(site)).get(0);
     }
@@ -216,7 +216,13 @@ public class StudySiteService {
 
             Collection<StudySite> unsaved = CollectionUtilsPlus.nonmatching(provided, existing, StudySecondaryIdentifierMatcher.instance());
 
+            logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
+            logger.debug("- " + unsaved);
+
             Collection<StudySite> qualifying = CollectionUtilsPlus.matching(unsaved, allStudies, StudySecondaryIdentifierMatcher.instance());
+
+            logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
+            logger.debug("- " + qualifying);
 
 
             // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
@@ -236,6 +242,9 @@ public class StudySiteService {
                 }
             });
 
+            logger.debug("Found " + enhanced.size() + " enhanced sites from the provider.");
+            logger.debug("- " + qualifying);
+
             for (StudySite s : enhanced) {
                 studySiteDao.save(s);
             }
@@ -249,6 +258,9 @@ public class StudySiteService {
     private static class CollectionUtilsPlus {
         public static Collection matching(Collection lefts, Collection rights, CollectionMatcher matcher) {
             Collection matching = new ArrayList();
+            if (lefts == null || rights == null) {
+                return matching;
+            }
 
             for (Object l : lefts) {
                 boolean match = false;
@@ -266,6 +278,9 @@ public class StudySiteService {
 
         public static Collection nonmatching(Collection lefts, Collection rights, CollectionMatcher matcher) {
             Collection matching = new ArrayList();
+            if (lefts == null || rights == null) {
+                return matching;
+            }
 
             for (Object l : lefts) {
                 boolean match = false;
@@ -298,7 +313,7 @@ public class StudySiteService {
 
             if (s1 == null || s2 == null) return false;
 
-            return s1 == null ? s2 == null : s1.equals(s2);
+            return s1 == null ? s2 == null : CollectionUtils.intersection(s1,s2).size() > 0;
         }
 
         private static SortedSet<StudySecondaryIdentifier> resolveStudySecondaryIdentifier(Object o) {

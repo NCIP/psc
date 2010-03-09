@@ -4,19 +4,17 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import static org.apache.commons.collections.CollectionUtils.union;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +24,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController implements CrumbSource {
@@ -44,6 +38,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private Crumb crumb;
     private ApplicationSecurityManager applicationSecurityManager;
     private AuthorizationService authorizationService;
+    private StudySiteService studySiteService;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -70,8 +65,10 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
-        List<Study> studies = studyDao.getAll();
+        List<Study> studies = refreshStudySiteAssociationsForStudies(studyDao.getAll());
         log.debug("{} studies in system", studies.size());
+
+        Collections.sort(studies, new NamedComparator());
 
         List<Study> ownedStudies
                 = authorizationService.filterStudiesForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
@@ -88,11 +85,43 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
         return assignableStudies;
     }
 
+    @SuppressWarnings("unchecked")
+    private List<Study> refreshStudySiteAssociationsForStudies(List<Study> all) {
+        List<List<StudySite>> refreshedStudySites = studySiteService.refreshStudySites(all);
+
+        List<Study> refreshed = new ArrayList<Study>();
+        for (List<StudySite> studySites : refreshedStudySites) {
+            for (StudySite studySite : studySites) {
+                if (!refreshed.contains(studySite.getStudy())) {
+                    refreshed.add(studySite.getStudy());
+                }
+            }
+        }
+
+        return new ArrayList<Study>(union(refreshed, all));
+    }
+
     protected List<Site> getAssignableSites(User siteCoordinator) {
-        List<Site> sites = new ArrayList<Site>(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites());
+        List<Site> sites = refreshStudySiteAssociationsForSites(new ArrayList(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites()));
         log.debug("{} sites found for {} as site coord", sites.size(), siteCoordinator.getName());
         Collections.sort(sites, new NamedComparator());
         return sites;
+    }
+
+    @SuppressWarnings("unchecked")    
+    private List<Site> refreshStudySiteAssociationsForSites(List<Site> sites) {
+        List<List<StudySite>> refreshedStudySites = studySiteService.refreshStudySitesForSites(sites);
+
+        List<Site> refreshed = new ArrayList<Site>();
+        for (List<StudySite> studySites : refreshedStudySites) {
+            for (StudySite studySite : studySites) {
+                if (!refreshed.contains(studySite.getSite())) {
+                    refreshed.add(studySite.getSite());
+                }
+            }
+        }
+
+        return new ArrayList<Site>(union(refreshed, sites));
     }
 
     protected List<Site> getAssignableSites(User siteCoordinator, Study study) {
@@ -163,5 +192,9 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     @Required
     public void setAuthorizationService(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
+    }
+
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 }

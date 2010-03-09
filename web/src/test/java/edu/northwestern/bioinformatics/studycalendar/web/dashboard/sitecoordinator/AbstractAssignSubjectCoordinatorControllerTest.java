@@ -5,15 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Security
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
 
@@ -46,6 +43,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     private List<User> users;
     private UserRole siteCoordinatorRole;
+    private StudySiteService studySiteService;
 
     @Override
     protected void setUp() throws Exception {
@@ -56,12 +54,14 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         studyDao        = registerDaoMockFor(StudyDao.class);
         templateService = registerMockFor(TemplateService.class);
         userService     = registerMockFor(UserService.class);
+        studySiteService = registerMockFor(StudySiteService.class);
         authorizationService = registerMockFor(AuthorizationService.class);
 
         controller = new SimpleAssignSubjectCoordinatorController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
+        controller.setStudySiteService(studySiteService);
         // TODO: indirect mocking like this is a bad idea
         applicationSecurityManager.setUserService(registerMockFor(UserService.class));
         controller.setApplicationSecurityManager(applicationSecurityManager);
@@ -111,6 +111,10 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     public void testGetAssignableStudies() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
+        expect(studySiteService.refreshStudySites(studies)).andReturn(asList(
+                study0.getStudySites(),
+                study1.getStudySites()
+        ));
         expect(authorizationService.filterStudiesForVisibility(studies, siteCoordinatorRole)).andReturn(studies);
         replayMocks();
 
@@ -121,6 +125,10 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetAssignableSites() throws Exception {
+        expect(studySiteService.refreshStudySitesForSites(sites)).andReturn(asList(
+                site0.getStudySites(),
+                site1.getStudySites()
+        ));
         replayMocks();
         List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator);
         verifyMocks();
@@ -130,6 +138,10 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetAssignableSitesDependingOnStudy() throws Exception {
+        expect(studySiteService.refreshStudySitesForSites(sites)).andReturn(asList(
+                site0.getStudySites(),
+                site1.getStudySites()
+        ));
         replayMocks();
         List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator, study1);
         verifyMocks();
