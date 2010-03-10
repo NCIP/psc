@@ -85,6 +85,153 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         assertAllowedMethods("GET");
     }
 
+    public void testGetFilterForRandOfDates() throws Exception {
+        String startDateString = "2010-03-01";
+        String endDateString = "2010-03-08";
+        Date startDate = ReportsResource.getApiDateFormat().parse(startDateString);
+        Date endDate = ReportsResource.getApiDateFormat().parse(endDateString);
+        FilterParameters.START_DATE.putIn(request, startDateString);
+        FilterParameters.END_DATE.putIn(request, endDateString);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertNotNull("Filter doesn't contain the actual activity date ", actualFilter.getActualActivityDate());
+        assertEquals("Actual Filter doesn't contain end date", startDate, actualFilter.getActualActivityDate().getStart());
+        assertEquals("Actual Filter doesn't contain end date", endDate, actualFilter.getActualActivityDate().getStop());
+    }
+
+    public void testGetFilterForEndDate() throws Exception {
+        String endDateString = "2010-03-08";
+        Date endDate = ReportsResource.getApiDateFormat().parse(endDateString);
+        FilterParameters.END_DATE.putIn(request, endDateString);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertEquals("Actual Filter doesn't contain end date", endDate, actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+        assertNull("Actual Filter has activity state", actualFilter.getCurrentStateMode());
+    }
+
+    public void testGetFilterForStartDate() throws Exception {
+        String startDateString = "2010-03-01";
+        Date startDate = ReportsResource.getApiDateFormat().parse(startDateString);
+        FilterParameters.START_DATE.putIn(request, startDateString);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertEquals("Actual Filter doesn't contain startDate", startDate, actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+        assertNull("Actual Filter has activity state", actualFilter.getCurrentStateMode());
+    }
+
+    public void testGetFilterForLabel() throws Exception {
+        String label = "labelA";
+        FilterParameters.LABEL.putIn(request, label);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertEquals("Actual Filter doesn't contain label", label, actualFilter.getLabel());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+        assertNull("Actual Filter has activity state", actualFilter.getCurrentStateMode());
+    }
+
+    public void testGetFilterForResponsibleUser() throws Exception {
+        String responsibleUserId = "2";
+        User responsibleUser = Fixtures.createUser("mayo mayo");
+        responsibleUser.setId(new Integer(responsibleUserId));
+        FilterParameters.RESPONSIBLE_USER.putIn(request, responsibleUserId);
+        expect(userDao.getById(new Integer(responsibleUserId))).andReturn(responsibleUser);
+        replayMocks();
+            ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        verifyMocks();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertSame("Actual Filter doesn't contain responsible user", responsibleUser, actualFilter.getSubjectCoordinator());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has activity state", actualFilter.getCurrentStateMode());
+    }
+
+    public void testGetFilterForCurrentState() throws Exception {
+        String currentState = "1";
+        ScheduledActivityMode activityState = ScheduledActivityMode.SCHEDULED;
+        FilterParameters.STATE.putIn(request, currentState);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertSame("Actual Filter doesn't contain activity state", activityState, actualFilter.getCurrentStateMode());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+    }
+
+    public void testGetFilterForStudyAssignedIdentifier() throws Exception {
+        String studyId = "101";
+        FilterParameters.STUDY.putIn(request, studyId);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertEquals("Actual Filter doesn't contain study", studyId, actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has current state mode", actualFilter.getCurrentStateMode());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+    }
+
+    public void testGetFilterForSiteAssignedIdendtifier() throws Exception {
+        String siteId = "11001";
+        FilterParameters.SITE.putIn(request, siteId);
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertEquals("Actual Filter doesn't contain site name", siteId, actualFilter.getSiteName());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has activity type", actualFilter.getActivityType());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has current state mode", actualFilter.getCurrentStateMode());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+    }
+
+    public void testGetFilterForActivityType() throws Exception {
+        String activityTypeString = "111";
+        ActivityType activityType = new ActivityType(activityTypeString);
+        activityType.setId(new Integer(activityTypeString));
+        FilterParameters.ACTIVITY_TYPE.putIn(request, activityTypeString);
+        expect(activityTypeDao.getById(new Integer(activityType.getId()))).andReturn(activityType);
+        replayMocks();
+            ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        verifyMocks();
+        assertNotNull("Actual Filter is Null", actualFilter);
+        assertSame("Actual Filter doesn't contain activity type", activityType, actualFilter.getActivityType());
+        assertNull("Actual Filter has actual activity start date", actualFilter.getActualActivityDate().getStart());
+        assertNull("Actual Filter has actual activity end date", actualFilter.getActualActivityDate().getStop());
+        assertNull("Actual Filter has site name", actualFilter.getSiteName());
+        assertNull("Actual Filter has study assigned identifier", actualFilter.getStudyAssignedIdentifier());
+        assertNull("Actual Filter has current state mode", actualFilter.getCurrentStateMode());
+        assertNull("Actual Filter has label", actualFilter.getLabel());
+        assertNull("Actual Filter has subject coordinator", actualFilter.getSubjectCoordinator());
+    }
+
     public void testGetJSONRepresentation() throws Exception {
         FilterParameters.START_DATE.putIn(request, "2010-03-01");
         FilterParameters.END_DATE.putIn(request, "2010-03-05");
