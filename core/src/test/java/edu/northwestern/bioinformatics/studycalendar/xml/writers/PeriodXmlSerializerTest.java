@@ -1,24 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PeriodXmlSerializer serializer;
-    private PeriodDao periodDao;
     private Element element;
     private Period period;
     private PlannedActivityXmlSerializer plannedActivitySerializer;
@@ -29,7 +26,6 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        periodDao = registerDaoMockFor(PeriodDao.class);
         plannedActivitySerializer = registerMockFor(PlannedActivityXmlSerializer.class);
 
         Study study = createNamedInstance("Study A", Study.class);
@@ -39,7 +35,6 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return plannedActivitySerializer;
             }
         };
-        serializer.setPeriodDao(periodDao);
         serializer.setStudy(study);
 
         period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
@@ -125,18 +120,6 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         }
     }
 
-    public void testReadElementExistsPeriod() {
-        expect(element.getName()).andReturn("period");
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(periodDao.getByGridId("grid0")).andReturn(period);
-        replayMocks();
-
-        Period actual = (Period) serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Wrong Period", period, actual);
-    }
-
     public void testValidateElement() throws Exception {
         Period period = createPeriod();
         Element actual = serializer.createElement(period);
@@ -190,10 +173,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("serializer must have a matching period", period, serializer.getPeriodWithMatchingGridId(periods, actual));
         period.setGridId("wrong grid id");
         assertNull(serializer.getPeriodWithMatchingGridId(periods, actual));
-
-
     }
-
 
     private Period createPeriod() {
         Period period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));

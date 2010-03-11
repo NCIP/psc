@@ -21,8 +21,6 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
     protected abstract String elementName();
 
-    protected abstract PlanTreeNode<?> getFromId(String id);
-
     protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
     protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) { }
@@ -51,16 +49,13 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         }
 
         String key = element.attributeValue(ID);
-        PlanTreeNode<?> node = key == null ? null : getFromId(key);
-        if (node == null) {
-            node = nodeInstance();
-            node.setGridId(key);
-            addAdditionalNodeAttributes(element, node);
+        PlanTreeNode<?> node = nodeInstance();
+        node.setGridId(key);
+        addAdditionalNodeAttributes(element, node);
 
-            if (getChildSerializer() != null) {
-                List<PlanTreeNode<?>> children = readChildElements(element);
-                addChildren(children, node);
-            }
+        if (getChildSerializer() != null) {
+            List<PlanTreeNode<?>> children = readChildElements(element);
+            addChildren(children, node);
         }
         return node;
     }

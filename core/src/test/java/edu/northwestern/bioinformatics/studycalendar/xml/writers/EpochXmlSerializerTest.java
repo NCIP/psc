@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
@@ -15,7 +14,6 @@ import static java.util.Collections.emptyList;
 
 public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
     private EpochXmlSerializer serializer;
-    private EpochDao epochDao;
     private Element element;
     private Epoch epoch;
     private StudySegmentXmlSerializer studySegmentSerializer;
@@ -24,7 +22,6 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        epochDao = registerDaoMockFor(EpochDao.class);
         studySegmentSerializer = registerMockFor(StudySegmentXmlSerializer.class);
 
         Study study = createNamedInstance("Study A", Study.class);
@@ -35,7 +32,6 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return studySegmentSerializer;
             }
         };
-        serializer.setEpochDao(epochDao);
         serializer.setStudy(study);
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
@@ -52,7 +48,6 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementEpoch() {
         expect(element.getName()).andReturn("epoch");
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(epochDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("name")).andReturn("Epoch A").anyTimes();
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
@@ -62,18 +57,6 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
         assertEquals("Wrong epoch name", "Epoch A", actual.getName());
-    }
-
-    public void testReadElementExistsEpoch() {
-        expect(element.getName()).andReturn("epoch");
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(epochDao.getByGridId("grid0")).andReturn(epoch);
-        replayMocks();
-
-        Epoch actual = (Epoch) serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Wrong Epoch", epoch, actual);
     }
 
     public void testValidateElement() throws Exception {
@@ -92,16 +75,10 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertTrue(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
         epoch.getChildren().add(new StudySegment());
         assertFalse(StringUtils.isBlank(serializer.validateElement(epoch, actual).toString()));
-
-
-        
-
     }
 
     private Epoch createEpoch() {
         Epoch epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
         return epoch;
     }
-
-
 }

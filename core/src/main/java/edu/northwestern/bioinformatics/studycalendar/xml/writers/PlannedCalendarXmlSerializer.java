@@ -1,18 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
 public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerializer <PlannedCalendar> {
     public static final String PLANNED_CALENDAR = "planned-calendar";
-    private PlannedCalendarDao plannedCalendarDao;
     private boolean serializeEpoch;
     private Study study;
 
@@ -42,17 +39,14 @@ public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerial
         }
 
         String key = element.attributeValue(ID);
-        PlannedCalendar cal = key == null ? null : plannedCalendarDao.getByGridId(key);
-        if (cal == null) {
-            cal = new PlannedCalendar();
-            cal.setGridId(key);
+        PlannedCalendar cal = new PlannedCalendar();
+        cal.setGridId(key);
 
-            EpochXmlSerializer serializer = getEpochSerializer();
+        EpochXmlSerializer serializer = getEpochSerializer();
             
-            if (serializer != null) {
-                for (Element elt : (List<Element>) element.elements()) {
-                    cal.addEpoch((Epoch) serializer.readElement(elt));
-                }
+        if (serializer != null) {
+            for (Element elt : (List<Element>) element.elements()) {
+                cal.addEpoch((Epoch) serializer.readElement(elt));
             }
         }
         return cal;
@@ -69,10 +63,6 @@ public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerial
     }
 
     ////// Bean Setters
-    @Required
-    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
-        this.plannedCalendarDao = plannedCalendarDao;
-    }
 
     public void setStudy(Study study) {
         this.study = study;

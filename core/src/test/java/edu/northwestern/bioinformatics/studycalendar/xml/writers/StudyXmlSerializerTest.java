@@ -2,16 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -30,8 +28,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Study study;
     private Element element;
     private PlannedCalendar calendar;
-    private StudyDao studyDao;
-    private PlannedCalendarDao plannedCalendarDao;
     private PopulationXmlSerializer populationSerializer;
     private Population population;
     private Element ePopulation;
@@ -54,8 +50,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        studyDao = registerDaoMockFor(StudyDao.class);
-        plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
@@ -78,8 +72,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return developmentAmendmentSerializer;
             }
         };
-        serializer.setStudyDao(studyDao);
-        serializer.setPlannedCalendarDao(plannedCalendarDao);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
@@ -120,8 +112,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element elt = createStudyElement();
         elt.addAttribute("provider", "study-provider");
         expectDeserializeCommonDataForNewElement();
-        expectDeserializePlannedCalendar();
-        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
         replayMocks();
 
         Study actual = serializer.readElement(elt, new Study());
@@ -203,18 +193,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         }
     }
 
-    public void testReadElementWhereElementExists() {
-        expectDeserializeAmendments();
-        expectDeserializePopulation();
-        expectDesearializeDevelopmentAmendment();
-        replayMocks();
-
-        Study actual = serializer.readElement(createStudyElement(), study);
-        verifyMocks();
-
-        assertEquals("Wrong Study", study, actual);
-    }
-
     public void testCreateElement() {
         expectChildrenSerializers();
         replayMocks();
@@ -230,7 +208,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertNotNull("Planned calendar should exist", actual.element("planned-calendar"));
         assertNotNull("Amendment should exist", actual.element("amendment"));
         assertNotNull("Development Amendment should exist", actual.element("development-amendment"));
-
     }
 
     public void testCreateElementWithProvider() throws Exception {
@@ -310,10 +287,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    private void expectResolveStudy(String name, Study resolved) {
-        expect(studyDao.getByAssignedIdentifier(name)).andReturn(resolved);
-    }
-
     private void expectDeserializePlannedCalendar() {
         expect(plannedCalendarSerializer.readElement(eCalendar)).andReturn(calendar);
     }
@@ -333,17 +306,16 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     private void expectDeserializeCommonDataForNewElement(){
         expectDeserializePopulation();
+        expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
     }
 
     private void expectDeserializeDataForNewElement() {
-        expectResolveStudy("Study A", study);
         expectDeserializePopulation();
         expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
-        expect(plannedCalendarDao.getByGridId(calendar.getGridId())).andReturn(null);
     }
 
     private StudySecondaryIdentifierXmlSerializer expectSecondaryIdentifierSerializer() {

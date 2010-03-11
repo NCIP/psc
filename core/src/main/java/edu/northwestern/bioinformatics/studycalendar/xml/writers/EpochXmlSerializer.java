@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
@@ -15,19 +14,12 @@ import java.util.List;
 public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String EPOCH = "epoch";
 
-    private EpochDao epochDao;
-
-
     protected PlanTreeNode<?> nodeInstance() {
         return new Epoch();
     }
 
     protected String elementName() {
         return EPOCH;
-    }
-
-    protected PlanTreeNode<?> getFromId(String id) {
-        return epochDao.getByGridId(id);
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
@@ -63,10 +55,6 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
                 eStudySegment.add(childElement);
             }
         }
-    }
-
-    public void setEpochDao(EpochDao epochDao) {
-        this.epochDao = epochDao;
     }
 
     //@Override

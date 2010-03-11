@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
@@ -17,8 +16,6 @@ import java.util.SortedSet;
 
 public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String PERIOD = "period";
-
-    private PeriodDao periodDao;
     private static final String START_DAY = "start-day";
     private static final String DURATION_QUANTITY = "duration-quantity";
     private static final String DURATION_UNIT = "duration-unit";
@@ -30,10 +27,6 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
 
     protected String elementName() {
         return PERIOD;
-    }
-
-    protected PlanTreeNode<?> getFromId(String id) {
-        return periodDao.getByGridId(id);
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
@@ -76,10 +69,6 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
                 eStudySegment.add(childElement);
             }
         }
-    }
-
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
     }
 
     @Override

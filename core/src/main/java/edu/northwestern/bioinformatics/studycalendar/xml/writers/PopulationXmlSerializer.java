@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -13,7 +12,6 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
     public static final String POPULATION = "population";
     private static final String POPULATION_ABBREVIATION_IS_INVALID_MESSAGE = "Population's abbreviation '%s' is invalid. Please make sure abbreviation don't contain spaces and less then 5 characters long.";
 
-    private PopulationDao populationDao;
     private Study study;
 
     public Element createElement(Population child) {
@@ -25,27 +23,12 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
     public Population readElement(Element element) {
         String abbreviation = element.attributeValue(ABBREVIATION);
         validateElement(abbreviation);
-        Population population = load(abbreviation);
-        if (population == null) {
-            population = new Population();
-            population.setAbbreviation(abbreviation);
-            population.setName(element.attributeValue(NAME));
-            population.setStudy(study);
-            study.getPopulations().add(population);
-        }
+        Population population = new Population();
+        population.setAbbreviation(abbreviation);
+        population.setName(element.attributeValue(NAME));
+        population.setStudy(study);
+        study.getPopulations().add(population);
         return population;
-    }
-
-    private Population load(String abbreviation) {
-        if (study.getId() == null) {
-            return null;
-        } else {
-            return populationDao.getByAbbreviation(study, abbreviation);
-        }
-    }
-
-    public void setPopulationDao(PopulationDao populationDao) {
-        this.populationDao = populationDao;
     }
 
     public void setStudy(Study study) {

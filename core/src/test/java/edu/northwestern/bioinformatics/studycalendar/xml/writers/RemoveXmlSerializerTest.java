@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -19,7 +18,6 @@ import java.util.List;
 public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
     private RemoveXmlSerializer serializer;
     private Element element;
-    private ChangeDao changeDao;
     private Epoch epoch;
     private Document document;
     private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
@@ -30,7 +28,6 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         document = registerMockFor(Document.class);
-        changeDao = registerDaoMockFor(ChangeDao.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
         planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
 
@@ -44,14 +41,11 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return epoch;
             }
         };
-        serializer.setChangeDao(changeDao);
-
         epoch = setGridId("grid1", new Epoch());
     }
 
     public void testReadElement() {
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(changeDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("child-id")).andReturn("grid1");
         expectGetElementByIdCalls();
         expect(planTreeNodeSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
@@ -101,11 +95,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertTrue(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
         remove.setGridId("wrong grid id");
         assertFalse(StringUtils.isBlank(serializer.validateElement(remove, actual).toString()));
-
-
         assertFalse(StringUtils.isBlank(serializer.validateElement(null, actual).toString()));
-
-
     }
 
     private Remove createRemove() {

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -11,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 
 import java.util.Collections;
@@ -19,7 +17,6 @@ import java.util.Collections;
 public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AbstractDeltaXmlSerializer serializer;
     private Delta plannedCalendarDelta;
-    private DeltaDao deltaDao;
     private Element element;
     private Study study;
     private PlannedCalendar calendar;
@@ -32,7 +29,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         super.setUp();
 
         element = registerMockFor(Element.class);
-        deltaDao = registerDaoMockFor(DeltaDao.class);
         templateService = registerMockFor(TemplateService.class);
         changeSerializerFactory = registerMockFor(ChangeXmlSerializerFactory.class);
         changeSerializer = registerMockFor(AbstractChangeXmlSerializer.class);
@@ -46,7 +42,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
                 return changeSerializerFactory;
             }
         };
-        serializer.setDeltaDao(deltaDao);
         serializer.setTemplateService(templateService);
         serializer.setStudy(study);
 
@@ -69,20 +64,8 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         assertEquals("Wrong id", "grid0", element.attributeValue("id"));
     }
 
-    public void testReadElementWithExistingDelta() {
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(deltaDao.getByGridId("grid0")).andReturn(plannedCalendarDelta);
-        replayMocks();
-
-        Delta actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Deltas should be the same", plannedCalendarDelta, actual);
-    }
-
     public void testReadElementWithNewAmendment() {
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(deltaDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("node-id")).andReturn("grid1");
         expect(element.elements()).andReturn(Collections.emptyList());
         replayMocks();

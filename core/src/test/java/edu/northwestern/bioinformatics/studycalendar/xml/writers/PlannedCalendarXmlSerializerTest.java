@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
@@ -13,7 +12,6 @@ import static java.util.Collections.emptyList;
 
 public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedCalendarXmlSerializer serializer;
-    private PlannedCalendarDao plannedCalendarDao;
     private Element element;
     private PlannedCalendar plannedCalendar;
     private EpochXmlSerializer epochSerializer;
@@ -23,8 +21,6 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         epochSerializer = registerMockFor(EpochXmlSerializer.class);
-        plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
-
         Study study = createNamedInstance("Study A", Study.class);
 
         serializer = new PlannedCalendarXmlSerializer(){
@@ -32,7 +28,6 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return epochSerializer;
             }
         };
-        serializer.setPlannedCalendarDao(plannedCalendarDao);
         serializer.setStudy(study);
 
         plannedCalendar = setGridId("grid0", new PlannedCalendar());
@@ -45,10 +40,9 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
     }
 
-    public void testReadElementWhenCalendarIsNew() {
+    public void testReadElement() {
         expect(element.getName()).andReturn("planned-calendar");
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(plannedCalendarDao.getByGridId("grid0")).andReturn(null);
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
 
@@ -56,17 +50,5 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
-    }
-
-    public void testReadElementWhenCalendarExists() {
-        expect(element.getName()).andReturn("planned-calendar");
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(plannedCalendarDao.getByGridId("grid0")).andReturn(plannedCalendar);
-        replayMocks();
-
-        PlannedCalendar actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Wrong Planned Calendar", plannedCalendar, actual);
     }
 }

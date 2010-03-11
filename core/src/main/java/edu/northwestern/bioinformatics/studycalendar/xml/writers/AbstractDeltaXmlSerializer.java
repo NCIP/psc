@@ -18,7 +18,6 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
     protected Study study;
 
     private static final String NODE_ID = "node-id";
-    private DeltaDao deltaDao;
     private TemplateService templateService;
 
     protected abstract Delta deltaInstance();
@@ -47,31 +46,24 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
     public Delta readElement(Element element) {
         String gridId = element.attributeValue(ID);
-        Delta delta = deltaDao.getByGridId(gridId);
-        if (delta == null) {
-            delta = deltaInstance();
-            delta.setGridId(gridId);
+        Delta delta = deltaInstance();
+        delta.setGridId(gridId);
 
-            Changeable node = nodeInstance();
-            node.setGridId(element.attributeValue(NODE_ID));
-            delta.setNode(node);
+        Changeable node = nodeInstance();
+        node.setGridId(element.attributeValue(NODE_ID));
+        delta.setNode(node);
 
-            List<Element> eChanges = element.elements();
-            for (Element eChange : eChanges) {
-                AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
-                Change change = changeSerializer.readElement(eChange);
-                delta.addChange(change);
-            }
+        List<Element> eChanges = element.elements();
+        for (Element eChange : eChanges) {
+            AbstractChangeXmlSerializer changeSerializer = getChangeXmlSerializerFactory().createXmlSerializer(eChange, node);
+            Change change = changeSerializer.readElement(eChange);
+            delta.addChange(change);
         }
         return delta;
     }
 
     public void setStudy(Study study) {
         this.study = study;
-    }
-
-    public void setDeltaDao(DeltaDao deltaDao) {
-        this.deltaDao = deltaDao;
     }
 
     public void setTemplateService(TemplateService templateService) {

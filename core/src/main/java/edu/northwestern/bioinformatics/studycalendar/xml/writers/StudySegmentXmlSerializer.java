@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
@@ -15,18 +14,12 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
 
     public static final String STUDY_SEGMENT = "study-segment";
 
-    private StudySegmentDao studySegmentDao;
-
     protected PlanTreeNode<?> nodeInstance() {
         return new StudySegment();
     }
 
     protected String elementName() {
         return STUDY_SEGMENT;
-    }
-
-    protected PlanTreeNode<?> getFromId(String id) {
-        return studySegmentDao.getByGridId(id);
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
@@ -54,10 +47,6 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
                 eStudySegment.add(childElement);
             }
         }
-    }
-
-    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
-        this.studySegmentDao = studySegmentDao;
     }
 
     @Override

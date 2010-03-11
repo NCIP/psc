@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -26,18 +25,12 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
     private static final String CONDITION = "condition";
     private static final String WEIGHT = "weight";
 
-    private PlannedActivityDao plannedActivityDao;
-
     protected PlanTreeNode<?> nodeInstance() {
         return new PlannedActivity();
     }
 
     protected String elementName() {
         return PLANNED_ACTIVITY;
-    }
-
-    protected PlanTreeNode<?> getFromId(String id) {
-        return plannedActivityDao.getByGridId(id);
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
@@ -97,10 +90,6 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
 
         Element eActivity = activityXmlSerializer.createElement(((PlannedActivity) node).getActivity());
         element.add(eActivity);
-    }
-
-    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
-        this.plannedActivityDao = plannedActivityDao;
     }
 
     public void setActivityXmlSerializer(ActivityXmlSerializer activityXmlSerializer) {

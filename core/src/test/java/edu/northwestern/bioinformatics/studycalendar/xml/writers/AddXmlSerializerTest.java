@@ -1,16 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -23,7 +22,6 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AddXmlSerializer serializer;
     private Add add;
     private Element element;
-    private ChangeDao changeDao;
     private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
     private StudyCalendarXmlSerializer studyCalendarXmlSerializer;
@@ -36,7 +34,6 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        changeDao = registerMockFor(ChangeDao.class);
         domainObjectDao = registerMockFor(DomainObjectDao.class);
         daoFinder = registerMockFor(DaoFinder.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
@@ -48,7 +45,6 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
                 return planTreeNodeSerializerFactory;
             }
         };
-        serializer.setChangeDao(changeDao);
         serializer.setDaoFinder(daoFinder);
         serializer.setChildClass(PlannedCalendar.class);
 
@@ -75,20 +71,8 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertFalse("Wrong child id", element.elements("epoch").isEmpty());
     }
 
-    public void testReadElementWhenAddExists() {
+    public void testReadElement() {
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(changeDao.getByGridId("grid0")).andReturn(add);
-        replayMocks();
-
-        Add actual = (Add) serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Change objects should be the same", add, actual);
-    }
-
-    public void testReadElementWhenAddIsNew() {
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(changeDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("index")).andReturn("0");
         expect(element.elements()).andReturn(Collections.singletonList(element));
         expect(planTreeNodeSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);

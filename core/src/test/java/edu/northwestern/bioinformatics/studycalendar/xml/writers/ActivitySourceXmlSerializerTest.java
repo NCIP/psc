@@ -1,22 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializerTest.assertEmbeddedActivityElement;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializerTest.assertEmbeddedActivityElement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -26,14 +24,11 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ActivitySourceXmlSerializer serializer;
     private Source source;
     private Activity actWalk, actRun, actSleep;
-    private ActivityTypeDao activityTypeDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         serializer = new ActivitySourceXmlSerializer();
-        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
-        serializer.setActivityTypeDao(activityTypeDao);
         source = createNamedInstance(SOURCE_NAME, Source.class);
         actWalk = createActivity("Walk", "W", source, Fixtures.createActivityType("OTHER"));
         actRun = createActivity("Run", "R", source, Fixtures.createActivityType("INTERVENTION"));
@@ -69,8 +64,6 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         activityType1.setId(1);
         ActivityType activityType2 = createActivityType("type2");
         activityType2.setId(2);
-        expect(activityTypeDao.getByName("type1")).andReturn(activityType1);
-        expect(activityTypeDao.getByName("type2")).andReturn(activityType2);
         replayMocks();
         Source read = parseDocumentString(serializer, String.format(
             "<source xmlns='%s' name='test-o'>\n" +
@@ -103,8 +96,6 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         activityType1.setId(1);
         ActivityType activityType2 = createActivityType("type2");
         activityType2.setId(2);
-        expect(activityTypeDao.getByName("type1")).andReturn(activityType1);
-        expect(activityTypeDao.getByName("type2")).andReturn(activityType2);
         replayMocks();
 
         Collection<Source> read = parseCollectionDocumentString(serializer, String.format(

@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -21,7 +20,6 @@ import java.util.TreeSet;
 
 public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedActivityXmlSerializer serializer;
-    private PlannedActivityDao plannedActivityDao;
     private Element element;
     private PlannedActivity plannedActivity;
     private ActivityXmlSerializer activitySerializer;
@@ -35,7 +33,6 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         activitySerializer = registerMockFor(ActivityXmlSerializer.class);
         plannedActivityLabelXmlSerializer = registerMockFor(PlannedActivityLabelXmlSerializer.class);
 
@@ -53,7 +50,6 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         labelList.add(eLabel);
 
         serializer = new PlannedActivityXmlSerializer();
-        serializer.setPlannedActivityDao(plannedActivityDao);
         serializer.setStudy(study);
         serializer.setActivityXmlSerializer(activitySerializer);
         serializer.setPlannedActivityLabelXmlSerializer(plannedActivityLabelXmlSerializer);
@@ -80,7 +76,6 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementStudyPlannedActivity() {
         expect(element.getName()).andReturn("planned-activity");
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(plannedActivityDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("day")).andReturn("2");
         expect(element.attributeValue("details")).andReturn("scan details");
         expect(element.attributeValue("condition")).andReturn("no mice");
@@ -103,18 +98,6 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong population", "MP", actual.getPopulation().getAbbreviation());
         assertNotNull("Activity should exist", actual.getActivity());
         assertNotNull("Labels should exist", actual.getPlannedActivityLabels());
-    }
-
-    public void testReadElementExistsPlannedActivity() {
-        expect(element.attributeValue("id")).andReturn("grid0");
-        expect(element.getName()).andReturn("planned-activity");
-        expect(plannedActivityDao.getByGridId("grid0")).andReturn(plannedActivity);
-        replayMocks();
-
-        PlannedActivity actual = (PlannedActivity) serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Wrong Planned Activity", plannedActivity, actual);
     }
 
     public void testValidateElement() throws Exception {
@@ -155,7 +138,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         plannedActivity.setPopulation(population);
         actual = serializer.createElement(plannedActivity);
         assertTrue(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
-       plannedActivity.setPopulation(null);
+        plannedActivity.setPopulation(null);
         assertFalse(StringUtils.isBlank(serializer.validateElement(plannedActivity, actual).toString()));
 
 
@@ -167,15 +150,10 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         PlannedActivity plannedActivity = createPlannedActivity();
 
         Element actual = serializer.createElement(plannedActivity);
-
-
         assertNotNull(serializer.getPlannedActivityWithMatchingGridId(plannedActivities, actual));
-
-
     }
 
     private PlannedActivity createPlannedActivity() {
-
         Population population = Fixtures.createPopulation("MP", "My Populaiton");
         PlannedActivity plannedActivity = setGridId("grid0", Fixtures.createPlannedActivity("Bone Scan", 2, "scan details", "no mice"));
         plannedActivity.setPopulation(population);

@@ -26,7 +26,6 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
     private static final String PREVIOUS_AMENDMENT_KEY = "previous-amendment-key";
 
     private Study study;
-    private AmendmentDao amendmentDao;
 
     private boolean isDevelopmentAmendment = false;
 
@@ -64,21 +63,17 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             throw new StudyCalendarValidationException("Could not parse date \"%s\", should be in format YYYY-MM-DD", element.attributeValue(DATE));
         }
 
-        Amendment amendment = amendmentDao.getByNaturalKey(new Amendment.Key(date, name).toString(), study);
-        if (amendment == null) {
-            amendment = new Amendment();
-            amendment.setName(name);
-            amendment.setDate(date);
-            amendment.setMandatory(Boolean.parseBoolean(element.attributeValue(MANDATORY)));
+        Amendment amendment = new Amendment();
+        amendment.setName(name);
+        amendment.setDate(date);
+        amendment.setMandatory(Boolean.parseBoolean(element.attributeValue(MANDATORY)));
 
-            String previousAmendmentKey = element.attributeValue(PREVIOUS_AMENDMENT_KEY);
-            if (previousAmendmentKey != null) {
-                Amendment previousAmendment = findAmendment(study.getAmendmentsList(), previousAmendmentKey);
-                amendment.setPreviousAmendment(previousAmendment);
-            }
-
-            addDeltas(element, amendment);
+        String previousAmendmentKey = element.attributeValue(PREVIOUS_AMENDMENT_KEY);
+        if (previousAmendmentKey != null) {
+            Amendment previousAmendment = findAmendment(study.getAmendmentsList(), previousAmendmentKey);
+            amendment.setPreviousAmendment(previousAmendment);
         }
+        addDeltas(element, amendment);
         return amendment;
     }
 
@@ -121,10 +116,6 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
         }
     }
 
-
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
-    }
 
     public DeltaXmlSerializerFactory getDeltaXmlSerializerFactory() {
         DeltaXmlSerializerFactory factory = (DeltaXmlSerializerFactory) getBeanFactory().getBean("deltaXmlSerializerFactory");

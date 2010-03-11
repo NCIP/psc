@@ -79,7 +79,6 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
         study.setDevelopmentAmendment(developmentAmendment);
 
         amendmentXmlSerializer = new AmendmentXmlSerializer();
-        amendmentXmlSerializer.setAmendmentDao(amendmentDao);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -105,7 +104,6 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
     public void testPutExistingAmendment() throws Exception {
         expectFoundStudy();
         expectFoundAmendment();
-        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey(), study)).andReturn(amendment);
 
         String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
                 "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";
@@ -116,7 +114,6 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
 
         expectAmendmentXmlSerializer();
         expectAmendmentXmlSerializer();
-//        amendmentService.deleteDevelopmentAmendmentOnly(study);
         templateDevService.deleteDevelopmentAmendmentOnly(study);
         studyService.save(study);
         doPut();
@@ -130,7 +127,6 @@ public class AmendmentResourceTest extends AuthorizedResourceTestCase<AmendmentR
         study.setDevelopmentAmendment(null);
         expectFoundStudy();
         expectFoundAmendment();
-        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey(), study)).andReturn(amendment);
 
         String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
                 "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";

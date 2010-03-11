@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -12,7 +11,6 @@ import java.util.List;
 
 public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarXmlSerializer<Change> {
     private Study study;
-    protected ChangeDao changeDao;
 
     protected abstract Change changeInstance();
     protected abstract String elementName();
@@ -34,12 +32,9 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
 
     public Change readElement(Element element) {
         String gridId = element.attributeValue(ID);
-        Change change = changeDao.getByGridId(gridId);
-        if (change == null) {
-            change = changeInstance();
-            change.setGridId(gridId);
-            setAdditionalProperties(element, change);
-        }
+        Change change = changeInstance();
+        change.setGridId(gridId);
+        setAdditionalProperties(element, change);
         return change;
     }
 
@@ -71,10 +66,6 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
             }
         }
         return null;
-    }
-
-    public void setChangeDao(ChangeDao changeDao) {
-        this.changeDao = changeDao;
     }
 
 

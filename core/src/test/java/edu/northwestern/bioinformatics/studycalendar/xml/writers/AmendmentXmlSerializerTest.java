@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.apache.commons.io.IOUtils;
@@ -25,7 +24,6 @@ import java.util.Collections;
 import java.util.Date;
 
 public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
-    private AmendmentDao amendmentDao;
     private AmendmentXmlSerializer serializer;
     private Amendment amendment1;
     private Element element;
@@ -44,7 +42,6 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
 
         element = registerMockFor(Element.class);
-        amendmentDao = registerDaoMockFor(AmendmentDao.class);
         deltaSerializer = registerMockFor(AbstractDeltaXmlSerializer.class);
         deltaSerializerFactory = registerMockFor(DeltaXmlSerializerFactory.class);
 
@@ -85,7 +82,6 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         };
         serializer.setStudy(study);
-        serializer.setAmendmentDao(amendmentDao);
     }
 
     public void testCreateElement() {
@@ -107,23 +103,10 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Should be more than one element", 1, actual.elements("planned-calendar-delta").size());
     }
 
-    public void testReadElementWithExistingAmendment() {
-        expect(element.attributeValue("name")).andReturn("Amendment 1");
-        expect(element.attributeValue("date")).andReturn("2007-01-02");
-        expect(amendmentDao.getByNaturalKey("2007-01-02~Amendment 1", study)).andReturn(amendment1);
-        replayMocks();
-
-        Amendment actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Amendments should be the same", amendment1, actual);
-    }
-
-    public void testReadElementWithNewAmendment() {
+    public void testReadElement() {
         expect(element.attributeValue("name")).andReturn("Amendment 1");
         expect(element.attributeValue("date")).andReturn("2008-01-02");
         expect(element.attributeValue("mandatory")).andReturn("true");
-        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1", study)).andReturn(null);
         expect(element.attributeValue("previous-amendment-key")).andReturn("2008-01-01~Amendment 0");
 
         expect(element.elements()).andReturn(Collections.singletonList(eDelta));

@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -25,9 +23,7 @@ import java.util.List;
 
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
 
-    private StudyDao studyDao;
     private StudyService studyService;
-    private PlannedCalendarDao plannedCalendarDao;
     private StudySecondaryIdentifierXmlSerializer studySecondaryIdentifierXmlSerializer;
 
     public Element createElement(Study study) {
@@ -101,22 +97,15 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             study.addSecondaryIdentifier(studySecondaryIdentifierXmlSerializer.readElement(identifierElt));
         }
 
-        if (study.getPlannedCalendar() == null) {
-            Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
-            PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
-            if (plannedCalendarDao.getByGridId(calendar.getGridId()) != null) {
-                throw new StudyCalendarValidationException ("The planned calendar with the same grid-ID already exists. Please check the xml file and modify the IDs appropriately.");
-            }
-            study.setPlannedCalendar(calendar);
-        }
+        Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
+        PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+        study.setPlannedCalendar(calendar);
 
         PopulationXmlSerializer populationXmlSerializer = getPopulationXmlSerializer(study);
         for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
             Element ePopulation = (Element) oPopulation;
             Population population = populationXmlSerializer.readElement(ePopulation);
-            if (!study.getPopulations().contains(population)) {
-                study.addPopulation(population);
-            }
+            study.addPopulation(population);
         }
 
         List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
@@ -124,9 +113,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         Element currAmendment = findOriginalAmendment(eAmendments);
         while (currAmendment != null) {
             Amendment amendment = getAmendmentSerializer(study).readElement(currAmendment);
-            if (!study.getAmendmentsList().contains(amendment)) {
-                study.pushAmendment(amendment);
-            }
+            study.pushAmendment(amendment);
             currAmendment = findNextAmendment(currAmendment, eAmendments);
         }
 
@@ -247,16 +234,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         amendmentSerializer.setStudy(study);
         amendmentSerializer.setDevelopmentAmendment(true);
         return amendmentSerializer;
-    }
-
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
-        this.plannedCalendarDao = plannedCalendarDao;
     }
 
     @Required
