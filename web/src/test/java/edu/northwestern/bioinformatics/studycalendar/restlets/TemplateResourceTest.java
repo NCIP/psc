@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -31,7 +31,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     private StudyDao studyDao;
     private StudyService studyService;
     private Study study, fullStudy;
-    private ImportTemplateService importTemplateService;
+    private TemplateImportService templateImportService;
     private StudyXmlSerializer studyXmlSerializer;
     private Date lastModifiedDate = DateUtils.createDate(2007, Calendar.OCTOBER, 5);
 
@@ -40,7 +40,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         super.setUp();
 
         studyDao = registerDaoMockFor(StudyDao.class);
-        importTemplateService = registerMockFor(ImportTemplateService.class);
+        templateImportService = registerMockFor(TemplateImportService.class);
         studyService = registerMockFor(StudyService.class);
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
 
@@ -62,7 +62,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         TemplateResource templateResource = new TemplateResource();
         templateResource.setStudyDao(studyDao);
         templateResource.setXmlSerializer(studyXmlSerializer);
-        templateResource.setImportTemplateService(importTemplateService);
+        templateResource.setTemplateImportService(templateImportService);
         templateResource.setStudyService(studyService);
         return templateResource;
     }
@@ -114,7 +114,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
         expectSuccessfulStudyLoad();
         InputStream in = expectPutEntity();
-        expect(importTemplateService.readAndSaveTemplate(study, in)).andReturn(updatedStudy);
+        expect(templateImportService.readAndSaveTemplate(study, in)).andReturn(updatedStudy);
         expect(studyService.getCompleteTemplateHistory(updatedStudy)).andReturn(fullStudy);
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 
@@ -129,7 +129,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
 
         InputStream in = expectPutEntity();
-        expect(importTemplateService.readAndSaveTemplate(null, in)).andReturn(study);
+        expect(templateImportService.readAndSaveTemplate(null, in)).andReturn(study);
         expectStudyFilledOut();
         expect(studyXmlSerializer.createDocumentString(fullStudy)).andReturn(MOCK_XML);
 

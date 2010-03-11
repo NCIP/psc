@@ -18,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.io.ByteArrayInputStream;
@@ -37,8 +38,8 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         = (AmendmentService) getApplicationContext().getBean("amendmentService");
     private DeltaService deltaService
         = (DeltaService) getApplicationContext().getBean("deltaService");
-    private ImportTemplateService importTemplateService
-        = (ImportTemplateService) getApplicationContext().getBean("importTemplateService");
+    private TemplateImportService templateImportService
+        = (TemplateImportService) getApplicationContext().getBean("templateImportService");
 
     private StudyDao studyDao
         = (StudyDao) getApplicationContext().getBean("studyDao");
@@ -82,7 +83,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
     }
 
     private Study doImport(InputStream export) {
-        importTemplateService.readAndSaveTemplate(reload(), export);
+        templateImportService.readAndSaveTemplate(export);
         interruptSession();
         return reload();
     }

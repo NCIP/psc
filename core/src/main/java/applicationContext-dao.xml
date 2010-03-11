@@ -184,7 +184,7 @@
 		<property name="auditAll"><value>false</value></property>
 	</bean>
 
-    <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.dao.LocalGridIdentifierCreator"/>
+    <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.dao.LocalGridIdentifierCreator" autowire="byName"/>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
         <property name="singleSession"><value>true</value></property>

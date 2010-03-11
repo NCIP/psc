@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -27,8 +27,7 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     private boolean useDownloadMode;
     private StudyDao studyDao;
     private StudyService studyService;
-
-    private ImportTemplateService importTemplateService;
+    private TemplateImportService templateImportService;
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
@@ -69,7 +68,7 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     public void storeRepresentation(Representation entity) throws ResourceException {
         Study out;
         try {
-            Study imported = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
+            Study imported = templateImportService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
             out = studyService.getCompleteTemplateHistory(imported);
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
@@ -99,7 +98,7 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     }
 
     @Required
-    public void setImportTemplateService(ImportTemplateService importTemplateService) {
-        this.importTemplateService = importTemplateService;
+    public void setTemplateImportService(TemplateImportService templateImportService) {
+        this.templateImportService = templateImportService;
     }
 }

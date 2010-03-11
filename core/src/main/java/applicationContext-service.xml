@@ -52,6 +52,16 @@
     <bean id="importTemplateService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService">
     </bean>
+
+    <bean id="templateImportService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService">
+        <property name="localGridIdentifierCreator" ref="gridIdentifierCreator"/>
+    </bean>
+
+    <bean id="gridIdentifierResolver" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.importer.GridIdentifierResolver">
+    </bean>
+
     <bean id="sourceService" class="edu.northwestern.bioinformatics.studycalendar.service.SourceService">
         <property name="sourceDao" ref="sourceDao"></property>
         <property name="activityService" ref="activityService"/>

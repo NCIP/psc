@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyImportException;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public class ImportTemplateXmlController extends PscSimpleFormController {
-    private ImportTemplateService importTemplateService;
+    private TemplateImportService templateImportService;
 
     public ImportTemplateXmlController() {
         setCommandClass(ImportTemplateXmlCommand.class);
@@ -41,13 +41,13 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
 
     protected ImportTemplateXmlCommand formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ImportTemplateXmlCommand command = new ImportTemplateXmlCommand();
-        command.setImportTemplateService(importTemplateService);
+        command.setTemplateImportService(templateImportService);
         return command;
     }
 
     //// Field setters
     @Required
-    public void setImportTemplateService(ImportTemplateService importTemplateService) {
-        this.importTemplateService = importTemplateService;
+    public void setTemplateImportService(TemplateImportService templateImportService) {
+        this.templateImportService = templateImportService;
     }
 }

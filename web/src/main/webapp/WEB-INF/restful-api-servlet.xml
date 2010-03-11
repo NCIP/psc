@@ -65,7 +65,7 @@
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
             >
-        <property name="importTemplateService" ref="importTemplateService"/>
+        <property name="templateImportService" ref="templateImportService"/>
         <property name="xmlSerializer" ref="studyXmlSerializer"/>
     </bean>
 

@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;
 import org.springframework.mock.web.MockMultipartFile;
@@ -15,23 +15,23 @@ public class ImportTemplateXmlCommandTest extends StudyCalendarTestCase {
     private ImportTemplateXmlCommand command;
     private MultipartFile file;
     private InputStream stream;
-    private ImportTemplateService importTemplateService;
+    private TemplateImportService templateImportService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         file = registerMockFor(MockMultipartFile.class);
         stream = registerMockFor(InputStream.class);
-        importTemplateService = registerMockFor(ImportTemplateService.class);
+        templateImportService =  registerMockFor(TemplateImportService.class);
 
         command = new ImportTemplateXmlCommand();
         command.setStudyXml(file);
-        command.setImportTemplateService(importTemplateService);
+        command.setTemplateImportService(templateImportService);
     }
 
     public void testApply() throws Exception {
         expect(file.getInputStream()).andReturn(stream);
-        importTemplateService.readAndSaveTemplate(stream);
+        templateImportService.readAndSaveTemplate(stream);
         replayMocks();
 
         command.apply();

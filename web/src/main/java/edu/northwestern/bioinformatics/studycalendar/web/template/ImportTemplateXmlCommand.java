@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 
@@ -16,10 +17,10 @@ public class ImportTemplateXmlCommand implements Validatable {
     private static final Logger log = LoggerFactory.getLogger(ImportActivitiesCommand.class);
 
     MultipartFile studyXml;
-    private ImportTemplateService service;
+    private TemplateImportService templateImportService;
 
     public void apply() throws Exception {
-        service.readAndSaveTemplate(studyXml.getInputStream());
+        templateImportService.readAndSaveTemplate(studyXml.getInputStream());
     }
 
     public void validate(Errors errors) {
@@ -46,7 +47,8 @@ public class ImportTemplateXmlCommand implements Validatable {
         return studyXml;
     }
 
-    public void setImportTemplateService(ImportTemplateService service) {
-        this.service = service;
+    @Required
+    public void setTemplateImportService(TemplateImportService service) {
+        this.templateImportService = service;
     }
 }
