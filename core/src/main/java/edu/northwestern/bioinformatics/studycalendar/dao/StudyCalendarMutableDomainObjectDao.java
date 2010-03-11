@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
+import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -16,6 +17,11 @@ public abstract class StudyCalendarMutableDomainObjectDao<T extends MutableDomai
     public T getByGridId(String gridId) {
         return (T) CollectionUtils.firstElement(
             getHibernateTemplate().find("from " + domainClass().getName() + " where gridId = ?", gridId));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> getAll(){
+         return getHibernateTemplate().find("from " + domainClass().getName());
     }
 
     public T getByGridId(T template) {
