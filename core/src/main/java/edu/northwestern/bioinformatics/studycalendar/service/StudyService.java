@@ -340,6 +340,9 @@ public class StudyService {
         // The current amendment for each snapshot is now the version we want
         // to include with the complete history
         Study complete = source.transientClone();
+        if (complete.getAmendment() != null) {
+           resolveCurrentAdds(complete);
+        }
         Amendment current = complete.getAmendment();
         for (int i = 1; i < snapshots.size(); i++) {
             Amendment previousAmendment = snapshots.get(i).getAmendment();

@@ -299,8 +299,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private void validatePopulation(final Population population, final Population copiedPopulation) {
         assertNotNull(population);
         assertNotNull(copiedPopulation);
-        System.out.println("=====population===" +population);
-        System.out.println("=====copiedPopulation===" +copiedPopulation);
         assertNotSame("copied population and source population must be different", copiedPopulation, population);
         assertNotSame("copied population and source population must belong to different different studies", copiedPopulation.getStudy(), population.getStudy());
         validateIds(population, copiedPopulation);
@@ -432,5 +430,29 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         Study fullHistory = service.getCompleteTemplateHistory(studyDao.getById(id));
         assertEquals("Wrong number of amendments", 3, fullHistory.getAmendmentsList().size());
         assertEquals("Wrong previous amendment key", "2007-04-07~A2", fullHistory.getAmendment().getPreviousAmendment().getNaturalKey());
+    }
+
+    public void testFullTemplateHistoryResolveAddForCurrentAmendment() throws Exception {
+        int id = saveBasicSkeleton();
+        {
+            Study reloaded = studyDao.getById(id);
+            amendmentService.amend(reloaded);
+            Epoch treatment = reloaded.getPlannedCalendar().getEpochs().get(0);
+            Amendment a1 = Fixtures.createAmendment("A1", DateTools.createDate(2007, Calendar.APRIL, 6));
+            reloaded.setDevelopmentAmendment(a1);
+            amendmentService.amend(reloaded);
+            Amendment a2 = Fixtures.createAmendment("A2", DateTools.createDate(2007, Calendar.APRIL, 8));
+            reloaded.setDevelopmentAmendment(a2);
+            StudySegment segment = new StudySegment();
+            segment.setName("S1");
+            a2.addDelta(
+                Delta.createDeltaFor(treatment, Add.create(segment)));
+            amendmentService.amend(reloaded);
+        }
+        interruptSession();
+        Study fullHistory = service.getCompleteTemplateHistory(studyDao.getById(id));
+        ChildrenChange add = (ChildrenChange) (fullHistory.getAmendment().getDeltas().get(0).getChanges().get(0));
+        assertNotNull("Add does not have child node", add.getChild());
+        assertEquals("Add has wrong child class", StudySegment.class, add.getChild().getClass());
     }
 }
