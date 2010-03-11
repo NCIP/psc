@@ -40,4 +40,21 @@ public class Differences {
         this.childDifferences = childDifferences;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (!getMessages().isEmpty()) {
+            for (Iterator<String> it = getMessages().iterator(); it.hasNext();) {
+                sb.append(it.next()).append(";");
+            }
+        }
+        if (!getChildDifferences().isEmpty()) {
+            for (Iterator entries = getChildDifferences().entrySet().iterator(); entries.hasNext();) {
+                Map.Entry entry = (Map.Entry)entries.next();
+                sb.append(entry.getKey()).append(" ");
+                sb.append((entry.getValue()).toString());
+            }
+        }
+        return sb.toString();
+    }
 }
