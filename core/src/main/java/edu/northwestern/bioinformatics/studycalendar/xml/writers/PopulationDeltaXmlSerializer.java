@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PopulationDelta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
@@ -11,9 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 public class PopulationDeltaXmlSerializer extends AbstractDeltaXmlSerializer {
     public static final String POPULATION_DELTA = "population-delta";
 
-    //not sure about this method
     protected Changeable nodeInstance() {
-        return new PlannedCalendar();
+        return new Population();
     }
 
     protected Delta deltaInstance() {
