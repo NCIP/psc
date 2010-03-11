@@ -322,7 +322,7 @@ public class Amendment
                 if (matchingDelta != null) {
                     Differences deltaDifferences = matchingDelta.deepEquals(delta);
                     if (deltaDifferences.hasDifferences()) {
-                        differences.addChildDifferences("Delta(".concat(Integer.toString(index)).concat(")"), deltaDifferences);
+                        differences.addChildDifferences(delta.getClass().getSimpleName(), deltaDifferences);
                     }
                     index++;
                 } else {

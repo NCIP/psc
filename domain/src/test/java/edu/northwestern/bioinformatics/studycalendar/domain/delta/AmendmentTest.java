@@ -338,7 +338,7 @@ public class AmendmentTest extends TestCase {
         a2.addDelta(delta2);
         Differences differences = a1.deepEquals(a2);
         assertFalse(differences.getChildDifferences().isEmpty());
-        String actualMessage =  differences.getChildDifferences().get("Delta(0)").getChildDifferences().get("Change property").getMessages().get(0);
+        String actualMessage =  differences.getChildDifferences().get("EpochDelta").getChildDifferences().get("Change property").getMessages().get(0);
         assertEquals("Amendments are equals", "new value C differs to B", actualMessage);
     }
 }
