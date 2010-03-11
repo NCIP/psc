@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import static org.easymock.EasyMock.expect;
 
@@ -24,6 +25,7 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     private Source source0, source1;
     private List<Source> sources;
     private SourceService sourceService;
+    private ActivityService activityService;
 
     @Override
     protected void setUp() throws Exception {
@@ -31,10 +33,12 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
 
         serializer = registerMockFor(ActivitySourceXmlSerializer.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
+        activityService = registerMockFor(ActivityService.class);
 
         service = new ImportActivitiesService();
         service.setSourceDao(sourceDao);
         service.setXmlSerializer(serializer);
+        service.setActivityService(activityService);
         sourceService = registerMockFor(SourceService.class);
         service.setSourceService(sourceService);
 
@@ -62,10 +66,14 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
 
     public void testReplaceCollidingSourcesWhereActivitiesAreDifferent() throws Exception {
         Source existingSource = setId(0, createNamedInstance("ICD-9", Source.class));
-        Activity activity2 = assignSource(createActivity("Bone Scan One"), existingSource);
+        Activity activity = createActivity("Bone Scan One");
+        ActivityType activityType = createActivityType("ExistingActivityType");
+        activity.setType(activityType);
+        Activity activity2 = assignSource(activity, existingSource);
         List<Source> existingSources = asList(existingSource);
 
         expect(sourceDao.getAll()).andReturn(existingSources);
+        activityService.resolveAndSaveActivityType(activity2);
         sourceService.updateSource(existingSource, existingSource.getActivities());
         replayMocks();
 
@@ -79,13 +87,15 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReplaceCollidingSourcesWhereActivitiesWithSameNameButDifferentCode() throws Exception {
-        Activity activity = createActivity("a", "123", source0, createActivityType("Bone Scan"));
+        ActivityType activityType = createActivityType("Bone Scan");
+        Activity activity = createActivity("a", "123", source0, activityType);
         source0.addActivity(activity);
         Source existingSource = setId(0, createNamedInstance("ICD-9", Source.class));
-        Activity activity0 = createActivity("a", "1234", existingSource, createActivityType("Bone Scan"));
+        Activity activity0 = createActivity("a", "1234", existingSource, activityType);
         List<Source> existingSources = asList(existingSource);
 
         expect(sourceDao.getAll()).andReturn(existingSources);
+        activityService.resolveAndSaveActivityType(activity0);
         sourceService.updateSource(existingSource, existingSource.getActivities());
         replayMocks();
 

@@ -3,10 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -28,6 +26,7 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     private PlannedActivityDao plannedActivityDao;
     private Source source;
     private SourceDao sourceDao;
+    private ActivityService activityService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -56,18 +55,15 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     @Override
     public void store(Activity activity) throws ResourceException {
         if (getRequestedObject() == null) {
-            activityDao.save(activity);
+            activityService.saveActivity(activity);
         } else {
             //Search the existing activity and edit the properties
             Activity existingActivity = activityDao.getById(getRequestedObject().getId());
             existingActivity.setCode(activity.getCode());
             existingActivity.setName(activity.getName());
             existingActivity.setDescription(activity.getDescription());
-            existingActivity.setType(activity.getType());
-            activityDao.save(existingActivity);
-
+            activityService.saveActivity(existingActivity);
         }
-
     }
 
     @Override
@@ -102,8 +98,14 @@ public class ActivityResource extends AbstractRemovableStorableDomainObjectResou
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
     }
+
     @Required
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 }

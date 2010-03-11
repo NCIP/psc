@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
@@ -19,18 +20,14 @@ import java.util.List;
 public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
     public static final String SOURCE_NAME = "House of Activities";
     public static final String SOURCE_NAME_ENCODED = "House%20of%20Activities";
-
     public static final String ACTIVITY_NAME = "Activities";
 
     private ActivityDao activityDao;
-
     private Activity activity;
-
     private PlannedActivityDao plannedActivityDao;
-
     private SourceDao sourceDao;
-
     private Source source;
+    private ActivityService activityService;
 
     @Override
     public void setUp() throws Exception {
@@ -40,6 +37,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_CODE.attributeName(), ACTIVITY_NAME);
         sourceDao = registerDaoMockFor(SourceDao.class);
+        activityService = registerMockFor(ActivityService.class);
         activity = Fixtures.createNamedInstance(ACTIVITY_NAME, Activity.class);
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
     }
@@ -49,6 +47,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
     protected ActivityResource createResource() {
         ActivityResource resource = new ActivityResource();
         resource.setActivityDao(activityDao);
+        resource.setActivityService(activityService);
         resource.setXmlSerializer(xmlSerializer);
         resource.setPlannedActivityDao(plannedActivityDao);
         resource.setSourceDao(sourceDao);
@@ -94,7 +93,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         expectReadXmlFromRequestAs(newActivity);
         expectObjectXmlized(newActivity);
         expect(activityDao.getById(1)).andReturn(activity);
-        activityDao.save(activity);
+        activityService.saveActivity(activity);
         doPut();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
@@ -128,7 +127,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         expectObjectXmlized(activity);
         expectReadXmlFromRequestAs(activity);
 
-        activityDao.save(activity);
+        activityService.saveActivity(activity);
         doPut();
 
         assertResponseStatus(Status.SUCCESS_CREATED);

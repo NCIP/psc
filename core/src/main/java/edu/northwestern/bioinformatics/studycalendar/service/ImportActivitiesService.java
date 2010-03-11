@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ public class ImportActivitiesService {
     private ActivitySourceXmlSerializer xmlSerializer;
     private SourceSerializer sourceSerializer;
     private SourceService sourceService;
+    private ActivityService activityService;
 
     public Source loadAndSave(InputStream sourcesXml) {
         Collection<Source> sources = readData(sourcesXml);
@@ -59,10 +59,12 @@ public class ImportActivitiesService {
         for (Source source : sources) {
             if (existingSources.contains(source)) {
                 Source existingSource = existingSources.get(existingSources.indexOf(source));
+                resolveActivityType(source.getActivities());
                 sourceService.updateSource(existingSource, source.getActivities());
                 validSources.add(existingSource);
             } else {
                 //means new source
+                resolveActivityType(source.getActivities());
                 sourceService.updateSource(source, source.getActivities());
                 validSources.add(source);
             }
@@ -73,6 +75,12 @@ public class ImportActivitiesService {
     protected void save(List<Source> sources) {
         for (Source source : sources) {
             sourceDao.save(source);
+        }
+    }
+
+    protected void resolveActivityType(List<Activity> activities) {
+        for (Activity activity : activities) {
+            activityService.resolveAndSaveActivityType(activity);
         }
     }
 
@@ -96,5 +104,10 @@ public class ImportActivitiesService {
     @Required
     public void setSourceService(SourceService sourceService) {
         this.sourceService = sourceService;
+    }
+
+    @Required
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 }
