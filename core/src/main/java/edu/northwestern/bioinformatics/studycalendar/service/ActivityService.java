@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,6 +21,8 @@ import java.util.*;
 public class ActivityService {
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityTypeDao activityTypeDao;
+    private SourceDao sourceDao;
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -115,6 +119,33 @@ public class ActivityService {
         return uriMap;
     }
 
+    //Creates new activity
+    public void saveActivity(Activity activity) {
+        resolveAndSaveSource(activity);
+        resolveAndSaveActivityType(activity);
+        activityDao.save(activity);
+    }
+
+    public void resolveAndSaveSource(Activity activity) {
+        Source source = sourceDao.getByName(activity.getSource().getName());
+        if (source == null) {
+            source = new Source();
+            source.setName(activity.getSource().getName());
+            sourceDao.save(source);
+        }
+        activity.setSource(source);
+    }
+
+    public void resolveAndSaveActivityType(Activity activity) {
+        ActivityType activityType = activityTypeDao.getByName(activity.getType().getName());
+        if (activityType == null) {
+            activityType =  new ActivityType();
+            activityType.setName(activity.getType().getName());
+            activityTypeDao.save(activityType);
+        }
+        activity.setType(activityType);
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -125,5 +156,15 @@ public class ActivityService {
     @Required
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
+    }
+
+    @Required
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

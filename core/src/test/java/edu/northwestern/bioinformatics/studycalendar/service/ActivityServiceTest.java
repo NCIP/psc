@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
@@ -18,17 +20,27 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
     private ActivityService service;
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityTypeDao activityTypeDao;
+    private SourceDao sourceDao;
     private Activity activity0;
+    private ActivityType activityType;
+    private Source source;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         activityDao = registerDaoMockFor(ActivityDao.class);
+        activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         service = new ActivityService();
         service.setActivityDao(activityDao);
         service.setPlannedActivityDao(plannedActivityDao);
-        activity0 = setId(20, createActivity("Bone Scan"));
+        service.setActivityTypeDao(activityTypeDao);
+        service.setSourceDao(sourceDao);
+        activityType = createActivityType("Activity Type");
+        source =  createSource("Source");
+        activity0 = setId(20, createActivity("Bone Scan", "Bone Scan", source, activityType));
     }
 
     public void testDeleteActivityWhenUnused() {
@@ -117,5 +129,75 @@ public class ActivityServiceTest extends StudyCalendarTestCase {
             assertTrue(message + " activity at " + i + " not transient",
                 actual.getActivities().get(i).isMemoryOnly());
         }
+    }
+
+    public void testResolveAndSaveSourceWhenExistingSource() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(source);
+        replayMocks();
+        service.resolveAndSaveSource(activity0);
+        verifyMocks();
+    }
+
+    public void testResolveAndSaveSourceWhenNewSource() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(null);
+        sourceDao.save(source);
+        replayMocks();
+        service.resolveAndSaveSource(activity0);
+        verifyMocks();
+    }
+
+    public void testResolveAndSaveActivityTypeForExistingActivityType() throws Exception {
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(activityType);
+        replayMocks();
+        service.resolveAndSaveActivityType(activity0);
+        verifyMocks();
+    }
+    
+    public void testResolveAndSaveActivityTypeForNewActivityType() throws Exception {
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(null);
+        activityTypeDao.save(activityType);
+        replayMocks();
+        service.resolveAndSaveActivityType(activity0);
+        verifyMocks();
+    }
+
+    public void testSaveActivityForExsitingSourceAndType() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(source);
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(activityType);
+        activityDao.save(activity0);
+        replayMocks();
+        service.saveActivity(activity0);
+        verifyMocks();
+    }
+
+    public void testSaveActivityForNewSourceAndExistingType() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(null);
+        sourceDao.save(source);
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(activityType);
+        activityDao.save(activity0);
+        replayMocks();
+        service.saveActivity(activity0);
+        verifyMocks();
+    }
+
+    public void testSaveActivityForExistingSourceAndNewType() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(source);
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(null);
+        activityTypeDao.save(activityType);
+        activityDao.save(activity0);
+        replayMocks();
+        service.saveActivity(activity0);
+        verifyMocks();
+    }
+
+    public void testSaveActivityForNewSourceAndNewType() throws Exception {
+        expect(sourceDao.getByName("Source")).andReturn(null);
+        sourceDao.save(source);
+        expect(activityTypeDao.getByName("Activity Type")).andReturn(null);
+        activityTypeDao.save(activityType);
+        activityDao.save(activity0);
+        replayMocks();
+        service.saveActivity(activity0);
+        verifyMocks();
     }
 }
