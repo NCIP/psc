@@ -172,9 +172,11 @@
                      </div>
                      <div class="value">
                         <select id="selector">
-                            <option class="unassigned" value="unassigned" <c:if test="${'unassigned' == selectedId}">selected</c:if>><b>unassigned</b></option>
+                            <c:set var="selected" value="${selectedId}"/>
+                            <option class="unassigned" value="unassigned" <c:if test="${fn:trim(selected) =='unassigned'}">selected</c:if>><b>unassigned</b></option>
                             <c:forEach items="${assignableUsers}" var="user">
-                                <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.displayName}</option>
+                                <c:set var="userId" value="${user.id}"/>
+                                <option value="${user.id}" <c:if test="${fn:trim(userId) == fn:trim(selected)}">selected</c:if>>${user.displayName}</option>
                             </c:forEach>
 
                         </select>
