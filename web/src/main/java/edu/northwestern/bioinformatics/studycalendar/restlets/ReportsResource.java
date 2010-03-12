@@ -39,6 +39,13 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     public Collection<ScheduledActivitiesReportRow> getAllObjects() throws ResourceException {
         ScheduledActivitiesReportFilters filters = getFilters();
         List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = scheduledActivitiesReportRowDao.search(filters);
+
+        //todo - mounting for label is not working... need to set it manually
+        if (filters.getLabel() != null) {
+            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
+                row.setLabel(filters.getLabel());
+            }
+        }
         return scheduledActivitiesReportRow;
     }
 

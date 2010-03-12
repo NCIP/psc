@@ -3,8 +3,14 @@
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<tags:javascriptLink name="psc-tools/misc"/>
+<tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+<%-- TODO: move common YUI parts to a tag if they are re-used --%>
+<c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+   <tags:javascriptLink name="yui/2.7.0/${script}"/>
+</c:forEach>
 
 <html>
 <title>Report</title>
@@ -24,12 +30,73 @@
     <tags:sassLink name="labels"/>
 
     <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
-    <style type="text/css">
-        table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
-        table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
-        table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
-    </style>
     <script type="text/javascript">
+
+        var bundleList;
+
+        function submitFilters() {
+            var uri = SC.relativeUri("/api/v1/reports/scheduled-activities")
+            var params = {};
+
+            params['study'] = $("filters.studyAssignedIdentifier").value;
+            params['site'] = $("filters.siteName").value;
+            params['state'] = $("filters.currentStateMode").value;
+            params['activity-type'] = $("filters.activityType").value;
+            params['label'] = $F("labels-autocompleter-input");
+            var startDate = $("actual-date-start").value
+            if (startDate != null && startDate.length > 0) {
+                startDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
+            }
+            params['start-date'] = startDate;
+            var endDate = $("actual-date-stop").value
+            if (endDate != null && startDate.length > 0) {
+                endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
+            }
+
+            params['end-date'] = endDate;
+            params['responsible-user'] =  $("filters.subjectCoordinator").value;
+
+            SC.asyncRequest(uri +".json", {
+              method: "GET", parameters: params,
+              onSuccess: function(response) {
+                   var bundleListColumns = [
+                        { key: "activity_name", label: "Activity Name", sortable: true},
+                        { key: "activity_status", label: "Activity Status", sortable: true },
+                        { key: "scheduled_date", label:"Scheduled Date", sortable:true},
+                        { key: "ideal_date", label: "Ideal Date", sortable: true},
+                        { key: "label", label: "Label", sortable: true},
+                        { key: "subject_name", label: "Subject Name", sortable: true},
+                        { key: "subject_id", label: "Subject Id", sortable: true},
+                        { key: "subject_coorinator_name", label: "Subject Coordinator Name", sortable: true},
+                        { key: "study", label: "Study Name", sortable: true},
+                        { key: "site", label: "Site Name", sortable: true}
+                   ];
+                   var myDataSource = new YAHOO.util.DataSource(response.responseJSON);
+                    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+
+                    myDataSource.responseSchema = {
+                          resultsList : "rows",
+                          fields : [
+                              { key: "activity_name"},
+                              { key: "activity_status"},
+                              { key: "scheduled_date"},
+                              { key: "ideal_date"},
+                              { key: "label" },
+                              { key: "subject_name"},
+                              { key: "subject_id"},
+                              { key: "subject_coorinator_name"},
+                              { key: "study"},
+                              { key: "site"}
+                          ]
+                      };
+
+                      bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
+
+                }
+            })
+        }
+
+
         function resetFilters() {
            $("filters.studyAssignedIdentifier").value = "";
            $("filters.siteName").value = "";
@@ -51,13 +118,13 @@
     </script>
 </head>
 <body>
-<laf:box title="Scheduled Activities Report">
+<laf:box title="Scheduled Activities Report" cssClass="yui-skin-sam">
     <laf:division>
         <c:set var="action"><c:url value="/pages/report/scheduledActivitiesReport"/></c:set>
         <form:form action="${action}"method="post" onsubmit="return false">
             <tags:errors path="*"/>
              <div class="search_box">
-                 <input type="submit" value="Search" class="button" onclick="submit()"/>
+                 <input type="submit" value="Search" class="button" onclick="submitFilters()"/>
                     <span id="searchResult">${fn:length(results)} results</span>
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
@@ -104,12 +171,9 @@
 
                     <span class="filterInput">
                         <label>Activity label: </label>
-                        <input id="labels-autocompleter-input" name="label" type="text" autocomplete="off" class="autocomplete" onkeypress="checkKey(event)"/>
-                        <div style="position: relative">
-                            <div id="labels-autocompleter-div" class="autocomplete"></div>
-                        </div>
+                        <input id="labels-autocompleter-input" type="text" autocomplete="off" class="autocomplete"/>
+                        <div id="labels-autocompleter-div" class="autocomplete"></div>
                     </span>
-                    
                 </div>
 
                 <div class="filterGroup">
@@ -153,28 +217,8 @@
             </div>
 
           <br style="clear:both"/>
-
-            <div id="qurey-result-display">
-            <display:table name="results" class="query-results" id="row" requestURI="scheduledActivitiesReport" export="true">
-                <display:setProperty name="basic.msg.empty_list" value="No results.  Please select filters and press the <b>Search</b> button."/>
-                <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true"/>
-                <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"  sortable="true"/>
-                <display:column title="Scheduled Date"  sortable="true">
-                        <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
-                </display:column>
-                <display:column title="Ideal Date"  sortable="true">
-                    <tags:formatDate value="${row.scheduledActivity.idealDate}"/>
-                </display:column>
-                <display:column property="label" title="Label" sortable="true"/>
-                                
-                <display:column property="subject.lastFirst" title="Subject Name"  sortable="true"/>
-                <display:column property="subject.personId" title="Subject Id"  sortable="true"/>
-                <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"  sortable="true"/>
-                <display:column property="study.assignedIdentifier" title="Study Name" sortable="true"/>
-                <display:column property="site.name" title="Site Name"  sortable="true"/>
-            </display:table>
+          <div id="bundle-list" class="bundle-list">
           </div>
-        
         </form:form>
     </laf:division>
 </laf:box>

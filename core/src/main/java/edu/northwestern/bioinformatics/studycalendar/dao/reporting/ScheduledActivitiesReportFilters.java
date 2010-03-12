@@ -19,7 +19,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 //    private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
 //            new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
 
-private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
+    private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
     private StringFilter label = new StringFilter("label");
 
@@ -82,5 +82,5 @@ private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFi
 
     public void setLabel(String value) {
         label.setValue(value);
-    }    
+    }
 }

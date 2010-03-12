@@ -16,37 +16,6 @@ input.button {
     margin: 0.5em 0;
 }
 
-table.query-results    { width: 100%; border: 0; border-spacing: 1px; }
-table.query-results td, table.query-results th { white-space: nowrap }
-table.query-results td { vertical-align: top; padding: 1px; }
-table.query-results th { text-align: center; vertical-align: bottom; padding: 2px; }
-table.query-results th a {
-    display: block;
-    color: white; text-decoration: none;
-}
-table.query-results th.sorted a, table.query-results th.sortable a {
-    background-position: right;
-    padding: 0;
-    margin-right: 14px; /* for arrow image */
-    width: 100%;
-}
-
-table.query-results tr.even td.highlighted { background-color: #7bf; }
-
-table.query-results ul {
-    padding: 0; margin: 0;
-}
-table.query-results li {
-    list-style-type: none;
-}
-table.query-results td.numeric, table.query-results td.date {
-    text-align: right;
-}
-
-table { border: 0px; }
-th { font-weight: bold; color: white; background-color: navy; }
-th, td { text-align: left; padding: 1px 3px; }
-
 .even { background: lightblue; }
 .odd  { background: lavender; }
 
