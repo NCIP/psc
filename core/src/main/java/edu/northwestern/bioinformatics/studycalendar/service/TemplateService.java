@@ -440,7 +440,10 @@ public class TemplateService {
     }
 
     private boolean isStudyApprovedBySite(Site site, Study study) {
-        return site.getStudySite(study).getUnapprovedAmendments().isEmpty();
+        if (site != null && site.getStudySite(study) != null) {
+            return site.getStudySite(study).getUnapprovedAmendments().isEmpty();
+        }
+        return false;
     }
 
     private boolean isSubjectCoordinatorAssignedToStudy(Study study) {
