@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.util.FileCopyUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +51,6 @@ public class ExportActivitiesController extends AbstractController {
             response.setContentType("text/xml");
             elt = activitySourceXmlSerializer.createDocumentString(source);
         } else {
-
             if (extension.equals("csv")) {
                 response.setContentType("text/plain");
                 elt = sourceSerializer.createDocumentString(source, ',');
@@ -62,8 +62,8 @@ public class ExportActivitiesController extends AbstractController {
 
         byte[] content = elt.getBytes();
         response.setContentLength(content.length);
-
-        IOUtils.write(content, response.getOutputStream());
+        response.setHeader("Content-Disposition","attachment");
+        FileCopyUtils.copy(content , response.getOutputStream());
         return null;
     }
 
