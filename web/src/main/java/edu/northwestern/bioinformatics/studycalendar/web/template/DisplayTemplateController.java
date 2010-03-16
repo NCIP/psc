@@ -74,8 +74,8 @@ public class DisplayTemplateController extends PscAbstractController {
             getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
             model.put("studySegment", new StudySegmentTemplate(studySegment));
 
-            Boolean canNotViewPopulations = study.isReleased() && selectedAmendmentId==null ;
-            model.put("canNotViewPopulations", canNotViewPopulations);
+            Boolean canEditPopulations = user.hasRole(Role.STUDY_COORDINATOR) && study.isInDevelopment() && !(study.isReleased() && selectedAmendmentId==null);
+            model.put("canEditPopulations", canEditPopulations);
 
             if (study.isReleased()) {
                 List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));

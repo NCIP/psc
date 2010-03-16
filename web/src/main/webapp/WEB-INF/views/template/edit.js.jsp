@@ -7,10 +7,6 @@ function createAllStudySegmentControls() {
     $$('#epochs ul').each(function(ul) {
         _updateAllStudySegmentsControlVisibility(ul.id)
     })
-
-    $$('.population').each(function(liItem) {
-        displayPopulations(liItem);
-    })
     populationAddButtonCreate()
 }
 
@@ -93,20 +89,6 @@ function deletePeriod(confirmMessageFn, periodId, studySegmentId, link) {
             })
             return true;
         }
-    }
-}
-
-function displayPopulations(liItem) {
-    var studyId = ${param.study}
-    var canNotViewPopulations = liItem.readAttribute('canNotViewPopulations');
-    var populationName = liItem.readAttribute('populationName');
-    var populationAbbreviation = liItem.readAttribute('populationAbbreviation');
-    var populationId = liItem.readAttribute('populationId');
-    if (canNotViewPopulations) {
-        var href ='<c:url value="/pages/cal/template/population"/>?study=' + studyId + "&population=" + populationId;
-        var aLink = Builder.node("a", {href: href});
-        aLink.innerHTML = populationAbbreviation + ': ' + populationName;
-        liItem.appendChild(aLink);
     }
 }
 
