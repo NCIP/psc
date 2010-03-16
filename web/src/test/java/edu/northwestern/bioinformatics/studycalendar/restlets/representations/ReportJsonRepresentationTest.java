@@ -16,7 +16,7 @@ import org.json.JSONObject;
 /**
  * @author Nataliya Shurupova
  */
-public class ReportRepresentationTest extends JsonRepresentationTestCase {
+public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
 
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
@@ -62,24 +62,24 @@ public class ReportRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testFilterKey() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         assertNotNull("Missing key filters", actual.getJSONObject("filters"));
     }
 
     public void testMissingFiltersValues() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(null, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(null, allRows));
         assertNotNull("Missing key filters", actual.getJSONObject("filters"));
         JSONObject filters = actual.getJSONObject("filters");
         assertTrue("Filter is empty", filters.length()==0);
     }
 
     public void testRowsKey() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         assertNotNull("Missing key rows", actual.getJSONArray("rows"));
     }
 
     public void testFilterValue() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         assertNotNull("Activity_type doesn't exist ", actual.getJSONObject("filters").get("activity_type"));
         assertEquals("activity_type has different value ", "activityType", actual.getJSONObject("filters").get("activity_type"));
         assertNotNull("Responsible_user doesn't exist", actual.getJSONObject("filters").get("responsible_user"));
@@ -89,13 +89,13 @@ public class ReportRepresentationTest extends JsonRepresentationTestCase {
     }
 
     public void testRowsValueLength() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         JSONArray rows = actual.getJSONArray("rows");
         assertTrue("Rows values are not = 2 ", rows.length()==2);
     }
 
     public void testRowsFirstValues() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         JSONArray rows = actual.getJSONArray("rows");
         JSONObject first = (JSONObject) rows.get(0);
         assertNotNull("Ideal_date  doesn't exist", first.get("ideal_date"));
@@ -125,7 +125,7 @@ public class ReportRepresentationTest extends JsonRepresentationTestCase {
 
 
     public void testRowsSecondValues() throws Exception {
-        JSONObject actual = writeAndParseObject(new ReportRepresentation(filters, allRows));
+        JSONObject actual = writeAndParseObject(new ReportJsonRepresentation(filters, allRows));
         JSONArray rows = actual.getJSONArray("rows");
         JSONObject first = (JSONObject) rows.get(1);
         assertNotNull("Ideal_date  doesn't exist", first.get("ideal_date"));

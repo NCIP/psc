@@ -8,7 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportJsonRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportCsvRepresentation;
 import org.restlet.data.*;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -32,6 +33,7 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+        getVariants().add(new Variant(PscMetadataService.TEXT_CSV));
     }
 
     @Override
@@ -106,7 +108,10 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ReportRepresentation(getFilters(), allRows);
+            return new ReportJsonRepresentation(getFilters(), allRows);
+        }
+        if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
+            return new ReportCsvRepresentation(allRows, ',');
         }
         return null;
     }

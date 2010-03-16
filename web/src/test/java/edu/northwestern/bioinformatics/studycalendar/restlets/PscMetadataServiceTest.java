@@ -23,7 +23,12 @@ public class PscMetadataServiceTest extends TestCase {
         Metadata metadata = metadataService.getMetadata("ics");
         assertNotNull("must support ics extention", metadata);
         assertEquals("must be of type calendar", MediaType.TEXT_CALENDAR, metadata);
-
-
     }
+
+    public void testCsvConstructor() {
+        Metadata metadata = metadataService.getMetadata("csv");
+        assertNotNull("must support csv extention", metadata);
+        assertEquals("must be of type calendar", PscMetadataService.TEXT_CSV, metadata);
+    }
+
 }

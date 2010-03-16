@@ -12,9 +12,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.data.Preference;
+import org.restlet.data.*;
 import java.util.*;
 
 /**
@@ -70,7 +68,6 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         rows.add(row2);
     }
 
-
     @Override
     @SuppressWarnings({ "unchecked" })
     protected ReportsResource createAuthorizedResource() {
@@ -83,6 +80,26 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
     public void testGetAllowed() throws Exception {
         assertAllowedMethods("GET");
+    }
+
+    public void test200ForSupportedCSVMediaType() throws Exception {
+        FilterParameters.STATE.putIn(request, "1");
+        filters = getResource().getFilters();
+        expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
+        request.getResourceRef().addQueryParameter("state", "1");
+        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(PscMetadataService.TEXT_CSV)));
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void test200ForSupportedJSONMediaType() throws Exception {
+        FilterParameters.STATE.putIn(request, "1");
+        filters = getResource().getFilters();
+        expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
+        request.getResourceRef().addQueryParameter("state", "1");
+        request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(MediaType.APPLICATION_JSON)));
+        doGet();
+        assertResponseStatus(Status.SUCCESS_OK);
     }
 
     public void testGetFilterForRandOfDates() throws Exception {

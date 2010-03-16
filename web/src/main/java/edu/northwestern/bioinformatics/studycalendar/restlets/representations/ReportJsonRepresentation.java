@@ -10,11 +10,11 @@ import org.codehaus.jackson.JsonGenerator;
 /**
  * @author Nataliya Shurupova
  */
-public class ReportRepresentation  extends StreamingJsonRepresentation  {
+public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
 
-    public ReportRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows) {
+    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows) {
         this.filters = filters;
         this.allRows = allRows;
     }
