@@ -4,10 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityPropertyDao;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Jalpa Patel
