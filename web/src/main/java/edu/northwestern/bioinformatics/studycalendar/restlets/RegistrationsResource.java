@@ -5,9 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.*;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class RegistrationsResource extends StudySiteCollectionResource<Registration> {
     private SubjectService subjectService;
-    private SubjectDao subjectDao;
+    private RegistrationService registrationService;
     private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer;
 
     @Override
@@ -40,6 +40,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
 
     @Override
     protected String acceptValue(Registration value) throws ResourceException {
+        registrationService.resolveRegistration(value);
         if (value.getSubjectCoordinator() == null) {
             Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
             value.setSubjectCoordinator((User) auth.getPrincipal());
@@ -66,8 +67,8 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     }
 
     @Required
-    public void setSubjectDao(SubjectDao subjectDao) {
-        this.subjectDao = subjectDao;
+    public void setRegistrationService(RegistrationService registrationService) {
+        this.registrationService = registrationService;
     }
 
     @Required

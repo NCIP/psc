@@ -2,11 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -35,9 +35,9 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     private StudySubjectAssignment ssa;
 
     private StudyDao studyDao;
-    private SubjectDao subjectDao;
     private SiteDao siteDao;
     private SubjectService subjectService;
+    private RegistrationService registrationService;
     private CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment> assignmentSerializerStub;
 
     @Override
@@ -51,12 +51,12 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         existedSubject.setPersonId("123");
 
         studyDao = registerDaoMockFor(StudyDao.class);
-        subjectDao = registerDaoMockFor(SubjectDao.class);
         ssa = createAssignment();
         ssa.setStudySite(createStudySite(study, site));
         ssa.setSubject(existedSubject);
         siteDao = registerDaoMockFor(SiteDao.class);
         subjectService = registerMockFor(SubjectService.class);
+        registrationService = registerMockFor(RegistrationService.class);
         assignmentSerializerStub = new CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment>();
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
@@ -70,7 +70,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setSubjectService(subjectService);
-        res.setSubjectDao(subjectDao);
+        res.setRegistrationService(registrationService);
         res.setXmlSerializer(xmlSerializer);
         return res;
     }
@@ -155,6 +155,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
+        expectResolvedRegistration(posted);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, null, posted.getSubjectCoordinator())).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
@@ -178,6 +179,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
+        expectResolvedRegistration(posted);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, null, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
@@ -200,6 +202,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
+        expectResolvedRegistration(posted);
         expect(subjectService.assignSubject(existedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, null, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
@@ -221,7 +224,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         posted.setSubjectCoordinator(subjCoord);
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
-
+        expectResolvedRegistration(posted);
         doPost();
         assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
@@ -235,5 +238,9 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER)).andReturn(expectedStudy);
         expect(siteDao.getByAssignedIdentifier(SITE_NAME)).andReturn(expectedSite);
+    }
+
+    private void expectResolvedRegistration(Registration registration) {
+        expect(registrationService.resolveRegistration(registration)).andReturn(registration);
     }
 }

@@ -67,6 +67,10 @@
         <property name="activityService" ref="activityService"/>
     </bean>
 
+     <bean id="registrationService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.RegistrationService">
+    </bean>
+
     <!--shceduling-->
 
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">

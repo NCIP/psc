@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT;
@@ -14,7 +13,6 @@ import java.util.Date;
  * @author John Dzak
  */
 public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Subject> {
-    private SubjectService subjectService;
 
     public Element createElement(Subject subject) {
         Element elt = SUBJECT.create();
@@ -33,11 +31,8 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
         Date birthDate = SUBJECT_BIRTH_DATE.fromDate(element);
         String gender = SUBJECT_GENDER.from(element);
 
-        Subject searchCriteria = createSubject(personId, firstName, lastName, birthDate, gender);
-        Subject searchResult = subjectService.findSubject(searchCriteria);
-
-        return (searchResult != null) ? searchResult : searchCriteria;
-
+        Subject subject = createSubject(personId, firstName, lastName, birthDate, gender);
+        return subject;
     }
 
 
@@ -49,10 +44,5 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
         subject.setDateOfBirth(birthDate);
         subject.setGender(Gender.getByCode(gender));
         return subject;
-    }
-
-    ////// Bean Setters
-    public void setSubjectService(SubjectService subjectService) {
-        this.subjectService = subjectService;
     }
 }

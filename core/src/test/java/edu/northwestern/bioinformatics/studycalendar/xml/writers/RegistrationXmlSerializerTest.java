@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
@@ -21,9 +19,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private RegistrationXmlSerializer serializer;
     private StudySegment segment;
     private Date date;
-    private StudySegmentDao studySegmentDao;
     private User subjCoord;
-    private UserDao userDao;
     private SubjectXmlSerializer subjectSerializer;
     private Subject subject;
     private String dateString;
@@ -32,14 +28,9 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-
-        userDao = registerDaoMockFor(UserDao.class);
-        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         subjectSerializer = registerMockFor(SubjectXmlSerializer.class);
 
         serializer = new RegistrationXmlSerializer();
-        serializer.setStudySegmentDao(studySegmentDao);
-        serializer.setUserDao(userDao);
         serializer.setSubjectXmlSerializer(subjectSerializer);
 
         segment = setGridId("grid0", new StudySegment());
@@ -53,19 +44,17 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElement() {
-        expect(studySegmentDao.getByGridId("grid0")).andReturn(segment);
-        expect(userDao.getByName("Sam the Subject Coord")).andReturn(subjCoord);
         expectReadSubjectElement();
         replayMocks();
 
         Registration actual = serializer.readElement(element);
         verifyMocks();
 
-        assertSame("Wrong first study segment", segment, actual.getFirstStudySegment());
+        assertEquals("Wrong first study segment", segment, actual.getFirstStudySegment());
         assertSameDay("Dates should be the same", date, actual.getDate());
-        assertSame("Subject Coordinators should be the same", subjCoord, actual.getSubjectCoordinator());
+        assertEquals("Wrong Subject coordinator", subjCoord, actual.getSubjectCoordinator());
         assertEquals("Wrong desired subject assignment id", "12345", actual.getDesiredStudySubjectAssignmentId());
-        assertSame("Subject should be the same", subject,  actual.getSubject());
+        assertEquals("Wrong Subject", subject,  actual.getSubject());
     }
 
     public void testReadElementWhenStudySegmentIsNull() {

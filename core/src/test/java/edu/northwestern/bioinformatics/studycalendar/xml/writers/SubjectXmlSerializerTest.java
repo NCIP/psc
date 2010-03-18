@@ -3,13 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createSubject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
 import org.easymock.EasyMock;
-import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 
 import java.text.ParseException;
@@ -21,16 +19,10 @@ import java.util.Calendar;
 public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SubjectXmlSerializer serializer;
     private Subject subject;
-    private SubjectService subjectService;
 
     protected void setUp() throws Exception {
         super.setUp();
-
-        subjectService = registerMockFor(SubjectService.class);
-
         serializer = new SubjectXmlSerializer();
-        serializer.setSubjectService(subjectService);
-
         subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
     }
 
@@ -44,19 +36,12 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElement() throws ParseException {
-        Subject searchCriteria = createSubject("1111", null, null, null, Gender.MALE);
-        Element element = createElement(searchCriteria);
+        Element element = createElement(subject);
 
-        expectSubjectFoundFromSearchCriteria(searchCriteria);
         replayMocks();
-
         Subject actual = serializer.readElement(element);
-        assertSame("Subjects should be the same", subject, actual);
-    }
-
-    ////// Expect Methods
-    private void expectSubjectFoundFromSearchCriteria(Subject searchCriteria) {
-        expect(subjectService.findSubject(eqSubject(searchCriteria))).andReturn(subject);
+        verifyMocks();
+        assertEquals("Wrong Subject", subject, actual);
     }
 
     ////// Helper Methods

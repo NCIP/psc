@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -17,8 +15,6 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.Date;
 
 public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Registration> {
-    private StudySegmentDao studySegmentDao;
-    private UserDao userDao;
     private SubjectXmlSerializer subjectXmlSerializer;
 
     protected XsdElement rootElement() { return XsdElement.REGISTRATION; }
@@ -41,14 +37,14 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
 
         Subject subject = subjectXmlSerializer.readElement(elt.element(SUBJECT.xmlName()));
 
-        StudySegment segment = studySegmentDao.getByGridId(segmentId);
-        if (segment == null) {
-            throw new StudyCalendarValidationException("Study Segment with grid id %s not found.", segmentId);
-        }
-
-        User subjCoord = (subjCoordName != null) ? userDao.getByName(subjCoordName) : null;
-
+        StudySegment segment = new StudySegment();
+        segment.setGridId(segmentId);
         Registration reg = new Registration();
+        User subjCoord = null;
+        if (subjCoordName != null) {
+          subjCoord = new User();
+          subjCoord.setName(subjCoordName);
+        }
         reg.setSubject(subject);
         reg.setFirstStudySegment(segment);
         reg.setDate(date);
@@ -69,15 +65,6 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
     }
 
     ////// Bean setters
-    @Required
-    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
-        this.studySegmentDao = studySegmentDao;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Required
     public void setSubjectXmlSerializer(SubjectXmlSerializer subjectXmlSerializer) {
