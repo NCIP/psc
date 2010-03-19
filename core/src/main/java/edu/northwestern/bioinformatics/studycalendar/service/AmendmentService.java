@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
@@ -212,6 +213,16 @@ public class AmendmentService {
         }
         updateDevelopmentAmendmentAndSave(studySegment, Remove.create(period));
 
+    }
+
+    public AmendmentApproval resolveAmentmentApproval(AmendmentApproval amendmentApproval, Study study) {
+        Amendment amendment = amendmentDao.getByNaturalKey(amendmentApproval.getAmendment().getNaturalKey(), study);
+        if (amendment == null && study != null) {
+            throw new StudyCalendarValidationException("Amendment '%s' not found for study '%s'.",
+                    amendmentApproval.getAmendment().getNaturalKey(), study.getAssignedIdentifier());
+        }
+        amendmentApproval.setAmendment(amendment);
+        return amendmentApproval;
     }
 
     ////// CONFIGURATION

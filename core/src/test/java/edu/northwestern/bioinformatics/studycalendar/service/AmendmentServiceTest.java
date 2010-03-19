@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
@@ -12,10 +13,7 @@ import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.*;
 
 import static java.util.Calendar.*;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -414,5 +412,41 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         templateDevService.deleteDevelopmentAmendmentOnly(study);
         assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
         verifyMocks();
+    }
+
+    public void testResolveAmendmentApprovalWhenAmendmentFoundForStudy() throws Exception {
+        AmendmentApproval amendmentApproval = createAmendementApproval();
+        Amendment existingAmendment = createAmendment("Amendment1", DateTools.createDate(2010, Calendar.APRIL, 1));
+        existingAmendment.setId(1);
+
+        assertNull(amendmentApproval.getAmendment().getId());
+        expect(amendmentDao.getByNaturalKey(amendmentApproval.getAmendment().getNaturalKey(), study)).andReturn(existingAmendment);
+
+        replayMocks();
+        AmendmentApproval actual = service.resolveAmentmentApproval(amendmentApproval, study);
+        verifyMocks();
+        assertNotNull(actual.getAmendment().getId());
+    }
+
+    public void testResolveAmendmentApprovalWhenAmendmentNotFoundForStudy() throws Exception {
+        study.setAssignedIdentifier("Study");
+        AmendmentApproval amendmentApproval = createAmendementApproval();
+        expect(amendmentDao.getByNaturalKey(amendmentApproval.getAmendment().getNaturalKey(), study)).andReturn(null);
+        replayMocks();
+        try {
+            service.resolveAmentmentApproval(amendmentApproval, study);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Amendment '2010-04-01~Amendment1' not found for study 'Study'.", scve.getMessage());
+        }
+    }
+
+    //Helper Method
+    private AmendmentApproval createAmendementApproval() {
+        AmendmentApproval amendmentApproval = new AmendmentApproval();
+        amendmentApproval.setDate(DateTools.createDate(2010, Calendar.APRIL, 2));
+        Amendment amendment = createAmendment("Amendment1", DateTools.createDate(2010, Calendar.APRIL, 1));
+        amendmentApproval.setAmendment(amendment);
+        return amendmentApproval;
     }
 }

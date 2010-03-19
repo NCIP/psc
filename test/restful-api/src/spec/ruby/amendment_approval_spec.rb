@@ -49,6 +49,18 @@ describe "/amendment_approval" do
         response.xml_elements('//amendment-approval').should have(1).elements
       end
     end
+
+    it "gives 400 if amendment not found for study" do
+      @study2 = PscTest::Fixtures.createSingleEpochStudy("NU481", "Treatment", ["segment_A", "segment_B"].to_java(:String))
+      @amend_date2 = PscTest.createDate(2008, 12, 10)
+      @amendment2 = PscTest::Fixtures.createAmendment("am2", @amend_date2)
+      @study2.amendment = @amendment2
+      application_context['studyService'].save(@study2)
+      @approveNew_xml = psc_xml("amendment-approval", 'amendment' => "2008-12-10~am2", 'date' => "2008-12-11")
+      post "/studies/NU480/sites/site1/approvals", @approveNew_xml, :as => :carla
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+    end
   end
   
   describe "GET" do

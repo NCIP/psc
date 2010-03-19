@@ -2,8 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.lang.StringTools;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -14,6 +18,7 @@ import java.util.Calendar;
  */
 public class ScheduleService {
     private SubjectService subjectService;
+    private StudySegmentDao studySegmentDao;
 
     /**
      * Shifts the given event by the given number of days, if the event is outstanding.
@@ -56,10 +61,25 @@ public class ScheduleService {
         return new StringBuilder("State change").append(" in revision ").append(source.getDisplayName()).toString();
     }
 
+    public NextScheduledStudySegment resolveNextScheduledStudySegment(NextScheduledStudySegment scheduled){
+        StudySegment segment = studySegmentDao.getByGridId(scheduled.getStudySegment().getGridId());
+        if (segment == null) {
+            throw new StudyCalendarValidationException("Segment with grid Identifier %s not found."
+                    , scheduled.getStudySegment().getGridId());
+        }
+        scheduled.setStudySegment(segment);
+        return scheduled;
+    }
+
     ////// CONFIGURATION
 
     @Required
     public void setSubjectService(SubjectService subjectService) {
         this.subjectService = subjectService;
+    }
+
+    @Required
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 }

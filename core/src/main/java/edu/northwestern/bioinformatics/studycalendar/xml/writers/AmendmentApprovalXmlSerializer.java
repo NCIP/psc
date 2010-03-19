@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
 
@@ -17,8 +16,6 @@ import java.util.Date;
  */
 public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<AmendmentApproval> {
     private Study study;
-
-    private AmendmentDao amendmentDao;
 
     @Override
     protected XsdElement rootElement() {
@@ -53,23 +50,20 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
         final String amendmentIdentifier = XsdAttribute.AMENDMENT_APPROVAL_AMENDMENT.from(element);
 
         if (amendmentIdentifier!= null) {
-
             Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
             AmendmentApproval amendmentApproval = new AmendmentApproval();
-            amendmentApproval.setAmendment(amendmentDao.getByNaturalKey(amendmentIdentifier, study));
+            Amendment amendment =  new Amendment();
+            Amendment.Key key= Amendment.decomposeNaturalKey(amendmentIdentifier);
+            amendment.setName(key.getName());
+            amendment.setDate(key.getDate());
+            amendmentApproval.setAmendment(amendment);
             amendmentApproval.setDate(date);
-
             return amendmentApproval;
 
         } else {
             throw new StudyCalendarValidationException("amendment element can not be null");
 
         }
-    }
-
-    @Required
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
     }
 
     public void setStudy(Study study) {

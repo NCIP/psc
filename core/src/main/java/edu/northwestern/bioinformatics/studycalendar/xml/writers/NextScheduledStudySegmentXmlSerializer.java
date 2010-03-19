@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -9,7 +8,6 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
 
@@ -17,7 +15,6 @@ import java.util.Date;
  * @author John Dzak
  */
 public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<NextScheduledStudySegment> {
-    private StudySegmentDao studySegmentDao;
     private final String PER_PROTOCOL = "per-protocol";
     private final String IMMEDIATE = "immediate";
 
@@ -38,11 +35,9 @@ public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalenda
         }
 
         Date startDate = NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE.fromDate(elt);
-
-        StudySegment segment = studySegmentDao.getByGridId(NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID.from(elt));
-        if (segment == null) {
-            throw new StudyCalendarValidationException("The study segment specified could not be found");
-        }
+        String segmentId = NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID.from(elt);
+        StudySegment segment = new StudySegment();
+        segment.setGridId(segmentId);
 
         NextStudySegmentMode mode;
         if (PER_PROTOCOL.equals(NEXT_STUDY_SEGMENT_SCHEDULE_MODE.from(elt))) {
@@ -60,10 +55,5 @@ public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalenda
         scheduled.setMode(mode);
 
         return scheduled;
-    }
-
-    @Required
-    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
-        this.studySegmentDao = studySegmentDao;
     }
 }

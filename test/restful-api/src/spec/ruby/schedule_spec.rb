@@ -106,7 +106,14 @@ describe "/schedule" do
       response.status_code.should == 400
       response.status_message.should == "Bad Request"
     end
-        
-  end
-          
+
+    it "gives 400 if studySegment with gridId doesn't exists in system" do
+      @next_assignment2_xml = psc_xml("next-scheduled-study-segment", 'start-day' => 2, 'start-date' => "2008-12-27",
+      'study-segment-id' => "unknownSegment", 'mode' => "immediate")
+      post "/studies/NU480/schedules/assignment1", @next_assignment2_xml, :as => :juno
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+      response.entity =~ %r(Segment with grid Identifier unknownSegment not found.)
+    end
+  end     
 end

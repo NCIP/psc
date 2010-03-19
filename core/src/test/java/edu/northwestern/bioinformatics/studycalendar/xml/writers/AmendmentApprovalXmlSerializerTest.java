@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -15,7 +14,6 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCal
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -33,19 +31,15 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
 
     private AmendmentApproval amendmentApproval;
     private Study study;
-
-    private AmendmentDao amendmentDao;
+    private Amendment amendment;
 
     final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        amendmentDao = registerDaoMockFor(AmendmentDao.class);
-
         serializer = new AmendmentApprovalXmlSerializer();
-
-        Amendment amendment = new Amendment();
+        amendment = new Amendment();
         amendment.setMandatory(true);
         amendment.setName("Amendment 1");
         amendment.setDate(createDate(2008, Calendar.JANUARY, 2));
@@ -56,8 +50,6 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         Date currentDate = new Date();
         studySite.approveAmendment(amendment, currentDate);
         amendmentApproval = studySite.getAmendmentApprovals().get(0);
-
-        serializer.setAmendmentDao(amendmentDao);
         serializer.setStudy(study);
     }
 
@@ -77,15 +69,13 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
     }
 
     public void testReadElement() {
-        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1", study)).andReturn(amendmentApproval.getAmendment());
-
         replayMocks();
         final AmendmentApproval expectedAmendmentApproval = serializer.readElement(serializer.createElement(amendmentApproval, true));
         verifyMocks();
-
         assertEquals(formatter.format(amendmentApproval.getDate()), formatter.format(expectedAmendmentApproval.getDate()));
+        assertSame("Amendment date is not same", amendment.getDate(), amendmentApproval.getAmendment().getDate());
+        assertEquals("Amendment name is not same", amendment.getName(), amendmentApproval.getAmendment().getName());
     }
-
 
     public void testCreateElementForInvalidValues() {
         try {
@@ -96,10 +86,7 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         }
     }
 
-
     public void testCreateDocumentString() throws Exception {
-
-
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<amendment-approvals ");

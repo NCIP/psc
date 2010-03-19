@@ -43,7 +43,21 @@ describe "/study-site-link" do
       put "/studies/NU000/sites/IL036", @invalid_study_valid_site_link_xml, :as => :juno
       response.status_code.should == 404
       response.status_message.should == "Not Found"
-    end  
+    end
+
+    it "gives 400 if study from xml is not exists in system" do
+      put "/studies/NU480/sites/IL036", @invalid_study_valid_site_link_xml, :as => :juno
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+      response.entity =~ %r(Study 'NU000' not found. Please define a study that exists.)
+    end
+
+    it "gives 400 if site from xml is not exists in system" do
+      put "/studies/NU480/sites/IL036", @valid_study_invalid_site_link_xml, :as => :juno
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+      response.entity =~ %r(Site 'AAAA12' not found. Please define a site that exists.)
+    end
         
   end
   

@@ -5,11 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -38,10 +36,15 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
 
     @Override
     protected String acceptValue(AmendmentApproval amendmentApproval) throws ResourceException {
-        amendmentService.approve(getStudySite(), amendmentApproval);
-        return String.format("studies/%s/sites/%s/approvals/%s",
+        try {
+            amendmentService.resolveAmentmentApproval(amendmentApproval, getStudy());
+            amendmentService.approve(getStudySite(), amendmentApproval);
+            return String.format("studies/%s/sites/%s/approvals/%s",
                 getStudySite().getStudy().getNaturalKey(), getStudySite().getSite().getNaturalKey(),
                 amendmentApproval.getAmendment().getNaturalKey());
+        } catch (StudyCalendarValidationException scve) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
+        }
     }
 
     ////// CONFIGURATION

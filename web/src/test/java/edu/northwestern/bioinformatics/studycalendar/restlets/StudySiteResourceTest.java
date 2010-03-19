@@ -116,6 +116,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         expectRequestHasIgnoredEntity();
         expectResolvedStudyAndSite(study, site);
+        expect(studySiteService.resolveStudySite(unlinkedSS)).andReturn(unlinkedSS);
         expectDeserializeEntity(unlinkedSS);
         expectSaveNewStudySite(unlinkedSS);
         expectObjectXmlized(unlinkedSS);

@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -66,8 +67,13 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     public void store(StudySite studySite) throws ResourceException {
-        if (getRequestedObject() == null) {
-            studySiteDao.save(studySite);
+        try {
+            if (getRequestedObject() == null) {
+                StudySite resolvedStudySite = studySiteService.resolveStudySite(studySite);
+                studySiteDao.save(resolvedStudySite);
+            }
+        } catch (StudyCalendarValidationException scve) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
         }
     }
 

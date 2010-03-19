@@ -1,22 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.WeekdayBlackout;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -30,6 +29,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     private ScheduledStudySegment scheduledStudySegment;
     private Site site;
     private Amendment amendment;
+    private StudySegmentDao studySegmentDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -52,6 +52,9 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         // be moved into SS.
         subjectService = new SubjectService();
         service.setSubjectService(subjectService);
+
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
+        service.setStudySegmentDao(studySegmentDao);
     }
 
     public void testReviseDateForScheduledScheduledActivity() throws Exception {
@@ -135,5 +138,44 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertEquals(ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
         assertDayOfDate(2007, Calendar.OCTOBER, 5, event.getActualDate());
         assertEquals(3, event.getAllStates().size());
+    }
+
+    public void testResolveNextScheduledStudySegmentWhenStudySegmentFound() throws Exception {
+        NextScheduledStudySegment scheduled = createNextScheduledStudySegment();
+        StudySegment existingSegment = setGridId("segment-grid0", new StudySegment());
+        existingSegment.setId(1);
+
+        assertNull("StudySegment is newly created",scheduled.getStudySegment().getId());
+        expect(studySegmentDao.getByGridId("segment-grid0")).andReturn(existingSegment);
+
+        replayMocks();
+        NextScheduledStudySegment actual = service.resolveNextScheduledStudySegment(scheduled);
+        verifyMocks();
+
+        assertNotNull("Existing StudySegment is not set", actual.getStudySegment().getId());
+        assertSame("StudySegment is not same", existingSegment, actual.getStudySegment());
+    }
+
+    public void testResolveNextScheduledStudySegmentWhenNoStudySegmentFound() throws Exception {
+        NextScheduledStudySegment scheduled = createNextScheduledStudySegment();
+        expect(studySegmentDao.getByGridId("segment-grid0")).andReturn(null);
+
+        replayMocks();
+        try {
+            service.resolveNextScheduledStudySegment(scheduled);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Segment with grid Identifier segment-grid0 not found.", scve.getMessage());
+        }
+    }
+
+    //Helper Method
+    private NextScheduledStudySegment createNextScheduledStudySegment() {
+        NextScheduledStudySegment scheduledSegment = new NextScheduledStudySegment();
+        scheduledSegment.setStartDay(2);
+        scheduledSegment.setStartDate(DateTools.createDate(2010, Calendar.APRIL, 24));
+        scheduledSegment.setStudySegment(setGridId("segment-grid0", new StudySegment()));
+        scheduledSegment.setMode(NextStudySegmentMode.PER_PROTOCOL);
+        return scheduledSegment;
     }
 }

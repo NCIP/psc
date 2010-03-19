@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
@@ -37,6 +38,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     private SubjectService subjectService;
     private TemplateService templateService;
     private Study study;
+    private ScheduleService scheduleService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -92,6 +94,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
             NextScheduledStudySegment scheduled;
             try {
                 scheduled = nextScheduledStudySegmentSerializer.readDocument(entity.getStream());
+                scheduleService.resolveNextScheduledStudySegment(scheduled);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
@@ -152,5 +155,10 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setScheduleService(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 }

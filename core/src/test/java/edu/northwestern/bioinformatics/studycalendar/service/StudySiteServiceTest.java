@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -280,6 +281,50 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, nu_nu123);
         assertContains(actual, nu_all999);
         assertContains(actual, nu_wo222);
+    }
+
+    public void testResolveStudySiteWhenStudyNotFound() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(null);
+        replayMocks();
+        try {
+            service.resolveStudySite(nu_nu123);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Study 'NU123' not found. Please define a study that exists.", scve.getMessage());
+        }
+    }
+
+    public void testResolveStudySiteWhenSiteNotFound() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
+        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(null);
+        replayMocks();
+        try {
+            service.resolveStudySite(nu_nu123);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Site 'Northwestern' not found. Please define a site that exists.", scve.getMessage());
+        }
+    }
+
+    public void testResolveStudySiteWhenNewStudySite() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
+        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(nu);
+        StudySite newStudySite = new StudySite(nu123, nu);
+        replayMocks();
+        StudySite actual = service.resolveStudySite(newStudySite);
+        verifyMocks();
+
+        assertSame("Study is not same", nu123, actual.getStudy());
+        assertSame("Site is not same", nu, actual.getSite());
+    }
+    
+    public void testResolveStudySiteWhenExistingStudySite() throws Exception {
+        expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
+        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(nu);
+        replayMocks();
+        StudySite actual = service.resolveStudySite(nu_nu123);
+        verifyMocks();
+        assertSame("StudySite is not same", nu_nu123, actual);
     }
 
     ////// HELPER METHODS

@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
@@ -42,6 +43,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     private SubjectService subjectService;
     private TemplateService templateService;
     private Study study;
+    private ScheduleService scheduleService;
 
     @Override
     protected void setUp() throws Exception {
@@ -50,6 +52,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         serializer = registerMockFor(ScheduledCalendarXmlSerializer.class);
         subjectService = registerMockFor(SubjectService.class);
         templateService = registerMockFor(TemplateService.class);
+        scheduleService = registerMockFor(ScheduleService.class);
         scheduledSegmentSerializer = registerMockFor(ScheduledStudySegmentXmlSerializer.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
@@ -77,6 +80,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         resource.setStudyDao(studyDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
         resource.setNextScheduledStudySegmentXmlSerializer(nextScheduledStudySegmentSerializer);
+        resource.setScheduleService(scheduleService);
         return resource;
     }
 
@@ -134,6 +138,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         expect(templateService.findStudy(studySegment)).andReturn(study);
         expectResolvedSubjectAssignment();
         expectReadXmlFromRequestAs(nextSgmtSchdScheduled);
+        expectResolveNextScheduledStudySegment(nextSgmtSchdScheduled);
         expect(subjectService.scheduleStudySegment(assigment, nextSgmtSchdScheduled.getStudySegment(), nextSgmtSchdScheduled.getStartDate(), nextSgmtSchdScheduled.getMode()))
                 .andReturn(schSegment);
         expectObjectXmlized(schSegment);
@@ -151,6 +156,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         expect(templateService.findStudy(studySegment)).andReturn(new Study());
         expectResolvedSubjectAssignment();
         expectReadXmlFromRequestAs(nextSgmtSchdScheduled);
+        expectResolveNextScheduledStudySegment(nextSgmtSchdScheduled);
         doPost();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
@@ -175,6 +181,10 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
 
     private void expectSerializeScheduledCalendar() {
         expect(serializer.createDocumentString(calendar)).andReturn(MOCK_XML);
+    }
+
+    private void expectResolveNextScheduledStudySegment(NextScheduledStudySegment nextSgmtSchdScheduled){
+        expect(scheduleService.resolveNextScheduledStudySegment(nextSgmtSchdScheduled)).andReturn(nextSgmtSchdScheduled);
     }
 
     ////// Helper methods

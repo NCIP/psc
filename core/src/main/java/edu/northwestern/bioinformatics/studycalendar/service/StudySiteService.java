@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
@@ -339,6 +340,27 @@ public class StudySiteService {
             }
         }
         return null;
+    }
+
+    public StudySite resolveStudySite(StudySite studySite) {
+        Study study = studyDao.getByAssignedIdentifier(studySite.getStudy().getAssignedIdentifier());
+        if (study == null) {
+          throw new StudyCalendarValidationException("Study '%s' not found. Please define a study that exists.", studySite.getStudy().getAssignedIdentifier());
+        }
+
+        Site site  = siteService.getByAssignedIdentifier(studySite.getSite().getAssignedIdentifier());
+        if (site == null) {
+          throw new StudyCalendarValidationException("Site '%s' not found. Please define a site that exists.", studySite.getSite().getAssignedIdentifier());
+        }
+
+        StudySite existingStudySite = study.getStudySite(site);
+        if (existingStudySite != null) {
+            return existingStudySite;
+        } else {
+            studySite.setStudy(study);
+            studySite.setSite(site);
+            return studySite;
+        }
     }
 
     ///// Collect Helpers
