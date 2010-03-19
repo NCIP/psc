@@ -41,7 +41,7 @@ public class SiteConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         assertEquals("Iowa Lutheran Hospital", refreshed.getName());
         assertNotNull("Could not find test site", refreshed);
         assertNotNull("Test site not refreshed", refreshed.getLastRefresh());
-        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 500);
+        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 5000);
     }
 
     ////// HELPERS

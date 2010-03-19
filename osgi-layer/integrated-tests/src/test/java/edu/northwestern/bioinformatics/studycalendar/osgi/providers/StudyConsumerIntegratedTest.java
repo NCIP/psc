@@ -43,7 +43,7 @@ public class StudyConsumerIntegratedTest extends OsgiLayerIntegratedTestCase {
         assertEquals("NCT00003641", refreshed.getAssignedIdentifier());
         assertNotNull("Could not find test study", refreshed);
         assertNotNull("Test study not refreshed", refreshed.getLastRefresh());
-        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 2000);
+        MoreJUnitAssertions.assertDatesClose("Not refreshed recently", new Date(), refreshed.getLastRefresh(), 10000);
     }
 
     ////// HELPERS
