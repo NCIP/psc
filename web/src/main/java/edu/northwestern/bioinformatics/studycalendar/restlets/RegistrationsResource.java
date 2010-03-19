@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.*;
@@ -40,23 +41,27 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
 
     @Override
     protected String acceptValue(Registration value) throws ResourceException {
-        registrationService.resolveRegistration(value);
-        if (value.getSubjectCoordinator() == null) {
-            Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
-            value.setSubjectCoordinator((User) auth.getPrincipal());
-        }
-        for (StudySite studySite : value.getSubjectCoordinator().getUserRole(Role.SUBJECT_COORDINATOR).getStudySites() ) {
-           if (studySite.equals(getStudySite())) {
-               StudySubjectAssignment assigned = subjectService.assignSubject(
-                   value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
-                   value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
-               return String.format("studies/%s/schedules/%s",
-                   Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
-                   Reference.encode(assigned.getGridId()));
+        try {
+            registrationService.resolveRegistration(value);
+            if (value.getSubjectCoordinator() == null) {
+                Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
+                value.setSubjectCoordinator((User) auth.getPrincipal());
             }
-        }
-        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Study " + getStudy().getAssignedIdentifier()
+            for (StudySite studySite : value.getSubjectCoordinator().getUserRole(Role.SUBJECT_COORDINATOR).getStudySites() ) {
+                if (studySite.equals(getStudySite())) {
+                    StudySubjectAssignment assigned = subjectService.assignSubject(
+                    value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
+                    value.getDesiredStudySubjectAssignmentId(), null, value.getSubjectCoordinator());
+                    return String.format("studies/%s/schedules/%s",
+                        Reference.encode(getStudySite().getStudy().getAssignedIdentifier()),
+                        Reference.encode(assigned.getGridId()));
+                }
+            }
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Study " + getStudy().getAssignedIdentifier()
                    +" is not visible to the subject coordinator " +value.getSubjectCoordinator().getDisplayName());
+        } catch (StudyCalendarValidationException scve) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
+        }
     }
 
     ////// CONFIGURATION

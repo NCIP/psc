@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -25,7 +25,7 @@ public class RegistrationService {
 
         StudySegment segment = studySegmentDao.getByGridId(registration.getFirstStudySegment().getGridId());
         if (segment == null) {
-            throw new StudyCalendarSystemException("Study Segment with grid id %s not found.",
+            throw new StudyCalendarValidationException("Study Segment with grid id %s not found.",
                     registration.getFirstStudySegment().getGridId());
         }
         registration.setFirstStudySegment(segment);

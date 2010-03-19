@@ -72,6 +72,22 @@ describe "/subject_assignments" do
       response.status_message.should == "Created"
       response.meta['location'].should =~ %r(studies/NU480/schedules/[^/]+)
     end
+
+    it "gives 400 if studySegment with gridId from xml not found in system" do
+      application_context['templateService'].assignTemplateToSubjectCoordinator(@nu480, pittsburgh, erin)
+      @wrong_subject_registration_xml = psc_xml(
+          "registration", 'first-study-segment-id' => "unknownSegment", 'date' => "2008-12-27",
+          'subject-coordinator-name' => "erin"
+      ) { |subject|
+          subject.tag!('subject',
+                'first-name' => "Andre", 'last-name' => "Suzuki",
+                'birth-date' => "1982-03-12", 'person-id' => "ID006", 'gender'=> "Male")
+      }
+      post "/studies/NU480/sites/PA015/subject-assignments", @wrong_subject_registration_xml, :as => :erin
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+      response.entity =~ %r(Study Segment with grid id unknownSegment not found.)
+    end
   end
           
 end

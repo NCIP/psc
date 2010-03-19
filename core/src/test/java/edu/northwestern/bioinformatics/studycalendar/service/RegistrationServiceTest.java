@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import static java.util.Calendar.JANUARY;
 
@@ -60,8 +60,8 @@ public class RegistrationServiceTest extends StudyCalendarTestCase {
         try {
             service.resolveRegistration(registration);
             fail("Exception not thrown");
-        } catch (StudyCalendarSystemException scse) {
-            assertEquals("Study Segment with grid id segment1 not found.", scse.getMessage());
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Study Segment with grid id segment1 not found.", scve.getMessage());
         }
     }
 
