@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
 
     /**
-     * Does nothing as we are already  commiting Registraiton message by default.
+     * Does nothing as we are already committing Registration message by default.
      *
      * @param registration
      * @throws RemoteException
@@ -84,62 +85,106 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     }
 
     public void rollback(final Registration registration) throws RemoteException, InvalidRegistrationException {
+    	//Get the study
+    	String ccIdentifier = findCoordinatingCenterIdentifier(registration);
+    	Study study = fetchStudy(ccIdentifier);
+    	if (study == null) {
+    		String message = "Study identified by Coordinating Center Identifier '" + ccIdentifier + "' doesn't exist";
+    		throw getInvalidRegistrationException(message);
+    	}
+    	//Get the studySite
+    	String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
+    	StudySite studySite = findStudySite(study, siteNCICode);
+    	if (studySite == null) {
+    		siteNCICode = registration.getStudySite().getHealthcareSite(0).getGridId();
+    		if((siteNCICode != null) && !(siteNCICode.equals(""))){
+    			studySite = findStudySite(study, siteNCICode);
+    		}
+    		if (studySite == null){
+    			String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
+    			+ "' is not associated to a site identified by NCI code :'" + siteNCICode + "'";
+    			throw getInvalidRegistrationException(message);
+    		}
+    	}
+    	//Get the Subject
+    	String mrn = findMedicalRecordNumber(registration.getParticipant());
+    	Subject subject = fetchCommitedSubject(mrn);
+    	if (subject == null) {
+    		String message = "Exception while rollback subject..no subject found with given identifier: " + mrn;
+    		throw getInvalidRegistrationException(message);
+    	}
+    	try {
+    		//check if subject was created by the grid service or not
+    		boolean checkIfSubjectWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(subject.getClass(), 
+    				subject.getId(), registrationConsumerGridServiceUrl);
 
-        String mrn = findMedicalRecordNumber(registration.getParticipant());
-        Subject subject = fetchCommitedSubject(mrn);
-        if (subject == null) {
-            String message = "Exception while rollback subject..no subject found with given identifier:" + mrn;
-            throw getInvalidRegistrationException(message);
-        }
-        try {
-            //check if subject was created by the grid service or not
+    		//check if this subject was created one minute before or not
+    		Calendar calendar = Calendar.getInstance();
+    		Integer rollbackTime = 1;
+    		try {
+    			rollbackTime = Integer.parseInt(rollbackTimeOut);
+    		} catch (NumberFormatException e) {
+    			logger.error(String.format("error parsing value of rollback time out. Value of rollback time out %s must be integer.", rollbackTimeOut));
+    		}
 
-            boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(subject.getClass(), subject.getId(), registrationConsumerGridServiceUrl);
+    		boolean checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
+    		checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, rollbackTime);
+    		
+    		//this Subject got created by the previous registration message. so delete it.
+    		if (checkIfSubjectWasCreatedByGridService && checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime) {
+    			logger.info("Subject (id:" + subject.getId() + ") was created by the grid service url:" + registrationConsumerGridServiceUrl);
+    			logger.info(String.format("Subject was created %s minute before the current time:%s", rollbackTime, calendar.getTime().toString()));
+    			logger.info("So deleting the subject: " + subject.getId());
+    			subjectDao.delete(subject);         
+    		}else{
+    			removeStudyAssignments(subject, studySite, rollbackTime);
+    		}
+    	} catch (Exception exception) {
+    		String message = "Error while rollback, " + exception.getMessage();
+    		throw getRegistrationConsumerException(message);
 
-            if (!checkIfEntityWasCreatedByGridService) {
-                logger.info("Subject was not created by the grid service url:" + registrationConsumerGridServiceUrl + " so can not rollback this study:" + subject.getId());
-                return;
-            }
-            logger.info("Subject (id:" + subject.getId() + ") was created by the grid service url:" + registrationConsumerGridServiceUrl);
+    	}
+    }
+    
+    /**
+     * Removes subject assignments, created one minute before current time by grid 
+     * @param subject
+     * @param studySite
+     * @param rollbackTime
+     */
+    private void removeStudyAssignments(Subject subject, StudySite studySite, Integer rollbackTime){
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	List<StudySubjectAssignment> assignmentList = subject.getAssignments();
+    	
+    	//Check each subject assignment, Delete SubjectAssignment created by previous registration message(based on Subject and StudySite)
+		//if the SujectAssignment was created one minute before
+		List<StudySubjectAssignment> tempStudySubjectAssignmentList = new ArrayList<StudySubjectAssignment>();
+		for (StudySubjectAssignment studySubjectAssignment: assignmentList){
+			if(studySubjectAssignment.getStudySite().getId().equals(studySite.getId())){
+				boolean checkIfAssignmentWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
+						checkIfEntityWasCreatedMinutesBeforeSpecificDate(studySubjectAssignment.getClass(), 
+						studySubjectAssignment.getId(), calendar, rollbackTime);
+				boolean checkIfAssignmentWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(studySubjectAssignment.getClass(), studySubjectAssignment.getId(), registrationConsumerGridServiceUrl);
 
-            //check if this subject was created one minute before or not
-
-
-            Calendar calendar = Calendar.getInstance();
-            Integer rollbackTime = 1;
-            try {
-                rollbackTime = Integer.parseInt(rollbackTimeOut);
-            } catch (NumberFormatException e) {
-                logger.error(String.format("error parsing value of rollback time out. Value of rollback time out %s must be integer.", rollbackTimeOut));
-            }
-            boolean checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
-                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, rollbackTime);
-            if (!checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime) {
-                logger.info(String.format("Subject was not created %s minute before the current time:%s so can not rollback this subject:%s",
-                        rollbackTime, calendar.getTime().toString(), subject.getId()));
-                return;
-
-            }
-            logger.info(String.format("Subject was created %s minute before the current time:%s", rollbackTime, calendar.getTime().toString()));
-            List<StudySubjectAssignment> assignmentList = subject.getAssignments();
-            if (assignmentList.size() > 1) {
-                logger.info("Subject has more than one assignments so deleting the assignments only for the subject: " + subject.getId());
-                subject.getAssignments().clear();
-                subjectDao.save(subject);
-
-            } else if (!assignmentList.isEmpty() && subject.getAssignments().size() == 1) {
-                //this participant got created by the previous registration message. so delete it.
-                logger.info("Subject has either only one assignments so deleting the subject: " + subject.getId());
-                subjectDao.delete(subject);
-            }
-        } catch (Exception exception) {
-
-            String message = "Error while rollback, " + exception.getMessage();
-            throw getRegistrationConsumerException(message);
-
-        }
-
-
+				if (checkIfAssignmentWasCreatedByGridService && checkIfAssignmentWasCreatedOneMinuteBeforeCurrentTime){
+					tempStudySubjectAssignmentList.add(studySubjectAssignment);
+				}
+			}
+		}
+		if(tempStudySubjectAssignmentList.size() > 0){
+			logger.info(String.format("SubjectAssignment was created %s minute before the current time:%s", rollbackTime, calendar.getTime().toString()));
+			logger.info(String.format("So deleting subjectAssignment for Subject: " + subject.getId()
+					+ "and StudySite: " + studySite.getId()));
+			for(StudySubjectAssignment studySubjectAssignmentObj: tempStudySubjectAssignmentList){
+				assignmentList.remove(studySubjectAssignmentObj);
+			}
+			subjectDao.save(subject);
+		}else{
+			logger.info(String.format("Subject/ SubjectAssignment was not created %s minute " +
+					"before the current time:%s so can not rollback this registration:%s",
+					rollbackTime, calendar.getTime().toString(), subject.getId())); 
+		}
     }
 
     /*
