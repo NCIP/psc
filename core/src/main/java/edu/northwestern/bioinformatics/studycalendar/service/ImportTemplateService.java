@@ -48,8 +48,6 @@ public class ImportTemplateService {
         Document document = studyXmlSerializer.deserializeDocument(stream);
         Element element = document.getRootElement();
 
-        studyXmlSerializer.validate(element);
-
         if (existingStudy != null) {
             studyPreProcessor.process(existingStudy);
         } else {

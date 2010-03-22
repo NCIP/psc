@@ -410,7 +410,6 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
                 return developmentAmendmentSerializer;
             }
         };
-        studyXmlserializer.setStudyService(studyService);
 
         populationSerializer = new PopulationXmlSerializer();
         plannedCalendarSerializer = new PlannedCalendarXmlSerializer();
