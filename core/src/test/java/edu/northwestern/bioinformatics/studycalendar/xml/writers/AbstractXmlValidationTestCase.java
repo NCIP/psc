@@ -26,7 +26,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalenda
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import org.dom4j.Element;
 import org.springframework.beans.factory.BeanFactory;
@@ -94,7 +93,6 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
     protected AmendmentXmlSerializer developmentAmendmentSerializer;
     protected Amendment firstAmendment;
 
-    protected StudyService studyService;
     protected StudyXmlSerializer studyXmlserializer;
     private BeanFactory beanFactory;
 
@@ -389,7 +387,6 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
             }
 
         };
-        studyService = registerMockFor(StudyService.class);
         studyXmlserializer = new StudyXmlSerializer() {
             protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
                 return plannedCalendarSerializer;
