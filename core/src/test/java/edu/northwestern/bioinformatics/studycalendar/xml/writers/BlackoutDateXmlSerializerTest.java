@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
@@ -14,7 +13,6 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCal
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import org.dom4j.Element;
-import static org.easymock.EasyMock.expect;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -26,12 +24,8 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     private BlackoutDateXmlSerializer serializer;
     private Element monthDayHolidayElement;
     private Site site;
-    private SiteService siteService;
-
     private WeekdayBlackout dayOfTheWeek;
-
     private RelativeRecurringBlackout relativeRecurringHoliday;
-
     private SpecificDateBlackout monthDayHoliday;
 
     @Override
@@ -39,10 +33,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
         super.setUp();
         site = createNamedInstance("Northwestern University", Site.class);
         site.setAssignedIdentifier("NU");
-        siteService = registerMockFor(SiteService.class);
-
         serializer = new BlackoutDateXmlSerializer();
-        serializer.setSiteService(siteService);
         dayOfTheWeek = new WeekdayBlackout();
         dayOfTheWeek.setDayOfTheWeek("Sunday");
         dayOfTheWeek.setDescription("day of the week");
@@ -242,7 +233,6 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     // Test Helper Method
     public BlackoutDate expectReadElement(Element element) {
-        expect(siteService.getByAssignedIdentifier("NU")).andReturn(site);
         replayMocks();
         BlackoutDate blackoutDate = serializer.readElement(element);
         verifyMocks();

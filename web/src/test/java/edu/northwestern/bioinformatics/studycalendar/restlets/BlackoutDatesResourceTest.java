@@ -65,6 +65,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
 
     public void testPostBlackoutDateToSite() throws Exception {
         expectReadXmlFromRequestAs(monthDayHoliday);
+        expect(siteService.resolveSiteForBlackoutDate(monthDayHoliday)).andReturn(monthDayHoliday);
         blackoutDateDao.save(monthDayHoliday);
 
         doPost();
@@ -73,14 +74,14 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
                 response.getLocationRef().getTargetRef().toString());
     }
 
-    public void testGet404IfSiteIsNull() throws Exception {
+    public void testGet400IfSiteIsNull() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), null);
 
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
-    public void testGet404IfSiteIsUnknown() throws Exception {
+    public void testGet400IfSiteIsUnknown() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(),"UnknownSite");
         expect(siteService.getByAssignedIdentifier("UnknownSite")).andReturn(null);
         

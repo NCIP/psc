@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -274,5 +275,43 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         replayMocks();
         service.removeSite(site);
         verifyMocks();
+    }
+
+    public void testResolveSiteForBlackoutDateWhenSiteFound() throws Exception {
+        SpecificDateBlackout blackOutDate = createBlackoutDate();
+        assertNull("Site is not from system", blackOutDate.getSite().getId());
+        expect(siteDao.getByAssignedIdentifier("Mayo")).andReturn(mayo);
+        replayMocks();
+        BlackoutDate actual =  service.resolveSiteForBlackoutDate(blackOutDate);
+        verifyMocks();
+        assertNotNull("Site is new", actual.getSite().getId());
+
+    }
+
+    public void testResolveSiteForBlackoutDateWhenSiteNotFound() throws Exception {
+        SpecificDateBlackout blackOutDate = createBlackoutDate();
+        assertNull("Site is not from system", blackOutDate.getSite().getId());
+        expect(siteDao.getByAssignedIdentifier("Mayo")).andReturn(null);
+        replayMocks();
+        try {
+            service.resolveSiteForBlackoutDate(blackOutDate);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Site 'Mayo' not found. Please define a site that exists.", scve.getMessage());
+        }
+    }
+
+    //Helper Method
+    private SpecificDateBlackout createBlackoutDate() {
+        SpecificDateBlackout blackOutDate = new SpecificDateBlackout();
+        blackOutDate.setDay(2);
+        blackOutDate.setMonth(1);
+        blackOutDate.setYear(2008);
+        blackOutDate.setDescription("month day holiday");
+        Site site = new Site();
+        site.setAssignedIdentifier("Mayo");
+        blackOutDate.setSite(site);
+        blackOutDate.setGridId("3");
+        return blackOutDate;
     }
 }

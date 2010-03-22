@@ -4,14 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCal
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,6 +139,16 @@ public class SiteService {
         } else {
             throw new StudyCalendarSystemException("The provided site %s is not editable", existingSite.getAssignedIdentifier());
         }
+    }
+
+    public BlackoutDate resolveSiteForBlackoutDate(BlackoutDate blackoutDate) {
+        Site site = siteDao.getByAssignedIdentifier(blackoutDate.getSite().getAssignedIdentifier());
+        if (site == null) {
+            throw new StudyCalendarValidationException("Site '%s' not found. Please define a site that exists.",
+                    blackoutDate.getSite().getAssignedIdentifier());
+        }
+        blackoutDate.setSite(site);
+        return blackoutDate;
     }
 
     ////// CONFIGURATION

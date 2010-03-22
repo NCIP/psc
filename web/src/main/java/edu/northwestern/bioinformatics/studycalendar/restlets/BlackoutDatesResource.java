@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -47,18 +48,17 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
     }
 
     @Override
-    public String store(BlackoutDate blackoutDate){
+    public String store(BlackoutDate blackoutDate) throws ResourceException {
         try {
+            siteService.resolveSiteForBlackoutDate(blackoutDate);
             blackoutDateDao.save(blackoutDate);
             return String.format("sites/%s/blackout-dates/%s",
                     blackoutDate.getSite().getAssignedIdentifier(), blackoutDate.getGridId());
+        } catch (StudyCalendarValidationException scve) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, scve.getMessage());
         } catch (Exception e) {
-            String message = "Can not POST the blackoutDate on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
-            log.error(message, e);
-
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, e);
         }
-
-        return null;
     }
 
     public StudyCalendarXmlCollectionSerializer<BlackoutDate> getXmlSerializer() {

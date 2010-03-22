@@ -71,7 +71,7 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
     }
 
 
-    public abstract String store(D instances);
+    public abstract String store(D instances) throws ResourceException;
 
     protected void validateEntity(Representation entity) throws ResourceException {
     }

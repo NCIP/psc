@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -11,15 +10,11 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
-import org.springframework.beans.factory.annotation.Required;
-
-import java.util.List;
 
 /**
  * @author Saurabh Agrawal
  */
 public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<BlackoutDate> {
-    private SiteService siteService;
 
     @Override
     protected XsdElement collectionRootElement() {
@@ -101,14 +96,10 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         }
         
         if (siteIdentifier != null) {
-            Site site = siteService.getByAssignedIdentifier(siteIdentifier);
+            Site site = new Site();
+            site.setAssignedIdentifier(siteIdentifier);
             blackoutDate.setSite(site);
         }
         return blackoutDate;
    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
-    }
 }

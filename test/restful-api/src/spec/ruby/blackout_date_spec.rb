@@ -25,7 +25,14 @@ describe "/blackout-date" do
       response.xml_elements('//blackout-date').should have(2).elements
       response.xml_attributes("blackout-date", "description").should include("My birthday")
       response.xml_attributes("blackout-date", "description").should include("Christmas party")
-    end   
+    end
+
+    it "gives 400 for unknown site" do
+      get '/sites/siteUnknown/blackout-dates', :as => :juno
+      response.status_code.should == 400
+      response.status_message.should == "Bad Request"
+      response.entity =~ %r(Unknown site siteUnknown)
+    end
   end
   
   describe "POST" do
@@ -46,6 +53,15 @@ describe "/blackout-date" do
           response.content_type.should == 'text/xml'
           response.xml_attributes("blackout-date", "description").should include("Labor Day")
           response.xml_attributes("blackout-date", "site-identifier").should include("siteId")
+      end
+
+      it "gives 400 for unknown site identifier in xml" do
+        @blackoutdate_unknownsite_xml = psc_xml("blackout-date", 'description' => "Labor Day", 'site-identifier' => "siteIdUnknown",
+          'day' => 17, 'month' => 9, 'year' =>2008)
+        post '/sites/siteId/blackout-dates', @blackoutdate_unknownsite_xml, :as => :juno
+        response.status_code.should == 400
+        response.status_message.should == "Bad Request"
+        response.entity.should =~ %r(Site 'siteIdUnknown' not found. Please define a site that exists.)
       end
   end
   
