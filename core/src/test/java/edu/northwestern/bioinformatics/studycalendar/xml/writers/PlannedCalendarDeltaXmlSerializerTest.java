@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -20,7 +19,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
     private Element element;
     private Study study;
     private PlannedCalendar calendar;
-    private TemplateService templateService;
     private ChangeXmlSerializerFactory changeSerializerFactory;
     private Add add;
     private AbstractChangeXmlSerializer changeSerializer;
@@ -29,7 +27,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         super.setUp();
 
         element = registerMockFor(Element.class);
-        templateService = registerMockFor(TemplateService.class);
         changeSerializerFactory = registerMockFor(ChangeXmlSerializerFactory.class);
         changeSerializer = registerMockFor(AbstractChangeXmlSerializer.class);
 
@@ -42,7 +39,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
                 return changeSerializerFactory;
             }
         };
-        serializer.setTemplateService(templateService);
         serializer.setStudy(study);
 
 

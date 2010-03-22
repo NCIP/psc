@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -16,7 +15,6 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
     protected Study study;
 
     private static final String NODE_ID = "node-id";
-    private TemplateService templateService;
 
     protected abstract Delta deltaInstance();
 
@@ -62,10 +60,6 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
 
     public void setStudy(Study study) {
         this.study = study;
-    }
-
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
     }
 
     public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
