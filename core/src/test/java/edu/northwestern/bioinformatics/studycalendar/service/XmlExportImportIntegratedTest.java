@@ -145,7 +145,10 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch e1 = expectedExport.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Test setup failure -- expected 1 segment in epoch 1 to start", 1, e1.getStudySegments().size());
         Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
-        Add newSegment = setId(5, Add.create(setId(3, Fixtures.createNamedInstance("New Segment", StudySegment.class))));
+        StudySegment s1 = setId(3, Fixtures.createNamedInstance("New Segment", StudySegment.class));
+        s1.setGridId("SS");
+        Add newSegment = setId(5, Add.create(s1));
+        newSegment.setGridId("ADD");
         dev.addDelta(setGridId("D", Delta.createDeltaFor(e1, newSegment)));
         expectedExport.setDevelopmentAmendment(dev);
         Fixtures.amend(expectedExport);
