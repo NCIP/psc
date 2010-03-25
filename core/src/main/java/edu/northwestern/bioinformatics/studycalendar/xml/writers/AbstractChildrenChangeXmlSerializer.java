@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 
 public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChangeXmlSerializer implements BeanFactoryAware {
     private static final String CHILD_ID = "child-id";
-    protected DaoFinder daoFinder;
     protected Class<? extends DomainObject> childClass;
 
     protected void addAdditionalAttributes(final Change change, Element element) {
