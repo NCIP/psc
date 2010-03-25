@@ -29,9 +29,13 @@ public class StudyCalendarPostLoadEventListener implements PostLoadEventListener
     }
 
     @SuppressWarnings({ "unchecked" })
-    private <T extends DomainObject> T findDaoAndLoad(int id, Class<T> klass) {
-        DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(klass);
-        return dao.getById(id);
+    private <T extends DomainObject> T findDaoAndLoad(Integer id, Class<T> klass) {
+        if (id != null) {
+            DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(klass);
+            return dao.getById(id);
+        } else {
+            return null;
+        }
     }
 
     @Required
