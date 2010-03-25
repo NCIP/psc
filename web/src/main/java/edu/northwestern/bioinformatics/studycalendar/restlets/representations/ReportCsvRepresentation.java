@@ -11,6 +11,8 @@ import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPsc
 import edu.northwestern.bioinformatics.studycalendar.restlets.PscMetadataService;
 import com.csvreader.CsvWriter;
 import org.restlet.resource.OutputRepresentation;
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Nataliya Shurupova
  */
@@ -18,8 +20,8 @@ public class ReportCsvRepresentation extends OutputRepresentation {
 
     private List<ScheduledActivitiesReportRow> allRows;
     private char delimeter;
-    private static final String[] ROW_COLUMNS = new String[] {"Activity Name","Activity Status","Scheduled Date","Ideal Date","Label",
-                "Subject Name","Subject Id","Subject Coorinator Name","study","site"};
+    private static final String[] ROW_COLUMNS = new String[] {"Activity Name","Activity Status","Scheduled Date","Ideal Date","Labels",
+                "Subject Name","Patient Id","Subject Coorinator Name","study","site"};
 
     public ReportCsvRepresentation(List<ScheduledActivitiesReportRow> allRows, char delimeter) {
         super(PscMetadataService.TEXT_CSV);
@@ -59,7 +61,7 @@ public class ReportCsvRepresentation extends OutputRepresentation {
            row.getScheduledActivity().getCurrentState().getMode().getDisplayName(),
            getApiDateFormat().format(row.getScheduledActivity().getActualDate()),
            getApiDateFormat().format(row.getScheduledActivity().getIdealDate()),
-           row.getLabel(),
+           StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ' '),
            row.getSubject().getFullName(),
            row.getSubject().getPersonId(),
            row.getSubjectCoordinatorName(),

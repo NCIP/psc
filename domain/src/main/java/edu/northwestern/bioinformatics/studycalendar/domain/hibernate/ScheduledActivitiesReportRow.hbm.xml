@@ -21,12 +21,14 @@
                 subj.first_name,
                 subj.last_name,
                 subj.person_id,
+                subj.grid_id,
                 studies.id AS study_id,
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
                 sites.name AS site_name,
                 users.name AS subject_coordinator_name,
                 users.id AS subject_coordinator_id
+
             FROM
                 scheduled_activities s_actv
                 LEFT JOIN activities a ON a.id = s_actv.activity_id
@@ -60,6 +62,10 @@
                 <property name="name" column="activity_name"/>
                 <many-to-one name="type" column="activity_type_id"/>
             </component>
+            <set name="labels" table="scheduled_activity_labels" sort="natural">
+                <key column="scheduled_activity_id"/>
+                <element column="label" type="string" not-null="true"/>
+            </set>
         </component>
 
         <component name="subject">
@@ -67,6 +73,7 @@
             <property name="firstName" column="first_name"/>
             <property name="lastName" column="last_name"/>
             <property name="personId" column="person_id"/>
+            <property name="gridId" column="grid_id"/>
         </component>
 
         <component name="study">
@@ -89,6 +96,7 @@
         <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
         <filter name="filter_subjectCoordinator" condition="subject_coordinator_id = :subjectCoordinator_id"/>
         <filter name="filter_label" condition="EXISTS(select 'x' FROM scheduled_activity_labels sal WHERE (sal.scheduled_activity_id = id AND UPPER(sal.label) = :label))"/>
+        <filter name="filter_personId" condition="UPPER(person_id) = :personId OR UPPER(grid_id) = :personId"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
@@ -113,5 +121,8 @@
     </filter-def>
     <filter-def name="filter_label">
         <filter-param name="label" type="string"/>
+    </filter-def>
+    <filter-def name="filter_personId">
+        <filter-param name="personId" type="string"/>
     </filter-def>
 </hibernate-mapping>

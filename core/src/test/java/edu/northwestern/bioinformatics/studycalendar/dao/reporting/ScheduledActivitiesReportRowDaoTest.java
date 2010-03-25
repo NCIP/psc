@@ -13,6 +13,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author John Dzak
@@ -21,6 +22,8 @@ public class ScheduledActivitiesReportRowDaoTest extends
         ReportDaoTestCase<ScheduledActivitiesReportFilters, ScheduledActivitiesReportRow, ScheduledActivitiesReportRowDao> {
     private static final long NEG_16 = -16;
     private static final long NEG_17 = -17;
+    private static final long NEG_18 = -18;
+    private static final long NEG_19 = -19;
 
     protected ScheduledActivitiesReportFilters createFilters() {
         return new ScheduledActivitiesReportFilters();
@@ -28,7 +31,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithStudyFilter_Pos() {
         filters.setStudyAssignedIdentifier("Foo");
-        ScheduledActivitiesReportRow row = assertSearchWithResults(NEG_17, NEG_16).get(0);
+        ScheduledActivitiesReportRow row = assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16).get(2);
 
         assertNotNull("ID should not be null", row.getId());
 
@@ -70,10 +73,10 @@ public class ScheduledActivitiesReportRowDaoTest extends
         filters.setCurrentStateMode(ScheduledActivityMode.OCCURRED);
         assertSearchWithResults();
     }
-    
+
     public void testSearchWithSiteFilter_Pos() {
         filters.setSiteName("DC");
-        assertSearchWithResults(NEG_17, NEG_16);
+        assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16);
     }
 
     public void testSearchWithLabelFilter() {
@@ -90,14 +93,14 @@ public class ScheduledActivitiesReportRowDaoTest extends
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
         filters.setActualActivityDate(range);
-        assertSearchWithResults(NEG_17);
+        assertSearchWithResults(NEG_19, NEG_18, NEG_17);
     }
 
     public void testSearchWithStartDateFilter_Neg() {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 15));
         filters.setActualActivityDate(range);
-        assertSearchWithResults();
+        assertSearchWithResults(NEG_19, NEG_18);
     }
 
     public void testSearchWithStopDateFilter_Pos() {
@@ -118,7 +121,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         ActivityType activityType = createNamedInstance("INTERVENTION", ActivityType.class);
         activityType.setId(2);
         filters.setActivityType(activityType);
-        assertSearchWithResults(NEG_17, NEG_16);
+        assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16);
     }
 
     public void testSearchWithActivityTypeFilter_Neg() {
@@ -130,7 +133,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithSubjectCoordinatorFilter_Pos() {
         filters.setSubjectCoordinator(edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId(-200, new User()));
-        assertSearchWithResults(NEG_17, NEG_16);
+        assertSearchWithResults(NEG_19, NEG_18, NEG_17, NEG_16);
     }
 
     public void testSearchWithSubjectCoordinatorFilter_Neg() {
@@ -141,4 +144,19 @@ public class ScheduledActivitiesReportRowDaoTest extends
     public void testSearchWithNoFiltersIsEmpty() {
         assertSearchWithResults();
     }
+
+    public void testRowWithPersonIdFilter() {
+        filters.setPersonId("UNIVERSAL");
+        List<ScheduledActivitiesReportRow> rows = assertSearchWithResults(NEG_18, NEG_17, NEG_16);
+        assertEquals("Returns different number of rows ", 3, rows.size());
+    }
+
+    public void testRowWithLabelFilter() {
+        filters.setLabel("LABELB");
+        List<ScheduledActivitiesReportRow> rows = doSearch();
+        for (ScheduledActivitiesReportRow row : rows ) {
+            assertTrue("labelB is not in the row", row.getScheduledActivity().getLabels().contains("labelB"));
+        }
+    }
+
 }

@@ -55,6 +55,7 @@
 
             params['end-date'] = endDate;
             params['responsible-user'] =  $("filters.subjectCoordinator").value;
+            params['person-id'] =  $("filters.personId").value;
 
             SC.asyncRequest(uri +".json", {
               method: "GET", parameters: params,
@@ -64,9 +65,9 @@
                         { key: "activity_status", label: "Activity Status", sortable: true },
                         { key: "scheduled_date", label:"Scheduled Date", sortable:true},
                         { key: "ideal_date", label: "Ideal Date", sortable: true},
-                        { key: "label", label: "Label", sortable: true},
+                        { key: "label", label: "Labels", sortable: true},
                         { key: "subject_name", label: "Subject Name", sortable: true},
-                        { key: "subject_id", label: "Subject Id", sortable: true},
+                        { key: "person_id", label: "Person ID", sortable: true},
                         { key: "subject_coorinator_name", label: "Subject Coordinator Name", sortable: true},
                         { key: "study", label: "Study Name", sortable: true},
                         { key: "site", label: "Site Name", sortable: true}
@@ -83,7 +84,7 @@
                               { key: "ideal_date"},
                               { key: "label" },
                               { key: "subject_name"},
-                              { key: "subject_id"},
+                              { key: "person_id"},
                               { key: "subject_coorinator_name"},
                               { key: "study"},
                               { key: "site"}
@@ -211,6 +212,15 @@
                             <form:options items="${coordinators}" itemLabel="displayName" itemValue="id"/>
                         </form:select>
 
+                    </span>
+                </div>
+
+                <div class="filterGroup">
+                    <span class="filterInput">
+                        <form:label path="filters.personId" >
+                            Person ID:
+                        </form:label>
+                        <form:input id="filters.personId" path="filters.personId"/>
                     </span>
                 </div>
 

@@ -47,8 +47,11 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
         ScheduledActivitiesReportRow row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);
-        row1.setLabel("label1");
-        row1.setScheduledActivity(Fixtures.createScheduledActivity("activity1 ", 2010, 03, 02, saState));
+        ScheduledActivity activity1 = Fixtures.createScheduledActivity("activity1 ", 2010, 03, 02, saState);
+        SortedSet<String> labels1 = new TreeSet<String>();
+        labels1.add("label1");
+        activity1.setLabels(labels1);
+        row1.setScheduledActivity(activity1);
         row1.setSubjectCoordinatorName("mayo mayo");
         row1.setSubject(Fixtures.createSubject("subject", "one"));
         row1.setSite(site);
@@ -56,8 +59,10 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
         ScheduledActivitiesReportRow row2 = new ScheduledActivitiesReportRow();
         row2.setId(1002);
-        row2.setLabel("label2");
-        row2.setScheduledActivity(Fixtures.createScheduledActivity("activity2 ", 2010, 03, 04, saState));
+        ScheduledActivity activity2 = Fixtures.createScheduledActivity("activity2 ", 2010, 03, 04, saState);
+        SortedSet<String> labels2 = new TreeSet<String>();
+        labels2.add("label2");
+        row2.setScheduledActivity(activity2);
         row2.setSubjectCoordinatorName("mayo mayo");
         row2.setSubject(Fixtures.createSubject("subject", "two"));
         row2.setSite(site);

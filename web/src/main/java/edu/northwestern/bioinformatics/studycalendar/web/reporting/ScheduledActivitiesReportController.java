@@ -73,12 +73,12 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
             command.setLabelFilter();                                 
         }
         List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = dao.search(command.getFilters());
-        //todo - mounting for label is not working... need to set it manually
-        if (command.getLabel() != null) {
-            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
-                row.setLabel(command.getLabel());
-            }
-        }
+//        //todo - mounting for label is not working... need to set it manually
+//        if (command.getLabel() != null) {
+//            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
+//                row.setLabel(command.getLabel());
+//            }
+//        }
         return scheduledActivitiesReportRow;
     }
 

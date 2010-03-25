@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import java.util.List;
 import java.io.IOException;
 import org.codehaus.jackson.JsonGenerator;
+import org.json.JSONArray;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Nataliya Shurupova
@@ -66,6 +69,9 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
         if (filters.getLabel() != null) {
             JacksonTools.nullSafeWriteStringField(generator, "label", filters.getLabel());
         }
+        if (filters.getPersonId() != null) {
+            JacksonTools.nullSafeWriteStringField(generator, "person_id", filters.getPersonId());
+        }
     }
 
     public static void createJSONRow(JsonGenerator generator, ScheduledActivitiesReportRow row) throws IOException {
@@ -74,9 +80,11 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
             JacksonTools.nullSafeWriteStringField(generator, "ideal_date", getApiDateFormat().format(row.getScheduledActivity().getIdealDate()));
-            JacksonTools.nullSafeWriteStringField(generator, "label", row.getLabel());
+            if (!row.getScheduledActivity().getLabels().isEmpty()) {
+                JacksonTools.nullSafeWriteStringField(generator, "label", StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ", "));
+            }
             JacksonTools.nullSafeWriteStringField(generator, "subject_name", row.getSubject().getFullName());
-            JacksonTools.nullSafeWriteStringField(generator, "subject_id", row.getSubject().getPersonId());
+            JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());
             JacksonTools.nullSafeWriteStringField(generator, "subject_coorinator_name", row.getSubjectCoordinatorName());
             JacksonTools.nullSafeWriteStringField(generator, "study", row.getStudy().getName());
             JacksonTools.nullSafeWriteStringField(generator, "site", row.getSite().getName());

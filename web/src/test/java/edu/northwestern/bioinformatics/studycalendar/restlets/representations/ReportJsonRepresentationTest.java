@@ -10,6 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,8 +37,11 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
 
         row1 = new ScheduledActivitiesReportRow();
         row1.setId(1001);
-        row1.setLabel("label1");
-        row1.setScheduledActivity(Fixtures.createScheduledActivity("activity1 ", 2009, 11, 12, saState));
+        ScheduledActivity activity1 = Fixtures.createScheduledActivity("activity1 ", 2009, 11, 12, saState);
+        SortedSet<String> labels1 = new TreeSet<String>();
+        labels1.add("label1");
+        activity1.setLabels(labels1);
+        row1.setScheduledActivity(activity1);
         row1.setSubjectCoordinatorName("mayo mayo");
         row1.setSubject(Fixtures.createSubject("subject", "one"));
         row1.setSite(site);
@@ -43,8 +49,11 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
 
         row2 = new ScheduledActivitiesReportRow();
         row2.setId(1002);
-        row2.setLabel("label2");
-        row2.setScheduledActivity(Fixtures.createScheduledActivity("activity2 ", 2009, 10, 15, saState));
+        ScheduledActivity activity2 = Fixtures.createScheduledActivity("activity2 ", 2009, 10, 15, saState);
+        SortedSet<String> labels2 = new TreeSet<String>();
+        labels2.add("label2");
+        activity2.setLabels(labels2);
+        row2.setScheduledActivity(activity2);
         row2.setSubjectCoordinatorName("mayo mayo");
         row2.setSubject(Fixtures.createSubject("subject", "two"));
         row2.setSite(site);
@@ -111,7 +120,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Value for site is incorrect ", site.getName(), first.get("site"));
 
         assertNotNull("Label doesn't exist ", first.get("label"));
-        assertEquals("Value for label is incorrect ", row1.getLabel(), first.get("label"));
+        assertEquals("Value for label is incorrect ", row1.getScheduledActivity().getLabels().first(), first.get("label"));
 
         assertNotNull("Activity_name doesn't exist ", first.get("activity_name"));
         assertEquals("Value for activity_name is incorrect ", row1.getScheduledActivity().getActivity().getName(), first.get("activity_name"));
@@ -141,7 +150,7 @@ public class ReportJsonRepresentationTest extends JsonRepresentationTestCase {
         assertEquals("Value for site is incorrect ", site.getName(), first.get("site"));
 
         assertNotNull("Label doesn't exist ", first.get("label"));
-        assertEquals("Value for label is incorrect ", row2.getLabel(), first.get("label"));
+        assertEquals("Value for label is incorrect ", row2.getScheduledActivity().getLabels().first(), first.get("label"));
 
         assertNotNull("Activity_name doesn't exist ", first.get("activity_name"));
         assertEquals("Value for activity_name is incorrect ", row2.getScheduledActivity().getActivity().getName(), first.get("activity_name"));

@@ -22,6 +22,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private DomainObjectFilterLimit<ActivityType> activityType =  new DomainObjectFilterLimit<ActivityType>("activityType");
     private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
     private StringFilter label = new StringFilter("label");
+    private StringFilter personId = new StringFilter("personId");
 
     protected String getHibernateFilterPrefix() {
         return "filter_";
@@ -82,5 +83,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public void setLabel(String value) {
         label.setValue(value);
+    }
+
+    public String getPersonId() {
+        return personId.getValue();
+    }
+
+    public void setPersonId(String value) {
+        personId.setValue(value);
     }
 }

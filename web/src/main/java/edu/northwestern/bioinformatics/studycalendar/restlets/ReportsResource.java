@@ -42,12 +42,6 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         ScheduledActivitiesReportFilters filters = getFilters();
         List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = scheduledActivitiesReportRowDao.search(filters);
 
-        //todo - mounting for label is not working... need to set it manually
-        if (filters.getLabel() != null) {
-            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
-                row.setLabel(filters.getLabel());
-            }
-        }
         return scheduledActivitiesReportRow;
     }
 
@@ -60,6 +54,7 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         String start_date = FilterParameters.START_DATE.extractFrom(getRequest());
         String end_date = FilterParameters.END_DATE.extractFrom(getRequest());
         String responsible_user = FilterParameters.RESPONSIBLE_USER.extractFrom(getRequest());
+        String person_id = FilterParameters.PERSON_ID.extractFrom(getRequest());
 
         ScheduledActivitiesReportFilters filters = new ScheduledActivitiesReportFilters();
         if (activity_type != null) {
@@ -80,6 +75,7 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         filters.setSiteName(site);
         filters.setLabel(label);
         filters.setStudyAssignedIdentifier(study);
+        filters.setPersonId(person_id);
 
         MutableRange<Date> range = new MutableRange<Date>();
         if (start_date != null) {

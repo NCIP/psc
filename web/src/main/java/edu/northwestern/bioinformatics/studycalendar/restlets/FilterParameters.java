@@ -14,7 +14,8 @@ public enum FilterParameters {
     LABEL,
     START_DATE,
     END_DATE,
-    RESPONSIBLE_USER;
+    RESPONSIBLE_USER,
+    PERSON_ID;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
