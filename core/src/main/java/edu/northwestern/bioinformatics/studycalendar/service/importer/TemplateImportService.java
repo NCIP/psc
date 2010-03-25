@@ -249,7 +249,11 @@ public class TemplateImportService {
 
     private <T extends Changeable> T findRealNode(T nodeTemplate) {
         GridIdentifiableDao<T> dao = (GridIdentifiableDao<T>) daoFinder.findDao(nodeTemplate.getClass());
-        return dao.getByGridId(nodeTemplate.getGridId());
+        if (dao instanceof PopulationDao) {
+            return (T) nodeTemplate;
+        } else {
+            return dao.getByGridId(nodeTemplate.getGridId());
+        }
     }
 
     private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {
