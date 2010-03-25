@@ -3,10 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -34,11 +32,6 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new RemoveXmlSerializer(){
             protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
                 return planTreeNodeSerializerFactory;
-            }
-
-            @Override
-            protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
-                return epoch;
             }
         };
         epoch = setGridId("grid1", new Epoch());

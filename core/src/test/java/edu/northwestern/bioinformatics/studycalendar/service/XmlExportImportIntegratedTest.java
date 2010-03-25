@@ -145,7 +145,7 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch e1 = expectedExport.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Test setup failure -- expected 1 segment in epoch 1 to start", 1, e1.getStudySegments().size());
         Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
-        Add newSegment = setGridId("ADD", Add.create(setGridId("NS", Fixtures.createNamedInstance("New Segment", StudySegment.class))));
+        Add newSegment = setId(5, Add.create(setId(3, Fixtures.createNamedInstance("New Segment", StudySegment.class))));
         dev.addDelta(setGridId("D", Delta.createDeltaFor(e1, newSegment)));
         expectedExport.setDevelopmentAmendment(dev);
         Fixtures.amend(expectedExport);
@@ -163,40 +163,5 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         Epoch actualE1 = actual.getPlannedCalendar().getEpochs().get(1);
         assertEquals("Segment not added to live plan tree", 2, actualE1.getStudySegments().size());
         assertEquals("Wrong segment added to live plan tree", "New Segment", actualE1.getStudySegments().get(1).getName());
-    }
-
-    public void testImportWithNewPopulation() throws Exception {
-        amendmentService.amend(reload());
-
-        Study study = reload().transientClone();
-        study.setDevelopmentAmendment(createAmendment("A0", new Date()));
-//        Population population = Fixtures.createPopulation("P0", "New Population");
-//        study.addPopulation(population);
-
-        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
-        StudySegment studySegment = epoch.getStudySegments().get(1);
-
-        Period period = setGridId("PG", createPeriod(3, 4, 18));
-        PlannedActivity pa = setGridId("PA", createPlannedActivity(activityDao.getById(-1), 1));
-//        pa.setPopulation(population);
-        period.addPlannedActivity(pa);
-
-        Add add = setGridId("A", Add.create(period));
-        Delta delta = setGridId("Delt", Delta.createDeltaFor(studySegment, add));
-        study.getDevelopmentAmendment().addDelta(delta);
-        Fixtures.amend(study);
-
-        InputStream xml = export(study);
-        Study importedStudy = doImport(xml);
-
-        StudySegment actualE0S1 = importedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
-        assertEquals("Wrong number of periods in E0S1", 1, actualE0S1.getPeriods().size());
-        Period actualPeriod = actualE0S1.getPeriods().first();
-        assertEquals("Added planned activity not present", 1, actualPeriod.getPlannedActivities().size());
-        Population actualPop = actualPeriod.getPlannedActivities().get(0).getPopulation();
-//        assertNotNull("Added planned activity does not have population", actualPop);
-//        assertEquals("Added planned activity does not have correct population", population.getAbbreviation(), actualPop.getAbbreviation());
-//        assertEquals("Added planned activity does not have correct population", population.getName(), actualPop.getName());
-//        assertEquals("Population is null", 1, importedStudy.getPopulations().size());
     }
 }

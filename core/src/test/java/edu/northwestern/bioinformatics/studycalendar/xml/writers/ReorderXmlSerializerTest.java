@@ -2,10 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -19,14 +17,8 @@ public class ReorderXmlSerializerTest extends StudyCalendarXmlTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        xmlSerializer = new ReorderXmlSerializer() {
-            @Override
-            protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
-                return epoch1;
-            }
-        };
+        xmlSerializer = new ReorderXmlSerializer(); 
         createReorder();
-
     }
 
     private Reorder createReorder() {
@@ -37,7 +29,6 @@ public class ReorderXmlSerializerTest extends StudyCalendarXmlTestCase {
         reorder.setGridId("2c845525-46cb-4c05-a0d8-9de0e866b61c");
         return reorder;
     }
-
 
     public void testValidateElement() throws Exception {
         Reorder reorder = createReorder();
@@ -63,9 +54,5 @@ public class ReorderXmlSerializerTest extends StudyCalendarXmlTestCase {
 
 
         assertFalse(StringUtils.isBlank(xmlSerializer.validateElement(null, actual).toString()));
-
-
     }
-
-
 }

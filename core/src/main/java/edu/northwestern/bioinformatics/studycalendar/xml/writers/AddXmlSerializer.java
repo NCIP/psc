@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -31,15 +29,12 @@ public class AddXmlSerializer extends AbstractChildrenChangeXmlSerializer {
             element.addAttribute(INDEX, add.getIndex().toString());
         }
 
-        DomainObject child = getChild(add, childClass);
-        if (child instanceof Changeable) {
-            Changeable added = (Changeable) child;
+        Child child = add.getChild();
+        if (child != null) {
+            Changeable added = child;
             StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(added);
             Element ePlanTreeNode = serializer.createElement(added);
             element.add(ePlanTreeNode);
-        } else {
-            // TEMPORARY -- see issue #494/#496
-            throw new IllegalStateException("Not currently capable of serializing Add for " + child.getClass().getName());
         }
     }
 

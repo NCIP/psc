@@ -1,13 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -19,10 +16,10 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
     protected Class<? extends DomainObject> childClass;
 
     protected void addAdditionalAttributes(final Change change, Element element) {
-        //element.addAttribute(CHILD_ID, ((ChildrenChange)change).getChild().getGridId());
-        // Child is not stored on ChildChange, must retreive from object id
-        PlanTreeNode<?> child = (PlanTreeNode<?>) getChild((ChildrenChange) change, childClass);
-        element.addAttribute(CHILD_ID, child.getGridId());
+        Child child = ((ChildrenChange) change).getChild();
+        if (child != null) {
+           element.addAttribute(CHILD_ID, child.getGridId());
+        }
     }
 
     protected void setAdditionalProperties(final Element element, Change change) {
@@ -31,16 +28,6 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
         StudyCalendarXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
         Child node = (Child)serializer.readElement(child);
         ((ChildrenChange) change).setChild(node);
-    }
-
-    // Methods to get child from child id
-    protected DomainObject getChild(ChildrenChange change, Class<? extends DomainObject> childClass) {
-        if (change.getChild() != null) {
-            return change.getChild();
-        } else {
-            DomainObjectDao<?> dao = getDaoFinder().findDao(childClass);
-            return dao.getById(change.getChildId());
-        }
     }
 
     @Override
@@ -66,13 +53,5 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
 
     public void setChildClass(Class childClass) {
         this.childClass = childClass;
-    }
-
-    public void setDaoFinder(DaoFinder daoFinder) {
-        this.daoFinder = daoFinder;
-    }
-
-    public DaoFinder getDaoFinder() {
-        return daoFinder;
     }
 }
