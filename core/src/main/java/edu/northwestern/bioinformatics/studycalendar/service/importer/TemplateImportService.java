@@ -69,7 +69,12 @@ public class TemplateImportService {
     }
 
     public Study beforeSave(Study newStudy, Study oldStudy) {
-        TemplateInternalReferenceIndex oldIndex = new TemplateInternalReferenceIndex();
+        TemplateInternalReferenceIndex loadedIndex;
+        List<Amendment> amendments = new ArrayList<Amendment>(newStudy.getAmendmentsListInReverseOrder());
+        if (newStudy.getDevelopmentAmendment() != null) {
+            amendments.add(newStudy.getDevelopmentAmendment());
+        }
+
         if (oldStudy != null) {
             Study fullVersion = studyService.getCompleteTemplateHistory(oldStudy);
             List<Amendment> oldVersionList = new ArrayList<Amendment>(fullVersion.getAmendmentsList());
@@ -96,27 +101,36 @@ public class TemplateImportService {
             if (sb.length() != 0) {
                 throw new StudyImportException(sb.toString());
             }
-            // Build TemplateInternalReferenceIndex for released Amendments
-            if (fullVersion.getDevelopmentAmendment() != null) {
-                oldVersionList.add(fullVersion.getDevelopmentAmendment());
+
+            TemplateInternalReferenceIndex oldExpectedIndex = buildTemplateInternalReferenceIndex(oldVersionList);
+            oldExpectedIndex.addPlanTreeNode(oldStudy.getPlannedCalendar());
+
+            TemplateInternalReferenceIndex newExpectedIndex = buildTemplateInternalReferenceIndex(newVersionList);
+            newExpectedIndex.addPlanTreeNode(newStudy.getPlannedCalendar());
+
+            TemplateInternalReferenceIndex expectedIndex = new TemplateInternalReferenceIndex();
+            expectedIndex.getIndex().putAll(oldExpectedIndex.getIndex());
+
+            for (Key key : expectedIndex.getIndex().keySet()) {
+                if (newExpectedIndex.getIndex().containsKey(key)) {
+                    newExpectedIndex.getIndex().remove(key);
+                }
+                oldExpectedIndex.getIndex().remove(key);
             }
-            oldIndex = buildTemplateInternalReferenceIndex(oldVersionList);
-            oldIndex.addPlanTreeNode(oldStudy.getPlannedCalendar());
-        }
 
-        List<Amendment> amendments = new ArrayList<Amendment>(newStudy.getAmendmentsListInReverseOrder());
-        if (newStudy.getDevelopmentAmendment() != null) {
-            amendments.add(newStudy.getDevelopmentAmendment());
-        }
-
-        //Build TemplateInternalReferenceIndex for xml loaded study.
-        TemplateInternalReferenceIndex loadedIndex = buildTemplateInternalReferenceIndex(amendments);
-        loadedIndex.addPlanTreeNode(newStudy.getPlannedCalendar());
-
-        for (Key key : oldIndex.getIndex().keySet()) {
-            if (loadedIndex.getIndex().containsKey(key)) {
-               loadedIndex.getIndex().remove(key);
+            if (!oldExpectedIndex.getIndex().isEmpty() || !newExpectedIndex.getIndex().isEmpty()) {
+                throw new StudyImportException("Imported study and existing study has different grid ids for released amendments");
             }
+
+            templateDevelopmentService.deleteDevelopmentAmendmentOnly(oldStudy);
+            List<Amendment> newAddedList = new ArrayList<Amendment>(newStudy.getAmendmentsListInReverseOrder().subList(oldVersionSize, newVersionSize));
+            if (newStudy.getDevelopmentAmendment() != null) {
+                newAddedList.add(newStudy.getDevelopmentAmendment());
+            }
+            loadedIndex = buildTemplateInternalReferenceIndex(newAddedList);
+        } else {
+            loadedIndex = buildTemplateInternalReferenceIndex(amendments);
+            loadedIndex.addPlanTreeNode(newStudy.getPlannedCalendar());
         }
 
         List<Key> existingGridIdKeys = new ArrayList<Key>();
@@ -127,16 +141,18 @@ public class TemplateImportService {
             }
         }
 
-        if (oldStudy != null && !existingGridIdKeys.isEmpty()) {
-           throw new StudyImportException("Study has grid id which already exists in system");
-        }
-
-        // Assign new grid ids for conflicted grid ids for new study
-        if (oldStudy == null) {
-            for (Key key : existingGridIdKeys) {
+        StringBuilder conflicts = new StringBuilder();
+        for (Key key : existingGridIdKeys) {
+            Entry entry = loadedIndex.get(key);
+            if (oldStudy != null) {
+                // Check grid id conflicts for existing study
+                if (entry.getReferringDeltas().isEmpty() && entry.getReferringChanges().isEmpty()) {
+                   conflicts.append(String.format(" [ grid id %s ] ", key.id));
+                }
+            } else {
+                // Assign new grid ids for conflicted grid ids for new study
                 String newGridId = localGridIdentifierCreator.getGridIdentifier();
                 log.debug("replacing conflicted grid identifier {} with new grid identifier {}", key.id, newGridId);
-                Entry entry = loadedIndex.get(key);
                 if (entry.getOriginal() != null)
                     ((MutableDomainObject)entry.getOriginal()).setGridId(newGridId);
                 for (Delta delta : entry.getReferringDeltas()) {
@@ -146,6 +162,11 @@ public class TemplateImportService {
                     childrenChange.getChild().setGridId(newGridId);
                 }
             }
+        }
+
+        if (conflicts.length() != 0) {
+            throw new StudyImportException("Existing study has new amendments with"
+                    .concat(conflicts.toString()).concat("already exists in system"));
         }
 
         // Create new activities if any
@@ -225,7 +246,6 @@ public class TemplateImportService {
             study = newStudy;
             toApply = newStudy.getAmendmentsListInReverseOrder();
         } else {
-            templateDevelopmentService.deleteDevelopmentAmendmentOnly(oldStudy);
             study = oldStudy;
             toApply = newStudy.getAmendmentsListInReverseOrder().subList(oldStudy.getAmendmentsList().size(), newStudy.getAmendmentsList().size());
         }

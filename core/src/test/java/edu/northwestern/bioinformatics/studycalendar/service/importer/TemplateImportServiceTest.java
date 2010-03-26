@@ -13,7 +13,7 @@ import static org.easymock.EasyMock.notNull;
 import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.BaseElement;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
@@ -204,9 +204,10 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
                 }
             }
         }
-        expect(gridIdentifierResolver.resolveGridId(studySegment.getClass(), studySegment.getGridId())).andReturn(false);
-        expect(gridIdentifierResolver.resolveGridId(add.getClass(), add.getGridId())).andReturn(false);
-        expect(gridIdentifierResolver.resolveGridId(newDelta.getClass(), newDelta.getGridId())).andReturn(false);
+        expectGridIdConflictsCheck(studySegment, false);
+        expectGridIdConflictsCheck(epoch, false);
+        expectGridIdConflictsCheck(add, false);
+        expectGridIdConflictsCheck(newDelta, false);
         studyDao.save(existingStudy);
         expect(daoFinder.expectDaoFor(Epoch.class, EpochDao.class).getByGridId("epoch")).andReturn(epoch);
         expect(daoFinder.expectDaoFor(StudySegment.class, StudySegmentDao.class).getByGridId("segment1")).andReturn(studySegment);
@@ -217,7 +218,7 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testReadAndSaveWhenStudyHasGridIdConflictsForReleasedAmendment() throws Exception {
+    public void testReadAndSaveWhenExistingStudyHasGridIdConflictsForReleasedAmendment() throws Exception {
         Study newStudy = createReleasesStudy();
         Study existingStudy = createReleasesStudy();
         Add add = (Add)newStudy.getAmendment().getDeltas().get(0).getChanges().get(0);
@@ -243,13 +244,60 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
                 }
             }
         }
-        expect(gridIdentifierResolver.resolveGridId(epoch.getClass(), epoch.getGridId())).andReturn(true);
         replayMocks();
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
         } catch (StudyImportException sie) {
-            String expectedMessage = "Study has grid id which already exists in system";
+            String expectedMessage = "Imported study and existing study has different grid ids for released amendments";
+            assertEquals(expectedMessage, sie.getMessage());
+        }
+    }
+
+    public void testReadAndSaveWhenExistingStudyHasGridIdConflictsForNewAmendment() throws Exception {
+        Study newStudy = createReleasesStudy();
+        Study existingStudy = createReleasesStudy();
+        Amendment newAmendment = Fixtures.createAmendment("NewAmendment", DateTools.createDate(2007, Calendar.APRIL, 6));
+        Epoch epoch = new Epoch();
+        epoch.setGridId("epoch");
+        Delta<Epoch> newDelta = Delta.createDeltaFor(epoch);
+        newDelta.setGridId("delta1");
+        StudySegment studySegment =  new StudySegment();
+        studySegment.setName("NewA");
+        studySegment.setGridId("segment1");
+        Add add = Add.create(studySegment);
+        add.setGridId("add-new");
+        newDelta.addChanges(add);
+        newAmendment.addDelta(newDelta);
+        newStudy.pushAmendment(newAmendment);
+
+        InputStream target = registerMockFor(InputStream.class);
+        expectStudyLoadedFromXml(newStudy, target);
+        expectExistingStudyFound(existingStudy, newStudy.getAssignedIdentifier());
+        expectExistingStudy(existingStudy);
+
+        expectGridIdConflictsCheck(studySegment, false);
+        expectGridIdConflictsCheck(epoch, false);
+        expectGridIdConflictsCheck(add, false);
+        expectGridIdConflictsCheck(newDelta, true);
+        for (Change change : existingStudy.getAmendment().getDeltas().get(0).getChanges()) {
+            expectDeltaAndChangesForTemplateIndex((Add)change);
+        }
+
+        for (Amendment amendment : newStudy.getAmendmentsList()) {
+            for (Delta<?> delta : amendment.getDeltas()) {
+                for (Change change : delta.getChanges()) {
+                    expectDeltaAndChangesForTemplateIndex((Add)change);
+                    expectForNewActivities(((Add)change), new ArrayList<PlannedActivity>());
+                }
+            }
+        }
+        replayMocks();
+        try {
+            service.readAndSaveTemplate(target);
+            fail("Exception not thrown");
+        } catch (StudyImportException sie) {
+            String expectedMessage = "Existing study has new amendments with [ grid id delta1 ] already exists in system";
             assertEquals(expectedMessage, sie.getMessage());
         }
     }
@@ -364,6 +412,10 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
                 }
             }
         }
+    }
+
+    private void expectGridIdConflictsCheck(MutableDomainObject node, Boolean value) {
+        expect(gridIdentifierResolver.resolveGridId(node.getClass(), node.getGridId())).andReturn(value);
     }
 
     private Study createStudy() {

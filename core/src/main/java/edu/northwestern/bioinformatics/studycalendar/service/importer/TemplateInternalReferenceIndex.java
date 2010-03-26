@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.importer;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 
 import java.util.List;
@@ -44,8 +45,12 @@ public class TemplateInternalReferenceIndex {
     public void addChildrenChange(ChildrenChange childrenChange) {
         addObject(childrenChange);
         if (childrenChange.getChild() != null && childrenChange.getChild().getGridId() != null) {
-            Key childKey = new Key(childrenChange.getChild().getClass(), childrenChange.getChild().getGridId());
-            get(childKey).addChildrenChangeReference(childrenChange);    
+            // Population from xml study will not have grid id.
+            // Required for identical map for existing study and study from xml.
+            if (!(childrenChange.getChild() instanceof Population)) {
+                Key childKey = new Key(childrenChange.getChild().getClass(), childrenChange.getChild().getGridId());
+                get(childKey).addChildrenChangeReference(childrenChange);
+            }
         }
     }
 
