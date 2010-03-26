@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaAccessor;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaAccessor;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import org.iso._21090.II;
@@ -10,6 +10,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +59,9 @@ public class CoppaProviderHelper {
         return ids.toArray(new II[0]);
     }
 
-    public static II[] getPlayerIds(ResearchOrganization[] researchOrgs) {
+    public static II[] getPlayerIds(Object[] roles) {
         List<II> iis = new ArrayList<II>();
-        for(ResearchOrganization r : researchOrgs) {
+        for(Object r : roles) {
             II ii = getPlayerId(r);
             iis.add(ii);
         }
@@ -74,8 +76,17 @@ public class CoppaProviderHelper {
         return o.getIdentifier();
     }
 
-    public static II getPlayerId(ResearchOrganization r) {
-        return r.getPlayerIdentifier();
+    public static II getPlayerId(Object r) {
+        try {
+            Method m = r.getClass().getMethod("getPlayerIdentifier");
+            return (II) m.invoke(r);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T extends II> T[] tranformIds(Class<T> clazz, II[] iis) {

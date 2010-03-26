@@ -96,6 +96,12 @@ public class IntegrationHubCoppaAccessor implements CoppaAccessor, ManagedServic
         ));
     }
 
+    public HealthCareFacility[] getHealthCareFacilities(Id[] ids) {
+        return (HealthCareFacility[]) executor.execute(endpoint, new IntegrationHubCoppaTask(
+            PoOperation.GET_HEALTH_CARE_FACILITIES, (Object[]) ids
+        ));
+    }
+
     ////// CONFIGURATION
 
     public void setExecutor(IntegrationHubExecutor executor) {

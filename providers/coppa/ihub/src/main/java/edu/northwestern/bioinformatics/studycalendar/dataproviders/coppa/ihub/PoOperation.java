@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import gov.nih.nci.coppa.po.HealthCareFacility;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.entities.organization.client.OrganizationClient;
@@ -14,8 +15,8 @@ public enum PoOperation implements HubOperation {
     GET_ORGANIZATION(   "getById", Organization.class,                 OrganizationClient.class),
     ORGANIZATION_SEARCH("search",  Organization[].class,               OrganizationClient.class),
     GET_RESEARCH_ORGANIZATIONS("getByIds", ResearchOrganization[].class, ResearchOrganizationClient.class),
-    GET_RESEARCH_ORGANIZATIONS_BY_PLAYER_IDS("getByPlayerIds", ResearchOrganization[].class, ResearchOrganizationClient.class)
-    ;
+    GET_RESEARCH_ORGANIZATIONS_BY_PLAYER_IDS("getByPlayerIds", ResearchOrganization[].class, ResearchOrganizationClient.class),
+    GET_HEALTH_CARE_FACILITIES("getByPlayerIds", HealthCareFacility[].class, HealthCareFacility.class);
 
     private String operationName;
     private Class<?> responseType;

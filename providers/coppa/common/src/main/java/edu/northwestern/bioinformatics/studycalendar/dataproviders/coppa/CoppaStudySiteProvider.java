@@ -7,9 +7,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.coppa.common.LimitOffset;
+import gov.nih.nci.coppa.po.HealthCareFacility;
 import gov.nih.nci.coppa.po.Organization;
 import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.pa.Id;
+import static org.apache.commons.lang.ArrayUtils.addAll;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
@@ -18,7 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import static java.util.Collections.EMPTY_LIST;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider, RefreshableProvider {
     private BundleContext bundleContext;
@@ -41,12 +45,18 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                 if (studySites == null || studySites.length == 0) {
                     results.add(EMPTY_LIST);
                 } else {
-                    II[] researchOrgIIs = getResearchOrganizationIds(studySites);
+                    Map<String, II[]> roles = buildOrganizationRolesMap(studySites);
 
-                    gov.nih.nci.coppa.po.Id[] researchOrgIds = tranformIds(gov.nih.nci.coppa.po.Id.class, researchOrgIIs);
+                    gov.nih.nci.coppa.po.Id[] researchOrgIds = tranformIds(gov.nih.nci.coppa.po.Id.class, roles.get("RO"));
                     ResearchOrganization[] researchOrgs = getCoppaAccessor(bundleContext).getResearchOrganizations(researchOrgIds);
 
-                    II[] orgIIs = getPlayerIds(researchOrgs);
+                    gov.nih.nci.coppa.po.Id[] hcFacilityIds = tranformIds(gov.nih.nci.coppa.po.Id.class, roles.get("HCF"));
+                    HealthCareFacility[] hcFacilities= getCoppaAccessor(bundleContext).getHealthCareFacilities(hcFacilityIds);
+
+                    II[] orgIIsForResearchOrgs = getPlayerIds(researchOrgs);
+                    II[] orgIIsForhcFacilities = getPlayerIds(hcFacilities);
+
+                    II[] orgIIs = (II[]) addAll(orgIIsForResearchOrgs , orgIIsForhcFacilities);
 
                     gov.nih.nci.coppa.po.Id[] orgIDs = tranformIds(gov.nih.nci.coppa.po.Id.class, orgIIs);
                     Organization[] organizations = getOrganizationsById(orgIDs);
@@ -63,6 +73,24 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
         return results;
     }
 
+    private Map<String, II[]> buildOrganizationRolesMap(gov.nih.nci.coppa.services.pa.StudySite[] studySites) {
+        List<II> hcFacilities = new ArrayList<II>();
+        List<II> researchOrgs = new ArrayList<II>();
+
+        for (gov.nih.nci.coppa.services.pa.StudySite s : studySites) {
+            if (s.getHealthcareFacility() != null) {
+                hcFacilities.add(s.getHealthcareFacility());
+            } else if (s.getResearchOrganization() != null) {
+                researchOrgs.add(s.getResearchOrganization());
+            }
+        }
+
+        Map<String, II[]> roles = new HashMap<String, II[]>();
+        roles.put("HCF", hcFacilities.toArray(new II[0]));
+        roles.put("RO", researchOrgs.toArray(new II[0]));
+        return roles;
+    }
+
     private Organization[] getOrganizationsById(gov.nih.nci.coppa.po.Id[]  ids) {
         List<Organization> orgs = new ArrayList<Organization>();
         for (gov.nih.nci.coppa.po.Id id : ids) {
@@ -72,16 +100,6 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
             }
         }
         return orgs.toArray(new Organization[0]);
-    }
-
-
-    private II[] getResearchOrganizationIds(gov.nih.nci.coppa.services.pa.StudySite[] studySites) {
-        List<II> ids = new ArrayList<II>();
-        for(gov.nih.nci.coppa.services.pa.StudySite studySite : studySites) {
-            II ii = studySite.getResearchOrganization();
-            ids.add(ii);
-        }
-        return ids.toArray(new II[0]);
     }
 
     private List<StudySite> buildStudySites(List<Site> sites) {
