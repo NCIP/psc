@@ -35,36 +35,44 @@ public class CoppaProviderHelper {
 
     public static List<Site> pscSites(Organization... organizations) {
         List<Site> sites = new ArrayList<Site>();
-        for (Organization org : organizations) {
-            sites.add(pscSite(org));
+        if (organizations != null) {
+            for (Organization org : organizations) {
+                sites.add(pscSite(org));
+            }
         }
         return sites;
     }
 
     public static II[] getIds(ResearchOrganization... rs) {
         List<II> ids = new ArrayList<II>();
-        for (ResearchOrganization r : rs) {
-            II ii = getId(r);
-            ids.add(ii);
+        if (rs != null) {
+            for (ResearchOrganization r : rs) {
+                II ii = getId(r);
+                ids.add(ii);
+            }
         }
         return ids.toArray(new II[0]);
     }
 
     public static II[] getIds(Organization... os) {
         List<II> ids = new ArrayList<II>();
-        for (Organization r : os) {
-            II ii = getId(r);
-            ids.add(ii);
+        if (os != null) {
+            for (Organization r : os) {
+                II ii = getId(r);
+                ids.add(ii);
+            }
         }
         return ids.toArray(new II[0]);
     }
 
     public static II[] getPlayerIds(Object[] roles) {
         List<II> iis = new ArrayList<II>();
-        for(Object r : roles) {
-            II ii = getPlayerId(r);
-            iis.add(ii);
-        }
+        if (roles != null) {
+            for(Object r : roles) {
+                II ii = getPlayerId(r);
+                iis.add(ii);
+            }
+        }        
         return iis.toArray(new II[0]);
     }
 
