@@ -16,7 +16,8 @@ public enum PoOperation implements HubOperation {
     ORGANIZATION_SEARCH("search",  Organization[].class,               OrganizationClient.class),
     GET_RESEARCH_ORGANIZATIONS("getByIds", ResearchOrganization[].class, ResearchOrganizationClient.class),
     GET_RESEARCH_ORGANIZATIONS_BY_PLAYER_IDS("getByPlayerIds", ResearchOrganization[].class, ResearchOrganizationClient.class),
-    GET_HEALTH_CARE_FACILITIES("getByPlayerIds", HealthCareFacility[].class, HealthCareFacility.class);
+    GET_HEALTH_CARE_FACILITIES("getByIds", HealthCareFacility[].class, HealthCareFacility.class),
+    GET_HEALTH_CARE_FACILITIES_BY_PLAYER_IDS("getByPlayerIds", HealthCareFacility[].class, HealthCareFacility.class);
 
     private String operationName;
     private Class<?> responseType;
