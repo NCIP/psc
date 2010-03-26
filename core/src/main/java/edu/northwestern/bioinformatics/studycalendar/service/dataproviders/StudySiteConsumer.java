@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.Arrays.asList;
 
 public class StudySiteConsumer extends AbstractConsumer {
@@ -114,14 +115,31 @@ public class StudySiteConsumer extends AbstractConsumer {
 
             for (String providerName : toUpdate.keySet()) {
                 P provider = (P) getProvider(providerName);
-                
-                List<List<A>> allFromProvider = loadNewVersions(provider, toUpdate.get(providerName));
+
+                List<List<A>> allFromProvider;
+                try {
+                    allFromProvider = loadNewVersions(provider, toUpdate.get(providerName));
+                } catch (RuntimeException re) {
+                    log.error("Refreshing " + toUpdate.get(providerName).size() + ' ' +
+                        providerType().getSimpleName() + " instance(s) from " + provider.providerToken() +
+                        "failed", re);
+                    log.debug("Specifically, the provider was trying to refresh {}", toUpdate.get(providerName));
+                    allFromProvider = EMPTY_LIST;
+                }
 
                 List<B> associationsToUpdate = toUpdate.get(providerName);
-                for (int i = 0; i < associationsToUpdate .size(); i++) {
+                for (int i = 0; i < associationsToUpdate.size(); i++) {
+
                     B base = associationsToUpdate.get(i);
                     List<A> existing = getAssociated(base);
-                    List<A> fromProvider = allFromProvider.get(i);
+
+                    List<A> fromProvider;
+                    if (i < allFromProvider.size()) {
+                        fromProvider = allFromProvider.get(i);
+                    } else {
+                        fromProvider = EMPTY_LIST;
+                    }
+
                     if (fromProvider == null) {fromProvider = new ArrayList<A>();}
 
                     provisionInstances(fromProvider, provider);

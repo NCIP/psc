@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.notNull;
 
 import java.sql.Timestamp;
 import static java.util.Arrays.asList;
@@ -225,6 +226,22 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
 
         List<StudySite> ss0 = results.get(0);
         assertEquals("Wrong Number of Study Sites", 0, ss0.size());
+    }
+
+    public void testRefershWhenProviderThrowsARuntimeException() {
+        expectProviders(providers);
+
+        associate(nu123, nu);
+
+        expect(providerA.getAssociatedStudies((List<Site>) notNull())).andThrow(new RuntimeException("Please Suppress Me!!!"));
+
+        replayMocks();
+        
+        List<StudySite> results = consumer.refresh(nu);
+        verifyMocks();
+
+        assertEquals("Wrong Number of Study Sites", 1, results.size());
+        assertEquals("Wrong Site", "NU", results.get(0).getSite().getAssignedIdentifier());
     }
 
     //// Site Based Refresh
