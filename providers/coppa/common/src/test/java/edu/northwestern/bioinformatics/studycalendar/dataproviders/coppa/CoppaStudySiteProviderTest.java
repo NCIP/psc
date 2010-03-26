@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
@@ -19,9 +19,10 @@ import org.iso._21090.*;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.mock.MockServiceReference;
 
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
 import java.util.List;
+import static java.util.Collections.sort;
 
 /**
  * @author John Dzak
@@ -155,9 +156,79 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
-    public void testGetAssociatedStudiesWithResults() throws Exception {
+    public void testGetAssociatedStudiesWithOnlyResearchOrgResults() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
         expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
-                coppaResearchOrg("Resesarch Org (NU)", "NU"),
+            coppaResearchOrg("Resesarch Org (NU)", "NU")
+        });
+
+        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+            coppaStudySite("NU <-> NU123", "NU123", "Resesarch Org (NU)"),
+            coppaStudySite("NU <-> NU999", "NU999", "Resesarch Org (NU)")
+        });
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(
+            asList(pscSite("NU"))
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 2, actual.get(0).size());
+
+        List<String> secondaryIds = new ArrayList<String>();
+        secondaryIds.add(actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        secondaryIds.add(actual.get(0).get(1).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        sort(secondaryIds);
+
+        assertEquals("Wrong name", "NU123", secondaryIds.get(0));
+        assertEquals("Wrong name", "NU999", secondaryIds.get(1));
+    }
+
+
+    public void testGetAssociatedStudiesWithOnlyHealthCareFacilityResults() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(new HealthCareFacility[] {
+            coppaHealthCareFacility("Health Care Facility (NU)", "NU")
+        });
+
+        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+            coppaStudySite("NU <-> NU123", "NU123", "Health Care Facility (NU)"),
+            coppaStudySite("NU <-> NU999", "NU999", "Health Care Facility (NU)")
+        });
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(
+            asList(pscSite("NU"))
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 2, actual.get(0).size());
+
+        List<String> secondaryIds = new ArrayList<String>();
+        secondaryIds.add(actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        secondaryIds.add(actual.get(0).get(1).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        sort(secondaryIds);
+
+        assertEquals("Wrong name", "NU123", secondaryIds.get(0));
+        assertEquals("Wrong name", "NU999", secondaryIds.get(1));
+    }
+
+    public void testGetAssociatedStudiesWithBothHealthCareFacilityAndResearchOrgResults() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(new HealthCareFacility[] {
+            coppaHealthCareFacility("Health Care Facility (NU)", "NU")
+        });
+
+        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
+            coppaResearchOrg("Resesarch Org (NU)", "NU")
+        });
+
+        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+            coppaStudySite("NU <-> NU123", "NU123", "Health Care Facility (NU)"),
+            coppaStudySite("NU <-> NU999", "NU999", "Health Care Facility (NU)")
         });
 
         expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
@@ -171,8 +242,57 @@ public class CoppaStudySiteProviderTest extends TestCase {
         );
 
         assertEquals("Wrong size", 1, actual.size());
-        assertEquals("Wrong size", 1, actual.get(0).size());
-        assertEquals("Wrong name", "NU123", actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        assertEquals("Wrong size", 2, actual.get(0).size());
+
+        List<String> secondaryIds = new ArrayList<String>();
+        secondaryIds.add(actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        secondaryIds.add(actual.get(0).get(1).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
+        sort(secondaryIds);
+
+        assertEquals("Wrong name", "NU123", secondaryIds.get(0));
+        assertEquals("Wrong name", "NU999", secondaryIds.get(1));
+    }
+
+    public void testGetAssociatedStudiesWithNoRoleResults() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(
+            asList(pscSite("NU"))
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 0, actual.get(0).size());
+    }
+
+    public void testGetAssociatedStudiesWithNoSite() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(null);
+
+        assertEquals("Wrong size", 0, actual.size());
+    }
+
+    public void testGetAssociatedStudiesWithSiteMissingAssignedIdentifier() throws Exception {
+        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedStudies(
+            asList(new Site())
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertNull("Should be null", actual.get(0));
     }
 
 
@@ -214,16 +334,20 @@ public class CoppaStudySiteProviderTest extends TestCase {
         return ro;
     }
 
-    private HealthCareFacility coppaHealthCareFacility(String ext, String playerExt) {
+    private HealthCareFacility coppaHealthCareFacility(String extension, String playerExtension) {
         HealthCareFacility h = new HealthCareFacility();
 
-        DSETII d = new DSETII();
-        d.setControlActExtension(ext);
-        h.setIdentifier(d);
+        DSETII dsetti = new DSETII();
+        II ii = new II();
+        ii.setExtension(extension);
+        ii.setIdentifierName("NCI Health Care Facility identifier");
+        dsetti.getItem().add(ii);
 
-        II i = new II();
-        i.setExtension(playerExt);
-        h.setPlayerIdentifier(i);
+        II playerII = new II();
+        playerII.setExtension(playerExtension);
+
+        h.setIdentifier(dsetti);
+        h.setPlayerIdentifier(playerII);
 
         return h;
     }

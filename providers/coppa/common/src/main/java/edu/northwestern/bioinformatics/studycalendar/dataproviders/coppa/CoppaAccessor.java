@@ -40,4 +40,6 @@ public interface CoppaAccessor {
     ResearchOrganization[] getResearchOrganizations(gov.nih.nci.coppa.po.Id[] ids );
 
     HealthCareFacility[] getHealthCareFacilities(gov.nih.nci.coppa.po.Id[] ids);
+
+    HealthCareFacility[] getHealthCareFacilitiesByPlayerIds(gov.nih.nci.coppa.po.Id[] ids);
 }
