@@ -179,6 +179,22 @@
         });
     </script>
 
+    <script type="text/javascript">
+        function generateExport(extention) {
+            var uri = SC.relativeUri("/api/v1/reports/scheduled-activities")
+            var startDate = $("actual-date-start").value
+            if (startDate != null && startDate.length > 0) {
+                startDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
+            }
+            var endDate = $("actual-date-stop").value
+            if (endDate != null && startDate.length > 0) {
+                endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-stop").value)
+            }
+
+            location.href = uri+extention + '?start-date='+startDate+'&end-date='+endDate+'&person-id='+'${subject.gridId}';
+        }
+    </script>
+
     <tags:resigTemplate id="list_day_entry">
         <div class="day [#= dateClass #]">
             <h3 class="date">
@@ -243,6 +259,7 @@
             </li>
         </tags:resigTemplate>
     </c:if>
+
 </head>
 <body>
 <div id="schedule-timeline"></div>
@@ -539,6 +556,41 @@
                 </c:forEach>
             </c:if>
         </div>
+
+        <div class="accordionDiv">
+            <h3><a class="accordionHeader" href="#">Report</a> </h3>
+        </div>
+        <div class="accordion-content">
+            <div class="accordionRow">
+                <div class="label"> Export activities scheduled from:  </div>
+                <div class="value">
+                    <input id="actual-date-start" class="date" type="text" value="" />
+                    <a href="#" id="actual-date-start-calbutton">
+                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                    </a>
+                <div></div>    
+               <div class="label"> to:  </div>
+                    <input id="actual-date-stop" class="date" type="text" value="" />
+                    <a href="#" id="actual-date-stop-calbutton">
+                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                    </a>
+               </div>
+            </div>
+            <div class="accordionRow" style="margin-top:1em;">
+                <div class="value" >
+                    <input class="button" type="submit" onclick="generateExport('.xls')" name="Excel" value="Excel"/>
+                    <input class="button" type="submit" onclick="generateExport('.csv')" name="CSV" value="CSV"/>
+                </div>
+
+
+            </div>
+            <div class="accordionRow " style="margin-top:1em;">
+                <a style="float:left;" href="<c:url value="/pages/report/scheduledActivitiesReport"/>">
+                    Show more options
+                </a>
+            </div>
+        </div>
+
      </c:if>
      <c:if test="${schedulePreview}">
         <div class="accordionDiv">

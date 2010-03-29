@@ -34,6 +34,7 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         setAuthorizedFor(Method.GET, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(PscMetadataService.TEXT_CSV));
+        getVariants().add(new Variant(MediaType.APPLICATION_EXCEL));
     }
 
     @Override
@@ -108,6 +109,9 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
             return new ReportCsvRepresentation(allRows, ',');
+        }
+        if (variant.getMediaType().equals(MediaType.APPLICATION_EXCEL)) {
+            return new ReportCsvRepresentation(allRows, '\t');
         }
         return null;
     }
