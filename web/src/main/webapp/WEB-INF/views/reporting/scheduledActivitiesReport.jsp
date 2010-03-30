@@ -50,7 +50,7 @@
             params['start-date'] = startDate;
             var endDate = $("actual-date-stop").value
             if (endDate != null && startDate.length > 0) {
-                endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
+                endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-stop").value)
             }
 
             params['end-date'] = endDate;

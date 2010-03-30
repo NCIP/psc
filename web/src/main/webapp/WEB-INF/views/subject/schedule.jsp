@@ -191,7 +191,11 @@
                 endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-stop").value)
             }
 
-            location.href = uri+extention + '?start-date='+startDate+'&end-date='+endDate+'&person-id='+'${subject.gridId}';
+            var personId = '${subject.personId}'
+            if (personId == null) {
+                personId = '${subject.gridId}'
+            }
+            location.href = uri+extention + '?start-date='+startDate+'&end-date='+endDate+'&person-id='+personId;
         }
     </script>
 

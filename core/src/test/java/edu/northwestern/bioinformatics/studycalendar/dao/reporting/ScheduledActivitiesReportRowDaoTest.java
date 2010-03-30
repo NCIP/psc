@@ -14,6 +14,9 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.text.ParseException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * @author John Dzak
@@ -151,6 +154,24 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertEquals("Returns different number of rows ", 3, rows.size());
     }
 
+    public void testRowWithPersonIdAndStartAndEndDate() {
+        filters.setPersonId("UNIVERSAL");
+        MutableRange<Date> range = new MutableRange<Date>();
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = API_DATE_FORMAT.get().parse("2007-09-29");
+            endDate = API_DATE_FORMAT.get().parse("2007-10-29");
+        } catch (ParseException pe) {
+            pe.getMessage(); 
+        }
+        range.setStart(startDate);
+        range.setStop(endDate);
+        filters.setActualActivityDate(range);
+        List<ScheduledActivitiesReportRow> rows = assertSearchWithResults(NEG_18);
+        assertEquals("Returns different number of rows ", 1, rows.size());
+    }
+
     public void testRowWithLabelFilter() {
         filters.setLabel("LABELB");
         List<ScheduledActivitiesReportRow> rows = doSearch();
@@ -158,5 +179,9 @@ public class ScheduledActivitiesReportRowDaoTest extends
             assertTrue("labelB is not in the row", row.getScheduledActivity().getLabels().contains("labelB"));
         }
     }
+
+    private static final ThreadLocal<DateFormat> API_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+        @Override protected DateFormat initialValue() { return new SimpleDateFormat("yyyy-MM-dd"); }
+    };
 
 }
