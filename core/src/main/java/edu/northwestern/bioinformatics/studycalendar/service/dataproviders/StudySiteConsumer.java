@@ -19,18 +19,18 @@ public class StudySiteConsumer extends AbstractConsumer {
     private final Log logger = LogFactory.getLog(getClass());
 
     public List<StudySite> refresh(Study in) {
-        return refresh(asList(in)).get(0);
+        return refreshSites(asList(in)).get(0);
     }
 
-    public List<List<StudySite>> refresh(List<Study> in, Object... o) {     // Variable Object argument is a hack to fix my overloading problem with generics
+    public List<List<StudySite>> refreshSites(List<Study> in) {
         return new StudyBasedStudySiteRefresh().execute(in);
     }
 
     public List<StudySite> refresh(Site in) {
-        return refresh(asList(in)).get(0);
+        return refreshStudies(asList(in)).get(0);
     }
 
-    public List<List<StudySite>> refresh(List<Site> in) {
+    public List<List<StudySite>> refreshStudies(List<Site> in) {
         return new SiteBasedStudySiteRefresh().execute(in);
     }
 

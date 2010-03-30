@@ -180,7 +180,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         expectProviders(asList(providerA, providerB));
 
         replayMocks();
-        List<List<StudySite>> results = consumer.refresh(asList(nu123));
+        List<List<StudySite>> results = consumer.refreshSites(asList(nu123));
         verifyMocks();
 
         assertEquals("Wrong Number of Study Sites Lists", 1, results.size());
@@ -200,7 +200,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         expectProviders(providers);
 
         replayMocks();
-        List<List<StudySite>> results = consumer.refresh(asList(notFromProvider));
+        List<List<StudySite>> results = consumer.refreshSites(asList(notFromProvider));
         verifyMocks();
 
         assertEquals("Wrong Number of Study Sites Lists", 1, results.size());
@@ -219,7 +219,7 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         ));
 
         replayMocks();
-        List<List<StudySite>> results = consumer.refresh(asList(notFromProvider));
+        List<List<StudySite>> results = consumer.refreshSites(asList(notFromProvider));
         verifyMocks();
 
         assertEquals("Wrong Number of Study Sites Lists", 1, results.size());

@@ -95,7 +95,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
 
-        expect(studySiteConsumer.refresh(asList(all999))).andReturn(asList(asList(
+        expect(studySiteConsumer.refreshSites(asList(all999))).andReturn(asList(asList(
             fromProvider, nu_all999
         )));
 
@@ -179,7 +179,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     public void testRefreshStudySitesUsingStudyReturningExistingStudySites() throws Exception {
         Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
 
-        expect(studySiteConsumer.refresh(asList(nu123))).andReturn(asList(asList(
+        expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList(asList(
             providedStudySite(nu123, nuProvided, "alpha")
         )));
 
@@ -201,7 +201,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
         Site mayoProvided = createSite(null, "Mayo Clinic");
 
-        expect(studySiteConsumer.refresh(asList(nu123))).andReturn(asList(asList(
+        expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList(asList(
             providedStudySite(nu123, nuProvided, "alpha"),
             providedStudySite(nu123, mayoProvided, "alpha")
         )));
@@ -230,7 +230,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         Study nu123Provided = new Study();
         addSecondaryIdentifier(nu123Provided , "Mock Provider Identifier", "NU123");
 
-        expect(studySiteConsumer.refresh(asList(nu))).andReturn(asList(asList(
+        expect(studySiteConsumer.refreshStudies(asList(nu))).andReturn(asList(asList(
             providedStudySite(nu123Provided , nu, "alpha")
         )));
 
@@ -256,7 +256,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         Study wo222Provided = new Study();
         addSecondaryIdentifier(wo222Provided, "Mock Provider Identifier", "WO222");
 
-        expect(studySiteConsumer.refresh(asList(nu))).andReturn(asList(asList(
+        expect(studySiteConsumer.refreshStudies(asList(nu))).andReturn(asList(asList(
             providedStudySite(nu123Provided , nu, "alpha"),
             providedStudySite(wo222Provided, nu, "alpha")
         )));

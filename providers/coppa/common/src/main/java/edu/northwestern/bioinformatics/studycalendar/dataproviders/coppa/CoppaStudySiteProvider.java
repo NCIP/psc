@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.Refreshab
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.coppa.common.LimitOffset;
 import gov.nih.nci.coppa.po.HealthCareFacility;
 import gov.nih.nci.coppa.po.Organization;
@@ -13,7 +13,6 @@ import gov.nih.nci.coppa.po.ResearchOrganization;
 import gov.nih.nci.coppa.services.pa.Id;
 import static org.apache.commons.collections.CollectionUtils.collect;
 import org.apache.commons.collections.Transformer;
-import static org.apache.commons.lang.ArrayUtils.addAll;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
@@ -32,6 +31,10 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
     }
 
     public List<List<StudySite>> getAssociatedSites(List<Study> studies) {
+        if (studies == null) {
+            return EMPTY_LIST;
+        }
+        
         List<List<StudySite>> results = new ArrayList<List<StudySite>>(studies.size());
 
         for (Study study : studies) {
@@ -44,20 +47,14 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                 if (studySites == null || studySites.length == 0) {
                     results.add(EMPTY_LIST);
                 } else {
-                    Map<String, II[]> roles = buildOrganizationRolesMap(studySites);
+                    II[] roles = collectHealthCareFacilityRoles(studySites);
 
-                    gov.nih.nci.coppa.po.Id[] researchOrgIds = tranformIds(gov.nih.nci.coppa.po.Id.class, roles.get("RO"));
-                    ResearchOrganization[] researchOrgs = getCoppaAccessor(bundleContext).getResearchOrganizations(researchOrgIds);
-
-                    gov.nih.nci.coppa.po.Id[] hcFacilityIds = tranformIds(gov.nih.nci.coppa.po.Id.class, roles.get("HCF"));
+                    gov.nih.nci.coppa.po.Id[] hcFacilityIds = tranformIds(gov.nih.nci.coppa.po.Id.class, roles);
                     HealthCareFacility[] hcFacilities= getCoppaAccessor(bundleContext).getHealthCareFacilities(hcFacilityIds);
 
-                    II[] orgIIsForResearchOrgs = getPlayerIds(researchOrgs);
                     II[] orgIIsForhcFacilities = getPlayerIds(hcFacilities);
 
-                    II[] orgIIs = (II[]) addAll(orgIIsForResearchOrgs , orgIIsForhcFacilities);
-
-                    gov.nih.nci.coppa.po.Id[] orgIDs = tranformIds(gov.nih.nci.coppa.po.Id.class, orgIIs);
+                    gov.nih.nci.coppa.po.Id[] orgIDs = tranformIds(gov.nih.nci.coppa.po.Id.class, orgIIsForhcFacilities);
                     Organization[] organizations = getOrganizationsById(orgIDs);
 
                     List<Site> sites = pscSites(organizations);
@@ -72,22 +69,16 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
         return results;
     }
 
-    private Map<String, II[]> buildOrganizationRolesMap(gov.nih.nci.coppa.services.pa.StudySite[] studySites) {
+    private II[] collectHealthCareFacilityRoles(gov.nih.nci.coppa.services.pa.StudySite[] studySites) {
         List<II> hcFacilities = new ArrayList<II>();
-        List<II> researchOrgs = new ArrayList<II>();
 
         for (gov.nih.nci.coppa.services.pa.StudySite s : studySites) {
             if (s.getHealthcareFacility() != null) {
                 hcFacilities.add(s.getHealthcareFacility());
-            } else if (s.getResearchOrganization() != null) {
-                researchOrgs.add(s.getResearchOrganization());
             }
         }
 
-        Map<String, II[]> roles = new HashMap<String, II[]>();
-        roles.put("HCF", hcFacilities.toArray(new II[0]));
-        roles.put("RO", researchOrgs.toArray(new II[0]));
-        return roles;
+        return hcFacilities.toArray(new II[0]);
     }
 
     private Organization[] getOrganizationsById(gov.nih.nci.coppa.po.Id[]  ids) {
@@ -139,20 +130,6 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                         associatedStudyIds.addAll(collectStudyProtocolIdentifiers(raw));
                     }
                 }
-
-                ResearchOrganization ro = getResearchOrganizationByPlayerId(s.getAssignedIdentifier());
-                if (ro != null) {
-                    II roII = detectResearchOrganizationIdentifier(ro);
-
-                    if (roII != null && roII.getExtension() != null) {
-                        gov.nih.nci.coppa.services.pa.StudySite param = new gov.nih.nci.coppa.services.pa.StudySite();
-                        param.setResearchOrganization(roII);
-                        gov.nih.nci.coppa.services.pa.StudySite[] raw = searchStudySitesByStudySite(param);
-
-                        associatedStudyIds.addAll(collectStudyProtocolIdentifiers(raw));
-                    }
-                }
-
 
                 for (String protocolId : associatedStudyIds) {
                     StudySecondaryIdentifier ssid = new StudySecondaryIdentifier();

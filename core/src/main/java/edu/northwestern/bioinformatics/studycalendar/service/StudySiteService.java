@@ -138,7 +138,7 @@ public class StudySiteService {
         List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
 
         final List<Site> allSites = siteService.getAll();
-        final List<List<StudySite>> allProvided = studySiteConsumer.refresh(studies);
+        final List<List<StudySite>> allProvided = studySiteConsumer.refreshSites(studies);
         
         for (int i = 0; i < studies.size(); i++) {
             final Study study = studies.get(i);
@@ -207,7 +207,7 @@ public class StudySiteService {
         List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
 
         final List<Study> allStudies = studyDao.getAll();
-        final List<List<StudySite>> allProvided = studySiteConsumer.refresh(sites);
+        final List<List<StudySite>> allProvided = studySiteConsumer.refreshStudies(sites);
 
         for (int i = 0; i < sites.size(); i++) {
             final Site site = sites.get(i);

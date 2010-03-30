@@ -76,25 +76,13 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
-    public void testGetAssociatedSitesWithOnlyResearchOrgResults() throws Exception {
+    public void testGetAssociatedSitesWithNoRoleResults() throws Exception {
         expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
             coppaStudySite("Ext SS", null, "Ext RO")
-        });
-
-        expect(coppaAccessor.getResearchOrganizations((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
-            coppaResearchOrg("Ext RO A", "Player Ext RO A"),
-            coppaResearchOrg("Ext RO B", "Player Ext RO B")
         });
 
         expect(coppaAccessor.getHealthCareFacilities((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new HealthCareFacility[0]);
 
-        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
-            coppaOrganization("Name A", "Ext O A")
-        );            
-
-        expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
-            coppaOrganization("Name B", "Ext O B")
-        );
 
         mocks.replayMocks();
 
@@ -103,22 +91,35 @@ public class CoppaStudySiteProviderTest extends TestCase {
         );
 
         assertEquals("Wrong size", 1, actual.size());
-        assertEquals("Wrong size", 2, actual.get(0).size());
-        assertEquals("Wrong name", "Name A", actual.get(0).get(0).getSite().getName());
-        assertEquals("Wrong name", "Name B", actual.get(0).get(1).getSite().getName());
+        assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
-    public void testGetAssociatedSitesWithBothResearchOrgAndHealthCareFacilityResults() throws Exception {
+    public void testGetAssociatedSitesWithNullRoleResults() throws Exception {
         expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
             coppaStudySite("Ext SS", null, "Ext RO")
         });
 
-        expect(coppaAccessor.getResearchOrganizations((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
-            coppaResearchOrg("Ext RO A", "Player Ext RO A"),
+        expect(coppaAccessor.getHealthCareFacilities((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
+
+
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedSites(
+            asList(pscStudy("Ext SS"))
+        );
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 0, actual.get(0).size());
+    }
+
+    public void testGetAssociatedSitesWithMultipleResults() throws Exception {
+        expect(coppaAccessor.searchStudySitesByStudyProtocolId((Id) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
+            coppaStudySite("Ext SS", null, "Ext RO")
         });
 
         expect(coppaAccessor.getHealthCareFacilities((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new HealthCareFacility[] {
             coppaHealthCareFacility("Ext HCF A", "Player Ext HCF A"),
+            coppaHealthCareFacility("Ext HCF B", "Player Ext HCF B")
         });
 
         expect(coppaAccessor.getOrganization((gov.nih.nci.coppa.po.Id) notNull())).andReturn(
@@ -129,6 +130,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
             coppaOrganization("Name B", "Ext O B")
         );
 
+
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedSites(
@@ -137,12 +139,20 @@ public class CoppaStudySiteProviderTest extends TestCase {
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 2, actual.get(0).size());
-        
+
         assertEquals("Wrong name", "Name A", actual.get(0).get(0).getSite().getName());
         assertEquals("Wrong name", "Ext O A", actual.get(0).get(0).getSite().getAssignedIdentifier());
 
         assertEquals("Wrong name", "Name B", actual.get(0).get(1).getSite().getName());
         assertEquals("Wrong name", "Ext O B", actual.get(0).get(1).getSite().getAssignedIdentifier());
+    }
+
+    public void testGetAssociatedSitesWithNullStudy() {
+        mocks.replayMocks();
+
+        List<List<StudySite>> actual = provider.getAssociatedSites(null);
+
+        assertEquals("Wrong size", 0, actual.size());
     }
 
     public void testGetAssociatedSitesWithBlankStudy() {
@@ -156,83 +166,14 @@ public class CoppaStudySiteProviderTest extends TestCase {
         assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
-    public void testGetAssociatedStudiesWithOnlyResearchOrgResults() throws Exception {
-        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
-
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
-            coppaResearchOrg("Resesarch Org (NU)", "NU")
-        });
-
-        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
-            coppaStudySite("NU <-> NU123", "NU123", "Resesarch Org (NU)"),
-            coppaStudySite("NU <-> NU999", "NU999", "Resesarch Org (NU)")
-        });
-
-        mocks.replayMocks();
-
-        List<List<StudySite>> actual = provider.getAssociatedStudies(
-            asList(pscSite("NU"))
-        );
-
-        assertEquals("Wrong size", 1, actual.size());
-        assertEquals("Wrong size", 2, actual.get(0).size());
-
-        List<String> secondaryIds = new ArrayList<String>();
-        secondaryIds.add(actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
-        secondaryIds.add(actual.get(0).get(1).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
-        sort(secondaryIds);
-
-        assertEquals("Wrong name", "NU123", secondaryIds.get(0));
-        assertEquals("Wrong name", "NU999", secondaryIds.get(1));
-    }
-
-
-    public void testGetAssociatedStudiesWithOnlyHealthCareFacilityResults() throws Exception {
-        expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(new HealthCareFacility[] {
-            coppaHealthCareFacility("Health Care Facility (NU)", "NU")
-        });
-
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
-
-        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
-            coppaStudySite("NU <-> NU123", "NU123", "Health Care Facility (NU)"),
-            coppaStudySite("NU <-> NU999", "NU999", "Health Care Facility (NU)")
-        });
-
-        mocks.replayMocks();
-
-        List<List<StudySite>> actual = provider.getAssociatedStudies(
-            asList(pscSite("NU"))
-        );
-
-        assertEquals("Wrong size", 1, actual.size());
-        assertEquals("Wrong size", 2, actual.get(0).size());
-
-        List<String> secondaryIds = new ArrayList<String>();
-        secondaryIds.add(actual.get(0).get(0).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
-        secondaryIds.add(actual.get(0).get(1).getStudy().getSecondaryIdentifierValue(COPPA_STUDY_IDENTIFIER_TYPE));
-        sort(secondaryIds);
-
-        assertEquals("Wrong name", "NU123", secondaryIds.get(0));
-        assertEquals("Wrong name", "NU999", secondaryIds.get(1));
-    }
-
     public void testGetAssociatedStudiesWithBothHealthCareFacilityAndResearchOrgResults() throws Exception {
         expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(new HealthCareFacility[] {
             coppaHealthCareFacility("Health Care Facility (NU)", "NU")
         });
 
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn( new ResearchOrganization[] {
-            coppaResearchOrg("Resesarch Org (NU)", "NU")
-        });
-
         expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
             coppaStudySite("NU <-> NU123", "NU123", "Health Care Facility (NU)"),
             coppaStudySite("NU <-> NU999", "NU999", "Health Care Facility (NU)")
-        });
-
-        expect(coppaAccessor.searchStudySitesByStudySite((gov.nih.nci.coppa.services.pa.StudySite) notNull(), (LimitOffset) notNull())).andReturn( new gov.nih.nci.coppa.services.pa.StudySite[] {
-            coppaStudySite("NU <-> NU123", "NU123", "Resesarch Org (NU)")
         });
 
         mocks.replayMocks();
@@ -256,8 +197,6 @@ public class CoppaStudySiteProviderTest extends TestCase {
     public void testGetAssociatedStudiesWithNoRoleResults() throws Exception {
         expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
 
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
-
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedStudies(
@@ -271,8 +210,6 @@ public class CoppaStudySiteProviderTest extends TestCase {
     public void testGetAssociatedStudiesWithNoSite() throws Exception {
         expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
 
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
-
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedStudies(null);
@@ -282,8 +219,6 @@ public class CoppaStudySiteProviderTest extends TestCase {
 
     public void testGetAssociatedStudiesWithSiteMissingAssignedIdentifier() throws Exception {
         expect(coppaAccessor.getHealthCareFacilitiesByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
-
-        expect(coppaAccessor.getResearchOrganizationsByPlayerIds((gov.nih.nci.coppa.po.Id[]) notNull())).andReturn(null);
 
         mocks.replayMocks();
 
