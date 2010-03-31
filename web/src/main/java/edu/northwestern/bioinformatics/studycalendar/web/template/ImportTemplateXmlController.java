@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyImportException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -27,7 +27,7 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
         ImportTemplateXmlCommand command = (ImportTemplateXmlCommand) o;
         try {
             command.apply();
-        } catch (StudyImportException e) {
+        } catch (StudyCalendarValidationException e) {
             errors.reject("error.problem.importing.file", new String[]{e.getMessage()}, e.getMessage());
 
         }

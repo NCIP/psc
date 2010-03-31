@@ -167,4 +167,50 @@ public class XmlExportImportIntegratedTest extends DaoTestCase {
         assertEquals("Segment not added to live plan tree", 2, actualE1.getStudySegments().size());
         assertEquals("Wrong segment added to live plan tree", "New Segment", actualE1.getStudySegments().get(1).getName());
     }
+
+    public void testExportImportWithReleasedAmendmentAndNewReleasedAmendmentWithPopulation() throws Exception {
+        amendmentService.amend(reload());
+
+        Study expectedExport = reload().transientClone();
+        Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
+
+        Population p1 = createPopulation("T1", "Test1");
+        Add newPop = Add.create(p1);
+        dev.addDelta(Delta.createDeltaFor(expectedExport, newPop));
+        expectedExport.setDevelopmentAmendment(dev);
+        Fixtures.amend(expectedExport);
+
+        InputStream xml = export(expectedExport);
+        Study actual = doImport(xml);
+
+        assertNull("Should have no dev amendment", actual.getDevelopmentAmendment());
+        assertNotNull("Should have a released amendment", actual.getAmendment());
+        assertEquals("Released amendment should be A0", "A0", actual.getAmendment().getName());
+        assertNotNull("Should have two released amendments, actually", actual.getAmendment().getPreviousAmendment());
+        assertEquals("Prev amendment should be original", Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME,
+            actual.getAmendment().getPreviousAmendment().getName());
+        assertEquals("Population not added to live plan tree", 1, actual.getPopulations().size());
+        assertEquals("Wrong population added to live plan tree", "Test1", actual.getPopulations().iterator().next().getName());
+    }
+
+    public void testExportImportDevAmendmentWithNewPopulation() throws Exception {
+        amendmentService.amend(reload());
+
+        Study expectedExport = reload().transientClone();
+        Amendment dev = createAmendment("A0", DateUtils.createDate(2008, Calendar.JANUARY, 3));
+        Population p1 = createPopulation("T1", "Test1");
+        Add newPop = Add.create(p1);
+        dev.addDelta(Delta.createDeltaFor(expectedExport, newPop));
+        expectedExport.setDevelopmentAmendment(dev);
+        InputStream xml = export(expectedExport);
+        Study actual = doImport(xml);
+        Add add = (Add) actual.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
+        assertNotNull("Add not found", add);
+        Child<?> child = deltaService.findChangeChild(add);
+        assertTrue(child instanceof Population);
+        Population actualPopulation = (Population) child;
+        assertNotNull("Should have dev amendment", actual.getDevelopmentAmendment());
+        assertEquals("Wrong Population Name", "Test1", actualPopulation.getName());
+        assertEquals("Wrong Population Abbreviation", "T1", actualPopulation.getAbbreviation());
+    }
 }

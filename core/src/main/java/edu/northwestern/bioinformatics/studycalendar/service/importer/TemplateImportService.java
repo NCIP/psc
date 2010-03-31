@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyImportException;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateInternalReferenceIndex.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import java.io.InputStream;
 import java.util.*;
@@ -82,7 +82,7 @@ public class TemplateImportService {
             int oldVersionSize = oldVersionList.size();
              // Detect changes to released amendment
             if (newVersionSize < oldVersionSize) {
-                throw new StudyImportException("Imported study doesn't have all released amendment as of existing study");
+                throw new StudyCalendarValidationException("Imported study doesn't have all released amendment as of existing study");
             }
 
             List<Amendment> newVersionList = newStudy.getAmendmentsList().subList(newVersionSize -
@@ -99,7 +99,7 @@ public class TemplateImportService {
             }
 
             if (sb.length() != 0) {
-                throw new StudyImportException(sb.toString());
+                throw new StudyCalendarValidationException(sb.toString());
             }
 
             TemplateInternalReferenceIndex oldExpectedIndex = buildTemplateInternalReferenceIndex(oldVersionList);
@@ -119,7 +119,7 @@ public class TemplateImportService {
             }
 
             if (!oldExpectedIndex.getIndex().isEmpty() || !newExpectedIndex.getIndex().isEmpty()) {
-                throw new StudyImportException("Imported study and existing study has different grid ids for released amendments");
+                throw new StudyCalendarValidationException("Imported study and existing study has different grid ids for released amendments");
             }
 
             templateDevelopmentService.deleteDevelopmentAmendmentOnly(oldStudy);
@@ -165,33 +165,33 @@ public class TemplateImportService {
         }
 
         if (conflicts.length() != 0) {
-            throw new StudyImportException("Existing study has new amendments with"
+            throw new StudyCalendarValidationException("Existing study has new amendments with"
                     .concat(conflicts.toString()).concat("already exists in system"));
         }
 
-        // Create new activities if any
         List<Changeable> cChildren = new ArrayList<Changeable>();
+        List<Population> populations = new ArrayList<Population>();
         for (Amendment amendment : amendments) {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
                     if (change.getAction() == ChangeAction.ADD) {
                         Child child = deltaService.findChangeChild((Add) change);
                         if (child == null) {
-                                    throw new StudyImportException(
-                                        "Could not resolve child for %s", change);
+                                    throw new StudyCalendarValidationException("Could not resolve child for %s", change);
                         }
-                        if (!(child instanceof Population)) {
-                            if (child instanceof PlannedActivity) {
-                                cChildren.add(child);
-                            } else {
-                                cChildren.addAll(templateService.findChildren((Parent) child, PlannedActivity.class));
-                            }
+                        if (child instanceof Population) {
+                            populations.add((Population)child);
+                        } else if (child instanceof PlannedActivity) {
+                            cChildren.add(child);
+                        } else {
+                            cChildren.addAll(templateService.findChildren((Parent) child, PlannedActivity.class));
                         }
                     }
                 }
             }
         }
 
+        StringBuilder populationErrors = new StringBuilder();
         for (Changeable pa: cChildren) {
             PlannedActivity plannedActivity = (PlannedActivity)pa;
             Activity activity = plannedActivity.getActivity();
@@ -203,7 +203,24 @@ public class TemplateImportService {
                 activityService.saveActivity(activity);
                 plannedActivity.setActivity(activity);
             }
+
+            Population population = plannedActivity.getPopulation();
+            if (population != null) {
+                Population resolvedPopulation = findPopulation(populations, population.getAbbreviation());
+                if (resolvedPopulation != null) {
+                    plannedActivity.setPopulation(resolvedPopulation);
+                } else {
+                    populationErrors.append(
+                        String.format(" [ Could not resolve population with abbreviation %s for plannedActivity with identifier %s ] "
+                            , population.getAbbreviation(), plannedActivity.getGridId()));
+                }
+            }
         }
+
+        if (populationErrors.length() != 0) {
+            throw new StudyCalendarValidationException(populationErrors.toString());
+        }
+
         return newStudy;
     }
 
@@ -236,6 +253,15 @@ public class TemplateImportService {
             }
         }
         return index;
+    }
+
+    private Population findPopulation(List<Population> populations, String abbreviation) {
+        for (Population population : populations) {
+            if (abbreviation.equals(population.getAbbreviation())) {
+                return population;
+            }
+        }
+        return null;
     }
 
     public Study saveStudy(Study newStudy, Study oldStudy) {
@@ -284,7 +310,7 @@ public class TemplateImportService {
             if (deltaNode != null) {
                 delta.setNode(deltaNode);
             } else {
-                throw new StudyImportException(String.format("Delta with id %s references unknown node with id %s. Please check the node id."
+                throw new StudyCalendarValidationException(String.format("Delta with id %s references unknown node with id %s. Please check the node id."
                         , delta.getGridId() ,delta.getNode().getGridId()));
             }
             // resolve child nodes

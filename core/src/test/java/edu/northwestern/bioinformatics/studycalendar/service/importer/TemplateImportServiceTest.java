@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.importer;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyImportException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -122,8 +122,8 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyImportException sie) {
-            assertEquals("Imported study doesn't have all released amendment as of existing study", sie.getMessage());
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Imported study doesn't have all released amendment as of existing study", scve.getMessage());
         }
     }
 
@@ -142,9 +142,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyImportException sie) {
+        } catch (StudyCalendarValidationException scve) {
             String expectedMessage = "Amendment 04/06/2007 (Amendment1) differs to Amendment 04/06/2007 (Amendment)[amendment name Amendment1 does not match to Amendment;]";
-            assertEquals(expectedMessage, sie.getMessage());
+            assertEquals(expectedMessage, scve.getMessage());
         }
     }
 
@@ -248,9 +248,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyImportException sie) {
+        } catch (StudyCalendarValidationException scve) {
             String expectedMessage = "Imported study and existing study has different grid ids for released amendments";
-            assertEquals(expectedMessage, sie.getMessage());
+            assertEquals(expectedMessage, scve.getMessage());
         }
     }
 
@@ -296,9 +296,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyImportException sie) {
+        } catch (StudyCalendarValidationException scve) {
             String expectedMessage = "Existing study has new amendments with [ grid id delta1 ] already exists in system";
-            assertEquals(expectedMessage, sie.getMessage());
+            assertEquals(expectedMessage, scve.getMessage());
         }
     }
 
@@ -319,9 +319,9 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         try {
             service.readAndSaveTemplate(target);
             fail("Exception not thrown");
-        } catch (StudyImportException sie) {
+        } catch (StudyCalendarValidationException scve) {
             String expectedMessage = "Delta with id pc-delta references unknown node with id cal. Please check the node id.";
-            assertEquals(expectedMessage, sie.getMessage());
+            assertEquals(expectedMessage, scve.getMessage());
         }
     }
 
