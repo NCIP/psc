@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -12,7 +11,6 @@ import org.dom4j.Element;
 import java.util.List;
 
 public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXmlSerializer<Delta> {
-    protected Study study;
 
     private static final String NODE_ID = "node-id";
 
@@ -58,13 +56,8 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
         return delta;
     }
 
-    public void setStudy(Study study) {
-        this.study = study;
-    }
-
     public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
         ChangeXmlSerializerFactory factory = (ChangeXmlSerializerFactory) getBeanFactory().getBean("changeXmlSerializerFactory");
-        factory.setStudy(study);
         return factory;
     }
 

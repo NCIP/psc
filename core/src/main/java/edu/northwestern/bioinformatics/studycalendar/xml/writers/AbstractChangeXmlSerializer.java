@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
@@ -10,8 +9,6 @@ import static java.util.Collections.singletonList;
 import java.util.List;
 
 public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarXmlSerializer<Change> {
-    private Study study;
-
     protected abstract Change changeInstance();
     protected abstract String elementName();
     protected void addAdditionalAttributes(final Change change, Element element) {}
@@ -20,14 +17,8 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
     public Element createElement(Change change) {
         Element element = element(elementName());
         element.addAttribute(ID, change.getGridId());
-        try {
-            addAdditionalAttributes(change, element);
-            return element;
-        } catch (IllegalStateException ise) {
-            // This is probably temporary.  See AddXmlSerializer and issue #494/#496.
-            log.warn("XML incomplete: " + ise.getMessage());
-            return null;
-        }
+        addAdditionalAttributes(change, element);
+        return element;
     }
 
     public Change readElement(Element element) {
@@ -71,12 +62,7 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
 
     protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
         PlanTreeNodeXmlSerializerFactory factory = (PlanTreeNodeXmlSerializerFactory) getBeanFactory().getBean("planTreeNodeXmlSerializerFactory");
-        factory.setStudy(study);
         return factory;
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
     }
 
     public StringBuffer validateElement(Change change, Element eChange) {

@@ -24,7 +24,6 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         PeriodXmlSerializer serializer = (PeriodXmlSerializer) getBeanFactory().getBean("periodXmlSerializer");
-        serializer.setStudy(study);
         return serializer;
     }
 

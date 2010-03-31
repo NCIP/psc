@@ -31,7 +31,6 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         PlannedActivityXmlSerializer serializer = (PlannedActivityXmlSerializer) getBeanFactory().getBean("plannedActivityXmlSerializer");
-        serializer.setStudy(study);
         return serializer;
     }
 

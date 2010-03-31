@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
@@ -28,7 +27,6 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
     private final String STUDY_DELTA_SERIALIZER = "studyDeltaXmlSerializer";
 
     private BeanFactory beanFactory;
-    private Study study;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -75,15 +73,10 @@ public class DeltaXmlSerializerFactory implements BeanFactoryAware {
 
     private AbstractDeltaXmlSerializer getXmlSerialzier(String beanName) {
         AbstractDeltaXmlSerializer serializer = (AbstractDeltaXmlSerializer) beanFactory.getBean(beanName);
-        serializer.setStudy(study);
         return serializer;
     }
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
     }
 }

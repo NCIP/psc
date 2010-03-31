@@ -110,8 +110,6 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("previous-amendment-key")).andReturn("2008-01-01~Amendment 0");
 
         expect(element.elements()).andReturn(Collections.singletonList(eDelta));
-        expect(element.elements()).andReturn(Collections.singletonList(eDelta));
-        expect(deltaSerializerFactory.createXmlSerializer(eDelta)).andReturn(deltaSerializer);
         expect(deltaSerializerFactory.createXmlSerializer(eDelta)).andReturn(deltaSerializer);
         expect(deltaSerializer.readElement(eDelta)).andReturn(delta);
         replayMocks();

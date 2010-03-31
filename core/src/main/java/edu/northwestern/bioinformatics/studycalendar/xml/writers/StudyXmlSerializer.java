@@ -93,13 +93,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
         study.setPlannedCalendar(calendar);
 
-        PopulationXmlSerializer populationXmlSerializer = getPopulationXmlSerializer(study);
-        for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
-            Element ePopulation = (Element) oPopulation;
-            Population population = populationXmlSerializer.readElement(ePopulation);
-            study.addPopulation(population);
-        }
-
         List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
 
         Element currAmendment = findOriginalAmendment(eAmendments);
@@ -153,13 +146,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
         PlannedCalendarXmlSerializer plannedCalendarXmlSerializer = (PlannedCalendarXmlSerializer) getBeanFactory().getBean("plannedCalendarXmlSerializer");
-        plannedCalendarXmlSerializer.setStudy(study);
         return plannedCalendarXmlSerializer;
     }
 
     protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
         PopulationXmlSerializer populationXmlSerializer = (PopulationXmlSerializer) getBeanFactory().getBean("populationXmlSerializer");
-        populationXmlSerializer.setStudy(study);
         return populationXmlSerializer;
     }
 

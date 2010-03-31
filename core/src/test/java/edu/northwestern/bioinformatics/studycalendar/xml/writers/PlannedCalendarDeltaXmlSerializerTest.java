@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
@@ -17,7 +15,6 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
     private AbstractDeltaXmlSerializer serializer;
     private Delta plannedCalendarDelta;
     private Element element;
-    private Study study;
     private PlannedCalendar calendar;
     private ChangeXmlSerializerFactory changeSerializerFactory;
     private Add add;
@@ -31,16 +28,11 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         changeSerializer = registerMockFor(AbstractChangeXmlSerializer.class);
 
         calendar = setGridId("grid1", new PlannedCalendar());
-        study = createNamedInstance("Study A", Study.class);
-        study.setPlannedCalendar(calendar);
-
         serializer = new PlannedCalendarDeltaXmlSerializer(){
             public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
                 return changeSerializerFactory;
             }
         };
-        serializer.setStudy(study);
-
 
         add = new Add();
         plannedCalendarDelta = Delta.createDeltaFor(calendar, add);

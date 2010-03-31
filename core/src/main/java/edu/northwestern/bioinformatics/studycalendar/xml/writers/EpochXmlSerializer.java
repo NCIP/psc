@@ -24,7 +24,6 @@ public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         StudySegmentXmlSerializer serializer = (StudySegmentXmlSerializer) getBeanFactory().getBean("studySegmentXmlSerializer");
-        serializer.setStudy(study);
         return serializer;
     }
 

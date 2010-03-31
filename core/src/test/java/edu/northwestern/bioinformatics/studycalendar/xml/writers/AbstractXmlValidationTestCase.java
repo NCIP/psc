@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
@@ -235,7 +237,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
         planTreeNodeXmlSerializerFactory = new PlanTreeNodeXmlSerializerFactory() {
 
             @Override
-            public StatefulTemplateXmlSerializer createXmlSerializer(Element node) {
+            public AbstractStudyCalendarXmlSerializer createXmlSerializer(Element node) {
                 if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
                     return null;
                 } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
@@ -251,7 +253,7 @@ public abstract class AbstractXmlValidationTestCase extends StudyCalendarTestCas
                 }
             }
 
-            public StatefulTemplateXmlSerializer createXmlSerializer(final Changeable node) {
+            public StudyCalendarXmlSerializer createXmlSerializer(final Changeable node) {
                 if (node instanceof Epoch) {
                     return epochXmlSerializer;
                 } else if (node instanceof StudySegment) {

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 
 public class ChangeXmlSerializerFactory implements BeanFactoryAware {
-    private Study study;
     private BeanFactory beanFactory;
     private String ADD_SERIALIZER = "addXmlSerializer";
     private String REMOVE_SERIALIZER = "removeXmlSerializer";
@@ -50,19 +48,13 @@ public class ChangeXmlSerializerFactory implements BeanFactoryAware {
     //// Helper Methods
     private AbstractChangeXmlSerializer getXmlSerialzier(String beanName) {
         AbstractChangeXmlSerializer serializer = (AbstractChangeXmlSerializer) beanFactory.getBean(beanName);
-        serializer.setStudy(study);
         return serializer;
     }
 
     private AbstractChildrenChangeXmlSerializer getXmlSerialzier(String beanName, Class<?> childClass) {
         AbstractChildrenChangeXmlSerializer serializer = (AbstractChildrenChangeXmlSerializer) getXmlSerialzier(beanName);
-        serializer.setStudy(study);
         serializer.setChildClass(childClass);
         return serializer;
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
     }
 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

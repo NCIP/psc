@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -41,16 +40,11 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         plannedActivity.setPopulation(population);
         plannedActivityLabels.add(Fixtures.createPlannedActivityLabel("testlabel"));
         plannedActivity.setPlannedActivityLabels(plannedActivityLabels);
-
-        Study study = createNamedInstance("Study A", Study.class);
-        study.addPopulation(population);
-
         eActivity = DocumentHelper.createElement("activity");
         eLabel = DocumentHelper.createElement("label");
         labelList.add(eLabel);
 
         serializer = new PlannedActivityXmlSerializer();
-        serializer.setStudy(study);
         serializer.setActivityXmlSerializer(activitySerializer);
         serializer.setPlannedActivityLabelXmlSerializer(plannedActivityLabelXmlSerializer);
         plannedActivities = new ArrayList<PlannedActivity>();

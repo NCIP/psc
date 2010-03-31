@@ -66,9 +66,6 @@ public class PlannedCalendarServiceIntegrationTest extends DaoTestCase {
         assertNotNull(study);
         assertNotNull(study.getGridId());
         plannedCalendarXmlSerializer.setSerializeEpoch(true);
-        plannedCalendarXmlSerializer.setStudy(study);
-
-
     }
 
 

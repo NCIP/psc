@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
@@ -22,19 +21,13 @@ public class StudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-
         element = registerMockFor(Element.class);
         periodSerializer = registerMockFor(PeriodXmlSerializer.class);
-
-        Study study = createNamedInstance("Study A", Study.class);
-
         serializer = new StudySegmentXmlSerializer() {
             protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
                 return periodSerializer;
             }
         };
-        serializer.setStudy(study);
-
         segment = setGridId("grid0", createNamedInstance("Segment A", StudySegment.class));
     }
 

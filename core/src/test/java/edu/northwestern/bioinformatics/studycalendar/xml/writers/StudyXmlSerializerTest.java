@@ -4,7 +4,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -28,9 +27,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Study study;
     private Element element;
     private PlannedCalendar calendar;
-    private PopulationXmlSerializer populationSerializer;
-    private Population population;
-    private Element ePopulation;
     private PlannedCalendarXmlSerializer plannedCalendarSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentXmlSerializer developmentAmendmentSerializer;
@@ -51,17 +47,12 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
-        populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
         developmentAmendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
 
         serializer = new StudyXmlSerializer() {
             protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
                 return plannedCalendarSerializer;
-            }
-
-            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
-                return populationSerializer;
             }
 
             public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
@@ -74,8 +65,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         };
 
         calendar = setGridId("grid1", new PlannedCalendar());
-        population = createPopulation("MP", "My Population");
-
         firstAmendment = createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);
 
         secondAmendment = createAmendment("[Second]", createDate(2008, Calendar.JANUARY, 11), true);
@@ -87,7 +76,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         study = createStudy();
 
         eCalendar = createCalendarElement(calendar);
-        ePopulation = createPopulationElement(population);
         eFirstAmendment = createAmendmentElement(firstAmendment);
         eSecondAmendment = createAmendmentElement(secondAmendment);
         eDevelopmentAmendment = createDevelopmentAmendmentElement(developmentAmendment);
@@ -102,7 +90,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
         assertSame("PlannedCalendar should be the same", calendar, actual.getPlannedCalendar());
-        assertSame("Populations should be the same", population, actual.getPopulations().iterator().next());
         assertSame("Wrong first amendment", firstAmendment, actual.getAmendment().getPreviousAmendment());
         assertSame("Wrong second amendment", secondAmendment, actual.getAmendment());
         assertSame("Wrong development amendment", developmentAmendment, actual.getDevelopmentAmendment());
@@ -291,10 +278,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(plannedCalendarSerializer.readElement(eCalendar)).andReturn(calendar);
     }
 
-    private void expectDeserializePopulation() {
-        expect(populationSerializer.readElement(ePopulation)).andReturn(population);
-    }
-
     private void expectDesearializeDevelopmentAmendment() {
         expect(developmentAmendmentSerializer.readElement(eDevelopmentAmendment)).andReturn(developmentAmendment);
     }
@@ -305,14 +288,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private void expectDeserializeCommonDataForNewElement(){
-        expectDeserializePopulation();
-        expectDeserializePlannedCalendar();
-        expectDeserializeAmendments();
-        expectDesearializeDevelopmentAmendment();
-    }
-
-    private void expectDeserializeDataForNewElement() {
-        expectDeserializePopulation();
         expectDeserializePlannedCalendar();
         expectDeserializeAmendments();
         expectDesearializeDevelopmentAmendment();
@@ -333,7 +308,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         eStudy.addAttribute("assigned-identifier", study.getAssignedIdentifier());
         eStudy.addAttribute("last-modified-date", formatter.format(study.getLastModifiedDate()));
 
-        eStudy.add(ePopulation);
         eStudy.add(eCalendar);
 
         // Amendments are added in this order to test unordered deserialization
@@ -354,11 +328,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         return s.createElement(amendment);
     }
 
-    private Element createPopulationElement(Population population) {
-        PopulationXmlSerializer s = new PopulationXmlSerializer();
-        return s.createElement(population);
-    }
-
     private Element createCalendarElement(PlannedCalendar calendar) {
         PlannedCalendarXmlSerializer s = new PlannedCalendarXmlSerializer();
         return s.createElement(calendar);
@@ -368,7 +337,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Study createStudy() {
         Study created = createNamedInstance("Study A", Study.class);
         created.setPlannedCalendar(calendar);
-        created.addPopulation(population);
         created.setAmendment(firstAmendment);
         created.setDevelopmentAmendment(developmentAmendment);
         return created;

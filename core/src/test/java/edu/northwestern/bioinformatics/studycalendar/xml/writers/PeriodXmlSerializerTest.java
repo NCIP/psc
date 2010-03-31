@@ -4,8 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCa
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.apache.commons.lang.StringUtils;
@@ -27,16 +25,11 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         element = registerMockFor(Element.class);
         plannedActivitySerializer = registerMockFor(PlannedActivityXmlSerializer.class);
-
-        Study study = createNamedInstance("Study A", Study.class);
-
         serializer = new PeriodXmlSerializer() {
             protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
                 return plannedActivitySerializer;
             }
         };
-        serializer.setStudy(study);
-
         period = setGridId("grid0", Fixtures.createPeriod("Period A", 1, 7, 3));
 
         periods = new TreeSet<Period>();

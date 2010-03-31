@@ -96,14 +96,12 @@ public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializ
         PlannedCalendarXmlSerializer serializer
             = (PlannedCalendarXmlSerializer) getBeanFactory().getBean("plannedCalendarXmlSerializer");
         serializer.setSerializeEpoch(true);
-        serializer.setStudy(parent);
         return serializer;
     }
 
     private PopulationXmlSerializer createPopulationXmlSerializer(Study parent) {
         PopulationXmlSerializer serializer
             = (PopulationXmlSerializer) getBeanFactory().getBean("populationXmlSerializer");
-        serializer.setStudy(parent);
         return serializer;
     }
     

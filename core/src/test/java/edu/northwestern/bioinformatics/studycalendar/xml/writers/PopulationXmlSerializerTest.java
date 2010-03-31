@@ -2,9 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.NAME;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.ABBREVIATION;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
@@ -13,23 +11,14 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PopulationXmlSerializer serializer;
     private Element element;
     private Population population;
-    private Study study;
 
     protected void setUp() throws Exception {
         super.setUp();
-
         element = registerMockFor(Element.class);
-
-        study = setId(4, createNamedInstance("Study A", Study.class));
-
         serializer = new PopulationXmlSerializer();
-        serializer.setStudy(study);
-
         population = new Population();
         population.setAbbreviation("MP");
         population.setName("My Population");
-        population.setStudy(study);
-
     }
 
     public void testCreateElement() throws Exception {

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.dom4j.Document;
@@ -12,10 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>>
-    implements StatefulTemplateXmlSerializer<PlanTreeNode<?>>
-{
-    protected Study study;
+public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
 
     protected abstract PlanTreeNode<?> nodeInstance();
 
@@ -95,10 +91,6 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
     @Override
     public PlanTreeNode<?> readDocument(InputStream in) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
     }
 
     public String validateElement(MutableDomainObject planTreeNode, Element ePlanTreeNode) {
