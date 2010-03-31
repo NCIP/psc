@@ -81,7 +81,7 @@ public class StudyListControllerTest extends ControllerTestCase {
                 asList(createStudySite(both, null))
         );
         expect(studyDao.getAll()).andReturn(allStudies).anyTimes();
-        expect(studySiteService.refreshStudySites((List<Study>) notNull())).andReturn(allStudySites).anyTimes();
+        expect(studySiteService.refreshStudySitesForStudies((List<Study>) notNull())).andReturn(allStudySites).anyTimes();
 
 //        expect(templateService.filterForVisibility(allStudies, null))
 //            .andReturn(Collections.<Study>emptyList()).anyTimes();

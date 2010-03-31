@@ -65,7 +65,9 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
-        List<Study> studies = refreshStudySiteAssociationsForStudies(studyDao.getAll());
+        List<Study> studies = studyDao.getAll();
+        studySiteService.refreshStudySitesForStudies(studies);
+
         log.debug("{} studies in system", studies.size());
 
         Collections.sort(studies, new NamedComparator());
@@ -85,43 +87,12 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
         return assignableStudies;
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Study> refreshStudySiteAssociationsForStudies(List<Study> all) {
-        List<List<StudySite>> refreshedStudySites = studySiteService.refreshStudySites(all);
-
-        List<Study> refreshed = new ArrayList<Study>();
-        for (List<StudySite> studySites : refreshedStudySites) {
-            for (StudySite studySite : studySites) {
-                if (!refreshed.contains(studySite.getStudy())) {
-                    refreshed.add(studySite.getStudy());
-                }
-            }
-        }
-
-        return new ArrayList<Study>(union(refreshed, all));
-    }
-
     protected List<Site> getAssignableSites(User siteCoordinator) {
-        List<Site> sites = refreshStudySiteAssociationsForSites(new ArrayList(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites()));
+        List<Site> sites = new ArrayList(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites());
+        studySiteService.refreshStudySitesForSites(sites);
         log.debug("{} sites found for {} as site coord", sites.size(), siteCoordinator.getName());
         Collections.sort(sites, new NamedComparator());
         return sites;
-    }
-
-    @SuppressWarnings("unchecked")    
-    private List<Site> refreshStudySiteAssociationsForSites(List<Site> sites) {
-        List<List<StudySite>> refreshedStudySites = studySiteService.refreshStudySitesForSites(sites);
-
-        List<Site> refreshed = new ArrayList<Site>();
-        for (List<StudySite> studySites : refreshedStudySites) {
-            for (StudySite studySite : studySites) {
-                if (!refreshed.contains(studySite.getSite())) {
-                    refreshed.add(studySite.getSite());
-                }
-            }
-        }
-
-        return new ArrayList<Site>(union(refreshed, sites));
     }
 
     protected List<Site> getAssignableSites(User siteCoordinator, Study study) {

@@ -111,7 +111,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     public void testGetAssignableStudies() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(studySiteService.refreshStudySites(studies)).andReturn(asList(
+        expect(studySiteService.refreshStudySitesForStudies(studies)).andReturn(asList(
                 study0.getStudySites(),
                 study1.getStudySites()
         ));

@@ -40,10 +40,7 @@ public class StudyListController extends PscAbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
 
-        List<List<StudySite>> studySiteLists = studySiteService.refreshStudySites(studyDao.getAll());
-        List<Study> refreshedStudies = collectStudies(studySiteLists);
-
-        studies = (List<Study>) CollectionUtils.union(studies, refreshedStudies);
+        studySiteService.refreshStudySitesForStudies(studies);
 
         User user = applicationSecurityManager.getUser();
 

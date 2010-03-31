@@ -71,7 +71,7 @@ public class StudySiteService {
 
 
     public List<Site> refreshAssociatedSites(Study study) {
-        List<StudySite> updated = refreshStudySites(study);
+        List<StudySite> updated = refreshStudySitesForStudy(study);
         return collectSites(updated);
     }
 
@@ -126,13 +126,13 @@ public class StudySiteService {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<StudySite> refreshStudySites(final Study study) {
+    public List<StudySite> refreshStudySitesForStudy(final Study study) {
         if (study == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
-        return refreshStudySites(asList(study)).get(0);
+        return refreshStudySitesForStudies(asList(study)).get(0);
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<List<StudySite>> refreshStudySites(final List<Study> studies) {
+    public List<List<StudySite>> refreshStudySitesForStudies(final List<Study> studies) {
         if (studies == null) { throw new IllegalArgumentException(STUDY_IS_NULL);}
 
         List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
@@ -332,7 +332,7 @@ public class StudySiteService {
     public StudySite getStudySite(String studyAssignedId, String siteAssignedId) {
         Study study = studyDao.getByAssignedIdentifier(studyAssignedId);
         if (study != null) {
-            List<StudySite> studySites = refreshStudySites(study);
+            List<StudySite> studySites = refreshStudySitesForStudy(study);
             for (StudySite studySite : studySites) {
                 if (studySite.getSite().getAssignedIdentifier().equals(siteAssignedId)) {
                     return studySite;

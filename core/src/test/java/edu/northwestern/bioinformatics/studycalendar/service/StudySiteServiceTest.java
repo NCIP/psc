@@ -189,7 +189,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        List<StudySite> actual = service.refreshStudySites(nu123);
+        List<StudySite> actual = service.refreshStudySitesForStudy(nu123);
         verifyMocks();
 
         assertEquals("Wrong number of sites", 1, actual.size());
@@ -217,7 +217,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        List<StudySite> actual = service.refreshStudySites(nu123);
+        List<StudySite> actual = service.refreshStudySitesForStudy(nu123);
         verifyMocks();
 
         assertEquals("Wrong number of sites", 2, actual.size());
@@ -281,6 +281,10 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, nu_nu123);
         assertContains(actual, nu_all999);
         assertContains(actual, nu_wo222);
+
+        assertContains(nu.getStudySites(), nu_nu123);
+        assertContains(nu.getStudySites(), nu_all999);
+        assertContains(nu.getStudySites(), nu_wo222);
     }
 
     public void testResolveStudySiteWhenStudyNotFound() throws Exception {
