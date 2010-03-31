@@ -14,6 +14,7 @@ import gov.nih.nci.coppa.services.pa.Id;
 import static org.apache.commons.collections.CollectionUtils.collect;
 import org.apache.commons.collections.Transformer;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isNumeric;
 import org.iso._21090.II;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
 
         for (Study study : studies) {
             String ext = study.getSecondaryIdentifierValue(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
-            if (ext != null) {
+            if (isValidExtension(ext)) {
                 Id id = new Id();
                 id.setExtension(ext);
                 gov.nih.nci.coppa.services.pa.StudySite[] studySites = getCoppaAccessor(bundleContext).searchStudySitesByStudyProtocolId(id);
@@ -113,7 +114,7 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
 
             List<StudySite> provided = null;
 
-            if (isNotBlank(s.getAssignedIdentifier())) {
+            if (isValidExtension(s.getAssignedIdentifier())) {
                 provided = new ArrayList<StudySite>();
 
                 Set<String> associatedStudyIds = new HashSet<String>();
@@ -142,10 +143,17 @@ public class CoppaStudySiteProvider implements edu.northwestern.bioinformatics.s
                     StudySite transformed = new StudySite(study, null);
                     provided.add(transformed);
                 }
+            } else {
+                provided = EMPTY_LIST;
             }
+            
             results.add(provided);
         }
         return results;
+    }
+
+    protected boolean isValidExtension(String s) {
+        return isNotBlank(s) && isNumeric(s);
     }
 
     @SuppressWarnings("unchecked")

@@ -2,9 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa;
 
 import static edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.helpers.CoppaProviderHelper;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addSecondaryIdentifier;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.coppa.common.LimitOffset;
@@ -20,6 +21,7 @@ import org.springframework.osgi.mock.MockServiceReference;
 
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.sort;
 import java.util.List;
 
@@ -48,12 +50,27 @@ public class CoppaStudySiteProviderTest extends TestCase {
         provider = new CoppaStudySiteProvider(bundleContext);
     }
 
-    public void testGetAssociatedSitesWithEmptyStudyList() throws Exception {
-        expectSearchStudySitesByStudyProcotolId();
+    public void testIsValidExtension() {
+        boolean result = provider.isValidExtension("123");
+        assertTrue("Should be valid", result);
+    }
 
+    public void testIsValidExtensionWithNullExtension() {
+        boolean result = provider.isValidExtension(null);
+        assertFalse("Should not be valid", result);
+    }
+
+    public void testIsValidExtensionWithInvalidExtension() {
+        boolean result = provider.isValidExtension("INVALID");
+        assertFalse("Should not be valid", result);
+    }
+
+
+    public void testGetAssociatedSitesWithEmptyStudyList() throws Exception {
         mocks.replayMocks();
 
-        List<List<StudySite>> actual = provider.getAssociatedSites(new ArrayList<Study>());
+        List<List<StudySite>> actual = provider.getAssociatedSites(EMPTY_LIST);
+        mocks.verifyMocks();
 
         assertEquals("Wrong results size", 0, actual.size());
     }
@@ -64,8 +81,9 @@ public class CoppaStudySiteProviderTest extends TestCase {
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedSites(asList(
-            pscStudy(extensionify("NU123"))
+            pscStudy("NU123")
         ));
+        mocks.verifyMocks();
 
         assertEquals("Wrong results size", 1, actual.size());
         assertEquals("Wrong size", 0, actual.get(0).size());
@@ -84,6 +102,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         List<List<StudySite>> actual = provider.getAssociatedSites(
             asList(pscStudy("NU123"))
         );
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 0, actual.get(0).size());
@@ -102,6 +121,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         List<List<StudySite>> actual = provider.getAssociatedSites(
             asList(pscStudy("NCI123"))
         );
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 0, actual.get(0).size());
@@ -124,8 +144,9 @@ public class CoppaStudySiteProviderTest extends TestCase {
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedSites(
-            asList(pscStudy("Ext SS"))
+            asList(pscStudy("NCI123"))
         );
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 2, actual.get(0).size());
@@ -143,6 +164,7 @@ public class CoppaStudySiteProviderTest extends TestCase {
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedSites(null);
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 0, actual.size());
     }
@@ -153,6 +175,22 @@ public class CoppaStudySiteProviderTest extends TestCase {
         List<List<StudySite>> actual = provider.getAssociatedSites(
             asList(new Study())
         );
+        mocks.verifyMocks();
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 0, actual.get(0).size());
+    }
+
+    public void testGetAssociatedSitesWithANonNumericExtension() {
+        Study brokenStudy = new Study();
+        addSecondaryIdentifier(brokenStudy, COPPA_STUDY_IDENTIFIER_TYPE, "YOU BETTER NOT SEARCH COPPA WITH ME!!!");
+
+        mocks.replayMocks();
+        List<List<StudySite>> actual = provider.getAssociatedSites(
+            asList(brokenStudy)
+        );
+
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 0, actual.get(0).size());
@@ -173,6 +211,8 @@ public class CoppaStudySiteProviderTest extends TestCase {
         List<List<StudySite>> actual = provider.getAssociatedStudies(
             asList(pscSite("NU"))
         );
+
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 2, actual.get(0).size());
@@ -195,32 +235,46 @@ public class CoppaStudySiteProviderTest extends TestCase {
             asList(pscSite("NU"))
         );
 
+        mocks.verifyMocks();
+
         assertEquals("Wrong size", 1, actual.size());
         assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
 
     public void testGetAssociatedStudiesWithNoSite() throws Exception {
-        expectGetHealthCareFacilitiesByPlayerIds(null);
-
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedStudies(null);
+
+        mocks.verifyMocks();
 
         assertEquals("Wrong size", 0, actual.size());
     }
 
     public void testGetAssociatedStudiesWithSiteMissingAssignedIdentifier() throws Exception {
-        expectGetHealthCareFacilitiesByPlayerIds(null);
-
         mocks.replayMocks();
 
         List<List<StudySite>> actual = provider.getAssociatedStudies(
             asList(new Site())
         );
 
+        mocks.verifyMocks();
+
         assertEquals("Wrong size", 1, actual.size());
-        assertNull("Should be null", actual.get(0));
+        assertEquals("Wrong size", 0, actual.get(0).size());
+    }
+
+    public void testGetAssociatedStudiesWithANonNumericExtension() {
+        Site brokenSite = createSite(null, "YOU BETTER NOT SEARCH COPPA WITH ME!!!");
+
+        mocks.replayMocks();
+        List<List<StudySite>> actual = provider.getAssociatedStudies(asList(brokenSite));
+
+        mocks.verifyMocks();
+
+        assertEquals("Wrong size", 1, actual.size());
+        assertEquals("Wrong size", 0, actual.get(0).size());
     }
 
 
@@ -305,21 +359,15 @@ public class CoppaStudySiteProviderTest extends TestCase {
         return org;
     }
 
-    private Study pscStudy(String extensionSecondaryIdentifier) {
+    private Study pscStudy(String copppaStudyExtension) {
         Study study = new Study();
-
-        StudySecondaryIdentifier i = new StudySecondaryIdentifier ();
-        i.setType(COPPA_STUDY_IDENTIFIER_TYPE);
-        i.setValue(extensionSecondaryIdentifier);
-        study.addSecondaryIdentifier(i);
+        addSecondaryIdentifier(study, COPPA_STUDY_IDENTIFIER_TYPE, extensionify(copppaStudyExtension));
 
         return study;
     }
 
     private Site pscSite(String identifier) {
-        Site site = new Site();
-        site.setAssignedIdentifier(identifier);
-        return site;
+        return createSite(null, extensionify(identifier));
     }
 
     private String extensionify(String s) {
