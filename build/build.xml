@@ -482,6 +482,23 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 		<remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${upgrade.target}" />
 	</target>
 
+    <target name="deploy:remote:upgrade:ahp" description="Installs and configures the application and required binaries and re-creates the datbase  on a remote machine. Used for NCI tiers (dev, qa, stg, prod)" >
+      <!--
+        * Will use the target from install.xml specified in ${upgrade.target} (defaults to upgrade unless passed in on command line).
+        * Requires specifying -Dproperties.file=@file@ on the command line to point installer to correct enviornment to install into.
+        * Calls ant from exec task to ensure properties are do not carry over from current ant runtime and also to emulate a manual install, if you want properties to be used at install time they must be included in a proeprties file.
+      -->
+      <!-- Call macro to deploy files on desired server -->
+      <echoproperties  prefix="ssh"> <propertyset negate="yes" > <propertyref regex="passw" /> </propertyset> </echoproperties>
+      <deploy-files dist.file="${psc-webapp.upgrade.zip.file}" />
+      <override-properties-prep
+       override.properties="@{override.properties}"
+       override.properties.string.property.name="override.properties.string"
+       />
+      <!-- SSH to machine ant run ant command line to install application -->
+      <remote-ssh remotesshcommand=". .bash_profile;cd ${ssh.dir.temp}; ant -Dproperties.file=${properties.file.name} -Dforce.reinstall=true ${override.properties.string} ${upgrade.target}" />
+    </target>
+
 	<target name="deploy:remote:upgrade:db"
 	       depends="
 		build:all,
