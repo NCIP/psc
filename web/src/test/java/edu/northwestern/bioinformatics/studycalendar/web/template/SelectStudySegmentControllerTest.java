@@ -58,11 +58,12 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertNotNull("study segment missing", actualStudySegment);
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
         System.out.println("mv.getModel " + mv.getModel());
-        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
     }
 
     public void testRequestWhenAmended() throws Exception {
         request.setParameter("developmentRevision", "true");
+        request.setParameter("canEdit", "true");
         study.setDevelopmentAmendment(new Amendment("dev"));
         expect(deltaService.revise(studySegment)).andReturn((StudySegment) studySegment.transientClone());
         expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
@@ -76,12 +77,12 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
         assertNotNull("dev revision missing", mv.getModel().get("developmentRevision"));
 
-        assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 7, mv.getModel().size());
     }
 
     public void testRequestWhenReleasedTemplateIsSelected() throws Exception {
         study.setDevelopmentAmendment(new Amendment("dev"));
-
+        request.setParameter("canEdit", "false");
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -91,6 +92,6 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
         assertNull("must not revise study", mv.getModel().get("developmentRevision"));
 
-        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
     }
 }

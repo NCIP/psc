@@ -52,6 +52,7 @@ public class SelectStudySegmentController implements Controller {
 
 
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
+        model.put("canEdit",ServletRequestUtils.getBooleanParameter(request, "canEdit"));
         model.put("epochs", epochs);
         model.put("studySegment", new StudySegmentTemplate(studySegment));
         return new ModelAndView("template/ajax/selectStudySegment", model);

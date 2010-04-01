@@ -21,7 +21,6 @@ function epochControlls() {
     })
 
     addPeriodControl()
-    displayCycleControl();
 }
 
 function createStudySegmentControls(studySegmentItem) {
@@ -99,21 +98,6 @@ function populationAddButtonCreate() {
     var addPopulationLink = Builder.node("a", {className: 'control', href: addPopulationHref});
     addPopulationLink.innerHTML='Add';
     populationLI.appendChild(addPopulationLink);
-}
-
-function displayCycleControl() {
-    var cycleDiv = $('cycle');
-    var studySegmentCycleLength = cycleDiv.readAttribute('studySegmentCycleLength');
-    var h5Elt = Builder.node("h5", {id: "cycleError"});
-    cycleDiv.appendChild(h5Elt);
-    var inputElt = Builder.node("input", {id: "cycleLength", name: "cycleLength", value: studySegmentCycleLength, size: "5"});
-    var paragraph1 = Builder.node("h2", {className: 'h2ForCycle'});
-    paragraph1.innerHTML='Cycle length ';
-    paragraph1.appendChild(inputElt);
-    paragraph1.innerHTML= paragraph1.innerHTML + ' days';
-    var submitBtn = Builder.node("input", {id: "cycleButton", name: "cycleLength", value: "Update", type: "submit"});
-    paragraph1.appendChild(submitBtn);
-    cycleDiv.appendChild(paragraph1);
 }
 
 function deletePeriodControls(tdItem) {

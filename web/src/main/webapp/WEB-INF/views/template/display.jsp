@@ -493,6 +493,7 @@
                         <c:if test="${not empty developmentRevision}">
                              href = href + '&developmentRevision=true';
                         </c:if>
+                        href = href +'&canEdit=' +${canEdit};
                         aElement.href = href;
 
                         lastRequest = new Ajax.Request(aElement.href,
@@ -666,7 +667,7 @@
             // Temporary.  Validation should really be on the server side.
             function isCorrectCycleLength() {
                 var isCorrectInput = true;
-                if ($('cycleLength ') != null) {
+                if ($('cycleLength') != null) {
                     var cycleLength = document.getElementById("cycleLength").value;
 
                     if ((cycleLength != null && (cycleLength != "" && cycleLength <=0) || (isNaN(cycleLength)) ||(cycleLength.indexOf(".")>0) || (cycleLength.indexOf(",") > 0))) {
@@ -679,7 +680,7 @@
 
             function updateCycleError() {
                  if (isCorrectCycleLength()){
-                    if ($('cycleLength ') != null) {
+                    if ($('cycleLength') != null) {
                         document.getElementById("cycleError").innerHTML = "";
                     }
                 }
@@ -772,12 +773,12 @@
                     <ul>
                         <c:forEach items="${study.populations}" var="population">
                             <li>
-                                <c:if test="${canEditPopulations}">
+                                <c:if test="${canEdit}">
                                     <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
                                             ${population.abbreviation}: ${population.name}
                                     </a>
                                 </c:if>
-                                <c:if test="${!canEditPopulations}">${population.abbreviation}: ${population.name}</c:if>
+                                <c:if test="${!canEdit}">${population.abbreviation}: ${population.name}</c:if>
                             </li>
                         </c:forEach>
                         <li class="controls addPopulationButton" studyId='${study.id}' studyInInitialDevelopment='${study.inInitialDevelopment}' studyInAmendmentDevelopment='${study.inAmendmentDevelopment}'/>
@@ -944,7 +945,7 @@
         </c:if>
 
         <div id="selected-studySegment" class="section">
-            <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true"/>
+            <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true" canEdit="${canEdit}"/>
         </div>
 
         <c:if test="${showChanges}"></div></c:if>

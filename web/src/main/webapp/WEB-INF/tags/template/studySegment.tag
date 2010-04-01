@@ -3,6 +3,7 @@
 <%@attribute name="studySegment" type="edu.northwestern.bioinformatics.studycalendar.web.template.StudySegmentTemplate"%>
 <%@attribute name="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
+<%@attribute name="canEdit" type="java.lang.Boolean" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -13,13 +14,16 @@
 <laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
     <c:url var="cycleUrl" value="/pages/cal/setCycleLength?studySegment=${studySegment.base.id}"/>
-    <c:if test="${editable || not empty studySegment.base.cycleLength}">
+    <c:if test="${canEdit || (!canEdit && not empty studySegment.base.cycleLength)}">
         <form:form method="post" id="cycle-form" action="${cycleUrl}">
-            <div id="cycle" editable=${editable} studySegmentCycleLength=${studySegment.base.cycleLength}>
-                <c:if test="${not editable && not empty studySegment.base.cycleLength}">
-                    The cycle length of this segment is ${studySegment.base.cycleLength} days.
-                </c:if>
-            </div>
+            <c:if test="${canEdit}">
+                <h5 id="cycleError"></h5>
+                    Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
+                <input type="submit" value="Update" id="cycleButton"/>
+            </c:if>
+            <c:if test="${!canEdit && not empty studySegment.base.cycleLength}">
+                The cycle length of this segment is ${studySegment.base.cycleLength} days.
+            </c:if>
         </form:form>
     </c:if>
     <p class="controls addPeriod" studySegmentId=${studySegment.base.id}>
