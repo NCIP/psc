@@ -12,7 +12,7 @@ initializeNewStudySegment()
 <jsgen:replaceHtml targetElement="errorMessages">
     <tags:replaceErrorMessagesForTemplate/>
 </jsgen:replaceHtml>
-<c:if test="${not empty developmentRevision}">
+<c:if test="${not empty developmentRevision && canEdit}">
     hideShowReleaseTemplateButton()
     epochControlls()
 </c:if>
