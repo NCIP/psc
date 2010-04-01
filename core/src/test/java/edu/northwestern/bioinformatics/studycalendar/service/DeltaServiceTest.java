@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
@@ -36,6 +37,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
     private ChangeDao changeDao;
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
+    private PlannedActivityLabelDao plannedActivityLabelDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -59,10 +61,11 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         deltaDao = registerDaoMockFor(DeltaDao.class);
         epochDao = registerDaoMockFor(EpochDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
+        plannedActivityLabelDao = registerDaoMockFor(PlannedActivityLabelDao.class);
         expect(epochDao.getById(2)).andReturn(e1).anyTimes();
         expect(studySegmentDao.getById(10)).andReturn(e0a0).anyTimes();
 
-        StaticDaoFinder daoFinder = new StaticDaoFinder(epochDao, studySegmentDao);
+        StaticDaoFinder daoFinder = new StaticDaoFinder(epochDao, studySegmentDao, plannedActivityLabelDao);
         MutatorFactory mutatorFactory = new MutatorFactory();
         mutatorFactory.setDaoFinder(daoFinder);
         TestingTemplateService templateService = new TestingTemplateService();
@@ -232,5 +235,24 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         replayMocks();
         service.delete(pcDelta);
         verifyMocks();
+    }
+
+    public void testMutateNodeForPlannedActivityLabel() throws Exception {
+        ActivityType at = setId(5, Fixtures.createActivityType("Other"));
+        Activity a =  setId(5, Fixtures.createActivity("survival-progression"));
+        a.setType(at);
+        PlannedActivity pa = Fixtures.createPlannedActivity(a, 6);
+        pa.setDetails(null);
+        PlannedActivityLabel pal1 = setId(3, Fixtures.createPlannedActivityLabel("a"));
+        PlannedActivityLabel pal2 = setId(4, Fixtures.createPlannedActivityLabel("b"));
+        pa.addPlannedActivityLabel(pal1);
+        pa.addPlannedActivityLabel(pal2);
+
+        Change removeChange = Remove.create(pal2);
+        replayMocks();
+        service.mutateNode(pa, removeChange);
+        verifyMocks();
+
+        assertEquals("Planned activity only has one label ", 1, pa.getChildren().size());
     }
 }

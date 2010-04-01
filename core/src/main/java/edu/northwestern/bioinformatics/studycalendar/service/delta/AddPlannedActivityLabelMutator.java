@@ -14,7 +14,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 /**
  * @author Jalpa Patel
  */
-public class AddPlannedActivityLabelMutator extends PlannedActivityLabelMutator {
+public class AddPlannedActivityLabelMutator extends CollectionAddMutator {
     private ScheduledActivityDao saDao;
     public AddPlannedActivityLabelMutator(Add change, DomainObjectDao<? extends Child<?>> dao, ScheduledActivityDao saDao) {
         super(change, dao);

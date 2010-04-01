@@ -55,10 +55,6 @@ public class AddPlannedActivityLabelMutatorTest extends StudyCalendarTestCase {
                 add, paLabelDao,scheduledActivityDao);
     }
 
-    public void testAppliesToSchedules() throws Exception {
-        assertTrue(mutator.appliesToExistingSchedules());
-    }
-
     public void testApplyToOneScheduledActivityWithOneLabel() throws Exception {
         ScheduledActivity expectedSA = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))

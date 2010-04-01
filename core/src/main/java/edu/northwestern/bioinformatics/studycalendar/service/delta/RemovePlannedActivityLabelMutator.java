@@ -12,25 +12,25 @@ import java.util.Iterator;
 /**
  * @author Jalpa Patel
  */
-public class RemovePlannedActivityLabelMutator extends PlannedActivityLabelMutator {
+public class RemovePlannedActivityLabelMutator extends RemoveMutator {
     private ScheduledActivityDao saDao;
     public RemovePlannedActivityLabelMutator(Remove change, DomainObjectDao<? extends Child<?>> dao, ScheduledActivityDao saDao) {
         super(change, dao);
         this.saDao = saDao;
     }
-        @Override
+
+    @Override
     public void apply(ScheduledCalendar calendar) {
         PlannedActivityLabel paLabel = (PlannedActivityLabel) findChild();
         PlannedActivity plannedActivity = (PlannedActivity) change.getDelta().getNode();
         plannedActivity.removeChild(paLabel);
         Collection<ScheduledActivity> scheduledActivities
-            = new ArrayList<ScheduledActivity>(saDao.getEventsFromPlannedActivity(
-                plannedActivity, calendar));
-            for (Iterator<ScheduledActivity> it = scheduledActivities.iterator(); it.hasNext();) {
-                ScheduledActivity sa = it.next();
-                if (paLabel.appliesToRepetition(sa.getRepetitionNumber())) {
-                    sa.removeLabel(paLabel.getLabel());
-                }
+            = new ArrayList<ScheduledActivity>(saDao.getEventsFromPlannedActivity(plannedActivity, calendar));
+        for (Iterator<ScheduledActivity> it = scheduledActivities.iterator(); it.hasNext();) {
+            ScheduledActivity sa = it.next();
+            if (paLabel.appliesToRepetition(sa.getRepetitionNumber())) {
+                sa.removeLabel(paLabel.getLabel());
             }
+        }
     }
 }

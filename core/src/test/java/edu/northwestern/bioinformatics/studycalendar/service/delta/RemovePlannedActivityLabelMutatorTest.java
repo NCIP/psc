@@ -51,10 +51,6 @@ public class RemovePlannedActivityLabelMutatorTest extends StudyCalendarTestCase
                     remove, paLabelDao,scheduledActivityDao);
     }
 
-    public void testAppliesToSchedules() throws Exception {
-        assertTrue(mutator.appliesToExistingSchedules());
-    }
-
     public void testRemoveLabelFromOneScheduledActivity() throws Exception {
         ScheduledActivity expectedSA = Fixtures.createScheduledActivityWithLabels(plannedActivity, 2007, Calendar.MARCH, 4);
         expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
