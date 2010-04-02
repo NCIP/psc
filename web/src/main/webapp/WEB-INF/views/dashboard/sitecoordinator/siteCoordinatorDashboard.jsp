@@ -168,7 +168,12 @@
                     <select id="selector">
                         <c:forEach items="${users}" var="user">
                             <option value="${user.id}"
-                                    <c:if test="${user.id == selected.id}">selected</c:if>>${user.displayName}</option>
+                                <c:if test="${user.id == selected.id}">selected</c:if>>
+                                <c:choose>
+                                    <c:when test="${user.activeFlag}">${user.displayName}</c:when>
+                                    <c:otherwise>${user.displayName} (Disabled)</c:otherwise>
+                                </c:choose>
+                            </option>
                         </c:forEach>
                     </select>
                 </c:if>
@@ -208,19 +213,36 @@
                                        <th>${x.key.name}</th>
                                     </c:when>
                                     <c:otherwise>
-                                       <th>${x.key.displayName}</th>
+                                         <c:if test="${x.key.activeFlag}"><th>${x.key.displayName}</th></c:if>
                                     </c:otherwise>
                                 </c:choose>
                                 <c:forEach items="${sites}" var="y">
-                                    <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
-                                        <td>
-                                            <form:checkbox path="grid[${x.key.id}][${y.id}].selected"/>
-                                        </td>
-                                    </c:if>
-                                    <c:if test="${not command.grid[x.key][y].siteAccessAllowed}">
-                                        <td class="blocked">&nbsp;</td>
+                                    <c:if test="${fn:contains(x,'Study') || x.key.activeFlag}">
+                                        <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
+                                            <td>
+                                                <form:checkbox path="grid[${x.key.id}][${y.id}].selected"/>
+                                            </td>
+                                        </c:if>
+                                        <c:if test="${not command.grid[x.key][y].siteAccessAllowed}">
+                                            <td class="blocked">&nbsp;</td>
+                                        </c:if>
                                     </c:if>
                                 </c:forEach>
+                            </tr>
+                        </c:forEach>
+                        <c:forEach items="${command.grid}" var="x">
+                            <tr>
+                                <c:if test="${not fn:contains(x,'Study') && not x.key.activeFlag}">
+                                    <th>${x.key.displayName} (Disabled)</th>
+                                    <c:forEach items="${sites}" var="y">
+                                        <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
+                                            <td><form:checkbox path="grid[${x.key.id}][${y.id}].selected"/></td>
+                                        </c:if>
+                                        <c:if test="${not command.grid[x.key][y].siteAccessAllowed}">
+                                            <td class="blocked">&nbsp;</td>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:if>
                             </tr>
                         </c:forEach>
                     </table>

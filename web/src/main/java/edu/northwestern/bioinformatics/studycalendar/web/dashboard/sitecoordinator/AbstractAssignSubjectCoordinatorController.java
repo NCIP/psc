@@ -45,7 +45,19 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
         AbstractAssignSubjectCoordinatorCommand command = (AbstractAssignSubjectCoordinatorCommand) o;
         refdata.put("studies", command.getAssignableStudies());
         refdata.put("sites", command.getAssignableSites());
-        refdata.put("users", command.getAssignableUsers());
+        List<User> assignableUsers = command.getAssignableUsers();
+        List<User> enabledUsers = new ArrayList<User>();
+        List<User> disabledUsers = new ArrayList<User>();
+        for (User user : assignableUsers) {
+            if (user.isEnabled()) {
+                enabledUsers.add(user);
+            } else {
+                disabledUsers.add(user);
+            }
+        }
+        List<User> allUsers = enabledUsers;
+        allUsers.addAll(disabledUsers);
+        refdata.put("users", allUsers);
         if(!StringUtils.isBlank(request.getParameter("flashMessage"))){
             refdata.put("flashMessage",request.getParameter("flashMessage"));
         }
