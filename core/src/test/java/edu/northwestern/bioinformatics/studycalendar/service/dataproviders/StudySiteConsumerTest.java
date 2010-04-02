@@ -5,12 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
@@ -256,20 +254,6 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         assertEquals("Wrong Site", "NCI999", results.get(1).getStudy().getSecondaryIdentifierValue("unit"));
     }
 
-
-    public void testFoo() {
-        AbstractRefresh a = new FooImpl();
-    }
-
-    class FooImpl extends StudySiteConsumer.AbstractRefresh {
-        protected List loadNewVersions(DataProvider provider, List targetSites) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        protected void updateInstanceInPlace(Providable current, Providable newVersion) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-    }
 
     ///// Helper Methods
 
