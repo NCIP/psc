@@ -49,7 +49,7 @@
             }
             params['start-date'] = startDate;
             var endDate = $("actual-date-stop").value
-            if (endDate != null && startDate.length > 0) {
+            if (endDate != null && endDate.length > 0) {
                 endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-stop").value)
             }
 
@@ -76,27 +76,25 @@
                     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 
                     myDataSource.responseSchema = {
-                          resultsList : "rows",
-                          fields : [
-                              { key: "activity_name"},
-                              { key: "activity_status"},
-                              { key: "scheduled_date"},
-                              { key: "ideal_date"},
-                              { key: "label" },
-                              { key: "subject_name"},
-                              { key: "person_id"},
-                              { key: "subject_coorinator_name"},
-                              { key: "study"},
-                              { key: "site"}
-                          ]
-                      };
+                        resultsList : "rows",
+                        fields : [
+                            { key: "activity_name"},
+                            { key: "activity_status"},
+                            { key: "scheduled_date"},
+                            { key: "ideal_date"},
+                            { key: "label" },
+                            { key: "subject_name"},
+                            { key: "person_id"},
+                            { key: "subject_coorinator_name"},
+                            { key: "study"},
+                            { key: "site"}
+                        ]
+                    };
 
-                      bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
-
+                    bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
                 }
             })
         }
-
 
         function resetFilters() {
            $("filters.studyAssignedIdentifier").value = "";
@@ -106,8 +104,8 @@
            $("actual-date-start").value = "";
            $("actual-date-stop").value = "";
            $("filters.subjectCoordinator").value = "";
-           $("qurey-result-display").hide();
-           $("searchResult").hide();
+           $("filters.personId").value ="";
+           $("bundle-list").hide();
         }
 
         //need this method to avoid form submission on the enter key press for labels autocompleter
@@ -116,6 +114,14 @@
                 Event.stop(event)
             }
         }
+
+        function setUpFiltersWithValues() {
+            $("filters.personId").value = '${personId}'
+            $("actual-date-start").value = '${startDate}'
+            $("actual-date-stop").value = '${endDate}'
+        }
+
+        Event.observe(window, "load", setUpFiltersWithValues)
     </script>
 </head>
 <body>
@@ -126,7 +132,7 @@
             <tags:errors path="*"/>
              <div class="search_box">
                  <input type="submit" value="Search" class="button" onclick="submitFilters()"/>
-                    <span id="searchResult">${fn:length(results)} results</span>
+                    <%--<span id="searchResult">${fn:length(results)} results</span>--%>
                  <input id="resetButton" type="submit" value="Reset filters" onclick="resetFilters()"/>
             </div>
             <div class="search-filters">

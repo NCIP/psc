@@ -57,39 +57,22 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     @Override
     protected ModelAndView handle(Object oCommand, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ScheduledActivitiesReportCommand command = (ScheduledActivitiesReportCommand) oCommand;
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, search(errors, command)));
-    }
-
-    private List<ScheduledActivitiesReportRow> search(Errors errors, ScheduledActivitiesReportCommand command) {
-        if (errors.hasErrors()) {
-            return Collections.emptyList();
-        } else {
-            return search(command);
-        }
-    }
-
-    protected List<ScheduledActivitiesReportRow> search(ScheduledActivitiesReportCommand command) {
-        if (command.getLabel()!= null ) {
-            command.setLabelFilter();                                 
-        }
-        List<ScheduledActivitiesReportRow> scheduledActivitiesReportRow = dao.search(command.getFilters());
-//        //todo - mounting for label is not working... need to set it manually
-//        if (command.getLabel() != null) {
-//            for (ScheduledActivitiesReportRow row : scheduledActivitiesReportRow) {
-//                row.setLabel(command.getLabel());
-//            }
-//        }
-        return scheduledActivitiesReportRow;
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, command));
     }
 
     @SuppressWarnings({"unchecked"})
-    protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {
+    protected Map createModel(BindException errors, ScheduledActivitiesReportCommand command) {
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
         model.put("coordinators", userDao.getAllSubjectCoordinators());
-        model.put("results", results);
-        model.put("resultSize", results.size());
+        model.put("personId", command.getPersonId());
+        if (command.getStartDate()!=null){
+            model.put("startDate", command.getStartDate());
+        }
+        if (command.getEndDate() !=null) {
+            model.put("endDate", command.getEndDate());
+        }
         return model;
     }
 

@@ -56,7 +56,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     @SuppressWarnings({"unchecked"})
     public void testCreateModel() {
-        Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY), EMPTY_LIST);
+        Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY), command);
         assertNotNull("Model should contain modes", model.get("modes"));
     }
 
@@ -64,7 +64,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     public void testHandle() throws Exception {
         expectActivityTypeDaoCall();
         expectFindAllSubjectCoordinators();
-        expectDaoSearch();
         ModelAndView mv = handleRequest();
         assertEquals("Wrong view", "reporting/scheduledActivitiesReport", mv.getViewName());
     }
@@ -116,10 +115,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         return mv;
     }
 
-    @SuppressWarnings({"unchecked"})
-    private void expectDaoSearch() {
-        expect(dao.search(filters)).andReturn(EMPTY_LIST);
-    }
 
     @SuppressWarnings({"unchecked"})
     private void expectActivityTypeDaoCall() {
@@ -129,7 +124,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     @SuppressWarnings({ "unchecked" })
     private ScheduledActivitiesReportCommand postAndReturnCommand(String expectNoErrorsForField) throws Exception {
         expectFindAllSubjectCoordinators();
-        expectDaoSearch();
         Map<String, Object> model = handleRequest().getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
         return (ScheduledActivitiesReportCommand) model.get("command");

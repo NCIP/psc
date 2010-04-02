@@ -192,10 +192,21 @@
             }
 
             var personId = '${subject.personId}'
-            if (personId == null) {
+            if (personId.length == 0) {
                 personId = '${subject.gridId}'
             }
             location.href = uri+extention + '?start-date='+startDate+'&end-date='+endDate+'&person-id='+personId;
+        }
+
+        function setUpReportParams() {
+            var personId = '${subject.personId}'
+            if (personId.length == 0) {
+                personId = '${subject.gridId}'
+            }
+            var startDate = $("actual-date-start").value
+            var endDate = $("actual-date-stop").value
+
+            $('options').href = SC.relativeUri("/pages/report/scheduledActivitiesReport?personId=" + personId+"&startDate="+startDate+"&endDate=" + endDate)
         }
     </script>
 
@@ -589,7 +600,7 @@
 
             </div>
             <div class="accordionRow " style="margin-top:1em;">
-                <a style="float:left;" href="<c:url value="/pages/report/scheduledActivitiesReport"/>">
+                <a style="float:left;" id="options" href="#" onclick="setUpReportParams()">
                     Show more options
                 </a>
             </div>
