@@ -226,6 +226,22 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, mayo_nu123);
     }
 
+    public void testRefreshStudySitesUsingStudyWithConsumerReturningNull() throws Exception {
+        expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList((List<StudySite>) null));
+
+        expect(siteService.getAll()).andReturn(asList(
+            nu, mayo
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForStudy(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 1, actual.size());
+        assertContains(actual, nu_nu123);
+    }
+
     public void testRefreshStudySitesUsingSiteAndReceivingExistingStudySite() throws Exception {
         Study nu123Provided = new Study();
         addSecondaryIdentifier(nu123Provided , "Mock Provider Identifier", "NU123");

@@ -144,10 +144,23 @@ public class StudySiteService {
             final Study study = studies.get(i);
             List<StudySite> provided = allProvided.get(i);
 
+            if (provided != null) {
+                logger.debug("Returned" + provided.size() + " study sites from the consumer for study " + study.getName());
+                logger.debug("- " + provided);
+
+            } else {
+                logger.debug("Returned 0 study sites from the study site consumer for study " + study.getName());
+            }
+
             List<StudySite> existing = study.getStudySites();
 
+            Collection unsaved;
+            if (provided != null) {
+                unsaved = subtract(provided, existing);
+            } else {
+                unsaved = EMPTY_COLLECTION;
+            }
 
-            Collection unsaved = subtract(provided, existing);
 
             logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
             logger.debug("- " + unsaved);

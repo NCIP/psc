@@ -108,6 +108,7 @@ public class StudySiteConsumer extends AbstractConsumer {
         @SuppressWarnings({ "unchecked" })
         public List<List<A>> execute(List<B> in) {
             List<List<A>> results = new ArrayList<List<A>>();
+            filloutWithNulls(results, in.size());
             logger.debug("in.size: " + in.size());
             logger.debug("providers.size: " + providers.size());
 
@@ -152,9 +153,8 @@ public class StudySiteConsumer extends AbstractConsumer {
                     }
 
                     List<A> merged = merge(existing, fromProvider);
-
-                    filloutWithNulls(results, in.indexOf(base));
-                    results.add(in.indexOf(base), merged);
+                    
+                    results.set(in.indexOf(base), merged);
                 }
 
             }
@@ -163,7 +163,7 @@ public class StudySiteConsumer extends AbstractConsumer {
             List<B> notUpdated = (List<B>) CollectionUtils.subtract(in, toUpdateflat);
 
             for (B base : notUpdated) {
-                results.add(in.indexOf(base), getAssociated(base));
+                results.set(in.indexOf(base), getAssociated(base));
             }
 
             return results;
