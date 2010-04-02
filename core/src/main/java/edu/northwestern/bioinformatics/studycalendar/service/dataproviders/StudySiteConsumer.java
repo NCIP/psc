@@ -88,7 +88,7 @@ public class StudySiteConsumer extends AbstractConsumer {
         }
     }
 
-    private abstract class AssociationRefresh<B extends Providable, A extends Providable, P extends DataProvider> {
+    public abstract class AssociationRefresh<B extends Providable, A extends Providable, P extends DataProvider> {
         protected abstract List<List<A>> loadNewVersions(P provider, List<B> base);
         protected abstract List<A> getAssociated(B base);
         protected abstract void enhanceInstances(List<A> associations, B base);
@@ -242,17 +242,23 @@ public class StudySiteConsumer extends AbstractConsumer {
 
             for (P provider : providers.values()) {
                 for (B base : in) {
-                    Timestamp now = getNowFactory().getNowTimestamp();
-                    if (shouldRefresh(getAssociated(base), provider, now)) {
-                        if (result.get(provider.providerToken()) == null) {
-                            result.put(provider.providerToken(), new ArrayList<B>());
+                    if (providerTokensMatch(base.getProvider(), provider.providerToken())) {
+                        Timestamp now = getNowFactory().getNowTimestamp();
+                        if (shouldRefresh(getAssociated(base), provider, now)) {
+                            if (result.get(provider.providerToken()) == null) {
+                                result.put(provider.providerToken(), new ArrayList<B>());
+                            }
+                            result.get(provider.providerToken()).add(base);
                         }
-                        result.get(provider.providerToken()).add(base);
                     }
                 }
             }
 
             return result;
+        }
+
+        protected boolean providerTokensMatch(String a, String b) {
+            return a == null ? b == null : a.equals(b); 
         }
 
 

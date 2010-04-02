@@ -5,11 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
@@ -19,7 +20,6 @@ import java.sql.Timestamp;
 import static java.util.Arrays.asList;
 import java.util.Calendar;
 import java.util.Collections;
-import static java.util.Collections.EMPTY_LIST;
 import java.util.List;
 
 public class StudySiteConsumerTest extends StudyCalendarTestCase {
@@ -57,11 +57,11 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         expect(providerA.providerToken()).andStubReturn("alpha");
         expect(providerA.getRefreshInterval()).andStubReturn(20 * 60);
 
-        nu = createSite("NU", "NU");
-        uic = createSite("UIC", "UIC");
+        nu = createSite("NU", "alpha");
+        uic = createSite("UIC", "alpha");
 
-        nuProv = providedSite("NU");
-        uicProv = providedSite("UIC");
+        nuProv = providedSite("NU", "alpha");
+        uicProv = providedSite("UIC", "alpha");
 
         nu123 = createNamedInstance("NU123", Study.class);
         Fixtures.addSecondaryIdentifier(nu123, "unit", "NU123");
@@ -193,10 +193,6 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     public void testRefreshWithAnEmptyListResult() {
         Study notFromProvider = createNamedInstance("Not From Provider", Study.class);
 
-        expect(providerA.getAssociatedSites(asList(notFromProvider))).andReturn(asList(
-            (List<StudySite>)EMPTY_LIST
-        ));
-
         expectProviders(providers);
 
         replayMocks();
@@ -213,10 +209,6 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
         expectProviders(providers);
 
         Study notFromProvider = createNamedInstance("Not From Provider", Study.class);
-
-        expect(providerA.getAssociatedSites(asList(notFromProvider))).andReturn(asList(
-            (List<StudySite>) null
-        ));
 
         replayMocks();
         List<List<StudySite>> results = consumer.refreshSites(asList(notFromProvider));
@@ -265,11 +257,32 @@ public class StudySiteConsumerTest extends StudyCalendarTestCase {
     }
 
 
+    public void testFoo() {
+        AbstractRefresh a = new FooImpl();
+    }
+
+    class FooImpl extends StudySiteConsumer.AbstractRefresh {
+        protected List loadNewVersions(DataProvider provider, List targetSites) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        protected void updateInstanceInPlace(Providable current, Providable newVersion) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
+
     ///// Helper Methods
 
-    private Site providedSite(String assignedIdentifier) {
+    private Site createSite(String name, String provider) {
+        Site s = Fixtures.createSite(name, name);
+        s.setProvider(provider);
+        return s;
+    }
+
+    private Site providedSite(String assignedIdentifier, String provider) {
         Site s = new Site();
         s.setAssignedIdentifier(assignedIdentifier);
+        s.setProvider(provider);
         return s;
     }
 
