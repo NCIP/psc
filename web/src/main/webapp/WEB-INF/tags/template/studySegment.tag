@@ -17,7 +17,8 @@
     <c:if test="${canEdit || (!canEdit && not empty studySegment.base.cycleLength)}">
         <form:form method="post" id="cycle-form" action="${cycleUrl}">
             <c:if test="${canEdit}">
-                <h5 id="cycleError"></h5>
+               <form:errors path="*"/>
+               <h5 id="cycleError"></h5>
                     Cycle length <input id="cycleLength" name="cycleLength" value="${studySegment.base.cycleLength}" size="5"/> days
                 <input type="submit" value="Update" id="cycleButton"/>
             </c:if>
