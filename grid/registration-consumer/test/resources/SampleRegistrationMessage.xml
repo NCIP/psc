@@ -35,7 +35,7 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			type="CDR000007829" xsi:type="OrganizationAssignedIdentifierType">
 			<type>Coordinating Center Identifier</type>
-			<value>04_C_0121</value>
+			<value>TEST_STUDY</value>
 			<primaryIndicator>true</primaryIndicator>
 			<healthcareSite gridId="WF GRID ID">
 				<nciInstituteCode>duke healthcare nci</nciInstituteCode>
@@ -54,7 +54,7 @@
 	</studyRef>
 	<participant
 		xmlns:ns1="gme://ccts.cabig/1.0/gov.nih.nci.cabig.ccts.domain"
-		ns1:gridId="50113a1a-4c3e-4418-8c37-7383cba1aaf8">
+		ns1:gridId="50113a1a-4c3e-4418-8c37-7383cba1aaf8test">
 		<ns1:gridId>50113a1a-4c3e-4418-8c37-7383cba1aaf8</ns1:gridId>
 		<ns1:firstName>Saurabh</ns1:firstName>
 		<ns1:lastName>e</ns1:lastName>
@@ -67,7 +67,7 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			type="CDR000007829" xsi:type="OrganizationAssignedIdentifierType">
 			<type>MRN</type>
-			<value>mrn6</value>
+			<value>TEST_MRN</value>
 			<primaryIndicator>true</primaryIndicator>
 			<healthcareSite gridId="WF GRID ID">
 				<nciInstituteCode>NCI001</nciInstituteCode>
