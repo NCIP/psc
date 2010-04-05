@@ -1,341 +1,240 @@
-/**
- *
- */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import gov.nih.nci.cabig.ccts.domain.IdentifierType;
-import gov.nih.nci.cabig.ccts.domain.OrganizationAssignedIdentifierType;
-import gov.nih.nci.cabig.ccts.domain.ParticipantType;
+import edu.northwestern.bioinformatics.studycalendar.service.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.test.AbstractTransactionalSpringContextTests;
+import org.springframework.beans.factory.annotation.Required;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ccts.domain.Registration;
-import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import gov.nih.nci.ccts.grid.client.RegistrationConsumerClient;
 import gov.nih.nci.cagrid.common.Utils;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.DBTestCase;
-import org.dbunit.PropertiesBasedJdbcDatabaseTester;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
-
-import java.io.*;
 import java.util.Date;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 
 /**
- * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
+ * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
+ *
+ * @author Saurabh Agrawal
  */
-public class PSCRegistrationConsumerTest extends DaoTestCase {
-
-    private String clientConfigFile;
-
-    private String regFile;
-
-    private String serviceUrl;
+public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringContextTests {
 
 
-    private SubjectDao subjectDao;
+	public static final Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
 
-    private StudySubjectAssignmentDao studySubjectAssignmentDao;
+	private PSCRegistrationConsumer registrationConsumer;
 
-    private StudyDao studyDao;
-
-    private StudyService studyService;
-
-    private SiteDao siteDao;
-
-    private StudySiteDao studySiteDao;
-
-    private PSCRegistrationConsumer registrationConsumer;
+	private String regFile;
+	private StudyService studyService;
 
 
-    private ApplicationContext applicationContext;
+	private String assignedIdentifier = "TEST_STUDY";
+
+	private String nciCode = "SITE_01";
+	private SiteDao siteDao;
+	private String shortTitle = "SMOTE_TEST";
+	private String longTitle = "Test long title";
+	private StudySubjectAssignmentDao studySubjectAssignmentDao;
+
+	private SubjectService subjectService;
+
+	private StudyDao studyDao;
+
+	private SubjectDao subjectDao;
+	private String assignmentGridId = "6115c43c-851e-425c-8312-fd78367aaef3"; 
+
+	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
+
+	private StudySubjectAssignmentXmlSerializer studySubjectAssignmentXmlSerializer;
+	private SiteService siteService;
+	private AmendmentService amendmentService;
+	private Study study;
+	private StudySite studySite;
 
 
-    private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
+	protected void onSetUpInTransaction() throws Exception {
 
-    // private static Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
+		DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf-psc/services/cagrid/RegistrationConsumer"));
+		regFile = System.getProperty("psc.test.sampleRegistrationFile");
+		study = studyDao.getByAssignedIdentifier(assignedIdentifier);
+		if (study == null) {
+			logger.error(String.format("no study found for given identifier %s", assignedIdentifier));
+			createStudy(); //create study and re-run the test case..
+		}
 
-//    private void init() {
-//
-//        applicationContext=new ClassPathXmlApplicationContext(new String[]{
-//                        // "classpath:applicationContext.xml",
-//                        "classpath:applicationContext-grid.xml"});
-//        registrationConsumer= (PSCRegistrationConsumer) applicationContext.getBean("registrationConsumer");
-//
-//
-//        clientConfigFile = System.getProperty("psc.test.clientConfigFile",
-//                "gov/nih/nci/ccts/grid/client/client-config.wsdd");
-//        regFile = System.getProperty("psc.test.sampleRegistrationFile",
-//                "grid/registration-consumer/test/resources/SampleRegistrationMessage.xml");
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "https://cbvapp-d1017.nci.nih.gov:28443/wsrf-caaers/services/cagrid/RegistrationConsumer");
-//
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "https://localhost:8443/psc-wsrf/services/cagrid/RegistrationConsumer");
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/RegistrationConsumer");
 
-//        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://cbiovdev5004.nci.nih.gov:5455/psc");
-//        String usr = System.getProperty("psc.test.db.usr", "pscdev");
-//        String pwd = System.getProperty("psc.test.db.pwd", "devpsc1234");
+	}
 
-//        String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
-//        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://localhost:5432/psc");
-//        //String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://10.10.10.2:5432/psc");
-//        String usr = System.getProperty("psc.test.db.usr", "psc");
-//        String pwd = System.getProperty("psc.test.db.pwd", "psc");
+	protected void onTearDownAfterTransaction() throws Exception {
 
-//        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc_test");
-        //String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://10.10.10.2:5432/psc");
-//        String usr = System.getProperty("psc.test.db.usr", "psc");
-//        String pwd = System.getProperty("psc.test.db.pwd", "psc");
-//
-//
-//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, driver);
-//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, url);
-//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
-//        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
-//
-//
-//
-//        subjectDao = (SubjectDao) applicationContext.getBean("subjectDao");
-//        studyDao = (StudyDao) applicationContext.getBean("studyDao");
-//        siteDao = (SiteDao) applicationContext.getBean("siteDao");
-//        studySubjectAssignmentDao = (StudySubjectAssignmentDao) applicationContext.getBean("studySubjectAssignmentDao");
-//        studySiteDao = (StudySiteDao) applicationContext.getBean("studySiteDao");
-//        studyService = (StudyService) applicationContext.getBean("studyService");
-//    }
+		DataAuditInfo.setLocal(null);
+	}
 
-//    public PSCRegistrationConsumerTest() {
-//        super();
-//        init();
-//
-//    }
-//
-//    public PSCRegistrationConsumerTest(final String name) {
-//        super(name);
-//        init();
-//    }
-//
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        regFile = System.getProperty("psc.test.sampleRegistrationFile");
-        //DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
-    }
-//
-//    @Override
-//    public void tearDown() throws Exception {
-//        super.tearDown();
-//        DataAuditInfo.setLocal(null);
-//
-//    }
+
+	public void testCreateRegistrationLocal() throws Exception {
+		logger.info("### Running test create Registration local method");
+		Registration registration = getRegistration();
+		try {
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());  
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error creating registration: " + ex.getMessage());
+		}
+	}
+
+	public void testRollbackRegistrationLocal() throws Exception {
+		logger.info("### Running test rollback Registration local method");
+		Registration registration = getRegistration();
+		try {           
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());
+			registrationConsumer.rollback(registration);
+
+			Subject subject =  subjectDao.findSubjectByPersonId("TEST_MRN");
+			assertNull("Subject not deleted", subject);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error creating/rollback registration: " + ex.getMessage());
+		}
+	}
 
 
 
-    public void testCreateRegistrationLocal() throws Exception {
-        Registration registration = getRegistration();
-        registrationConsumer.register(registration);
-//        consumer.commit(registration);
-        registrationConsumer.rollback(registration);
-//        //consumer.register(registration);
+	public void setStudySubjectAssignmentXmlSerializer(StudySubjectAssignmentXmlSerializer studySubjectAssignmentXmlSerializer) {
+		this.studySubjectAssignmentXmlSerializer = studySubjectAssignmentXmlSerializer;
+	}
 
-//            consumer.commit(registration);
-//            consumer.register(registration);
-        // DataAuditInfo.setLocal(null);
+	public void createStudy() throws Exception {
+		if (studyDao.getByAssignedIdentifier(assignedIdentifier) == null) {
+			logger.debug("creating study for given identifer:" + assignedIdentifier);
+			study = TemplateSkeletonCreatorImpl.createBase(shortTitle);
+			study.setAssignedIdentifier(assignedIdentifier);
+			study.setLongTitle(longTitle);
 
-//        validateRegistration(registration);
-    }
+			Site site = siteDao.getByAssignedIdentifier(nciCode);
+			if (site == null) {
+				String message = "No site exists for given assigned identifier" + nciCode;
+				logger.error(message);
+				site = new Site();
+				site.setAssignedIdentifier(nciCode);
+				site.setName(nciCode);
+				siteService.createOrUpdateSite(site);
 
-    public void testRollbackRegistrationLocal() {
-        Registration registration = getRegistration();
-        try {
-            // DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-            registrationConsumer.register(registration);
-//            validateRegistration(registration);
-            registrationConsumer.rollback(registration);
-            // DataAuditInfo.setLocal(null);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error creating registration: " + ex.getMessage());
-        }
+			}
+			studySite = new StudySite();
+			studySite.setSite(site);
+			studySite.setStudy(study);
+			study.addStudySite(studySite);
 
-    }
+			TemplateSkeletonCreatorImpl.addEpoch(study, 0, Epoch.create("Treatment"));
+			Epoch epoch = new Epoch();
+			epoch.setName("Treatment");
+			StudySegment child = new StudySegment();
+			child.setName("Arm A");
+			epoch.addChild(child);
+			study.getPlannedCalendar().addEpoch(epoch);
 
-    public void testCommitRegistrationLocal() {
-        Registration registration = getRegistration();
-        try {
-            // DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-            registrationConsumer.register(registration);
-//            validateRegistration(registration);
-            registrationConsumer.commit(registration);
-            // DataAuditInfo.setLocal(null);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error creating registration: " + ex.getMessage());
-        }
+			studyService.save(study);
 
-    }
+			amendmentService.amend(study);
 
-    public void testCreateRegistrationRemote() {
-        Registration reg = getRegistration();
-        try {
-            RegistrationConsumerClient client = new RegistrationConsumerClient(serviceUrl);
-            client.register(reg);
+			AmendmentApproval approvals = new AmendmentApproval();
+			approvals.setAmendment(study.getAmendment());
+			approvals.setDate(new Date());
+
+			amendmentService.approve(studySite, approvals);
+			logger.info("Created the study :" + study.getId());
+		} else {
+			logger.debug("study already exists for given identifier : " + assignedIdentifier);
+		}
+	}
 
 
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error making call: " + ex.getMessage());
-        }
-    }
+	protected String[] getConfigLocations() {
 
-    public void testRollbackRegistrationRemote() {
-        Registration registration = getRegistration();
-        try {
-            RegistrationConsumerClient client = new RegistrationConsumerClient(serviceUrl);
-            client.register(registration);
-            client.rollback(registration);
+		String[] configs = {"classpath:applicationContext-grid.xml"};
+		return configs;
+	}
 
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error making call: " + ex.getMessage());
-        }
-    }
 
-    public void testCommitRegistrationRemote() {
-        Registration registration = getRegistration();
-        try {
-            RegistrationConsumerClient client = new RegistrationConsumerClient(serviceUrl);
-            // client.register(registration);
-            client.rollback(registration);
+	private Registration getRegistration() {
 
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error making call: " + ex.getMessage());
-        }
-    }
+		Registration reg = null;
+		try {
+			InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream("gov/nih/nci/ccts/grid/client/client-config.wsdd");
+			Reader reader = null;
+			if (regFile != null){
+				reader = new FileReader(regFile);
+			}else{
+				reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
+						"SampleRegistrationMessage.xml"));
+			}
+			reg = (Registration) Utils.deserializeObject(reader, Registration.class, config);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error deserializing Registration object: " + ex.getMessage());
+		}
+		return reg;
+	}
 
-    private Registration getRegistration() {
 
-        Registration reg = null;
-        try {
-            InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    "gov/nih/nci/ccts/grid/client/client-config.wsdd");
-            Reader reader = null;
-            if (regFile != null){
-            	reader = new FileReader(regFile);
-            }else{
-            	reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                    "SampleRegistrationMessage.xml"));
-            }
-            reg = (Registration) Utils.deserializeObject(reader, Registration.class, config);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error deserializing Registration object: " + ex.getMessage());
-        }
-        return reg;
-    }
+	public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
+		this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+	}
 
-    private String findIdentifierOfType(final IdentifierType[] idTypes, final String ofType) {
-        if (idTypes == null) {
-            return null;
-        }
-        for (IdentifierType idType : idTypes) {
-            if (idType instanceof OrganizationAssignedIdentifierType && StringUtils.equals(idType.getType(), ofType)) {
-                return idType.getValue();
-            }
-        }
-        return null;
-    }
+	public void setSubjectService(SubjectService subjectService) {
+		this.subjectService = subjectService;
+	}
 
-    private StudySite findStudySite(final Study study, final String siteNCICode) {
-        for (StudySite studySite : study.getStudySites()) {
-            if (StringUtils.equals(studySite.getSite().getAssignedIdentifier(), siteNCICode)) {
-                return studySite;
-            }
-        }
-        return null;
-    }
+	public void setSubjectDao(SubjectDao subjectDao) {
+		this.subjectDao = subjectDao;
+	}
 
-    private void validateRegistration(final Registration registration) {
-        // first validate subject
-//        Subject subjectToBeValidated = subjectDao.findSubjectByPersonId(findIdentifierOfType(registration
-//                .getParticipant().getIdentifier(), "MRN"));
-//        assertNotNull(subjectToBeValidated);
-//        validateParticipant(subjectToBeValidated, registration.getParticipant());
-//
-//        Study study = studyService.getStudyByAssignedIdentifier(findIdentifierOfType(registration.getStudyRef()
-//                .getIdentifier(), COORDINATING_CENTER_IDENTIFIER_TYPE));
-//        String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
-//        StudySite studySite = findStudySite(study, siteNCICode);
-//
-//        assertNotNull(studySite);
-//        assertNotNull(studySite.getSite());
-//        assertNotNull(study);
-//        StudySubjectAssignment studySubjectAssignment = subjectDao.getAssignment(subjectToBeValidated, study, studySite
-//                .getSite());
-//
-//        assertNotNull(studySubjectAssignment);
+	@Required
+	public void setAmendmentService(AmendmentService amendmentService) {
+		this.amendmentService = amendmentService;
+	}
 
-        // TODO: Check if it was correctly populated.
-    }
+	@Required
+	public void setStudyService(StudyService studyService) {
+		this.studyService = studyService;
+	}
 
-    private void validateParticipant(final Subject participantToBeValidated, final ParticipantType registerdParticipant) {
-        assertEquals(registerdParticipant.getBirthDate(), participantToBeValidated.getDateOfBirth());
-        assertEquals(registerdParticipant.getAdministrativeGenderCode(), participantToBeValidated.getGender());
-        assertEquals(registerdParticipant.getFirstName(), participantToBeValidated.getFirstName());
-        assertEquals(registerdParticipant.getLastName(), participantToBeValidated.getLastName());
-        assertEquals(registerdParticipant.getIdentifier(0).getValue(), participantToBeValidated.getPersonId());
+	@Required
+	public void setSiteDao(SiteDao siteDao) {
+		this.siteDao = siteDao;
+	}
 
-    }
+	@Required
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
+	}
 
-//    public static void main(final String[] args) {
-//        junit.textui.TestRunner.run(suite());
-//    }
-//
-//    public static Test suite() {
-//        TestSuite suite = new TestSuite();
-        /*
-           * NOTE: These tests CANNOT be run in succession because it will cause the maximum number of connections to be exceeded.
-           */
-        //  suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
-        //  suite.addTest(new PSCRegistrationConsumerTest("testRollbackRegistrationLocal"));
-       //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
-//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
-      //suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
-        //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationRemote"));
-//        return suite;
-//    }
+	@Required
+	public void setStudyDao(StudyDao studyDao) {
+		this.studyDao = studyDao;
+	}
 
-    @Override
-    protected IDataSet getDataSet() throws Exception {
-
-//        String fileName = "grid/registration-consumer/test/resources/test_data.xml";
-//        File testFile = new File(fileName);
-//        if (!testFile.exists()) {
-//            throw new RuntimeException(fileName + " not found.");
-//        }
-//
-//        return new FlatXmlDataSet(new FileInputStream(testFile));
-        
-        String fileName = "test_data.xml";
-        return new FlatXmlDataSet(Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName));
-    }
-
+	@Required
+	public void setRegistrationConsumer(PSCRegistrationConsumer registrationConsumer) {
+		this.registrationConsumer = registrationConsumer;
+	}
 }
