@@ -18,7 +18,7 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
         <type>Coordinating Center Identifier</type>
-        <value>value15</value>
+        <value>TEST_STUDY</value>
         <primaryIndicator>true</primaryIndicator>
         <healthcareSite>
             <name>duke healthcare</name>
@@ -106,10 +106,10 @@
     </epoch>
     <studyOrganization xsi:type="StudySiteType">
         <healthcareSite>
-            <name>duke healthcare</name>
-            <descriptionText>duke healthcare</descriptionText>
+            <name>Test healthcare</name>
+            <descriptionText>Test healthcare</descriptionText>
             <address><streetAddress>12359 sunrise valley drive</streetAddress><city>Reston</city><stateCode>VA</stateCode><postalCode>20191</postalCode><countryCode>USA</countryCode></address>
-            <nciInstituteCode>DUKE</nciInstituteCode>
+            <nciInstituteCode>TEST_SITE</nciInstituteCode>
         </healthcareSite>
         <irbApprovalDate>0006-06-23</irbApprovalDate>
         <roleCode>role</roleCode>
