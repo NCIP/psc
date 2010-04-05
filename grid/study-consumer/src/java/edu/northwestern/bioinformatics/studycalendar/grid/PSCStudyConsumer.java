@@ -305,9 +305,10 @@ public class PSCStudyConsumer implements StudyConsumerI {
                     studySite = new StudySite();
                     studySite.setSite(fetchSite(studyOrganizationType));
                     studySite.setStudy(study);
-                    studySite.setGridId(studyOrganizationType.getGridId());                  
+                    studySite.setGridId(studyOrganizationType.getGridId());
+                    studySites.add(studySite);
                 } 
-                studySites.add(studySite);
+                
             }
         }
         if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
