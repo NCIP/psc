@@ -125,10 +125,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetAssignableSites() throws Exception {
-        expect(studySiteService.refreshStudySitesForSites(sites)).andReturn(asList(
-                site0.getStudySites(),
-                site1.getStudySites()
-        ));
         replayMocks();
         List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator);
         verifyMocks();
@@ -138,10 +134,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetAssignableSitesDependingOnStudy() throws Exception {
-        expect(studySiteService.refreshStudySitesForSites(sites)).andReturn(asList(
-                site0.getStudySites(),
-                site1.getStudySites()
-        ));
         replayMocks();
         List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator, study1);
         verifyMocks();
