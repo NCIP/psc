@@ -101,7 +101,6 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     protected List<Site> getAssignableSites(User siteCoordinator) {
         List<Site> sites = new ArrayList(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites());
-        studySiteService.refreshStudySitesForSites(sites);
         log.debug("{} sites found for {} as site coord", sites.size(), siteCoordinator.getName());
         Collections.sort(sites, new NamedComparator());
         return sites;

@@ -243,9 +243,14 @@ public class Fixtures {
     }
 
     public static StudySite createStudySite(Study study, Site site) {
+        return createStudySite(study ,site, null);
+    }
+
+    public static StudySite createStudySite(Study study, Site site, String provider) {
         StudySite studySite = new StudySite();
         if (study != null) study.addStudySite(studySite);
         if (site != null) site.addStudySite(studySite);
+        studySite.setProvider(provider);
         return studySite;
     }
 
@@ -472,8 +477,13 @@ public class Fixtures {
     }
 
     public static Site createSite(String name, String assignedIdentifier) {
+        return createSite(name, assignedIdentifier, null);
+    }
+
+    public static Site createSite(String name, String assignedIdentifier, String provider) {
         Site site = createNamedInstance(name, Site.class);
         site.setAssignedIdentifier(assignedIdentifier);
+        site.setProvider(provider);
         return site;
     }
 

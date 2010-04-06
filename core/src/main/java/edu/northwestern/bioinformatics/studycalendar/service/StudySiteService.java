@@ -11,15 +11,14 @@ import org.apache.commons.collections.CollectionUtils;
 import static org.apache.commons.collections.CollectionUtils.*;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.ArrayList;
+import java.util.*;
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.Arrays.asList;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
 
 public class StudySiteService {
     private StudyCalendarAuthorizationManager authorizationManager;
@@ -137,48 +136,45 @@ public class StudySiteService {
 
         List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
 
-        final List<Site> allSites = siteService.getAll();
-        final List<List<StudySite>> allProvided = studySiteConsumer.refreshSites(studies);
+        final Map<String, List<Site>> sites = buildProvidedSiteMap();
+        List<List<StudySite>> allProvided = studySiteConsumer.refreshSites(studies);
         
         for (int i = 0; i < studies.size(); i++) {
             final Study study = studies.get(i);
             List<StudySite> provided = allProvided.get(i);
-
-            if (provided != null) {
-                logger.debug("Returned" + provided.size() + " study sites from the consumer for study " + study.getName());
-                logger.debug("- " + provided);
-
-            } else {
-                logger.debug("Returned 0 study sites from the study site consumer for study " + study.getName());
+            if (provided == null) {
+                provided = EMPTY_LIST;
             }
 
-            List<StudySite> existing = study.getStudySites();
-
-            Collection unsaved;
-            if (provided != null) {
-                unsaved = subtract(provided, existing);
-            } else {
-                unsaved = EMPTY_COLLECTION;
-            }
-
-
-            logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
-            logger.debug("- " + unsaved);
-
-            Collection qualifying = CollectionUtils.select(unsaved, new Predicate(){
+            Collection<StudySite> qualifying = CollectionUtils.select(provided, new Predicate(){
                 public boolean evaluate(Object o) {
-                    StudySite s  = (StudySite) o;
+                    StudySite potential  = (StudySite) o;
 
-                    return allSites.contains(s.getSite());
+                    // Verify Study Provider and StudySite Provider Are Equal
+                    if (study.getProvider() == null || !study.getProvider().equals(potential.getProvider())) {
+                        return false;
+                    }
+
+                    // Verify Site Provider and StudySite Provider Are Equal (And Site Exists)
+                    List<Site> providerSpecific = sites.get(potential.getProvider());
+                    if (providerSpecific == null || !providerSpecific.contains(potential.getSite())) {
+                        return false;
+                    }
+
+                    // Verify new study site
+                    Site site = providerSpecific.get(providerSpecific.indexOf(potential.getSite()));
+                    if (StudySite.findStudySite(study, site) != null) {
+                        return false;
+                    }
+
+                    return true;
                 }
             });
 
-            logger.debug("There are" + allSites.size() + " sites total.");
-            logger.debug("- " + allSites);
-
-
-            logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
-            logger.debug("- " + qualifying);
+            logger.debug("Found " + qualifying.size() + " new study sites from the provider.");
+            for (StudySite u : qualifying) {
+                logger.debug("- " + u);
+            }
 
             // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
             // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
@@ -186,7 +182,8 @@ public class StudySiteService {
             Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
                 public Object transform(Object o) {
                     StudySite s  = (StudySite) o;
-                    Site site = allSites.get(allSites.indexOf(s.getSite()));
+                    List<Site> providerSpecific = sites.get(s.getProvider());
+                    Site site = providerSpecific.get(providerSpecific.indexOf(s.getSite()));
 
                     StudySite e = new StudySite(study, site);
                     e.getStudy().addStudySite(e);
@@ -201,10 +198,24 @@ public class StudySiteService {
                 studySiteDao.save(s);
             }
 
-            refreshed.add(new ArrayList<StudySite>(union(existing, enhanced)));
+            refreshed.add(study.getStudySites());
         }
 
         return refreshed;
+    }
+
+    private Map<String, List<Site>> buildProvidedSiteMap() {
+        Map<String, List<Site>> results = new HashMap<String, List<Site>>();
+        for (Site s : siteService.getAll()) {
+            String p = s.getProvider();
+            if (isNotBlank(p)) {
+                if (results.get(p) == null) {
+                    results.put(p, new ArrayList<Site>());
+                }
+                results.get(p).add(s);
+            }
+        }
+        return results;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -219,25 +230,45 @@ public class StudySiteService {
 
         List<List<StudySite>> refreshed = new ArrayList<List<StudySite>>();
 
-        final List<Study> allStudies = studyDao.getAll();
+        final Map<String, List<Study>> studies = buildProvidedStudyMap();
         final List<List<StudySite>> allProvided = studySiteConsumer.refreshStudies(sites);
 
         for (int i = 0; i < sites.size(); i++) {
             final Site site = sites.get(i);
             List<StudySite> provided = allProvided.get(i);
+            if (provided == null) {
+                provided = EMPTY_LIST;
+            }
 
-            List<StudySite> existing = site.getStudySites();
+            Collection<StudySite> qualifying = CollectionUtils.select(provided, new Predicate(){
+                public boolean evaluate(Object o) {
+                    StudySite potential  = (StudySite) o;
 
-            Collection<StudySite> unsaved = CollectionUtilsPlus.nonmatching(provided, existing, StudySecondaryIdentifierMatcher.instance());
+                    // Verify Provider for existing Site is equal to StudySite Provider
+                    if (site.getProvider() == null || !site.getProvider().equals(potential.getProvider())) {
+                        return false;
+                    }
 
-            logger.debug("Found " + unsaved.size() + " unsaved sites from the provider.");
-            logger.debug("- " + unsaved);
+                    // Verify Provider for existing Study is equal to StudySite Provider (And Study Exists)
+                    List<Study> providerSpecific = studies.get(potential.getProvider());
+                    if (providerSpecific == null || CollectionUtilsPlus.matching(asList(potential.getStudy()), providerSpecific, StudySecondaryIdentifierMatcher.instance()).size() == 0) {
+                        return false;
+                    }
 
-            Collection<StudySite> qualifying = CollectionUtilsPlus.matching(unsaved, allStudies, StudySecondaryIdentifierMatcher.instance());
+                    // Verify new study site
+                    Study study = (Study) CollectionUtilsPlus.matching(asList(potential.getStudy()), providerSpecific, StudySecondaryIdentifierMatcher.instance()).iterator().next();
+                    if (StudySite.findStudySite(study, site) != null) {
+                        return false;
+                    }
 
-            logger.debug("Found " + qualifying.size() + " qualifying sites from the provider.");
-            logger.debug("- " + qualifying);
+                    return true;
+                }
+            });
 
+            logger.debug("Found " + qualifying.size() + " new study sites from the provider.");
+            for (StudySite u : qualifying) {
+                logger.debug("- " + u);
+            }
 
             // StudySites returned from provider are proxied by CGLIB.  This causes problems when saving,
             // so we want to create a fresh StudySite instance. Also, we want to populate the site with a
@@ -245,7 +276,9 @@ public class StudySiteService {
             Collection<StudySite> enhanced = CollectionUtils.collect(qualifying, new Transformer(){
                 public Object transform(Object o) {
                     StudySite s  = (StudySite) o;
-                    Study study = (Study) CollectionUtilsPlus.matching(allStudies, asList(s.getStudy()), StudySecondaryIdentifierMatcher.instance()).iterator().next();
+
+                    List<Study> providerSpecific = studies.get(s.getProvider());
+                    Study study = (Study) CollectionUtilsPlus.matching(asList(s.getStudy()), providerSpecific, StudySecondaryIdentifierMatcher.instance()).iterator().next();
 
                     StudySite e = new StudySite(study, site);
                     e.getStudy().addStudySite(e);
@@ -256,41 +289,40 @@ public class StudySiteService {
                 }
             });
 
-            logger.debug("Found " + enhanced.size() + " enhanced sites from the provider.");
-            logger.debug("- " + qualifying);
-
             for (StudySite s : enhanced) {
                 studySiteDao.save(s);
             }
 
-            refreshed.add(new ArrayList<StudySite>(union(existing, enhanced)));
+            refreshed.add(site.getStudySites());
         }
 
         return refreshed;
     }
 
-    private static class CollectionUtilsPlus {
-        public static Collection matching(Collection lefts, Collection rights, CollectionMatcher matcher) {
-            Collection matching = new ArrayList();
-            if (lefts == null || rights == null) {
-                return matching;
+    private Map<String, List<Study>> buildProvidedStudyMap() {
+        Map<String, List<Study>> results = new HashMap<String, List<Study>>();
+        for (Study s : studyDao.getAll()) {
+            String p = s.getProvider();
+            if (isNotBlank(p)) {
+                if (results.get(p) == null) {
+                    results.put(p, new ArrayList<Study>());
+                }
+                results.get(p).add(s);
             }
+        }
+        return results;
+    }
 
-            for (Object l : lefts) {
-                boolean match = false;
-                for (Object r : rights) {
-                    if (l != null && r != null && matcher.compare(l, r)) {
-                        match = true;
-                    }
-                }
-                if (match) {
-                    matching.add(l);
-                }
-            }
-            return matching;
+    protected static class CollectionUtilsPlus {
+        public static Collection matching(Collection lefts, Collection rights, CollectionMatcher matcher) {
+            return toggleMatching(lefts, rights, matcher, true);
         }
 
         public static Collection nonmatching(Collection lefts, Collection rights, CollectionMatcher matcher) {
+            return toggleMatching(lefts, rights, matcher, false);
+        }
+
+        private static Collection toggleMatching(Collection lefts, Collection rights, CollectionMatcher matcher, boolean toggle) {
             Collection matching = new ArrayList();
             if (lefts == null || rights == null) {
                 return matching;
@@ -299,11 +331,11 @@ public class StudySiteService {
             for (Object l : lefts) {
                 boolean match = false;
                 for (Object r : rights) {
-                    if (l != null && r != null && matcher.compare(l, r)) {
+                    if (l != null && r != null && matcher.match(l, r)) {
                         match = true;
                     }
                 }
-                if (!match) {
+                if (match == toggle) {
                     matching.add(l);
                 }
             }
@@ -311,27 +343,26 @@ public class StudySiteService {
         }
     }
 
-    private interface CollectionMatcher {
-        public boolean compare(Object o1, Object o2);
+    protected interface CollectionMatcher {
+        public boolean match(Object o1, Object o2);
     }
 
-    private static class StudySecondaryIdentifierMatcher implements CollectionMatcher {
+    protected static class StudySecondaryIdentifierMatcher implements CollectionMatcher {
 
         public static StudySecondaryIdentifierMatcher instance() {
             return new StudySecondaryIdentifierMatcher();
         }
 
-        public boolean compare(Object o1, Object o2) {
+        public boolean match(Object o1, Object o2) {
             SortedSet<StudySecondaryIdentifier> s1 = resolveStudySecondaryIdentifier(o1);
             SortedSet<StudySecondaryIdentifier> s2 = resolveStudySecondaryIdentifier(o2);
 
             if (s1 == null || s2 == null) return false;
 
-            return s1 == null ? s2 == null : CollectionUtils.intersection(s1,s2).size() > 0;
+            return CollectionUtils.intersection(s1,s2).size() > 0;
         }
 
         private static SortedSet<StudySecondaryIdentifier> resolveStudySecondaryIdentifier(Object o) {
-
             if (o instanceof Study) {
                 return ((Study) o).getSecondaryIdentifiers();
             } else if (o instanceof StudySite) {

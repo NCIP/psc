@@ -175,7 +175,7 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return getAssignedIdentifier() != null ? getAssignedIdentifier().hashCode() : 0;
     }
 
     @Override

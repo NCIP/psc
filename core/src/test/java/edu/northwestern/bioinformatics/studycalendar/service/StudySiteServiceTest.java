@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
@@ -8,14 +9,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.checkOrder;
 
 import static java.util.Arrays.asList;
+import java.util.Collection;
 import java.util.List;
 
 public class StudySiteServiceTest extends StudyCalendarTestCase {
@@ -48,15 +50,15 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         service.setStudySiteConsumer(studySiteConsumer);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
 
-        nu = createNamedInstance("Northwestern", Site.class);
-        mayo = createNamedInstance("Mayo Clinic" , Site.class);
+        nu = createSite("Northwestern", "NU", "alpha");
+        mayo = createSite("Mayo Clinic", "MAYO" , "alpha");
 
-        nu123 = createNamedInstance("NU123", Study.class);
-        all999 = createNamedInstance("ALL999", Study.class);
+        nu123 = createStudy("NU123", "alpha");
+        all999 = createStudy("ALL999", "alpha");
 
-        nu_nu123 = createStudySite(nu123, nu);
-        nu_all999 = createStudySite(all999, nu);
-        mayo_all999 = createStudySite(all999, mayo);
+        nu_nu123 = createStudySite(nu123, nu, "alpha");
+        nu_all999 = createStudySite(all999, nu, "alpha");
+        mayo_all999 = createStudySite(all999, mayo, "alpha");
 
         studySites = asList(nu_nu123, nu_all999, mayo_all999);
 
@@ -65,6 +67,12 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         role.setStudySites(studySites);
         user.addUserRole(role);
 
+    }
+
+    private Study createStudy(String assignedIdentifier, String provider) {
+        Study s = createNamedInstance(assignedIdentifier, Study.class);
+        s.setProvider(provider);
+        return s;
     }
 
     public void testGetAllStudySitesForSubjectCoordinator() {
@@ -90,22 +98,21 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
     public void testRefreshAssociatedSites() {
         Site uicSkel = createSite(null, "UIC"); // Sites returned from the consumer only with assignedIdentifier
-        StudySite fromProvider = new StudySite(all999, uicSkel);
-        fromProvider.setProvider("alpha");
-
-        Site uic = createSite("UIC North", "UIC");    // Sites returned from the service with assignedIdentifier and name
 
         expect(studySiteConsumer.refreshSites(asList(all999))).andReturn(asList(asList(
-            fromProvider, nu_all999
+            providedStudySite(all999, uicSkel, "alpha"),
+            nu_all999
         )));
 
+        Site uic = createSite("UIC North", "UIC", "alpha");
         expect(siteService.getAll()).andReturn(asList(
             nu, uic, mayo
         ));
 
-        StudySite fullStudySite = new StudySite(all999, uic);
-        fullStudySite.setProvider("alpha");
-        studySiteDao.save(providedStudySiteEq(fullStudySite));
+        StudySite uic_all999 = providedStudySite(all999, uic, "alpha");
+        studySiteDao.save(providedStudySiteEq(
+            uic_all999)
+        );
 
         replayMocks();
         
@@ -176,7 +183,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
     }
 
-    public void testRefreshStudySitesUsingStudyReturningExistingStudySites() throws Exception {
+    public void testRefreshStudySitesForStudyReturningExistingStudySites() throws Exception {
         Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
 
         expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList(asList(
@@ -197,9 +204,9 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, nu_nu123);
     }
 
-    public void testRefreshStudySitesUsingStudyReturningNewStudySites() throws Exception {
-        Site nuProvided = createSite(null, "Northwestern University"); // Provided Instances only have assigned identifier populated
-        Site mayoProvided = createSite(null, "Mayo Clinic");
+    public void testRefreshStudySitesForStudyReturningNewStudySites() throws Exception {
+        Site nuProvided = createSite(null, "NU"); // Provided Instances only have assigned identifier populated
+        Site mayoProvided = createSite(null, "MAYO");
 
         expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList(asList(
             providedStudySite(nu123, nuProvided, "alpha"),
@@ -226,7 +233,30 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, mayo_nu123);
     }
 
-    public void testRefreshStudySitesUsingStudyWithConsumerReturningNull() throws Exception {
+    public void testRefreshStudySitesForStudyReturningNewStudySiteWithDiffProvider() throws Exception {
+        Site uicProvided = createSite(null, "UIC"); // Provided Instances only have assigned identifier populated
+
+        expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList(asList(
+            providedStudySite(nu123, uicProvided, "alpha")
+        )));
+
+
+        Site uic = createSite("UIC North", "UIC", "beta");
+        expect(siteService.getAll()).andReturn(asList(
+            nu, uic
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForStudy(nu123);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 1, actual.size());
+
+        assertContains(actual, nu_nu123);
+    }
+
+    public void testRefreshStudySitesForStudyWithConsumerReturningNull() throws Exception {
         expect(studySiteConsumer.refreshSites(asList(nu123))).andReturn(asList((List<StudySite>) null));
 
         expect(siteService.getAll()).andReturn(asList(
@@ -242,7 +272,24 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, nu_nu123);
     }
 
-    public void testRefreshStudySitesUsingSiteAndReceivingExistingStudySite() throws Exception {
+    public void testRefreshStudySitesForSiteWithConsumerReturningNull() throws Exception {
+        expect(studySiteConsumer.refreshStudies(asList(nu))).andReturn(asList((List<StudySite>) null));
+
+        expect(studyDao.getAll()).andReturn(asList(
+            all999, nu123
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForSite(nu);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 2, actual.size());
+        assertContains(actual, nu_nu123);
+        assertContains(actual, nu_all999);
+    }
+
+    public void testRefreshStudySitesForSiteAndReceivingExistingStudySite() throws Exception {
         Study nu123Provided = new Study();
         addSecondaryIdentifier(nu123Provided , "Mock Provider Identifier", "NU123");
 
@@ -265,11 +312,11 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertContains(actual, nu_all999);
     }
 
-    public void testRefreshStudySitesUsingSiteAndReceivingNewStudySite() throws Exception {
-        Study nu123Provided = new Study();
+    public void testRefreshStudySitesForSiteAndReceivingNewStudySite() throws Exception {
+        Study nu123Provided = createNamedInstance("NU123", Study.class);
         addSecondaryIdentifier(nu123Provided, "Mock Provider Identifier", "NU123");
 
-        Study wo222Provided = new Study();
+        Study wo222Provided = createNamedInstance("WO222 Study", Study.class);
         addSecondaryIdentifier(wo222Provided, "Mock Provider Identifier", "WO222");
 
         expect(studySiteConsumer.refreshStudies(asList(nu))).andReturn(asList(asList(
@@ -277,7 +324,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
             providedStudySite(wo222Provided, nu, "alpha")
         )));
 
-        Study wo222 = createNamedInstance("WOOOOOOO", Study.class);
+        Study wo222 = createStudy("WO222 Study", "alpha");
         addSecondaryIdentifier(wo222, "Mock Provider Identifier", "WO222");
 
         expect(studyDao.getAll()).andReturn(asList(
@@ -285,7 +332,9 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         ));
 
         StudySite nu_wo222 = providedStudySite(wo222, nu, "alpha");
-        studySiteDao.save(providedStudySiteEq(nu_wo222));
+        studySiteDao.save(providedStudySiteEq(
+            nu_wo222
+        ));
 
         replayMocks();
 
@@ -293,14 +342,47 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong number of sites", 3, actual.size());
-
         assertContains(actual, nu_nu123);
         assertContains(actual, nu_all999);
         assertContains(actual, nu_wo222);
 
+        assertEquals("Wrong number of sites", 3, nu.getStudySites().size());
         assertContains(nu.getStudySites(), nu_nu123);
         assertContains(nu.getStudySites(), nu_all999);
         assertContains(nu.getStudySites(), nu_wo222);
+    }
+
+    public void testRefreshStudySitesForSiteAndReceivingNewStudySiteWithDiffProvider() throws Exception {
+        Study nu123Provided = createNamedInstance("NU123", Study.class);
+        addSecondaryIdentifier(nu123Provided, "Mock Provider Identifier", "NU123");
+
+        Study wo222Provided = createNamedInstance("WO222 Study", Study.class);
+        addSecondaryIdentifier(wo222Provided, "Mock Provider Identifier", "WO222");
+
+        expect(studySiteConsumer.refreshStudies(asList(nu))).andReturn(asList(asList(
+            providedStudySite(nu123Provided , nu, "alpha"),
+            providedStudySite(wo222Provided, nu, "beta")
+        )));
+
+        Study wo222 = createStudy("WO222 Study", "alpha");
+        addSecondaryIdentifier(wo222, "Mock Provider Identifier", "WO222");
+
+        expect(studyDao.getAll()).andReturn(asList(
+            wo222, nu123
+        ));
+
+        replayMocks();
+
+        List<StudySite> actual = service.refreshStudySitesForSite(nu);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 2, actual.size());
+        assertContains(actual, nu_nu123);
+        assertContains(actual, nu_all999);
+
+        assertEquals("Wrong number of sites", 2, nu.getStudySites().size());
+        assertContains(nu.getStudySites(), nu_nu123);
+        assertContains(nu.getStudySites(), nu_all999);
     }
 
     public void testResolveStudySiteWhenStudyNotFound() throws Exception {
@@ -316,19 +398,19 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
 
     public void testResolveStudySiteWhenSiteNotFound() throws Exception {
         expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
-        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(null);
+        expect(siteService.getByAssignedIdentifier("NU")).andReturn(null);
         replayMocks();
         try {
             service.resolveStudySite(nu_nu123);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Site 'Northwestern' not found. Please define a site that exists.", scve.getMessage());
+            assertEquals("Site 'NU' not found. Please define a site that exists.", scve.getMessage());
         }
     }
 
     public void testResolveStudySiteWhenNewStudySite() throws Exception {
         expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
-        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(nu);
+        expect(siteService.getByAssignedIdentifier("NU")).andReturn(nu);
         StudySite newStudySite = new StudySite(nu123, nu);
         replayMocks();
         StudySite actual = service.resolveStudySite(newStudySite);
@@ -340,11 +422,63 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
     
     public void testResolveStudySiteWhenExistingStudySite() throws Exception {
         expect(studyDao.getByAssignedIdentifier("NU123")).andReturn(nu123);
-        expect(siteService.getByAssignedIdentifier("Northwestern")).andReturn(nu);
+        expect(siteService.getByAssignedIdentifier("NU")).andReturn(nu);
         replayMocks();
         StudySite actual = service.resolveStudySite(nu_nu123);
         verifyMocks();
         assertSame("StudySite is not same", nu_nu123, actual);
+    }
+
+    public void testProvidedStudyMatcherUsingSameProviders() {
+        Study s1 = new Study();
+        addSecondaryIdentifier(s1, "foo", "bar");
+        s1.setProvider("alpha");
+
+        Study s2 = new Study();
+        addSecondaryIdentifier(s2, "foo", "bar");
+        s2.setProvider("alpha");
+
+        boolean result = StudySiteService.StudySecondaryIdentifierMatcher.instance().match(s1, s2);
+        assertTrue("Study Sites should match", result);
+    }
+
+   
+    public void testProvidedStudyMatcherUsingSameStudySecondaryIdentifiers() {
+        Study s1 = new Study();
+        addSecondaryIdentifier(s1, "foo", "bar");
+
+        Study s2 = new Study();
+        addSecondaryIdentifier(s2, "foo", "bar");
+
+        boolean result = StudySiteService.StudySecondaryIdentifierMatcher.instance().match(s1, s2);
+        assertTrue("Study Sites should match", result);
+    }
+
+    public void testProvidedStudyMatcherUsingDiffStudySecondaryIdentifiers() {
+        Study s1 = new Study();
+        addSecondaryIdentifier(s1, "foo", "bar");
+
+        Study s2 = new Study();
+        addSecondaryIdentifier(s2, "foo", "baz");
+
+        boolean result = StudySiteService.StudySecondaryIdentifierMatcher.instance().match(s1, s2);
+        assertFalse("Study Sites should match", result);
+    }
+
+    class TestMatcher implements StudySiteService.CollectionMatcher {
+        public boolean match(Object o1, Object o2) {
+            return o1.equals(o2);
+        }
+    }
+
+    public void testCollectionUtilsPlusMatchWithMatch() {
+        Collection result = StudySiteService.CollectionUtilsPlus.matching(asList("foo"), asList("foo"), new TestMatcher());
+        assertEquals("Wrong size", 1, result.size());
+    }
+
+    public void testCollectionUtilsPlusMatchWithNoMatch() {
+        Collection result = StudySiteService.CollectionUtilsPlus.matching(asList("foo"), asList("bar"), new TestMatcher());
+        assertEquals("Wrong size", 0, result.size());
     }
 
     ////// HELPER METHODS
@@ -353,6 +487,7 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         studySite.setProvider(providerName);
         return studySite;
     }
+
 
     ////// CUSTOM MATCHERS
     private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {

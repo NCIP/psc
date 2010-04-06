@@ -3,17 +3,24 @@ package edu.northwestern.bioinformatics.studycalendar.service.dataproviders;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.DataProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.RefreshableProvider;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudySiteProvider;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Providable;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import org.apache.commons.collections.CollectionUtils;
 import static org.apache.commons.collections.CollectionUtils.intersection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.sql.Timestamp;
-import java.util.*;
-import static java.util.Collections.EMPTY_LIST;
+import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+//@Transactional(readOnly = true)
 public class StudySiteConsumer extends AbstractConsumer {
     @Override protected Class<StudySiteProvider> providerType() { return StudySiteProvider.class; }
     private final Log logger = LogFactory.getLog(getClass());
@@ -178,6 +185,7 @@ public class StudySiteConsumer extends AbstractConsumer {
 
         private void updateTimestamps(List<A> in, String providerName) {
             for (A s : in) {
+                logger.debug("- Updating timestamp for " + ((StudySite) s).getName());
                 updateTimestamp(providerName, s);
             }
         }
