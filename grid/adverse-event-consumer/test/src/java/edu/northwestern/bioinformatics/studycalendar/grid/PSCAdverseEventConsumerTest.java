@@ -94,7 +94,6 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		Notification notification = studySubjectAssignment.getNotifications().get(0);
 
 		assertNotNull("AdverseEvent create test failed: ", notification);
-		assertNotNull("AdverseEvent create test failed: ", notification.getId());
 	}
 
 	private AENotificationType getNotification() throws Exception {
