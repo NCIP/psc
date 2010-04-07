@@ -71,6 +71,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         PlannedActivity pa = createPlannedActivity(activity, 4);
         p.addPlannedActivity(pa);
         StudySubjectAssignment ssa = createAssignment(study,site,subject);
+        ssa.setSubjectCoordinator(Fixtures.createUser("subjCoord1", Role.SUBJECT_COORDINATOR));
         state = new Scheduled();
         state.setDate(DateTools.createDate(2009, Calendar.APRIL, 3));
         state.setReason("Just moved by 4 days");

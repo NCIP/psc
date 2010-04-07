@@ -176,9 +176,23 @@ psc.namespace("subject");
           start: new Date(sa.currentDate().getTime() + psc.tools.Dates.ONE_DAY / 2),
           title: sa.activity && sa.activity.name,
           description: sa.study + " / " + sa.study_segment,
-          classname: sa.isOpen() ? "outstanding open" : "complete closed",
+          classname: this.stateClasses(sa),
           image: psc.tools.Uris.relative("/images/" + sa.current_state.name + ".png")
         };
+      },
+
+      stateClasses: function(sa) {
+        var classes = [];
+        if (sa.isOpen() && sa.belongsToSubjCoord()) {
+          classes.push("outstanding open mine")
+        }
+        if (sa.isOpen() && !sa.belongsToSubjCoord()) {
+          classes.push("outstanding open others")
+        }
+        if (!sa.isOpen()) {
+          classes.push("complete closed")
+        }
+        return classes;
       },
 
       eventForScheduledStudySegment: function (segment) {

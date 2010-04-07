@@ -165,6 +165,12 @@ import java.io.IOException;
         generator.writeStartObject();
         JacksonTools.nullSafeWriteStringField(generator, "id", assignment.getGridId());
         JacksonTools.nullSafeWriteStringField(generator, "name", assignment.getName());
+        generator.writeFieldName("subject_coordinator");
+            generator.writeStartObject();
+                if (assignment.getSubjectCoordinator() != null) {
+                    JacksonTools.nullSafeWriteStringField(generator, "username", assignment.getSubjectCoordinator().getUsername());
+                }
+            generator.writeEndObject();
         generator.writeEndObject();
 
     }

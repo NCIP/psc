@@ -26,6 +26,16 @@ psc.subject.Schedule = function (scheduleApiResponse) {
         return classes.join(' ');
       },
 
+      mineClass: function () {
+        var classes = [];
+        if (this.belongsToSubjCoord()) {
+          classes.push("mine");
+        } else {
+          classes.push("others");
+        }
+        return classes;
+      },
+
       currentDate: function () {
         return psc.tools.Dates.apiDateToUtc(this.current_state.date);
       },
@@ -44,6 +54,14 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
       assignmentClass: function () {
         return "assignment-" + this.assignment.id.replace(/\W/g, '_')
+      },
+
+      belongsToSubjCoord: function() {
+        if (psc.subject.ScheduleData.getSubjectCoordinator() == this.assignment.subject_coordinator.username) {
+          return true;
+        } else {
+          return false;
+        }
       },
 
       isOpen: function () {

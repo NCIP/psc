@@ -3,7 +3,8 @@ psc.namespace("subject");
 
 (function ($) {
   psc.subject.ScheduleData = (function () {
-    var schedule = null, focusDate = new Date();
+    var schedule, subjectCoordinator = null, focusDate = new Date();
+
     
     function triggeredDateComparableFn(triggerData) {
       return triggerData && triggerData.date && triggerData.date.getTime();
@@ -100,6 +101,14 @@ psc.namespace("subject");
             throw "psc.subject.ScheduleData.uriGenerator not set.  Don't know which resource to load from."
           }
         }
+      },
+
+      setSubjectCoordinator: function(subjCoord) {
+        subjectCoordinator = subjCoord;
+      },
+
+      getSubjectCoordinator: function() {
+        return subjectCoordinator;
       },
 
       errorMessage: function(XMLHttpRequest, textStatus, errorThrown) {

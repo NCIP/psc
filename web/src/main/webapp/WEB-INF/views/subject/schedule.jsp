@@ -73,12 +73,14 @@
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
+            <jsp:useBean id="subjectCoordinator" type="edu.northwestern.bioinformatics.studycalendar.domain.User" scope="request"/>
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
                     return psc.tools.Uris.relative("/api/v1/subjects/${subject.gridId}/schedules.json?"+new Date().getTime());
                 });
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
+                psc.subject.ScheduleData.setSubjectCoordinator('${subjectCoordinator.name}');
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
@@ -235,7 +237,7 @@
     </tags:resigTemplate>
 
     <tags:resigTemplate id="list_day_sa_entry">
-        <li class="[#= stateClasses() #]">
+        <li class="[#= stateClasses() #] [#= mineClass() #] ">
             <label>
                 [# if (hasId()) { #]
                   <input type="checkbox" value="[#= id #]" name="scheduledActivities" class="event [#= stateClasses() #]  [#= assignmentClass() #]"/>
