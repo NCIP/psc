@@ -226,7 +226,7 @@
                     [#= scheduledActivityListItems #]
                 </ul>
                 [# } #]
-                [# if (hasHiddenActivities) { #]
+                [# if (hasHiddenActivities == "true") { #]
                     <span class="hidden-activities">
                         Note: There are one or more activities on this day which
                         belong to studies or sites to which you don't have access.
