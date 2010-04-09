@@ -25,6 +25,7 @@
                 <ul class="menu">
                     <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/manage/sources">Manage sources</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/manage/plugins">Manage plugins (OSGi layer)</tags:restrictedListItem>

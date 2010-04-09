@@ -556,6 +556,18 @@
         </property>
     </bean>
 
+    <bean name="/admin/manage/sources" id="manageSourcesController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSourcesController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Manage sources"/>
+                <property name="parent">
+                    <ref local="administrationController"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <bean name="/admin/manage/plugins" id="pluginsListController"
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.ParameterizableViewController">
         <property name="viewName" value="admin/plugins"/>
@@ -695,6 +707,11 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName" value="Manage users"/>
                                 <property name="linkName" value="listUsersController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Manage sources"/>
+                                <property name="linkName" value="manageSourcesController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
