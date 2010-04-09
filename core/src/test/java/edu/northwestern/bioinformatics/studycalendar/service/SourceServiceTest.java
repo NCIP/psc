@@ -1,15 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoTools;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static org.easymock.EasyMock.expect;
 
 import java.util.SortedSet;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 /**
@@ -18,7 +17,7 @@ import java.util.TreeSet;
 public class SourceServiceTest extends StudyCalendarTestCase {
     private static final String TARGET_SOURCE = "targetSource";
     private static final String SOURCE = "source";
-
+    private DaoTools daoTools;
     private SourceService sourceService;
     private ActivityService activityService;
     private SourceDao sourceDao;
@@ -34,12 +33,13 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         super.setUp();
 
         sourceDao = registerDaoMockFor(SourceDao.class);
-
+        daoTools =  registerMockFor(DaoTools.class);
         activityService = registerMockFor(ActivityService.class);
         sourceService = new SourceService();
         sourceService.setActivityService(activityService);
 
         sourceService.setSourceDao(sourceDao);
+        sourceService.setDaoTools(daoTools);
         source = Fixtures.createSource(SOURCE);
         targetSource = Fixtures.createSource(TARGET_SOURCE);
 
@@ -148,5 +148,40 @@ public class SourceServiceTest extends StudyCalendarTestCase {
         assertEquals(2, targetSource.getActivities().size());
         assertTrue(targetSource.getActivities().contains(activityToUpdate));
         assertTrue(targetSource.getActivities().contains(activityToDelete));
+    }
+
+    public void testMakeManualTargetWhenManualTargetIsNotNull() throws Exception {
+        Source manual_source = Fixtures.createSource("Manual_Target");
+        manual_source.setManualFlag(true);
+
+        expect(sourceDao.getManualTargetSource()).andReturn(manual_source);
+        sourceDao.save(manual_source);
+        daoTools.forceFlush();
+        sourceDao.save(source);
+        daoTools.forceFlush();
+
+        assertTrue("Source is not manual target source", manual_source.getManualFlag());
+        assertNull("Source is manual target source", source.getManualFlag());
+
+        replayMocks();
+        sourceService.makeManualTarget(source);
+        verifyMocks();
+
+        assertTrue("Source is not manual target source", source.getManualFlag());
+        assertNull("Source is manual target source", manual_source.getManualFlag());
+    }
+
+    public void testMakeManualTargetWhenNoManualTargetInSystem() throws Exception {
+        expect(sourceDao.getManualTargetSource()).andReturn(null);
+        sourceDao.save(source);
+        daoTools.forceFlush();
+
+        assertNull("Source is manual target source", source.getManualFlag());
+
+        replayMocks();
+        sourceService.makeManualTarget(source);
+        verifyMocks();
+
+        assertTrue("Source is not manual target source", source.getManualFlag());
     }
 }

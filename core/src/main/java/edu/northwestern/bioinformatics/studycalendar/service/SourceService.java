@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.beans.BeanUtils;
@@ -12,8 +10,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Transient;
-import javax.transaction.Transaction;
 import java.util.*;
 
 /**
@@ -22,6 +18,7 @@ import java.util.*;
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class SourceService {
     private SourceDao sourceDao;
+    private DaoTools daoTools;
     private ActivityService activityService;
 
 
@@ -121,11 +118,30 @@ public class SourceService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void makeManualTarget(Source source) {
+        Source manual_Source = sourceDao.getManualTargetSource();
+        if (manual_Source != null) {
+            manual_Source.setManualFlag(null);
+            sourceDao.save(manual_Source);
+            // required manual flush because hibernate is not flushing in order of update operation
+            // and throws database constraint error for unique key.
+            daoTools.forceFlush();
+        }
+        source.setManualFlag(true);
+        sourceDao.save(source);
+        daoTools.forceFlush();
+    }
 
 
     @Required
     public void setSourceDao(final SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setDaoTools(DaoTools daoTools) {
+        this.daoTools = daoTools;
     }
 
     public void setActivityService(ActivityService activityService) {

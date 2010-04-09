@@ -62,9 +62,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.importer.GridIdentifierResolver">
     </bean>
 
-    <bean id="sourceService" class="edu.northwestern.bioinformatics.studycalendar.service.SourceService">
-        <property name="sourceDao" ref="sourceDao"></property>
-        <property name="activityService" ref="activityService"/>
+    <bean id="sourceService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.SourceService" >
     </bean>
 
      <bean id="registrationService" autowire="byName"
