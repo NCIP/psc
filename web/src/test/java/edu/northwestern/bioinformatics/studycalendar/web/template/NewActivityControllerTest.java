@@ -40,10 +40,12 @@ public class NewActivityControllerTest extends ControllerTestCase {
         controller.setValidateOnBinding(false);
         controller.setControllerTools(controllerTools);
 
-        source = createNamedInstance(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME, Source.class);
+        source = createNamedInstance("Manual Activity Target", Source.class);
+        source.setManualFlag(true);
     }
 
     public void testFormView() throws Exception {
+        expect(sourceDao.getManualTargetSource()).andReturn(source);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         request.setMethod("GET");
 
@@ -70,7 +72,8 @@ public class NewActivityControllerTest extends ControllerTestCase {
         expect(activityTypeDao.getById(4)).andReturn(expected).anyTimes();
         request.setMethod("POST");
         request.addParameter("activity.type", "4");
-        expect(sourceDao.getByName(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME)).andReturn(source);
+        expect(sourceDao.getManualTargetSource()).andReturn(source);
+        expectNoValidationInputError();
         activityDao.save((Activity) notNull());
     }
 
@@ -88,7 +91,8 @@ public class NewActivityControllerTest extends ControllerTestCase {
     public void testBindActivityType() throws Exception {
         ActivityType expected = Fixtures.createActivityType("LAB_TEST");
         expect(activityTypeDao.getById(1)).andReturn(expected).anyTimes();
-        expect(sourceDao.getByName(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME)).andReturn(source);
+        expect(sourceDao.getManualTargetSource()).andReturn(source);
+        expectNoValidationInputError();
         activityDao.save((Activity) notNull());
 
         replayMocks();
@@ -98,5 +102,10 @@ public class NewActivityControllerTest extends ControllerTestCase {
 
         verifyMocks();
         assertSame(expected, command.getActivity().getType());
+    }
+
+    private void expectNoValidationInputError() {
+        expect(activityDao.getByNameAndSourceName(null, source.getName())).andReturn(null).anyTimes();
+        expect(activityDao.getByCodeAndSourceName(null, source.getName())).andReturn(null).anyTimes();
     }
 }

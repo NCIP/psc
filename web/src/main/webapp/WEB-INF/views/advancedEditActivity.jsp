@@ -84,6 +84,12 @@
                     <form:input path="activity.code" size="30"/>
                 </div>
             </div>
+            <c:if test="${not empty source}">
+                <div class="row">
+                    <div class="label">Activity Source</div>
+                    <div class="value">${source.name}</div>
+                </div>
+            </c:if>
             <div class="row">
                 <div class="label"><form:label path="activity.type">Activity Type</form:label></div>
                 <div class="value">

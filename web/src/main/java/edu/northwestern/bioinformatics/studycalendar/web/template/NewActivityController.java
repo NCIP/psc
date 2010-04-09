@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityCommand;
@@ -29,8 +30,6 @@ import java.util.Collections;
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class NewActivityController extends PscSimpleFormController {
-    public static final String PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME = "PSC - Manual Activity Creation";
-
     private ActivityDao activityDao;
     Activity activity;
     private SourceDao sourceDao;
@@ -54,6 +53,7 @@ public class NewActivityController extends PscSimpleFormController {
         if (periodId != null) {
             getControllerTools().addHierarchyToModel(periodDao.getById(periodId), refdata);
         }
+        refdata.put("source", sourceDao.getManualTargetSource());
         refdata.put("activityTypes", activityTypeDao.getAll());
         refdata.put("action", "New");
         return refdata;
@@ -67,17 +67,29 @@ public class NewActivityController extends PscSimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AdvancedEditActivityCommand command = (AdvancedEditActivityCommand) oCommand;
-        command.getActivity().setSource(sourceDao.getByName(PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME));
-        Activity activity = command.updateActivity();
-
-        if (request.getParameter("returnToPeriod") == null) {
-            Map<String, Object> model = errors.getModel();
-            model.put("activity", activity);
-            return new ModelAndView(getSuccessView(), model);
+        Source source = sourceDao.getManualTargetSource();
+        if (source != null) {
+            if (activityDao.getByCodeAndSourceName(command.getActivity().getName(), source.getName()) != null) {
+                errors.rejectValue("activity.name","error.activity.name.already.exists");
+                return showForm(request, response, errors);
+            } else if (activityDao.getByCodeAndSourceName(command.getActivity().getCode(), source.getName()) != null) {
+                errors.rejectValue("activity.name","error.activity.code.already.exists");
+                return showForm(request, response, errors);
+            }
+            command.getActivity().setSource(source);
+            activity = command.updateActivity();
+            if (request.getParameter("returnToPeriod") == null) {
+                Map<String, Object> model = errors.getModel();
+                model.put("activity", activity);
+                return new ModelAndView(getSuccessView(), model);
+            } else {
+                ModelMap model = new ModelMap("period",Integer.parseInt(request.getParameter("returnToPeriod")))
+                    .addAttribute("selectedActivity", activity.getId());
+                return new ModelAndView("redirectToManagePeriod", model);
+            }
         } else {
-            ModelMap model = new ModelMap("period",Integer.parseInt(request.getParameter("returnToPeriod")))
-                    .addObject("selectedActivity", activity.getId());
-              return new ModelAndView("redirectToManagePeriod", model);
+            errors.reject("error.no.manual.activity.target.source");
+            return showForm(request, response, errors);
         }
     }
 

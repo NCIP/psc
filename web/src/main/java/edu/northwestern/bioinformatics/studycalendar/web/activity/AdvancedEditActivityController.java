@@ -56,7 +56,8 @@ public class AdvancedEditActivityController extends PscSimpleFormController {
         refdata.put("activityTypes", activityTypeDao.getAll());
         if(activity.getType()!=null)
             refdata.put("activityDefaultType" ,activity.getType().getName());
-            refdata.put("activity",activity);
+        refdata.put("activity",activity);
+        refdata.put("source", activity.getSource());
         return refdata;
      }
     @Override
