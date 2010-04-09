@@ -65,8 +65,32 @@ describe "/source" do
       response.content_type.should == 'text/xml'
       response.xml_attributes("source", "name").should include("Dental")
       response.xml_elements('//activity').should have(0).elements
-    end      
-    
+    end
+
+    describe "api /sources/source_name/manual-target" do
+      before do
+        @source = PscTest::Fixtures.createSource("Cancer")
+        application_context['sourceDao'].save(@source)
+      end
+      it "allows to make source as manual activity target source for manual_flag is true" do
+        get '/sources.json', :as => :zelda
+        response.json["sources"][2]["manual_flag"].should == true
+        @JSONentity = "{ manual_flag: true }"
+        put "/sources/Cancer/manual-target", @JSONentity, :as => :zelda, 'Content-Type' => 'application/json'
+        response.should be_success
+        get '/sources.json', :as => :zelda
+        response.json["sources"][0]["manual_flag"].should == true
+        put "/sources/PSC%20-%20Manual%20Activity%20Creation/manual-target", @JSONentity, :as => :zelda, 'Content-Type' => 'application/json'
+      end
+
+      it "throws 400 request error for manual_flag is not true" do
+        @JSONentity = "{ manual_flag: false }"
+        put "/sources/Cancer/manual-target", @JSONentity, :as => :zelda, 'Content-Type' => 'application/json'
+        response.status_code.should == 400
+        response.status_message.should == "Bad Request"
+        response.entity.should =~ %r(Manual Target Flag must be true to set source as manual activity target source)
+      end
+    end
   end
     
 end

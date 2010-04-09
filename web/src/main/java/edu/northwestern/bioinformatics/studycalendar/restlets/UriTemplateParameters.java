@@ -27,6 +27,7 @@ public enum UriTemplateParameters {
     ROLENAME,
     BUNDLE_ID,
     NOTIFICATION_IDENTIFIER,
+    SOURCE_NAME,
     SERVICE_IDENTIFIER
     ;
 
