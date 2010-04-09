@@ -368,10 +368,10 @@
                     <option value="select">Select... </option>
                     <c:forEach items="${sources}" var="source">
                         <c:if test="${sourceId == source.id}">
-                            <option value="${source.id}" selected="true">${source.name}</option>
+                            <option value="${source.id}" selected="true">${source.name}<c:if test="${source.manualFlag}"> (Manual Target) </c:if></option>
                         </c:if>
                         <c:if test="${sourceId != source.id}">
-                            <option value="${source.id}">${source.name}</option>
+                            <option value="${source.id}">${source.name}<c:if test="${source.manualFlag}"> (Manual Target) </c:if></option>
                         </c:if>
                     </c:forEach>
                     <option value="selectAll">All sources</option>
