@@ -22,4 +22,10 @@ public class SourceDaoTest extends DaoTestCase {
         assertEquals("Wrong name", "Empty", sources.get(0).getName());
         assertEquals("Wrong name", "ICD-9", sources.get(1).getName());
     }
+
+    public void testGetManualTargetSource() throws Exception {
+        Source source = dao.getManualTargetSource();
+        assertTrue("Wrong Manual Target Flag", source.getManualFlag());
+        assertEquals("Wrong source name", "ICD-9", source.getName());
+    }
 }

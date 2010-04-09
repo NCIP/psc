@@ -23,6 +23,7 @@ public class Source extends AbstractMutableDomainObject
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
     private boolean memoryOnly;
+    private Boolean manualFlag;
 
     ////// LOGIC
 
@@ -52,6 +53,11 @@ public class Source extends AbstractMutableDomainObject
         return clone;
     }
 
+    @Transient
+    public boolean isManualActivityTarget() {
+        return getManualFlag();
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
@@ -60,6 +66,14 @@ public class Source extends AbstractMutableDomainObject
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getManualFlag() {
+        return manualFlag;
+    }
+
+    public void setManualFlag(Boolean manualFlag) {
+        this.manualFlag = manualFlag;
     }
 
     @OneToMany(mappedBy = "source")

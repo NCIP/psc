@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
 
@@ -32,5 +33,16 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
             return sources.get(0);
         }
         return null; 
+    }
+
+    /**
+     * Finds Manual Activity Target Source
+     *
+     * @return the source with the manual_flag set to true
+     */
+    @SuppressWarnings({ "unchecked" })
+    public Source getManualTargetSource() {
+        return CollectionUtils.firstElement(
+            (List<Source>) getHibernateTemplate().find("from Source where manual_flag = true"));
     }
 }

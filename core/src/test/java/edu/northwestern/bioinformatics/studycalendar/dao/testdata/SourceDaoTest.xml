@@ -2,7 +2,8 @@
     <SOURCES
         id="-1"
         version="0"
-        name="ICD-9"/>
+        name="ICD-9"
+        manual_flag="1"/>
 
     <SOURCES
         id="-2"

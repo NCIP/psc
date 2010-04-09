@@ -40,4 +40,11 @@ public class SourceTest extends TestCase {
         assertFalse(differences.getMessages().isEmpty());
         assertEquals("Activiy source is not different", "Source name Source1 differs to Source2", differences.getMessages().get(0));
     }
+
+    public void testIsManualActivityTargetTracksManualFlag() throws Exception {
+        source.setManualFlag(false);
+        assertFalse(source.isManualActivityTarget());
+        source.setManualFlag(true);
+        assertTrue(source.isManualActivityTarget());
+    }
 }
