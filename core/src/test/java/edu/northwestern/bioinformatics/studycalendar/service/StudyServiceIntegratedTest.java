@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityStateDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
@@ -23,11 +20,14 @@ import java.util.SortedSet;
 public class StudyServiceIntegratedTest extends DaoTestCase {
     private StudyService service;
     private StudyDao studyDao;
+    private StudySiteDao studySiteDao;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduledActivityStateDao scheduledActivityStateDao;
+    private ScheduledStudySegmentDao scheduledStudySegmentDao;
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,10 +35,13 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         service = (StudyService) getApplicationContext().getBean("studyService");
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
+        studySiteDao = (StudySiteDao) getApplicationContext().getBean("studySiteDao");
         amendmentService = (AmendmentService) getApplicationContext().getBean("amendmentService");
         scheduledCalendarDao = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
         scheduledActivityDao = (ScheduledActivityDao) getApplicationContext().getBean("scheduledActivityDao");
         scheduledActivityStateDao = (ScheduledActivityStateDao) getApplicationContext().getBean("scheduledActivityStateDao");
+        scheduledStudySegmentDao = (ScheduledStudySegmentDao) getApplicationContext().getBean("scheduledStudySegmentDao");
+        studySubjectAssignmentDao = (StudySubjectAssignmentDao ) getApplicationContext().getBean("studySubjectAssignmentDao");
     }
 
     @Override
@@ -381,12 +384,48 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertNull("should be purged", reloaded);
     }
 
+    public void testPurgeStudySite() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<StudySite> current = loaded.getStudySites();
+            assertTrue("must have assignments", current.size() > 0);
+            assertEquals("assignment should exist", -300, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        StudySite reloaded = studySiteDao.getById(-300);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeStudySubjectAssignment() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<StudySubjectAssignment> current = loaded.getStudySites().get(0).getStudySubjectAssignments();
+            assertTrue("must have assignments", current.size() > 0);
+            assertEquals("assignment should exist", -500, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        StudySubjectAssignment reloaded = studySubjectAssignmentDao.getById(-500);
+        assertNull("should be purged", reloaded);
+    }
+
     public void testPurgeScheduledCalendar() {
         {
             Study loaded = studyDao.getById(-1);
             assertNotNull(loaded);
 
-            ScheduledCalendar current = scheduledCalendarDao.getById(-600);
+            ScheduledCalendar current = loaded.getStudySites().get(0).getStudySubjectAssignments().get(0).getScheduledCalendar();
             assertNotNull("must have scheduled calendar", current);
 
             service.purge(loaded);
@@ -395,6 +434,24 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         interruptSession();
 
         ScheduledCalendar reloaded = scheduledCalendarDao.getById(-600);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeScheduledStudySegment() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<ScheduledStudySegment> current = loaded.getStudySites().get(0).getStudySubjectAssignments().get(0).getScheduledCalendar().getScheduledStudySegments();
+            assertTrue("must have scheduled segments", current.size() > 0);
+            assertEquals("should include segment", -700, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledStudySegment reloaded = scheduledStudySegmentDao.getById(-700);
         assertNull("should be purged", reloaded);
     }
 
