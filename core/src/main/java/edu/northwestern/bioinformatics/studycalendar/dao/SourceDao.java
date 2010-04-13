@@ -45,4 +45,14 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
         return CollectionUtils.firstElement(
             (List<Source>) getHibernateTemplate().find("from Source where manual_flag = true"));
     }
+    
+    /**
+     * Returns the number of sources available
+     *
+     * @return      an integer for the number of sources available
+     */
+    public int getCount() {
+        Long count = (Long) getHibernateTemplate().find("select COUNT(s) from Source s").get(0);
+        return count.intValue();
+    }
 }

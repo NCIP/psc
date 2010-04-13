@@ -5,6 +5,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Map;
@@ -20,6 +21,7 @@ public class SetupStatus implements InitializingBean {
     private Map<InitialSetupElement, SetupChecker> checkers;
     private SiteDao siteDao;
     private UserDao userDao;
+    private SourceDao sourceDao;
 
     private boolean[] prepared;
 
@@ -31,6 +33,12 @@ public class SetupStatus implements InitializingBean {
                 return siteDao.getCount() > 0;
             }
         });
+        checkers.put(SOURCE, new SetupChecker() {
+            public boolean isPrepared() {
+                return sourceDao.getCount() > 0;
+            }
+        });
+
         checkers.put(ADMINISTRATOR, new SetupChecker() {
             public boolean isPrepared() {
                 return userDao.getByRole(Role.SYSTEM_ADMINISTRATOR).size() > 0;
@@ -53,7 +61,7 @@ public class SetupStatus implements InitializingBean {
     }
 
     public boolean isPostAuthenticationSetupNeeded(){
-        return !prepared[SITE.ordinal()];
+        return (isSiteMissing() || isSourceMissing());
     }
 
     public InitialSetupElement preAuthenticationSetup(){
@@ -67,6 +75,8 @@ public class SetupStatus implements InitializingBean {
         recheck();
         if (isSiteMissing())
             return InitialSetupElement.SITE;
+        if (isSourceMissing())
+            return InitialSetupElement.SOURCE;
         return null;
     }
 
@@ -78,6 +88,10 @@ public class SetupStatus implements InitializingBean {
 
     public boolean isAdministratorMissing() {
         return !prepared[ADMINISTRATOR.ordinal()];
+    }
+
+    public boolean isSourceMissing() {
+        return !prepared[SOURCE.ordinal()];
     }
 
     ////// CONFIGURATION
@@ -92,6 +106,11 @@ public class SetupStatus implements InitializingBean {
         this.userDao = userDao;
     }
 
+    @Required
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
+    }
+
     ////// INNER CLASSES
 
     private interface SetupChecker {
@@ -100,6 +119,7 @@ public class SetupStatus implements InitializingBean {
 
     public enum InitialSetupElement {
         SITE,
+        SOURCE,
         ADMINISTRATOR
     }
 }

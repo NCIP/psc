@@ -28,4 +28,17 @@ public class SourceDaoTest extends DaoTestCase {
         assertTrue("Wrong Manual Target Flag", source.getManualFlag());
         assertEquals("Wrong source name", "ICD-9", source.getName());
     }
+
+    public void testCount() throws Exception {
+        assertEquals("Should be two sources to start", 2, dao.getCount());
+
+        Source newSource = new Source();
+        newSource.setName("newSource");
+        dao.save(newSource);
+        interruptSession();
+        assertEquals("Should be three sources after saving", 3 ,dao.getCount());
+
+        getJdbcTemplate().update("DELETE FROM sources");
+        assertEquals("And now there should be none", 0, dao.getCount());
+    }
 }
