@@ -39,4 +39,8 @@ public class PlannedActivityDao extends ChangeableDao<PlannedActivity> {
     public void deleteOrphans() {
         deleteOrphans("PlannedActivity", "period", "PeriodDelta", "period");
     }
+
+    public void deleteAll(List<PlannedActivity> t) {
+        getHibernateTemplate().delete(t);
+    }
 }

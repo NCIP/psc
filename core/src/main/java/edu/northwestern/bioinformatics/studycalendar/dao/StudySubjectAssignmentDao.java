@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectDao<StudySubjectAssignment> {
+public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectDao<StudySubjectAssignment> implements DeletableDomainObjectDao<StudySubjectAssignment> {
     @Override
     public Class<StudySubjectAssignment> domainClass() {
         return StudySubjectAssignment.class;
@@ -52,5 +52,13 @@ public class StudySubjectAssignmentDao extends StudyCalendarMutableDomainObjectD
             "select ssa from StudySubjectAssignment ssa where ssa.studySite.study = ? and ssa.studySubjectId = ?",
             new Object[] { inStudy, identifier }
         ));
+    }
+
+    public void delete(StudySubjectAssignment t) {
+        getHibernateTemplate().delete(t);
+    }
+
+    public void deleteAll(List<StudySubjectAssignment> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }

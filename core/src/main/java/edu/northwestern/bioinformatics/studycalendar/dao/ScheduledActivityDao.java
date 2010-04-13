@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<ScheduledActivity> {
+public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<ScheduledActivity> implements DeletableDomainObjectDao<ScheduledActivity> {
     @Override public Class<ScheduledActivity> domainClass() { return ScheduledActivity.class; }
 
     /**
@@ -78,5 +78,13 @@ public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<Sc
         return getHibernateTemplate().find(
             "from ScheduledActivity e where e.plannedActivity = ? and e.scheduledStudySegment.scheduledCalendar = ?",
             new Object[] { source, calendar });
+    }
+
+    public void delete(ScheduledActivity t) {
+        getHibernateTemplate().delete(t);
+    }
+
+    public void deleteAll(List<ScheduledActivity> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }

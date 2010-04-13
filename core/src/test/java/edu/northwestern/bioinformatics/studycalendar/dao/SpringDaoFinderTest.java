@@ -1,29 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.hibernate.SessionFactory;
-import org.hibernate.Interceptor;
-import org.hibernate.HibernateException;
-import org.hibernate.StatelessSession;
-import org.hibernate.engine.FilterDefinition;
-import org.hibernate.stat.Statistics;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.metadata.CollectionMetadata;
-import org.hibernate.classic.Session;
-import gov.nih.nci.cabig.ctms.domain.AbstractImmutableDomainObject;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import gov.nih.nci.cabig.ctms.dao.AbstractDomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.AbstractImmutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.HibernateException;
+import org.hibernate.Interceptor;
+import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.classic.Session;
+import org.hibernate.engine.FilterDefinition;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.metadata.CollectionMetadata;
+import org.hibernate.stat.Statistics;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 
-import javax.naming.Reference;
 import javax.naming.NamingException;
+import javax.naming.Reference;
+import java.io.Serializable;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 /**
  * @author Rhett Sutphin
@@ -41,6 +43,8 @@ public class SpringDaoFinderTest extends StudyCalendarTestCase {
         factory.registerBeanDefinition("testOneDao", new RootBeanDefinition(TestOneDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
         factory.registerBeanDefinition("testTwoDao", new RootBeanDefinition(TestTwoDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
         factory.registerBeanDefinition("testTwoSubDao", new RootBeanDefinition(TestTwoPointOneDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
+        factory.registerBeanDefinition("testDeletableDao", new RootBeanDefinition(TestDeletableDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
+        factory.registerBeanDefinition("testChangeableDao", new RootBeanDefinition(TestChangeableDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
         factory.registerBeanDefinition("someOtherBean", new RootBeanDefinition(Object.class));
         finder.postProcessBeanFactory(factory);
     }
@@ -90,6 +94,45 @@ public class SpringDaoFinderTest extends StudyCalendarTestCase {
     }
     private static class TestTwoPointOneDao extends AbstractDomainObjectDao<TestTwoPointOne> {
         @Override public Class<TestTwoPointOne> domainClass() { return TestTwoPointOne.class; }
+    }
+
+
+    public void testFindDeletableDomainObjectDao() throws Exception {
+        DeletableDomainObjectDao<?> actual = finder.findDeletableDomainObjectDao(TestDeletable.class);
+        assertNotNull(actual);
+        assertEquals(TestDeletableDao.class, actual.getClass());
+    }
+    private static class TestDeletable extends AbstractMutableDomainObject {}
+    private static class TestDeletableDao extends AbstractDomainObjectDao<TestDeletable> implements DeletableDomainObjectDao<TestDeletable> {
+        @Override public Class<TestDeletable> domainClass() { return TestDeletable.class;}
+
+        public void delete(TestDeletable deletableOne) {}
+
+        public void deleteAll(List<TestDeletable> t) {}
+
+        public void save(TestDeletable t) {}
+
+        public TestDeletable getByGridId(String s) {return null;}
+    }
+
+    public void testFindChangeableDomainObjectDao() throws Exception {
+        List<ChangeableDao<?>> actual = finder.findStudyCalendarMutableDomainObjectDaos();
+        assertEquals(1, actual.size());
+        assertEquals(TestChangeableDao.class, actual.get(0).getClass());
+    }
+
+    private static class TestChangeable extends AbstractMutableDomainObject implements Changeable {
+        public boolean isDetached() {return false;}
+        public boolean isMemoryOnly() {return false;}
+        public void setMemoryOnly(boolean memoryOnly) {}
+        public Changeable transientClone() {return null;}
+    }
+
+    private static class TestChangeableDao extends ChangeableDao<TestChangeable> {
+        @Override public Class<TestChangeable> domainClass() { return TestChangeable.class;}
+        public void deleteOrphans() {}
+        public void delete(TestChangeable testChangeable) {}
+        public void deleteAll(List<TestChangeable> t) {}
     }
 
     private static class StubSessionFactory implements SessionFactory {

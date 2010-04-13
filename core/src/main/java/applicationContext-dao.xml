@@ -260,6 +260,7 @@
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>
     <bean id="scheduledStudySegmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledStudySegmentDao"/>
     <bean id="scheduledActivityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao"/>
+    <bean id="scheduledActivityStateDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityStateDao"/>
     <bean id="notificationDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao"/>
     <bean id="populationDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao"/>
 

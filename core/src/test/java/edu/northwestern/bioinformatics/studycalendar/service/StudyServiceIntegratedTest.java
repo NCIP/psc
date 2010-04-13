@@ -2,25 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityStateDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
@@ -37,6 +25,9 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private StudyDao studyDao;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
+    private ScheduledCalendarDao scheduledCalendarDao;
+    private ScheduledActivityDao scheduledActivityDao;
+    private ScheduledActivityStateDao scheduledActivityStateDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -45,6 +36,9 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
         amendmentService = (AmendmentService) getApplicationContext().getBean("amendmentService");
+        scheduledCalendarDao = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
+        scheduledActivityDao = (ScheduledActivityDao) getApplicationContext().getBean("scheduledActivityDao");
+        scheduledActivityStateDao = (ScheduledActivityStateDao) getApplicationContext().getBean("scheduledActivityStateDao");
     }
 
     @Override
@@ -371,6 +365,73 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
                 }
             }
         }
+    }
+
+    public void testPurgeStudy() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull("must have a study", loaded);
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Study reloaded = studyDao.getById(-1);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeScheduledCalendar() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            ScheduledCalendar current = scheduledCalendarDao.getById(-600);
+            assertNotNull("must have scheduled calendar", current);
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledCalendar reloaded = scheduledCalendarDao.getById(-600);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeScheduledActivities() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<ScheduledActivity> current = loaded.getStudySites().get(0).getStudySubjectAssignments().get(0).getScheduledCalendar().getScheduledStudySegments().get(0).getActivities();
+            assertTrue("must have scheduled activities", current.size() > 0);
+            assertEquals("should include activity", -800, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledActivity reloaded = scheduledActivityDao.getById(-800);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeCurrentActivityState() {
+          {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<ScheduledActivityState> current = loaded.getStudySites().get(0).getStudySubjectAssignments().get(0).getScheduledCalendar().getScheduledStudySegments().get(0).getActivities().get(0).getAllStates();
+            assertTrue("must have scheduled activities", current.size() > 0);
+            assertEquals("should include activity", -900, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        ScheduledActivityState reloaded = scheduledActivityStateDao.getById(-900);
+        assertNull("should be purged", reloaded);
     }
 
     private void assertMemoryOnly(TransientCloneable<?> node) {

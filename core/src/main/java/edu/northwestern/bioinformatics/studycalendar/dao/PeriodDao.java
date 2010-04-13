@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
@@ -33,5 +35,9 @@ public class PeriodDao extends ChangeableDao<Period> {
 
     public void deleteOrphans() {
         deleteOrphans("Period", "studySegment", "StudySegmentDelta", "segmnt");
+    }
+
+    public void deleteAll(List<Period> t) {
+        getHibernateTemplate().delete(t);
     }
 }

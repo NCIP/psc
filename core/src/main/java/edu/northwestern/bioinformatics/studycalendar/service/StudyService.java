@@ -1,19 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import static edu.nwu.bioinformatics.commons.CollectionUtils.putInMappedList;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.apache.commons.lang.StringUtils;
@@ -37,9 +33,14 @@ public class StudyService {
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
+    private ScheduledActivityStateDao scheduledActivityStateDao;
     private DaoFinder daoFinder;
 
     private static final String COPY = "copy";
+    private ScheduledStudySegmentDao scheduledStudySegmentDao;
+    private ScheduledCalendarDao scheduledCalendarDao;
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private StudySiteDao studySiteDao;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -433,7 +434,98 @@ public class StudyService {
         this.daoFinder = daoFinder;
     }
 
-    ////// INNER CLASSES
+    @Required
+    public void setScheduledActivityStateDao(final ScheduledActivityStateDao scheduledActivityStateDao) {
+        this.scheduledActivityStateDao = scheduledActivityStateDao;
+    }
+
+    @Required
+    public void setScheduledStudySegmentDao(ScheduledStudySegmentDao scheduledStudySegmentDao) {
+        this.scheduledStudySegmentDao = scheduledStudySegmentDao;
+    }
+
+    @Required
+    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
+        this.scheduledCalendarDao = scheduledCalendarDao;
+    }
+
+    @Required
+    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+    }
+
+    @Required
+    public void setStudySiteDao(StudySiteDao studySiteDao) {
+        this.studySiteDao = studySiteDao;
+    }
+
+    public void purge(Study study) {
+        Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNodes.allByType(study);
+
+        for (Class klass : nodes.keySet()) {
+            DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
+            dao.deleteAll(nodes.get(klass));
+        }
+//        for (ChangeableDao dao: daoFinder.findStudyCalendarMutableDomainObjectDaos()) {
+//            List toBePurged = nodes.get(dao.domainClass());
+//            if (toBePurged != null) {
+//                dao.delete(toBePurged);
+//            }
+//        }
+
+//        scheduledActivityStateDao.delete(states);
+//        scheduledActivityDao.delete(activities);
+//        scheduledStudySegmentDao.delete(segments);
+//        scheduledCalendarDao.delete(calendar);
+//        studySubjectAssignmentDao.delete(assignments);
+//        studySiteDao.delete(studySites);
+//        studyDao.delete(study);
+    }
+
+    static class StudyNodes {
+        public static Map<Class<? extends AbstractMutableDomainObject>, List<Object>> allByType(Study study) {
+            Map<Class<? extends AbstractMutableDomainObject>, List<Object>> all =
+                    new HashMap<Class<? extends AbstractMutableDomainObject>, List<Object>>();
+
+
+            putInMappedList(all, study.getClass(), study);
+            for (StudySite studySite : study.getStudySites()) {
+                putInMappedList(all, studySite.getClass(), studySite);
+                for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
+                    putInMappedList(all, assignment.getClass(), studySite);
+
+                    ScheduledCalendar calendar = assignment.getScheduledCalendar();
+                    putInMappedList(all, calendar.getClass(), calendar);
+                    for (ScheduledStudySegment segment : calendar.getScheduledStudySegments()) {
+                        putInMappedList(all, segment.getClass(), segment);
+                        for (ScheduledActivity activity : segment.getActivities()) {
+                            putInMappedList(all, activity.getClass(), activity);
+//                            for (ScheduledActivityState state : activity.getAllStates()) {
+//                                putInMappedList(all, state.getClass(), state);
+//                            }
+                        }
+                    }
+
+                }
+            }
+
+            return all;
+        }
+
+
+//        private static Map<Class<? extends AbstractMutableDomainObject>, List<Object>> buildScheduledNodesMap(ScheduledParentNode node) {
+//            if (!(node instanceof ScheduledParentNode)) {
+//                return;
+//            }
+//            for (Object child : node.getChildren()) {
+//                addToMap((node.childClass()) child, )
+//
+//
+//            }
+//        }
+    }
+
+        ////// INNER CLASSES
 
     private class CopiedStudyTemporaryNameComparator implements Comparator<Study> {
         private final Logger logger = LoggerFactory.getLogger(getClass());

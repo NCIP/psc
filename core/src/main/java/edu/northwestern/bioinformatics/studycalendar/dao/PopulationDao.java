@@ -50,4 +50,8 @@ public class PopulationDao extends StudyCalendarMutableDomainObjectDao<Populatio
     public void delete(final Population population) {
         getHibernateTemplate().delete(population);
     }
+
+    public void deleteAll(List<Population> t) {
+        getHibernateTemplate().delete(t);
+    }
 }

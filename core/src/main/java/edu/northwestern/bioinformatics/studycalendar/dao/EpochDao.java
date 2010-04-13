@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import org.hibernate.Hibernate;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
@@ -50,5 +52,9 @@ public class EpochDao extends ChangeableDao<Epoch> {
 
     public void deleteOrphans() {
         deleteOrphans("Epoch", "plannedCalendar", "PlannedCalendarDelta", "cal");
+    }
+
+    public void deleteAll(List<Epoch> t) {
+        getHibernateTemplate().delete(t);
     }
 }

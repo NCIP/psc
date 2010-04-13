@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 
+import java.util.List;
+
 
 /**
  * @author Padmaja Vedula
@@ -16,5 +18,9 @@ public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite>
      */
     public void delete(StudySite studySite) {
         getHibernateTemplate().delete(studySite);
+    }
+
+    public void deleteAll(List<StudySite> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }

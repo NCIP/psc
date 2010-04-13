@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.BeansException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.*;
-
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * Builds an index of all the DAOs in the project and allows retrieval based on the types they
@@ -60,6 +60,16 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
         }
     }
 
+    public <T extends MutableDomainObject> DeletableDomainObjectDao<?> findDeletableDomainObjectDao(Class<T> domainClass) {
+        for (DaoEntry entry : entries) {
+            // since the entries are sorted by specificity, we can return the first match
+            if (DeletableDomainObjectDao.class.isAssignableFrom(entry.getDao().getClass()) && entry.matches(domainClass)) {
+                return (DeletableDomainObjectDao) entry.getDao();
+            }
+        }
+        throw new StudyCalendarSystemException("There is no DAO registered for %s", domainClass.getName());
+    }
+
     private static class DaoEntry implements Comparable<DaoEntry> {
         private DomainObjectDao<?> dao;
         private final Logger log = LoggerFactory.getLogger(getClass());
@@ -77,7 +87,7 @@ public class SpringDaoFinder implements BeanFactoryPostProcessor, DaoFinder {
 
 
         public boolean matchesDaoSuperclas(Class<?> domainClass) {
-            return getDao().getClass().getSuperclass().equals(domainClass);
+            return domainClass.isAssignableFrom(dao.getClass());
         }
 
         public boolean matches(Class<?> domainClass) {

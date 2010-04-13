@@ -128,4 +128,8 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
     public void delete(Subject subject) {
         getHibernateTemplate().delete(subject);
     }
+
+    public void deleteAll(List<Subject> t) {
+        getHibernateTemplate().delete(t); 
+    }
 }

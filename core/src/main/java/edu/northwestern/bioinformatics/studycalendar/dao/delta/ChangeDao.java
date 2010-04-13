@@ -19,4 +19,8 @@ public class ChangeDao extends StudyCalendarMutableDomainObjectDao<Change> imple
     public void delete(Change change) {
         getHibernateTemplate().delete(change);
     }
+
+    public void deleteAll(List<Change> t) {
+        getHibernateTemplate().delete(t);
+    }
 }

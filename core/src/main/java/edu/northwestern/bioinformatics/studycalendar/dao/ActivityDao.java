@@ -133,4 +133,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
         //have to flush, otherwise it's failing to add a new activity in the same session.
         getSession().flush();
     }
+
+    public void deleteAll(List<Activity> t) {
+        getHibernateTemplate().deleteAll(t);
+        //have to flush, otherwise it's failing to add a new activity in the same session.
+        getSession().flush();
+    }
 }

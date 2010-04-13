@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
@@ -52,5 +54,9 @@ public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<Plan
     @Transactional(readOnly = false)
     public void delete(PlannedCalendar plannedCalendar) {
         getHibernateTemplate().delete(plannedCalendar);
+    }
+
+    public void deleteAll(List<PlannedCalendar> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }

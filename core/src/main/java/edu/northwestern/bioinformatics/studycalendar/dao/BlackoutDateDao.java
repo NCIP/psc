@@ -1,13 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
-import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
-
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Nataliya Shurupova
@@ -24,6 +21,10 @@ public class BlackoutDateDao extends StudyCalendarMutableDomainObjectDao<Blackou
 
     public void delete(final BlackoutDate site) {
         getHibernateTemplate().delete(site);
+    }
+
+    public void deleteAll(List<BlackoutDate> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }
 

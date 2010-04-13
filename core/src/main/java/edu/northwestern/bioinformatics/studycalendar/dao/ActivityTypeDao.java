@@ -47,5 +47,8 @@ public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<Activit
         getHibernateTemplate().delete(activityType);
     }
 
+    public void deleteAll(List<ActivityType> t) {
+        getHibernateTemplate().deleteAll(t);
+    }
 }
 

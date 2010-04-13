@@ -69,6 +69,10 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
         getHibernateTemplate().delete(site);
     }
 
+    public void deleteAll(List<Site> t) {
+        getHibernateTemplate().deleteAll(t);
+    }
+
     /**
     * Finds the Sites doing a LIKE search with some search text for sites.
     *

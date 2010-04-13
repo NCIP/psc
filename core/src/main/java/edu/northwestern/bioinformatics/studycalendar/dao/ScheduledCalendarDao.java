@@ -7,11 +7,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.hibernate.Hibernate;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<ScheduledCalendar> {
+public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<ScheduledCalendar> implements DeletableDomainObjectDao<ScheduledCalendar> {
     @Override
     public Class<ScheduledCalendar> domainClass() {
         return ScheduledCalendar.class;
@@ -49,5 +50,13 @@ public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<Sc
     public Collection<ScheduledCalendar> getAllFor(Study source) {
         return getHibernateTemplate().find(
             "from ScheduledCalendar cal where cal.assignment.studySite.study = ?", source);
+    }
+
+    public void delete(ScheduledCalendar t) {
+        getHibernateTemplate().delete(t);
+    }
+
+    public void deleteAll(List<ScheduledCalendar> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }

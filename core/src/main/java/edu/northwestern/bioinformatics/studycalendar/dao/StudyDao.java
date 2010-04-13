@@ -111,6 +111,10 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         getHibernateTemplate().delete(study);
     }
 
+    public void deleteAll(List<Study> t) {
+        getHibernateTemplate().deleteAll(t);
+    }
+
     /**
      * Search studies by matching study name (or assigned identifier of study) to search text.
      * Returns all studies if no study found matching with given search text

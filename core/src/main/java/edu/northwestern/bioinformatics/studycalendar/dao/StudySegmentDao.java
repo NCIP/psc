@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 
+import java.util.List;
+
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
@@ -23,5 +25,9 @@ public class StudySegmentDao extends ChangeableDao<StudySegment> {
 
     public void deleteOrphans() {
         deleteOrphans("StudySegment", "epoch", "EpochDelta", "epoch");
+    }
+
+    public void deleteAll(List<StudySegment> t) {
+        getHibernateTemplate().delete(t);
     }
 }

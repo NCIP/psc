@@ -581,6 +581,11 @@
         </property>
     </bean>
 
+    <bean name="/admin/manage/purgeStudy" id="purgeStudyController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.PurgeStudyController">
+    </bean>
+
+
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="messages"/>
     </bean>
