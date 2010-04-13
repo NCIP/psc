@@ -33,14 +33,9 @@ public class StudyService {
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
-    private ScheduledActivityStateDao scheduledActivityStateDao;
     private DaoFinder daoFinder;
 
     private static final String COPY = "copy";
-    private ScheduledStudySegmentDao scheduledStudySegmentDao;
-    private ScheduledCalendarDao scheduledCalendarDao;
-    private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private StudySiteDao studySiteDao;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -434,31 +429,6 @@ public class StudyService {
         this.daoFinder = daoFinder;
     }
 
-    @Required
-    public void setScheduledActivityStateDao(final ScheduledActivityStateDao scheduledActivityStateDao) {
-        this.scheduledActivityStateDao = scheduledActivityStateDao;
-    }
-
-    @Required
-    public void setScheduledStudySegmentDao(ScheduledStudySegmentDao scheduledStudySegmentDao) {
-        this.scheduledStudySegmentDao = scheduledStudySegmentDao;
-    }
-
-    @Required
-    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
-        this.scheduledCalendarDao = scheduledCalendarDao;
-    }
-
-    @Required
-    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
-        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
-    }
-
-    @Required
-    public void setStudySiteDao(StudySiteDao studySiteDao) {
-        this.studySiteDao = studySiteDao;
-    }
-
     public void purge(Study study) {
         Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNodes.allByType(study);
 
@@ -466,20 +436,6 @@ public class StudyService {
             DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
             dao.deleteAll(nodes.get(klass));
         }
-//        for (ChangeableDao dao: daoFinder.findStudyCalendarMutableDomainObjectDaos()) {
-//            List toBePurged = nodes.get(dao.domainClass());
-//            if (toBePurged != null) {
-//                dao.delete(toBePurged);
-//            }
-//        }
-
-//        scheduledActivityStateDao.delete(states);
-//        scheduledActivityDao.delete(activities);
-//        scheduledStudySegmentDao.delete(segments);
-//        scheduledCalendarDao.delete(calendar);
-//        studySubjectAssignmentDao.delete(assignments);
-//        studySiteDao.delete(studySites);
-//        studyDao.delete(study);
     }
 
     static class StudyNodes {
@@ -500,9 +456,6 @@ public class StudyService {
                         putInMappedList(all, segment.getClass(), segment);
                         for (ScheduledActivity activity : segment.getActivities()) {
                             putInMappedList(all, activity.getClass(), activity);
-//                            for (ScheduledActivityState state : activity.getAllStates()) {
-//                                putInMappedList(all, state.getClass(), state);
-//                            }
                         }
                     }
 
@@ -511,18 +464,6 @@ public class StudyService {
 
             return all;
         }
-
-
-//        private static Map<Class<? extends AbstractMutableDomainObject>, List<Object>> buildScheduledNodesMap(ScheduledParentNode node) {
-//            if (!(node instanceof ScheduledParentNode)) {
-//                return;
-//            }
-//            for (Object child : node.getChildren()) {
-//                addToMap((node.childClass()) child, )
-//
-//
-//            }
-//        }
     }
 
         ////// INNER CLASSES
