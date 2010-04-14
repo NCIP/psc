@@ -143,8 +143,56 @@ psc.subject.RealScheduleControls = (function ($) {
        }
    }
 
+  function makeReportRequest() {
+      var subjectId = $(this).attr('subject');
+      var extension = $(this).attr('extension');
+      var baseUrl = psc.tools.Uris.relative("/api/v1/reports/scheduled-activities")
+      var url = baseUrl + extension + '?person-id=' +subjectId;
+      var startDate = getReportStartDate();
+      var endDate = getReportEndDate()
+      if (startDate) {
+          url = url + '&start-date='+startDate
+      }
+      if (endDate) {
+          url = url + '&end-date=' +endDate
+      }
+      location.href = url
+  }
+
+  function makeReportMoreOptionsRequest() {
+      var subjectId = $(this).attr('subject');
+      var baseUrl = psc.tools.Uris.relative("/pages/report/scheduledActivitiesReport")
+      var url = baseUrl + '?personId=' +subjectId;
+      var startDate = getReportStartDate();
+      var endDate = getReportEndDate()
+      if (startDate) {
+          url = url + '&startDate'+startDate
+      }
+      if (endDate) {
+          url = url + '&endDate=' +endDate
+      }
+      $('#report-options').attr("href", url);
+  }
+
+  function getReportStartDate() {
+      var startDate = $('#actual-date-start').val() ?
+            psc.tools.Dates.displayDateToApiDate($('#actual-date-start').val()) :
+            null;
+      return startDate;
+  }
+
+  function getReportEndDate() {
+      var endDate = $('#actual-date-stop').val() ?
+            psc.tools.Dates.displayDateToApiDate($('#actual-date-stop').val()) :
+            null;
+      return endDate;
+  }
+
   return {
     init: function () {
+      $('#xls-report').click(makeReportRequest)
+      $('#csv-report').click(makeReportRequest)
+      $('#report-options').click(makeReportMoreOptionsRequest)
       $('#delay-submit').click(performDelay);
       $('#mark-submit').click(performCheckedModifications);
       $('a.mark-select').click(checkScheduledActivitiesByClass).

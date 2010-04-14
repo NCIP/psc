@@ -181,37 +181,6 @@
         });
     </script>
 
-    <script type="text/javascript">
-        function generateExport(extention) {
-            var uri = SC.relativeUri("/api/v1/reports/scheduled-activities")
-            var startDate = $("actual-date-start").value
-            if (startDate != null && startDate.length > 0) {
-                startDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
-            }
-            var endDate = $("actual-date-stop").value
-            if (endDate != null && startDate.length > 0) {
-                endDate = psc.tools.Dates.displayDateToApiDate($("actual-date-stop").value)
-            }
-
-            var personId = '${subject.personId}'
-            if (personId.length == 0) {
-                personId = '${subject.gridId}'
-            }
-            location.href = uri+extention + '?start-date='+startDate+'&end-date='+endDate+'&person-id='+personId;
-        }
-
-        function setUpReportParams() {
-            var personId = '${subject.personId}'
-            if (personId.length == 0) {
-                personId = '${subject.gridId}'
-            }
-            var startDate = $("actual-date-start").value
-            var endDate = $("actual-date-stop").value
-
-            $('options').href = SC.relativeUri("/pages/report/scheduledActivitiesReport?personId=" + personId+"&startDate="+startDate+"&endDate=" + endDate)
-        }
-    </script>
-
     <tags:resigTemplate id="list_day_entry">
         <div class="day [#= dateClass #]">
             <h3 class="date">
@@ -534,17 +503,25 @@
                     </a>
                </div>
             </div>
+            <c:choose>
+                <c:when test="${not empty subject.personId}">
+                    <c:set var="subjectId" value="${subject.personId}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="subjectId" value="${subject.gridId}"/>
+                </c:otherwise>
+            </c:choose>
             <div class="row">
                 <div class="value" >
-                    <a class="control" onclick="generateExport('.xls')" href="#" title="Download scheduled activities report into Excel format">Excel</a>
-                    <a class="control" onclick="generateExport('.csv')" href="#" title="Download scheduled activities report into CSV format">CSV</a>
+                    <a class="control" id="xls-report" href="#" title="Download scheduled activities report into Excel format" extension=".xls"
+                       subject="${subjectId}">Excel</a>
+                    <a class="control" id="csv-report" href="#" title="Download scheduled activities report into CSV format" extension=".csv"
+                       subject="${subjectId}">CSV</a>
                 </div>
             </div>
             <div class="row">
                 <div class="value" >
-                    <a style="float:left;" id="options" href="#" onclick="setUpReportParams()">
-                        Show more options
-                    </a>
+                    <a style="float:left;" id="report-options" href="#" subject="${subjectId}">Show more options</a>
                 </div>
             </div>
         </div>
