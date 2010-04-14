@@ -494,6 +494,7 @@
             <h3><a class="accordionHeader" href="#">Export</a></h3>
         </div>
         <div class="accordion-content" id="export-controls">
+            <div class="label" style="font-weight: bold;">ICS:</div>
             <div class="row even">
                 <div class="label">All</div>
                 <div class="value">
@@ -518,14 +519,42 @@
                     </div>
                 </div>
             </c:forEach>
+            <div class="label" style="font-weight: bold;">Report:</div>
+            <div class="row">
+                <div class="label"> Export activities scheduled from  </div>
+                <div class="value">
+                    <input id="actual-date-start" class="date" type="text" size="10"/>
+                    <a href="#" id="actual-date-start-calbutton">
+                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                    </a>
+                    to:
+                    <input id="actual-date-stop" class="date" type="text" size="10"/>
+                    <a href="#" id="actual-date-stop-calbutton">
+                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
+                    </a>
+               </div>
+            </div>
+            <div class="row">
+                <div class="value" >
+                    <a class="control" onclick="generateExport('.xls')" href="#" title="Download scheduled activities report into Excel format">Excel</a>
+                    <a class="control" onclick="generateExport('.csv')" href="#" title="Download scheduled activities report into CSV format">CSV</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="value" >
+                    <a style="float:left;" id="options" href="#" onclick="setUpReportParams()">
+                        Show more options
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Interapplication links</a> </h3>
+            <h3><a class="accordionHeader" href="#">Links</a> </h3>
         </div>
         <div class="accordion-content">
+            <div class="label" style="font-weight: bold;">Interapplication:</div>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
-
                 <c:if test="${configuration.externalAppsConfigured}">
                     <div class="row ${commons:parity(outerCounter.index)}">
                         <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
@@ -554,58 +583,23 @@
                     </div>
                 </c:if>
             </c:forEach>
-            <c:if test="${! configuration.externalAppsConfigured}">
-                <li class="none">None configured</li>
-             </c:if>  
-
-        </div>
-
-        <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Template links</a> </h3>
-        </div>
-        <div class="accordion-content">
-            <c:if test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 0}">
-                Return to template :
-                <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
-                    <a class="control" href="<c:url value="/pages/cal/template?study=${row.studySite.study.id}"/>">
-                        ${row.name}
-                    </a>
-                </c:forEach>
-            </c:if>
-        </div>
-
-        <div class="accordionDiv">
-            <h3><a class="accordionHeader" href="#">Report</a> </h3>
-        </div>
-        <div class="accordion-content">
-            <div class="accordionRow">
-                <div class="label"> Export activities scheduled from:  </div>
-                <div class="value">
-                    <input id="actual-date-start" class="date" type="text" value="" />
-                    <a href="#" id="actual-date-start-calbutton">
-                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
-                    </a>
-                <div></div>    
-               <div class="label"> to:  </div>
-                    <input id="actual-date-stop" class="date" type="text" value="" />
-                    <a href="#" id="actual-date-stop-calbutton">
-                        <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17" height="16" border="0" align="absmiddle"/>
-                    </a>
-               </div>
-            </div>
-            <div class="accordionRow" style="margin-top:1em;">
-                <div class="value" >
-                    <input class="button" type="submit" onclick="generateExport('.xls')" name="Excel" value="Excel"/>
-                    <input class="button" type="submit" onclick="generateExport('.csv')" name="CSV" value="CSV"/>
+            <c:if test="${!configuration.externalAppsConfigured}">
+                <div class="row">
+                    <div class="value none">None configured</div>
                 </div>
-
-
-            </div>
-            <div class="accordionRow " style="margin-top:1em;">
-                <a style="float:left;" id="options" href="#" onclick="setUpReportParams()">
-                    Show more options
-                </a>
-            </div>
+            </c:if>
+            <div class="label" style="font-weight: bold;">Template:</div>
+            <c:if test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 0}">
+                <div class="row">
+                    <div class="label">Return to :</div>
+                    <div class="value">
+                        <c:forEach items="${schedule.visibleAssignments}" var="row" varStatus="rowStatus">
+                            <a class="control" href="<c:url value="/pages/cal/template?study=${row.studySite.study.id}"/>">
+                            ${row.name} </a>
+                        </c:forEach>
+                   </div>
+                 </div>
+            </c:if>
         </div>
 
      </c:if>
