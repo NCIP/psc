@@ -2,14 +2,16 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;
@@ -17,7 +19,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import static java.util.Collections.EMPTY_LIST;
 import java.util.*;
 
 /**
@@ -31,6 +32,17 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
     private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
+    private AuthorizationService authorizationService;
+    private StudyDao studyDao;
+    private String userName;
+    private User user;
+    private Study study;
+    private Site site;
+    private StudySite studySite;
+    private List<Study> studies = new ArrayList<Study>();
+    private List<Study> ownedStudies = new ArrayList<Study>();
+    private List<StudySite> studySites= new ArrayList<StudySite>();
+    private List<User> users = new ArrayList<User>();
 
     @Override
     protected void setUp() throws Exception {
@@ -48,22 +60,50 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
                 return command;
             }
         };
+
+
+        userName = "USER NAME";
+        user = Fixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
+        users.add(user);
+        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
+
+        study = setId(100, Fixtures.createBasicTemplate());
+        site = Fixtures.createSite("Site");
+        studySite = Fixtures.createStudySite(study, site);
+        studies.add(study);
+        ownedStudies.add(study);
+        studySites.add(studySite);
+
+        studyDao = registerDaoMockFor(StudyDao.class);
+        authorizationService = registerMockFor(AuthorizationService.class);
+        controller.setAuthorizationService(authorizationService);
+        controller.setStudyDao(studyDao);
         controller.setScheduledActivitiesReportRowDao(dao);
         controller.setControllerTools(controllerTools);
         controller.setUserDao(userDao);
         controller.setActivityTypeDao(activityTypeDao);
+        controller.setApplicationSecurityManager(applicationSecurityManager);
+
+        applicationSecurityManager.setUserService(registerMockFor(UserService.class));
+        expect(applicationSecurityManager.getFreshUser()).andReturn(user).anyTimes();
+        expect(studyDao.getAll()).andReturn(studies);
+        expect(userDao.getAllSubjectCoordinators()).andReturn(users);
+        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies).anyTimes();
     }
 
     @SuppressWarnings({"unchecked"})
     public void testCreateModel() {
-        Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY), command);
+        expectActivityTypeDaoCall();
+        replayMocks();
+            Map<String,Object> model = controller.createModel(new BindException(this, StringUtils.EMPTY), command);
+        verifyMocks();
         assertNotNull("Model should contain modes", model.get("modes"));
     }
 
     @SuppressWarnings({"unchecked"})
     public void testHandle() throws Exception {
         expectActivityTypeDaoCall();
-        expectFindAllSubjectCoordinators();
+
         ModelAndView mv = handleRequest();
         assertEquals("Wrong view", "reporting/scheduledActivitiesReport", mv.getViewName());
     }
@@ -100,12 +140,29 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     }
 
     public void testBindSubjectCoordinator() throws Exception {
-        expectActivityTypeDaoCall();        
+        expectActivityTypeDaoCall();
         request.addParameter("filters.subjectCoordinator", "100");
         expectFindUser(100, setId(100, new User()));
         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.subjectCoordinator");
         assertEquals("Wrong user", 100, (int) command.getFilters().getSubjectCoordinator().getId());
     }
+
+    public void testGetMapOfColleagueUsers() throws Exception {
+        String user2Name = "USER2";
+        User user2 = Fixtures.createUser(user2Name, Role.SUBJECT_COORDINATOR);
+        users.add(user2);
+        SecurityContextHolderTestHelper.setSecurityContext(user2, "pass");
+
+        expect(authorizationService.filterStudiesForVisibility(studies, user2.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies).anyTimes();
+
+        replayMocks();
+            List<User> listOfUsers = controller.getListOfColleagueUsers();
+        verifyMocks();
+        assertEquals("Wrong number of users ", 2, listOfUsers.size());
+        assertEquals("Wrong user one", user, listOfUsers.get(0));
+        assertEquals("Wrong user two", user2, listOfUsers.get(1));
+    }
+
 
     ////// Helper Methods
     private ModelAndView handleRequest() throws Exception {
@@ -123,7 +180,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     @SuppressWarnings({ "unchecked" })
     private ScheduledActivitiesReportCommand postAndReturnCommand(String expectNoErrorsForField) throws Exception {
-        expectFindAllSubjectCoordinators();
         Map<String, Object> model = handleRequest().getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
         return (ScheduledActivitiesReportCommand) model.get("command");

@@ -7,9 +7,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ReportCsvRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import org.restlet.data.*;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -27,11 +30,15 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     private ScheduledActivitiesReportRowDao scheduledActivitiesReportRowDao;
     private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
+    private ApplicationSecurityManager applicationSecurityManager;
+    private AuthorizationService authorizationService;
+    private StudyDao studyDao;
+
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(PscMetadataService.TEXT_CSV));
         getVariants().add(new Variant(MediaType.APPLICATION_EXCEL));
@@ -46,11 +53,27 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
         return scheduledActivitiesReportRow;
     }
 
+    public List<ScheduledActivitiesReportRow> filteredRows(List<ScheduledActivitiesReportRow> rows) {
+        List<ScheduledActivitiesReportRow> filteredRows = new ArrayList<ScheduledActivitiesReportRow>();
+        User user = applicationSecurityManager.getFreshUser();
+        List<Study> studies = studyDao.getAll();
+        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<StudySite> ownedStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+        for (ScheduledActivitiesReportRow row : rows) {
+            for (StudySite studySite : ownedStudySites) {
+                if (row.getStudy().getId().equals(studySite.getStudy().getId()) && row.getSite().getId().equals(studySite.getSite().getId())) {
+                    filteredRows.add(row);
+                }
+            }
+        }
+        return filteredRows;
+    }
+
     public ScheduledActivitiesReportFilters getFilters() throws ResourceException {
         String study = FilterParameters.STUDY.extractFrom(getRequest());
         String site = FilterParameters.SITE.extractFrom(getRequest());
         String state = FilterParameters.STATE.extractFrom(getRequest());
-        String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());
+        String activity_type = FilterParameters.ACTIVITY_TYPE.extractFrom(getRequest());               
         String label = FilterParameters.LABEL.extractFrom(getRequest());
         String start_date = FilterParameters.START_DATE.extractFrom(getRequest());
         String end_date = FilterParameters.END_DATE.extractFrom(getRequest());
@@ -104,14 +127,19 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         List<ScheduledActivitiesReportRow> allRows = new ArrayList<ScheduledActivitiesReportRow>(getAllObjects());
+        List<ScheduledActivitiesReportRow> filteredRows = filteredRows(allRows);
+        boolean messageIndicator = false;
+        if (allRows.size() > filteredRows.size()) {
+            messageIndicator = true;
+        }
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ReportJsonRepresentation(getFilters(), allRows);
+            return new ReportJsonRepresentation(getFilters(), filteredRows, messageIndicator);
         }
         if (variant.getMediaType().equals(PscMetadataService.TEXT_CSV)) {
-            return new ReportCsvRepresentation(allRows, ',');
+            return new ReportCsvRepresentation(filteredRows, ',');
         }
         if (variant.getMediaType().equals(MediaType.APPLICATION_EXCEL)) {
-            return new ReportCsvRepresentation(allRows, '\t');
+            return new ReportCsvRepresentation(filteredRows, '\t');
         }
         return null;
     }
@@ -134,5 +162,20 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     @Required
     public void setScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao scheduledActivitiesReportRowDao) {
         this.scheduledActivitiesReportRowDao = scheduledActivitiesReportRowDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 }

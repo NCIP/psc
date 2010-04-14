@@ -2,16 +2,17 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,11 +28,14 @@ import java.util.*;
 /**
  * @author John Dzak
  */
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
+@AccessControl(roles = {Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR})
 public class ScheduledActivitiesReportController extends PscAbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
     private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
+    private ApplicationSecurityManager applicationSecurityManager;
+    private AuthorizationService authorizationService;
+    private StudyDao studyDao;
 
 
     public ScheduledActivitiesReportController() {
@@ -63,9 +67,10 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     @SuppressWarnings({"unchecked"})
     protected Map createModel(BindException errors, ScheduledActivitiesReportCommand command) {
         Map<String, Object> model = errors.getModel();
+        List<User> users = getListOfColleagueUsers();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", activityTypeDao.getAll());
-        model.put("coordinators", userDao.getAllSubjectCoordinators());
+        model.put("coordinators", users);
         model.put("personId", command.getPersonId());
         if (command.getStartDate()!=null){
             model.put("startDate", command.getStartDate());
@@ -74,6 +79,48 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
             model.put("endDate", command.getEndDate());
         }
         return model;
+    }
+
+    public List<User> getListOfColleagueUsers() {
+        User signedUser = applicationSecurityManager.getUser();
+        List<Study> studies = studyDao.getAll();
+        List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, signedUser.getUserRole(Role.SUBJECT_COORDINATOR));
+        List<User> mapOfUsers = new ArrayList<User>();
+        List<User> allSubjCoord = new ArrayList<User>();
+        List<User> coord = userDao.getAllSubjectCoordinators();
+
+        for (User pcUser : coord) {
+            if (!pcUser.equals(signedUser)) {
+                allSubjCoord.add(pcUser);
+            }
+        }
+        allSubjCoord.add(signedUser);
+        for (User user : allSubjCoord) {
+            List<Study> studiesForUser = authorizationService.filterStudiesForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
+            if (studiesForUser != null && studiesForUser.size() > 0) {
+                mapOfUsers.add(user);
+            }
+        }
+        if (mapOfUsers.size() ==0) {
+            mapOfUsers.add(signedUser);
+        }
+
+        return mapOfUsers;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 
     ////// Bean Setters

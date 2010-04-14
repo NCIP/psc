@@ -16,15 +16,23 @@ import org.apache.commons.lang.StringUtils;
 public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
     private List<ScheduledActivitiesReportRow> allRows;
     private ScheduledActivitiesReportFilters filters;
+    private boolean messageIndicator;
 
-    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows) {
+    public ReportJsonRepresentation(ScheduledActivitiesReportFilters filters, List<ScheduledActivitiesReportRow> allRows, boolean messageIndicator) {
         this.filters = filters;
         this.allRows = allRows;
+        this.messageIndicator = messageIndicator;
     }
 
     @Override
     public void generate(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
+            if (messageIndicator) {
+                generator.writeFieldName("messages");
+                generator.writeStartObject();
+                    JacksonTools.nullSafeWriteStringField(generator, "limitedAccess", "There are some activities that you do not have access to");
+                generator.writeEndObject();
+            }
             generator.writeFieldName("filters");
             generator.writeStartObject();
                 if (filters != null) {

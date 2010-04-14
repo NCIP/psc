@@ -33,4 +33,10 @@ input.button {
     font-weight: bold ;
 }
 
+.messagesInfo {
+    text-decoration:none;
+    margin-top:0.5em;
+    margin-bottom:0.7em;
+}
+
 th, a { background-repeat: no-repeat; }

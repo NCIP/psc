@@ -35,6 +35,7 @@
         var bundleList;
 
         function submitFilters() {
+            $('messagesInfo').innerHTML = ""
             var uri = SC.relativeUri("/api/v1/reports/scheduled-activities")
             var params = {};
 
@@ -60,6 +61,9 @@
             SC.asyncRequest(uri +".json", {
               method: "GET", parameters: params,
               onSuccess: function(response) {
+                   var resp = response.responseJSON
+                   fillInMessagesInfo(resp);
+                  
                    var bundleListColumns = [
                         { key: "activity_name", label: "Activity Name", sortable: true},
                         { key: "activity_status", label: "Activity Status", sortable: true },
@@ -72,7 +76,7 @@
                         { key: "study", label: "Study Name", sortable: true},
                         { key: "site", label: "Site Name", sortable: true}
                    ];
-                   var myDataSource = new YAHOO.util.DataSource(response.responseJSON);
+                   var myDataSource = new YAHOO.util.DataSource(resp);
                     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 
                     myDataSource.responseSchema = {
@@ -96,6 +100,17 @@
             })
         }
 
+        function fillInMessagesInfo(resp) {
+            var messageList = resp.messages
+            if (messageList != null) {
+                messageList = messageList.limitedAccess
+            }
+            if (messageList != null) {
+                $('messagesInfo').innerHTML = messageList;
+            }
+
+        }
+
         function resetFilters() {
            $("filters.studyAssignedIdentifier").value = "";
            $("filters.siteName").value = "";
@@ -106,6 +121,7 @@
            $("filters.subjectCoordinator").value = "";
            $("filters.personId").value ="";
            $("bundle-list").hide();
+           $('messagesInfo').innerHTML = "";
         }
 
         //need this method to avoid form submission on the enter key press for labels autocompleter
@@ -233,6 +249,7 @@
             </div>
 
           <br style="clear:both"/>
+          <div id="messagesInfo" class="messagesInfo"> </div>
           <div id="bundle-list" class="bundle-list">
           </div>
         </form:form>
