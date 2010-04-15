@@ -301,19 +301,24 @@
             $('studySubjectId').disabled = flag;
             var studySegmentElement = $('studySegment')
             if (studySegmentElement != null) {
-                $('studySegment').disabled = flag;
+                studySegmentElement.disabled = flag;
             }
             $('startDate').disabled = flag;
-            $('population-checkboxes').disabled = flag;
+            var populationCheckboxes = $('population-checkboxes');
+            if (populationCheckboxes != null) {
+                populationCheckboxes.disabled = flag;
+            }
         }
 
-        $(document).observe('dom:loaded', function() {
+       function disableFields() {
+            $('submitBtn').disabled='true'
             createSubjectsAutocompleter()
             disableEnableElementsForCommonDiv(true)
             disableEnableElementsOfDiv1(true)
             disableEnableElementsOfDiv2(true)
-            $('submitBtn').disabled=true
-        })
+       }
+
+       Event.observe(window, "load", disableFields)
 
     </script>
 </head>
@@ -332,7 +337,7 @@
                     <laf:division cssClass="divisionClass">
                             <div class="row">
                                 <div class="label">
-                                    <form:label path="firstName">First Name</form:label>
+                                    <form:label path="firstName">First name *</form:label>
                                 </div>
                                 <div class="value">
                                     <form:input path="firstName"/>
@@ -340,7 +345,7 @@
                             </div>
                             <div class="row">
                                 <div class="label">
-                                    <form:label path="lastName">Last Name</form:label>
+                                    <form:label path="lastName">Last name *</form:label>
                                 </div>
                                 <div class="value">
                                     <form:input path="lastName"/>
@@ -348,7 +353,7 @@
                             </div>
                             <div class="row">
                                 <div class="label">
-                                    <form:label path="dateOfBirth">Date of Birth (mm/dd/yyyy)</form:label>
+                                    <form:label path="dateOfBirth">Date of birth* (mm/dd/yyyy)</form:label>
                                 </div>
                                 <div class="value">
                                     <form:input path="dateOfBirth"/>
@@ -369,7 +374,7 @@
                             </div>
                             <div class="row">
                                 <div class="label">
-                                    <form:label path="personId">Person Id</form:label>
+                                    <form:label path="personId">Person ID</form:label>
                                 </div>
                                 <div class="value">
                                     <form:input path="personId"/>
@@ -438,7 +443,7 @@
                     </div>
                     <div class="row">
                         <div class="label">
-                            <form:label path="studySubjectId">StudySubject Id</form:label>
+                            <form:label path="studySubjectId">Study subject ID</form:label>
                         </div>
                         <div class="value">
                             <form:input path="studySubjectId"/>
@@ -448,7 +453,7 @@
                     <c:if test="${not empty studySegments}">
                         <div class="row">
                             <div class="label">
-                                <form:label path="studySegment">Select studySegment for first epoch</form:label>
+                                <form:label path="studySegment">First study segment</form:label>
                             </div>
                             <div class="value">
                                 <form:select path="studySegment">
@@ -462,7 +467,7 @@
 
                     <div class="row">
                         <div class="label">
-                            <form:label path="startDate">Start date of first epoch</form:label>
+                            <form:label path="startDate">Start date *</form:label>
                         </div>
                         <div class="value">
                             <laf:dateInput path="startDate"/>
