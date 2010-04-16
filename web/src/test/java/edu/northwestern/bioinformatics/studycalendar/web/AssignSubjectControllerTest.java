@@ -132,7 +132,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     public void testBindStartDate() throws Exception {
         request.setParameter("startDate", "09/20/1996");
         AssignSubjectCommand command = getAndReturnCommand("startDate");
-        assertDayOfDate(1996, Calendar.SEPTEMBER, 20, command.getStartDate());
+        assertDayOfDate(1996, Calendar.SEPTEMBER, 20, command.convertStringToDate(command.getStartDate()));
     }
 
     public void testBindStudySegment() throws Exception {

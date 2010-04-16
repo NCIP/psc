@@ -15,6 +15,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Rhett Sutphin
@@ -35,15 +36,16 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
         command.setSubjectDao(subjectDao);
-
-        subject = createSubject("11", "Fred", "Jones", createDate(2008, 1, 12),Gender.MALE);
+        String dateOfBirthString = "12/01/2008";
+        Date dateOfBirth = command.convertStringToDate(dateOfBirthString);
+        subject = createSubject("11", "Fred", "Jones", dateOfBirth, Gender.MALE);
         subject.setGridId("grid_id_123");
 
         command.setFirstName(subject.getFirstName());
         command.setLastName(subject.getLastName());
         command.setPersonId(subject.getPersonId());
-        command.setDateOfBirth(subject.getDateOfBirth());
-        command.setStartDate(createDate(2008, 2, 1));
+        command.setDateOfBirth(dateOfBirthString);
+        command.setStartDate("01/02/2008");
         command.setRadioButton(NEW);
     }
 
@@ -55,7 +57,10 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         Set<Population> populations = Collections.singleton(new Population());
         String studySubjectId = "SSId1";
 
-        command.setStartDate(new Date());
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+        String stringDate = formatter.format(date);
+        command.setStartDate(stringDate);
         command.setStudySubjectId(studySubjectId);
         command.setStudy(study);
         command.setSite(site);
@@ -65,7 +70,8 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         subjectDao.save(subjectEq(subject));
 
 
-        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.getStartDate()), EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null))).andReturn(assignment);
+        expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
+                EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null))).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 

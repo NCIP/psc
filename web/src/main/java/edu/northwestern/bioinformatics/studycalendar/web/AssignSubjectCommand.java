@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 
 /**
@@ -20,7 +22,7 @@ import java.util.Set;
  */
 public class AssignSubjectCommand implements Validatable {
     private StudySegment studySegment;
-    private Date startDate;
+    private String startDate;
 
     private Site site;
     private Study study;
@@ -32,7 +34,7 @@ public class AssignSubjectCommand implements Validatable {
 
     private String firstName;
     private String lastName;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String gender;
     private String personId;
     private String studySubjectId;
@@ -55,7 +57,7 @@ public class AssignSubjectCommand implements Validatable {
             if (getRadioButton().equals("existing")){
                 if (getIdentifier() == null || getIdentifier().trim().length()==0){
                     errors.rejectValue("personId", "error.subject.please.select.a.subject");
-                } else if (getStartDate() == null) {
+                } else if (getStartDate() == null || getStartDate().length() != 10 || convertStringToDate(getStartDate()) == null) {
                     errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
                 } else {
                     subject = subjectDao.findSubjectByGridOrPersonId(getIdentifier());
@@ -63,7 +65,9 @@ public class AssignSubjectCommand implements Validatable {
             } else if (getRadioButton().equals("new")){
                 if (isEmpty(getPersonId()) && (isEmpty(getFirstName()) || isEmpty(getLastName()) || getDateOfBirth() == null)) {
                     errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
-                } else if (getStartDate() == null) {
+                } else if (getDateOfBirth() == null || getDateOfBirth().length() != 10 || convertStringToDate(getDateOfBirth()) == null) {
+                    errors.rejectValue("dateOfBirth", "error.subject.assignment.please.enter.date.of.birth");
+                } else if (getStartDate() == null || getStartDate().length() != 10 || convertStringToDate(getStartDate()) == null) {
                     errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
                 } else {
                     subject = createSubject();
@@ -84,7 +88,7 @@ public class AssignSubjectCommand implements Validatable {
     public StudySubjectAssignment assignSubject() {
 		Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
-            subject, getStudySite(), getEffectiveStudySegment(), getStartDate(), getStudySubjectId(), getSubjectCoordinator());
+            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getSubjectCoordinator());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
@@ -93,7 +97,7 @@ public class AssignSubjectCommand implements Validatable {
         Subject subject = new Subject();
 		subject.setFirstName(getFirstName());
 		subject.setLastName(getLastName());
-		subject.setDateOfBirth(getDateOfBirth());
+		subject.setDateOfBirth(convertStringToDate(getDateOfBirth()));
 		subject.setGender(Gender.getByCode(getGender()));
 		subject.setPersonId(getPersonId());
         return subject;
@@ -122,6 +126,19 @@ public class AssignSubjectCommand implements Validatable {
         return StudySite.findStudySite(getStudy(), getSite());
     }
 
+    public Date convertStringToDate(String dateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Date convertedDate = null;
+
+        try {
+            convertedDate = dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            convertedDate = null;
+
+        }
+        return convertedDate;
+    }
+
     ////// CONFIGURATION
 
     public void setSubjectService(SubjectService subjectService) {
@@ -134,11 +151,11 @@ public class AssignSubjectCommand implements Validatable {
 
     ////// BOUND PROPERTIES
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
@@ -191,11 +208,11 @@ public class AssignSubjectCommand implements Validatable {
     }
 
    //////////////////////////////////////////
-    public Date getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
