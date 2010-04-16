@@ -67,27 +67,37 @@ public class SourceSerializerTest extends StudyCalendarTestCase {
     public void testCsvForActivityWithDescriptionWithCommas() throws Exception {
         Source oneAct = Fixtures.createSource("Src", act2);
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nActivity2,INTERVENTION,Code2,\"A2 also has frob, bar, and zap\"\n";
-        assertEquals(expected, doc);
+        String[] result = doc.split("\r?\n");
+        String expectedSource = ACTIVITY_SOURCE + ",Src";
+        assertEquals("Source header and content do not match", expectedSource, result[0]);
+        assertEquals("Headers do not match", CSV_HEADER, result[1]);
+        String expectedContents = "Activity2,INTERVENTION,Code2,\"A2 also has frob, bar, and zap\"";
+        assertEquals("Contents do not match", expectedContents, result[2]);
     }
 
     public void testCsvForActivityWithDescriptionWithNewlines() throws Exception {
         Source oneAct = Fixtures.createSource("Src", act3);
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nActivity3,OTHER,Code3,\"A3\nhas a long\ndescription\"\n";
-        assertEquals(expected, doc);
+        String[] result = doc.split("\r?\n");
+        String expectedContent1 = "Activity3,OTHER,Code3,\"A3";
+        String expectedContent2 = "has a long";
+        String expectedContent3 = "description\"";
+        assertEquals("Contents with description first line do not match", expectedContent1, result[2]);
+        assertEquals("Contents with description second line do not match", expectedContent2, result[3]);
+        assertEquals("Contents with description third line do not match", expectedContent3, result[4]);
     }
 
     public void testCsvForActivityWithDescriptionWithQuotes() throws Exception {
         Source oneAct = Fixtures.createSource("Src", createActivity("A", "A", null, other, "aka \"Alpha\""));
         String doc = serializer.createDocumentString(oneAct, CSV_DELIM);
-        String expected = ACTIVITY_SOURCE + ",Src" + "\n" + CSV_HEADER + "\nA,OTHER,A,\"aka \"\"Alpha\"\"\"\n";
-        assertEquals(expected, doc);
+        String expectedContents = "A,OTHER,A,\"aka \"\"Alpha\"\"\"";
+        String[] result = doc.split("\r?\n");
+        assertEquals("Contents with description with quotes do not match", expectedContents, result[2]);
     }
 
     public void testWillUseOtherDelimiter() throws Exception {
         String document = serializer.createDocumentString(source, XLS_DELIM);
-        String[] rows = document.split("\n");
+        String[] rows = document.split("\r?\n");
         assertEquals("Source header is incorrect", ACTIVITY_SOURCE +"\t"+SOURCE_NAME, rows[0]);
         assertEquals("Column header is incorrect", XLS_HEADER, rows[1]);
         assertEquals("Wrong first row", "Activity1\tOTHER\tCode1\t", rows[2]);
