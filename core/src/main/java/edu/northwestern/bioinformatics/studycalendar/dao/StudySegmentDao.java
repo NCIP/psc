@@ -28,6 +28,6 @@ public class StudySegmentDao extends ChangeableDao<StudySegment> {
     }
 
     public void deleteAll(List<StudySegment> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

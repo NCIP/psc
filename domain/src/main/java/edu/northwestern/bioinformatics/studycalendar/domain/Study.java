@@ -209,6 +209,17 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
         return Collections.unmodifiableList(amendments);
     }
 
+    @Transient
+    public List<Amendment> getDevelopmentAmendmentList() {
+        List<Amendment> amendments = new LinkedList<Amendment>();
+        Amendment current = getDevelopmentAmendment();
+        while (current != null) {
+            amendments.add(current);
+            current = current.getPreviousAmendment();
+        }
+        return Collections.unmodifiableList(amendments);
+    }
+
     public void addPopulation(Population population) {
         getPopulations().add(population);
         population.setStudy(this);

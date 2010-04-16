@@ -55,6 +55,6 @@ public class EpochDao extends ChangeableDao<Epoch> {
     }
 
     public void deleteAll(List<Epoch> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

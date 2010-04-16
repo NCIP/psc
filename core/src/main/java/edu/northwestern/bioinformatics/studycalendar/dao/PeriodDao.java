@@ -38,6 +38,6 @@ public class PeriodDao extends ChangeableDao<Period> {
     }
 
     public void deleteAll(List<Period> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

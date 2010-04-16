@@ -48,7 +48,8 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> impleme
         getHibernateTemplate().delete(delta);
     }
 
+    @Transactional(readOnly = false)
     public void deleteAll(List<Delta> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

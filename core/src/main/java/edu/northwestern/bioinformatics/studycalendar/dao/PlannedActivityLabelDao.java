@@ -61,6 +61,6 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
     }
 
     public void deleteAll(List<PlannedActivityLabel> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

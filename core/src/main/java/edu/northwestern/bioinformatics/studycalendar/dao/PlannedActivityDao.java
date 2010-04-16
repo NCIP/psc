@@ -41,6 +41,6 @@ public class PlannedActivityDao extends ChangeableDao<PlannedActivity> {
     }
 
     public void deleteAll(List<PlannedActivity> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }

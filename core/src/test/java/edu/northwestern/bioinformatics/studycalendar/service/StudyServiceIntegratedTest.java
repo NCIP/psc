@@ -3,16 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -474,7 +474,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     }
 
     public void testPurgeCurrentActivityState() {
-          {
+        {
             Study loaded = studyDao.getById(-1);
             assertNotNull(loaded);
 
@@ -488,6 +488,257 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         interruptSession();
 
         ScheduledActivityState reloaded = scheduledActivityStateDao.getById(-900);
+        assertNull("should be purged", reloaded);
+    }
+    
+    public void testPurgePlannedCalendar() {
+        PlannedCalendarDao plannedCalendarDao = (PlannedCalendarDao) getApplicationContext().getBean("plannedCalendarDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            PlannedCalendar current = loaded.getPlannedCalendar();
+            assertEquals("must have planned calendar", -1, current.getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        PlannedCalendar reloaded = plannedCalendarDao.getById(-1);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeEpoch() {
+        EpochDao epochDao = (EpochDao) getApplicationContext().getBean("epochDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<Epoch> current = loaded.getPlannedCalendar().getEpochs();
+            assertTrue("must have epochs", current.size() > 0);
+            assertEquals("should include epoch", -11, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Epoch reloaded = epochDao.getById(-11);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeStudySegment() {
+        StudySegmentDao studySegmentDao = (StudySegmentDao) getApplicationContext().getBean("studySegmentDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<StudySegment> current = loaded.getPlannedCalendar().getEpochs().get(0).getStudySegments();
+            assertTrue("must have study segments", current.size() > 0);
+            assertEquals("should include epoch", -32, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        StudySegment reloaded = studySegmentDao.getById(-32);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgePeriod() {
+        PeriodDao periodDao = (PeriodDao) getApplicationContext().getBean("periodDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Set<Period> current = loaded.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).getPeriods();
+            assertTrue("must have periods", current.size() > 0);
+            assertEquals("should include period", -2, current.iterator().next().getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Period reloaded = periodDao.getById(-2);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgePlannedActivity() {
+        PlannedActivityDao plannedActivityDao = (PlannedActivityDao) getApplicationContext().getBean("plannedActivityDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<PlannedActivity> current = loaded.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).getPeriods().iterator().next().getPlannedActivities();
+            assertTrue("must have planend activities", current.size() > 0);
+            assertEquals("should include planned activities", -2004, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        PlannedActivity reloaded = plannedActivityDao.getById(-2004);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgePlannedActivityLabel() {
+        PlannedActivityLabelDao plannedActivityLabelDao = (PlannedActivityLabelDao) getApplicationContext().getBean("plannedActivityLabelDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Set<PlannedActivityLabel> current = loaded.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).getPeriods().iterator().next().getPlannedActivities().get(0).getPlannedActivityLabels();
+            assertTrue("must have planend activity labels", current.size() > 0);
+            assertEquals("should include planned activity labels", -3001, current.iterator().next().getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        PlannedActivityLabel reloaded = plannedActivityLabelDao.getById(-3001);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeAmendment() {
+        AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Amendment current = loaded.getAmendment();
+
+            assertEquals("should include previous amendment", -220, current.getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Amendment reloaded = amendmentDao.getById(-220);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgePreviousAmendment() {
+        AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Amendment current = loaded.getAmendment().getPreviousAmendment();
+
+            assertEquals("should include amendment", -200, current.getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Amendment reloaded = amendmentDao.getById(-200);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeDevelopmentAmendment() {
+        AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Amendment current = loaded.getDevelopmentAmendment();
+
+            assertEquals("should include development amendment", -1, current.getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Amendment reloaded = amendmentDao.getById(-1);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgePreviousDevelopmentAmendment() {
+        AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Amendment current = loaded.getDevelopmentAmendment().getPreviousAmendment();
+
+            assertEquals("should include previous development amendment", -2, current.getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Amendment reloaded = amendmentDao.getById(-2);
+        assertNull("should be purged", reloaded);
+    }
+
+    class AmendmentApprovalDao extends StudyCalendarMutableDomainObjectDao<AmendmentApproval> {
+        public Class<AmendmentApproval> domainClass() { return AmendmentApproval.class; }
+    }
+    public void testPurgeAmendmentApproval() {
+        AmendmentApprovalDao amendmentApprovalDao = new AmendmentApprovalDao();
+        amendmentApprovalDao.setHibernateTemplate(studyDao.getHibernateTemplate());
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<AmendmentApproval> current = loaded.getStudySites().get(0).getAmendmentApprovals();
+
+            assertTrue("must have amendment approvals", current.size() > 0);
+            assertEquals("should include amendment approval", -33, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        AmendmentApproval reloaded = amendmentApprovalDao.getById(-33);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeDelta() {
+        DeltaDao deltaDao = (DeltaDao) getApplicationContext().getBean("deltaDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<Delta<?>> current = loaded.getDevelopmentAmendment().getDeltas();
+            assertTrue("must have planend deltas", current.size() > 0);
+            assertEquals("should include delta", -1, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Delta reloaded = deltaDao.getById(-1);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeChange() {
+        ChangeDao changeDao = (ChangeDao) getApplicationContext().getBean("changeDao");
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<Change> current = loaded.getDevelopmentAmendment().getDeltas().get(0).getChanges();
+            assertTrue("must have planend changes", current.size() > 0);
+            assertEquals("should include changes", -2001, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        Change reloaded = changeDao.getById(-2001);
         assertNull("should be purged", reloaded);
     }
 

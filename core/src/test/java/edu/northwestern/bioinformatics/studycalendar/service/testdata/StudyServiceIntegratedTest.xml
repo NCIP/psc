@@ -1,18 +1,22 @@
 <dataset>
 
     <AMENDMENTS id="-2" name="abc" amendment_date="2006-02-01"/>
-    <AMENDMENTS id="-1" amendment_date="2007-01-01" previous_amendment_id='-2'/>
-
-    <AMENDMENTS id="-220" amendment_date="2008-05-17" previous_amendment_id="-200"/>
     <AMENDMENTS id="-200" name="def" amendment_date="2008-05-17"/>
 
     <SITES id="-201" name="Old site"/>
+
+    <!-- For some reason, these amendments must be below Sites for the previous_amendment_id column to be inserted -->
+    <AMENDMENTS id="-1" amendment_date="2007-01-01" previous_amendment_id="-2"/>
+    <AMENDMENTS id="-220" amendment_date="2008-05-15" previous_amendment_id="-200"/>
+
 
     <STUDIES id="-1" assigned_identifier="ECOG" long_title="Study" grid_id="grid0"
              dev_amendment_id="-1" amendment_id="-220"/>
 
     <STUDY_SITES id="-300" site_id="-201" study_id="-1"/>
-        
+
+    <AMENDMENT_APPROVALS id="-33" study_site_id="-300" amendment_id="-220"/>
+  
     <populations id="-77" name="Hepatitis positive" abbreviation="H+" study_id="-1" grid_id="grid 0"/>
     
     <PLANNED_CALENDARS id="-1" study_id="-1"/>

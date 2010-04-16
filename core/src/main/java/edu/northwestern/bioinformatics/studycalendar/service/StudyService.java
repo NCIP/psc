@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.putInMappedList;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
@@ -430,23 +429,28 @@ public class StudyService {
     }
 
     public void purge(Study study) {
-        Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNodes.allByType(study);
+        Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNode.allByType(study);
+        Class[] order = {
+                ScheduledActivity.class, ScheduledStudySegment.class, ScheduledCalendar.class, StudySubjectAssignment.class,
+                StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
+        };
 
-        for (Class klass : nodes.keySet()) {
-            DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
-            dao.deleteAll(nodes.get(klass));
+        for (Class klass : order) {
+            if (nodes.containsKey(klass)) {
+                DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
+                dao.deleteAll(nodes.get(klass));
+            }
         }
     }
 
-    static class StudyNodes {
+    static private class StudyNode {
         public static Map<Class<? extends AbstractMutableDomainObject>, List<Object>> allByType(Study study) {
             Map<Class<? extends AbstractMutableDomainObject>, List<Object>> all =
                     new HashMap<Class<? extends AbstractMutableDomainObject>, List<Object>>();
 
-
             putInMappedList(all, study.getClass(), study);
             for (StudySite studySite : study.getStudySites()) {
-                putInMappedList(all, studySite.getClass(), studySite);
+
                 for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                     putInMappedList(all, assignment.getClass(), studySite);
 
@@ -462,7 +466,26 @@ public class StudyService {
                 }
             }
 
+            all.putAll(amendmentNodesByType(study));
+
             return all;
+        }
+
+        public static Map<Class<? extends AbstractMutableDomainObject>, List<Object>> amendmentNodesByType(Study study) {
+            Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes =
+                    new HashMap<Class<? extends AbstractMutableDomainObject>, List<Object>>();
+
+            List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
+            amendments.addAll(study.getDevelopmentAmendmentList());
+
+            for (Amendment amendment : amendments) {
+                putInMappedList(nodes, amendment.getClass(), amendment);
+                for (Delta<?> delta : amendment.getDeltas()) {
+                    putInMappedList(nodes, Delta.class, delta);
+                }
+            }
+
+            return nodes;
         }
     }
 

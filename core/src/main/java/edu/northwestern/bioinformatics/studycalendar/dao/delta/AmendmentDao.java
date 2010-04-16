@@ -86,6 +86,6 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     }
 
     public void deleteAll(List<Amendment> t) {
-        getHibernateTemplate().delete(t);
+        getHibernateTemplate().deleteAll(t);
     }
 }
