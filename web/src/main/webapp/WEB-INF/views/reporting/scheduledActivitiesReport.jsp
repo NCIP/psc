@@ -34,11 +34,12 @@
 
         var bundleList;
 
-        function submitFilters() {
-            $('messagesInfo').innerHTML = ""
-            var uri = SC.relativeUri("/api/v1/reports/scheduled-activities")
-            var params = {};
+        function getUri(extention) {
+            return SC.relativeUri("/api/v1/reports/scheduled-activities") + extention
+        }
 
+        function getParams() {
+            var params = {};
             params['study'] = $("filters.studyAssignedIdentifier").value;
             params['site'] = $("filters.siteName").value;
             params['state'] = $("filters.currentStateMode").value;
@@ -57,6 +58,23 @@
             params['end-date'] = endDate;
             params['responsible-user'] =  $("filters.subjectCoordinator").value;
             params['person-id'] =  $("filters.personId").value;
+            return params;
+        }
+
+        function generateExport(extention) {
+            var uri = getUri(extention);
+            var params = getParams();
+            location.href = uri+extention + '?study='+ params['study'] + '&site=' + params['site'] +
+                            '&state=' + params['state'] + '&activity-type='+ params['activity-type'] +
+                            '&label=' + params['label'] + '&start-date='+params['start-date'] +
+                            '&end-date='+ params['end-date'] + '&responsible-user=' + params['responsible-user'] +
+                            '&person-id='+ params['person-id'];
+        }
+
+        function submitFilters() {
+            $('messagesInfo').innerHTML = ""
+            var uri = getUri(".json")
+            var params = getParams();
 
             SC.asyncRequest(uri +".json", {
               method: "GET", parameters: params,
@@ -252,6 +270,12 @@
           <div id="messagesInfo" class="messagesInfo"> </div>
           <div id="bundle-list" class="bundle-list">
           </div>
+          <div class="export">
+            <span id="exportOptions"> Export Options:</span>
+            <a id="exportActivitiesLinkCSV" class="underlined" id="xls-report" href="#" onclick="generateExport('.csv')">CSV</a> |
+            <a id="exportActivitiesLinkXLS" class="underlined" id="csv-report" href="#" onclick="generateExport('.xls')">Excel</a>
+          </div>
+          
         </form:form>
     </laf:division>
 </laf:box>

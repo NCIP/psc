@@ -39,4 +39,8 @@ input.button {
     margin-bottom:0.7em;
 }
 
+.export {
+    margin-top:1em;
+}
+
 th, a { background-repeat: no-repeat; }
