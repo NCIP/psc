@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import static org.easymock.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private TemplateService templateService;
     private UserService userService;
     private AuthorizationService authorizationService;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     private AbstractAssignSubjectCoordinatorCommand command;
 
@@ -56,7 +58,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         userService     = registerMockFor(UserService.class);
         studySiteService = registerMockFor(StudySiteService.class);
         authorizationService = registerMockFor(AuthorizationService.class);
-
+        installedAuthenticationSystem = registerMockFor(InstalledAuthenticationSystem.class);
         controller = new SimpleAssignSubjectCoordinatorController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
@@ -165,7 +167,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private class SimpleAssignSubjectCoordinatorCommand extends AbstractAssignSubjectCoordinatorCommand<Study, Site> {
         private Map<Study, Map<Site, GridCell>> studyAssignmentGrid = new HashMap<Study, Map<Site, GridCell>>();
         public SimpleAssignSubjectCoordinatorCommand(List assignableStudies, List assignableSites, List assignableUsers) {
-            super(assignableStudies, assignableSites, assignableUsers);
+            super(assignableStudies, assignableSites, assignableUsers, installedAuthenticationSystem);
         }
 
         @Override

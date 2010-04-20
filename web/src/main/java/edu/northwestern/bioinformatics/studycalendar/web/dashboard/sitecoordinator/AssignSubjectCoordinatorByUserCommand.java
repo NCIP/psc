@@ -4,6 +4,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparatorByLetterCase;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +18,8 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
     private TemplateService templateService;
     private Map<Study, Map<Site, GridCell>> grid;
 
-
-    public AssignSubjectCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        super(assignableStudies, assignableSites, assignableUsers);
+    public AssignSubjectCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers, InstalledAuthenticationSystem installedAuthenticationSystem) {
+        super(assignableStudies, assignableSites, assignableUsers, installedAuthenticationSystem);
         grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparatorByLetterCase());
         this.templateService = templateService;
         this.selected = selected;
@@ -46,10 +46,12 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
 
      protected void performCheckAction(Study study, Site site) throws Exception {
         templateService.assignTemplateToSubjectCoordinator(study,site, selected);
+        refreshUser(selected);
     }
 
     protected void performUncheckAction(Study study, Site site) throws Exception  {
         templateService.removeAssignedTemplateFromSubjectCoordinator(study,site, selected);
+        refreshUser(selected);
     }
 
     public User getSelected() {

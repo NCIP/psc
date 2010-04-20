@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparato
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.AbstractGridCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.springframework.validation.Errors;
 
@@ -20,9 +21,8 @@ public class AssignSubjectCoordinatorByStudyCommand extends AbstractAssignSubjec
     private TemplateService templateService;
     private Map<User, Map<Site, AbstractGridCommand.GridCell>> studyAssignmentGrid;
 
-
-    public AssignSubjectCoordinatorByStudyCommand(TemplateService templateService, Study selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        super(assignableStudies, assignableSites, assignableUsers);
+    public AssignSubjectCoordinatorByStudyCommand(TemplateService templateService, Study selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers, InstalledAuthenticationSystem installedAuthenticationSystem) {
+        super(assignableStudies, assignableSites, assignableUsers, installedAuthenticationSystem);
         studyAssignmentGrid = new TreeMap<User, Map<Site, AbstractGridCommand.GridCell>>(new NamedComparator());
         this.templateService = templateService;
         this.selected = selected;
@@ -49,10 +49,12 @@ public class AssignSubjectCoordinatorByStudyCommand extends AbstractAssignSubjec
 
     protected void performCheckAction(User user, Site site) throws Exception {
         templateService.assignTemplateToSubjectCoordinator(selected, site, user);
+        refreshUser(user);
     }
 
     protected void performUncheckAction(User user, Site site) throws Exception {
         templateService.removeAssignedTemplateFromSubjectCoordinator(selected, site, user);
+        refreshUser(user);
     }
 
     ////////// Getters and setters

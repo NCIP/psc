@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import static org.apache.commons.collections.CollectionUtils.union;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +40,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private ApplicationSecurityManager applicationSecurityManager;
     private AuthorizationService authorizationService;
     private StudySiteService studySiteService;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -178,5 +180,14 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     public void setStudySiteService(StudySiteService studySiteService) {
         this.studySiteService = studySiteService;
+    }
+
+    public InstalledAuthenticationSystem getInstalledAuthenticationSystem() {
+        return installedAuthenticationSystem;
+    }
+
+    @Required
+    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 }
