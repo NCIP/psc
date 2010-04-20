@@ -12,6 +12,7 @@ require_spec('sync-updater.js');
 require_main("psc-tools/misc.js");
 require_main("subject/schedule-structure.js");
 require_main("subject/schedule-timeline.js");
+require_main("subject/schedule-data.js");
 
 Screw.Unit(function () {
   describe("Event conversion", function () {
@@ -95,6 +96,12 @@ Screw.Unit(function () {
                 range: {
                   start_date: "2009-04-06",
                   stop_date: "2009-04-06"
+                },
+                assignment:{
+                  name: "NU 1402",
+                  subject_coordinator:{
+                    username:"superuser"
+                  }
                 }
               }
             ]
