@@ -46,11 +46,19 @@ public class ApplicationSecurityManager {
      */
     // TODO: copy metadata
     public User getFreshUser() {
-        String userName = getUserName();
+        return getFreshUser(false);
+    }
+
+    /**
+     * Reloads the logged in {@link User} with assignments in the current hibernate session.
+     */
+    //
+    public User getFreshUser(Boolean includeAssignments) {
+       String userName = getUserName();
         if (userName ==  null) {
             return null;
         } else {
-            return userService.getUserByName(userName);
+            return userService.getUserByName(userName, includeAssignments);
         }
     }
 

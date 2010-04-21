@@ -137,6 +137,18 @@ public class UserService implements Serializable {
         }
         return user;
     }
+    /**
+     * Returns the user, fully initialized with studySubjectAssignment
+     * @param username
+     * @param includeAssignments
+     */
+    public User getUserByName(String username, Boolean includeAssignments) {
+        User user = getUserByName(username);
+        if (includeAssignments) {
+            Hibernate.initialize(user.getStudySubjectAssignments());
+        }
+        return user;
+    }
 
     ////// CONFIGURATION
 

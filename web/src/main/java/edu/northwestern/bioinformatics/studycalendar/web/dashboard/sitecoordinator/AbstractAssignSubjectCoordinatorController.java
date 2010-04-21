@@ -75,7 +75,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected User getSiteCoordinator() {
-        return applicationSecurityManager.getFreshUser();
+        return applicationSecurityManager.getFreshUser(true);
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {

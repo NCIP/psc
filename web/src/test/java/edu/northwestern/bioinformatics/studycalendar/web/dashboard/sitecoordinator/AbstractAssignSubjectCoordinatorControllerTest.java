@@ -103,7 +103,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     }
 
     public void testGetSiteCoordinator() throws Exception {
-        expect(applicationSecurityManager.getFreshUser()).andReturn(siteCoordinator).anyTimes();
+        expect(applicationSecurityManager.getFreshUser(true)).andReturn(siteCoordinator).anyTimes();
         replayMocks();
 
         User actualSiteCoord = controller.getSiteCoordinator();

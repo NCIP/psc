@@ -57,7 +57,7 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     public void testGetFreshUserReloadsUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext(createUser("jim") , "pass");
         User expectedUser = createUser("jim");
-        expect(userService.getUserByName("jim")).andReturn(expectedUser);
+        expect(userService.getUserByName("jim", false)).andReturn(expectedUser);
 
         replayMocks();
         User actualUser = applicationSecurityManager.getFreshUser();
@@ -68,6 +68,23 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     public void testFreshUserIsNullWhenNotLoggedIn() throws Exception {
         replayMocks();
         assertNull(applicationSecurityManager.getFreshUser());
+        verifyMocks();
+    }
+
+    public void testGetFreshUserWithAssignmentsReloadsUser() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(createUser("jim") , "pass");
+        User expectedUser = createUser("jim");
+        expect(userService.getUserByName("jim", true)).andReturn(expectedUser);
+
+        replayMocks();
+        User actualUser = applicationSecurityManager.getFreshUser(true);
+        verifyMocks();
+        assertSame(expectedUser, actualUser);
+    }
+
+    public void testFreshUserWithAssignmentIsNullWhenNotLoggedIn() throws Exception {
+        replayMocks();
+        assertNull(applicationSecurityManager.getFreshUser(true));
         verifyMocks();
     }
 }
