@@ -48,7 +48,7 @@ public abstract class AbstractAssignSubjectCoordinatorCommand<R extends Named, C
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             User authenticatedUser = (User) authentication.getPrincipal();
-            if (user.equals(authenticatedUser)) {
+            if (user.getName().equals(authenticatedUser.getName())) {
                 installedAuthenticationSystem.reloadAuthorities();
             }
         }
