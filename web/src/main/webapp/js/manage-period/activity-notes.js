@@ -67,19 +67,37 @@ psc.template.mpa.ActivityNotes = (function ($) {
     editNotes($('#notes-preview').attr('row'));
   }
   
+  function checkWeightAndFinishEditingNotes() {
+    var weight = $F('edit-notes-weight');
+    var defaultValue = $('#edit-notes-weight').attr('hint');
+    if (weight != null && weight.trim() != "" && weight.trim() != defaultValue) {
+      var weightInt = parseInt(weight);
+      if (isNaN(weightInt)) {
+        $('#error').css('display', 'inline')
+      } else {
+        $('#error').css('display', 'none')
+        finishEditingNotes()
+      }
+    } else {
+      $('#error').css('display', 'none')
+      finishEditingNotes()
+    }
+
+  }
+
   function finishEditingNotes() {
-    $("#edit-notes-lightbox input").attr("disabled", "disabled");
-    $(notesObservers).each(function () { this.stop() });
-    
-    Model.findRow('days', $('#edit-notes-lightbox').attr('row')).
-      find('td.cell .marker').each(function () {
-        var data = Model.cellData($(this).parent('td.cell'));
-        data.action = { name: 'update-notes', step: 0 };
-        $('#days').trigger('action-started', data);
-      });
-    
-    $('tr.activity.emphasized').removeClass('emphasized');
-    LB.Lightbox.deactivate();
+      $("#edit-notes-lightbox input").attr("disabled", "disabled");
+      $(notesObservers).each(function () { this.stop() });
+
+      Model.findRow('days', $('#edit-notes-lightbox').attr('row')).
+        find('td.cell .marker').each(function () {
+          var data = Model.cellData($(this).parent('td.cell'));
+          data.action = { name: 'update-notes', step: 0 };
+          $('#days').trigger('action-started', data);
+        });
+
+      $('tr.activity.emphasized').removeClass('emphasized');
+      LB.Lightbox.deactivate();
   }
 
   function registerNotesPreviewHandlers() {
@@ -111,7 +129,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
         hover(showNotesPreview, hideNotesPreview).
         click(editDisplayedNotes);
       $('#days').bind('row-added', registerNotesPreviewHandlers);
-      $('#edit-notes-done').click(finishEditingNotes);
+      $('#edit-notes-done').click(checkWeightAndFinishEditingNotes);
     },
 
     // exposed for testing

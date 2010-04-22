@@ -150,6 +150,10 @@
             padding:2px;
         }
 
+        .error {
+            margin-left:20px;
+        }
+
     </style>
 
     <script type="text/javascript">
@@ -568,7 +572,8 @@
             <div class="value">
                 <input type="text" class="text" id="edit-notes-weight" hint="Default is 0" />
             </div>
-        </div>        
+        </div>
+        <h5 id="error" class="error" style="display:none">Error: Weight value must be an integer. </h5>
         <div class="row">
             <div class="submit">
                 <input type="button" value="Done" id="edit-notes-done"/>
