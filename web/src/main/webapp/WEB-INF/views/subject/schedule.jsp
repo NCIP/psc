@@ -531,17 +531,14 @@
         </div>
         <div class="accordion-content">
             <div class="label" style="font-weight: bold;">Interapplication:</div>
-            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
-                <c:if test="${configuration.externalAppsConfigured}">
+            <c:if test="${configuration.externalAppsConfigured}">
+                <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+                <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+                <c:set var="ctmsAvail" value="${not empty configuration.map.patientPageUrl}"/>
+                <c:forEach items="${schedule.visibleAssignments}" var="subjectAssignment" varStatus="outerCounter">
                     <div class="row ${commons:parity(outerCounter.index)}">
-                        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
-                        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-                        <c:set var="ctmsAvail" value="${not empty configuration.map.patientPageUrl}"/>
-                        <c:set var="subjectAssignment" value="${assignment}"/>
                         <div class="label">
-                            <c:if test="${caaersAvail || labViewerAvail || ctmsAvail}">
-                                View this subject's
-                            </c:if>
+                            ${subjectAssignment.name}
                         </div>
                         <div class="value">
                             <c:if test="${ctmsAvail}">
@@ -558,8 +555,8 @@
                             </c:if>
                         </div>
                     </div>
-                </c:if>
-            </c:forEach>
+                </c:forEach>
+            </c:if>
             <c:if test="${!configuration.externalAppsConfigured}">
                 <div class="row">
                     <div class="value none">None configured</div>
