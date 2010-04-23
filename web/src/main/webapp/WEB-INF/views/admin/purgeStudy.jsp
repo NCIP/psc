@@ -12,6 +12,21 @@
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
 
+        #purge-study-warning {
+            width: 55em;
+        }
+        .warning-message {
+            font-size: 1.5em;
+        }
+
+        .red-warning {
+            color: #f00;
+        }
+
+        #study-search-container {
+            display: none;
+        }
+        
         #study-search-container div.label {
             width: 4em;
         }
@@ -65,6 +80,7 @@
         jQuery(document).ready(function() {
             psc.admin.ps.StudyDetails.init();
             psc.admin.ps.StudyAutocompleter.init();
+            psc.admin.ps.Warning.init();
         })
     </script>
 
@@ -73,9 +89,11 @@
   <body>
     <laf:box title="Purge Study">
         <laf:division>
-            <%--<div class="row" id="purge-study-warning">--%>
-                <%--<p>Warning: This </p>--%>
-            <%--</div>--%>
+            <div class="row" id="purge-study-warning">
+                <p class="warning-message"><span class="red-warning">Warning:</span> This page allows purging of studies an all associated study information.</p>
+                <p class="warning-message">Please only continue if you are sure you want to do this.</p>
+                <p class="warning-message">Are you sure you want to continue? <button id="continue-to-purge-study">Yes</button></p>
+            </div>
             <div class="row" id="study-search-container">
                 <div class="label">
                     Study:

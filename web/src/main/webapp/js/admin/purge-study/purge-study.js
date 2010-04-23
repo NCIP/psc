@@ -1,5 +1,18 @@
 psc.namespace("admin.ps");
 
+psc.admin.ps.Warning = (function ($) {
+    return {
+        init: function() {
+            $(document).ready(function() {
+                $('#continue-to-purge-study').click(function() {
+                    $('#study-search-container').show();
+                    $('#purge-study-warning').hide();
+                });
+            });
+        }
+    };
+})(jQuery);
+
 psc.admin.ps.StudyAutocompleter = (function ($) {
     var resourceUri = "/api/v1/studies";
 
