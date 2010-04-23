@@ -138,7 +138,18 @@ psc.admin.ps.StudyDetails = (function ($) {
 
             $('#study-amendment-count').html(amendmentCount);
         },
+        populateSiteAssociations: function(sites) {
+            if (sites == null) {
+                return;
+            }
 
+            $('#associated-sites').html('');
+            for(var i = 0; i < sites.site.length; i++) {
+                var site = sites.site[i];
+                var msg = site['assigned-identifier'] + " is an associated site and has " + site['subject-count'] + " subjects assigned.";
+                $('#associated-sites').append("<div>" + msg + "</div>");
+            }
+        },
         hideyDetails: function() {
             $('#study-details').hide();
         },

@@ -146,10 +146,15 @@ Screw.Unit(function () {
           it("populates the study site details", function() {
               expect(jQuery('#associated-sites').html()).to(equal, 'Loading...');
 
-              psc.admin.ps.StudyDetails.populateSiteAssociations({})
+              psc.admin.ps.StudyDetails.populateSiteAssociations(
+                    { site: [
+                        {'assigned-identifier': 'NU', 'subject-count': 2},
+                        {'assigned-identifier': 'Mayo', 'subject-count': 0}
+                    ]}
+             )
 
-//              expect
-              
+              expect(jQuery('#associated-sites div:first').html()).to(equal, "NU is an associated site and has 2 subjects assigned.")
+              expect(jQuery('#associated-sites div:last').html()).to(equal, "Mayo is an associated site and has 0 subjects assigned.")
           });
       });
 
