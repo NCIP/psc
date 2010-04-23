@@ -14,6 +14,7 @@
 
         #purge-study-warning {
             width: 55em;
+            text-align:center;
         }
         .warning-message {
             font-size: 1.5em;
@@ -91,8 +92,7 @@
         <laf:division>
             <div class="row" id="purge-study-warning">
                 <p class="warning-message"><span class="red-warning">Warning:</span> This page allows purging of studies an all associated study information.</p>
-                <p class="warning-message">Please only continue if you are sure you want to do this.</p>
-                <p class="warning-message">Are you sure you want to continue? <button id="continue-to-purge-study">Yes</button></p>
+                <p>Are you sure you want to continue? <button id="continue-to-purge-study">Yes</button></p>
             </div>
             <div class="row" id="study-search-container">
                 <div class="label">
