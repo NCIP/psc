@@ -38,7 +38,7 @@ psc.admin.ps.StudyAutocompleter = (function ($) {
                 input.focus();
                 $('#' + acResultsIdentifier).hide()
 
-                $('#' + acInputIdentifier).trigger("autocompleter-study-selected", {study:{assigned_identifier: selected.innerHTML, id: selected.id}});
+                $('#' + acInputIdentifier).trigger("autocompleter-study-selected", {assigned_identifier: selected.innerHTML, id: selected.id});
             }
         });
     }
@@ -69,47 +69,50 @@ psc.admin.ps.StudyDetails = (function ($) {
     var acInputIdentifier = "studies-autocompleter-input";
     var studyResourceUri = "/api/v1/studies/{assigned-identifier}/template"
     var studySitesResourceUri = "api/v1/studies/{study-identifier}/sites";  // Have to creates
+    var sites;
 
     function createStudyInputListener() {
-        $('#' + acInputIdentifier).bind("autocompleter-study-selected", updateStudyDetails(event))
+        $('#' + acInputIdentifier).bind("autocompleter-study-selected", updateStudyDetails)
     }
 
-    function updateStudyDetails(event) {
-        clearDetails();
+    function updateStudyDetails(event, study) {
+        psc.admin.ps.StudyDetails.clearDetails();
 
-        if (event == null || event.data == null || event.data.study == null) {
+        if (study == null) {
             return;
         }
 
-        getStudyDetails(event.data.study, populateStudyDetails);
+        getStudyDetails(study, psc.admin.ps.StudyDetails.populateStudyDetails);
     }
 
     function getStudyDetails(study, callback) {
+
         if (study == null || study.assigned_identifier == null || study.assigned_identifier.blank()) {
             return;
         }
 
-        showDetails();
+        psc.admin.ps.StudyDetails.showDetails();
 
-        var assignedIdentifier = event.study.assigned_identifier;
+        var assignedIdentifier = study.assigned_identifier;
 
         var uri = SC.relativeUri(
                 studyResourceUri .replace("\{assigned-identifier\}", assignedIdentifier)
                 )
 
         $.get(uri, function(data) {
-            // callback(generateStudyJSON(data));
+            callback(psc.admin.ps.StudyDetails.generateStudyJSON(data));
+
         })
 
 
     }
 
     return {
-        init: function() {
+        init: function(sitesData) {
             $(document).ready(function() {
+                sites = sitesData;
                 createStudyInputListener();
             });
-
         },
 
         generateStudyJSON: function(xml) {
@@ -124,12 +127,19 @@ psc.admin.ps.StudyDetails = (function ($) {
                 study['development-amendment'] = SC.objectifyXml("development-amendment", xml);
             });
 
+            if (studies.length == 0) {
+                return;
+            }
+
             return studies[0];
         },
 
-        populateTitleAndIdentifier: function(study) {
-            $('#study-assigned-identifier').html(study['assigned-identifier'])
-            $('#study-long-title').html(study['long-title'])
+        populateStudyDetails: function(study) {
+            $('#study-details-title').html("Displaying details for study " + study['assigned-identifier']);
+            $('#study-assigned-identifier').html(study['assigned-identifier']);
+            
+            var long = study['long-title'] || "<span class='none-specified'>None Specified</span>"
+            $('#study-long-title').html(long);
 
             var amendmentCount = study['amendment'].length;
             if (amendmentCount > 0) {
@@ -154,13 +164,16 @@ psc.admin.ps.StudyDetails = (function ($) {
             $('#study-details').hide();
         },
         showDetails: function() {
-            $('#study-details').hide();
+            $('#study-details').show();
         },
 
         clearDetails: function() {
-            $('#study-assigned-identifier').html("Loading...");
-            $('#study-long-title').html("Loading...");
-            $('#study-amendment-count').html("Loading...");
+            var loading = 'Loading...';
+            $('#study-details-title').html(loading);
+            $('#study-assigned-identifier').html(loading);
+            $('#study-long-title').html(loading);
+            $('#study-amendment-count').html(loading);
+            $('#associated-sites').html(loading);
         }
     }
 })(jQuery);

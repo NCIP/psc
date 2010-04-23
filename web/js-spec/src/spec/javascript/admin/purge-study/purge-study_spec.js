@@ -120,12 +120,14 @@ Screw.Unit(function () {
           });
 
           it("populates the study details fields", function () {
+              expect(jQuery('#study-details-title').html()).to(equal, 'Loading...')
               expect(jQuery('#study-long-title').html()).to(equal, 'Loading...')
               expect(jQuery('#study-assigned-identifier').html()).to(equal, 'Loading...')
               expect(jQuery('#study-amendment-count').html()).to(equal, 'Loading...')
 
-              psc.admin.ps.StudyDetails.populateTitleAndIdentifier({'assigned-identifier': 'NCI-999', 'long-title':'Long title.', amendment:['[Original]', 'First']});
+              psc.admin.ps.StudyDetails.populateStudyDetails({'assigned-identifier': 'NCI-999', 'long-title':'Long title.', amendment:['[Original]', 'First']});
 
+              expect(jQuery('#study-details-title').html()).to(equal, 'Displaying details for study NCI-999')
               expect(jQuery('#study-long-title').html()).to(equal, 'Long title.')
               expect(jQuery('#study-assigned-identifier').html()).to(equal, 'NCI-999')
               expect(jQuery('#study-amendment-count').html()).to(equal, 1)
