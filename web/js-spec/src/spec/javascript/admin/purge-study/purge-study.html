@@ -11,6 +11,12 @@
   <script type="text/javascript" src="/main/resig-templates.js"/>
   <script type="text/javascript" src="/main/admin/purge-study/purge-study.js"></script>
 
+  <style type="text/css">
+    #studies-autocompleter-input, #studies-autocompleter-div, #study-details {
+      display:none;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -20,6 +26,7 @@
   <div id="studies-autocompleter-div" class="autocomplete"></div>
 
   <div id="study-details">
+    <input type="hidden" id="study-assigned-identifier-hidden"/>
     <h2 id="study-details-title">Loading...</h2>
     <div>Assigned Identifier</div>
     <div id="study-assigned-identifier">Loading...</div>

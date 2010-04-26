@@ -255,6 +255,7 @@
     <bean id="siteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SiteDao"/>
     <bean id="subjectDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao"/>
     <bean id="studySubjectAssignmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao"/>
+    <bean id="studySecondaryIdentifierDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySecondaryIdentifierDao"/>
     <bean id="studySiteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao"/>
 
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>

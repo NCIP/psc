@@ -51,7 +51,7 @@ psc.admin.ps.StudyAutocompleter = (function ($) {
                 input.focus();
                 $('#' + acResultsIdentifier).hide()
 
-                $('#' + acInputIdentifier).trigger("autocompleter-study-selected", {assigned_identifier: selected.innerHTML, id: selected.id});
+                $('#' + acInputIdentifier).trigger("autocompleter-study-selected", {assigned_identifier: selected.innerHTML});
             }
         });
     }
@@ -82,7 +82,7 @@ psc.admin.ps.StudyDetails = (function ($) {
     var acInputIdentifier = "studies-autocompleter-input";
     var studyResourceUri = "/api/v1/studies/{assigned-identifier}/template"
     var studySitesResourceUri = "api/v1/studies/{study-identifier}/sites";  // Have to creates
-    var sites;
+    var studySites = [];
 
     function createStudyInputListener() {
         $('#' + acInputIdentifier).bind("autocompleter-study-selected", updateStudyDetails)
@@ -91,41 +91,35 @@ psc.admin.ps.StudyDetails = (function ($) {
     function updateStudyDetails(event, study) {
         psc.admin.ps.StudyDetails.clearDetails();
 
-        if (study == null) {
-            return;
-        }
-
-        getStudyDetails(study, psc.admin.ps.StudyDetails.populateStudyDetails);
-    }
-
-    function getStudyDetails(study, callback) {
-
         if (study == null || study.assigned_identifier == null || study.assigned_identifier.blank()) {
             return;
         }
 
         psc.admin.ps.StudyDetails.showDetails();
 
-        var assignedIdentifier = study.assigned_identifier;
+        getStudyDetails(study.assigned_identifier, [psc.admin.ps.StudyDetails.populateStudyDetails, psc.admin.ps.StudyDetails.populateSiteAssociations]);
+    }
 
+    function getStudyDetails(assignedIdentifier, callbacks) {
         var uri = SC.relativeUri(
                 studyResourceUri .replace("\{assigned-identifier\}", assignedIdentifier)
                 )
 
         $.get(uri, function(data) {
-            callback(psc.admin.ps.StudyDetails.generateStudyJSON(data));
-
+            var study = psc.admin.ps.StudyDetails.generateStudyJSON(data);
+            for (var i=0; i < callbacks.length; i++) {
+                callbacks[i](study);
+            }
         })
+    }
 
-
+    function getStudySites() {
+        return studySites;
     }
 
     return {
-        init: function(sitesData) {
-            $(document).ready(function() {
-                sites = sitesData;
-                createStudyInputListener();
-            });
+        setStudySites: function(studySitesData) {
+            studySites = studySitesData;
         },
 
         generateStudyJSON: function(xml) {
@@ -150,8 +144,12 @@ psc.admin.ps.StudyDetails = (function ($) {
         populateStudyDetails: function(study) {
             $('#study-details-title').html("Displaying details for study " + study['assigned-identifier']);
             $('#study-assigned-identifier').html(study['assigned-identifier']);
-            
-            var long = study['long-title'] || "<span class='none-specified'>None Specified</span>"
+            $('#study-assigned-identifier-hidden').val(study['assigned-identifier']);
+
+            var long = "<span class='none-specified'>None Specified</span>";
+            if (study['long-title'] != null && !study['long-title'].blank()) {
+                long = study['long-title'];
+            }
             $('#study-long-title').html(long);
 
             var amendmentCount = study['amendment'].length;
@@ -161,21 +159,23 @@ psc.admin.ps.StudyDetails = (function ($) {
 
             $('#study-amendment-count').html(amendmentCount);
         },
-        populateSiteAssociations: function(sites) {
-            if (sites == null) {
-                return;
-            }
 
+        populateSiteAssociations: function(study) {
             $('#associated-sites').html('');
-            for(var i = 0; i < sites.site.length; i++) {
-                var site = sites.site[i];
-                var msg = site['assigned-identifier'] + " is an associated site and has " + site['subject-count'] + " subjects assigned.";
-                $('#associated-sites').append("<div>" + msg + "</div>");
+
+            for(var i = 0; i < getStudySites().length; i++) {
+                var studySite = getStudySites()[i];
+                if (studySite['study-assigned-identifier'] === study['assigned-identifier']) {
+                    var msg = studySite['site-assigned-identifier'] + " is an associated site and has " + studySite['subject-assignment-count'] + " subjects assigned.";
+                    $('#associated-sites').append("<div>" + msg + "</div>");
+                }
             }
         },
+
         hideyDetails: function() {
             $('#study-details').hide();
         },
+
         showDetails: function() {
             $('#study-details').show();
         },
@@ -186,7 +186,15 @@ psc.admin.ps.StudyDetails = (function ($) {
             $('#study-assigned-identifier').html(loading);
             $('#study-long-title').html(loading);
             $('#study-amendment-count').html(loading);
+            $('#study-assigned-identifier-hidden').val('');
             $('#associated-sites').html(loading);
+        },
+
+        init: function(studySitesData) {
+            $(document).ready(function() {
+                psc.admin.ps.StudyDetails.setStudySites(studySitesData);
+                createStudyInputListener();
+            });
         }
     }
 })(jQuery);

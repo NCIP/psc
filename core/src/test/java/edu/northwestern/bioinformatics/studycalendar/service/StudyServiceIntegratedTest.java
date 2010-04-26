@@ -28,6 +28,8 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private ScheduledActivityStateDao scheduledActivityStateDao;
     private ScheduledStudySegmentDao scheduledStudySegmentDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    private UserRoleDao userRoleDao;
+    private StudySecondaryIdentifierDao studySecondaryIdentifierDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,6 +37,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         service = (StudyService) getApplicationContext().getBean("studyService");
         deltaService = (DeltaService) getApplicationContext().getBean("deltaService");
         studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
+        userRoleDao = (UserRoleDao) getApplicationContext().getBean("userRoleDao");
         studySiteDao = (StudySiteDao) getApplicationContext().getBean("studySiteDao");
         amendmentService = (AmendmentService) getApplicationContext().getBean("amendmentService");
         scheduledCalendarDao = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
@@ -42,6 +45,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         scheduledActivityStateDao = (ScheduledActivityStateDao) getApplicationContext().getBean("scheduledActivityStateDao");
         scheduledStudySegmentDao = (ScheduledStudySegmentDao) getApplicationContext().getBean("scheduledStudySegmentDao");
         studySubjectAssignmentDao = (StudySubjectAssignmentDao ) getApplicationContext().getBean("studySubjectAssignmentDao");
+        studySecondaryIdentifierDao = (StudySecondaryIdentifierDao) getApplicationContext().getBean("studySecondaryIdentifierDao");
     }
 
     @Override
@@ -384,6 +388,24 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertNull("should be purged", reloaded);
     }
 
+    public void testPurgeStudySecondaryIdentifiers() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            Set<StudySecondaryIdentifier> current = loaded.getSecondaryIdentifiers();
+            assertTrue("must have secondary idents", current.size() > 0);
+            assertEquals("assignment should exist", -77, current.iterator().next().getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        StudySecondaryIdentifier reloaded = studySecondaryIdentifierDao.getById(-77);
+        assertNull("should be purged", reloaded);
+    }
+
     public void testPurgeStudySite() {
         {
             Study loaded = studyDao.getById(-1);
@@ -399,6 +421,24 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         interruptSession();
 
         StudySite reloaded = studySiteDao.getById(-300);
+        assertNull("should be purged", reloaded);
+    }
+
+    public void testPurgeUserRole() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<UserRole> current = loaded.getStudySites().get(0).getUserRoles();
+            assertTrue("must have user roles", current.size() > 0);
+            assertEquals("user role should exist", -55, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        UserRole reloaded = userRoleDao.getById(-55);
         assertNull("should be purged", reloaded);
     }
 

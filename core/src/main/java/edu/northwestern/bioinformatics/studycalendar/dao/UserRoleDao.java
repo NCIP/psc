@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 
 import java.util.List;
 
-public class UserRoleDao extends StudyCalendarMutableDomainObjectDao<UserRole> {
+public class UserRoleDao extends StudyCalendarMutableDomainObjectDao<UserRole> implements DeletableDomainObjectDao<UserRole> {
     @Override public Class<UserRole> domainClass() { return UserRole.class; }
     
     @SuppressWarnings({ "unchecked" })
@@ -13,5 +13,13 @@ public class UserRoleDao extends StudyCalendarMutableDomainObjectDao<UserRole> {
         // ordering is for testing consistency only
         return (List<UserRole>) getHibernateTemplate().find(
             "from UserRole ur where ? in elements(ur.sites) order by ur.id", site);
+    }
+
+    public void delete(UserRole userRole) {
+        getHibernateTemplate().delete(userRole);
+    }
+
+    public void deleteAll(List<UserRole> t) {
+        getHibernateTemplate().deleteAll(t);
     }
 }
