@@ -4,12 +4,11 @@
 <%@taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@attribute name="subject" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject"%>
 
 <div class="accordionRow">
     <label id="new-mode-selector-group" class="studySegmentSelectLabel">
         <select id="studySegmentSelector" class="studySegmentSelector">
-            <c:forEach items="${subject.assignments}" var="assignment">
+            <c:forEach items="${schedule.visibleAssignments}" var="assignment">
                 <c:forEach items="${assignment.studySite.study.plannedCalendar.epochs}" var="epoch">
                     <c:forEach items="${epoch.studySegments}" var="studySegment">
                         <option assignment="${assignment.gridId}" study="${assignment.studySite.study.assignedIdentifier}" studySegment="${studySegment.gridId}" startday="${studySegment.dayRange.startDay}" >${assignment.studySite.study.name}: ${studySegment.qualifiedName}</option>

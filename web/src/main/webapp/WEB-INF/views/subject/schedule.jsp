@@ -291,7 +291,7 @@
         </div>
         <div class="accordion-content">
            <span id="notification-message"></span>
-           <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+           <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
                 <c:if test="${not empty assignment.currentAeNotifications}">
                    <div class="row ${commons:parity(outerCounter.index)}" id="div-${assignment.name}" >
                         <div class="label">${assignment.name}</div>
@@ -329,7 +329,7 @@
             <h3><a class="accordionHeader" href="#">Amendments </a></h3>
         </div>
         <div class="accordion-content">
-            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+            <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
                 <div class="row ${commons:parity(outerCounter.index)}" id="div-${assignment.name}" >
                     <div class="label">${assignment.name}</div>
                     <div class="value">
@@ -449,7 +449,7 @@
           <h3><a class="accordionHeader" href="#">Next segment</a></h3>
         </div>
         <div class="accordion-content">
-            <markTag:scheduleStudySegment subject="${subject}"/>
+            <markTag:scheduleStudySegment/>
         </div>
         <div class="accordionDiv">
           <h3><a class="accordionHeader" href="#">Population</a></h3>
@@ -464,18 +464,20 @@
         </div>
         <div class="accordion-content" id="export-controls">
             <div class="label" style="font-weight: bold;">ICS:</div>
-            <div class="row even">
-                <div class="label">All</div>
-                <div class="value">
-                    <a class="control ics-subscribe"
-                       href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
-                       title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
-                    <a class="control"
-                       href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
-                       title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
+            <c:if test="${not empty schedule.visibleAssignments && fn:length(schedule.visibleAssignments) gt 1}">
+                <div class="row even">
+                    <div class="label">All</div>
+                    <div class="value">
+                        <a class="control ics-subscribe"
+                            href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
+                            title="Subscribe as ICS for iCal, Outlook and other calendar applications">Subscribe</a>
+                        <a class="control"
+                            href="<c:url value="/api/v1/subjects/${subject.gridId}/schedules.ics"/>"
+                            title="Download as ICS for one-time import into iCal, Outlook and other calendar applications">Export ICS</a>
+                    </div>
                 </div>
-            </div>
-            <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
+            </c:if>
+            <c:forEach items="${schedule.visibleAssignments}" var="assignment" varStatus="outerCounter">
                 <div class="row ${commons:parity(outerCounter.count)}">
                     <div class="label">${assignment.name}</div>
                     <div class="value">
