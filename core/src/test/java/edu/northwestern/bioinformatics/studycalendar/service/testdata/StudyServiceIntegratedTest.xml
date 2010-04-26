@@ -17,7 +17,7 @@
 
     <STUDY_SITES id="-300" site_id="-201" study_id="-1"/>
 
-    <USERS id="-22" name="sarge" csm_user_id="-19" active_flag="true"/>
+    <USERS id="-22" name="sarge" csm_user_id="-19" active_flag="1"/>
 
     <USER_ROLES id="-55"  user_id="-22" csm_group_name="SUBJECT_COORDINATOR"/>
 
