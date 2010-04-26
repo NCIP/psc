@@ -146,11 +146,11 @@ psc.admin.ps.StudyDetails = (function ($) {
             $('#study-assigned-identifier').html(study['assigned-identifier']);
             $('#study-assigned-identifier-hidden').val(study['assigned-identifier']);
 
-            var long = "<span class='none-specified'>None Specified</span>";
+            var lTitle = "<span class='none-specified'>None Specified</span>";
             if (study['long-title'] != null && !study['long-title'].blank()) {
-                long = study['long-title'];
+                lTitle = study['long-title'];
             }
-            $('#study-long-title').html(long);
+            $('#study-long-title').html(lTitle);
 
             var amendmentCount = study['amendment'].length;
             if (amendmentCount > 0) {
