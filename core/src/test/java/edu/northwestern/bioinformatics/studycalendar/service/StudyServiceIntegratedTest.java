@@ -29,7 +29,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     private ScheduledStudySegmentDao scheduledStudySegmentDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private UserRoleDao userRoleDao;
-    private StudySecondaryIdentifierDao studySecondaryIdentifierDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -45,7 +44,6 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         scheduledActivityStateDao = (ScheduledActivityStateDao) getApplicationContext().getBean("scheduledActivityStateDao");
         scheduledStudySegmentDao = (ScheduledStudySegmentDao) getApplicationContext().getBean("scheduledStudySegmentDao");
         studySubjectAssignmentDao = (StudySubjectAssignmentDao ) getApplicationContext().getBean("studySubjectAssignmentDao");
-        studySecondaryIdentifierDao = (StudySecondaryIdentifierDao) getApplicationContext().getBean("studySecondaryIdentifierDao");
     }
 
     @Override
@@ -388,7 +386,13 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         assertNull("should be purged", reloaded);
     }
 
+    class StudySecondaryIdentifierDao extends StudyCalendarMutableDomainObjectDao<StudySecondaryIdentifier> {
+        public Class<StudySecondaryIdentifier> domainClass() { return StudySecondaryIdentifier.class; }
+    }
     public void testPurgeStudySecondaryIdentifiers() {
+        StudySecondaryIdentifierDao studySecondaryIdentifierDao = new StudySecondaryIdentifierDao();
+        studySecondaryIdentifierDao.setHibernateTemplate(studyDao.getHibernateTemplate());
+
         {
             Study loaded = studyDao.getById(-1);
             assertNotNull(loaded);

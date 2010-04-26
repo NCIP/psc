@@ -30,6 +30,7 @@
                     <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/manage/plugins">Manage plugins (OSGi layer)</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/diagnostics">Grid services configuration</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/manage/purgeStudy">Purge Study</tags:restrictedListItem>
                 </ul>
             </laf:division>
         </laf:box>

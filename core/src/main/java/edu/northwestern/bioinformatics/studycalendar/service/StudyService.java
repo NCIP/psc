@@ -431,7 +431,7 @@ public class StudyService {
     public void purge(Study study) {
         Map<Class<? extends AbstractMutableDomainObject>, List<Object>> nodes = StudyNode.allByType(study);
         Class[] order = {
-                StudySecondaryIdentifier.class, ScheduledActivity.class, ScheduledStudySegment.class, ScheduledCalendar.class, StudySubjectAssignment.class,
+                ScheduledActivity.class, ScheduledStudySegment.class, ScheduledCalendar.class, StudySubjectAssignment.class,
                 UserRole.class, StudySite.class, Change.class, Delta.class, Amendment.class, Study.class
         };
 
@@ -449,7 +449,7 @@ public class StudyService {
                     new HashMap<Class<? extends AbstractMutableDomainObject>, List<Object>>();
 
             putInMappedList(all, study.getClass(), study);
-            all.put(StudySecondaryIdentifier.class, new ArrayList(study.getSecondaryIdentifiers()));
+            
             for (StudySite studySite : study.getStudySites()) {
                 all.put(UserRole.class, (List) studySite.getUserRoles());
 

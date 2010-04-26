@@ -739,6 +739,11 @@
                                 <property name="linkName" value="diagnosticsController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName" value="Purge Study"/>
+                                <property name="linkName" value="purgeStudyController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>
