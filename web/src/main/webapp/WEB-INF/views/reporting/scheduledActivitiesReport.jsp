@@ -140,6 +140,7 @@
            $("filters.personId").value ="";
            $("bundle-list").hide();
            $('messagesInfo').innerHTML = "";
+           $("labels-autocompleter-input").value = "";
         }
 
         //need this method to avoid form submission on the enter key press for labels autocompleter
