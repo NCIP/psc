@@ -171,7 +171,7 @@ public class CreateUserCommand implements Validatable, Serializable {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             User authenticatedUser = (User) authentication.getPrincipal();
-            if (user != null && user.equals(authenticatedUser)) {
+            if (user != null && user.getName().equals(authenticatedUser.getName())) {
                 installedAuthenticationSystem.reloadAuthorities();
             }
         }
