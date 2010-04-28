@@ -74,6 +74,12 @@
             margin: 0.5em;
             color:red;
         }
+
+        .currentActivity select#activityTypesList{
+          vertical-align: top;
+          margin: 0; padding: 0;
+        }
+
     </style>
 </head>
 <body>

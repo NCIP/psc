@@ -114,6 +114,10 @@
             margin-left:10px;
         }
 
+        .currentActivity select#activityTypesList{
+          vertical-align: top;
+          margin: 0; padding: 0;
+        }
  
     </style>
     <script type="text/javascript">

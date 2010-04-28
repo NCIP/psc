@@ -143,10 +143,10 @@ public class SubjectCoordinatorDashboardServiceTest extends StudyCalendarTestCas
         activities.add(sa3);
         activities.add(sa4);
 
-        Map<ActivityType, Boolean> activitiesMap = new HashMap<ActivityType, Boolean>();
-        activitiesMap.put(sa1.getActivity().getType(), true);
-        activitiesMap.put(sa2.getActivity().getType(), true);
-        activitiesMap.put(sa4.getActivity().getType(), true);
+        List<ActivityType> activitiesMap = new ArrayList<ActivityType>();
+        activitiesMap.add(sa1.getActivity().getType());
+        activitiesMap.add(sa2.getActivity().getType());
+        activitiesMap.add(sa4.getActivity().getType());
 
         Date currentDate = new Date();
         currentDate = service.shiftStartDayByNumberOfDays(currentDate, 0);

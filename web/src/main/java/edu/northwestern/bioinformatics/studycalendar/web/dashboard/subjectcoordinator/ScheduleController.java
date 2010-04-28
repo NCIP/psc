@@ -72,7 +72,7 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(filteredAssignmnetns, 7));
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(filteredAssignmnetns));
         model.put("activityTypes", activityTypeDao.getAll());
-
+        model.put("activityTypesCount", activityTypeDao.getAll().size());
         Map<Subject, List<Notification>> subjectNotificationsMap = getMapOfSubjectsAndNotifications(filteredAssignmnetns);
         model.put("notificationsSubjectMap", subjectNotificationsMap);
         model.put("notifications",notifications);

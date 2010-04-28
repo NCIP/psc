@@ -20,7 +20,7 @@ public class ScheduleCommand {
     private ScheduledActivityDao scheduledActivityDao;
     private Integer notificationId;
 
-    private Map<ActivityType, Boolean> activityTypes = new HashMap<ActivityType, Boolean>();
+    private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
     private ActivityType activityType;
     private Boolean activityValue;
 
@@ -77,11 +77,11 @@ public class ScheduleCommand {
     }
 
 
-    public Map<ActivityType, Boolean> getActivityTypes() {
+    public List<ActivityType> getActivityTypes() {
         return activityTypes;
     }
 
-    public void setActivityTypes(Map<ActivityType, Boolean> activityTypes) {
+    public void setActivityTypes(List<ActivityType> activityTypes) {
         this.activityTypes = activityTypes;
     }
 

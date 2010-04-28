@@ -11,11 +11,24 @@
             <li class="autoclear">
                  Activities for the next <input value="${numberOfDays}" id="toDate" name="toDate" size="5"/> days
             </li>
-            <li>
+            <li class="currentActivity">
                 Filter by activity type:
-                <c:forEach items="${activityTypes}" var="activityType">
-                    <input type="checkbox" class="activity-type" name="activityTypes[${activityType.id}]" value="true" checked="true" />&nbsp;${activityType.name}
-                </c:forEach>
+                <c:choose>
+                    <c:when test="${activityTypesCount < 8}">
+                        <c:forEach items="${activityTypes}" var="activityType">
+                            <input type="checkbox" class="activity-type" name="activityTypes" value="${activityType.id}" checked="true" />&nbsp;${activityType.name}
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <select id="activityTypesList" name="activityTypes" size = 5 multiple>
+                            <c:forEach items="${activityTypes}" var="activityType">
+                                <option class="activity-type" value="${activityType.id}" selected="true">${activityType.name}</option>
+                            </c:forEach>
+                        </select>
+                        <input type="button" class="activity-type" name="Button" value="Select all" onclick="selectAll('activityTypesList',true)" />
+                        <input type="button" class="activity-type" name="Button" value="Select none" onclick="selectAll('activityTypesList',false)" />
+                    </c:otherwise>
+                </c:choose>
             </li>
             <li class="autoclear" id="subject-schedule">
                  <dash:subjectCoordinatorSchedule/>

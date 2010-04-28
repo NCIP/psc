@@ -187,10 +187,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         List<StudySubjectAssignment> studySubjectAssignment = new ArrayList<StudySubjectAssignment>();
         studySubjectAssignment.add(assignment);
 
-        Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("DISEASE_MEASURE"), true);
-        activities.put(Fixtures.createActivityType("LAB_TEST"), false);
-        activities.put(Fixtures.createActivityType("INTERVENTION"), true);
+        List<ActivityType> activities = new ArrayList<ActivityType>();
+        activities.add(Fixtures.createActivityType("DISEASE_MEASURE"));
+        activities.add(Fixtures.createActivityType("INTERVENTION"));
 
 
         Collection<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
@@ -251,8 +250,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         ScheduledActivity e1, e2, e3, e5, e6, e7;
 
-        Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("LAB_TEST"), true);
+        List<ActivityType> activities = new ArrayList<ActivityType>();
+        activities.add(Fixtures.createActivityType("LAB_TEST"));
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addStudySegment(new ScheduledStudySegment());
@@ -386,11 +385,10 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         ScheduledActivity e1, e2, e3, e5, e6, e7;
 
-        Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
-        activities.put(Fixtures.createActivityType("DISEASE_MEASURE"), true);
-        activities.put(Fixtures.createActivityType("LAB_TEST"), false);
-        activities.put(Fixtures.createActivityType("INTERVENTION"), true);
-        activities.put(Fixtures.createActivityType("PROCEDURE"), true);
+        List<ActivityType> activities = new ArrayList<ActivityType>();
+        activities.add(Fixtures.createActivityType("DISEASE_MEASURE"));
+        activities.add(Fixtures.createActivityType("INTERVENTION"));
+        activities.add(Fixtures.createActivityType("PROCEDURE"));
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addStudySegment(new ScheduledStudySegment());
@@ -494,7 +492,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assertEquals("ValueOne doesn't contain the right number of events", 1, valueOne.values().size());
         assertEquals("ValueTwo doesn't contain the right number of events", 1, valueTwo.values().size());
-        assertEquals("ValueThree doesn't contain the right number of events", 1, valueTwo.values().size());
+        assertEquals("ValueThree doesn't contain the right number of events", 1, valueThree.values().size());
 
         Set<String> valueOneKey = valueOne.keySet();
         assertEquals("Wrong number of subjects ", 1, valueOneKey.size());

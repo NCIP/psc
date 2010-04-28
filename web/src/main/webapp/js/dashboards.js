@@ -23,6 +23,9 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
             input.observe('click', handler)
         })
 
+        $$('option.activity-type').each(function(option) {
+            option.observe('click', handler)
+        })
         var handler1 = function(evt) {
             Event.stop(evt)
         }
@@ -30,3 +33,9 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
     })
 }
 
+function selectAll(selectBox, selectAll) {
+    var box = $(selectBox);
+    for (var i = 0; i < box.options.length; i++) {
+        box.options[i].selected = selectAll;
+    }
+}
