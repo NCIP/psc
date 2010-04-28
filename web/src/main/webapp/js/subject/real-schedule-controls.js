@@ -151,10 +151,10 @@ psc.subject.RealScheduleControls = (function ($) {
       var startDate = getReportStartDate();
       var endDate = getReportEndDate()
       if (startDate) {
-          url = url + '&start-date='+startDate
+          url = url + '&start-date=' + startDate
       }
       if (endDate) {
-          url = url + '&end-date=' +endDate
+          url = url + '&end-date=' + endDate
       }
       location.href = url
   }
@@ -163,13 +163,13 @@ psc.subject.RealScheduleControls = (function ($) {
       var subjectId = $(this).attr('subject');
       var baseUrl = psc.tools.Uris.relative("/pages/report/scheduledActivitiesReport")
       var url = baseUrl + '?personId=' +subjectId;
-      var startDate = getReportStartDate();
-      var endDate = getReportEndDate()
+      var startDate = $('#actual-date-start').val()
+      var endDate = $('#actual-date-stop').val()
       if (startDate) {
-          url = url + '&startDate'+startDate
+          url = url + '&startDate=' + startDate
       }
       if (endDate) {
-          url = url + '&endDate=' +endDate
+          url = url + '&endDate=' + endDate
       }
       $('#report-options').attr("href", url);
   }
