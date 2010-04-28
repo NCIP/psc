@@ -49,6 +49,7 @@
             if (startDate != null && startDate.length > 0) {
                 startDate = psc.tools.Dates.displayDateToApiDate($("actual-date-start").value)
             }
+            console.log("----startDate " + startDate)
             params['start-date'] = startDate;
             var endDate = $("actual-date-stop").value
             if (endDate != null && endDate.length > 0) {
@@ -76,7 +77,7 @@
             var uri = getUri(".json")
             var params = getParams();
 
-            SC.asyncRequest(uri +".json", {
+            SC.asyncRequest(uri, {
               method: "GET", parameters: params,
               onSuccess: function(response) {
                    var resp = response.responseJSON
@@ -114,6 +115,9 @@
                     };
 
                     bundleList = new YAHOO.widget.DataTable("bundle-list", bundleListColumns, myDataSource, {scrollable:true});
+                },
+                onFailure: function(response) {
+                    $('errors').innerHTML = "Please correct date format";
                 }
             })
         }
@@ -164,6 +168,9 @@
     <laf:division>
         <c:set var="action"><c:url value="/pages/report/scheduledActivitiesReport"/></c:set>
         <form:form action="${action}"method="post" onsubmit="return false">
+            <div id="errors">
+                <form:errors path="*"/>
+            </div>
             <tags:errors path="*"/>
              <div class="search_box">
                  <input type="submit" value="Search" class="button" onclick="submitFilters()"/>
