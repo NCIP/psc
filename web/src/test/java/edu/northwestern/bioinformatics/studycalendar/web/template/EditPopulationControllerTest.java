@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -13,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createInDevelopmentBasicTemplate;
 
 import java.util.*;
 
@@ -29,6 +31,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
     private PopulationService populationService;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
+    private TemplateService templateService;
 
     private EditPopulationController controller;
     private EditPopulationCommand command;
@@ -42,6 +45,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         amendmentService = registerMockFor(AmendmentService.class);
+        templateService = registerMockFor(TemplateService.class);
         populationService = registerMockFor(PopulationService.class);
         deltaService = registerMockFor(DeltaService.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
@@ -51,7 +55,8 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setAmendmentService(amendmentService);
         controller.setPopulationService(populationService);
-        controller.setDeltaService(deltaService);                         
+        controller.setDeltaService(deltaService);
+        controller.setTemplateService(templateService);
 
         controller.setPopulationDao(populationDao);
         controller.setStudyDao(studyDao);
@@ -74,8 +79,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         expect(studyDao.getById(100)).andReturn(study).anyTimes();
     }
 
-    public void testCommandForRegularNewPeriod() throws Exception {
-        request.setParameter("population", originalPopulation.getId().toString());
+    public void testCommandForRegularNewPopulation() throws Exception {
         request.setParameter("study", study.getId().toString());
         replayMocks();
         Object actual = controller.formBackingObject(request);
@@ -105,5 +109,38 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         assertEquals("Wrong study id in the model ",100,  mv.getModel().get("study"));
         assertEquals("Wrong amendment id in the model ",1,  mv.getModel().get("amendment"));
         assertEquals("Wrong redirect view ","redirectToCalendarTemplate",  mv.getViewName());
+    }
+
+    public void testEditPopulationForInitialTemplate() throws Exception {
+        Study devStudy = setId(101,createInDevelopmentBasicTemplate("InitialTemplate"));
+        expect(studyDao.getById(101)).andReturn(devStudy).anyTimes();
+        request.setParameter("population", originalPopulation.getId().toString());
+        request.setParameter("study", devStudy.getId().toString());
+        replayMocks();
+        Object actual = controller.formBackingObject(request);
+        verifyMocks();
+        assertTrue(actual instanceof EditPopulationCommand);
+    }
+
+    public void testEditPopulationForAmendedTemplate() throws Exception {
+        request.setParameter("population", originalPopulation.getId().toString());
+        request.setParameter("study", study.getId().toString());
+        expect(deltaService.revise(study,  study.getDevelopmentAmendment())).andReturn(study);
+        expect(templateService.findEquivalentChild(study, originalPopulation)).andReturn(originalPopulation);
+        replayMocks();
+        Object actual = controller.formBackingObject(request);
+        verifyMocks();
+        assertTrue(actual instanceof EditPopulationCommand);
+    }
+
+    public void testEditPopulationWhenPopulationFromDeltaIsNull() throws Exception {
+        request.setParameter("population", originalPopulation.getId().toString());
+        request.setParameter("study", study.getId().toString());
+        expect(deltaService.revise(study,  study.getDevelopmentAmendment())).andReturn(study);
+        expect(templateService.findEquivalentChild(study, originalPopulation)).andReturn(null);
+        replayMocks();
+        Object actual = controller.formBackingObject(request);
+        verifyMocks();
+        assertTrue(actual instanceof EditPopulationCommand);
     }
 }
