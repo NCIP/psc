@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <title>New User</title>
+    <title>List Users</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         #container {
