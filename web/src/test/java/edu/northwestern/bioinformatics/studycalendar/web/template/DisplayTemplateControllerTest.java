@@ -164,7 +164,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         assertSame(seg0a, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
-    public void testAssignmentsIncludedWhenComplete() throws Exception {
+    public void testOnStudyAssignmentsIncludedWhenComplete() throws Exception {
         reset(studyDao);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
@@ -177,7 +177,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
         Map<String, Object> actualModel = (Map<String, Object>) mv.getModel();
-        assertSame(expectedAssignments, actualModel.get("assignments"));
+        assertEquals(expectedAssignments, actualModel.get("onStudyAssignments"));
     }
 
     public void testDefaultToPublishedAmendment() throws Exception {
@@ -263,13 +263,6 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
         assertSame(amended.getDevelopmentAmendment(), actualModel.get("developmentRevision"));
-    }
-
-    public void testStudyAssignableIfSubjectCoordAssigned() throws Exception {
-
-        Map<String, Object> actualModel = getAndReturnModel();
-
-        assertSame("Study should be assignable", Boolean.TRUE, actualModel.get("canAssignSubjects"));
     }
 
     public void testIncludesTodaysDateInApiFormatForPreview() throws Exception {

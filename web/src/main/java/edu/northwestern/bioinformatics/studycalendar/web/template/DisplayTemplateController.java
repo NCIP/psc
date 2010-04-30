@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.Study
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -32,6 +33,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR, Role.SITE_COORDINATOR})
 public class DisplayTemplateController extends PscAbstractController {
     private StudyDao studyDao;
     private DeltaService deltaService;
@@ -67,10 +69,9 @@ public class DisplayTemplateController extends PscAbstractController {
         List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
         List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
         List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
-
+        model.put("user", user);
         if (!inDevelopmentTemplates.isEmpty() || !releasedTemplates.isEmpty() || !pendingTemplates.isEmpty() || !releasedAndAssignedTemplates.isEmpty()) {
             StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
-
             getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
             model.put("studySegment", new StudySegmentTemplate(studySegment));
 
@@ -78,27 +79,18 @@ public class DisplayTemplateController extends PscAbstractController {
             model.put("canEdit", canEdit);
 
             if (study.isReleased()) {
-                List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
-                //todo -- not sure what role the canAssignSubjects is playing
-                Boolean canAssignSubjects = !subjectAssignableStudySites.isEmpty();
-
-                List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
-                List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
-                List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
-
-                List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(subjectAssignableStudySites, assignments);
-                for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
-                    if (currentAssignment.getEndDateEpoch() == null)
-                        onStudyAssignments.add(currentAssignment);
-                    else
-                        offStudyAssignments.add(currentAssignment);
+                List<StudySite> visibleStudySites = new ArrayList<StudySite>();
+                if (user.hasRole(Role.STUDY_ADMIN) && user.hasRole(Role.SUBJECT_COORDINATOR)) {
+                    visibleStudySites = study.getStudySites();
+                    List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
+                    makeOnOrOffAssignments(subjectAssignableStudySites, studyId, model);
+                } else if (user.hasRole(Role.STUDY_ADMIN)) {
+                    visibleStudySites = study.getStudySites();
+                } else if (user.hasRole(Role.SUBJECT_COORDINATOR)) {
+                    visibleStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
+                    makeOnOrOffAssignments(visibleStudySites, studyId, model);
                 }
-
-                model.put("assignments", assignments);
-                model.put("canAssignSubjects", canAssignSubjects);
-                model.put("offStudyAssignments", offStudyAssignments);
-                model.put("onStudyAssignments", onStudyAssignments);
-                model.put("subjectAssignableStudySites", subjectAssignableStudySites);
+                model.put("visibleStudySites", visibleStudySites);
             }
 
             List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
@@ -115,6 +107,21 @@ public class DisplayTemplateController extends PscAbstractController {
                 "Authenticated account is not authorized for this resource and method");
             return null;
         }
+    }
+
+    private void makeOnOrOffAssignments(List<StudySite> studySites, int studyId, Map<String, Object> model ) {
+        List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
+        List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(studySites, assignments);
+        List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
+        List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
+        for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
+            if (currentAssignment.getEndDateEpoch() == null)
+                onStudyAssignments.add(currentAssignment);
+            else
+                offStudyAssignments.add(currentAssignment);
+        }
+        model.put("offStudyAssignments", offStudyAssignments);
+        model.put("onStudyAssignments", onStudyAssignments);
     }
 
     public Study getStudyByTheIdentifier(String studyStringIdentifier){

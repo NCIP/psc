@@ -836,7 +836,7 @@
                             </div>
                         </div>
 
-                        <c:forEach items="${subjectAssignableStudySites}" var="studySite" varStatus="studySiteStatus">
+                        <c:forEach items="${visibleStudySites}" var="studySite" varStatus="studySiteStatus">
                             <div class="row">
                                 <div class="label" >
                                     ${studySite.site.name}
@@ -852,15 +852,19 @@
                                     </c:if>
                                     <c:if test="${empty studySite.unapprovedAmendments}">
                                         <c:set var="isSubjectCoordinatorAssigned" value="false"/>
+                                        <c:set var="canAssignSubject" value="false"/>
                                         <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
                                             <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
                                                 <c:set var="isSubjectCoordinatorAssigned" value="true"/>
+                                            </c:if>
+                                            <c:if test="${userRole.user.name == user.name && userRole.role == 'SUBJECT_COORDINATOR'}">
+                                                <c:set var="canAssignSubject" value="true"/>
                                             </c:if>
                                         </c:forEach>
                                         <c:if test="${!isSubjectCoordinatorAssigned}">
                                             Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
                                         </c:if>
-                                        <c:if test="${canAssignSubjects && isSubjectCoordinatorAssigned}">
+                                        <c:if test="${canAssignSubject}">
                                             <c:if test="${configuration.map.enableAssigningSubject}">
                                                 <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
                                                     Assign Subject
