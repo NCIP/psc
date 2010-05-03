@@ -12,7 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -250,7 +250,7 @@ public class DisplayTemplateController extends PscAbstractController {
 
     private static class Crumb extends DefaultCrumb {
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             StringBuilder sb = new StringBuilder(context.getStudy().getName());
             if (context.getStudySegment() != null) {
                 sb.append(" (").append(context.getStudySegment().getQualifiedName()).append(')');
@@ -259,7 +259,7 @@ public class DisplayTemplateController extends PscAbstractController {
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("study", context.getStudy().getId().toString());
             if (context.getStudySegment() != null) {

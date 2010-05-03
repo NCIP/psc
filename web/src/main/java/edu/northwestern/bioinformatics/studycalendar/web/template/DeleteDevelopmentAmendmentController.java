@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
@@ -73,13 +73,13 @@ public class DeleteDevelopmentAmendmentController extends PscSimpleFormControlle
 
     private static class Crumb extends DefaultCrumb {
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             StringBuilder sb = new StringBuilder("Delete " + context.getStudy().getName());
             return sb.toString();
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("study", context.getStudy().getId().toString());
             return params;

@@ -15,7 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -213,12 +213,12 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
 
     private static class Crumb extends DefaultCrumb {
        @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             return "Colleague Dashboard";
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             User user = context.getUser();
 
             Map<String, String> params = new HashMap<String, String>();

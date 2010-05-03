@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.springframework.beans.factory.annotation.Required;
@@ -62,7 +62,7 @@ public class ExternalStudyController extends PscSimpleFormController {
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             return Collections.singletonMap("study", context.getStudy().getId().toString());
         }
     }

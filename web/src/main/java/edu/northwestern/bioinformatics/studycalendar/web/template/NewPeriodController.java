@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
@@ -100,7 +100,7 @@ public class NewPeriodController extends AbstractPeriodController<PeriodCommand>
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             return Collections.singletonMap("studySegment", context.getStudySegment().getId().toString());
         }
     }

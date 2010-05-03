@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -122,7 +122,7 @@ public class CreateUserController extends PscCancellableFormController {
 
     private static class Crumb extends DefaultCrumb {
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             StringBuilder sb = new StringBuilder();
             if (context.getUser() == null || context.getUser().getId() == null) {
                 sb.append( "Create User");
@@ -133,7 +133,7 @@ public class CreateUserController extends PscCancellableFormController {
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             Map<String, String> params = new HashMap<String, String>();
             if (context.getUser() != null && context.getUser().getId() != null) {
                 params.put("id", context.getUser().getId().toString());

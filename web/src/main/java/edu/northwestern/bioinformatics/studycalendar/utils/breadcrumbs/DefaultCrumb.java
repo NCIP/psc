@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -24,7 +26,7 @@ public class DefaultCrumb implements Crumb {
         this.parent = parent;
     }
 
-    public String getName(BreadcrumbContext context) {
+    public String getName(DomainContext context) {
         return name;
     }                                                       
 
@@ -32,7 +34,7 @@ public class DefaultCrumb implements Crumb {
         this.name = name;
     }
 
-    public Map<String, String> getParameters(BreadcrumbContext context) {
+    public Map<String, String> getParameters(DomainContext context) {
         return null;
     }
 

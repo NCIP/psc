@@ -13,9 +13,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
@@ -67,7 +67,7 @@ public class NewSiteController extends PscSimpleFormController {
 
     private static class Crumb extends DefaultCrumb {
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             StringBuilder sb = new StringBuilder();
             if (context.getSite() == null || context.getSite().getId() == null) {
                 sb.append( "Create Site");
@@ -78,7 +78,7 @@ public class NewSiteController extends PscSimpleFormController {
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             Map<String, String> params = new HashMap<String, String>();
             if (context.getSite() != null && context.getSite().getId() != null) {
                 params.put("id", context.getSite().getId().toString());

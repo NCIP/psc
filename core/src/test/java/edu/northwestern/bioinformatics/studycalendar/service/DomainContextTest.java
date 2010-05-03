@@ -1,18 +1,17 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class BreadcrumbContextTest extends StudyCalendarTestCase {
+public class DomainContextTest extends StudyCalendarTestCase {
     private TemplateService templateService;
 
     @Override
@@ -33,7 +32,7 @@ public class BreadcrumbContextTest extends StudyCalendarTestCase {
         expect(templateService.findParent(epoch)).andReturn(plannedCalendar);
 
         replayMocks();
-        BreadcrumbContext context = BreadcrumbContext.create(plannedActivity, templateService);
+        DomainContext context = DomainContext.create(plannedActivity, templateService);
         verifyMocks();
 
         assertSame(plannedActivity, context.getPlannedActivity());

@@ -1,6 +1,5 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import java.util.Map;
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public enum GeneratedUriTemplateVariable {
         return name().replaceAll("_", "-").toLowerCase();
     }
 
-    public Object resolve(BreadcrumbContext context) {
+    public Object resolve(DomainContext context) {
         if (resolutionPath.equals("subject.personId")){
             if (context.getProperty(resolutionPath) == null || context.getProperty(resolutionPath).toString().trim().length() == 0) {
                 return context.getProperty(secondTryResolutionPath);
@@ -35,7 +34,7 @@ public enum GeneratedUriTemplateVariable {
         return context.getProperty(resolutionPath);
     }
 
-    public static Map<String, Object> getAllTemplateValues(BreadcrumbContext context) {
+    public static Map<String, Object> getAllTemplateValues(DomainContext context) {
         Map<String, Object> all = new HashMap<String, Object>();
         for (GeneratedUriTemplateVariable variable : values()) {
             all.put(variable.attributeName(), variable.resolve(context));
@@ -43,7 +42,7 @@ public enum GeneratedUriTemplateVariable {
         return all;
     }
 
-    public static Map<String, Object> getAllTemplateValues(BreadcrumbContext context, StudySubjectAssignment assignment) {
+    public static Map<String, Object> getAllTemplateValues(DomainContext context, StudySubjectAssignment assignment) {
         if (assignment != null) {
             context.setStudySubjectAssignment(assignment);
         }

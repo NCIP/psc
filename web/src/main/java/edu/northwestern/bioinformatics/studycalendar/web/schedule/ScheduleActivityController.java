@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -99,7 +99,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
     }
 
     private class Crumb extends DefaultCrumb {
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             ScheduledActivity evt = context.getScheduledActivity();
             return new StringBuilder()
                 .append(evt.getActivity().getName())
@@ -108,7 +108,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
                 .toString();
         }
 
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             return createParameters("event", context.getScheduledActivity().getId().toString());
         }
     }

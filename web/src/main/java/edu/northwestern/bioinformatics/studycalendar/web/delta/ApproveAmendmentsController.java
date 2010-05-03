@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -82,7 +82,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
 
     private static class Crumb extends DefaultCrumb {
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             return "Approve amendments for " + context.getSite().getName();
         }
     }

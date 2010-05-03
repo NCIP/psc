@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -60,7 +60,7 @@ public class SubjectOffStudyController extends PscSimpleFormController {
     }
 
      private static class Crumb extends DefaultCrumb {
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             StudySubjectAssignment assignment = context.getStudySubjectAssignment();
             return new StringBuilder()
                     .append("Take ")
@@ -68,7 +68,7 @@ public class SubjectOffStudyController extends PscSimpleFormController {
                     .append(" off study").toString();
         }
 
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             return createParameters("assignment", context.getStudySubjectAssignment().getId().toString());
         }
     }

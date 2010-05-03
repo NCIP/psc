@@ -1,9 +1,8 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import java.lang.reflect.Method;
 /**
  * @author Rhett Sutphin
  */
-public class BreadcrumbContext {
+public class DomainContext {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private Study study;
@@ -44,15 +43,15 @@ public class BreadcrumbContext {
 
     private BeanWrapper selfWrapper;
 
-    public BreadcrumbContext(TemplateService templateService) {
+    public DomainContext(TemplateService templateService) {
         this.templateService = templateService;
         selfWrapper = new BeanWrapperImpl(this);
     }
 
-    public static BreadcrumbContext create(DomainObject basis, TemplateService templateService) {
-        BreadcrumbContext context = new BreadcrumbContext(templateService);
+    public static DomainContext create(DomainObject basis, TemplateService templateService) {
+        DomainContext context = new DomainContext(templateService);
         if (basis != null) {
-            Method[] methods = BreadcrumbContext.class.getMethods();
+            Method[] methods = DomainContext.class.getMethods();
             for (Method method : methods) {
                 if (method.getParameterTypes().length == 1) {
                     if (method.getParameterTypes()[0].isAssignableFrom(basis.getClass())) {
@@ -74,7 +73,7 @@ public class BreadcrumbContext {
         try {
             return selfWrapper.getPropertyValue(path);
         } catch (BeansException beansException) {
-            log.debug("Could not resolve " + path + " in BreadcrumbContext", beansException);
+            log.debug("Could not resolve " + path + " in DomainContext", beansException);
             return null;
         }
     }

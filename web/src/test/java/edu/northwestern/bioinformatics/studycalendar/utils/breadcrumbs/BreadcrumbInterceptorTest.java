@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
         Map<String, Object> model = new HashMap<String, Object>();
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         controllerTools.addHierarchyToModel(epoch, model);
-        BreadcrumbContext context = interceptor.createContext(model);
+        DomainContext context = interceptor.createContext(model);
         assertSame(epoch, context.getEpoch());
         assertNull(context.getStudySegment());
     }
@@ -49,7 +50,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
         ModelAndView mv = new ModelAndView("test", "modelObject", 17);
         CrumbSource handler = testHandler();
         List<Anchor> expectedBreadcrumbs = new ArrayList<Anchor>();
-        expect(creator.createAnchors(same(handler), (BreadcrumbContext) notNull())).andReturn(expectedBreadcrumbs);
+        expect(creator.createAnchors(same(handler), (DomainContext) notNull())).andReturn(expectedBreadcrumbs);
 
         replayMocks();
         interceptor.postHandle(request, response, handler, mv);

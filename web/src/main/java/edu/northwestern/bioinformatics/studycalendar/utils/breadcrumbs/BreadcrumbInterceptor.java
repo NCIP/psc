@@ -11,6 +11,7 @@ import java.util.Map;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -32,17 +33,17 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
         if (mv == null) return;
         if (isRedirect(mv)) return;
         CrumbSource src = (CrumbSource) handler;
-        BreadcrumbContext context = createContext(mv.getModel());
+        DomainContext context = createContext(mv.getModel());
         mv.getModel().put(
             "breadcrumbs",
             breadcrumbCreator.createAnchors(src, context)
         );
         mv.getModel().put(
-            "breadcrumbContext", context
+            "domainContext", context
         );
     }
 
-    BreadcrumbContext createContext(Map<String, Object> model) {
+    DomainContext createContext(Map<String, Object> model) {
         DomainObject basis = null;
         // look through the context for the most specific model object
         for (Object o : model.values()) {
@@ -53,7 +54,7 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
-        BreadcrumbContext context = BreadcrumbContext.create(basis, templateService);
+        DomainContext context = DomainContext.create(basis, templateService);
         // look for other model fields which can be set into the context
         for (Object o : model.values()) {
             if (o instanceof Amendment) {

@@ -1,11 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.Map;
 
@@ -13,13 +9,13 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
-    private BreadcrumbContext context;
+    private DomainContext context;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        context = new BreadcrumbContext(new TestingTemplateService());
+        context = new DomainContext(new TestingTemplateService());
     }
 
     public void testResolveWhenResolveable() throws Exception {

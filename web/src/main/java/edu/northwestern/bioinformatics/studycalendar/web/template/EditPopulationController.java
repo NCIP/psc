@@ -5,15 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessCon
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
@@ -136,7 +132,7 @@ public class EditPopulationController extends PscSimpleFormController {
     private static class Crumb extends DefaultCrumb {
         Logger log = LoggerFactory.getLogger(getClass());
         @Override
-        public String getName(BreadcrumbContext context) {
+        public String getName(DomainContext context) {
             Population pop = context.getPopulation();
             StringBuilder name = new StringBuilder();
             if (pop.getId() == null) {
@@ -149,7 +145,7 @@ public class EditPopulationController extends PscSimpleFormController {
         }
 
         @Override
-        public Map<String, String> getParameters(BreadcrumbContext context) {
+        public Map<String, String> getParameters(DomainContext context) {
             Map<String, String> params = createParameters("study", context.getStudy().getId().toString());
             if (context.getPopulation().getId() != null) {
                 params.put("population", context.getPopulation().getId().toString());

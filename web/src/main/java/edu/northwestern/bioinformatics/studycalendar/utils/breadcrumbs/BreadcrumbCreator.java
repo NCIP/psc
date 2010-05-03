@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+
 /**
  * @author Rhett Sutphin
  */
@@ -34,18 +36,18 @@ public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
         }
     }
 
-    public List<Anchor> createAnchors(CrumbSource current, BreadcrumbContext breadcrumbContext) {
+    public List<Anchor> createAnchors(CrumbSource current, DomainContext domainContext) {
         log.debug("Creating anchors for source of type " + current.getClass().getName());
         List<Crumb> ancestry = new LinkedList<Crumb>();
         buildAncestry(current, ancestry);
 
         List<Anchor> anchors = new LinkedList<Anchor>();
         for (Crumb crumb : ancestry) {
-            Map<String, String> params = crumb.getParameters(breadcrumbContext);
+            Map<String, String> params = crumb.getParameters(domainContext);
 
             anchors.add(new Anchor(
                 createUrl(names.get(crumb), params),
-                crumb.getName(breadcrumbContext)
+                crumb.getName(domainContext)
             ));
         }
 
