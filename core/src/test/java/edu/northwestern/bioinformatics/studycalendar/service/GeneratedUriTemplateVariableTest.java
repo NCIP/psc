@@ -74,4 +74,46 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context, assignment);
         assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
     }
+
+    public void testResolveScheduledActivityIdentifier() throws Exception {
+        String scheduledActivityIdentifier = "Expected";
+        ScheduledActivity scheduledActivity = new ScheduledActivity();
+        scheduledActivity.setGridId(scheduledActivityIdentifier);
+        context.setScheduledActivity(scheduledActivity);
+
+        assertEquals("identifier not resolved", scheduledActivityIdentifier, GeneratedUriTemplateVariable.SCHEDULED_ACTIVITY_IDENTIFIER.resolve(context));
+    }
+
+    public void testResolveActivityCode() throws Exception {
+        String activityCode = "activityCode";
+        Activity activity  = Fixtures.createActivity(activityCode);
+        ScheduledActivity scheduledActivity = new ScheduledActivity();
+        scheduledActivity.setActivity(activity);
+        context.setScheduledActivity(scheduledActivity);
+
+        assertEquals("Activity code not resolved", activityCode, GeneratedUriTemplateVariable.ACTIVITY_CODE.resolve(context));
+    }
+
+    public void testResolveDayFromStudyPlan() throws Exception {
+        PlannedActivity plannedActivity = Fixtures.createPlannedActivity(Fixtures.createActivity("New"), 1);
+        Period period = Fixtures.createPeriod(3, 5, 1);
+        plannedActivity.setPeriod(period);
+        ScheduledActivity scheduledActivity = new ScheduledActivity();
+        scheduledActivity.setPlannedActivity(plannedActivity);
+        scheduledActivity.setRepetitionNumber(0);
+        ScheduledStudySegment scheduledStudySegment = Fixtures.createScheduledStudySegment(new StudySegment());
+        scheduledActivity.setScheduledStudySegment(scheduledStudySegment);
+        context.setScheduledActivity(scheduledActivity);
+
+        assertEquals("Day from study plan not resolved", "3", GeneratedUriTemplateVariable.DAY_FROM_STUDY_PLAN.resolve(context).toString());
+    }
+
+    public void testResolveStudySubjectIdentifier() throws Exception {
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        String studySubjectIdentifier = "StudySubjectIdentifier";
+        assignment.setStudySubjectId(studySubjectIdentifier);
+        context.setStudySubjectAssignment(assignment);
+
+        assertEquals("Identifier not resolved", studySubjectIdentifier, GeneratedUriTemplateVariable.STUDY_SUBJECT_IDENTIFIER.resolve(context));
+    }
 }

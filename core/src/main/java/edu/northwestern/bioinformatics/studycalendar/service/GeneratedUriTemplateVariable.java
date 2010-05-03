@@ -7,7 +7,11 @@ import java.util.HashMap;
 public enum GeneratedUriTemplateVariable {
     STUDY_IDENTIFIER("study.assignedIdentifier"),
     ASSIGNMENT_IDENTIFIER("studySubjectAssignment.gridId"),
-    SUBJECT_IDENTIFIER("subject.personId", "subject.gridId");
+    SUBJECT_IDENTIFIER("subject.personId", "subject.gridId"),
+    SCHEDULED_ACTIVITY_IDENTIFIER("scheduledActivity.gridId"),
+    ACTIVITY_CODE("scheduledActivity.activity.code"),
+    DAY_FROM_STUDY_PLAN("scheduledActivity.dayNumber"),
+    STUDY_SUBJECT_IDENTIFIER("studySubjectAssignment.studySubjectId");
 
     private String resolutionPath;
     private String secondTryResolutionPath;
