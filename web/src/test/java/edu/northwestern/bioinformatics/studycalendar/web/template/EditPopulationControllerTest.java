@@ -121,26 +121,4 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         verifyMocks();
         assertTrue(actual instanceof EditPopulationCommand);
     }
-
-    public void testEditPopulationForAmendedTemplate() throws Exception {
-        request.setParameter("population", originalPopulation.getId().toString());
-        request.setParameter("study", study.getId().toString());
-        expect(deltaService.revise(study,  study.getDevelopmentAmendment())).andReturn(study);
-        expect(templateService.findEquivalentChild(study, originalPopulation)).andReturn(originalPopulation);
-        replayMocks();
-        Object actual = controller.formBackingObject(request);
-        verifyMocks();
-        assertTrue(actual instanceof EditPopulationCommand);
-    }
-
-    public void testEditPopulationWhenPopulationFromDeltaIsNull() throws Exception {
-        request.setParameter("population", originalPopulation.getId().toString());
-        request.setParameter("study", study.getId().toString());
-        expect(deltaService.revise(study,  study.getDevelopmentAmendment())).andReturn(study);
-        expect(templateService.findEquivalentChild(study, originalPopulation)).andReturn(null);
-        replayMocks();
-        Object actual = controller.formBackingObject(request);
-        verifyMocks();
-        assertTrue(actual instanceof EditPopulationCommand);
-    }
 }

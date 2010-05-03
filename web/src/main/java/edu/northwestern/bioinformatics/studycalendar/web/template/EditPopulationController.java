@@ -61,16 +61,7 @@ public class EditPopulationController extends PscSimpleFormController {
         } else {
             pop = populationDao.getById(popId);
         }
-
         Study study = studyDao.getById(studyId);
-        if (popId != null && study.isInAmendmentDevelopment()){
-            //applying the dev amendmnets to the cloned study to get the new population, that's in the deltas
-            Study amStudy1 = deltaService.revise(study, study.getDevelopmentAmendment());
-            Population popFromDelta = templateService.findEquivalentChild(amStudy1, pop);
-            if (popFromDelta != null) {
-                pop = popFromDelta; 
-            }
-        }
         return new EditPopulationCommand(pop, populationService, amendmentService, populationDao, study);
     }
 
