@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
@@ -13,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
-import java.util.Calendar;
+import java.util.*;
 
 import static org.easymock.EasyMock.expect;
 
@@ -22,9 +23,12 @@ import static org.easymock.EasyMock.expect;
  */
 public class ScheduleServiceTest extends StudyCalendarTestCase {
     private static final String REVISION_DISPLAY_NAME = "10/01/1926 (Leopard)";
+    private static final String textValue = "Activity URI Text";
 
     private ScheduleService service;
     private SubjectService subjectService;
+    private TemplateService templateService;
+    private ActivityService activityService;
 
     private ScheduledStudySegment scheduledStudySegment;
     private Site site;
@@ -53,6 +57,10 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         subjectService = new SubjectService();
         service.setSubjectService(subjectService);
 
+        activityService = registerMockFor(ActivityService.class);
+        templateService = new TestingTemplateService();
+        service.setActivityService(activityService);
+        service.setTemplateService(templateService);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         service.setStudySegmentDao(studySegmentDao);
     }
@@ -169,7 +177,106 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testGenerateUriForScheduledActivityIdentifier() throws Exception {
+        String templateValue = "https://test.com?event={scheduled-activity-identifier}";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        sa.setGridId("EventIdentifier");
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for activity identifier is not correct"
+                , "https://test.com?event=EventIdentifier", uriMap.get(textValue));
+    }
+
+    public void testGenerateUriForActivityCode() throws Exception {
+        String templateValue = "https://test.com?activityCode={activity-code}";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for activity code is not correct"
+                , "https://test.com?activityCode=Bone Scan", uriMap.get(textValue));
+    }
+
+    public void testGenerateUriForStudyPlanDay() throws Exception {
+        String templateValue = "https://test.com?planDay={day-from-study-plan}";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for study plan day is not correct"
+                , "https://test.com?planDay=3", uriMap.get(textValue));
+    }
+
+    public void testGenerateUriForStudySubjectIdentifier() throws Exception {
+        String templateValue = "https://test.com?StudySubjectIdentifier={study-subject-identifier}";
+        String studySubjectId = "S1S1";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setStudySubjectId(studySubjectId);
+        sa.getScheduledStudySegment().getScheduledCalendar().setAssignment(assignment);
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for activity identifier is not correct"
+                , "https://test.com?StudySubjectIdentifier=S1S1", uriMap.get(textValue));
+    }
+
+    public void testGeneratedUriForAssignmentIdentifier() throws Exception {
+        String templateValue = "https://test.com?assignment={assignment-identifier}";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setGridId("assignmentId");
+        sa.getScheduledStudySegment().getScheduledCalendar().setAssignment(assignment);
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for assignment identifier is not correct"
+                , "https://test.com?assignment=assignmentId", uriMap.get(textValue));
+    }
+
+    public void testGeneratedUriForSubjectIdentifier() throws Exception {
+        String templateValue = "https://test.com?subject={subject-identifier}";
+        ScheduledActivity sa =  expectCreateScheduledActivityWithUri(templateValue);
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        Subject subject = new Subject();
+        subject.setPersonId("personId");
+        assignment.setSubject(subject);
+        sa.getScheduledStudySegment().getScheduledCalendar().setAssignment(assignment);
+        replayMocks();
+        Map<String,String> uriMap = service.generateActivityTemplateUri(sa);
+        verifyMocks();
+        assertEquals("Generated template Uri for subject identifier is not correct"
+                , "https://test.com?subject=personId", uriMap.get(textValue));
+    }
+
     //Helper Method
+    
+    private ScheduledActivity expectCreateScheduledActivityWithUri(String templateValue) {
+        Activity activity = createActivity("Bone Scan");
+        String namespace = "URI";
+        ActivityProperty ap1 = Fixtures.createActivityProperty(namespace, "URI.text", textValue);
+        ActivityProperty ap2 = Fixtures.createActivityProperty(namespace, "URI.template", templateValue);
+        activity.addProperty(ap1);
+        activity.addProperty(ap2);
+        PlannedActivity plannedActivity = createPlannedActivity(activity,1);
+        Period period = Fixtures.createPeriod(3, 5, 1);
+        plannedActivity.setPeriod(period);
+        ScheduledActivity scheduledActivity = new ScheduledActivity();
+        scheduledActivity.setPlannedActivity(plannedActivity);
+        scheduledActivity.setActivity(activity);
+        scheduledActivity.setRepetitionNumber(0);
+        ScheduledStudySegment scheduledStudySegment = Fixtures.createScheduledStudySegment(new StudySegment());
+        scheduledActivity.setScheduledStudySegment(scheduledStudySegment);
+        Map<String,List<String>> uriList = new TreeMap<String,List<String>>();
+        List<String> values = new ArrayList<String>();
+        values.add(textValue);
+        values.add(templateValue);
+        uriList.put(namespace, values);
+        expect(activityService.createActivityUriList(scheduledActivity.getActivity())).andReturn(uriList);
+        return scheduledActivity;
+    }
+    
     private NextScheduledStudySegment createNextScheduledStudySegment() {
         NextScheduledStudySegment scheduledSegment = new NextScheduledStudySegment();
         scheduledSegment.setStartDay(2);

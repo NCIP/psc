@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
@@ -20,13 +20,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
@@ -35,7 +31,7 @@ import java.util.TreeMap;
 public class ScheduleActivityController extends PscSimpleFormController {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
-    private ActivityService activityService;
+    private ScheduleService scheduleService;
 
     public ScheduleActivityController() {
         setBindOnNewForm(true);
@@ -62,15 +58,8 @@ public class ScheduleActivityController extends PscSimpleFormController {
         Map<String, Object> model = errors.getModel();
         ScheduleActivityCommand command = (ScheduleActivityCommand) errors.getTarget();
         getControllerTools().addHierarchyToModel(command.getEvent(), model);
-        Map<String,String> uriMap = new TreeMap<String,String>();
-        Collection<List<String>> uriList = activityService.createActivityUriList(command.getEvent().getActivity()).values();
-        Iterator iterator = uriList.iterator();
-        while(iterator.hasNext()) {
-            List<String> values = (List)(iterator.next());
-            uriMap.put(values.get(0),values.get(1));
-        }
-        model.put("uri",uriMap);
-//        model.put("modes", ScheduledActivityMode.values());
+        Map<String,String> uriMap = scheduleService.generateActivityTemplateUri(command.getEvent());
+        model.put("uriMap",uriMap);
         model.put("modes", command.getEventSpecificMode());
         return new ModelAndView("schedule/event", model);
     }
@@ -94,8 +83,8 @@ public class ScheduleActivityController extends PscSimpleFormController {
         this.scheduledActivityDao = scheduledActivityDao;
     }
 
-    public void setActivityService(ActivityService activityService) {
-        this.activityService = activityService;
+    public void setScheduleService(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 
     private class Crumb extends DefaultCrumb {

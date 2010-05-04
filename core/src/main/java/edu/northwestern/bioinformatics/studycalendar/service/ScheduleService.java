@@ -10,8 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStu
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.lang.StringTools;
 import org.springframework.beans.factory.annotation.Required;
+import org.restlet.util.Template;
 
-import java.util.Calendar;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -19,6 +20,8 @@ import java.util.Calendar;
 public class ScheduleService {
     private SubjectService subjectService;
     private StudySegmentDao studySegmentDao;
+    private ActivityService activityService;
+    private TemplateService templateService;
 
     /**
      * Shifts the given event by the given number of days, if the event is outstanding.
@@ -71,6 +74,27 @@ public class ScheduleService {
         return scheduled;
     }
 
+    /**
+    * Generate activity template Uri for activity URI properties.
+    * generated uri map will have text value as key and generated template uri as value.
+    *
+    * @param scheduledActivity
+    */
+    public Map<String,String> generateActivityTemplateUri(ScheduledActivity scheduledActivity) {
+        DomainContext context = DomainContext.create(scheduledActivity, templateService);
+        Map<String,String> uriMap = new TreeMap<String,String>();
+        Collection<List<String>> uriValues = activityService.createActivityUriList(scheduledActivity.getActivity()).values();
+        Iterator iterator = uriValues.iterator();
+        while(iterator.hasNext()) {
+            List<String> textTemplateValue = (List)(iterator.next());
+            String uriTemplate = textTemplateValue.get(1);
+            Template template = new Template(uriTemplate);
+            String generatedUri = template.format(GeneratedUriTemplateVariable.getAllTemplateValues(context));
+            uriMap.put(textTemplateValue.get(0),generatedUri);
+        }
+        return uriMap;
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -81,5 +105,15 @@ public class ScheduleService {
     @Required
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
+    }
+
+    @Required
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

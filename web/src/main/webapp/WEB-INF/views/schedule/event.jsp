@@ -116,11 +116,11 @@
                 </div>
                 <c:set var="count" value="${count + 1}"/>
             </c:if>
-            <c:if test="${not empty uri}">
+            <c:if test="${not empty uriMap}">
                 <div class="row ${commons:parity(count)}">
                     <div class="label">Links</div>
-                    <c:forEach items="${uri}" var="uriMap" varStatus="keyStatus">
-                        <div class="value"><a href="<c:url value="${uriMap.value}"/>">${uriMap.key}</a></div>
+                    <c:forEach items="${uriMap}" var="uri" varStatus="keyStatus">
+                         <div class="value"><a href="<c:url value="${uri.value}"/>">${uri.key}</a></div>
                     </c:forEach>
                 </div>
             <c:set var="count" value="${count + 1}"/>
