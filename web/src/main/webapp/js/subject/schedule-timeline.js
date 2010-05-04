@@ -196,10 +196,15 @@ psc.namespace("subject");
       },
 
       segmentClass: function(segment) {
-        if (psc.subject.ScheduleData.getSubjectCoordinator() == segment.assignment.subject_coordinator.username) {
-          return "segment_mine";
+        if (this.assignment !== undefined) {
+          if (psc.subject.ScheduleData.getSubjectCoordinator() == segment.assignment.subject_coordinator.username) {
+            return "segment_mine";
+          } else {
+            return "segment_others";
+          }
         } else {
-          return "segment_others";
+          //preview case
+          return "segment_mine";
         }
       },
 

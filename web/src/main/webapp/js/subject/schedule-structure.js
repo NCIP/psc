@@ -57,10 +57,15 @@ psc.subject.Schedule = function (scheduleApiResponse) {
       },
 
       belongsToSubjCoord: function() {
-        if (psc.subject.ScheduleData.getSubjectCoordinator() == this.assignment.subject_coordinator.username) {
-          return true;
+        if (this.assignment !== undefined) {
+          if (psc.subject.ScheduleData.getSubjectCoordinator() == this.assignment.subject_coordinator.username) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          //preview case
+          return true;
         }
       },
 
