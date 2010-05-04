@@ -387,10 +387,10 @@
                         xmlDoc.documentElement.removeChild(secIds[i])
                     }
                     var secondaryIds = oRecord.getData('secondary_identifiers');
-                    for (var j = 0; j< secondaryIds.length; j ++) {
+                    for (var j = 0; j< secondaryIds.length; j++) {
                         var secIdElt = xmlDoc.createElement('secondary-identifier')
-                        secIdElt.setAttribute('type', secondaryIds[i].type)
-                        secIdElt.setAttribute('value', secondaryIds[i].value)
+                        secIdElt.setAttribute('type', secondaryIds[j].type)
+                        secIdElt.setAttribute('value', secondaryIds[j].value)
                         xmlRoot.insertBefore(secIdElt, plannedCalendarElt)
                     }
 
