@@ -15,6 +15,8 @@ import java.util.*;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -23,6 +25,7 @@ import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 /**
  * @author Jalpa Patel
  */
+@Transactional
 public class TemplateImportService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private StudyXmlSerializer studyXmlSerializer;
@@ -264,6 +267,7 @@ public class TemplateImportService {
         return null;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public Study saveStudy(Study newStudy, Study oldStudy) {
         Amendment newDevelopment = newStudy.getDevelopmentAmendment();
         Study study;
@@ -286,9 +290,14 @@ public class TemplateImportService {
 
         if (newDevelopment != null) {
             resolveDeltaNodesAndChangeChildren(newDevelopment);
+            study.setDevelopmentAmendment(newDevelopment);
         }
 
-        study.setDevelopmentAmendment(newDevelopment);
+        study.setAssignedIdentifier(newStudy.getAssignedIdentifier());
+        study.setLongTitle(newStudy.getLongTitle());
+        for (StudySecondaryIdentifier studySecondaryIdentifier : newStudy.getSecondaryIdentifiers()) {
+            study.addSecondaryIdentifier(studySecondaryIdentifier);
+        }
         studyService.save(study);
         return study;
     }

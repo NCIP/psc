@@ -357,6 +357,77 @@ public class TemplateImportServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testreadAndSaveStudyAttributeForNewStudy() throws Exception {
+        Study study = createStudy();
+        String assignedIdentifier = "AssignedIdentifier";
+        study.setAssignedIdentifier(assignedIdentifier);
+        String longTitle = "LongTitle";
+        study.setLongTitle(longTitle);
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(study, "Type1", "ident1");
+        InputStream target = registerMockFor(InputStream.class);
+        expectStudyLoadedFromXml(study, target);
+        expectExistingStudyFound(null, study.getAssignedIdentifier());
+        Change change = study.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0);
+        expectDeltaAndChangesForTemplateIndex(((Add)change));
+        expectForNewActivities(((Add)change), new ArrayList<PlannedActivity>());
+        expectNoGridIdConflicts(study);
+        expectDaoForPlannedCalendar(study);
+        EpochDao epochDao = daoFinder.expectDaoFor(Epoch.class, EpochDao.class);
+        expect(epochDao.getByGridId(((Add)change).getChild().getGridId())).andReturn((Epoch)((Add)change).getChild());
+        studyDao.save(study);
+        studyService.save(study);
+        replayMocks();
+        service.readAndSaveTemplate(target);
+        verifyMocks();
+
+        assertEquals("New study doesn't have identifier", assignedIdentifier, study.getAssignedIdentifier());
+        assertNotNull(study.getLongTitle());
+        assertEquals("New study doesn't have long title", longTitle, study.getLongTitle());
+        assertEquals("New study doesn't have secondary identifiers", 1, study.getSecondaryIdentifiers().size());
+        assertEquals("New study doesn't have correct secondary identifiers",
+                identifier.getValue(), study.getSecondaryIdentifierValue("Type1"));
+    }
+
+    public void testReadAndSaveUpdateStudyAttributeWhenExistingStudy() throws Exception {
+        Study newStudy = createReleasesStudy();
+        String newIdentifier = "UpdatedAssignedIdentifier";
+        newStudy.setAssignedIdentifier(newIdentifier);
+        String longTitle = "LongTitle";
+        newStudy.setLongTitle(longTitle);
+        StudySecondaryIdentifier identifier = addSecondaryIdentifier(newStudy, "Type1", "ident1");
+        Study existingStudy = createReleasesStudy();
+        InputStream target = registerMockFor(InputStream.class);
+        expectStudyLoadedFromXml(newStudy, target);
+        expectExistingStudyFound(existingStudy, newStudy.getAssignedIdentifier());
+        expectExistingStudy(existingStudy);
+        for (Change change : existingStudy.getAmendment().getDeltas().get(0).getChanges()) {
+            expectDeltaAndChangesForTemplateIndex((Add)change);
+
+        }
+        for (Amendment amendment : newStudy.getAmendmentsList()) {
+            for (Delta<?> delta : amendment.getDeltas()) {
+                for (Change change : delta.getChanges()) {
+                    expectDeltaAndChangesForTemplateIndex((Add)change);
+                    expectForNewActivities(((Add)change), new ArrayList<PlannedActivity>());
+                }
+            }
+        }
+        studyDao.save(existingStudy);
+        studyService.save(existingStudy);
+        assertEquals("Existing study has different identifier", "study", existingStudy.getAssignedIdentifier());
+        assertNull(existingStudy.getLongTitle());
+        assertEquals("Existing study has secondary identifiers", 0, existingStudy.getSecondaryIdentifiers().size());
+        replayMocks();
+        service.readAndSaveTemplate(target);
+        verifyMocks();
+        assertEquals("Existing study has old identifier", newIdentifier, existingStudy.getAssignedIdentifier());
+        assertNotNull(existingStudy.getLongTitle());
+        assertEquals("Existing study doesn't have long title", longTitle, existingStudy.getLongTitle());
+        assertEquals("Existing study doesn't have secondary identifiers", 1, existingStudy.getSecondaryIdentifiers().size());
+        assertEquals("Existing study doesn't have correct secondary identifier",
+                identifier.getValue(), existingStudy.getSecondaryIdentifierValue("Type1"));
+    }
+
     private void expectStudyLoadedFromXml(Study newStudy,InputStream target) {
         expect(studyXmlSerializer.deserializeDocument(target)).andReturn(DocumentHelper.createDocument());
         expect(studyXmlSerializer.readElement(null, new Study())).andReturn(newStudy);
