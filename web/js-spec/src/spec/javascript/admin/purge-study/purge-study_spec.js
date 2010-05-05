@@ -121,8 +121,26 @@ Screw.Unit(function () {
 
           });
 
+          it("report a failure when populating study details", function () {
+              jQuery('#study-details-title').html('Loading..');
+              jQuery('#study-long-title').html("Loading..");
+              jQuery('#study-assigned-identifier').html("Loading..");
+              jQuery('#study-amendment-count').html("Loading..");
+              jQuery('#study-assigned-identifier-hidden').val("");
+              jQuery('#associated-sites').html('Loading..');
+
+              psc.admin.ps.StudyDetails.failurePopulatingFields();
+
+              expect(jQuery('#study-details-title').html()).to(equal, 'A problem occurred when retrieving the assigned identifier')
+              expect(jQuery('#study-long-title').html()).to(equal, 'A problem occurred when retrieving the long title')
+              expect(jQuery('#study-assigned-identifier').html()).to(equal, 'A problem occurred when retrieving the assigned identifier')
+              expect(jQuery('#study-amendment-count').html()).to(equal, 'A problem occurred when retrieving the total amendment count')
+              expect(jQuery('#study-assigned-identifier-hidden').val()).to(equal, '')
+              expect(jQuery('#associated-sites').html()).to(equal, 'A problem occurred when retrieving the associated sites')
+          });
+
           it("populates the study site details", function() {
-              expect(jQuery('#associated-sites').html()).to(equal, 'Loading...');
+              jQuery('#associated-sites').html('Loading..');
 
               psc.admin.ps.StudyDetails.setStudySites(
                     [

@@ -97,19 +97,22 @@ psc.admin.ps.StudyDetails = (function ($) {
 
         psc.admin.ps.StudyDetails.showDetails();
 
-        getStudyDetails(study.assigned_identifier, [psc.admin.ps.StudyDetails.populateStudyDetails, psc.admin.ps.StudyDetails.populateSiteAssociations]);
+        getStudyDetails(study.assigned_identifier, [psc.admin.ps.StudyDetails.populateStudyDetails, psc.admin.ps.StudyDetails.populateSiteAssociations], psc.admin.ps.StudyDetails.failurePopulatingFields);
     }
 
-    function getStudyDetails(assignedIdentifier, callbacks) {
+    function getStudyDetails(assignedIdentifier, callbacks, failureCallback) {
         var uri = SC.relativeUri(
                 studyResourceUri .replace("\{assigned-identifier\}", assignedIdentifier)
                 )
 
-        $.get(uri, function(data) {
-            var study = psc.admin.ps.StudyDetails.generateStudyJSON(data);
-            for (var i=0; i < callbacks.length; i++) {
-                callbacks[i](study);
-            }
+        $.ajax({url: uri,
+            success: function(data) {
+                var study = psc.admin.ps.StudyDetails.generateStudyJSON(data);
+                for (var i=0; i < callbacks.length; i++) {
+                    callbacks[i](study);
+                }
+            },
+            error: failureCallback
         })
     }
 
@@ -170,6 +173,15 @@ psc.admin.ps.StudyDetails = (function ($) {
                     $('#associated-sites').append("<div>" + msg + "</div>");
                 }
             }
+        },
+
+        failurePopulatingFields: function() {
+            $('#study-details-title').html('A problem occurred when retrieving the assigned identifier');
+            $('#study-assigned-identifier').html('A problem occurred when retrieving the assigned identifier');
+            $('#study-long-title').html('A problem occurred when retrieving the long title');
+            $('#study-amendment-count').html('A problem occurred when retrieving the total amendment count');
+            $('#study-assigned-identifier-hidden').val('');
+            $('#associated-sites').html('A problem occurred when retrieving the associated sites');
         },
 
         hideyDetails: function() {
