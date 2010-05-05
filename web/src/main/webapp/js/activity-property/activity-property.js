@@ -21,20 +21,23 @@ Object.extend(SC.AP, {
  editProperty: function(property) {
     var rowClass = SC.AP.findSelectIndexClass(property)
     SC.AP.PROPERTY_OBSERVERS = { }
-    $w ("templateValue textValue").each(function(propertyType) {
-        var propertySpan = $(property).up().down('.' + propertyType, 0);
-        var propertyInput = $('edit-property-' + propertyType);
-        propertyInput.value = propertySpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
-        SC.applyInputHint(propertyInput)
-        SC.AP.PROPERTY_OBSERVERS[propertyType] = new Form.Element.Observer(propertyInput, 0.4,
-            function(e, value) {
-                if (propertyInput.hasClassName("input-hint")) {
-                    propertySpan.update("")
-                } else {
-                    propertySpan.update(value.strip())
+    $w("templateValue textValue").each(function(propertyType) {
+        var propertyArray = $(property).select('.' + propertyType);
+        if (propertyArray.size() != 0) {
+            var propertySpan = propertyArray.first();
+            var propertyInput = $('edit-property-' + propertyType);
+            propertyInput.value = propertySpan.innerHTML.unescapeHTML().strip().replace(/\s+/g, " ")
+            SC.applyInputHint(propertyInput)
+            SC.AP.PROPERTY_OBSERVERS[propertyType] = new Form.Element.Observer(propertyInput, 0.4,
+                function(e, value) {
+                    if (propertyInput.hasClassName("input-hint")) {
+                        propertySpan.update("")
+                    } else {
+                        propertySpan.update(value.strip())
+                    }
                 }
-            }
-        )
+            )
+        }
     })
     $('edit-property-lightbox').addClassName(rowClass)
     $('edit-property-lightbox').show()
@@ -54,17 +57,17 @@ Object.extend(SC.AP, {
 
     var oldUri = $('oldUri ' +rowClass);
     if (oldUri != null) {
-       var keyValue = $(oldUri).up().down('.listKey', 0).value
+       var keyValue = $(oldUri).select('.listKey').first().value
        SC.AP.addValues(keyValue, "existingUri")
     }
 
     var newId = $('newUri ' +rowClass);
     if (newId != null) {
-       if (!$(newId).up().down('.textValue', 0).innerHTML.empty()
-           && !$(newId).up().down('.templateValue', 0).innerHTML.empty()) {
-           $(newId).up().down(".textName", 0).update("Text: ")
-           $(newId).up().down(".templateName", 0).update("Template: ")
-           newId.up().down(".property-edit", 0).style.display = 'inline'
+       if (!$(newId).select('.textValue').first().innerHTML.empty()
+           && !$(newId).select('.templateValue').first().innerHTML.empty()) {
+           $(newId).select(".textName").first().update("Text: ")
+           $(newId).select(".templateName").first().update("Template: ")
+           newId.select(".property-edit").first().style.display = 'inline'
            SC.AP.addValues(rowIndex, "newUri")
        } else {
            $('propertyTable').deleteRow(rowIndex);
