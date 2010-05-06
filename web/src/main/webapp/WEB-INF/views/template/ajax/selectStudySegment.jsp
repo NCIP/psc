@@ -4,7 +4,7 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsgen:replaceHtml targetElement="selected-studySegment">
-    <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}"/>
+    <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true" canEdit="${canEdit}"/>
 </jsgen:replaceHtml>
 Element.addClassName("studySegment-${studySegment.base.id}-item", "selected")
 SC.slideAndShow('selected-studySegment-content')

@@ -55,7 +55,7 @@ public class DeletePeriodController extends PscSimpleFormController {
         if (study.getDevelopmentAmendment() != null) {
             studySegment = deltaService.revise(studySegment);
             model.put("developmentRevision", study.getDevelopmentAmendment());
-
+            model.put("canEdit", "true");
         }
 
         Study theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
