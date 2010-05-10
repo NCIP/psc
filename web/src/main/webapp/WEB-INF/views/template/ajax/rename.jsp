@@ -3,6 +3,10 @@
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<jsgen:replaceHtml targetElement="errors"></jsgen:replaceHtml>
+<jsgen:replaceHtml targetElement="epochAndSegmentErrors"></jsgen:replaceHtml>
 <c:if test="${not empty command.studySegment}">
     <jsgen:replaceHtml targetElement="studySegment-${command.studySegment.id}">${command.revisedStudySegment.name}</jsgen:replaceHtml>
 </c:if>
@@ -15,12 +19,22 @@
         <a href="/studycalendar/pages/cal/studyList">Studies</a> /
         <a href="/studycalendar/pages/cal/template?study=${command.study.id}&amendment=${command.study.developmentAmendment.id}">${command.study.name}</a>
     </jsgen:replaceHtml>
+
     <c:choose>
         <c:when test="${!error}">
-            <jsgen:replaceHtml targetElement="errors"><h5>Template name already exists</h5></jsgen:replaceHtml>
+             <c:choose>
+                <c:when test="${rename eq 'Study Segment' || rename eq 'Epoch'}">
+                     <jsgen:replaceHtml targetElement="epochAndSegmentErrors"><h5 class="error">${rename} name already exists</h5></jsgen:replaceHtml>
+                </c:when>
+                <c:otherwise>
+                     <jsgen:replaceHtml targetElement="errors"><h5 class="error">Template name already exists</h5></jsgen:replaceHtml>
+                </c:otherwise>
+            </c:choose>
+
         </c:when>
         <c:otherwise>
             <jsgen:replaceHtml targetElement="errors"></jsgen:replaceHtml>
+            <jsgen:replaceHtml targetElement="epochAndSegmentErrors"></jsgen:replaceHtml>
         </c:otherwise>
     </c:choose>
 

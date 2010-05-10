@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,6 +29,7 @@ public abstract class EditTemplateCommand implements EditCommand {
     private DeltaService deltaService;
     private StudyService studyService;
     private DaoFinder daoFinder;
+    private TemplateService templateService;
 
     // directly bound
     private Study study;
@@ -80,6 +82,14 @@ public abstract class EditTemplateCommand implements EditCommand {
         Study theRevisedStudy = deltaService.revise(getStudy(), getStudy().getDevelopmentAmendment());
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
         model.put("epochs", epochs);
+        if (getRelativeViewName() != null && getRelativeViewName().equals("rename")) {
+            if (getMode().toString().toLowerCase().contains("studysegment")){
+                model.put(getRelativeViewName(), "Study Segment");
+            }
+            if (getMode().toString().toLowerCase().contains("epoch")) {
+                model.put(getRelativeViewName(), "Epoch");
+            }
+        }
         return model;
     }
 
@@ -224,6 +234,14 @@ public abstract class EditTemplateCommand implements EditCommand {
 
     public StudyService getStudyService() {
         return studyService;
+    }
+
+    public TemplateService getTemplateService() {
+        return templateService;
+    }
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
     @Required

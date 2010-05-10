@@ -3,11 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static org.easymock.classextension.EasyMock.expect;
+
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -17,6 +21,7 @@ public class RenameCommandTest extends EditCommandTestCase {
     private StudyService studyService;
     private RenameCommand command;
     private StudyDao studyDao;
+    private TemplateService templateService;
 
     @Override
     protected void setUp() throws Exception {
@@ -29,6 +34,8 @@ public class RenameCommandTest extends EditCommandTestCase {
         command.setDeltaService(getTestingDeltaService());
         command.setValue(NEW_NAME);
 
+        templateService = registerMockFor(TemplateService.class);
+        command.setTemplateService(templateService);
         // study.getPlannedCalendar().addEpoch(Epoch.create("E1"));
         assignIds(study);
         command.setStudy(study);
@@ -45,7 +52,12 @@ public class RenameCommandTest extends EditCommandTestCase {
     public void testRenameMultiStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1", "A", "B");
         command.setEpoch(epoch);
-
+        PlannedCalendar pc = study.getPlannedCalendar();
+        study.getPlannedCalendar().addEpoch(epoch);
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        Epoch e = command.getRevisedEpoch();
+        expect(templateService.findParent(e)).andReturn(pc).anyTimes();
+        expect(templateService.findChildren(pc, Epoch.class)).andReturn(epochs);
         doApply();
         assertEquals("Wrong number of deltas", 1, study.getDevelopmentAmendment().getDeltas().size());
         assertSame("Delta is for wrong node", epoch, lastDelta().getNode());
@@ -54,8 +66,12 @@ public class RenameCommandTest extends EditCommandTestCase {
 
     public void testRenameNoStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1");
+        PlannedCalendar pc = study.getPlannedCalendar();
         command.setEpoch(epoch);
-
+        Epoch e = command.getRevisedEpoch();
+        expect(templateService.findParent(e)).andReturn(pc).anyTimes();
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        expect(templateService.findChildren(pc, Epoch.class)).andReturn(epochs);
         doApply();
         assertEquals("Wrong number of deltas", 2, study.getDevelopmentAmendment().getDeltas().size());
         assertPropertyChange("Epoch not renamed", "name", "E1", NEW_NAME,
@@ -66,7 +82,10 @@ public class RenameCommandTest extends EditCommandTestCase {
     public void testRenameStudySegmentFromMultiStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1", "A", "B");
         command.setStudySegment(epoch.getStudySegments().get(0));
-
+        StudySegment ss = command.getRevisedStudySegment();
+        expect(templateService.findParent(ss)).andReturn(epoch).anyTimes();
+        List<StudySegment> studySegments = epoch.getStudySegments();
+        expect(templateService.findChildren(epoch, StudySegment.class)).andReturn(studySegments);
         doApply();
         assertEquals("Wrong number of deltas", 1,
             study.getDevelopmentAmendment().getDeltas().size());
@@ -77,7 +96,10 @@ public class RenameCommandTest extends EditCommandTestCase {
     public void testRenameStudySegmentOfNoStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1");
         command.setStudySegment(epoch.getStudySegments().get(0));
-
+        StudySegment ss = command.getRevisedStudySegment();
+        expect(templateService.findParent(ss)).andReturn(epoch).anyTimes();
+        List<StudySegment> studySegments = epoch.getStudySegments();
+        expect(templateService.findChildren(epoch, StudySegment.class)).andReturn(studySegments);
         doApply();
         assertEquals("Wrong number of deltas", 2, study.getDevelopmentAmendment().getDeltas().size());
         assertPropertyChange("Sole studySegment not renamed", "name", "E1", NEW_NAME,

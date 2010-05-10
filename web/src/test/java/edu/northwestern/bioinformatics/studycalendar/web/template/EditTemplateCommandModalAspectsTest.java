@@ -54,7 +54,7 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
     public void testGetModelMerges() throws Exception {
         useMockMode();
         expect(mockMode.getModel()).andReturn(Collections.singletonMap("zip", (Object) "zap"));
-
+        expect(command.getRelativeViewName()).andReturn(null);
         replayMocks();
         Map<String, Object> model = command.getModel();
         verifyMocks();

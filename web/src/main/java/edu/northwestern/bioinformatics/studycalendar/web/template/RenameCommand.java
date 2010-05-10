@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 import java.util.Map;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -68,6 +67,18 @@ public class RenameCommand extends EditTemplateCommand {
                 setStudySegment(soleStudySegment);
             }
         }
+
+        public boolean validAction() {
+            Epoch e = getRevisedEpoch();
+            PlannedCalendar pc = getTemplateService().findParent(e);
+            Collection<Epoch> epochs = getTemplateService().findChildren(pc, Epoch.class);
+            for (Epoch epoch : epochs) {
+                if (!epoch.equals(e) && epoch.getName().equals(getValue())) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     private class RenameStudySegment extends RenameMode {
@@ -76,6 +87,18 @@ public class RenameCommand extends EditTemplateCommand {
             if (getStudySegment().getEpoch() != null && !getStudySegment().getEpoch().isMultipleStudySegments()) {
                 rename(getStudySegment().getEpoch());
             }
+        }
+
+        public boolean validAction() {
+            StudySegment ss = getRevisedStudySegment();
+            Epoch e = getTemplateService().findParent(ss);
+            Collection<StudySegment> studySegments = getTemplateService().findChildren(e, StudySegment.class);
+            for (StudySegment studySegmentFromList : studySegments) {
+                if (!studySegmentFromList.equals(ss) && studySegmentFromList.getName().equals(getValue())) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

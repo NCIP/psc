@@ -238,6 +238,11 @@
             .h2ForCycle {
                 font-weight:normal;
             }
+
+            .error .epochAndSegmentErrors {
+                margin-right:10px;
+                margin-left:0.5em;
+            }
         </style>
 
         <c:if test="${not empty developmentRevision}">
@@ -747,7 +752,7 @@
     <body>
         <div id="study-info" class="title-card card">
             <div class="header">Study info</div>
-            <div id="errors" style="margin-right:10px; margin-left:0.5em;"></div>
+            <div id="errors" class="error"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
             <div class="row odd">
                 <div class="label">Amendment</div>
@@ -807,7 +812,7 @@
                     <h1 id="enterStudyNameSentence"></h1>
                 </div>
 
-                <div id="errorMessages" style="display:none;">
+                <div id="errorMessages" class="error" style="display:none;">
                     <tags:replaceErrorMessagesForTemplate/>
                 </div>
 
@@ -933,6 +938,7 @@
                 <p class="controls" id="addEpoch"/>
 
                 <laf:division>
+                    <div id="epochAndSegmentErrors" class="error"></div>
                     <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
                 </laf:division>
             </laf:box>
