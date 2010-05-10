@@ -60,7 +60,9 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
         command.apply();
-        return getControllerTools().redirectToCalendarTemplate(command.getStudySite().getStudy().getId());
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("selected", command.getStudySite().getStudy().getId());
+        return new ModelAndView("redirectToAssignSubjectCoordinatorByStudy", model);
     }
 
     ////// CONFIGURATION

@@ -57,4 +57,9 @@
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/activities"/>
     </bean>
+
+    <bean id="redirectToAssignSubjectCoordinatorByStudy" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative" value="true"/>
+        <property name="url" value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>
+    </bean>
 </beans>
