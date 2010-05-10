@@ -101,7 +101,7 @@
     </target>
 
     <target name="build:war" depends="install">
-        <jruby line="-S buildr build test=no"/>
+        <jruby line="-S buildr clean build test=no"/>
     </target>
 
     <target name="deploy:psc:webapp" description="Deploy pre-built war file">
