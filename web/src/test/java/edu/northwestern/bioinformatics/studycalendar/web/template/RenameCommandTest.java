@@ -6,12 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.EasyMock.same;
+import static org.easymock.EasyMock.eq;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +42,7 @@ public class RenameCommandTest extends EditCommandTestCase {
         command.setTemplateService(templateService);
         // study.getPlannedCalendar().addEpoch(Epoch.create("E1"));
         assignIds(study);
+        study.setAssignedIdentifier("Study name");
         command.setStudy(study);
     }
 
@@ -47,6 +52,16 @@ public class RenameCommandTest extends EditCommandTestCase {
 
         doApply();
         assertRenamed("Study", study);
+    }
+
+    public void testRenameStudyWithSameName() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(NEW_NAME)).andReturn(study);
+        command.setStudy(study);
+        replayMocks();
+           boolean result = command.apply();
+        verifyMocks();
+        assertEquals("Study was renamed", false, result);
+        assertFalse("Study name is changed", study.getName().equals(NEW_NAME));
     }
 
     public void testRenameMultiStudySegmentEpoch() throws Exception {
@@ -79,6 +94,21 @@ public class RenameCommandTest extends EditCommandTestCase {
         assertPropertyChange("Sole studySegment not renamed", "name", "E1", NEW_NAME, lastChange());
     }
 
+    public void testRenameEpochWithExistingName() throws Exception {
+        Epoch epoch = createAndAddEpoch(NEW_NAME);
+        PlannedCalendar pc = study.getPlannedCalendar();
+        command.setEpoch(epoch);
+        Epoch e = command.getRevisedEpoch();
+        expect(templateService.findParent(e)).andReturn(pc).anyTimes();
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        expect(templateService.findChildren(pc, Epoch.class)).andReturn(epochs);
+
+        replayMocks();
+           boolean result = command.apply();
+        verifyMocks();
+        assertEquals("Epoch was renamed", false, result);
+    }
+
     public void testRenameStudySegmentFromMultiStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1", "A", "B");
         command.setStudySegment(epoch.getStudySegments().get(0));
@@ -91,6 +121,19 @@ public class RenameCommandTest extends EditCommandTestCase {
             study.getDevelopmentAmendment().getDeltas().size());
         assertEquals("Wrong affected node", epoch.getStudySegments().get(0), lastDelta().getNode());
         assertPropertyChange("StudySegment not renamed", "name", "A", NEW_NAME, lastChange());
+    }
+
+    public void testRenameStudySegmentWithSameNameFromMultiStudySegmentEpoch() throws Exception {
+        Epoch epoch = createAndAddEpoch("E2", "B", NEW_NAME);
+        command.setStudySegment(epoch.getStudySegments().get(0));
+        StudySegment ss = command.getRevisedStudySegment();
+        expect(templateService.findParent(ss)).andReturn(epoch).anyTimes();
+        List<StudySegment> studySegments = epoch.getStudySegments();
+        expect(templateService.findChildren(epoch, StudySegment.class)).andReturn(studySegments);
+        replayMocks();
+        boolean result = command.apply();
+        verifyMocks();
+        assertEquals("Epoch was renamed", false, result);
     }
 
     public void testRenameStudySegmentOfNoStudySegmentEpoch() throws Exception {
