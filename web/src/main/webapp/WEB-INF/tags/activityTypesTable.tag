@@ -3,9 +3,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
-
-<display:table name="activityTypes" class="query-results" id="row" requestURI="activityTypes" >
-    <display:column title="Type" sortable="true">
+<display:table name="activityTypes" class="query-results" id="row" requestURI="addEditActivityType" >
+    <display:column title="Type" sortable="true" sortName="type">
         <label id="Type${row.id}">${row.name}</label>
         <input id="TypeName${row.id}" type="hidden" value="${row.name}"/>
     </display:column>
