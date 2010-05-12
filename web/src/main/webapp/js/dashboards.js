@@ -5,11 +5,18 @@ SC.updateCurrentActivities = function(href) {
     });
 }
 
+var timeout = 3000;
+var delay;
 SC.registerCurrentActivitiesUpdaters = function(href) {
     Event.observe(window, 'load', function() {
+        var toDateValueOld = $('toDate').value;
+        delay = function() { timeoutFunction(toDateValueOld, href) };
+        setTimeout(delay, timeout);
+
         var handler = function() { SC.updateCurrentActivities(href) }
 
-        $('toDate').observe('change', handler)
+//        $('toDate').observe('change', handler)
+
         var browser=navigator.appName;
         if (browser=="Microsoft Internet Explorer") {
             $('toDate').observe('keypress', function(e) {
@@ -31,6 +38,15 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
         }
         $('current-activities-form').observe('submit', handler1)
     })
+}
+
+function timeoutFunction(toDateValueOld, href) {
+  var toDateValueNew = $('toDate').value;
+  if (toDateValueOld != toDateValueNew) {
+    SC.updateCurrentActivities(href)
+  }
+  delay = function() {timeoutFunction(toDateValueNew, href)};
+  setTimeout(delay, timeout)
 }
 
 function selectAll(selectBox, selectAll) {
