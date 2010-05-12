@@ -75,6 +75,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(getStudySubjectAssignments(colleagueId), 7));
         model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(getStudySubjectAssignments(colleagueId)));
         model.put("activityTypes", activityTypeDao.getAll());
+        model.put("activityTypesCount", activityTypeDao.getAll().size());
 
         return model;
     }
