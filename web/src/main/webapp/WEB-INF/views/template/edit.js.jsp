@@ -59,7 +59,7 @@ function createStudySegmentControls(studySegmentItem) {
 }
 
 function createDeletePeriodControls(periodItem) {
-    var periodId = periodItem.readAttribute('periodId')
+    var periodId = $(periodItem).readAttribute('periodId')
     var periodName = periodItem.readAttribute('periodName')
     var studySegmentId = periodItem.readAttribute('studySegmentId')
     periodItem.show();
