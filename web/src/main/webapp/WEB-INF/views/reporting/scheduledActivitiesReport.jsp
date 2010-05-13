@@ -64,7 +64,7 @@
         function generateExport(extention) {
             var uri = getUri(extention);
             var params = getParams();
-            location.href = uri+extention + '?study='+ params['study'] + '&site=' + params['site'] +
+            location.href = uri + '?study='+ params['study'] + '&site=' + params['site'] +
                             '&state=' + params['state'] + '&activity-type='+ params['activity-type'] +
                             '&label=' + params['label'] + '&start-date='+params['start-date'] +
                             '&end-date='+ params['end-date'] + '&responsible-user=' + params['responsible-user'] +
