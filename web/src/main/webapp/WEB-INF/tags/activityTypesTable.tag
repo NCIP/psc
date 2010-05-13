@@ -6,7 +6,7 @@
 <display:table name="activityTypes" class="query-results" id="row" requestURI="addEditActivityType" >
     <display:column title="Type" sortable="true" sortName="type">
         <label id="Type${row.id}">${row.name}</label>
-        <input id="TypeName${row.id}" type="hidden" value="${row.name}"/>
+        <input id="TypeName${row.id}" style="display:none;" value="${row.name}"/>
     </display:column>
 
     <display:column title="Controls" media="html">

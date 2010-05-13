@@ -71,7 +71,7 @@
         function editActivityType(activityTypeId) {
             var inputTypeName = 'TypeName'+activityTypeId
             var labelTypeName = 'Type'+activityTypeId
-            $(inputTypeName).type = 'visible'
+            $(inputTypeName).style.display = 'inline'
             $(labelTypeName).hide();
 
             var editButton = 'Edit'+activityTypeId
@@ -96,7 +96,7 @@
                 method: 'post',
                 onComplete: function(t) {
                     $(labelTypeName).innerHTML = $(inputTypeName).value;
-                    $(inputTypeName).type ='hidden'
+                    $(inputTypeName).style.display ='none'
                     $(labelTypeName).show()
 
 
