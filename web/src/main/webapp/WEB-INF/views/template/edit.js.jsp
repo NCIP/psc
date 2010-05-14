@@ -196,21 +196,28 @@ function hideShowReleaseTemplateButton() {
     }
 }
 
-function createStudyControls() {
+function createStudyControls(anyProvidersAvailable) {
     var h1 = $$("h1")[0];
     var studyId = ${param.study}
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
     h1.appendChild(controlBox)
 
     var renameControl = createRenameControl('study', studyId, "Set protocol identifier", 'study')
-    var externalStudyControl = createExternalStudyControl('study', studyId, "Associate with external study")
+
+    if (anyProvidersAvailable) {
+        var externalStudyControl = createExternalStudyControl('study', studyId, "Associate with external study")
+    }
+    
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename", onComplete:function() {hideShowReleaseTemplateButton()}
     })
 
     controlBox.appendChild(renameControl)
-    controlBox.appendChild(externalStudyControl)
+
+    if (anyProvidersAvailable) {
+        controlBox.appendChild(externalStudyControl)
+    }
 }
 
 function createAllEpochControls() {

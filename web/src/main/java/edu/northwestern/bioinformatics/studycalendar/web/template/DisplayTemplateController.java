@@ -2,26 +2,31 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
-import edu.northwestern.bioinformatics.studycalendar.service.*;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.restlet.data.Status;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +49,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private AuthorizationService authorizationService;
     private StudyConsumer studyConsumer;
     private TemplateService templateService;
+    private OsgiLayerTools osgiLayerTools;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -55,6 +61,8 @@ public class DisplayTemplateController extends PscAbstractController {
         Integer selectedStudySegmentId = ServletRequestUtils.getIntParameter(request, "studySegment");
         Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
         Map<String, Object> model = new HashMap<String, Object>();
+
+        model.put("anyProvidersAvailable", anyProvidersAvailable());
 
         Study loaded = getStudyByTheIdentifier(studyStringIdentifier);
         studyConsumer.refresh(loaded);
@@ -205,7 +213,27 @@ public class DisplayTemplateController extends PscAbstractController {
         return study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
     }
 
+    private boolean anyProvidersAvailable() {
+        boolean result = false;
+
+        List providers = getOsgiLayerTools().getServices(StudyProvider.class);
+        if (providers != null && providers.size() > 0) {
+            result = true;
+        }
+
+        return result;
+    }
+
     ////// CONFIGURATION
+
+    public OsgiLayerTools getOsgiLayerTools() {
+        return osgiLayerTools;
+    }
+
+    @Required
+    public void setOsgiLayerTools(OsgiLayerTools tools) {
+        this.osgiLayerTools = tools;
+    }
 
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;

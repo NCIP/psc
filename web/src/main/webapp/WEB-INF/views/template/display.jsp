@@ -722,9 +722,18 @@
             }
 
             function loadFunctionsForDevelopmentRevision() {
+                <c:choose>
+                    <c:when test="${anyProvidersAvailable == null || anyProvidersAvailable == true}">
+                      var anyProvidersAvailable = true;
+                    </c:when>
+                    <c:otherwise>
+                        var anyProvidersAvailable = false;
+                    </c:otherwise>
+                </c:choose>
+
                 generalSetup();
                 if(typeof createStudyControls == 'function')
-                    createStudyControls();
+                    createStudyControls(anyProvidersAvailable);
                 if(typeof createAddEpochControl == 'function')
                     createAddEpochControl();
                 if(typeof addToBeginSentence == 'function')
