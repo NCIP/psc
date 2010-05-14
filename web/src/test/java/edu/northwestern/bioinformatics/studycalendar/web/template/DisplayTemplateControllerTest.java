@@ -1,30 +1,34 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.reset;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
-import static java.util.Collections.singletonList;
 import java.util.*;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.EMPTY_LIST;
 
 /**
  * @author Rhett Sutphin
@@ -50,6 +54,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private StudySegment seg1, seg0a, seg0b;
     private Amendment a0, a1, a2;
     private User subjectCoord;
+    private OsgiLayerTools osgiTools;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,6 +66,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         studyConsumer = registerMockFor(StudyConsumer.class);
         nowFactory = new StaticNowFactory();
         templateService = registerMockFor(TemplateService.class);
+        osgiTools = registerMockFor(OsgiLayerTools.class);
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setAssignedIdentifier(STUDY_NAME);
@@ -90,6 +96,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setNowFactory(nowFactory);
         controller.setStudyConsumer(studyConsumer);
         controller.setTemplateService(templateService);
+        controller.setOsgiLayerTools(osgiTools);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
@@ -128,6 +135,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
 
     public void testView() throws Exception {
+        expectGetStudyProviders();
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
         expect(studyConsumer.refresh(study)).andReturn(study);
@@ -165,6 +173,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     }
 
     public void testOnStudyAssignmentsIncludedWhenComplete() throws Exception {
+        expectGetStudyProviders();
         reset(studyDao);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
@@ -241,6 +250,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
         expect(studyConsumer.refresh(study)).andReturn(study);
+        expectGetStudyProviders();
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -271,6 +281,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     private Map<String, Object> getAndReturnModel() throws Exception {
+        expectGetStudyProviders();
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
         expect(studyConsumer.refresh(study)).andReturn(study);
@@ -281,5 +292,9 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
         return (Map<String, Object>) mv.getModel();
+    }
+
+    private void expectGetStudyProviders() {
+        expect(osgiTools.getServices(StudyProvider.class)).andReturn(EMPTY_LIST);
     }
 }
