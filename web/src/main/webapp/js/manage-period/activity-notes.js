@@ -70,7 +70,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
   function checkWeightAndFinishEditingNotes() {
     var weight = $F('edit-notes-weight');
     var defaultValue = $('#edit-notes-weight').attr('hint');
-    if (weight != null && weight.trim() != "" && weight.trim() != defaultValue) {
+    if (weight != null && $.trim(weight) != "" && $.trim(weight) != defaultValue) {
       var weightInt = parseInt(weight);
       if (isNaN(weightInt)) {
         $('#error').css('display', 'inline')
