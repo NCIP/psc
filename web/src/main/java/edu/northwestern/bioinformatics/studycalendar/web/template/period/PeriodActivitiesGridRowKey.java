@@ -33,7 +33,7 @@ public class PeriodActivitiesGridRowKey implements Comparable<PeriodActivitiesGr
 
     public static PeriodActivitiesGridRowKey create(Activity activity) {
         return new PeriodActivitiesGridRowKey(
-            activity.getId(), null, null, Collections.<String>emptySet(), 0
+            activity.getId(), null, null, Collections.<String>emptySet(), null
         );
     }
 
