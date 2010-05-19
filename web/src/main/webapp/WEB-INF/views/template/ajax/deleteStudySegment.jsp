@@ -10,7 +10,7 @@ $('epochs-container').style.height = '<tags:epochHeight plannedCalendar="${epoch
 updateAllStudySegmentsControlVisibility(${epoch.id})
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
 <jsgen:replaceHtml targetElement="selected-studySegment">
-    <templ:studySegment studySegment="${template}" developmentRevision="${developmentRevision}"/>
+    <templ:studySegment studySegment="${template}" developmentRevision="${developmentRevision}" visible="true" canEdit="${canEdit}"/>
 </jsgen:replaceHtml>
 Element.addClassName("select-studySegment-${studySegment.id}", "selected")
 SC.slideAndShow('selected-studySegment-content')
@@ -18,4 +18,7 @@ SC.slideAndShow('selected-studySegment-content')
 <jsgen:replaceHtml targetElement="errorMessages">
     <tags:replaceErrorMessagesForTemplate/>
 </jsgen:replaceHtml>
+if (${not empty developmentRevision && canEdit}) {
+    epochControlls()
+}
 hideShowReleaseTemplateButton()

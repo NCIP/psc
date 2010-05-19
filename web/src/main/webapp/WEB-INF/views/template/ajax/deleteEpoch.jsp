@@ -15,8 +15,12 @@ Element.addClassName(epochDivs.last(), "last")
 
 //changing the selected studySegment to the very first one on the first epoch
 <jsgen:replaceHtml targetElement="selected-studySegment">
-    <templ:studySegment studySegment="${template}" developmentRevision="${developmentRevision}"/>
+    <templ:studySegment studySegment="${template}" developmentRevision="${developmentRevision}" visible="true" canEdit="${canEdit}"/>
 </jsgen:replaceHtml>
+
+if (${not empty developmentRevision && canEdit}) {
+    epochControlls()
+}
 
 Element.addClassName("studySegment-${studySegment.id}-item", "selected")
 SC.slideAndShow('selected-studySegment-content')

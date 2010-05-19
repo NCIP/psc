@@ -90,6 +90,9 @@ public abstract class EditTemplateCommand implements EditCommand {
                 model.put(getRelativeViewName(), "Epoch");
             }
         }
+        if (getStudy().getDevelopmentAmendment() != null) {
+            model.put("canEdit", "true");
+        }
         return model;
     }
 
