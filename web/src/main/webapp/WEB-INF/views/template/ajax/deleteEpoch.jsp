@@ -30,3 +30,4 @@ SC.slideAndShow('selected-studySegment-content')
     <tags:replaceErrorMessagesForTemplate/>
 </jsgen:replaceHtml>
 hideShowReleaseTemplateButton()
+initializeNewStudySegment()

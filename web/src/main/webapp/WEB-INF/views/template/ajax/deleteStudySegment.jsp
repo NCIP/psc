@@ -22,3 +22,4 @@ if (${not empty developmentRevision && canEdit}) {
     epochControlls()
 }
 hideShowReleaseTemplateButton()
+initializeNewStudySegment()
