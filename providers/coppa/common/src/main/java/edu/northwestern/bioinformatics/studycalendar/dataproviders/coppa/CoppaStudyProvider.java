@@ -54,6 +54,7 @@ public class CoppaStudyProvider implements StudyProvider {
         return null;
     }
 
+    @SuppressWarnings({ "unchecked" })
     public List<Study> search(String partialName) {
         StudyProtocol base = new StudyProtocol();
 
@@ -80,17 +81,14 @@ public class CoppaStudyProvider implements StudyProvider {
             combined.addAll(Arrays.asList(raw_by_assigned_id));
         }
 
-        Map<String, Study> dict = new HashMap<String, Study>();
+        Map<String, Study> dict = new LinkedHashMap<String, Study>();
         for (StudyProtocol protocol : combined) {
             if (protocol.getIdentifier() != null && !dict.containsKey(protocol.getIdentifier().getExtension())) {
                 dict.put(protocol.getIdentifier().getExtension(), createStudy(protocol));
             }
         }
 
-        List<Study> results = new ArrayList(dict.values());
-        Collections.reverse(results);
-        return results;
-
+        return new ArrayList<Study>(dict.values());
     }
 
     public String providerToken() {
