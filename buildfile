@@ -189,6 +189,7 @@ define "psc" do
       bnd.name = "PSC Acegi Extensions"
       bnd.import_packages <<
         "org.acegisecurity" <<
+        "org.springframework.core" <<
         "gov.nih.nci.cabig.ctms.domain"
       compile.with SECURITY.acegi, project('domain').and_dependencies
       package(:jar)
