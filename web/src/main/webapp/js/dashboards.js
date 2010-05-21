@@ -15,8 +15,6 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
 
         var handler = function() { SC.updateCurrentActivities(href) }
 
-//        $('toDate').observe('change', handler)
-
         var browser=navigator.appName;
         if (browser=="Microsoft Internet Explorer") {
             $('toDate').observe('keypress', function(e) {
@@ -30,9 +28,8 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
             input.observe('click', handler)
         })
 
-        $$('option.activity-type').each(function(option) {
-            option.observe('click', handler)
-        })
+        $('activityTypesList').observe('change', handler)
+
         var handler1 = function(evt) {
             Event.stop(evt)
         }
