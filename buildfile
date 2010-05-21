@@ -1053,15 +1053,9 @@ define "psc" do
     directory _('tmp/logs')
 
     task :jetty_deploy_exploded => ['psc:web:explode', _('tmp/logs')] do
-      logconfig = task(:explode).target + '/WEB-INF/classes/logback.xml'
-      filter(_('src/main/java')).
-        using(:maven, 'catalina.home' => _('tmp').to_s).
-        include(File.basename(logconfig)).
-        into(File.dirname(logconfig)).
-        run
-      Java.java.lang.System.setProperty("logback.configurationFile", logconfig)
       Java.java.lang.System.setProperty("catalina.home", _('tmp').to_s)
       Java.java.lang.System.setProperty("org.mortbay.util.FileResource.checkAliases", "false")
+      Java.java.lang.System.setProperty("psc.logging.debug", ENV['PSC_DEBUG'] || "true")
 
       jetty.deploy "#{jetty.url}/psc", task(:explode).target
     end
