@@ -83,7 +83,8 @@ CTMS_COMMONS_VERSION = "1.0.0-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
-SLF4J_VERSION = "1.5.6"
+SLF4J_VERSION = "1.5.11"
+LOGBACK_VERSION = "0.9.20"
 CAGRID_VERSION = "1.3"
 
 CTMS_COMMONS = struct(
@@ -108,17 +109,17 @@ CSV = [
 
 # While 0.9.18 is available in the springsource repo, it wants to work with SLF4J 1.5.8, which is not.
 LOGBACK = struct(
-  :core    => "ch.qos.logback:com.springsource.ch.qos.logback.core:jar:0.9.15",
-  :classic => "ch.qos.logback:com.springsource.ch.qos.logback.classic:jar:0.9.15",
+  :core    => "ch.qos.logback:logback-core:jar:#{LOGBACK_VERSION}",
+  :classic => "ch.qos.logback:logback-classic:jar:#{LOGBACK_VERSION}",
   # not technically part of logback, but exclusively used by it
   :janino  => "org.codehaus.janino:com.springsource.org.codehaus.janino:jar:2.5.15"
 )
 
 SLF4J = struct(
-  :api   => "org.slf4j:com.springsource.slf4j.api:jar:#{SLF4J_VERSION}",
-  :jcl   => "org.slf4j:com.springsource.slf4j.org.apache.commons.logging:jar:#{SLF4J_VERSION}",
-  :log4j => "org.slf4j:com.springsource.slf4j.org.apache.log4j:jar:#{SLF4J_VERSION}",
-  :jul   => "org.slf4j:com.springsource.slf4j.bridge:jar:#{SLF4J_VERSION}"
+  :api   => "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}",
+  :jcl   => "org.slf4j:jcl-over-slf4j:jar:#{SLF4J_VERSION}",
+  :log4j => "org.slf4j:log4j-over-slf4j:jar:#{SLF4J_VERSION}",
+  :jul   => "org.slf4j:jul-to-slf4j:jar:#{SLF4J_VERSION}"
 )
 
 def spring_osgi_apache_commons(name, version)

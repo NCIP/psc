@@ -4,11 +4,11 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
+        <encoder>
+            <pattern>
                 %d [%thread] %logger{36} %-5level: %msg%n
-            </Pattern>
-        </layout>
+            </pattern>
+        </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -18,18 +18,18 @@
                 ${catalina.home}/logs/studycalendar.%d{yyyy-MM-dd}.log.gz
             </FileNamePattern>
         </rollingPolicy>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
+        <encoder>
+            <pattern>
                 %date{HH:mm:ss} %36logger{36} %-5level: %msg%n
-            </Pattern>
-        </layout>
+            </pattern>
+        </encoder>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator name="warn-only-for-libs">
                 <expression>
                     (level &lt; WARN)
                         &amp;&amp; !(
-                            logger.getName().startsWith("edu.northwestern.bioinformatics")
-                            || logger.getName().endsWith("DispatcherServlet")
+                            logger.startsWith("edu.northwestern.bioinformatics")
+                            || logger.endsWith("DispatcherServlet")
                         )
                 </expression>
             </evaluator>
@@ -39,7 +39,7 @@
             <evaluator name="cglib-fake-warnings">
                 <expression>
                     (level == WARN)
-                        &amp;&amp; logger.getName().endsWith("Cglib2AopProxy")
+                        &amp;&amp; logger.endsWith("Cglib2AopProxy")
                         &amp;&amp; message.contains("Unable to proxy method")
                         &amp;&amp; message.contains("because it is final")
                 </expression>

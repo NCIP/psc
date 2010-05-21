@@ -4,11 +4,11 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
+        <encoder>
+            <pattern>
                 %d [%thread] %logger{36} %-5level: %msg%n
-            </Pattern>
-        </layout>
+            </pattern>
+        </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -18,11 +18,11 @@
                 ${catalina.home}/logs/studycalendar-plugins.%d{yyyy-MM-dd}.log.gz
             </FileNamePattern>
         </rollingPolicy>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
+        <encoder>
+            <pattern>
                 %date{HH:mm:ss} %36logger{36} %-5level: %msg%n
-            </Pattern>
-        </layout>
+            </pattern>
+        </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>WARN</level>
         </filter>
