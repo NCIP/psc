@@ -443,7 +443,44 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
         interruptSession();
 
         UserRole reloaded = userRoleDao.getById(-55);
-        assertNull("should be purged", reloaded);
+        assertNotNull("should be not be purged", reloaded);
+    }
+
+    public void testPurgeUserRoleStudySitesForAssociatedStudySite() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<UserRole> current = loaded.getStudySites().get(0).getUserRoles();
+            assertTrue("must have user roles", current.size() > 0);
+            assertEquals("user role should exist", -55, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        UserRole reloaded = userRoleDao.getById(-55);
+        assertEquals("should not be purged", 1, reloaded.getStudySites().size());
+        assertEquals("should not be purged", -301, reloaded.getStudySites().get(0).getId().intValue());
+    }
+
+    public void testPurgeUserRoleSites() {
+        {
+            Study loaded = studyDao.getById(-1);
+            assertNotNull(loaded);
+
+            List<UserRole> current = loaded.getStudySites().get(0).getUserRoles();
+            assertTrue("must have user roles", current.size() > 0);
+            assertEquals("user role should exist", -55, current.get(0).getId().intValue());
+
+            service.purge(loaded);
+        }
+
+        interruptSession();
+
+        UserRole reloaded = userRoleDao.getById(-55);
+        assertTrue("should not be be purged", reloaded.getSites().size() > 0);
     }
 
     public void testPurgeStudySubjectAssignment() {

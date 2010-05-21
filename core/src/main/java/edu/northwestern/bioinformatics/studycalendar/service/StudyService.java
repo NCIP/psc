@@ -12,6 +12,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -437,8 +438,18 @@ public class StudyService {
 
         for (Class klass : order) {
             if (nodes.containsKey(klass)) {
-                DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
-                dao.deleteAll(nodes.get(klass));
+                if (klass.equals(UserRole.class)) {
+                    for (Object o : nodes.get(klass)) {
+                        UserRole role = (UserRole) o;
+                        Collection<StudySite> intersect = CollectionUtils.intersection(study.getStudySites(), role.getStudySites());
+                        for (StudySite s : intersect) {
+                            role.removeStudySite(s);
+                        }
+                    }
+                } else {
+                    DeletableDomainObjectDao dao = ((SpringDaoFinder)daoFinder).findDeletableDomainObjectDao(klass);
+                    dao.deleteAll(nodes.get(klass));
+                }
             }
         }
     }
