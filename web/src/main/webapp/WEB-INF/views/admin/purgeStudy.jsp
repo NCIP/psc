@@ -117,7 +117,7 @@
                 </div>
             </c:if>
             <div class="row" id="purge-study-warning">
-                <p class="warning-message"><span class="warning">Warning:</span> This page allows purging of studies an all associated study information.</p>
+                <p class="warning-message"><span class="warning">Warning:</span> This page allows purging of studies and all associated study information.</p>
                 <p>Are you sure you want to continue? <button id="continue-to-purge-study">Yes</button></p>
             </div>
             <div class="row" id="study-search-container">
