@@ -33,7 +33,7 @@
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
         </c:if>
     </p>
-    <c:if test="${editable and empty studySegment.months}">
+    <c:if test="${editable and canEdit and empty studySegment.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
             <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">add period</a>.
