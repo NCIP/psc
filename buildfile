@@ -401,8 +401,8 @@ define "psc" do
       system_bundles = FELIX.values - [FELIX.main, FELIX.framework] - system_optional
       osgi_framework = { "osgi-framework/felix/#{felix_main.version}" => [felix_main] }
 
-      system_bundles += (LOG4J.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
-        [ project('osgi-layer:log4j-configuration').packages.first ]
+      system_bundles += (LOGBACK.values + [SLF4J.api, SLF4J.jcl]).collect { |spec| artifact(spec) } +
+        [ project('osgi-layer:log-configuration').packages.first ]
 
       bundle_projects = Buildr::projects.select { |p| p.bnd.wrap? }
       application_bundles =
@@ -524,13 +524,13 @@ define "psc" do
       package(:jar)
     end
 
-    define "log4j-configuration" do
+    define "log-configuration" do
       bnd.wrap!
-      bnd.name = "PSC OSGi Layer log4j Configuration"
+      bnd.name = "PSC OSGi Layer Log Configuration"
       bnd['Bundle-Activator'] =
-        'edu.northwestern.bioinformatics.studycalendar.osgi.log4j.Activator'
+        "edu.northwestern.bioinformatics.studycalendar.osgi.logback.LogbackConfigurator"
 
-      compile.with OSGI.core, LOG4J.main
+      compile.with SLF4J.api, LOGBACK, OSGI.core
 
       package(:jar)
     end

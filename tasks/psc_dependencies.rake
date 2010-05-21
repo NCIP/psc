@@ -106,11 +106,10 @@ CSV = [
   "net.sourceforge.javacsv:javacsv:jar:2.0"
 ]
 
-# Note that this bundle of logback-0.9.9 is not compatible, OSGi-wise, with
-# slf4j-1.5.6 below.
+# While 0.9.18 is available in the springsource repo, it wants to work with SLF4J 1.5.8, which is not.
 LOGBACK = struct(
-  :core    => "ch.qos.logback:com.springsource.ch.qos.logback.core:jar:0.9.9",
-  :classic => "ch.qos.logback:com.springsource.ch.qos.logback.classic:jar:0.9.9",
+  :core    => "ch.qos.logback:com.springsource.ch.qos.logback.core:jar:0.9.15",
+  :classic => "ch.qos.logback:com.springsource.ch.qos.logback.classic:jar:0.9.15",
   # not technically part of logback, but exclusively used by it
   :janino  => "org.codehaus.janino:com.springsource.org.codehaus.janino:jar:2.5.15"
 )
@@ -120,13 +119,6 @@ SLF4J = struct(
   :jcl   => "org.slf4j:com.springsource.slf4j.org.apache.commons.logging:jar:#{SLF4J_VERSION}",
   :log4j => "org.slf4j:com.springsource.slf4j.org.apache.log4j:jar:#{SLF4J_VERSION}",
   :jul   => "org.slf4j:com.springsource.slf4j.bridge:jar:#{SLF4J_VERSION}"
-)
-
-# For use inside the osgi layer until SpringSource releases a bundle of logback
-# that's compatible with slf4j-1.5.6
-LOG4J = struct(
-  :main  => "org.apache.log4j:com.springsource.org.apache.log4j:jar:1.2.15",
-  :slf4j => "org.slf4j:com.springsource.slf4j.log4j:jar:1.5.6"
 )
 
 def spring_osgi_apache_commons(name, version)
