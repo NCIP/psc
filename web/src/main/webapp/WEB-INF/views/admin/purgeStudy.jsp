@@ -96,7 +96,7 @@
             psc.admin.ps.Warning.init();
 
             jQuery("form").submit( function () {
-                return confirm("Are you sure you want to purge this study?  This action is undoable.");
+                return confirm("Are you sure you want to purge this study?  This action will permanently delete the study template and all associated subject schedules.");
             });
 
             jQuery("#acknowledge-status-message").click( function(event) {
@@ -117,7 +117,7 @@
                 </div>
             </c:if>
             <div class="row" id="purge-study-warning">
-                <p class="warning-message"><span class="warning">Warning:</span> This page allows purging of studies and all associated study information.</p>
+                <p class="warning-message"><span class="warning">Warning:</span> This page allows purging of studies and all associated study information, including subject schedules.</p>
                 <p>Are you sure you want to continue? <button id="continue-to-purge-study">Yes</button></p>
             </div>
             <div class="row" id="study-search-container">
