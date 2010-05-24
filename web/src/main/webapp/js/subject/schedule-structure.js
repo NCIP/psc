@@ -28,9 +28,10 @@ psc.subject.Schedule = function (scheduleApiResponse) {
 
       mineClass: function () {
         var classes = [];
-        if (this.belongsToSubjCoord()) {
+        if (this.isOpen() && this.belongsToSubjCoord()) {
           classes.push("mine");
-        } else {
+        }
+        if (this.isOpen() && !this.belongsToSubjCoord()) {
           classes.push("others");
         }
         return classes;
