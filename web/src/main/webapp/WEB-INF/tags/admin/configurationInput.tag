@@ -6,6 +6,10 @@
 <%@attribute name="configEntry" type="edu.northwestern.bioinformatics.studycalendar.web.admin.BindableConfigurationEntry" %>
 <%@attribute name="configEntryPath" type="java.lang.String" %>
 <c:choose>
+    <c:when test="${configEntry.property.key == 'displayDateFormat'}" >
+            <label><form:radiobutton path="${configEntryPath}" value="MM/DD/YYYY"/> American (MM/DD/YYYY)</label>
+            <label><form:radiobutton path="${configEntryPath}" value="DD/MM/YYYY"/> European (DD/MM/YYYY)</label>
+    </c:when>
     <c:when test="${configEntry.property.controlType == 'boolean'}">
         <div>
             <label><form:radiobutton path="${configEntryPath}" value="true"/> Yes</label>

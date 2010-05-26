@@ -66,6 +66,9 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Boolean>
             ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableCreatingTemplate"));
 
+    public static final ConfigurationProperty<String>
+            APPLICATION_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
+    
     ////// PSC-SPECIFIC LOGIC
     public boolean getExternalAppsConfigured() {
         return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null || get(PATIENT_PAGE_URL) != null;
