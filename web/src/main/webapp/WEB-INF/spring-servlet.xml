@@ -715,7 +715,7 @@
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="Manage sources"/>
+                                <property name="displayName" value="Set manual activity source"/>
                                 <property name="linkName" value="manageSourcesController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
@@ -740,7 +740,7 @@
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName" value="Purge Study"/>
+                                <property name="displayName" value="Purge study"/>
                                 <property name="linkName" value="purgeStudyController"/>
                                 <property name="urlResolver" ref="urlResolver"/>
                             </bean>
