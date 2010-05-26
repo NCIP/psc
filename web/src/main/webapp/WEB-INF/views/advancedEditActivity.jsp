@@ -130,7 +130,7 @@
                         </c:forEach>
                     </table>
                 </div>
-                <div class="value"><a class="newUriBtn" id="newUriBtn" href='#newUriBtn'>New Uri</a></div>
+                <div class="value"><a class="newUriBtn" id="newUriBtn" href='#newUriBtn'>New URI</a></div>
             </div>
             <div class="row submit">
                 <input type="submit" value="Save"/>
