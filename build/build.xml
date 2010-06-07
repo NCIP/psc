@@ -327,6 +327,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 			optional.property.list="ldap.url,ldap.basedn"
 			delete.property.list="exclude.jboss.backup"
 			/>
+		<mkdir dir="${dist.dir}" />
 		<zip destfile="${dist.dir}/${psc-webapp.install.zip.file}" basedir="${dist.exploded.dir}" />
 	</target>
 <!--
