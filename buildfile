@@ -7,6 +7,7 @@ require "buildr/emma" if emma?
 require "shenandoah/buildr"
 require "buildr/core/filter"
 require 'fileutils'
+require 'rexml/document'
 
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
@@ -50,6 +51,29 @@ define "psc" do
 
   task :public_demo_deploy do
     cp FileList[_("test/public/*")], "/opt/tomcat/webapps-vera/studycalendar/"
+  end
+
+  desc "Ensures that the BDA build includes an explicit install for each gem mentioned in build.yml"
+  task :verify_bda_gems do
+    requirements = *Buildr.settings.build["gems"].
+      collect { |line| line.split(/\s+/, 2) }.
+      collect { |name, version| [name, (Gem::Requirement.new(version) if version)] }
+
+    bda_installs = {}
+    REXML::Document.new(File.new _("build-adapter.xml")).elements.each("project/property") do |prop|
+      if prop.attributes["name"] =~ /gems.(\S+).version/
+        bda_installs[$1] = Gem::Version.new(prop.attributes["value"])
+      end
+    end
+
+    missing = requirements.reject { |gem, req|
+      (req.nil? && bda_installs.keys.include?(gem)) ||
+      (bda_installs[gem] && req.satisfied_by?(bda_installs[gem]))
+    }
+    unless missing.empty?
+      fail "The BDA installer is missing the following gem#{'s' unless missing.size == 1}:\n" <<
+        "- #{missing.collect { |pair| pair.join(' ') }.join("\n- ")}"
+    end
   end
 
   desc "Pure utility code"
@@ -1216,7 +1240,7 @@ task :server => 'psc:web:local_jetty'
 
 namespace :ci do
   desc "Continuous unit test build"
-  task :unit => [:clean, :'psc:database:clean_hsqldb'] do
+  task :unit => [:clean, :'psc:database:clean_hsqldb', :'psc:verify_bda_gems'] do
     task('psc:database:migrate').invoke unless hsqldb?
     task(:test).invoke
     if emma?
