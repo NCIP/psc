@@ -19,7 +19,7 @@
 
  <!--Standard sub project build TARGETS -->
     <target name="install"
-        depends="install:gem:buildr,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
+        depends="install:gem:buildr,install:gem:haml,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
         description="Downloads JRuby and installs required gems">
     </target>
 
@@ -74,6 +74,12 @@
     <gem_available name="buildr" path="buildr-1.3.3-java"/>
     <target name="install:gem:buildr" unless="buildr.exists" depends="install:jruby" description="Installs buildr gem">
         <install_gem name="buildr"/>
+    </target>
+
+    <property name="gems.haml.version" value="2.2.23"/>
+    <gem_available name="haml"/>
+    <target name="install:gem:haml" unless="haml.exists" depends="install:jruby" description="Installs haml gem">
+        <install_gem name="haml"/>
     </target>
 
     <property name="gems.shenandoah.version" value="0.0.0"/>
