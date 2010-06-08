@@ -58,6 +58,11 @@
         <property name="cacheSeconds" value="0"/>
     </bean>
 
+    <bean name="/configuration.js" id="configurationJsController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
+        <property name="viewName" value="configuration.js"/>
+    </bean>
+
     <bean name="/cal/studyList" id="studyListController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 

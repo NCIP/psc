@@ -39,7 +39,7 @@ CTMS.registerCalendarPopups = function(containerId) {
             {
                 inputField  : input.id,
                 button      : anchorId,
-                ifFormat    : "%m/%d/%Y", // TODO: get this from the configuration
+                ifFormat    : psc.configuration.calendarDateFormat(),
                 weekNumbers : false
             }
         );
