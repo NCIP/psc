@@ -12,7 +12,9 @@ require 'rexml/document'
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
 
-VERSION_NUMBER="2.8.0.PRE02"
+# Version number is set in build/project.properties for BDA compatibility
+VERSION_NUMBER=File.read(File.expand_path("../build/project.properties", __FILE__)).
+  scan(/^psc-webapp.version=(.*?)$/).first.first
 APPLICATION_SHORT_NAME = 'psc'
 
 ###### Jetty config
