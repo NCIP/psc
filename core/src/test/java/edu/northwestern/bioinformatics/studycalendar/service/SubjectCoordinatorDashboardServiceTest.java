@@ -9,10 +9,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.*;
 import static java.util.Calendar.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -24,13 +30,20 @@ public class SubjectCoordinatorDashboardServiceTest extends StudyCalendarTestCas
     private ScheduledActivityDao scheduledActivityDao;
     StudySubjectAssignment subjectAssignment;
     ScheduledCalendar calendar;
+    MockConfiguration configuration;
+    private static final String DATE_FORMAT = "MM/dd/yyyy";
+
 
     protected void setUp() throws Exception {
         super.setUp();
 
         scheduledActivityDao = registerMockFor(ScheduledActivityDao.class);
+        configuration = new MockConfiguration();
+        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
+        
         service = new SubjectCoordinatorDashboardService();
         service.setScheduledActivityDao(scheduledActivityDao);
+        service.setConfiguration(configuration);
 
         calendar = new ScheduledCalendar();
 

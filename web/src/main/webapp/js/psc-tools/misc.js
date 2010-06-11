@@ -16,10 +16,15 @@ psc.tools.Dates = (function () {
     },
 
     displayDateToUtc: function (humanReadableDate) {
+      var dateFormat = psc.configuration.calendarDateFormat();
       var pieces = humanReadableDate.split('/')
-      return new Date(Date.UTC(pieces[2], pieces[0] -1, pieces[1]));
+      if (dateFormat.startsWith("%m")) {
+        return new Date(Date.UTC(pieces[2], pieces[0] -1, pieces[1]));
+      } else {
+        return new Date(Date.UTC(pieces[2], pieces[1] -1, pieces[0]));
+      }
     },
-    
+
     utcToApiDate: function (jsDate) {
       return jsDate.getUTCFullYear() + 
         "-" + psc.tools.Strings.leftpad(jsDate.getUTCMonth() + 1, 2) +

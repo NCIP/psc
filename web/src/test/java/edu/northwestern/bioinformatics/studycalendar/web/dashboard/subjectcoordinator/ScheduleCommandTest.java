@@ -15,6 +15,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.expect;
 
@@ -39,6 +41,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     private ScheduleCommand command = new ScheduleCommand();
     private SubjectCoordinatorDashboardService paService;
 
+    MockConfiguration configuration;
+    private static final String DATE_FORMAT = "MM/dd/yyyy";
 
     @Override
     protected void setUp() throws Exception {
@@ -58,6 +62,10 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         paService = new SubjectCoordinatorDashboardService();
         paService.setScheduledActivityDao(scheduledActivityDao);
+
+        configuration = new MockConfiguration();
+        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
+        paService.setConfiguration(configuration);
 
     }
 

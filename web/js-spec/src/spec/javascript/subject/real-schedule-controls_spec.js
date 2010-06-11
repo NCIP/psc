@@ -9,8 +9,12 @@ require_main('subject/schedule-list.js'); // for regenerating the list HTML
 require_main('jquery/jquery.enumerable.js');
 require_main('subject/real-schedule-controls.js');
 
+psc.namespace('configuration');
+
 Screw.Unit(function () {
   (function ($) {
+    psc.configuration.calendarDateFormat = (function () {return "%m/%d/%y"; });
+
     describe("psc.subject.RealScheduleControls", function () {
       var realScheduleDataModule;
 

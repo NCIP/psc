@@ -16,6 +16,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,6 +57,9 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private Site site;
     private StudySite studySite;
     private List<StudySite> studySites = new ArrayList<StudySite>();
+
+    MockConfiguration configuration;
+    private static final String DATE_FORMAT = "MM/dd/yyyy";
 
     @Override
     protected void setUp() throws Exception {
@@ -104,6 +109,10 @@ public class ScheduleControllerTest extends ControllerTestCase {
         request.addParameter("id", "15");
 
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
+        configuration = new MockConfiguration();
+        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
+        paService.setConfiguration(configuration);
+
     }
 
     public void testReferenceData() throws Exception {

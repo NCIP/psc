@@ -2,20 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 
 import java.util.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 
 
 public class SubjectCoordinatorDashboardService {
 
     private ScheduledActivityDao scheduledActivityDao;
+    private Configuration configuration;
 
     final String dayNames[] =
     {"Sunday",
@@ -46,7 +48,6 @@ public class SubjectCoordinatorDashboardService {
                 collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
 
                 Subject subject = studySubjectAssignment.getSubject();
-                String subjectName = subject.getFullName();
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledActivity event : collectionOfEvents) {
                         if (event.getCurrentState().getMode().getId() == 1 || event.getCurrentState().getMode().getId() == 4 ) {
@@ -180,7 +181,7 @@ public class SubjectCoordinatorDashboardService {
         long numberOfDaysToShift = numberOfDays * 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() + numberOfDaysToShift);
         Date d = timestampTo;
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = FormatTools.createDateFormat(getDateFormat());
         String dateString = df.format(d);
         Date d1;
         try {
@@ -193,10 +194,17 @@ public class SubjectCoordinatorDashboardService {
     }
 
     public String formatDateToString(Date date) {
-        DateFormat df = new SimpleDateFormat("MM/dd");
+        DateFormat df = FormatTools.createDateFormatAsDayOrMonth(getDateFormat());
         return df.format(date);
     }
 
+    public String getDateFormat() {
+        return configuration.get(edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.DISPLAY_DATE_FORMAT);
+    }
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     @Required
     public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {

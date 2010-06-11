@@ -1,8 +1,12 @@
 require_spec("spec_helper.js");
 require_main("psc-tools/misc.js");
 
+psc.namespace('configuration');
+
 Screw.Unit(function () {
   describe("Dates", function () {
+    psc.configuration.calendarDateFormat = (function () {return "%m/%d/%y"; });
+
     describe("conversion", function () {
       it("converts 2009-05-01 to a UTC date", function () {
         expect(psc.tools.Dates.apiDateToUtc("2009-05-01")).to(
@@ -15,6 +19,7 @@ Screw.Unit(function () {
       });
 
       it("converts display date 06/23/2009 to a UTC date", function () {
+
         expect(psc.tools.Dates.displayDateToUtc("06/23/2009")).to(
           equal_utc_date, new Date(Date.UTC(2009, 5, 23)));
       });

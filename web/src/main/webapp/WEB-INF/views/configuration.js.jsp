@@ -9,7 +9,7 @@ psc.configuration.calendarDateFormat = function() {
     } else if (dateFormat.toLowerCase() == "dd/mm/yyyy") {
         return "%d/%m/%Y";
     } else {
-        javascript:alert("Data format error: Unsupported date format - should be eithe dd/mm/yyyy or mm/dd/yyyy")
+        javascript:alert("Data format error: Unsupported date format - should be either dd/mm/yyyy or mm/dd/yyyy")
     }
 
 };

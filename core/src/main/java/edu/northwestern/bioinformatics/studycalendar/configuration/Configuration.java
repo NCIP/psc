@@ -67,7 +67,7 @@ public class Configuration extends DatabaseBackedConfiguration {
             ENABLE_CREATING_TEMPLATE = PROPERTIES.add(new DefaultConfigurationProperty.Bool("enableCreatingTemplate"));
 
     public static final ConfigurationProperty<String>
-            APPLICATION_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
+            DISPLAY_DATE_FORMAT = PROPERTIES.add(new DefaultConfigurationProperty.Text("displayDateFormat"));
     
     ////// PSC-SPECIFIC LOGIC
     public boolean getExternalAppsConfigured() {
