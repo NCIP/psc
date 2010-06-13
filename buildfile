@@ -1040,6 +1040,11 @@ define "psc" do
       ENV['test'] = 'no'
       set_db_name 'datasource' unless ENV['DB']
 
+      # set temp directory to something without +++ in it
+      tmpdir = _('target/java-tmp')
+      mkdir_p tmpdir
+      Java.java.lang.System.setProperty('java.io.tmpdir', tmpdir)
+
       task(:jetty_deploy_exploded).invoke
 
       msg = "PSC deployed at #{jetty.url}/psc.  Press ^C to stop.  PID: #{Process.pid || "?"}"
