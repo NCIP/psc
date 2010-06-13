@@ -58,7 +58,7 @@ class Revision
   end
 
   def commit_cmd
-    "svn commit -N -m \"#{port_message.gsub(/"/, '\\"')}\" . \"#{local_paths.join('" "')}\""
+    "svn commit -N -m '#{port_message.gsub(/'/, "\\'")}' . '#{local_paths.join("' '")}'"
   end
 end
 
