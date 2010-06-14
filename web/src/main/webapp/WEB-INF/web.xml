@@ -84,7 +84,17 @@
         <filter-name>BeansInRequestFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
+
+    <filter>
+        <filter-name>FormatToolsConfigurationFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.FormatToolsConfigurationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>FormatToolsConfigurationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>Installed authentication system</filter-name>
         <filter-class>

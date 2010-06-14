@@ -40,7 +40,7 @@ public class Notification extends AbstractMutableDomainObject {
         if (adverseEvent != null) {
             setActionRequired(true);
             if (adverseEvent.getDetectionDate() != null) {
-                title = "Serious Adverse Event on " + FormatTools.formatDate(adverseEvent.getDetectionDate());
+                title = "Serious Adverse Event on " + FormatTools.getLocal().formatDate(adverseEvent.getDetectionDate());
             }
             message = adverseEvent.getDescription();
         }
@@ -66,7 +66,7 @@ public class Notification extends AbstractMutableDomainObject {
      */
     public Notification(final ScheduledActivity reconsentEvent) {
         if (reconsentEvent != null) {
-            title = "Reconsent scheduled for " + FormatTools.formatDate(reconsentEvent.getActualDate());
+            title = "Reconsent scheduled for " + FormatTools.getLocal().formatDate(reconsentEvent.getActualDate());
             message = "/pages/cal/scheduleActivity?event=" + reconsentEvent.getId();
         }
 

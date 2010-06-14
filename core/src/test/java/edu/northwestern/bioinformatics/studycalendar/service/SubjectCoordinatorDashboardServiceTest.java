@@ -28,22 +28,16 @@ public class SubjectCoordinatorDashboardServiceTest extends StudyCalendarTestCas
 
     private SubjectCoordinatorDashboardService service;
     private ScheduledActivityDao scheduledActivityDao;
-    StudySubjectAssignment subjectAssignment;
-    ScheduledCalendar calendar;
-    MockConfiguration configuration;
-    private static final String DATE_FORMAT = "MM/dd/yyyy";
-
+    private StudySubjectAssignment subjectAssignment;
+    private ScheduledCalendar calendar;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         scheduledActivityDao = registerMockFor(ScheduledActivityDao.class);
-        configuration = new MockConfiguration();
-        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
-        
+
         service = new SubjectCoordinatorDashboardService();
         service.setScheduledActivityDao(scheduledActivityDao);
-        service.setConfiguration(configuration);
 
         calendar = new ScheduledCalendar();
 

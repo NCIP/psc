@@ -26,7 +26,6 @@ public class NotificationTest extends TestCase {
     private Amendment amendment;
     private StudySite studySite;
     private Subject subject;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -47,13 +46,14 @@ public class NotificationTest extends TestCase {
         study.setId(3);
         studySite = Fixtures.createStudySite(study, new Site());
         subject = Fixtures.createSubject("first", "last");
+        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
     }
 
     public void testCrateNotificationForAdverseEvent() {
 
         notification = new Notification(adverseEvent);
 
-        String expectedTitle = "Serious Adverse Event on " + FormatTools.formatDate(detectionDate);
+        String expectedTitle = "Serious Adverse Event on 09/02/2007";
         assertEquals(expectedTitle, notification.getTitle());
         assertTrue("action is required", notification.isActionRequired());
         assertFalse(notification.isDismissed());
@@ -66,7 +66,7 @@ public class NotificationTest extends TestCase {
         scheduledActivity.setId(2);
         notification = new Notification(scheduledActivity);
 
-        String expectedTitle = "Reconsent scheduled for " + FormatTools.formatDate(scheduledActivity.getActualDate());
+        String expectedTitle = "Reconsent scheduled for 03/03/2008";
 
         assertEquals(expectedTitle, notification.getTitle());
         assertTrue("action is required", notification.isActionRequired());

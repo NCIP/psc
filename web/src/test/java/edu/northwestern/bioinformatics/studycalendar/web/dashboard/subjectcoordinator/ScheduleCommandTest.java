@@ -41,9 +41,6 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     private ScheduleCommand command = new ScheduleCommand();
     private SubjectCoordinatorDashboardService paService;
 
-    MockConfiguration configuration;
-    private static final String DATE_FORMAT = "MM/dd/yyyy";
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -62,11 +59,6 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         paService = new SubjectCoordinatorDashboardService();
         paService.setScheduledActivityDao(scheduledActivityDao);
-
-        configuration = new MockConfiguration();
-        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
-        paService.setConfiguration(configuration);
-
     }
 
     public void testShiftStartDayByNumberOfDays() throws Exception {

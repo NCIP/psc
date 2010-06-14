@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -37,6 +38,8 @@ public class StudySiteTest extends TestCase {
         study.setAmendment(a2005);
         Site site = Fixtures.createNamedInstance("Galesburg", Site.class);
         studySite = Fixtures.createStudySite(study, site);
+
+        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
     }
     
     public void testUsedWhenUsed() throws Exception {

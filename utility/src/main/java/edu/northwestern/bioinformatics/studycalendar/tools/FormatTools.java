@@ -1,50 +1,85 @@
 package edu.northwestern.bioinformatics.studycalendar.tools;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * @author Rhett Sutphin
+ * @author Nataliya Shurupova
  */
 public class FormatTools {
-    private static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>();
-    private final static String DAY_MONTH = "dd/MM";
-    private final static String MONTH_DAY = "MM/dd";
+    public static final String UNCONFIGURED_FORMAT = "yyyy-MM-dd";
+    private static final String UNCONFIGURED_MONTH_DAY_FORMAT = "MM-dd";
+    private static final String EXPECTED_YEAR_SUFFIX = "/yyyy";
 
+    private String dateFormatString;
 
-    // TODO: make date format externally configurable
-    public static DateFormat createDateFormat() {
-        return new SimpleDateFormat("MM/dd/yyyy");
+    private static ThreadLocal<FormatTools> instance = new ThreadLocal<FormatTools>();
+
+    public FormatTools(String format) {
+        setDateFormatString(format);
     }
 
-    public static DateFormat createDateFormat(String dateFormatFromConfiguration) {
-        if (dateFormatFromConfiguration.equals("MM/DD/YYYY")) {
-            return new SimpleDateFormat("MM/dd/yyyy");
-        } else if (dateFormatFromConfiguration.equals("DD/MM/YYYY")) {
-            return new SimpleDateFormat("dd/MM/yyyy");
+    ////// INSTANCE ACCESS
+
+    public static FormatTools getLocal() {
+        if (!hasLocalInstance()) {
+            setLocal(createDefaultInstance());
+        }
+        return instance.get();
+    }
+
+    private static FormatTools createDefaultInstance() {
+        return new FormatTools(UNCONFIGURED_FORMAT);
+    }
+
+    public static void setLocal(FormatTools tools) {
+        instance.set(tools);
+    }
+
+    public static void clearLocalInstance() {
+        instance.set(null);
+    }
+
+    public static boolean hasLocalInstance() {
+        return instance.get() != null;
+    }
+
+    ////// LOGIC
+
+    public String getMonthDayFormatString() {
+        if (UNCONFIGURED_FORMAT.equals(getDateFormatString())) {
+            return UNCONFIGURED_MONTH_DAY_FORMAT;
+        } else if (getDateFormatString().endsWith(EXPECTED_YEAR_SUFFIX))  {
+            return getDateFormatString().substring(0, getDateFormatString().length() - EXPECTED_YEAR_SUFFIX.length());
         } else {
-            //todo should throw unsupported exception
-//            throw new Exception("Date format is not supported. Should be MM/dd/yyyy or dd/MM/yyyy");
-            return new SimpleDateFormat("MM/dd/yyyy");
+            throw new StudyCalendarSystemException("Unsupported base date format for month-day: %s", getDateFormatString());
         }
     }
 
-    public static DateFormat createDateFormatAsDayOrMonth(String dateFormat) {
-        if (dateFormat.startsWith("DD/MM")) {
-            return new SimpleDateFormat(DAY_MONTH);
-        } else {
-            return new SimpleDateFormat(MONTH_DAY);
-        }
+    public String formatDate(Date date) {
+        return getDateFormat().format(date);
     }
 
-   //todo - this has to be changed!
-    public static String formatDate(Date date) {
-        if (dateFormat.get() == null) {
-            dateFormat.set(createDateFormat());
-        }
-        return dateFormat.get().format(date);
+    ////// BEAN PROPERTIES
+
+    public String getDateFormatString() {
+        return dateFormatString;
     }
 
-    private FormatTools() { }
+    public void setDateFormatString(String dateFormat) {
+        this.dateFormatString = dateFormat;
+    }
+
+    public DateFormat getDateFormat() {
+        return new SimpleDateFormat(dateFormatString);
+    }
+
+    public DateFormat getMonthDayFormat() {
+        return new SimpleDateFormat(getMonthDayFormatString());
+//        throw new UnsupportedOperationException("getMonthDayFormat not implemented yet.");
+    }
 }

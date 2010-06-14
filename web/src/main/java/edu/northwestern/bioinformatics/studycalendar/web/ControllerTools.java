@@ -55,7 +55,7 @@ public class ControllerTools {
      */
     public PropertyEditor getDateEditor(boolean required) {
         // note that date formats are not threadsafe, so we have to create a new one each time
-        return new DateCustomEditor(FormatTools.createDateFormat(), !required);
+        return new DateCustomEditor(FormatTools.getLocal().getDateFormat(), !required);
     }
 
     public void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {

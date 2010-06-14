@@ -93,7 +93,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
             return new StringBuilder()
                 .append(evt.getActivity().getName())
                 .append(" on ")
-                .append(FormatTools.formatDate(evt.getActualDate()))
+                .append(FormatTools.getLocal().formatDate(evt.getActualDate()))
                 .toString();
         }
 

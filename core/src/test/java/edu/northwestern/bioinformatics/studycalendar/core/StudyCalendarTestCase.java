@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.core;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -43,12 +44,14 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         applicationSecurityManager = new ApplicationSecurityManager();
+        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         applicationSecurityManager.removeUserSession();
+        FormatTools.clearLocalInstance();
     }
 
     ////// MOCK REGISTRATION AND HANDLING

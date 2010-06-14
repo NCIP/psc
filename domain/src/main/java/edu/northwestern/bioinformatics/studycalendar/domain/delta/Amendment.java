@@ -2,10 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
-import static edu.northwestern.bioinformatics.studycalendar.tools.FormatTools.formatDate;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.apache.commons.lang.StringUtils;
@@ -85,7 +85,7 @@ public class Amendment
         } else {
             StringBuilder n = new StringBuilder();
             if (getDate() != null) {
-                n.append(formatDate(getDate()));
+                n.append(FormatTools.getLocal().formatDate(getDate()));
             } else {
                 n.append("Timeless");
             }

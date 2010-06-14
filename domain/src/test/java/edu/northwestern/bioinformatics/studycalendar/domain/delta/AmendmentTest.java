@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
@@ -27,6 +28,7 @@ public class AmendmentTest extends TestCase {
         a0 = a1.getPreviousAmendment();
 
         b2 = createAmendments("B0", "B1", "B2");
+        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
     }
 
     public void testIsPreviousAmendment() throws Exception {

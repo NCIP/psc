@@ -58,9 +58,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private StudySite studySite;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    MockConfiguration configuration;
-    private static final String DATE_FORMAT = "MM/dd/yyyy";
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -109,10 +106,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
         request.addParameter("id", "15");
 
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
-        configuration = new MockConfiguration();
-        configuration.set(Configuration.DISPLAY_DATE_FORMAT, DATE_FORMAT);
-        paService.setConfiguration(configuration);
-
     }
 
     public void testReferenceData() throws Exception {
