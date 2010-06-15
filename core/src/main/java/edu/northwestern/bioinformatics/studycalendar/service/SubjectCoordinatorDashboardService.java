@@ -181,7 +181,7 @@ public class SubjectCoordinatorDashboardService {
         long numberOfDaysToShift = numberOfDays * 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() + numberOfDaysToShift);
         Date d = timestampTo;
-        DateFormat df = FormatTools.createDateFormat(getDateFormat());
+        DateFormat df = FormatTools.getLocal().getDateFormat();
         String dateString = df.format(d);
         Date d1;
         try {
@@ -194,16 +194,8 @@ public class SubjectCoordinatorDashboardService {
     }
 
     public String formatDateToString(Date date) {
-        DateFormat df = FormatTools.createDateFormatAsDayOrMonth(getDateFormat());
+        DateFormat df = FormatTools.getLocal().getMonthDayFormat();
         return df.format(date);
-    }
-
-    public String getDateFormat() {
-        return configuration.get(edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.DISPLAY_DATE_FORMAT);
-    }
-
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
     }
 
     @Required
