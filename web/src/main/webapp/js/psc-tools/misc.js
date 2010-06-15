@@ -32,9 +32,16 @@ psc.tools.Dates = (function () {
     },
 
     utcToDisplayDate: function(jsDate) {
+      var dateFormat = psc.configuration.calendarDateFormat();
+      if (dateFormat.startsWith("%m")) {
         return psc.tools.Strings.leftpad(jsDate.getUTCMonth() + 1, 2)+
          '/'+psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2)+
          '/'+jsDate.getUTCFullYear()
+      } else {
+        return psc.tools.Strings.leftpad(jsDate.getUTCDate(), 2)+
+         '/'+psc.tools.Strings.leftpad(jsDate.getUTCMonth() + 1, 2)+
+         '/'+jsDate.getUTCFullYear()
+      }
     },
 
     apiDateToDisplayDate: function (apiDate) {
