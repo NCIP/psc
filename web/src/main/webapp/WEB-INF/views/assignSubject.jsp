@@ -353,7 +353,8 @@
                             </div>
                             <div class="row">
                                 <div class="label">
-                                    <form:label path="dateOfBirth">Date of birth* (mm/dd/yyyy)</form:label>
+                                    <c:set var="origPattern" value="${configuration.map.displayDateFormat}"/>
+                                    <form:label path="dateOfBirth">Date of birth* (${fn:toLowerCase(origPattern)})</form:label>
                                 </div>
                                 <div class="value">
                                     <form:input path="dateOfBirth"/>

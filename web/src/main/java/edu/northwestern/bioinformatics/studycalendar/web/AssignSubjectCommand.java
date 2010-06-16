@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import org.springframework.validation.Errors;
@@ -84,7 +85,6 @@ public class AssignSubjectCommand implements Validatable {
         }
     }
 
-
     public StudySubjectAssignment assignSubject() {
 		Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
@@ -127,11 +127,9 @@ public class AssignSubjectCommand implements Validatable {
     }
 
     public Date convertStringToDate(String dateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        Date convertedDate = null;
-
+        Date convertedDate;
         try {
-            convertedDate = dateFormat.parse(dateString);
+            convertedDate = FormatTools.getLocal().getDateFormat().parse(dateString);
         } catch (ParseException e) {
             convertedDate = null;
 
