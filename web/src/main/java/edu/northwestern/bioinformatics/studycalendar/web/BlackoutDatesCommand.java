@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.BlackoutDateDao;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,9 +86,15 @@ public class BlackoutDatesCommand {
 
     public void parse (String date){
         String[] components = date.split("/");
-        setDay(new Integer(components[1]));
-        //we need to store month as Calendar class - where January ==0
-        setMonth(new Integer(components[0])-1);
+        String configuredFormat =FormatTools.getLocal().getDateFormatString();
+        if (configuredFormat.toLowerCase().startsWith("mm")) {
+            setDay(new Integer(components[1]));
+            //we need to store month as Calendar class - where January ==0
+            setMonth(new Integer(components[0])-1);
+        } else {
+            setDay(new Integer(components[0]));
+            setMonth(new Integer(components[1])-1);
+        }
         if(components.length ==3){
             setYear(new Integer(components[2]));
         } else {

@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
+
 import javax.persistence.*;
 
 /**
@@ -15,11 +17,23 @@ public class SpecificDateBlackout extends BlackoutDate {
 
     @Transient
     public String getDisplayName(){
-        if (year==null) {
-            return (getMonth()+1)+"/" + getDay();
+        String format = FormatTools.getLocal().getMonthDayFormatString();
+        StringBuffer sb = new StringBuffer();
+        String delim ="/";
+        if (format.toLowerCase().startsWith("mm")) {
+            sb.append(getMonth()+1);
+            sb.append(delim);
+            sb.append(getDay());
         } else {
-            return (getMonth()+1) +"/" + getDay() +"/" + getYear();
+            sb.append(getDay());
+            sb.append(delim);
+            sb.append(getMonth()+1);
         }
+        if (getYear()!=null) {
+            sb.append(delim);
+            sb.append(getYear());
+        }
+        return sb.toString();
     }
 
     public boolean equals(Object o) {
