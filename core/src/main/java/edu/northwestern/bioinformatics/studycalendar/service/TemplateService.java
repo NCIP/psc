@@ -2,12 +2,23 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Child;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.Parent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
@@ -15,15 +26,23 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedT
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import static java.util.Arrays.asList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.*;
 
 /**
  * This service provides methods for:
@@ -37,9 +56,6 @@ import static java.util.Arrays.asList;
  */
 @Transactional
 public class TemplateService {
-    public static final String SUBJECT_COORDINATOR_ACCESS_ROLE = "SUBJECT_COORDINATOR";
-    public static final String SUBJECT_COORDINATOR_GROUP = "SUBJECT_COORDINATOR";
-    private StudyCalendarAuthorizationManager authorizationManager;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
@@ -51,9 +67,6 @@ public class TemplateService {
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
     public static final String STUDY_IS_NULL = "Study is null";
-    public static final String LIST_IS_NULL = "List parameter is null";
-    public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
-    public static final String STRING_IS_NULL = "String parameter is null";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -74,8 +87,6 @@ public class TemplateService {
         if (!userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.addStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
-
-            assignMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
         }
 
         return user;
@@ -102,62 +113,9 @@ public class TemplateService {
         if (userRole.getStudySites().contains(studySite)) {
             userRole.removeStudySite(studySite);
             userRoleDao.save(userRole);
-
-            removeMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
         }
 
         return user;
-    }
-
-    public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
-        if (studyTemplates == null) {
-            throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (userId == null) {
-            throw new IllegalArgumentException(STRING_IS_NULL);
-        }
-        List<String> assignedUserIds = new ArrayList<String>();
-
-        assignedUserIds.add(userId);
-
-        for (Study template : studyTemplates) {
-            List<StudySite> studySites = template.getStudySites();
-            for (StudySite studySite : studySites) {
-                if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                    String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
-                    authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, SUBJECT_COORDINATOR_ACCESS_ROLE);
-                }
-            }
-        }
-    }
-
-    public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) {
-        if (studyTemplates == null) {
-            throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (userId == null) {
-            throw new IllegalArgumentException(STRING_IS_NULL);
-        }
-        List<String> userIds = new ArrayList<String>();
-
-        userIds.add(userId);
-
-        for (Study template : studyTemplates) {
-            List<StudySite> studySites = template.getStudySites();
-            for (StudySite studySite : studySites) {
-
-                if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                    ProtectionGroup studySitePG = authorizationManager.getProtectionGroup(studySite);
-                    authorizationManager.removeProtectionGroupUsers(userIds, studySitePG);
-                }
-            }
-        }
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
@@ -505,11 +463,6 @@ public class TemplateService {
     @Required
     public void setDeltaDao(DeltaDao deltaDao) {
         this.deltaDao = deltaDao;
-    }
-
-    @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
 
     @Required

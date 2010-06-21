@@ -1,19 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools.createExternalObjectId;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,7 +29,6 @@ import java.util.Set;
 @Transactional
 public class SiteService {
     private SiteDao siteDao;
-    private StudyCalendarAuthorizationManager authorizationManager;
     private SiteConsumer siteConsumer;
     private UserService userService;
     private UserRoleDao userRoleDao;
@@ -58,25 +59,7 @@ public class SiteService {
     
     public Site createOrUpdateSite(Site site) {
         siteDao.save(site);
-        if (site.getId() == null || authorizationManager.getProtectionGroup(site) == null) {
-            // no need to update the protection group when you update the site because the protection group are created by class name+id which never changes.
-            saveSiteProtectionGroup(site);
-        }
         return site;
-    }
-
-    protected void saveSiteProtectionGroup(final Site site) {
-        authorizationManager.createProtectionGroup(site);
-    }
-
-    public void assignProtectionGroup(Site site, User user, Role role) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getProtectionGroup(site);
-        authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmGroup());
-    }
-
-    public void removeProtectionGroup(Site site, User user) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getProtectionGroup(site);
-        authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 
     public Collection<Site> getSitesForSubjectCoordinator(String username) {
@@ -104,10 +87,7 @@ public class SiteService {
     }
 
     public void removeSite(final Site site) throws Exception {
-        if ( !site.hasAssignments()) {
-            // first remove the protection group
-            authorizationManager.removeProtectionGroup(createExternalObjectId(site));
-
+        if (!site.hasAssignments()) {
             List<UserRole> userRoles = userRoleDao.getUserRolesForSite(site);
             if (userRoles != null) {
                 for (UserRole userRole: userRoles){
@@ -122,7 +102,7 @@ public class SiteService {
     }
 
     /**
-     * Creates a new site if existing site is null. Or merge exisisting site with new site if existing site is not null
+     * Creates a new site if existing site is null. Or merge existing site with new site if existing site is not null
      *
      * @param existingSite existing    site
      * @param newSite      new site
@@ -165,11 +145,6 @@ public class SiteService {
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
-    }
-
-    @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
     }
 
     @Required

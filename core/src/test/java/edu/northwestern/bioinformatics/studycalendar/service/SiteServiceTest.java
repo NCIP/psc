@@ -3,21 +3,28 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import static org.easymock.EasyMock.notNull;
-import static org.easymock.classextension.EasyMock.expect;
 
-import java.util.*;
-import static java.util.Arrays.asList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static org.easymock.classextension.EasyMock.*;
 
 
 /**
@@ -26,7 +33,6 @@ import static java.util.Arrays.asList;
 public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private SiteService service;
-    private StudyCalendarAuthorizationManager authorizationManager;
     private SiteConsumer siteConsumer;
     private UserService userService;
     private User user;
@@ -37,14 +43,12 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
-        authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
         userService = registerMockFor(UserService.class);
         siteConsumer = registerMockFor(SiteConsumer.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
         service = new SiteService();
         service.setSiteDao(siteDao);
-        service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setUserService(userService);
         service.setSiteConsumer(siteConsumer);
         service.setUserRoleDao(userRoleDao);
@@ -58,40 +62,12 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCreateSite() throws Exception {
         siteDao.save(nu);
-        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
-        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
-            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
-        );
         replayMocks();
 
         Site siteCreated = service.createOrUpdateSite(nu);
         verifyMocks();
 
         assertNotNull("site not returned", siteCreated);
-    }
-
-    public void testSaveSiteProtectionGroup() throws Exception {
-        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
-            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
-        );
-        replayMocks();
-
-
-        service.saveSiteProtectionGroup(nu);
-        verifyMocks();
-    }
-
-    public void testRemoveProtectionGroupPSCDomainObjects() throws Exception {
-        user.addUserRole(createUserRole(user, SUBJECT_COORDINATOR, nu));
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(expectedPG);
-        authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
-        replayMocks();
-
-        service.removeProtectionGroup(nu, user);
-        verifyMocks();
     }
 
     public void testGetSitesForSubjectCoordinators() {
@@ -108,22 +84,10 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertTrue(actualSites.containsAll(expectedSites));
     }
 
-    public void testAssignProtectionGroup() throws Exception {
-        Role role = SUBJECT_COORDINATOR;
-        ProtectionGroup pg = createProtectionGroup((long) mayo.getId(), DomainObjectTools.createExternalObjectId(mayo));
-
-        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(pg);
-        authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), pg, role.csmGroup());
-        replayMocks();
-        service.assignProtectionGroup(mayo, user, role);
-        verifyMocks();
-    }
-
     public void testRemoveRemoveableSite() throws Exception {
         Site site = new Site();
         site.setId(1);
         expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
-        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         siteDao.delete(site);
 
         replayMocks();
@@ -142,12 +106,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCreateOrMergeSiteForCreateSite() throws Exception {
         siteDao.save(nu);
-        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(null);
-        expect(authorizationManager.createProtectionGroup(nu)).andReturn(
-            createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")
-        );
         replayMocks();
-
 
         Site newSite = service.createOrMergeSites(null, nu);
         assertEquals(newSite.getName(), nu.getName());
@@ -159,7 +118,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site newSite = new Site();
         newSite.setName("new Name");
         siteDao.save(nu);
-        expect(authorizationManager.getProtectionGroup((DomainObject) notNull())).andReturn(new ProtectionGroup());
         expect(siteDao.getById(1)).andReturn(nu);
         expect(siteConsumer.refresh(nu)).andReturn(nu);
 
@@ -254,7 +212,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         site.setId(11);
         UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site);
         expect(userRoleDao.getUserRolesForSite(site)).andReturn(Arrays.asList(userRole));
-        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.11");
         siteDao.delete(site);
 
         replayMocks();
@@ -268,7 +225,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site site = createNamedInstance("Northwestern", Site.class);
         site.setId(12);
         createStudySite(study, site);
-        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.12");
         expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
         siteDao.delete(site);
 

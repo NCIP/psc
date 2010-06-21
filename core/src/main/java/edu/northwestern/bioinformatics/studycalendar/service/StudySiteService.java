@@ -1,27 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
 import org.apache.commons.collections.CollectionUtils;
-import static org.apache.commons.collections.CollectionUtils.*;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.*;
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Arrays.asList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+
+import static java.util.Arrays.*;
+import static java.util.Collections.*;
+import static org.apache.commons.collections.CollectionUtils.*;
+import static org.apache.commons.lang.StringUtils.*;
 
 public class StudySiteService {
-    private StudyCalendarAuthorizationManager authorizationManager;
     private SiteService siteService;
     private StudySiteDao studySiteDao;
     private StudySiteConsumer studySiteConsumer;
@@ -31,7 +40,6 @@ public class StudySiteService {
     public static final String SITES_LIST_IS_NULL = "Sites List is null";
     private final Log logger = LogFactory.getLog(getClass());
     private StudyDao studyDao;
-    private StudyService studyService;
 
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -104,14 +112,6 @@ public class StudySiteService {
     }
 
     private void removeStudySite(StudySite removing) {
-        try {
-            authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(removing));
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new StudyCalendarSystemException(e);
-        }
-
         Site site = removing.getSite();
         Study study = removing.getStudy();
         site.getStudySites().remove(removing);
@@ -421,11 +421,6 @@ public class StudySiteService {
         );
     }
 
-
-    @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
-    }
 
     @Required
     public void setSiteService(SiteService siteService) {

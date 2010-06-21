@@ -1,21 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static java.util.Arrays.asList;
-
-import static org.easymock.EasyMock.expect;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createStudySite;
-
-import static java.util.Collections.singleton;
-
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 
-import java.util.Collections;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static java.util.Arrays.*;
+import static org.easymock.EasyMock.*;
 
 public class UserRoleServiceTest extends StudyCalendarTestCase {
     private SiteService siteService;
@@ -25,7 +22,6 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
     private Site site0, site1;
     private UserRole userRole0, userRole1;
     private UserDao userDao;
-    private StudyCalendarAuthorizationManager authorizatioManager;
     private StudySite studySite0;
     private StudySiteService studySiteService;
 
@@ -36,11 +32,9 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         siteService = registerMockFor(SiteService.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
         studySiteService = registerMockFor(StudySiteService.class);
-        authorizatioManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         userRoleService = new UserRoleService();
 
-        userRoleService.setStudyCalendarAuthorizationManager(authorizatioManager);
         userRoleService.setStudySiteService(studySiteService);
         userRoleService.setSiteService(siteService);
         userRoleService.setUserRoleDao(userRoleDao);
@@ -69,7 +63,6 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         UserRole userRole = new UserRole(user2, role, site0);
 
         userRoleDao.save(userRole);
-        authorizatioManager.assignCsmGroups(user2,  singleton(userRole));
         replayMocks();
 
         userRoleService.assignUserRole(user2, role, site0);
@@ -86,8 +79,6 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         UserRole userRole = new UserRole(user2, role, site0);
 
         userRoleDao.save(userRole);
-        siteService.assignProtectionGroup(site0, user2, role);
-        authorizatioManager.assignCsmGroups(user2, singleton(userRole));
         replayMocks();
 
         userRoleService.assignUserRole(user2, role, site0);
@@ -104,7 +95,6 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         expect(studySiteService.getStudySitesForSubjectCoordinator(user0, site0)).andReturn(asList(studySite0));
         userRoleDao.save(userRole0);
-        siteService.removeProtectionGroup(site0, user0);
         replayMocks();
 
         userRoleService.removeUserRoleAssignment(user0, role, site0);
@@ -122,7 +112,6 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         userRoleDao.save(userRole1);
         userDao.save(user1);
-        authorizatioManager.assignCsmGroups(user1, Collections.<UserRole>emptySet());
         replayMocks();
 
         userRoleService.removeUserRoleAssignment(user1, role, site0);

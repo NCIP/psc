@@ -1,29 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudySiteConsumer;
-import static org.easymock.EasyMock.expect;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.checkOrder;
 
-import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUserRole;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addSecondaryIdentifier;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static java.util.Arrays.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.checkOrder;
 
 public class StudySiteServiceTest extends StudyCalendarTestCase {
     private StudySiteService service;
     private SiteService siteService;
-    private StudyCalendarAuthorizationManager authorizationManager;
 
     private User user;
     private Site nu, mayo;
@@ -41,14 +48,12 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         siteService = registerMockFor(SiteService.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         studySiteConsumer = registerMockFor(StudySiteConsumer.class);
-        authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new StudySiteService();
         service.setStudyDao(studyDao);
         service.setSiteService(siteService);
         service.setStudySiteDao(studySiteDao);
         service.setStudySiteConsumer(studySiteConsumer);
-        service.setStudyCalendarAuthorizationManager(authorizationManager);
 
         nu = createSite("Northwestern", "NU", "alpha");
         mayo = createSite("Mayo Clinic", "MAYO" , "alpha");
@@ -66,7 +71,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         UserRole role = createUserRole(user, Role.SUBJECT_COORDINATOR, nu, mayo);
         role.setStudySites(studySites);
         user.addUserRole(role);
-
     }
 
     private Study createStudy(String assignedIdentifier, String provider) {
@@ -171,7 +175,6 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         StudySite inUse = setId(11, createStudySite(study, site2));
         inUse.getStudySubjectAssignments().add(new StudySubjectAssignment());
 
-        authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(notInUse));
         studySiteDao.delete(notInUse);
         replayMocks();
 

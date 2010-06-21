@@ -24,8 +24,6 @@ import java.util.List;
 
 @Transactional
 public class UserService implements Serializable {
-    public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
-
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private UserDao userDao;
