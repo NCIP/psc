@@ -4,107 +4,52 @@
 -->
 
 <beans
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:tx="http://www.springframework.org/schema/tx"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
-        default-lazy-init="true"
-        >
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+    default-lazy-init="true"
+    >
     <bean id="csmContextName" class="java.lang.String">
         <constructor-arg value="study_calendar"/>
     </bean>
 
     <bean id="csmAuthorizationDao"
-          class="gov.nih.nci.security.dao.DIAuthorizationDao"
-          init-method="init">
-        <property name="sessionFactory">
-            <bean
-                    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-                <property name="dataSource" ref="dataSource"/>
-                <property name="mappingResources">
-                    <list>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/Privilege.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/Application.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/Role.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/dao/hibernate/RolePrivilege.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/dao/hibernate/UserGroup.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/dao/hibernate/ProtectionGroupProtectionElement.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/Group.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/User.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/ProtectionGroup.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/ProtectionElement.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml
-                        </value>
-                        <value>
-                            gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml
-                        </value>
-                    </list>
-                </property>
-                <property name="hibernateProperties">
-                    <bean
-                            class="edu.northwestern.bioinformatics.studycalendar.tools.spring.HibernatePropertiesFactoryBean">
-                        <!--
-                              <property name="dialectName">
-
-                                  <value>s[hibernate.dialect]</value>
-
-                              </property>
-                                   -->
+          class="gov.nih.nci.security.dao.AuthorizationDAOImpl"
+          >
+        <constructor-arg index="0">
+            <bean class="gov.nih.nci.security.system.ApplicationSessionFactory"
+                  factory-method="getSessionFactory">
+                <constructor-arg index="0" ref="csmContextName"/>
+                <constructor-arg index="1">
+                    <bean class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmHibernatePropertiesFactoryBean">
                         <property name="properties">
-                            <props>
-                                <!--
-                                            <prop key="hibernate.show_sql">
-                                            true
-                                            </prop>
-                                            <prop key="hibernate.format_sql">
-                                            true
-                                            </prop>
-                                        -->
-                                <prop
-                                        key="hibernate.connection.release_mode">
-                                    after_transaction
-                                </prop>
-
-                            </props>
+                            <map>
+                                <entry key="hibernate.connection.url" value="${datasource.url}"/>
+                                <entry key="hibernate.connection.driver_class" value="${datasource.driver}"/>
+                                <entry key="hibernate.connection.username" value="${datasource.username}"/>
+                                <entry key="hibernate.connection.password" value="${datasource.password}"/>
+                                <entry key="hibernate.dialect" value="${datasource.dialect}"/>
+                            </map>
                         </property>
                     </bean>
-                </property>
+                </constructor-arg>
             </bean>
-        </property>
-        <property name="applicationContextName"
-                  ref="csmContextName"/>
+        </constructor-arg>
+        <constructor-arg index="1" ref="csmContextName"/>
     </bean>
 
-    <bean id="userProvisioningManager"
-          class="gov.nih.nci.security.provisioning.UserProvisioningManagerImpl">
-        <property name="authorizationDAO" ref="csmAuthorizationDao"/>
+    <bean id="csmAuthorizationManager"
+          class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmAuthorizationManagerFactoryBean">
+        <property name="applicationName" ref="csmContextName"/>
+        <property name="authorizationDao" ref="csmAuthorizationDao"/>
     </bean>
 
+    <!-- TODO: is this actually wired to anything? -->
     <bean id="authorizationSwitch"
-          class="gov.nih.nci.security.acegi.csm.authorization.AuthorizationSwitch"
+          class="gov.nih.nci.cabig.ctms.acegi.csm.authorization.AuthorizationSwitch"
           factory-method="getInstance">
         <property name="on" value="true"/>
     </bean>

@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparator;
+import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
@@ -27,7 +28,7 @@ public class UserService implements Serializable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private UserDao userDao;
-    private UserProvisioningManager userProvisioningManager;
+    private AuthorizationManager authorizationManager;
     private SiteConsumer siteConsumer;
 
     public User saveUser(User user, String password, final String emailAddress) {
@@ -46,13 +47,13 @@ public class UserService implements Serializable {
             }
         } else {
             try {
-                gov.nih.nci.security.authorization.domainobjects.User csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
+                gov.nih.nci.security.authorization.domainobjects.User csmUser = authorizationManager.getUserById(user.getCsmUserId().toString());
                 csmUser.setPassword(password);
                 //for editing emailAddress
                 if (! csmUser.getEmailId().equals(emailAddress)) {
                     csmUser.setEmailId(emailAddress);
                 }
-                userProvisioningManager.modifyUser(csmUser);
+                authorizationManager.modifyUser(csmUser);
             } catch (CSObjectNotFoundException e) {
                 throw new StudyCalendarSystemException(
                         "%s references CSM user with id %d but CSM reports no such user exists",
@@ -75,7 +76,7 @@ public class UserService implements Serializable {
         csmUser.setFirstName(".");
         csmUser.setLastName(".");
         csmUser.setEmailId(emailAddress);
-        userProvisioningManager.createUser(csmUser);
+        authorizationManager.createUser(csmUser);
         return csmUser;
     }
 
@@ -112,7 +113,7 @@ public class UserService implements Serializable {
     public String getEmailAddresssForUser(final User user) {
         gov.nih.nci.security.authorization.domainobjects.User csmUser = null;
         try {
-            csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
+            csmUser = authorizationManager.getUserById(user.getCsmUserId().toString());
         } catch (CSObjectNotFoundException e) {
             log.error("No csm user found for given csm user id:" + user.getCsmUserId());
         }
@@ -156,8 +157,8 @@ public class UserService implements Serializable {
     }
 
     @Required
-    public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
-        this.userProvisioningManager = userProvisioningManager;
+    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.authorizationManager = authorizationManager;
     }
 
     @Required

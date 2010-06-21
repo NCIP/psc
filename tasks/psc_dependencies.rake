@@ -214,14 +214,12 @@ EHCACHE = struct(
 )
 
 SECURITY = struct(
-  # temporarily using an older version to avoid immediately upgrading
-  # to CSM 4.2 alongside the other ctms-commons updates.
-  :acegi_csm  => "gov.nih.nci.security.acegi:acegi-csm:jar:0.9",
-  :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:0.9",
-  :clm => "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
-  :csm => psc_osgi_artifact(
-    "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
-    "Private-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
+  :acegi_csm  => ctms_commons_lib("ctms-commons-acegi-csm"),
+  :acegi_grid => ctms_commons_lib("ctms-commons-acegi-grid"),
+  :clm => cbiit_lib("gov.nih.nci.security", "clm", "clm", "4.2.beta"),
+  :csm => cbiit_lib(
+    "gov.nih.nci.security", "csm", "csmapi", "4.2",
+    "Conditional-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"
   ),
   :acegi => psc_osgi_artifact("org.acegisecurity:acegi-security:jar:1.0.7"),
   :cas => psc_osgi_artifact("cas:casclient:jar:2.0.11"),

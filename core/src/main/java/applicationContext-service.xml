@@ -22,8 +22,10 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService"/>
     <bean id="scheduleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
-    <bean id="userService" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.service.UserService"/>
+    <bean id="userService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.UserService">
+        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+    </bean>
     <bean id="studyService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudyService"/>
     <bean id="amendmentService" autowire="byName"

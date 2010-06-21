@@ -7,16 +7,19 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.SiteConsumer;
-import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.ApplicationContext;
+import gov.nih.nci.security.authorization.domainobjects.FilterClause;
 import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.InstanceLevelMappingElement;
 import gov.nih.nci.security.authorization.domainobjects.Privilege;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.jaas.AccessPermission;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.exceptions.CSDataAccessException;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
@@ -25,6 +28,7 @@ import static org.easymock.classextension.EasyMock.*;
 import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
+import java.net.URL;
 import java.security.Principal;
 import static java.util.Arrays.*;
 import java.util.Collection;
@@ -33,8 +37,8 @@ import java.util.Set;
 
 public class UserServiceTest extends StudyCalendarTestCase {
     private UserDao userDao;
-    private UserProvisioningManager userProvisioningManager;
-    private UserProvisioningManagerStub userProvisioningManagerStub;
+    private AuthorizationManager authorizationManager;
+    private AuthorizationManagerStub authorizationManagerStub;
     private UserService service;
     private SiteConsumer siteConsumer;
     private User adam, steve, siteCoord;
@@ -45,13 +49,13 @@ public class UserServiceTest extends StudyCalendarTestCase {
         super.setUp();
 
         userDao = registerMockFor(UserDao.class);
-        userProvisioningManager = registerMockFor(UserProvisioningManager.class);
-        userProvisioningManagerStub = new UserProvisioningManagerStub();
+        authorizationManager = registerMockFor(AuthorizationManager.class);
+        authorizationManagerStub = new AuthorizationManagerStub();
         siteConsumer = registerMockFor(SiteConsumer.class);
 
         service = new UserService();
         service.setUserDao(userDao);
-        service.setUserProvisioningManager(userProvisioningManager);
+        service.setAuthorizationManager(authorizationManager);
         service.setSiteConsumer(siteConsumer);
         
         adam = createNamedInstance("Adam", User.class);
@@ -67,7 +71,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSaveNewUser() throws Exception {
-        service.setUserProvisioningManager(userProvisioningManagerStub);
+        service.setAuthorizationManager(authorizationManagerStub);
         User expectedUser = createUser(null, "john", null, true, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         userDao.save(expectedUser);
@@ -77,12 +81,12 @@ public class UserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertSame("Input user not returned", expectedUser, actual);
-        assertEquals("CSM ID not propagated to PSC user", (Long) UserProvisioningManagerStub.USER_ID,
+        assertEquals("CSM ID not propagated to PSC user", (Long) AuthorizationManagerStub.USER_ID,
             actual.getCsmUserId());
         assertEquals("CSM user not given correct login name", expectedUser.getName(),
-            userProvisioningManagerStub.getCreatedUser().getLoginName());
+            authorizationManagerStub.getCreatedUser().getLoginName());
         assertEquals("CSM user not given correct password", "flan",
-            userProvisioningManagerStub.getCreatedUser().getPassword());
+            authorizationManagerStub.getCreatedUser().getPassword());
     }
 
     public void testGetSubjectCoordinatorsForSites() throws Exception {
@@ -170,7 +174,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    private class UserProvisioningManagerStub implements UserProvisioningManager {
+    private class AuthorizationManagerStub implements AuthorizationManager {
         public static final long USER_ID = 100L;
         private gov.nih.nci.security.authorization.domainobjects.User createdUser;
 
@@ -521,6 +525,96 @@ public class UserServiceTest extends StudyCalendarTestCase {
             throw new UnsupportedOperationException();
         }
 
-    }
+        public boolean checkPermission(String s, String s1, String s2, String s3, String s4) throws CSException {
+            throw new UnsupportedOperationException("checkPermission not implemented");
+        }
 
+        public boolean checkPermissionForGroup(String s, String s1, String s2, String s3, String s4) throws CSException {
+            throw new UnsupportedOperationException("checkPermissionForGroup not implemented");
+        }
+
+        public void initialize(String s, URL url) {
+            throw new UnsupportedOperationException("initialize not implemented");
+        }
+
+        public void addUserRoleToProtectionGroup(String s, String[] strings, String s1) throws CSTransactionException {
+            throw new UnsupportedOperationException("addUserRoleToProtectionGroup not implemented");
+        }
+
+        public void addPrivilegesToRole(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addPrivilegesToRole not implemented");
+        }
+
+        public void addGroupsToUser(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addGroupsToUser not implemented");
+        }
+
+        public void addUsersToGroup(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addUsersToGroup not implemented");
+        }
+
+        public void addGroupRoleToProtectionGroup(String s, String s1, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addGroupRoleToProtectionGroup not implemented");
+        }
+
+        public void addProtectionElements(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addProtectionElements not implemented");
+        }
+
+        public void addToProtectionGroups(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addToProtectionGroups not implemented");
+        }
+
+        public void addOwners(String s, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException("addOwners not implemented");
+        }
+
+        public List getAttributeMap(String s, String s1, String s2) {
+            throw new UnsupportedOperationException("getAttributeMap not implemented");
+        }
+
+        public List getAttributeMapForGroup(String s, String s1, String s2) {
+            throw new UnsupportedOperationException("getAttributeMapForGroup not implemented");
+        }
+
+        public void createFilterClause(FilterClause filterClause) throws CSTransactionException {
+            throw new UnsupportedOperationException("createFilterClause not implemented");
+        }
+
+        public FilterClause getFilterClauseById(String s) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException("getFilterClauseById not implemented");
+        }
+
+        public void modifyFilterClause(FilterClause filterClause) throws CSTransactionException {
+            throw new UnsupportedOperationException("modifyFilterClause not implemented");
+        }
+
+        public void removeFilterClause(String s) throws CSTransactionException {
+            throw new UnsupportedOperationException("removeFilterClause not implemented");
+        }
+
+        public void createInstanceLevelMappingElement(InstanceLevelMappingElement instanceLevelMappingElement) throws CSTransactionException {
+            throw new UnsupportedOperationException("createInstanceLevelMappingElement not implemented");
+        }
+
+        public InstanceLevelMappingElement getInstanceLevelMappingElementById(String s) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException("getInstanceLevelMappingElementById not implemented");
+        }
+
+        public void modifyInstanceLevelMappingElement(InstanceLevelMappingElement instanceLevelMappingElement) throws CSTransactionException {
+            throw new UnsupportedOperationException("modifyInstanceLevelMappingElement not implemented");
+        }
+
+        public void removeInstanceLevelMappingElement(String s) throws CSTransactionException {
+            throw new UnsupportedOperationException("removeInstanceLevelMappingElement not implemented");
+        }
+
+        public void maintainInstanceTables(String s) throws CSObjectNotFoundException, CSDataAccessException {
+            throw new UnsupportedOperationException("maintainInstanceTables not implemented");
+        }
+
+        public void refreshInstanceTables(boolean b) throws CSObjectNotFoundException, CSDataAccessException {
+            throw new UnsupportedOperationException("refreshInstanceTables not implemented");
+        }
+    }
 }
