@@ -13,6 +13,8 @@ import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 
 import javax.sql.DataSource;
@@ -27,7 +29,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public abstract class AuthenticationTestCase extends TestCase {
-    private final Log log = LogFactory.getLog(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private MockRegistry mocks;
     protected StaticPscUserDetailsService userDetailsService;
     protected DataSource dataSource;

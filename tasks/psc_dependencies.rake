@@ -39,22 +39,46 @@ def cagrid_lib(org, mod, art, bnd_props = nil)
     "cagrid-ivy", org, mod, CAGRID_VERSION, art, bnd_props)
 end
 
+# TODO: replace all uses of this with cbiit_lib
 def ncicb_lib(org, mod, art, ver, bnd_props = nil)
   ivy_artifact(
     "https://gforge.nci.nih.gov/svnroot/commonlibrary/trunk/ivy-repo",
     "ncicb-common", org, mod, ver, art, bnd_props)
 end
 
+def cbiit_lib(org, mod, art, ver, bnd_props = nil)
+  ivy_artifact(
+    "https://ncisvn.nci.nih.gov/svn/cbiit-ivy-repo/trunk",
+    "cbiit", org, mod, ver, art, bnd_props)
+end
+
+def ivy_artifact_spec(repo_group, org, mod, rev, art)
+  "#{repo_group}.#{org}.#{mod}:#{art}:jar:#{rev}"
+end
+
 def ivy_artifact(repo_url, repo_group, org, mod, rev, art, bnd_props = nil)
   # TODO: base this on ivysettings.xml instead
   url = "#{repo_url}/#{org}/#{mod}/#{rev}/#{art}-#{rev}.jar"
-  artifact_spec = "#{repo_group}.#{org}.#{mod}:#{art}:jar:#{rev}"
+  artifact_spec = ivy_artifact_spec(repo_group, org, mod, rev, art)
   if bnd_props.nil?
     download(artifact(artifact_spec) => url)
   else
     psc_osgi_artifact(artifact_spec, bnd_props) { |src|
       download(src => url)
     }
+  end
+end
+
+def ctms_commons_lib(mod)
+  if ENV['LOCAL_CC_REV']
+    rev = ENV['LOCAL_CC_REV']
+    spec = ivy_artifact_spec("local-ctms-commons",
+      "gov.nih.nci.cabig.ctms", mod, rev, mod)
+    file = Dir[ "#{ENV['HOME']}/ctms-commons/git/**/target/#{mod}-#{rev}.jar" ].first
+    fail "Cannot find locally built #{mod} rev #{rev}" unless file
+    artifact(spec).from(file)
+  else
+    cbiit_lib("gov.nih.nci.cabig.ctms", mod, mod, CTMS_COMMONS_VERSION)
   end
 end
 
@@ -79,7 +103,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "1.0.0-SNAPSHOT"
+CTMS_COMMONS_VERSION = "1.0.4.RELEASE"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.5.6"
 RESTLET_VERSION = "1.1.1"
@@ -89,7 +113,7 @@ CAGRID_VERSION = "1.3"
 
 CTMS_COMMONS = struct(
   %w{base core laf lang web}.inject({}) do |h, a|
-    h[a.to_sym] = "gov.nih.nci.cabig.ctms:ctms-commons-#{a}:jar:#{CTMS_COMMONS_VERSION}"
+    h[a.to_sym] = ctms_commons_lib("ctms-commons-#{a}")
     h
   end
 )
@@ -190,8 +214,10 @@ EHCACHE = struct(
 )
 
 SECURITY = struct(
-  :acegi_csm  => "gov.nih.nci.security.acegi:acegi-csm:jar:#{CTMS_COMMONS_VERSION}",
-  :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:#{CTMS_COMMONS_VERSION}",
+  # temporarily using an older version to avoid immediately upgrading
+  # to CSM 4.2 alongside the other ctms-commons updates.
+  :acegi_csm  => "gov.nih.nci.security.acegi:acegi-csm:jar:0.9",
+  :acegi_grid => "gov.nih.nci.security.acegi:acegi-grid:jar:0.9",
   :clm => "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
   :csm => psc_osgi_artifact(
     "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
@@ -416,7 +442,7 @@ SPRING_OSGI_MOCKS = "org.springframework.osgi:org.springframework.osgi.mock:jar:
 
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
-  "gov.nih.nci.cabig.ctms:ctms-commons-testing:jar:#{CTMS_COMMONS_VERSION}",
+  ctms_commons_lib("ctms-commons-testing-unit"),
   CTMS_COMMONS.base,
   eponym("dbunit", "2.1"),
   "org.easymock:easymock:jar:2.2",

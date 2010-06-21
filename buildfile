@@ -84,7 +84,7 @@ define "psc" do
     bnd.name = "PSC Utility Module"
 
     compile.with SLF4J.api, SPRING, JAKARTA_COMMONS.collections,
-      CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
+      CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core, CONTAINER_PROVIDED
     test.with(UNIT_TESTING)
 
     package(:jar)
@@ -109,7 +109,7 @@ define "psc" do
       "org.hibernate.cfg;version=3.3"
 
     compile.with project('utility'), SLF4J.api,
-      CTMS_COMMONS.lang, CTMS_COMMONS.core,
+      CTMS_COMMONS.base, CTMS_COMMONS.lang, CTMS_COMMONS.core,
       JAKARTA_COMMONS.beanutils, JAKARTA_COMMONS.collections,
       JAKARTA_COMMONS.lang, JAKARTA_COMMONS.collections_generic,
       SPRING, SECURITY.acegi, SECURITY.csm, HIBERNATE, HIBERNATE_ANNOTATIONS
@@ -127,7 +127,8 @@ define "psc" do
         into(resources.target.to_s + "/db/migrate").run
     end
     compile.with BERING, SLF4J.api, SLF4J.jcl, SPRING, CORE_COMMONS,
-      CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps, HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
+      CTMS_COMMONS.base, CTMS_COMMONS.core, JAKARTA_COMMONS, db_deps,
+      HIBERNATE, EHCACHE, HIBERNATE_ANNOTATIONS
     test.with UNIT_TESTING
 
     # Automatically generate the HSQLDB when the migrations change
@@ -1214,6 +1215,13 @@ define "psc" do
 
     task.filename = _("target/dist/#{pkg_name}-bin.zip")
     zip(task.filename).path(pkg_name).include("#{dist_dir}/*").root.invoke
+  end
+
+  desc "Purge any .DEV artifacts in the local m2 repo"
+  task :purge_dev_artifacts do
+    Dir["#{ENV['HOME']}/.m2/repository/**/*.DEV"].each do |dir|
+      rm_r dir
+    end
   end
 end
 
