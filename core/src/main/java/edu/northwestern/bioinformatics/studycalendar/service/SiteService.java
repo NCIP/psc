@@ -103,10 +103,6 @@ public class SiteService {
 
     /**
      * Creates a new site if existing site is null. Or merge existing site with new site if existing site is not null
-     *
-     * @param existingSite existing    site
-     * @param newSite      new site
-     * @throws Exception
      */
     public Site createOrMergeSites(final Site existingSite, final Site newSite) throws Exception {
         if (existingSite == null) {

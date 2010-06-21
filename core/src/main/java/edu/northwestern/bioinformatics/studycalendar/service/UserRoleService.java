@@ -16,7 +16,6 @@ import java.util.List;
 
 @Transactional
 public class UserRoleService implements Serializable {
-    private SiteService siteService;
     private UserRoleDao userRoleDao;
     private UserDao userDao;
     private StudySiteService studySiteService;
@@ -85,11 +84,6 @@ public class UserRoleService implements Serializable {
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 
     @Required

@@ -4,9 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
@@ -56,9 +53,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.*;
  */
 @Transactional
 public class TemplateService {
-    private StudyDao studyDao;
-    private SiteDao siteDao;
-    private StudySiteDao studySiteDao;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
     private AuthorizationService authorizationService;
@@ -444,21 +438,6 @@ public class TemplateService {
     }
 
     ////// CONFIGURATION
-
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
-
-    @Required
-    public void setStudySiteDao(StudySiteDao studySiteDao) {
-        this.studySiteDao = studySiteDao;
-    }
 
     @Required
     public void setDeltaDao(DeltaDao deltaDao) {

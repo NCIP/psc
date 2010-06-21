@@ -5,9 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
@@ -23,7 +20,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -46,44 +42,29 @@ import static org.easymock.EasyMock.*;
 public class TemplateServiceTest extends StudyCalendarTestCase {
     private TemplateService service;
 
-    private StudyDao studyDao;
-    private SiteDao siteDao;
-    private StudySiteDao studySiteDao;
     private DaoFinder daoFinder;
-    private AuthorizationService authorizationService;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
 
-    private User user;
-    private UserRole siteCoordinatorRole;
-    private UserRole subjectCoordinatorRole;
     private DeletableDomainObjectDao domainObjectDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        studyDao = registerDaoMockFor(StudyDao.class);
-        siteDao = registerDaoMockFor(SiteDao.class);
-        studySiteDao = registerDaoMockFor(StudySiteDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
-        authorizationService = registerMockFor(AuthorizationService.class);
+        AuthorizationService authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
         service = new TemplateService();
-        service.setStudyDao(studyDao);
-        service.setSiteDao(siteDao);
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
         service.setDaoFinder(daoFinder);
-        service.setStudySiteDao(studySiteDao);
         service.setAuthorizationService(authorizationService);
 
-        user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
-        siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
-        subjectCoordinatorRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
+        createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
     }
 
     public void testAssignTemplateToSubjectCoordinatorRequiresSite() throws Exception {

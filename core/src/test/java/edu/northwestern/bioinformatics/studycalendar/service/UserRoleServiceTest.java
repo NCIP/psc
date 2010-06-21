@@ -15,7 +15,6 @@ import static java.util.Arrays.*;
 import static org.easymock.EasyMock.*;
 
 public class UserRoleServiceTest extends StudyCalendarTestCase {
-    private SiteService siteService;
     private UserRoleService userRoleService;
     private UserRoleDao userRoleDao;
     private User user2, user0, user1;
@@ -29,14 +28,12 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         super.setUp();
 
         userDao     = registerDaoMockFor(UserDao.class);
-        siteService = registerMockFor(SiteService.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
         studySiteService = registerMockFor(StudySiteService.class);
 
         userRoleService = new UserRoleService();
 
         userRoleService.setStudySiteService(studySiteService);
-        userRoleService.setSiteService(siteService);
         userRoleService.setUserRoleDao(userRoleDao);
         userRoleService.setUserDao(userDao);
 

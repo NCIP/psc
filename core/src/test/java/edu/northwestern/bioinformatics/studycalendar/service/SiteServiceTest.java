@@ -34,7 +34,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private SiteService service;
     private SiteConsumer siteConsumer;
-    private UserService userService;
     private User user;
     private Site nu, mayo;
     private UserRoleDao userRoleDao;
@@ -42,8 +41,8 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        UserService userService = registerMockFor(UserService.class);
         siteDao = registerDaoMockFor(SiteDao.class);
-        userService = registerMockFor(UserService.class);
         siteConsumer = registerMockFor(SiteConsumer.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
@@ -84,7 +83,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertTrue(actualSites.containsAll(expectedSites));
     }
 
-    public void testRemoveRemoveableSite() throws Exception {
+    public void testRemoveRemovableSite() throws Exception {
         Site site = new Site();
         site.setId(1);
         expect(userRoleDao.getUserRolesForSite(site)).andReturn(null);
