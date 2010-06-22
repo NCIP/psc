@@ -88,11 +88,15 @@ public class ReportJsonRepresentation extends StreamingJsonRepresentation  {
             JacksonTools.nullSafeWriteStringField(generator, "activity_status", row.getScheduledActivity().getCurrentState().getMode().getDisplayName());
             JacksonTools.nullSafeWriteStringField(generator, "scheduled_date", getApiDateFormat().format(row.getScheduledActivity().getActualDate()));
             JacksonTools.nullSafeWriteStringField(generator, "ideal_date", getApiDateFormat().format(row.getScheduledActivity().getIdealDate()));
+            JacksonTools.nullSafeWriteStringField(generator, "details", row.getScheduledActivity().getDetails());
+            JacksonTools.nullSafeWriteStringField(generator, "condition", row.getScheduledActivity().getPlannedActivity().getCondition());
+
             if (!row.getScheduledActivity().getLabels().isEmpty()) {
                 JacksonTools.nullSafeWriteStringField(generator, "label", StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ", "));
             }
             JacksonTools.nullSafeWriteStringField(generator, "subject_name", row.getSubject().getFullName());
             JacksonTools.nullSafeWriteStringField(generator, "person_id", row.getSubject().getPersonId());
+            JacksonTools.nullSafeWriteStringField(generator, "study_subject_id", row.getStudySubjectId());
             JacksonTools.nullSafeWriteStringField(generator, "subject_coorinator_name", row.getSubjectCoordinatorName());
             JacksonTools.nullSafeWriteStringField(generator, "study", row.getStudy().getName());
             JacksonTools.nullSafeWriteStringField(generator, "site", row.getSite().getName());

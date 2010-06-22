@@ -2,9 +2,7 @@ describe "/reports/scheduled-activities.json" do
 
   before do
     #create site
-    @site = PscTest::Fixtures.createSite("TestSite", "site")
-    application_context['siteDao'].save( @site)
-
+    @site = load_site('IL036') 
     #create study with an amendment
     @study = PscTest::Fixtures.createSingleEpochStudy("NU480", "Treatment", ["segment_A", "segment_B"].to_java(:String))
     @amendment = PscTest::Fixtures.createAmendment("am", PscTest.createDate(2008, 12, 10))
@@ -25,6 +23,9 @@ describe "/reports/scheduled-activities.json" do
     application_context['activityDao'].save(@activity)
     @planned_activity = PscTest::Fixtures.createPlannedActivity(@activity, 4)
     @planned_activity1 = PscTest::Fixtures.createPlannedActivity(@activity, 4)
+    @planned_activity1.setDetails("DetailsOneTwoAnd Three");
+    @planned_activity1.setCondition("If CBC>100")
+
     application_context['plannedActivityDao'].save(@planned_activity)
     application_context['plannedActivityDao'].save(@planned_activity1)
     @period.addPlannedActivity(@planned_activity)
@@ -59,14 +60,14 @@ describe "/reports/scheduled-activities.json" do
 
   describe "GET" do
     it "returns all sources without parameters" do
-      get '/reports/scheduled-activities.json', :as => :alice
+      get '/reports/scheduled-activities.json', :as => :erin
       response.status_code.should == 200
     end
   end
 
   describe "json with param responsible-user" do
     before do
-      get "/reports/scheduled-activities.json?responsible-user=1", :as => :alice
+      get "/reports/scheduled-activities.json?responsible-user=1", :as => :erin
     end
     it "has a right value for filter responsible-user" do
       response.json["filters"]["responsible_user"].should == "juno"
@@ -75,7 +76,7 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param end-date" do
     before do
-      get "/reports/scheduled-activities.json?end-date=2010-03-05", :as => :alice
+      get "/reports/scheduled-activities.json?end-date=2010-03-05", :as => :erin
     end
     it "has a right value for filter end_date" do
       response.json["filters"]["end_date"].should == "2010-03-05"
@@ -84,7 +85,7 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param start-date" do
     before do
-      get "/reports/scheduled-activities.json?start-date=2010-03-02", :as => :alice
+      get "/reports/scheduled-activities.json?start-date=2010-03-02", :as => :erin
     end
     it "has a right value for filter start_date" do
       response.json["filters"]["start_date"].should == "2010-03-02"
@@ -93,7 +94,7 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param label" do
     before do
-      get "/reports/scheduled-activities.json?label=a", :as => :alice
+      get "/reports/scheduled-activities.json?label=a", :as => :erin
     end
     it "has a right value for the filter label" do
       response.json["filters"]["label"].should == "a"
@@ -102,7 +103,7 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param study" do
     before do
-      get "/reports/scheduled-activities.json?study=a", :as => :alice
+      get "/reports/scheduled-activities.json?study=a", :as => :erin
     end
     it "has a right value for filter study" do
       response.json["filters"]["study"].should == "a"
@@ -111,7 +112,7 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param site" do
     before do
-      get "/reports/scheduled-activities.json?site=1", :as => :alice
+      get "/reports/scheduled-activities.json?site=1", :as => :erin
     end
     it "has a right value for filter site" do
       response.json["filters"]["site"].should == "1"
@@ -120,16 +121,16 @@ describe "/reports/scheduled-activities.json" do
 
   describe "json with param state" do
     before do
-      get "/reports/scheduled-activities.json?state=2", :as => :alice
+      get "/reports/scheduled-activities.json?state=2", :as => :erin
     end
     it "has a right value for filter state" do
       response.json["filters"]["state"].should == "Occurred"
     end
   end
 
-  describe "json with param responsible-user" do
+  describe "json with param start and end dates" do
     before do
-      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :alice
+      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :erin
     end
     it "contains the right number of filters" do
       response.json["filters"].size.should == 2
@@ -140,6 +141,44 @@ describe "/reports/scheduled-activities.json" do
     end
     it "has the right number of rows" do
       response.json["rows"].size.should == 4
+    end
+  end
+
+
+  describe "json with message for activites that are not visible for user for param start and end dates " do
+    before do
+      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :juno
+    end
+    it "has a right values for details" do
+      response.json["messages"]["limitedAccess"].should == "There are some activities that you do not have access to"
+    end
+  end
+
+
+  describe "json with column details for param start and end dates " do
+    before do
+      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :erin
+    end
+    it "has a right values for details" do
+      response.json["rows"][1]["details"].should == "DetailsOneTwoAnd Three"
+    end
+  end
+
+  describe "json with column condition for param start and end dates " do
+    before do
+      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :erin
+    end
+    it "has a right values for details" do
+      response.json["rows"][1]["condition"].should == "If CBC>100"
+    end
+  end
+
+  describe "json with column studySubjectId for param start and end dates " do
+    before do
+      get "/reports/scheduled-activities.json?start-date=2008-12-28&end-date=2009-03-01", :as => :erin
+    end
+    it "has a right values for details" do
+      response.json["rows"][1]["study_subject_id"].should == "SS001"
     end
   end
 end

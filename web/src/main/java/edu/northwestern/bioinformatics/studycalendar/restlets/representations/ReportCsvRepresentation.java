@@ -20,8 +20,8 @@ public class ReportCsvRepresentation extends OutputRepresentation {
 
     private List<ScheduledActivitiesReportRow> allRows;
     private char delimeter;
-    private static final String[] ROW_COLUMNS = new String[] {"Activity Name","Activity Status","Scheduled Date","Ideal Date","Labels",
-                "Subject Name","Patient Id","Subject Coorinator Name","study","site"};
+    private static final String[] ROW_COLUMNS = new String[] {"Activity Name","Activity Status","Scheduled Date","Details","Condition","Labels","Ideal Date",
+                "Subject Name","Patient Id","Study Subject Id","Subject Coorinator Name","Study","Site"};
 
     public ReportCsvRepresentation(List<ScheduledActivitiesReportRow> allRows, char delimeter) {
         super(PscMetadataService.TEXT_CSV);
@@ -60,10 +60,13 @@ public class ReportCsvRepresentation extends OutputRepresentation {
            row.getScheduledActivity().getActivity().getName(),
            row.getScheduledActivity().getCurrentState().getMode().getDisplayName(),
            getApiDateFormat().format(row.getScheduledActivity().getActualDate()),
-           getApiDateFormat().format(row.getScheduledActivity().getIdealDate()),
+           row.getScheduledActivity().getDetails(),
+           row.getScheduledActivity().getPlannedActivity().getCondition(),
            StringUtils.join(row.getScheduledActivity().getLabels().iterator(), ' '),
+           getApiDateFormat().format(row.getScheduledActivity().getIdealDate()),
            row.getSubject().getFullName(),
            row.getSubject().getPersonId(),
+           row.getStudySubjectId(),
            row.getSubjectCoordinatorName(),
            row.getStudy().getName(),
            row.getSite().getName()
