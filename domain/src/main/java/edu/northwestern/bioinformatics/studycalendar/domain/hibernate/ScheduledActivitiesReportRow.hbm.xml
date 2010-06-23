@@ -15,6 +15,7 @@
                 s_actv.ideal_date,
                 s_actv.details,
                 s_actv.activity_id,
+                s_actv.planned_activity_id,
                 a.name AS activity_name,
                 a.activity_type_id,
                 subj.id AS subject_id,
@@ -27,7 +28,9 @@
                 sites.id AS site_id,
                 sites.name AS site_name,
                 users.name AS subject_coordinator_name,
-                users.id AS subject_coordinator_id
+                users.id AS subject_coordinator_id,
+                pa.condition,
+                assign.study_subject_id
 
             FROM
                 scheduled_activities s_actv
@@ -40,6 +43,7 @@
                 LEFT JOIN study_sites ssites ON ssites.id = assign.study_site_id
                 LEFT JOIN studies ON studies.id = ssites.study_id
                 LEFT JOIN sites ON sites.id = ssites.site_id
+                LEFT JOIN planned_activities pa ON pa.id = s_actv.planned_activity_id
         </subselect>
         
         <synchronize table="scheduled_activities"/>
@@ -66,6 +70,10 @@
                 <key column="scheduled_activity_id"/>
                 <element column="label" type="string" not-null="true"/>
             </set>
+            <component name="plannedActivity">
+                <property name="id" column="planned_activity_id"/>
+                <property name="condition" column="condition"/>
+            </component>
         </component>
 
         <component name="subject">
@@ -85,8 +93,9 @@
             <property name="id" column="site_id"/>
             <property name="name" column="site_name"/>
         </component>
-        
+
         <property name="subjectCoordinatorName" column="subject_coordinator_name"/>
+        <property name="studySubjectId" column="study_subject_id"/>
 
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
         <filter name="filter_siteName" condition="UPPER(site_name) LIKE :siteName"/>

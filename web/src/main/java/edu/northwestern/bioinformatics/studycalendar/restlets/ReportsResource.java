@@ -55,7 +55,7 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
 
     public List<ScheduledActivitiesReportRow> filteredRows(List<ScheduledActivitiesReportRow> rows) {
         List<ScheduledActivitiesReportRow> filteredRows = new ArrayList<ScheduledActivitiesReportRow>();
-        User user = applicationSecurityManager.getFreshUser();
+        User user = getCurrentUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySite> ownedStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));

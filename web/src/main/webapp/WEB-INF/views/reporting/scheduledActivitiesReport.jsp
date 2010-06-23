@@ -83,16 +83,19 @@
                    fillInMessagesInfo(resp);
                   
                    var bundleListColumns = [
-                        { key: "activity_name", label: "Activity Name", sortable: true},
+                        { key: "activity_name", label: "Activity", sortable: true},
                         { key: "activity_status", label: "Activity Status", sortable: true },
                         { key: "scheduled_date", label:"Scheduled Date", sortable:true},
-                        { key: "ideal_date", label: "Ideal Date", sortable: true},
+                        { key: "details", label: "Details", sortable: true, width: 200},
+                        { key: "condition", label: "Condition", sortable: true, width: 200},
                         { key: "label", label: "Labels", sortable: true},
-                        { key: "subject_name", label: "Subject Name", sortable: true},
+                        { key: "ideal_date", label: "Ideal Date", sortable: true},
+                        { key: "subject_name", label: "Subject", sortable: true},
                         { key: "person_id", label: "Person ID", sortable: true},
-                        { key: "subject_coorinator_name", label: "Subject Coordinator Name", sortable: true},
-                        { key: "study", label: "Study Name", sortable: true},
-                        { key: "site", label: "Site Name", sortable: true}
+                        { key: "study_subject_id", label: "Study Subject Id", sortable: true},
+                        { key: "subject_coorinator_name", label: "Subject Coordinator", sortable: true},
+                        { key: "study", label: "Study", sortable: true},
+                        { key: "site", label: "Site", sortable: true}
                    ];
                    var myDataSource = new YAHOO.util.DataSource(resp);
                     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
@@ -103,10 +106,13 @@
                             { key: "activity_name"},
                             { key: "activity_status"},
                             { key: "scheduled_date"},
-                            { key: "ideal_date"},
+                            { key: "details"},
+                            { key: "condition"},
                             { key: "label" },
+                            { key: "ideal_date"},
                             { key: "subject_name"},
                             { key: "person_id"},
+                            { key: "study_subject_id"},
                             { key: "subject_coorinator_name"},
                             { key: "study"},
                             { key: "site"}

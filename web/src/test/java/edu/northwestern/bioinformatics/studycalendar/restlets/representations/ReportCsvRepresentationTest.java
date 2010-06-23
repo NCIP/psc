@@ -30,7 +30,7 @@ public class ReportCsvRepresentationTest extends TestCase {
     private Study study;
     private Site site;
     private ScheduledActivitiesReportRow row1, row2;
-    private static final String CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Ideal Date,Labels,Subject Name,Patient Id,Subject Coorinator Name,study,site";
+    private static final String CSV_ROW_HEADER = "Activity Name,Activity Status,Scheduled Date,Details,Condition,Labels,Ideal Date,Subject Name,Patient Id,Study Subject Id,Subject Coorinator Name,Study,Site";
 
     public void setUp() throws Exception {
         super.setUp();
@@ -79,8 +79,8 @@ public class ReportCsvRepresentationTest extends TestCase {
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityOne = "activity1,Scheduled,2009-12-12,2009-12-10,label1,subject one,,mayo mayo,Whatever Study,Site for whatever study";
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,2009-11-13,label2,subject two,,mayo mayo,Whatever Study,Site for whatever study";
+        String csvRepForActivityOne = "activity1,Scheduled,2009-12-12,,,label1,2009-12-10,subject one,,,mayo mayo,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,label2,2009-11-13,subject two,,,mayo mayo,Whatever Study,Site for whatever study";
         assertEquals("Wrong description for row1 ", csvRepForActivityOne, rows[1]);
         assertEquals("Wrong description for row2 ", csvRepForActivityTwo, rows[2]);
         assertEquals("There are more rows in the document ", 3, rows.length);
@@ -94,7 +94,7 @@ public class ReportCsvRepresentationTest extends TestCase {
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,2009-11-13,\"labelA, labelB, labelC\",subject two,,mayo mayo,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,\"labelA, labelB, labelC\",2009-11-13,subject two,,,mayo mayo,Whatever Study,Site for whatever study";
         assertEquals("Wrong implementation of row2 ", csvRepForActivityTwo, rows[2]);
         assertEquals("There are more rows in the document ", 3, rows.length);
     }
@@ -106,7 +106,7 @@ public class ReportCsvRepresentationTest extends TestCase {
         String csvDocument = rr.generateDocumentString(new StringWriter(), ',');
         String[] rows = csvDocument.split("\n");
         assertEquals("Wrong amount of filter rows", CSV_ROW_HEADER, rows[0]);
-        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,2009-11-13,\"\"\"labelA\"\", \"\"labelB\"\", \"\"labelC\"\"\",subject two,,mayo mayo,Whatever Study,Site for whatever study";
+        String csvRepForActivityTwo = "activity2,Scheduled,2009-11-15,,,\"\"\"labelA\"\", \"\"labelB\"\", \"\"labelC\"\"\",2009-11-13,subject two,,,mayo mayo,Whatever Study,Site for whatever study";
         assertEquals("Wrong implementation of row2 ", csvRepForActivityTwo, rows[2]);
         assertEquals("There are more rows in the document ", 3, rows.length);
     }
