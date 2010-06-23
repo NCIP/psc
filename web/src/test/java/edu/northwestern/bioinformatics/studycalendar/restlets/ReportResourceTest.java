@@ -6,13 +6,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
@@ -146,10 +147,17 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.STATE.putIn(request, "1");
 
         filters = getResource().getFilters();
-        expect(applicationSecurityManager.getFreshUser()).andReturn(user);
+        User userOne = getCurrentUser();
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
+                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
+            );
+        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+        expect(getResource().getCurrentUser()).andReturn(userOne);
+
         expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
         replayMocks();
         List<ScheduledActivitiesReportRow> filteredRows = getResource().filteredRows(rows);
         verifyMocks();
@@ -160,21 +168,27 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.STUDY.putIn(request, "1001");
 
         filters = getResource().getFilters();
+        User userOne = getCurrentUser();
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
+                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
+            );
+        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+        expect(getResource().getCurrentUser()).andReturn(userOne);
         ScheduledActivitiesReportRow row3 = new ScheduledActivitiesReportRow();
         row3.setId(1003);
         ScheduledActivityState sa3State = new Conditional();
         ScheduledActivity activity3 = Fixtures.createScheduledActivity("activity2 ", 2010, 03, 04, sa3State);
         row3.setScheduledActivity(activity3);
-        row3.setSubjectCoordinatorName(user.getName());
+        row3.setSubjectCoordinatorName(userOne.getName());
         row3.setSubject(Fixtures.createSubject("subject", "two"));
         row3.setSite(siteB);
         row3.setStudy(studyB);
         rows.add(row3);
 
-        expect(applicationSecurityManager.getFreshUser()).andReturn(user);
         expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
         replayMocks();
         List<ScheduledActivitiesReportRow> filteredRows = getResource().filteredRows(rows);
         verifyMocks();
@@ -186,11 +200,17 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
     public void test200ForSupportedCSVMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
+        User userOne = getCurrentUser();
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
+                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
+            );
+        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+        expect(getResource().getCurrentUser()).andReturn(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        expect(applicationSecurityManager.getFreshUser()).andReturn(user);
         expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
         request.getResourceRef().addQueryParameter("state", "1");
         request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(PscMetadataService.TEXT_CSV)));
         doGet();
@@ -200,11 +220,17 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
     public void test200ForSupportedJSONMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
+        User userOne = getCurrentUser();
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
+                createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
+            );
+        userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+        expect(getResource().getCurrentUser()).andReturn(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        expect(applicationSecurityManager.getFreshUser()).andReturn(user);
         expect(studyDao.getAll()).andReturn(studies);
-        expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
-        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
+        expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
+        expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
         request.getResourceRef().addQueryParameter("state", "1");
         request.getClientInfo().setAcceptedMediaTypes(Arrays.asList(new Preference<MediaType>(MediaType.APPLICATION_JSON)));
         doGet();
@@ -365,7 +391,14 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
         filters = getResource().getFilters();
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        expect(applicationSecurityManager.getFreshUser()).andReturn(user);
+        User user = getCurrentUser();
+
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(user, Role.SITE_COORDINATOR, siteB),
+                createUserRole(user, Role.SUBJECT_COORDINATOR, siteZ)
+            );
+        user.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+        expect(getResource().getCurrentUser()).andReturn(user);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
