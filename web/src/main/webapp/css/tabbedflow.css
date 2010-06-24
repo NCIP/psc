@@ -5,14 +5,14 @@
 /* second-level tabs */
 
 #workflow-tabs {
-  background: #A2A2A2 url(../../images/chrome/workflow-tab_R.gif) no-repeat center left;
+  background: #A2A2A2 url(../images/chrome/workflow-tab_R.gif) no-repeat center left;
   padding-right: 12px;
   min-height: 18px; font-size: .85em;
   border-bottom: 1px solid #001779;
 }
 
 #workflow-tabs li {
-  background: url(../../images/chrome/workflow-tab_BG.gif) no-repeat top left;
+  background: url(../images/chrome/workflow-tab_BG.gif) no-repeat top left;
   padding: 2px 0;
   line-height: 14px;
   border: 0 solid #000;
@@ -20,18 +20,18 @@
 }
 
 #workflow-tabs li.selected {
-  background-image: url(../../images/chrome/workflow-tab_BG_s.gif);
+  background-image: url(../images/chrome/workflow-tab_BG_s.gif);
 }
 
 #workflow-tabs li div {
   position: relative;
   left: 6px;
-  background: url(../../images/chrome/workflow-tab_R.gif) no-repeat top right;
+  background: url(../images/chrome/workflow-tab_R.gif) no-repeat top right;
   padding: 0 16px 0 10px;
 }
 
 #workflow-tabs li.selected div {
-  background-image: url(../../images/chrome/workflow-tab_R_s.gif);
+  background-image: url(../images/chrome/workflow-tab_R_s.gif);
 }
 
 #workflow-tabs li.last div {

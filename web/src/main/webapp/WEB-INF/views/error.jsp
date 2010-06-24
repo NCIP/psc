@@ -4,8 +4,7 @@
 <html>
     <head>
         <title>Error - ${statusName}</title>
-        <laf:stylesheetLink name="debug"/>
-        <laf:stylesheetLink name="common"/>
+        <tags:stylesheetLink name="debug"/>
         <tags:stylesheetLink name="common"/>
         <tags:javascriptLink name="prototype"/>
         <style type="text/css">

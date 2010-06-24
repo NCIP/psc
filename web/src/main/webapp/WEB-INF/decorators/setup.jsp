@@ -9,12 +9,11 @@
 <html>
   <head>
     <title>PSC - Initial setup - <decorator:title/></title>
-    <laf:stylesheetLink name="debug"/>
-    <laf:stylesheetLink name="common"/>
-    <laf:stylesheetLink name="fields"/>
-    <laf:stylesheetLink name="calendar-blue"/>
-    <tags:stylesheetLink name="lightbox"/>
+    <tags:stylesheetLink name="debug"/>
     <tags:stylesheetLink name="common"/>
+    <tags:stylesheetLink name="fields"/>
+    <tags:stylesheetLink name="calendar-blue"/>
+    <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="setup"/>
 
     <tags:javascriptLink name="prototype"/>
