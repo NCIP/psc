@@ -29,9 +29,9 @@
     </script>
     <tags:javascriptLink name="prototype"/>
 
-    <laf:javascriptLink name="common"/>
-    <laf:javascriptLink name="calendar"/>
-    <laf:javascriptLink name="ccts-hotlinks"/>
+    <tags:javascriptLink name="common"/>
+    <tags:javascriptLink name="calendar"/>
+    <tags:javascriptLink name="ccts-hotlinks"/>
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>

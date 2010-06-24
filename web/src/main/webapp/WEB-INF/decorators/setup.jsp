@@ -18,8 +18,8 @@
     <tags:stylesheetLink name="setup"/>
 
     <tags:javascriptLink name="prototype"/>
-    <laf:javascriptLink name="common"/>
-    <laf:javascriptLink name="calendar"/>
+    <tags:javascriptLink name="common"/>
+    <tags:javascriptLink name="calendar"/>
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="common"/>
 
