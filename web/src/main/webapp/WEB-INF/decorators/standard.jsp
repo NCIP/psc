@@ -35,7 +35,7 @@
     <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
 
-    <script type="text/javascript" src="<c:url value="/pages/configuration.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/public/configuration.js"/>"></script>
     
     <c:choose>
       <c:when test="${configuration.map.showDebugInformation}">

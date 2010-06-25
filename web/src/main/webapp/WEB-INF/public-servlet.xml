@@ -47,5 +47,11 @@
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName"><value>accessDenied</value></property>
     </bean>
-          
+
+
+    <bean name="/configuration.js" id="configurationJsController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="configuration.js"/>
+    </bean>
+
 </beans>
