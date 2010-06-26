@@ -4,12 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
-import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -116,17 +114,63 @@ public class UserAdministrationCommandTest extends WebTestCase {
 
     ////// authorization
 
-    // role changes for disallowed roles ignored
+    public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
+        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+            pSession, authorizationManager,
+            Arrays.asList(SuiteRole.USER_ADMINISTRATOR),
+            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
+            true
+        );
 
-    // all-site changes for all-site=false ignored
+        expectRoleChange(limitedCommand, "system_administrator", "add", null, null);
+        replayMocks(); // nothing expected
 
-    // role changes for disallowed sites ignored
+        limitedCommand.apply();
+        verifyMocks();
+    }
+
+    public void testSiteChangeWhenDisallowedIgnored() throws Exception {
+        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+            pSession, authorizationManager,
+            Arrays.asList(SuiteRole.values()),
+            Arrays.asList(Fixtures.createSite("T", "i-t")),
+            true
+        );
+
+        expectRoleChange(limitedCommand, "data_reader", "add", "site", "i-a");
+        replayMocks(); // nothing expected
+
+        limitedCommand.apply();
+        verifyMocks();
+    }
+
+    public void testAllSiteChangesWhenDisallowedIgnored() throws Exception {
+        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+            pSession, authorizationManager,
+            Arrays.asList(SuiteRole.values()),
+            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
+            false
+        );
+
+        expectRoleChange(limitedCommand, "data_reader", "add", "site", "__ALL__");
+        replayMocks(); // nothing expected
+
+        limitedCommand.apply();
+        verifyMocks();
+    }
 
     private void expectRoleChange(String roleKey, String changeKind) {
         expectRoleChange(roleKey, changeKind, null, null);
     }
 
     private void expectRoleChange(String roleKey, String changeKind, String scopeType, String scopeIdent) {
+        expectRoleChange(this.command, roleKey, changeKind, scopeType, scopeIdent);
+    }
+
+    private void expectRoleChange(
+        UserAdministrationCommand command,
+        String roleKey, String changeKind, String scopeType, String scopeIdent
+    ) {
         MapBuilder<String, String> mb = new MapBuilder<String, String>().
             put("role", roleKey).put("kind", changeKind);
         if (scopeType != null) {

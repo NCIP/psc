@@ -12,15 +12,23 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
  */
+// TODO: this class should be reusable for provisioning flows other than the main user admin one,
+// except that it needs to be slightly modified to allow for study scoping also.
 public class UserAdministrationCommand {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final String CHANGE_PROP_ROLE = "role";
     private static final String CHANGE_PROP_KIND = "kind";
     private static final String CHANGE_PROP_SCOPE_TYPE = "scopeType";
@@ -34,6 +42,7 @@ public class UserAdministrationCommand {
     private final AuthorizationManager authorizationManager;
     private final List<SuiteRole> provisionableRoles;
     private final List<Site> provisionableSites;
+    private final Set<String> provisionableSiteIdentifiers;
     private final boolean mayProvisionAllSites;
 
     public UserAdministrationCommand(
@@ -47,11 +56,16 @@ public class UserAdministrationCommand {
         this.authorizationManager = authorizationManager;
         this.provisionableRoles = provisionableRoles;
         this.provisionableSites = provisionableSites;
+        this.provisionableSiteIdentifiers = new LinkedHashSet<String>();
+        for (Site site : provisionableSites) {
+            // TODO: replace getAssignedIdentifier with a call to the mapping
+            this.provisionableSiteIdentifiers.add(site.getAssignedIdentifier());
+        }
         this.mayProvisionAllSites = mayProvisionAllSites;
     }
 
     public void apply() throws CSTransactionException {
-        Map<String, List<SubmittedChange>> changesByType = classifyChanges();
+        Map<String, List<SubmittedChange>> changesByType = classifyAndFilterChanges();
         applyAddAndRemoveScopes(changesByType.get("specificScope"));
         applyAddAndRemoveAllScope(changesByType.get("allScope"));
         applyAddAndRemoveGroupOnly(changesByType.get("groupOnly"));
@@ -96,7 +110,7 @@ public class UserAdministrationCommand {
         }
     }
 
-    private Map<String, List<SubmittedChange>> classifyChanges() {
+    private Map<String, List<SubmittedChange>> classifyAndFilterChanges() {
         Map<String, List<SubmittedChange>> classified = new MapBuilder<String, List<SubmittedChange>>().
             put("specificScope", new LinkedList<SubmittedChange>()).
             put("allScope", new LinkedList<SubmittedChange>()).
@@ -105,6 +119,8 @@ public class UserAdministrationCommand {
         for (int i = 0; i < getRoleChanges().length(); i++) {
             try {
                 SubmittedChange change = new SubmittedChange(getRoleChanges().getJSONObject(i));
+                if (shouldSkip(change)) continue;
+
                 if (!change.isScopeChange()) {
                     classified.get("groupOnly").add(change);
                 } else if (change.isAllScope()) {
@@ -120,6 +136,34 @@ public class UserAdministrationCommand {
         return classified;
     }
 
+    private boolean shouldSkip(SubmittedChange change) {
+        if (!provisionableRoles.contains(change.getRole())) {
+            log.warn("Ignoring unauthorized attempt to change {} membership.  Authorized to change only {}.",
+                change.getRole(), provisionableRoles);
+            return true;
+        }
+        if (change.isAllScope() && !this.mayProvisionAllSites) {
+            log.warn("Ignoring unauthorized attempt to change all-sites access.");
+            return true;
+        }
+        if (!change.isAllScope() && change.isScopeChange() && !provisionableSiteIdentifiers.contains(change.getScopeIdentifier())) {
+            log.warn("Ignoring unauthorized attempt to change site \"{}\" access.  Authorized to change only {}.",
+                change.getScopeIdentifier(), provisionableSiteIdentifiers);
+            return true;
+        }
+        return false;
+    }
+
+    ////// ACCESSORS
+
+    public List<SuiteRole> getProvisionableRoles() {
+        return provisionableRoles;
+    }
+
+    public List<Site> getProvisionableSites() {
+        return provisionableSites;
+    }
+
     ////// BOUND PROPERTIES
 
     public User getUser() {
@@ -133,6 +177,7 @@ public class UserAdministrationCommand {
         return roleChanges;
     }
 
+    @SuppressWarnings({ "UnusedDeclaration" })
     public void setRoleChanges(JSONArray roleChanges) {
         this.roleChanges = roleChanges;
     }
