@@ -4,17 +4,21 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSTransactionException;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +30,7 @@ import java.util.Set;
  */
 // TODO: this class should be reusable for provisioning flows other than the main user admin one,
 // except that it needs to be slightly modified to allow for study scoping also.
-public class UserAdministrationCommand {
+public class ProvisionUserCommand {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final String CHANGE_PROP_ROLE = "role";
@@ -37,6 +41,7 @@ public class UserAdministrationCommand {
 
     private User user;
     private JSONArray roleChanges;
+    private final Map<SuiteRole, SuiteRoleMembership> currentRoleMemberships;
 
     private final ProvisioningSession provisioningSession;
     private final AuthorizationManager authorizationManager;
@@ -45,13 +50,15 @@ public class UserAdministrationCommand {
     private final Set<String> provisionableSiteIdentifiers;
     private final boolean mayProvisionAllSites;
 
-    public UserAdministrationCommand(
+    public ProvisionUserCommand(
         User user,
+        Map<SuiteRole, SuiteRoleMembership> currentRoles,
         ProvisioningSession provisioningSession, AuthorizationManager authorizationManager, 
         List<SuiteRole> provisionableRoles,
         List<Site> provisionableSites, boolean mayProvisionAllSites
     ) {
         this.user = user;
+        currentRoleMemberships = currentRoles;
         this.provisioningSession = provisioningSession;
         this.authorizationManager = authorizationManager;
         this.provisionableRoles = provisionableRoles;
@@ -91,8 +98,7 @@ public class UserAdministrationCommand {
             if (change.isAdd()) {
                 base.forAllSites();
             } else if (change.isRemove()) {
-                // TODO: needs ctms-commons-suite-authorization 0.3.1+
-                // base.notAllSites();
+                base.notForAllSites();
             }
             provisioningSession.replaceRole(base);
         }
@@ -154,6 +160,46 @@ public class UserAdministrationCommand {
         return false;
     }
 
+    public String getJavaScriptProvisionableUser() {
+        List<String> roleClauses = buildJsProvisionableUserRoleClauses();
+        
+        return String.format(
+            "new psc.admin.ProvisionableUser('%s', {\n%s\n})",
+            getUser().getLoginName(),
+            StringUtils.join(roleClauses.iterator(), ",\n")
+            );
+    }
+
+    private List<String> buildJsProvisionableUserRoleClauses() {
+        List<String> roleClauses = new ArrayList<String>(getCurrentRoles().size());
+        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
+            roleClauses.add(new StringBuilder().append("  ").append(entry.getKey().getCsmName()).
+                append(": { ").
+                append(StringUtils.join(buildJsProvisionableUserScopeClauses(entry.getValue()).iterator(), ", ")).
+                append(" }").
+                toString());
+        }
+        return roleClauses;
+    }
+
+    private List<String> buildJsProvisionableUserScopeClauses(SuiteRoleMembership membership) {
+        List<String> clauses = new ArrayList<String>(ScopeType.values().length);
+        for (ScopeType scopeType : ScopeType.values()) {
+            if (membership.hasScope(scopeType)) {
+                List<String> identifiers;
+                if (membership.isAll(scopeType)) {
+                    identifiers = Collections.singletonList(ALL_SCOPE_IDENTIFIER);
+                } else {
+                    identifiers = membership.getIdentifiers(scopeType);
+                }
+                clauses.add(String.format("%s: ['%s']",
+                    scopeType.getPluralName(),
+                    StringUtils.join(identifiers.iterator(), "', '")));
+            }
+        }
+        return clauses;
+    }
+
     ////// ACCESSORS
 
     public List<SuiteRole> getProvisionableRoles() {
@@ -162,6 +208,10 @@ public class UserAdministrationCommand {
 
     public List<Site> getProvisionableSites() {
         return provisionableSites;
+    }
+
+    public Map<SuiteRole, SuiteRoleMembership> getCurrentRoles() {
+        return currentRoleMemberships;
     }
 
     ////// BOUND PROPERTIES
@@ -177,6 +227,10 @@ public class UserAdministrationCommand {
         return roleChanges;
     }
 
+    /*
+     * This array is parsed with the expectation that it will be the JSON-serialized result
+     * of calling #roleChanges on the javascript object psc.admin.ProvisionableUser.
+     */
     @SuppressWarnings({ "UnusedDeclaration" })
     public void setRoleChanges(JSONArray roleChanges) {
         this.roleChanges = roleChanges;

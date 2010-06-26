@@ -27,6 +27,7 @@
       jQuery.noConflict();
     </script>
     <tags:javascriptLink name="prototype"/>
+    <tags:javascriptLink name="underscore-min"/>
 
     <tags:javascriptLink name="common"/>
     <tags:javascriptLink name="calendar"/>

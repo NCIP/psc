@@ -62,4 +62,9 @@
         <property name="contextRelative" value="true"/>
         <property name="url" value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>
     </bean>
+
+    <bean id="redirectToUserList" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative" value="true"/>
+        <property name="url" value="/pages/admin/manage/listUsers"/>
+    </bean>
 </beans>

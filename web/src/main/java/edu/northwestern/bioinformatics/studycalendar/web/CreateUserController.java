@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
+@Deprecated // don't remove until all features are supported by AdministerUserController
 public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
     private SiteDao siteDao;

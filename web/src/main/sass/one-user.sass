@@ -1,0 +1,68 @@
+!role_manager_height = 72em
+!role_manager_width = 72em
+!role_tab_width = 15em
+!role_editor_width = !role_manager_width - !role_tab_width
+
+#role-manager
+  position: relative
+  height= !role_manager_height
+  width= !role_manager_width
+#roles
+  width= !role_tab_width
+  position: absolute
+  left: 0
+  top: 0
+  padding-top: 3em
+  .role-tab
+    width: 100%
+    overflow: hidden
+    position: relative
+    margin: 0 0 0.5em 0
+  .role
+    border: 1px solid #444
+    border-width: 1px 0 1px 1px
+    text-align: right
+    float: right
+    width= !role_tab_width - 3em
+    padding: 2px
+    padding-left: 1em
+    display: block
+    &.selected
+      background-color: #444
+      color: #fff
+    &.member
+      background-image: url('../images/occurred.png')
+      background-repeat: no-repeat
+      background-position: 2px 2px
+    border-radius: 5px 0 0 5px
+    -moz-border-radius: 5px 0 0 5px
+  .role-control
+    width: 2em
+    visibility: hidden /* TODO */
+#role-editor
+  position: absolute
+  left= !role_tab_width
+  width= !role_editor_width
+  border: 1px solid #444
+  border-left-width: 1px
+  height: 100%
+  overflow: auto
+  h2
+    width: !role_editor_width
+    background-color: #444
+    color: white
+    margin: 0
+    padding: 0.5em
+  div.label
+    width: 3em
+  div.value
+    margin-left: 4em
+
+div.row
+  padding: 2px 0
+  div.label
+    width= !role_tab_width - 1em
+    padding: 0
+    margin: 0
+  div.value
+    margin-left= !role_tab_width

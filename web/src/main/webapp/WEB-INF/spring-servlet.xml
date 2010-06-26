@@ -502,6 +502,23 @@
         </property>
     </bean>
 
+    <bean name="/admin/manage/oneUser" id="administerUserController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Administer one user"/>
+                <property name="parent">
+                    <ref local="listUsersController"/>
+                </property>
+            </bean>
+        </property>
+        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
+        <property name="controllerTools" ref="controllerTools"/>
+    </bean>
+
     <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
         <property name="crumb">

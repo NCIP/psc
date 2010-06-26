@@ -47,6 +47,17 @@
         <property name="authorizationDao" ref="csmAuthorizationDao"/>
     </bean>
 
+    <bean id="provisioningSessionFactory"
+          class="gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory">
+        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
+    </bean>
+
+    <bean id="suiteRoleMembershipLoader"
+          class="gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader">
+        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+    </bean>
+
     <!-- TODO: is this actually wired to anything? -->
     <bean id="authorizationSwitch"
           class="gov.nih.nci.cabig.ctms.acegi.csm.authorization.AuthorizationSwitch"

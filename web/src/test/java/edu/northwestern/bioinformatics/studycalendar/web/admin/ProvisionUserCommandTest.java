@@ -11,15 +11,17 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
-public class UserAdministrationCommandTest extends WebTestCase {
-    private UserAdministrationCommand command;
+public class ProvisionUserCommandTest extends WebTestCase {
+    private ProvisionUserCommand command;
 
     private User user;
     private ProvisioningSession pSession;
@@ -29,11 +31,13 @@ public class UserAdministrationCommandTest extends WebTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         user = new User();
+        user.setLoginName("jo");
         user.setUpdateDate(new Date()); // or CSM pukes
         pSession = registerMockFor(ProvisioningSession.class);
         authorizationManager = registerNiceMockFor(AuthorizationManager.class);
 
-        command = new UserAdministrationCommand(user, 
+        command = new ProvisionUserCommand(user,
+            new LinkedHashMap<SuiteRole, SuiteRoleMembership>(),
             pSession, authorizationManager,
             Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
@@ -115,7 +119,8 @@ public class UserAdministrationCommandTest extends WebTestCase {
     ////// authorization
 
     public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
-        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
+            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
             pSession, authorizationManager,
             Arrays.asList(SuiteRole.USER_ADMINISTRATOR),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
@@ -130,7 +135,8 @@ public class UserAdministrationCommandTest extends WebTestCase {
     }
 
     public void testSiteChangeWhenDisallowedIgnored() throws Exception {
-        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
+            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
             pSession, authorizationManager,
             Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("T", "i-t")),
@@ -145,7 +151,8 @@ public class UserAdministrationCommandTest extends WebTestCase {
     }
 
     public void testAllSiteChangesWhenDisallowedIgnored() throws Exception {
-        UserAdministrationCommand limitedCommand = new UserAdministrationCommand(user,
+        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
+            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
             pSession, authorizationManager,
             Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
@@ -159,6 +166,42 @@ public class UserAdministrationCommandTest extends WebTestCase {
         verifyMocks();
     }
 
+    ////// javascript user init
+    
+    public void testJavascriptUserForEmptyUserIsCorrect() throws Exception {
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n\n})", command.getJavaScriptProvisionableUser());
+    }
+
+    public void testJavascriptUserWithOneGroupOnlyRole() throws Exception {
+        command.getCurrentRoles().put(SuiteRole.SYSTEM_ADMINISTRATOR,
+            new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  system_administrator: {  }\n})",
+            command.getJavaScriptProvisionableUser());
+    }
+
+    public void testJavascriptUserWithOneSiteScopedRole() throws Exception {
+        command.getCurrentRoles().put(SuiteRole.USER_ADMINISTRATOR,
+            new SuiteRoleMembership(SuiteRole.USER_ADMINISTRATOR, null, null).forSites("A", "B"));
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['A', 'B'] }\n})",
+            command.getJavaScriptProvisionableUser());
+    }
+
+    public void testJavascriptUserWithOneSitePlusStudyScopedRole() throws Exception {
+        command.getCurrentRoles().put(SuiteRole.DATA_READER,
+            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forSites("A", "B").forAllStudies());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  data_reader: { sites: ['A', 'B'], studies: ['__ALL__'] }\n})",
+            command.getJavaScriptProvisionableUser());
+    }
+
+    public void testJavascriptUserWithMultipleRoles() throws Exception {
+        command.getCurrentRoles().put(SuiteRole.USER_ADMINISTRATOR,
+            new SuiteRoleMembership(SuiteRole.USER_ADMINISTRATOR, null, null).forSites("A", "B"));
+        command.getCurrentRoles().put(SuiteRole.DATA_READER,
+            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forAllSites().forStudies("T", "Q"));
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['A', 'B'] },\n  data_reader: { sites: ['__ALL__'], studies: ['T', 'Q'] }\n})",
+            command.getJavaScriptProvisionableUser());
+    }
+
     private void expectRoleChange(String roleKey, String changeKind) {
         expectRoleChange(roleKey, changeKind, null, null);
     }
@@ -168,7 +211,7 @@ public class UserAdministrationCommandTest extends WebTestCase {
     }
 
     private void expectRoleChange(
-        UserAdministrationCommand command,
+        ProvisionUserCommand command,
         String roleKey, String changeKind, String scopeType, String scopeIdent
     ) {
         MapBuilder<String, String> mb = new MapBuilder<String, String>().
