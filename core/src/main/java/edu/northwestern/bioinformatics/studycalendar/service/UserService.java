@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 @Transactional
 public class UserService implements Serializable {
     private final Logger log = LoggerFactory.getLogger(getClass());

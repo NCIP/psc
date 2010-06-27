@@ -5,6 +5,7 @@ import gov.nih.nci.cabig.ctms.domain.EnumHelper;
 import static gov.nih.nci.cabig.ctms.domain.CodedEnumHelper.*;
 import org.acegisecurity.GrantedAuthority;
 
+@Deprecated
 public enum Role implements CodedEnum<String>, GrantedAuthority {
     STUDY_COORDINATOR   (false),
     STUDY_ADMIN         (false),

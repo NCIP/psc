@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 
 import java.util.List;
 
+@Deprecated
 public class UserRoleDao extends StudyCalendarMutableDomainObjectDao<UserRole> implements DeletableDomainObjectDao<UserRole> {
     @Override public Class<UserRole> domainClass() { return UserRole.class; }
     

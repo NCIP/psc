@@ -26,6 +26,7 @@ import java.util.Set;
         @Parameter(name="sequence", value="seq_user_roles_id")
     }
 )
+@Deprecated
 public class UserRole  extends AbstractMutableDomainObject implements Serializable {
     private User user;
     private Role role;

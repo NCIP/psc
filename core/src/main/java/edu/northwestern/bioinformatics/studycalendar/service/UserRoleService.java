@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
+@Deprecated
 public class UserRoleService implements Serializable {
     private UserRoleDao userRoleDao;
     private UserDao userDao;

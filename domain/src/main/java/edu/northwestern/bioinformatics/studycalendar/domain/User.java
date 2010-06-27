@@ -28,6 +28,7 @@ import java.util.Set;
         @Parameter(name="sequence", value="seq_users_id")
     }
 )
+@Deprecated
 public class User extends AbstractMutableDomainObject implements Named, Serializable, UserDetails {
     private String name;
     private String firstName;

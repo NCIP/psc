@@ -9,7 +9,7 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import java.util.List;
 import java.io.Serializable;
 
-
+@Deprecated
 public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implements Serializable {
     @Override
     public Class<User> domainClass() {
