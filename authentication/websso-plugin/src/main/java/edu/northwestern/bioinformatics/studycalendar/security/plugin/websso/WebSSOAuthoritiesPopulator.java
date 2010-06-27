@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;

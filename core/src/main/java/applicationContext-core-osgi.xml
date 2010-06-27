@@ -15,7 +15,7 @@
         <property name="sharedPackages">
             <list>
                 <value>edu.northwestern.bioinformatics.studycalendar.security</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.security.acegi</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.security.authorization</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.security.plugin</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.osgi.hostservices</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.dataproviders.api</value>

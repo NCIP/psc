@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal.
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.security.StubAuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl;

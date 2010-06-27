@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UserDetailsService;

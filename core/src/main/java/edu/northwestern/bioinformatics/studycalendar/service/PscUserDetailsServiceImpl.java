@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Required;

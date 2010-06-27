@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.security.acegi;
+package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.acegisecurity.userdetails.UserDetailsService;

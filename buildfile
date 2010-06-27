@@ -209,24 +209,24 @@ define "psc" do
     package(:sources)
   end # database
 
+  define "authorization" do
+    bnd.wrap!
+    bnd.name = "PSC Authorization Implementation"
+    bnd.import_packages <<
+      "org.acegisecurity" <<
+      "org.springframework.core" <<
+      "gov.nih.nci.cabig.ctms.domain"
+    compile.with SECURITY.acegi, project('domain').and_dependencies
+    package(:jar)
+  end
+
   desc "Pluggable authentication definition and included plugins"
   define "authentication" do
-    define "acegi" do
-      bnd.wrap!
-      bnd.name = "PSC Acegi Extensions"
-      bnd.import_packages <<
-        "org.acegisecurity" <<
-        "org.springframework.core" <<
-        "gov.nih.nci.cabig.ctms.domain"
-      compile.with SECURITY.acegi, project('domain').and_dependencies
-      package(:jar)
-    end
-
     desc "Interfaces and base classes for PSC's pluggable authentication system"
     define "plugin-api" do
       bnd.wrap!
       bnd.name = "PSC Pluggable Auth API"
-      compile.with project('utility'), project('authentication:acegi'),
+      compile.with project('utility'), project('authorization'),
         SLF4J.api, OSGI, CONTAINER_PROVIDED, SPRING, SECURITY.acegi,
         CTMS_COMMONS.core, JAKARTA_COMMONS.lang, SPRING_OSGI
       test.with UNIT_TESTING, EHCACHE,
@@ -533,7 +533,7 @@ define "psc" do
         "edu.northwestern.bioinformatics.studycalendar.domain"
 
       compile.with project('utility').and_dependencies,
-        project('authentication:acegi'), SECURITY.acegi, OSGI, FELIX.configadmin
+        project('authorization'), SECURITY.acegi, OSGI, FELIX.configadmin
       test.using(:junit).with UNIT_TESTING,
         project('domain').and_dependencies, project('domain').test_dependencies
 
@@ -614,7 +614,7 @@ define "psc" do
     ).exclude "**/.DS_Store"
 
     compile.with project('domain').and_dependencies,
-      project('authentication:acegi').and_dependencies,
+      project('authorization').and_dependencies,
       project('providers:api').and_dependencies,
       project('database').and_dependencies,
       project('utility:osgimosis').and_dependencies,

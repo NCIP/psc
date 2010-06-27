@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.core.osgi;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import org.apache.felix.cm.PersistenceManager;
 import static org.easymock.EasyMock.expect;

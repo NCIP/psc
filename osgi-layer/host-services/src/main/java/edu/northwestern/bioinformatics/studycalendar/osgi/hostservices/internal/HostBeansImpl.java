@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal;
 
 import edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.HostBeans;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import org.apache.felix.cm.PersistenceManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;

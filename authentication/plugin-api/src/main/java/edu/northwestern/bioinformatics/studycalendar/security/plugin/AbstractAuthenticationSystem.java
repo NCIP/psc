@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.security.acegi.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.tools.spring.ConcreteStaticApplicationContext;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
