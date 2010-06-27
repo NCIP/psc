@@ -11,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,7 +41,7 @@ public class StudyListController extends PscAbstractController {
 
         studySiteService.refreshStudySitesForStudies(studies);
 
-        User user = applicationSecurityManager.getUser();
+        User user = applicationSecurityManager.getUser().getLegacyUser();
 
         List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
         List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.springframework.dao.DataAccessException;
@@ -11,5 +10,5 @@ import org.springframework.dao.DataAccessException;
  * @author Rhett Sutphin
  */
 public interface PscUserDetailsService extends UserDetailsService {
-    User loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException;
+    PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException;
 }

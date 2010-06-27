@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dataproviders.coppa.ihub;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cagrid.caxchange.client.CaXchangeRequestProcessorClient;
+import gov.nih.nci.caxchange.Credentials;
 import gov.nih.nci.caxchange.Message;
+import gov.nih.nci.caxchange.Metadata;
 import gov.nih.nci.caxchange.Request;
 import gov.nih.nci.caxchange.ResponseMessage;
-import gov.nih.nci.caxchange.Metadata;
-import gov.nih.nci.caxchange.Credentials;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.axis.message.MessageElement;
@@ -85,13 +85,13 @@ public class IntegrationHubExecutor {
         if (principal == null) {
             log.error("No principal for authentication token (this shouldn't be possible).");
             return null;
-        } else if (!(principal instanceof User)) {
+        } else if (!(principal instanceof PscUser)) {
             log.error("Authenticated principal {} is not a PSC User object; it is a {}.  Cannot extract credential to use with iHub.  (This is indicates a bug in your AuthenticationSystem.)",
                 principal, principal.getClass().getName());
             return null;
         }
 
-        User user = (User) principal;
+        PscUser user = (PscUser) principal;
         GlobusCredential found = (GlobusCredential) user.getAttribute(DELEGATED_CREDENTIAL_OBJ_USER_ATTRIBUTE);
         if (found == null) {
             log.error("No delegated credential available in the authentication token under attribute '" +

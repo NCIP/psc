@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.providers.cas.CasAuthoritiesPopulator;
-import org.acegisecurity.userdetails.UserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -58,17 +57,17 @@ public class WebSSOAuthoritiesPopulator implements CasAuthoritiesPopulator {
      * @param casUserId as obtained from the webSSO CAS validation service
      * @return the details of the indicated user (at minimum the granted authorities and the username)
      */
-    public UserDetails getUserDetails(String casUserId) throws AuthenticationException {
+    public PscUser getUserDetails(String casUserId) throws AuthenticationException {
         Map<String, String> responseAttributes = parseResponse(casUserId);
         String username = extractUsername(responseAttributes, casUserId);
 
         log.debug("Getting details for user {} from provided user details service", username);
-        User user = pscUserDetailsService.loadUserByUsername(username);
+        PscUser user = pscUserDetailsService.loadUserByUsername(username);
         copySimpleAttributes(responseAttributes, user);
 
         String epr = responseAttributes.get(DELEGATION_SERVICE_EPR_RESPONSE_KEY);
         try {
-            user.addAttribute(DELEGATED_CREDENTIAL_USER_ATTRIBUTE,
+            user.setAttribute(DELEGATED_CREDENTIAL_USER_ATTRIBUTE,
                 createDelegatedCredentialAcquirer(epr).acquire());
         } catch (Exception e) {
             log.error("Could not retrieve user credential from CDS service using reference \n" + epr, e);
@@ -107,9 +106,9 @@ public class WebSSOAuthoritiesPopulator implements CasAuthoritiesPopulator {
         }
     }
 
-    private void copySimpleAttributes(Map<String, String> responseAttributes, User target) {
+    private void copySimpleAttributes(Map<String, String> responseAttributes, PscUser target) {
         for (String responseKey : COPY_KEY_ATTRIBUTES_MAP.keySet()) {
-            target.addAttribute(COPY_KEY_ATTRIBUTES_MAP.get(responseKey), responseAttributes.get(responseKey));
+            target.setAttribute(COPY_KEY_ATTRIBUTES_MAP.get(responseKey), responseAttributes.get(responseKey));
         }
     }
 

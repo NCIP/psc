@@ -1,14 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.security.plugin.websso;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationTestCase;
-import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.userdetails.UserDetails;
-import static org.easymock.EasyMock.expect;
+import org.acegisecurity.BadCredentialsException;
 import org.globus.gsi.GlobusCredential;
 
 import java.security.PrivateKey;
@@ -35,22 +31,16 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         new GlobusCredential((PrivateKey) null, null);
 
     private WebSSOAuthoritiesPopulator populator;
-    private PscUserDetailsService pscUserDetailsService;
-    
-    private User user;
-    private WebSSOAuthoritiesPopulatorTest.NoopDelegatedCredentialAcquirer lastDelegatedCredentialAcquirer;
+
     private Exception expectedCredentialException;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        pscUserDetailsService = registerMockFor(PscUserDetailsService.class);
         populator = new TestPopulator();
-        populator.setPscUserDetailsService(pscUserDetailsService);
+        populator.setPscUserDetailsService(userDetailsService);
         
-        user = Fixtures.createUser(USERNAME, Role.STUDY_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
-
-        expect(pscUserDetailsService.loadUserByUsername(USERNAME)).andStubReturn(user);
+        userDetailsService.addUser(USERNAME, Role.STUDY_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void testThrowsAuthenticationExceptionForNoGridIdentity() throws Exception {
@@ -75,20 +65,12 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         }
     }
 
-    public void testPopulatedDetailsIsPscUser() throws Exception {
-        replayMocks();
-        UserDetails actual = populator.getUserDetails(WEBSSO_RESPONSE);
-        verifyMocks();
-        
-        assertTrue("Returned details not a PSC User", actual instanceof User);
-    }
-
     public void testUsernamePopulated() throws Exception {
         assertEquals("Wrong username", "jo", doPopulate().getUsername());
     }
     
     public void testRolesPopulated() throws Exception {
-        User actual = doPopulate();
+        PscUser actual = doPopulate();
 
         assertEquals("User has wrong number of authorities", 2, actual.getAuthorities().length);
         assertEquals("User has wrong authority 0", Role.STUDY_COORDINATOR, actual.getAuthorities()[0]);
@@ -96,19 +78,19 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
     }
 
     public void testGridPersonalNamePopulated() throws Exception {
-        User actual = doPopulate();
+        PscUser actual = doPopulate();
         assertEquals("Wrong first name", "Josephine", actual.getAttribute("cagrid.sso.name.first"));
         assertEquals("Wrong last name", "Miller", actual.getAttribute("cagrid.sso.name.last"));
     }
 
     public void testGridIdentityPopulated() throws Exception {
-        User actual = doPopulate();
+        PscUser actual = doPopulate();
         assertEquals("Wrong grid identity",
             "/C=US/O=NU/OU=NUBIC/OU=Dorian/CN=jo", actual.getAttribute("cagrid.grid-identity"));
     }
 
     public void testGridEprXmlPopulated() throws Exception {
-        User actual = doPopulate();
+        PscUser actual = doPopulate();
         assertEquals("Wrong EPR XML",
             "<ns1:DelegatedCredentialReference xmlns:ns1=\"http://cds.gaards.cagrid.org/CredentialDelegationService/DelegatedCredential/types\">\n" +
             " <ns2:EndpointReference xmlns:ns2=\"http://schemas.xmlsoap.org/ws/2004/03/addressing\">\n" +
@@ -126,7 +108,7 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
     }
 
     public void testDelegatedCredentialAcquired() throws Exception {
-        User actual = doPopulate();
+        PscUser actual = doPopulate();
         assertSame(EXPECTED_CREDENTIAL,
             actual.getAttribute("cagrid.delegated-credential.value"));
     }
@@ -141,9 +123,9 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
         }
     }
 
-    private User doPopulate() {
+    private PscUser doPopulate() {
         replayMocks();
-        User actual = (User) populator.getUserDetails(WEBSSO_RESPONSE);
+        PscUser actual = populator.getUserDetails(WEBSSO_RESPONSE);
         verifyMocks();
         return actual;
     }
@@ -172,9 +154,7 @@ public class WebSSOAuthoritiesPopulatorTest extends AuthenticationTestCase {
     private class TestPopulator extends WebSSOAuthoritiesPopulator {
         @Override
         protected DelegatedCredentialAcquirer createDelegatedCredentialAcquirer(String xml) {
-            lastDelegatedCredentialAcquirer = new NoopDelegatedCredentialAcquirer(
-                xml, expectedCredentialException);
-            return lastDelegatedCredentialAcquirer;
+            return new NoopDelegatedCredentialAcquirer(xml, expectedCredentialException);
         }
     }
 }

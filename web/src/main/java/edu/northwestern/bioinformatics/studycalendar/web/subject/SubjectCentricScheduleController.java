@@ -68,7 +68,7 @@ public class SubjectCentricScheduleController extends PscAbstractController {
 
         List<StudySubjectAssignment> allAssignments = subject.getAssignments();
         List<StudySubjectAssignment> visibleAssignments
-            = authorizationService.filterAssignmentsForVisibility(allAssignments, applicationSecurityManager.getUser());
+            = authorizationService.filterAssignmentsForVisibility(allAssignments, applicationSecurityManager.getUser().getLegacyUser());
         Set<StudySubjectAssignment> hiddenAssignments
             = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
         for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
@@ -80,7 +80,7 @@ public class SubjectCentricScheduleController extends PscAbstractController {
         ModelMap model = new ModelMap("schedule", schedule);
         model.addObject(subject);
         model.addAttribute("schedulePreview", false);
-        model.addAttribute("subjectCoordinator", applicationSecurityManager.getUser());
+        model.addAttribute("subjectCoordinator", applicationSecurityManager.getUser().getLegacyUser());
         return new ModelAndView("subject/schedule", model);
     }
 

@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.osgi.hostservices.internal;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.apache.felix.cm.PersistenceManager;
-import static org.easymock.EasyMock.expect;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.osgi.mock.MockBundleContext;
@@ -17,6 +15,8 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -88,7 +88,7 @@ public class HostBeansImplTest extends TestCase {
         PscUserDetailsService actual = (PscUserDetailsService) registeredServices.get(PscUserDetailsService.class.getName());
         impl.setPscUserDetailsService(pscUserDetailsService);
 
-        User expectedUser = Fixtures.createUser("Joe");
+        PscUser expectedUser = new PscUser(null, null);
         expect(pscUserDetailsService.loadUserByUsername("joe")).andReturn(expectedUser);
         mockRegistry.replayMocks();
         assertSame(expectedUser, actual.loadUserByUsername("joe"));

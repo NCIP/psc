@@ -2,13 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.mocks.osgi.PscTestingBundleContext;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.testing.MockRegistry;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.DefaultConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import junit.framework.TestCase;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
@@ -111,16 +112,18 @@ public abstract class AuthenticationTestCase extends TestCase {
     }
 
     protected static class StaticPscUserDetailsService implements PscUserDetailsService {
-        private Map<String, User> users = new HashMap<String, User>();
+        private Map<String, PscUser> users = new HashMap<String, PscUser>();
 
-        public User loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
-            User u = users.get(username);
+        public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+            PscUser u = users.get(username);
             if (u == null) throw new UsernameNotFoundException(username);
             return u;
         }
 
         public void addUser(String username, Role... roles) {
-            users.put(username, Fixtures.createUser(username, roles));
+            User csmUser = new User();
+            csmUser.setLoginName(username);
+            users.put(username, new PscUser(csmUser, null, Fixtures.createUser(username, roles)));
         }
     }
 }

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.core.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -26,13 +27,13 @@ public class ApplicationSecurityManager {
         return user;
     }
 
-    public User getUser() {
+    public PscUser getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.trace("getUser(): Retrieved authentication {}", authentication);
         if (authentication == null) {
             return null;
         } else {
-            return (User) authentication.getPrincipal();
+            return (PscUser) authentication.getPrincipal();
         }
     }
 

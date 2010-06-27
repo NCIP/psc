@@ -96,7 +96,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
     //todo - might want to return List<StudySite> instead
     private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
         String userName = applicationSecurityManager.getUserName();
-        User user = applicationSecurityManager.getUser();
+        User user = applicationSecurityManager.getUser().getLegacyUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR));
         List<StudySite> filteredStudySites = authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));

@@ -216,7 +216,9 @@ define "psc" do
       "org.acegisecurity" <<
       "org.springframework.core" <<
       "gov.nih.nci.cabig.ctms.domain"
-    compile.with SECURITY.acegi, project('domain').and_dependencies
+    compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm,
+      SECURITY.suite_authorization
+    test.with UNIT_TESTING, project('domain').test_dependencies
     package(:jar)
   end
 
@@ -290,7 +292,7 @@ define "psc" do
         "org.acegisecurity.ui.logout"
       compile.with project('plugin-api').and_dependencies, SECURITY.cas,
         EHCACHE, JAKARTA_COMMONS.httpclient, HTMLPARSER
-      test.with project('plugin-api').test_dependencies, JAKARTA_COMMONS.io 
+      test.with project('plugin-api').test_dependencies, JAKARTA_COMMONS.io
       package(:jar)
     end
 
@@ -397,7 +399,8 @@ define "psc" do
           "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
           "gov.nih.nci.cabig.ctms.domain"
 
-        compile.with project('psc:providers:coppa:common').and_dependencies, CIH, GLOBUS_UNDUPLICABLE
+        compile.with project('psc:providers:coppa:common').and_dependencies,
+          CIH, GLOBUS_UNDUPLICABLE, project('authorization')
         test.using(:junit).with UNIT_TESTING
         package(:jar)
       end
@@ -641,6 +644,7 @@ define "psc" do
   ##Adding the grid module.
   desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"
   define "grid" do
+    project.no_iml
     
     ##creating work folders for mimicking the tomcat directory structure.
     rm_rf _('target/work-tomcat')

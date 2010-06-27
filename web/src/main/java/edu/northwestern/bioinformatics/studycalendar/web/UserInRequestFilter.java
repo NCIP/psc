@@ -26,7 +26,7 @@ public class UserInRequestFilter extends ContextRetainingFilterAdapter {
     ) throws IOException, ServletException {
         String username = getApplicationSecurityManager().getUserName();
         if (username != null) {
-            User user = getApplicationSecurityManager().getUser();
+            User user = getApplicationSecurityManager().getUser().getLegacyUser();
             slog.trace("Adding user {} to request attributes as {}", user, USER_ATTRIBUTE);
             servletRequest.setAttribute(USER_ATTRIBUTE, user);
             // old behavior preserved for backwards compatibility

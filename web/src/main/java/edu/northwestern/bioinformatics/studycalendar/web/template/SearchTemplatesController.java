@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -19,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * @author Saurabh Agrawal
@@ -43,7 +44,7 @@ public class SearchTemplatesController extends PscAbstractCommandController<Sear
 
             List<Study> studies = studyDao.searchStudiesByStudyName(searchText);
             log.debug("{} studies found total", studies.size());
-            User user = applicationSecurityManager.getUser();
+            User user = applicationSecurityManager.getUser().getLegacyUser();
 
             List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
 

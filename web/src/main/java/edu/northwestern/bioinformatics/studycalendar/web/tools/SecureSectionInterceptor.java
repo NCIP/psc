@@ -32,7 +32,7 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         super.preHandle(request,  response, handler);
 
-        User user = applicationSecurityManager.getUser();
+        User user = applicationSecurityManager.getUser().getLegacyUser();
 
         List<Section> filtered = new ArrayList<Section>();
 

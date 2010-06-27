@@ -115,6 +115,8 @@
         class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl">
         <property name="userService" ref="userService"/>
         <property name="transactionManager" ref="transactionManager"/>
+        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
     </bean>
 
     <!-- DATA PROVIDERS -->

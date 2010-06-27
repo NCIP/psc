@@ -62,7 +62,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController {
         if (selectedActivityId != null) {
             model.put("selectedActivity", activityDao.getById(selectedActivityId));
         }
-        Set<UserRole> userRoles = applicationSecurityManager.getUser().getUserRoles();
+        Set<UserRole> userRoles = applicationSecurityManager.getUser().getLegacyUser().getUserRoles();
         Boolean hasRightsToEdit = false;
         for (UserRole userRole: userRoles) {
             if (userRole.getRole().equals(Role.STUDY_COORDINATOR)) {

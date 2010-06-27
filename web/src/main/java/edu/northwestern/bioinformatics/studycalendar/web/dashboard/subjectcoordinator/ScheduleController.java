@@ -108,7 +108,7 @@ public class ScheduleController extends PscSimpleFormController {
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
         Map<User, List<StudySite>> mapOfUsersAndStudies = new HashMap<User, List<StudySite>>();
         List<User> colleagues = new ArrayList<User>();
-        User current = applicationSecurityManager.getUser();
+        User current = applicationSecurityManager.getUser().getLegacyUser();
         // userDao.getAllSubjectCoordinators().remove doesn't remove user with assignment from list. 
         for (User pcUser : userDao.getAllSubjectCoordinators()) {
             if (!pcUser.equals(current)) {
@@ -147,7 +147,7 @@ public class ScheduleController extends PscSimpleFormController {
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
-        User user = applicationSecurityManager.getUser();
+        User user = applicationSecurityManager.getUser().getLegacyUser();
         if (scheduleCommand.getNotificationId() != null ) {
             Notification notification = notificationDao.getById(scheduleCommand.getNotificationId());
             notification.setDismissed(true);
