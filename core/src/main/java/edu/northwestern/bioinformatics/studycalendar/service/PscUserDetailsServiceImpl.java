@@ -21,13 +21,14 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     private PlatformTransactionManager transactionManager;
     private AuthorizationManager authorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
+    private boolean legacyMode = true;
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
         return new PscUser(
             user,
             suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
-            loadLegacyUser(username)
+            legacyMode ? loadLegacyUser(username) : null
         );
     }
 
@@ -82,5 +83,11 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     @Required
     public void setSuiteRoleMembershipLoader(SuiteRoleMembershipLoader suiteRoleMembershipLoader) {
         this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
+    }
+
+    // Not required
+    @Deprecated
+    public void setLegacyMode(boolean legacyMode) {
+        this.legacyMode = legacyMode;
     }
 }
