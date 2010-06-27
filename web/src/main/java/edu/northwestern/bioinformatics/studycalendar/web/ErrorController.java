@@ -1,9 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.nwu.bioinformatics.commons.ThrowableUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ExceptionMailMessage;
+import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
+import edu.nwu.bioinformatics.commons.ThrowableUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -17,6 +18,8 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class ErrorController extends AbstractController {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private MailSender mailSender;
     private MailMessageFactory mailMessageFactory;
 
@@ -34,9 +37,18 @@ public class ErrorController extends AbstractController {
         model.put("message", message);
 
         if (exception != null) {
+            log.error("Uncaught exception in web stack", exception);
             ExceptionMailMessage mailMessage = mailMessageFactory.createExceptionMailMessage(exception, request);
-            if (mailMessage != null) mailSender.send(mailMessage);
-            model.put("notified", mailMessage != null);
+            if (mailMessage != null) {
+                try {
+                    mailSender.send(mailMessage);
+                    model.put("notified", true);
+                } catch (Exception e) {
+                    log.error("Sending exception e-mail message failed: {}", e.getMessage());
+                    log.debug("Message-sending error detail:", e);
+                }
+            }
+            if (!model.containsKey("notified")) model.put("notified", false);
         }
 
         return new ModelAndView("error", model);
