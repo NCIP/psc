@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 
@@ -28,6 +29,7 @@ public class PscUserDetailsServiceIntegratedTest extends DaoTestCase {
     }
 
     public void testUserModificationsAreNotAutomaticallyPersisted() throws Exception {
+        if (!isLegacyMode()) return;
         int originalId;
         String originalName;
         {
@@ -45,5 +47,10 @@ public class PscUserDetailsServiceIntegratedTest extends DaoTestCase {
             Site reloaded = siteDao.getById(originalId);
             assertEquals("Name changed", originalName, reloaded.getName());
         }
+    }
+
+    private boolean isLegacyMode() {
+        return ((LegacyModeSwitch) getApplicationContext().
+            getBean("authorizationLegacyModeSwitch")).isOn();
     }
 }
