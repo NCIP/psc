@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerRequiredAuthorityExtractor;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -18,8 +18,11 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import static java.util.Arrays.asList;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser;
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * @author John Dzak
@@ -42,6 +45,9 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         interceptor = new SecureSectionInterceptor();
         interceptor.setApplicationSecurityManager(applicationSecurityManager);
+        ControllerRequiredAuthorityExtractor extractor = new ControllerRequiredAuthorityExtractor();
+        extractor.setLegacyModeSwitch(new LegacyModeSwitch(true)); // <- TODO
+        interceptor.setControllerRequiredAuthorityExtractor(extractor);
         interceptor.postProcessBeanFactory(beanFactory);
 
         task0 = new Task();
@@ -69,12 +75,6 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         // Bean Name: subjCoordController   Alias: /subjCoordController
         registerControllerBean("subjCoord", SubjectCoordinatorController.class);
-    }
-
-    public void testGetAllowedRoles() {
-        List<Role> roles = interceptor.getAllowedRoles(new SiteCoordinatorController());
-        assertEquals("Wrong number of roles", 1, roles.size());
-        assertSame("Wrong number of roles", Role.SITE_COORDINATOR, roles.get(0));
     }
 
     @SuppressWarnings({"unchecked"})

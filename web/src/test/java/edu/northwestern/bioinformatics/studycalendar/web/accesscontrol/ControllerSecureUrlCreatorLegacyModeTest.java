@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
@@ -23,11 +23,12 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Vector;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static org.easymock.classextension.EasyMock.*;
 
 @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
-public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
+@Deprecated
+public class ControllerSecureUrlCreatorLegacyModeTest extends StudyCalendarTestCase {
     private static final String PREFIX = "prefix";
 
     private ControllerSecureUrlCreator creator;
@@ -51,7 +52,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         creator.setUrlResolver(resolver);
         creator.setOsgiLayerTools(osgiLayerTools);
         ControllerRequiredAuthorityExtractor extractor = new ControllerRequiredAuthorityExtractor();
-        extractor.setLegacyModeSwitch(new LegacyModeSwitch(false));
+        extractor.setLegacyModeSwitch(new LegacyModeSwitch());
         creator.setControllerRequiredAuthorityExtractor(extractor);
 
         beanFactory = new DefaultListableBeanFactory();
@@ -71,41 +72,34 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("single", SingleGroupController.class);
         doProcess();
 
-        PscRole[] defs = actualRolesForPath("/prefix/single/**");
+        Role[] defs = actualRolesForPath("/prefix/single/**");
         assertEquals("Wrong number of roles", 1, defs.length);
-        assertEquals("Wrong Role", DATA_READER, defs[0]);
+        assertEquals("Wrong Role", STUDY_COORDINATOR, defs[0]);
     }
 
     public void testMultiGroupRegistered() throws Exception {
         registerControllerBean("multi", MultiGroupController.class);
         doProcess();
 
-        PscRole[] defs = actualRolesForPath("/prefix/multi/**");
+        Role[] defs = actualRolesForPath("/prefix/multi/**");
         assertEquals("Wrong Protection Group Size", 2, defs.length);
 
-        assertEquals("Wrong Role", STUDY_QA_MANAGER, defs[0]);
-        assertEquals("Wrong Role", STUDY_CALENDAR_TEMPLATE_BUILDER, defs[1]);
+        assertEquals("Wrong Role", STUDY_COORDINATOR, defs[0]);
+        assertEquals("Wrong Role", SUBJECT_COORDINATOR, defs[1]);
     }
 
-    public void testNoGroupAllowsNone() throws Exception {
+    public void testNoGroupAllowsAll() throws Exception {
         registerControllerBean("zero", NoGroupController.class);
         doProcess();
 
-        PscRole[] roles = actualRolesForPath("/prefix/zero/**");
-        assertEquals("Wrong number of roles", 0, roles.length);
-    }
+        Role[] roles = actualRolesForPath("/prefix/zero/**");
+        assertEquals("Wrong number of roles", 5, roles.length);
 
-    public void testAllAllowsAll() throws Exception {
-        registerControllerBean("all", AllGroupController.class);
-        doProcess();
-
-        PscRole[] roles = actualRolesForPath("/prefix/all/**");
-        assertEquals("Wrong number of roles", PscRole.values().length, roles.length);
-
-        for (int i = 0; i < roles.length; i++) {
-            PscRole actual = roles[i];
-            assertEquals("Wrong role " + i, actual, PscRole.values()[i]);
-        }
+        assertEquals("Wrong role 0", STUDY_COORDINATOR,    roles[0]);
+        assertEquals("Wrong role 1", STUDY_ADMIN,          roles[1]);
+        assertEquals("Wrong role 2", SYSTEM_ADMINISTRATOR, roles[2]);
+        assertEquals("Wrong role 3", SUBJECT_COORDINATOR,  roles[3]);
+        assertEquals("Wrong role 4", SITE_COORDINATOR,     roles[4]);
     }
 
     public void testMapResolvesPathsLongestFirst() throws Exception {
@@ -116,7 +110,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
 
         Map<String, GrantedAuthority[]> actual = actualPathMap();
         GrantedAuthority[] noGroup = actual.get("/prefix/long/plus/more/**");
-        assertEquals("Wrong number of groups: " + Arrays.asList(noGroup), 0, noGroup.length);
+        assertEquals("Wrong number of groups: " + Arrays.asList(noGroup), 5, noGroup.length);
         GrantedAuthority[] singleGroup = actual.get("/prefix/long/plus/**");
         assertEquals("Wrong number of groups: " + Arrays.asList(singleGroup), 1, singleGroup.length);
         GrantedAuthority[] multiGroup = actual.get("/prefix/long/**");
@@ -128,11 +122,11 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         registerControllerBean("pome", MultiGroupController.class);
         doProcess();
 
-        GrantedAuthority[] singleGroup = actualRolesForPath("/prefix/pear/**");
+        Role[] singleGroup = actualRolesForPath("/prefix/pear/**");
         assertNotNull("Could not resolve pear", singleGroup);
         assertEquals("Wrong number of groups: " + Arrays.asList(singleGroup), 1, singleGroup.length);
 
-        GrantedAuthority[] multiGroup = actualRolesForPath("/prefix/pome/**");
+        Role[] multiGroup = actualRolesForPath("/prefix/pome/**");
         assertNotNull("Could not resolve pome", multiGroup);
         assertEquals("Wrong number of groups: " + Arrays.asList(multiGroup), 2, multiGroup.length);
     }
@@ -144,8 +138,8 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         osgiLayerTools.updateConfiguration(new MapBasedDictionary(Collections.singletonMap(
             FilterSecurityInterceptorConfigurer.PATH_ROLE_MAP_KEY,
             new Vector(Arrays.asList(
-                "/prefix/pome/**|study_qa_manager study_calendar_template_builder",
-                "/prefix/pear/**|data_reader"
+                "/prefix/pome/**|STUDY_COORDINATOR SUBJECT_COORDINATOR",
+                "/prefix/pear/**|STUDY_COORDINATOR"
             )
         ))), FilterSecurityInterceptorConfigurer.SERVICE_PID);
         doProcess();
@@ -157,7 +151,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         doProcess();
 
         assertNotNull(creator.getObject());
-        Map<String, PscRole[]> actual = (Map<String, PscRole[]>) creator.getObject();
+        Map<String, Role[]> actual = (Map<String, Role[]>) creator.getObject();
         assertSame(actual, actualPathMap());
         assertEquals(2, actual.size());
     }
@@ -172,9 +166,9 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         assertEquals(Map.class, creator.getObjectType());
     }
 
-    private PscRole[] actualRolesForPath(String path) {
+    private Role[] actualRolesForPath(String path) {
         assertNotNull("Map is null", actualPathMap());
-        PscRole[] roles = (PscRole[]) actualPathMap().get(path);
+        Role[] roles = (Role[]) actualPathMap().get(path);
         assertNotNull("No roles for " + path, roles);
         return roles;
     }
@@ -196,14 +190,11 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         }
     }
 
-    @AuthorizedFor(DATA_READER)
+    @AccessControl(roles = STUDY_COORDINATOR)
     public static class SingleGroupController extends TestingController { }
 
-    @AuthorizedFor({ STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER })
+    @AccessControl(roles = { STUDY_COORDINATOR, SUBJECT_COORDINATOR })
     public static class MultiGroupController extends TestingController { }
-
-    @AuthorizedForAll
-    public static class AllGroupController extends TestingController { }
 
     public static class NoGroupController extends TestingController { }
 

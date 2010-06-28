@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.tools;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerRequiredAuthorityExtractor;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
+import org.acegisecurity.GrantedAuthority;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -26,24 +26,27 @@ import java.util.Set;
  */
 public class SecureSectionInterceptor extends SectionInterceptor implements BeanFactoryPostProcessor {
     private ConfigurableListableBeanFactory beanFactory;
+    private ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor;
     private ApplicationSecurityManager applicationSecurityManager;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         super.preHandle(request,  response, handler);
 
-        User user = applicationSecurityManager.getUser().getLegacyUser();
+        PscUser user = applicationSecurityManager.getUser();
 
         List<Section> filtered = new ArrayList<Section>();
 
         for (Section section : getSections()) {
-            Set<Role> allowed = new HashSet<Role>();
+            Set<GrantedAuthority> allowed = new HashSet<GrantedAuthority>();
             for (Task task : section.getTasks()) {
                 Controller controller = (Controller) beanFactory.getBean(task.getLinkName(), Controller.class);
-                allowed.addAll(getAllowedRoles(controller));
+                allowed.addAll(Arrays.asList(
+                    controllerRequiredAuthorityExtractor.getRequiredAuthoritiesForController(
+                        controller.getClass())));
             }
 
-            for (Role role : allowed) {
+            for (GrantedAuthority role : allowed) {
                 if (user.hasRole(role) && !filtered.contains(section)) {
                     filtered.add(section);
                 }
@@ -59,20 +62,17 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
         this.beanFactory = beanFactory;
     }
 
-    protected List<Role> getAllowedRoles(Controller controller) {
-        Class<? extends Controller> clazz = controller.getClass();
-        AccessControl ac = clazz.getAnnotation(AccessControl.class);
-        Role[] roles = Role.values();
-        if (ac != null) {
-            roles = ac.roles();
-        }
-        return Arrays.asList(roles);
-    }
-
     ////// CONFIGURATION
 
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setControllerRequiredAuthorityExtractor(
+        ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor
+    ) {
+        this.controllerRequiredAuthorityExtractor = controllerRequiredAuthorityExtractor;
     }
 }

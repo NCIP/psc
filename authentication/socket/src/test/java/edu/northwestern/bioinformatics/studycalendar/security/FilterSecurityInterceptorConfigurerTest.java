@@ -54,6 +54,12 @@ public class FilterSecurityInterceptorConfigurerTest extends TestCase {
         assertNull("Definitions present for unknown path", actualConfigAttributeDefinitions("/huh/**"));
     }
 
+    public void testNoRolePath() throws Exception {
+        updateWith("/path/foo/**");
+        ConfigAttributeDefinition actual = actualConfigAttributeDefinitions("/path/foo/**");
+        assertEquals("Wrong number of definitions", 0, actual.size());
+    }
+
     @SuppressWarnings({ "unchecked" })
     private void updateWith(String... serializedMap) throws ConfigurationException {
         Dictionary<String, Object> props = new Hashtable<String, Object>();

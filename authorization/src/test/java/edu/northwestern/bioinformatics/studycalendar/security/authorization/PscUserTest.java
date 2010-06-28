@@ -33,12 +33,22 @@ public class PscUserTest extends TestCase {
         legacyUser.setName(csmUser.getLoginName());
     }
 
-    public void testAuthoritiesArePscRolesInLegacyMode() throws Exception {
+    public void testAuthoritiesAreInternalRolesInLegacyMode() throws Exception {
         Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = createLegacy().getAuthorities();
         assertEquals("Wrong number of authorities", 2, actual.length);
         assertEquals("Wrong 1st entry", Role.STUDY_ADMIN, actual[0]);
         assertEquals("Wrong 2nd entry", Role.STUDY_COORDINATOR, actual[1]);
+    }
+
+    public void testHasRoleWhenHasInLegacyMode() throws Exception {
+        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        assertTrue(createLegacy().hasRole(Role.STUDY_COORDINATOR));
+    }
+
+    public void testHasRoleWhenDoesNotHaveInLegacyMode() throws Exception {
+        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        assertFalse(createLegacy().hasRole(Role.SYSTEM_ADMINISTRATOR));
     }
 
     public void testAuthoritiesArePscRoles() throws Exception {
@@ -52,6 +62,16 @@ public class PscUserTest extends TestCase {
         assertEquals("1st entry not a PscRole", PscRole.class, actual[0].getClass());
         assertEquals("Wrong 2nd entry", "study_calendar_template_builder", actual[1].getAuthority());
         assertEquals("2nd entry not a PscRole", PscRole.class, actual[1].getClass());
+    }
+
+    public void testHasRoleWhenHas() throws Exception {
+        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        assertTrue(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.DATA_READER));
+    }
+
+    public void testHasRoleWhenDoesNotHave() throws Exception {
+        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        assertFalse(create(createMembership(SuiteRole.DATA_READER)).hasRole(PscRole.SYSTEM_ADMINISTRATOR));
     }
 
     public void testAuthoritiesDoNotIncludeSuiteRolesWhichAreNotUsedInPsc() throws Exception {

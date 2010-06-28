@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
-import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
+import org.acegisecurity.GrantedAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -25,34 +25,36 @@ import java.util.Vector;
 
 /**
  * @author John Dzak
+ * @author Rhett Sutphin
  */
 public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ordered, FactoryBean {
     private static Logger log = LoggerFactory.getLogger(ControllerSecureUrlCreator.class);
     private ControllerUrlResolver urlResolver;
-    private Map<String, Role[]> pathRoleMap;
+    private Map<String, GrantedAuthority[]> pathRoleMap;
     private OsgiLayerTools osgiLayerTools;
+    private ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor;
 
     // Must occur after BeanNameControllerUrlResolver
     public int getOrder() { return 3; }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        pathRoleMap = new TreeMap<String, Role[]>(new PathComparator());
+        pathRoleMap = new TreeMap<String, GrantedAuthority[]>(new PathComparator());
         String[] controllerNames = beanFactory.getBeanNamesForType(Controller.class, false, false);
         for (String controllerName : controllerNames) {
             ResolvedControllerReference controller = urlResolver.resolve(controllerName);
-            Role[] groupNames = getRequiredRoles(controller);
+            GrantedAuthority[] authorities = controllerRequiredAuthorityExtractor.
+                getRequiredAuthoritiesForController(controller.getControllerClass());
 
             String url = controller.getUrl(true);
             if (log.isDebugEnabled()) {
                 log.debug("Controller {} ({}) requires one of the roles {}",
-                    new Object[] { controller.getControllerClass(), url, groupNames });
+                    new Object[] { controller.getControllerClass(), url, authorities });
             }
-            pathRoleMap.put(new ApacheAntPattern(url).toString(), groupNames);
+            pathRoleMap.put(new ApacheAntPattern(url).toString(), authorities);
         }
 
         Dictionary upd = createOsgiDictionary();
-        String serviceInTargetBundle = FilterSecurityInterceptorConfigurer.class.getName();
         String servicePid = FilterSecurityInterceptorConfigurer.SERVICE_PID;
 
         osgiLayerTools.updateConfiguration(upd, servicePid);
@@ -61,10 +63,10 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     private Dictionary createOsgiDictionary() {
         Collection<String> serializedMap = new Vector<String>();
-        for (Map.Entry<String, Role[]> pair : pathRoleMap.entrySet()) {
+        for (Map.Entry<String, GrantedAuthority[]> pair : pathRoleMap.entrySet()) {
             StringBuilder v = new StringBuilder(pair.getKey()).append('|');
-            for (Role role : pair.getValue()) {
-                v.append(role.csmGroup()).append(' ');
+            for (GrantedAuthority role : pair.getValue()) {
+                v.append(role.getAuthority()).append(' ');
             }
             v.deleteCharAt(v.length() - 1);
             serializedMap.add(v.toString());
@@ -75,17 +77,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         return props;
     }
 
-    private Role[] getRequiredRoles(ResolvedControllerReference controller) {
-        Class<? extends Controller> clazz = controller.getControllerClass();
-        AccessControl ac = clazz.getAnnotation(AccessControl.class);
-        Role[] roles = Role.values();
-        if (ac != null) {
-             roles = ac.roles();
-        }
-        return roles;
-    }
-
-    public Map<String, Role[]> getPathRoleMap() {
+    public Map<String, GrantedAuthority[]> getPathRoleMap() {
         return pathRoleMap;
     }
 
@@ -112,6 +104,11 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     @Required
     public void setOsgiLayerTools(OsgiLayerTools osgiLayerTools) {
         this.osgiLayerTools = osgiLayerTools;
+    }
+
+    @Required
+    public void setControllerRequiredAuthorityExtractor(ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor) {
+        this.controllerRequiredAuthorityExtractor = controllerRequiredAuthorityExtractor;
     }
 
     private class ApacheAntPattern {

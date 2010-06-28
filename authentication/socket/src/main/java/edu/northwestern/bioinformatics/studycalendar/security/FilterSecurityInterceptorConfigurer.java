@@ -44,7 +44,12 @@ public class FilterSecurityInterceptorConfigurer implements ManagedService {
         PathBasedFilterInvocationDefinitionMap pathMap = new PathBasedFilterInvocationDefinitionMap();
         for (String pair : pathRoleSerializedMap) {
             String[] pathAndRoles = pair.split("\\|");
-            String[] roles = pathAndRoles[1].split("\\s+");
+            String[] roles;
+            if (pathAndRoles.length > 1) {
+                roles = pathAndRoles[1].split("\\s+");
+            } else {
+                roles = new String[0];
+            }
             pathMap.addSecureUrl(pathAndRoles[0], createRoleDefinition(roles));
         }
         return pathMap;

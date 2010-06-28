@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -23,10 +22,10 @@ import java.util.Map;
  */
 public class SecureOperation extends TagSupport {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private static final Role[] NO_ROLES = new Role[0];
+    private static final GrantedAuthority[] NO_ROLES = new GrantedAuthority[0];
 
     private String element;
-    private Map<String, Role[]> secureUrls;
+    private Map<String, GrantedAuthority[]> secureUrls;
 
     /////// ATTRIBUTES
 
@@ -55,7 +54,7 @@ public class SecureOperation extends TagSupport {
             return SKIP_BODY;
         }
 
-        Role[] allowedRoles = findAllowedRoles();
+        GrantedAuthority[] allowedRoles = findAllowedRoles();
         if (log.isTraceEnabled()) {
             log.trace(" - {} is open to {}", element, Arrays.asList(allowedRoles));
             log.trace(" - user is {}", Arrays.asList(authentication.getAuthorities()));
@@ -73,12 +72,12 @@ public class SecureOperation extends TagSupport {
     private void init() {
         if (secureUrls == null) {
             if (getApplicationContext().containsBean("secureUrls")) {
-                secureUrls = (Map<String, Role[]>) getApplicationContext().getBean("secureUrls");
+                secureUrls = (Map<String, GrantedAuthority[]>) getApplicationContext().getBean("secureUrls");
             }
         }
     }
 
-    private Role[] findAllowedRoles() {
+    private GrantedAuthority[] findAllowedRoles() {
         AntPathMatcher matcher = new AntPathMatcher();
         for (String path : secureUrls.keySet()) {
             if (matcher.matchStart(path, element)) return secureUrls.get(path);
@@ -86,8 +85,8 @@ public class SecureOperation extends TagSupport {
         return NO_ROLES;
     }
 
-    private boolean inAuthorizedRole(Authentication authentication, Role[] allowed) {
-        for (Role role : allowed) {
+    private boolean inAuthorizedRole(Authentication authentication, GrantedAuthority[] allowed) {
+        for (GrantedAuthority role : allowed) {
             for (GrantedAuthority a : authentication.getAuthorities()) {
                 if (role.getAuthority().equals(a.getAuthority())) return true;
             }

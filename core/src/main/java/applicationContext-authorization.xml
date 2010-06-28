@@ -61,7 +61,7 @@
     <bean id="authorizationLegacyModeSwitch"
           class="edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch">
         <!-- set this to false to use the unified auth system -->
-        <property name="on" value="true"/>
+        <property name="on" value="false"/>
     </bean>
 
     <!-- TODO: is this actually wired to anything? -->

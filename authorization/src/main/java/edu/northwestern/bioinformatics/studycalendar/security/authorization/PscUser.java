@@ -7,6 +7,7 @@ import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +53,10 @@ public class PscUser implements UserDetails {
 
     public Map<SuiteRole, SuiteRoleMembership> getMemberships() {
         return memberships;
+    }
+
+    public boolean hasRole(GrantedAuthority ga) {
+        return Arrays.asList(getAuthorities()).contains(ga);
     }
 
     private boolean legacyMode() {

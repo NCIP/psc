@@ -24,6 +24,13 @@
             <ref local="urlResolver"/>
         </property>
         <property name="osgiLayerTools" ref="osgiLayerTools"/>
+        <property name="controllerRequiredAuthorityExtractor"
+                  ref="controllerRequiredAuthorityExtractor"/>
+    </bean>
+
+    <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerRequiredAuthorityExtractor"
+          id="controllerRequiredAuthorityExtractor">
+        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
     </bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -634,8 +641,9 @@
         <property name="urlResolver" ref="urlResolver"/>
     </bean>
 
-    <bean id="sectionInterceptor" class="edu.northwestern.bioinformatics.studycalendar.web.tools.SecureSectionInterceptor"
-          autowire="byName">
+    <bean id="sectionInterceptor" class="edu.northwestern.bioinformatics.studycalendar.web.tools.SecureSectionInterceptor">
+        <property name="controllerRequiredAuthorityExtractor" ref="controllerRequiredAuthorityExtractor"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
         <property name="sections">
             <list>
                 <bean parent="sectionTemplate">
