@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
@@ -21,14 +22,14 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     private PlatformTransactionManager transactionManager;
     private AuthorizationManager authorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
-    private boolean legacyMode = true;
+    private LegacyModeSwitch legacyModeSwitch;
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
         return new PscUser(
             user,
             suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
-            legacyMode ? loadLegacyUser(username) : null
+            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
         );
     }
 
@@ -85,9 +86,8 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
         this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
     }
 
-    // Not required
-    @Deprecated
-    public void setLegacyMode(boolean legacyMode) {
-        this.legacyMode = legacyMode;
+    @Required @Deprecated
+    public void setLegacyModeSwitch(LegacyModeSwitch lmSwitch) {
+        this.legacyModeSwitch = lmSwitch;
     }
 }

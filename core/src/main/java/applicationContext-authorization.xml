@@ -58,6 +58,12 @@
         <property name="authorizationManager" ref="csmAuthorizationManager"/>
     </bean>
 
+    <bean id="authorizationLegacyModeSwitch"
+          class="edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch">
+        <!-- set this to false to use the unified auth system -->
+        <property name="on" value="true"/>
+    </bean>
+
     <!-- TODO: is this actually wired to anything? -->
     <bean id="authorizationSwitch"
           class="gov.nih.nci.cabig.ctms.acegi.csm.authorization.AuthorizationSwitch"

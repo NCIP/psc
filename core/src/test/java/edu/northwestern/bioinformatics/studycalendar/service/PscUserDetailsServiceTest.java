@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -47,6 +48,7 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
         service.setTransactionManager(transactionManager);
         service.setAuthorizationManager(authorizationManager);
         service.setSuiteRoleMembershipLoader(suiteRoleMembershipLoader);
+        service.setLegacyModeSwitch(new LegacyModeSwitch());
 
         csmUser = new User();
         csmUser.setLoginName("John");

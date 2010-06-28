@@ -117,8 +117,7 @@
         <property name="transactionManager" ref="transactionManager"/>
         <property name="authorizationManager" ref="csmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
-        <!-- set this to false to ignore legacy user info -->
-        <property name="legacyMode" value="true"/>
+        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
     </bean>
 
     <!-- DATA PROVIDERS -->
