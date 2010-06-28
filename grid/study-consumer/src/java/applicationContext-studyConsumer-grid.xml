@@ -28,6 +28,7 @@
         <property name="siteService" ref="siteService"/>        
         <property name="templateDevelopmentService" ref="templateDevelopmentService"/>
         <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
+        <property name="pscUserDetailsService" ref="pscUserDetailsService"/>   
     </bean>
 
     <bean id="rollbackTimeOut" class="java.lang.String">

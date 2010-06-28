@@ -29,10 +29,17 @@ import gov.nih.nci.ccts.grid.studyconsumer.common.StudyConsumerI;
 import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
 import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
 
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import org.globus.wsrf.security.SecurityManager;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -49,7 +56,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *  1. If Site does not exist DB, we will create it.
+ *  1. If Site does not exist DB, we will create one.
  *
  * @author <a href="mailto:saurabh.agrawal@semanticbits.com>Saurabh Agrawal</a>
  */
@@ -80,65 +87,92 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private String rollbackTimeOut;
 
     private TemplateDevelopmentService templateDevelopmentService;
+    
+    private PscUserDetailsService pscUserDetailsService;
+    
+    public boolean authorizedStudyConsumer(){
+    	String gridIdentity = SecurityManager.getManager().getCaller();
+		String userName = gridIdentity.substring(gridIdentity.indexOf("/CN=")+4, gridIdentity.length());
+		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
+		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
+		SuiteRoleMembership suiteRoleMembership = memberships.get(SuiteRole.STUDY_CREATOR);
+		if(suiteRoleMembership == null){
+			return false;
+		}else{
+			return true;
+		}
+    }
 
-	public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
-            StudyCreationException {
-        if (studyDto == null) {
-            String message = "No Study message was found";
-            throw getInvalidStudyException(message);
-        }
+    public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
+    StudyCreationException {
+    	try{
+    		// Check for Role
+    		// 1. If Role is Study_creator, then process, otherwise Access Denied.
+    		if(!authorizedStudyConsumer()){
+    			String message = "Access Denied";
+    			throw getInvalidStudyException(message);
+    		}
 
-        String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
+    		if (studyDto == null) {
+    			String message = "No Study message was found";
+    			throw getInvalidStudyException(message);
+    		}
 
-        if (studyDao.getStudyIdByAssignedIdentifier(ccIdentifier) != null) {
-            logger.info("Already a study with the same Coordinating Center Identifier (" + ccIdentifier
-                    + ") exists.Returning without processing the request.");
-            return;
-        }
+    		String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
 
-        // <-- Start added for COPPA Identifier -->
-        // 1.Get the COPPA Identifier(if present in the request)
-        String coppaIdentifier = findCoppaIdentifier(studyDto);
-        boolean hasCoppaIdentifier = false;
-        if ((coppaIdentifier != null) && !coppaIdentifier.equals("")){
-        	// 2.Check if COPPA Identifier already exist in DB or not
-            // If exist then return
-        	if (studyDao.getStudySecondaryIdentifierByCoppaIdentifier(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, coppaIdentifier) != null) {
-                logger.info("Already a study with the same Coppa Identifier (" + coppaIdentifier
-                        + ") exists.Returning without processing the request.");
-                return;
-            }
-        	hasCoppaIdentifier = true;
-        }
-        // <-- End added for COPPA Identifier -->
-        
-        Study study = TemplateSkeletonCreatorImpl.createBase(studyDto.getShortTitleText());
-        study.setAssignedIdentifier(ccIdentifier);
-        // 3.Add COPPA Identifier as secondary Identifier in Study
-        if(hasCoppaIdentifier){
-        	StudySecondaryIdentifier studySecondaryIdentifier = new StudySecondaryIdentifier();
-        	studySecondaryIdentifier.setStudy(study);
-        	// set coppa type from CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE
-        	studySecondaryIdentifier.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
-        	// set value from the request
-        	studySecondaryIdentifier.setValue(coppaIdentifier);
-        	// Add coppa identifier as secondaryIndentifier in study
-        	study.addSecondaryIdentifier(studySecondaryIdentifier);
-        	// Set the provider as COPPA(CoppaProviderConstants.PROVIDER_TOKEN)
-        	study.setProvider(CoppaProviderConstants.PROVIDER_TOKEN);
-        }
-        
-        study.setGridId(studyDto.getGridId());
-        study.setLongTitle(studyDto.getLongTitleText());
+    		if (studyDao.getStudyIdByAssignedIdentifier(ccIdentifier) != null) {
+    			logger.info("Already a study with the same Coordinating Center Identifier (" + ccIdentifier
+    					+ ") exists.Returning without processing the request.");
+    			return;
+    		}
 
-        gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes = studyDto.getStudyOrganization();
-        populateStudySite(study, studyOrganizationTypes);
+    		// <-- Start added for COPPA Identifier -->
+    		// 1.Get the COPPA Identifier(if present in the request)
+    		String coppaIdentifier = findCoppaIdentifier(studyDto);
+    		boolean hasCoppaIdentifier = false;
+    		if ((coppaIdentifier != null) && !coppaIdentifier.equals("")){
+    			// 2.Check if COPPA Identifier already exist in DB or not
+    			// If exist then return
+    			if (studyDao.getStudySecondaryIdentifierByCoppaIdentifier(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE, coppaIdentifier) != null) {
+    				logger.info("Already a study with the same Coppa Identifier (" + coppaIdentifier
+    						+ ") exists.Returning without processing the request.");
+    				return;
+    			}
+    			hasCoppaIdentifier = true;
+    		}
+    		// <-- End added for COPPA Identifier -->
 
-        // now add epochs and arms to the planned calendar of study
-        populateEpochsAndArms(studyDto, study);
+    		Study study = TemplateSkeletonCreatorImpl.createBase(studyDto.getShortTitleText());
+    		study.setAssignedIdentifier(ccIdentifier);
+    		// 3.Add COPPA Identifier as secondary Identifier in Study
+    		if(hasCoppaIdentifier){
+    			StudySecondaryIdentifier studySecondaryIdentifier = new StudySecondaryIdentifier();
+    			studySecondaryIdentifier.setStudy(study);
+    			// set coppa type from CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE
+    			studySecondaryIdentifier.setType(CoppaProviderConstants.COPPA_STUDY_IDENTIFIER_TYPE);
+    			// set value from the request
+    			studySecondaryIdentifier.setValue(coppaIdentifier);
+    			// Add coppa identifier as secondaryIndentifier in study
+    			study.addSecondaryIdentifier(studySecondaryIdentifier);
+    			// Set the provider as COPPA(CoppaProviderConstants.PROVIDER_TOKEN)
+    			study.setProvider(CoppaProviderConstants.PROVIDER_TOKEN);
+    		}
 
-        studyService.save(study);
-        logger.info("Created the study :" + study.getId());
+    		study.setGridId(studyDto.getGridId());
+    		study.setLongTitle(studyDto.getLongTitleText());
+
+    		gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes = studyDto.getStudyOrganization();
+    		populateStudySite(study, studyOrganizationTypes);
+
+    		// now add epochs and arms to the planned calendar of study
+    		populateEpochsAndArms(studyDto, study);
+
+    		studyService.save(study);
+    		logger.info("Created the study :" + study.getId());
+    	}catch (Exception e) {
+    		logger.error("Error while creating study", e);
+    		throw new RemoteException("Unable to create study", e);
+    	} 
     }
 
 	/**
@@ -170,23 +204,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @throws InvalidStudyException
      */
     public void commit(final gov.nih.nci.cabig.ccts.domain.Study study) throws RemoteException, InvalidStudyException {
-//        if (studyDto == null) {
-//            throw new InvalidStudyException();
-//        }
-//        logger.info("commit called for study:long titlte-" + studyDto.getLongTitleText());
-//        String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
-//
-//        try {
-//            studyDao.commitInProgressStudy(ccIdentifier);
-//        }
-//
-//        catch (Exception exp) {
-//            logger.error("Exception while trying to commit the study", exp);
-//            InvalidStudyException invalidStudyException = new InvalidStudyException();
-//            invalidStudyException.setFaultReason("Exception while comitting study," + exp.getMessage());
-//            invalidStudyException.setFaultString("Exception while comitting study," + exp.getMessage());
-//            throw invalidStudyException;
-//        }
+
     }
 
     public void rollback(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException {
@@ -288,7 +306,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
     }
 
     /**
-     * Populates study siste and returns it.
+     * Populates study site and returns it.
      *
      * @param study
      * @param studyOrganizationTypes
@@ -454,4 +472,13 @@ public class PSCStudyConsumer implements StudyConsumerI {
     public void setRollbackTimeOut(String rollbackTimeOut) {
         this.rollbackTimeOut = rollbackTimeOut;
     }
+
+   
+	public PscUserDetailsService getPscUserDetailsService() {
+		return pscUserDetailsService;
+	}
+	@Required
+	public void setPscUserDetailsService(PscUserDetailsService pscUserDetailsService) {
+		this.pscUserDetailsService = pscUserDetailsService;
+	}
 }
