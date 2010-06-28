@@ -28,6 +28,7 @@
         <property name="subjectService" ref="subjectService"/>
         <property name="userDao" ref="userDao"/>
         <property name="rollbackTimeOut" ref="rollbackTimeOut"/>
+        <property name="pscUserDetailsService" ref="pscUserDetailsService"/> 
     </bean>
 
     <bean id="rollbackTimeOut" class="java.lang.String">

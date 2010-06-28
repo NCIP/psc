@@ -19,9 +19,15 @@ import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.globus.wsrf.security.SecurityManager;
 import org.oasis.wsrf.properties.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -62,6 +69,21 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private String rollbackTimeOut;
     	
     private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
+    
+    private PscUserDetailsService pscUserDetailsService;
+
+    public boolean authorizedRegistrationConsumer(){
+    	String gridIdentity = SecurityManager.getManager().getCaller();
+    	String userName = gridIdentity.substring(gridIdentity.indexOf("/CN=")+4, gridIdentity.length());
+    	PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
+    	Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
+    	SuiteRoleMembership suiteRoleMembership = memberships.get(SuiteRole.REGISTRAR);
+    	if(suiteRoleMembership == null){
+    		return false;
+    	}else{
+    		return true;
+    	}
+    }
 
     /**
      * Does nothing as we are already committing Registration message by default.
@@ -71,17 +93,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
      * @throws InvalidRegistrationException
      */
     public void commit(final Registration registration) throws RemoteException, InvalidRegistrationException {
-//        try {
-//            String mrn = findMedicalRecordNumber(registration.getParticipant());
-//            subjectDao.commitInProgressSubject(mrn);
-//
-//        } catch (Exception exp) {
-//            InvalidRegistrationException e = new InvalidRegistrationException();
-//            e.setFaultReason("Error while comitting, " + exp.getMessage());
-//            e.setFaultString("Error while comitting, " + exp.getMessage());
-//            exp.printStackTrace();
-//            throw e;
-//        }
+    	
     }
 
     public void rollback(final Registration registration) throws RemoteException, InvalidRegistrationException {
@@ -193,92 +205,104 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
       */
     public Registration register(final Registration registration) throws RemoteException, InvalidRegistrationException,
             RegistrationConsumptionException {
+    	
+    	try{
+    		// Check for Role
+    		// 1. If Assigned Role is Registrar, then process, otherwise Access Denied.
+    		if(!authorizedRegistrationConsumer()){
+    			String message = "Access Denied";
+    			throw getInvalidRegistrationException(message);
+    		}
 
-        String ccIdentifier = findCoordinatingCenterIdentifier(registration);
-        Study study = fetchStudy(ccIdentifier);
+    		String ccIdentifier = findCoordinatingCenterIdentifier(registration);
+    		Study study = fetchStudy(ccIdentifier);
 
-        if (study == null) {
-            String message = "Study identified by Coordinating Center Identifier '" + ccIdentifier + "' doesn't exist";
-            throw getInvalidRegistrationException(message);
-        }
+    		if (study == null) {
+    			String message = "Study identified by Coordinating Center Identifier '" + ccIdentifier + "' doesn't exist";
+    			throw getInvalidRegistrationException(message);
+    		}
 
-        String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
-        StudySite studySite = findStudySite(study, siteNCICode);
-        if (studySite == null) {
-        	siteNCICode = registration.getStudySite().getHealthcareSite(0).getGridId();
-        	if((siteNCICode != null) && !(siteNCICode.equals(""))){
-        		studySite = findStudySite(study, siteNCICode);
-        	}
-        	if (studySite == null){
-        		String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
-        		+ "' is not associated to a site identified by NCI code :'" + siteNCICode + "'";
-        		throw getInvalidRegistrationException(message);
-        	}
+    		String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
+    		StudySite studySite = findStudySite(study, siteNCICode);
+    		if (studySite == null) {
+    			siteNCICode = registration.getStudySite().getHealthcareSite(0).getGridId();
+    			if((siteNCICode != null) && !(siteNCICode.equals(""))){
+    				studySite = findStudySite(study, siteNCICode);
+    			}
+    			if (studySite == null){
+    				String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
+    				+ "' is not associated to a site identified by NCI code :'" + siteNCICode + "'";
+    				throw getInvalidRegistrationException(message);
+    			}
 
-        }
-        String mrn = findMedicalRecordNumber(registration.getParticipant());
+    		}
+    		String mrn = findMedicalRecordNumber(registration.getParticipant());
 
-        Subject subject = fetchCommitedSubject(mrn);
-        if (subject == null) {
-            subject = createSubject(registration.getParticipant(), mrn);
-            subjectDao.save(subject);
-        } else {
+    		Subject subject = fetchCommitedSubject(mrn);
+    		if (subject == null) {
+    			subject = createSubject(registration.getParticipant(), mrn);
+    			subjectDao.save(subject);
+    		} else {
 
-            StudySubjectAssignment assignment = subjectDao.getAssignment(subject, study, studySite.getSite());
-            if (assignment != null) {
-                String message = "Subject already assigned to this study. Use scheduleNextArm to change to the next arm.";
-                throw getInvalidRegistrationException(message);
-            }
+    			StudySubjectAssignment assignment = subjectDao.getAssignment(subject, study, studySite.getSite());
+    			if (assignment != null) {
+    				String message = "Subject already assigned to this study. Use scheduleNextArm to change to the next arm.";
+    				throw getInvalidRegistrationException(message);
+    			}
 
-        }
-        // // retrieve Arm
-        StudySegment studySegment = null;
-        StudySegment loadedStudySegment = null;
-        if (registration.getScheduledEpoch() != null
-                && registration.getScheduledEpoch() instanceof ScheduledTreatmentEpochType
-                && ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm() != null
-                && ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm() != null) {
-            studySegment = new StudySegment();
-            studySegment.setName(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
-                    .getArm().getName());
-            studySegment.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
-                    .getArm().getGridId());
-            loadedStudySegment = loadAndValidateStudySegmentInStudy(study, studySegment);
-        } else {
-            try {
-                loadedStudySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
-            } catch (Exception e) {
-                String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
-                        + "' does not have any arm'";
-                throw getInvalidRegistrationException(message);
+    		}
+    		// // retrieve Arm
+    		StudySegment studySegment = null;
+    		StudySegment loadedStudySegment = null;
+    		if (registration.getScheduledEpoch() != null
+    				&& registration.getScheduledEpoch() instanceof ScheduledTreatmentEpochType
+    				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm() != null
+    				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm() != null) {
+    			studySegment = new StudySegment();
+    			studySegment.setName(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
+    					.getArm().getName());
+    			studySegment.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
+    					.getArm().getGridId());
+    			loadedStudySegment = loadAndValidateStudySegmentInStudy(study, studySegment);
+    		} else {
+    			try {
+    				loadedStudySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+    			} catch (Exception e) {
+    				String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
+    				+ "' does not have any arm'";
+    				throw getInvalidRegistrationException(message);
 
-            }
-        }
+    			}
+    		}
 
 
-        String userName = applicationSecurityManager.getUserName();
-        // FIXME:Saurabh: check for correct implementation of userDao
-        // User user = userDao.getByName(userName);
+    		String userName = applicationSecurityManager.getUserName();
+    		// FIXME:Saurabh: check for correct implementation of userDao
+    		// User user = userDao.getByName(userName);
 
-        String registrationGridId = registration.getGridId();
-        // Using the informed consent date as the calendar start date
-        Date startDate = registration.getInformedConsentFormSignedDate();
-        if (startDate == null) {
-            startDate = new Date();
-        }
+    		String registrationGridId = registration.getGridId();
+    		// Using the informed consent date as the calendar start date
+    		Date startDate = registration.getInformedConsentFormSignedDate();
+    		if (startDate == null) {
+    			startDate = new Date();
+    		}
 
-        StudySubjectAssignment newAssignment = null;
-        try {
-            newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-                    startDate, registrationGridId,registrationGridId, null);
-        } catch (StudyCalendarSystemException exp) {
-            throw getRegistrationConsumerException(exp.getMessage());
+    		StudySubjectAssignment newAssignment = null;
+    		try {
+    			newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
+    					startDate, registrationGridId,registrationGridId, null);
+    		} catch (StudyCalendarSystemException exp) {
+    			throw getRegistrationConsumerException(exp.getMessage());
 
-        }
+    		}
 
-        ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
-        logger.info("Created assignment " + scheduledCalendar.getId());
-        return registration;
+    		ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
+    		logger.info("Created assignment " + scheduledCalendar.getId());
+    		return registration;
+    	}catch (Exception e) {
+    		logger.error("Error while creating registration", e);
+    		throw new RemoteException("Unable to create registration", e);
+    	} 
     }
 
     private Subject fetchCommitedSubject(String mrn) {
@@ -435,4 +459,12 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     public QueryResourcePropertiesResponse queryResourceProperties(final QueryResourceProperties_Element queryResourceProperties_element) throws RemoteException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+    
+    public PscUserDetailsService getPscUserDetailsService() {
+		return pscUserDetailsService;
+	}
+	@Required
+	public void setPscUserDetailsService(PscUserDetailsService pscUserDetailsService) {
+		this.pscUserDetailsService = pscUserDetailsService;
+	}
 }
