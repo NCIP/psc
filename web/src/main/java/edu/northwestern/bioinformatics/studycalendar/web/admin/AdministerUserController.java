@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AuthorizedFor;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
@@ -24,7 +26,8 @@ import java.util.Arrays;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR) // <- TODO
+@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
+@AuthorizedFor({ PscRole.SYSTEM_ADMINISTRATOR, PscRole.USER_ADMINISTRATOR })
 public class AdministerUserController extends PscAbstractCommandController<ProvisionUserCommand> {
     private AuthorizationManager authorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
