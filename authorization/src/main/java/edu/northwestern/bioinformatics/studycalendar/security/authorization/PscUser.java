@@ -4,11 +4,12 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.GrantedAuthority;
-import org.acegisecurity.GrantedAuthorityImpl;
 import org.acegisecurity.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,13 +74,14 @@ public class PscUser implements UserDetails {
         if (legacyMode()) {
             return legacyUser.getAuthorities();
         } else {
-            GrantedAuthority[] authorities = new GrantedAuthority[memberships.size()];
-            int i = 0;
+            List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(memberships.size());
             for (SuiteRole suiteRole : memberships.keySet()) {
-                authorities[i] = new GrantedAuthorityImpl(suiteRole.getCsmName());
-                i++;
+                PscRole match = PscRole.valueOf(suiteRole);
+                if (match != null) {
+                    authorities.add(match);
+                }
             }
-            return authorities;
+            return authorities.toArray(new GrantedAuthority[authorities.size()]);
         }
     }
 

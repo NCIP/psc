@@ -41,7 +41,7 @@ public class PscUserTest extends TestCase {
         assertEquals("Wrong 2nd entry", Role.STUDY_COORDINATOR, actual[1]);
     }
 
-    public void testAuthoritiesAreSuiteRoles() throws Exception {
+    public void testAuthoritiesArePscRoles() throws Exception {
         Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         GrantedAuthority[] actual = create(
             createMembership(SuiteRole.STUDY_QA_MANAGER),
@@ -49,7 +49,17 @@ public class PscUserTest extends TestCase {
         ).getAuthorities();
         assertEquals("Wrong number of authorities", 2, actual.length);
         assertEquals("Wrong 1st entry", "study_qa_manager", actual[0].getAuthority());
+        assertEquals("1st entry not a PscRole", PscRole.class, actual[0].getClass());
         assertEquals("Wrong 2nd entry", "study_calendar_template_builder", actual[1].getAuthority());
+        assertEquals("2nd entry not a PscRole", PscRole.class, actual[1].getClass());
+    }
+
+    public void testAuthoritiesDoNotIncludeSuiteRolesWhichAreNotUsedInPsc() throws Exception {
+        Fixtures.setUserRoles(legacyUser, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        GrantedAuthority[] actual = create(
+            createMembership(SuiteRole.DATA_ANALYST)
+        ).getAuthorities();
+        assertEquals("Wrong number of authorities", 0, actual.length);
     }
 
     public void testIsExpiredIfEndDateInPast() throws Exception {
