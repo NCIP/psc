@@ -6,13 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -36,6 +38,14 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
     public void testGetByAssignedIdentifier() throws Exception {
         Study actual = getDao().getByAssignedIdentifier("NCI-IS-WATCHING");
         assertIsTestStudy100(actual);
+    }
+
+    public void testGetByAssignedIdentifiers() throws Exception {
+        List<Study> actual = getDao().getByAssignedIdentifiers(
+            Arrays.asList("NCI-IS-WATCHING", "another nci study"));
+        assertEquals("Wrong number of results", 2, actual.size());
+        assertIsTestStudy100(actual.get(0));
+        assertEquals("Wrong second study", new Integer(-102), actual.get(1).getId());
     }
 
     public void testSearchByName() throws Exception {

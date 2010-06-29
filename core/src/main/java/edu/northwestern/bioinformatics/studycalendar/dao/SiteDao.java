@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,6 +52,26 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
     public Site getByAssignedIdentifier(final String assignedIdentifier) {
         List<Site> results = getHibernateTemplate().find("from Site where assignedIdentifier= ? or (assignedIdentifier=null and name=?)", new String[]{assignedIdentifier,assignedIdentifier});
         return CollectionUtils.firstElement(results);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Site> getByAssignedIdentifiers(List<String> assignedIdentifiers) {
+        List fromDatabase = getHibernateTemplate().findByCriteria(
+            DetachedCriteria.forClass(Site.class).add(
+                MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
+
+        List<Site> inOrder = new ArrayList<Site>();
+        for (String assignedIdentifier : assignedIdentifiers) {
+            for (Iterator<Site> foundIt = fromDatabase.iterator(); foundIt.hasNext();) {
+                Site found = foundIt.next();
+                if (found.getAssignedIdentifier().equals(assignedIdentifier)) {
+                    inOrder.add(found);
+                    foundIt.remove();
+                    break;
+                }
+            }
+        }
+        return inOrder;
     }
 
     /**

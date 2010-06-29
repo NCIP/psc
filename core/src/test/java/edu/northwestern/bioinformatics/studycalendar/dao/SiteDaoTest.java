@@ -4,10 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -43,12 +45,23 @@ public class SiteDaoTest extends DaoTestCase {
         assertEquals("Wrong name", "Mayo Clinic", actual.getName());
     }
 
+    public void testGetByAssignedIdentifiers() throws Exception {
+        List<Site> actual = siteDao.getByAssignedIdentifiers(Arrays.asList("IL036", "TN008"));
+        assertEquals("Wrong number of sites found", 2, actual.size());
+        assertEquals("Wrong first site", new Integer(-10), actual.get(0).getId());
+        assertEquals("Wrong second site", new Integer(-11), actual.get(1).getId());
+    }
+
+    public void testGetByAssignedIdentifiersReturnEmptyForUnknown() throws Exception {
+        List<Site> actual = siteDao.getByAssignedIdentifiers(Arrays.asList("IL037"));
+        assertEquals("Wrong number of sites found", 0, actual.size());
+    }
+
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
         List<BlackoutDate> list = actual.getBlackoutDates();
         actual.getBlackoutDates().remove(1);
         siteDao.save(actual);
-
 
         interruptSession();
 
@@ -85,13 +98,13 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testCount() throws Exception {
-        assertEquals("Should be two sites, to start", 3, siteDao.getCount());
+        assertEquals("Should be two sites, to start", 5, siteDao.getCount());
 
         Site newSite = new Site();
         newSite.setName("Hampshire");
         siteDao.save(newSite);
         interruptSession();
-        assertEquals("Should be three sites after saving", 4, siteDao.getCount());
+        assertEquals("Should be three sites after saving", 6, siteDao.getCount());
 
         getJdbcTemplate().update("DELETE FROM sites");
         assertEquals("And now there should be none", 0, siteDao.getCount());

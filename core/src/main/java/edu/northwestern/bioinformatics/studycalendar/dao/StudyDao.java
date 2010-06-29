@@ -4,12 +4,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -57,6 +61,25 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     public Study getByAssignedIdentifier(String assignedIdentifier) {
         List<Study> results = getHibernateTemplate().find("from Study where assignedIdentifier= ?", assignedIdentifier);
         return CollectionUtils.firstElement(results);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Study> getByAssignedIdentifiers(List<String> assignedIdentifiers) {
+        List<Study> fromDatabase = getHibernateTemplate().findByCriteria(
+            DetachedCriteria.forClass(Study.class).add(
+                MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
+        List<Study> inOrder = new ArrayList<Study>();
+        for (String assignedIdentifier : assignedIdentifiers) {
+            for (Iterator<Study> foundIt = fromDatabase.iterator(); foundIt.hasNext();) {
+                Study found = foundIt.next();
+                if (found.getAssignedIdentifier().equals(assignedIdentifier)) {
+                    inOrder.add(found);
+                    foundIt.remove();
+                    break;
+                }
+            }
+        }
+        return inOrder;
     }
 
     /**

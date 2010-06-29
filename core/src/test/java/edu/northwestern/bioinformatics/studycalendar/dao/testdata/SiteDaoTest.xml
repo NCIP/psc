@@ -17,6 +17,15 @@
         name="Mayo Clinic"
         assigned_identifier="Mayo Clinic"/>
 
+    <SITES
+        id="-10"
+        name="Northwestern University"
+        assigned_identifier="IL036"/>
+    <SITES
+        id="-11"
+        name="Vanderbilt University"
+        assigned_identifier="TN008"/>
+
     <HOLIDAYS
         id="-1"
         site_id="-4"
