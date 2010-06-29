@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscSiteMapping;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
@@ -53,7 +54,7 @@ public class ProvisionUserCommand {
     public ProvisionUserCommand(
         User user,
         Map<SuiteRole, SuiteRoleMembership> currentRoles,
-        ProvisioningSession provisioningSession, AuthorizationManager authorizationManager, 
+        ProvisioningSession provisioningSession, AuthorizationManager authorizationManager,
         List<SuiteRole> provisionableRoles,
         List<Site> provisionableSites, boolean mayProvisionAllSites
     ) {
@@ -65,8 +66,7 @@ public class ProvisionUserCommand {
         this.provisionableSites = provisionableSites;
         this.provisionableSiteIdentifiers = new LinkedHashSet<String>();
         for (Site site : provisionableSites) {
-            // TODO: replace getAssignedIdentifier with a call to the mapping
-            this.provisionableSiteIdentifiers.add(site.getAssignedIdentifier());
+            this.provisionableSiteIdentifiers.add(PscSiteMapping.INSTANCE.getSharedIdentity(site));
         }
         this.mayProvisionAllSites = mayProvisionAllSites;
     }
