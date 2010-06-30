@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscSiteMapping;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
@@ -25,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.SITE_MAPPING;
 
 /**
  * @author Rhett Sutphin
@@ -66,7 +67,7 @@ public class ProvisionUserCommand {
         this.provisionableSites = provisionableSites;
         this.provisionableSiteIdentifiers = new LinkedHashSet<String>();
         for (Site site : provisionableSites) {
-            this.provisionableSiteIdentifiers.add(PscSiteMapping.INSTANCE.getSharedIdentity(site));
+            this.provisionableSiteIdentifiers.add(SITE_MAPPING.getSharedIdentity(site));
         }
         this.mayProvisionAllSites = mayProvisionAllSites;
     }

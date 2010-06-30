@@ -11,7 +11,6 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class PscStudyMapping implements StudyMapping<Study> {
-    public static PscStudyMapping INSTANCE = new PscStudyMapping.Static();
 
     private StudyDao studyDao;
 
@@ -32,17 +31,5 @@ public class PscStudyMapping implements StudyMapping<Study> {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
-    }
-
-    private static class Static extends PscStudyMapping {
-        @Override
-        public List<Study> getApplicationInstances(List<String> identifiers) {
-            throw new UnsupportedOperationException("Use a spring-configured instance if you need to use #getApplicationInstances");
-        }
-
-        @Override
-        public void setStudyDao(StudyDao studyDao) {
-            throw new UnsupportedOperationException("The static instance must not have a studyDao");
-        }
     }
 }
