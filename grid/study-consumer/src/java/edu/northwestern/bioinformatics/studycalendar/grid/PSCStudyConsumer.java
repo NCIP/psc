@@ -90,17 +90,25 @@ public class PSCStudyConsumer implements StudyConsumerI {
     
     private PscUserDetailsService pscUserDetailsService;
     
+    private SuiteRoleMembership suiteRoleMembership;
+    
+    private StudyGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
+    
     public boolean authorizedStudyConsumer(){
-    	String gridIdentity = SecurityManager.getManager().getCaller();
-		String userName = gridIdentity.substring(gridIdentity.indexOf("/CN=")+4, gridIdentity.length());
-		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
-		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
-		SuiteRoleMembership suiteRoleMembership = memberships.get(SuiteRole.STUDY_CREATOR);
-		if(suiteRoleMembership == null){
-			return false;
-		}else{
-			return true;
-		}
+    	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	if (userName != null){
+    		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
+    		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
+    		suiteRoleMembership = memberships.get(SuiteRole.STUDY_CREATOR);
+    		if(suiteRoleMembership != null){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean authorizedSiteIdentifier(String siteidentifier){
+    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
     }
 
     public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -347,6 +355,11 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
 
     	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
+    	// Authorization
+		if(!authorizedSiteIdentifier(assignedIdentifier)){
+			String message = "Access Denied: Study_Creator is not authorized for the Site Identifier : " + assignedIdentifier;
+			throw getStudyCreationException(message);
+		}
     	String siteName = studyOrganizationType.getHealthcareSite(0).getName();
         Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
         
@@ -480,5 +493,16 @@ public class PSCStudyConsumer implements StudyConsumerI {
 	@Required
 	public void setPscUserDetailsService(PscUserDetailsService pscUserDetailsService) {
 		this.pscUserDetailsService = pscUserDetailsService;
+	}
+	
+	public StudyGridServiceAuthorizationHelper getGridServicesAuthorizationHelper() {
+		if(gridServicesAuthorizationHelper==null){
+			gridServicesAuthorizationHelper = new StudyGridServiceAuthorizationHelper();
+		}
+		return gridServicesAuthorizationHelper;
+	}
+	public void setGridServicesAuthorizationHelper(
+			StudyGridServiceAuthorizationHelper gridServicesAuthorizationHelper) {
+		this.gridServicesAuthorizationHelper = gridServicesAuthorizationHelper;
 	}
 }
