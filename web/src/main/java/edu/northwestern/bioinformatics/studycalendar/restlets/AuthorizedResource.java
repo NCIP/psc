@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.restlet.data.Method;
-import org.restlet.Uniform;
 
 import java.util.Collection;
 
@@ -20,9 +19,7 @@ public interface AuthorizedResource {
      * Implementors are not required to ensure that it returns the correct value
      * for every possible method -- just those that the resource actually
      * implements.
-     *
-     * @param method
-     * @return
      */
-    Collection<Role> authorizedRoles(Method method);
+    @Deprecated
+    Collection<Role> legacyAuthorizedRoles(Method method);
 }

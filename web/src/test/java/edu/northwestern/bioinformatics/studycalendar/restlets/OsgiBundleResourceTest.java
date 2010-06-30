@@ -62,7 +62,7 @@ public class OsgiBundleResourceTest extends AuthorizedResourceTestCase<OsgiBundl
     }
     
     public void testAvailableToSystemAdminsOnly() throws Exception {
-        assertRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+        assertLegacyRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void testGetReturnsArrayWithOneEntryPerBundle() throws Exception {

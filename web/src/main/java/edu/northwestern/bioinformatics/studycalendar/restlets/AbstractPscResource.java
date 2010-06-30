@@ -39,7 +39,7 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
 
     private static final Collection<Role> NO_AUTH = Collections.emptySet();
 
-    private Map<Method, Collection<Role>> roleAuthorizations;
+    private Map<Method, Collection<Role>> legacyRoleAuthorizations;
     private String clientErrorReason;
 
     private User currentUser;
@@ -48,27 +48,27 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     public AbstractPscResource() { }
     public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
 
-    public Collection<Role> authorizedRoles(Method method) {
-        if (getRoleAuthorizations().containsKey(method)) {
-            return getRoleAuthorizations().get(method);
+    public Collection<Role> legacyAuthorizedRoles(Method method) {
+        if (getLegacyRoleAuthorizations().containsKey(method)) {
+            return getLegacyRoleAuthorizations().get(method);
         } else {
             return NO_AUTH;
         }
     }
 
     protected void setAllAuthorizedFor(Method method) {
-        getRoleAuthorizations().put(method, null);
+        getLegacyRoleAuthorizations().put(method, null);
     }
 
     protected void setAuthorizedFor(Method method, Role... roles) {
-        getRoleAuthorizations().put(method, Arrays.asList(roles));
+        getLegacyRoleAuthorizations().put(method, Arrays.asList(roles));
     }
 
-    private Map<Method, Collection<Role>> getRoleAuthorizations() {
-        if (roleAuthorizations == null) {
-            roleAuthorizations = new HashMap<Method, Collection<Role>>();
+    private Map<Method, Collection<Role>> getLegacyRoleAuthorizations() {
+        if (legacyRoleAuthorizations == null) {
+            legacyRoleAuthorizations = new HashMap<Method, Collection<Role>>();
         }
-        return roleAuthorizations;
+        return legacyRoleAuthorizations;
     }
 
     protected User getCurrentUser() {

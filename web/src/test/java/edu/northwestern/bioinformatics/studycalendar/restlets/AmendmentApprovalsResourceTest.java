@@ -98,7 +98,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
     }
 
     public void testGetAuthorizations() {
-        assertAllRolesAllowedForMethod(Method.GET);
+        assertAllLegacyRolesAllowedForMethod(Method.GET);
     }
 
     ////// POST
@@ -114,7 +114,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
     }
 
     public void testPutWithAuthorizedRole() {
-        assertRolesAllowedForMethod(Method.POST, Role.SITE_COORDINATOR);
+        assertLegacyRolesAllowedForMethod(Method.POST, Role.SITE_COORDINATOR);
     }
 
     ////// Helper Methods

@@ -1,13 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import static org.easymock.EasyMock.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -39,12 +40,12 @@ public class OsgiBundleStateResourceTest extends AuthorizedResourceTestCase<Osgi
     
     public void testSysAdminsOnlyCanGet() throws Exception {
         expectGetBundleInState(Bundle.ACTIVE);
-        assertRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+        assertLegacyRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void testSysAdminsOnlyCanPut() throws Exception {
         expectGetBundleInState(Bundle.ACTIVE);
-        assertRolesAllowedForMethod(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
+        assertLegacyRolesAllowedForMethod(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void testGetCurrentState() throws Exception {

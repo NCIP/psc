@@ -118,13 +118,13 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     public void testGetAllowedOnlyForSubjectCoordinator() {
-        assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
+        assertLegacyRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
     }
 
     ////// POST tests
 
     public void testPostAllowedOnlyForSubjectCoordinator() {
-        assertRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
+        assertLegacyRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
     public void testPostXmlForScheduledSegment() throws Exception {

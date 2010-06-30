@@ -47,7 +47,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
     public void testIsNotAvailableToSysadmins() throws Exception {
         Set<Role> roles = new HashSet<Role>(Arrays.asList(Role.values()));
         roles.remove(Role.SYSTEM_ADMINISTRATOR);
-        assertRolesAllowedForMethod(Method.GET, roles.toArray(new Role[roles.size()]));
+        assertLegacyRolesAllowedForMethod(Method.GET, roles.toArray(new Role[roles.size()]));
     }
 
     @SuppressWarnings({ "unchecked" })

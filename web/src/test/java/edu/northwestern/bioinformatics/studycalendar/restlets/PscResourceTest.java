@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static org.restlet.data.Method.*;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
+import static org.restlet.data.Method.*;
 
 /**
  * Tests for functionality implemented in {@link AbstractPscResource}
@@ -24,23 +25,23 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         return new TestResource();
     }
 
-    public void testAllAuthorizedRoleReturnsNull() throws Exception {
-        assertNull(getResource().authorizedRoles(GET));
+    public void testAllAuthorizedMethodReturnsNull() throws Exception {
+        assertNull(getResource().legacyAuthorizedRoles(GET));
     }
 
-    public void testProperRolesReturnedForLimitedAuthorizationResources() throws Exception {
-        Collection<Role> putRoles = getResource().authorizedRoles(PUT);
+    public void testProperLegacyRolesReturnedForLimitedAuthorizationResources() throws Exception {
+        Collection<Role> putRoles = getResource().legacyAuthorizedRoles(PUT);
         assertEquals(1, putRoles.size());
         assertEquals(SYSTEM_ADMINISTRATOR, putRoles.iterator().next());
 
-        Collection<Role> postRoles = getResource().authorizedRoles(POST);
+        Collection<Role> postRoles = getResource().legacyAuthorizedRoles(POST);
         assertEquals(2, postRoles.size());
         assertContains(postRoles, STUDY_ADMIN);
         assertContains(postRoles, STUDY_COORDINATOR);
     }
     
-    public void testNoRolesReturnedForUnmentionedMethods() throws Exception {
-        Collection<Role> lockRoles = getResource().authorizedRoles(LOCK);
+    public void testNoLegacyRolesReturnedForUnmentionedMethods() throws Exception {
+        Collection<Role> lockRoles = getResource().legacyAuthorizedRoles(LOCK);
         assertNotNull(lockRoles);
         assertEquals(0, lockRoles.size());
     }

@@ -53,11 +53,11 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
     }
 
     public void testSysAdminsOnlyCanGet() throws Exception {
-        assertRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+        assertLegacyRolesAllowedForMethod(Method.GET, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void testSysAdminsOnlyCanPut() throws Exception {
-        assertRolesAllowedForMethod(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
+        assertLegacyRolesAllowedForMethod(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
     }
 
     public void test404ForInvalidBundle() throws Exception {

@@ -1,27 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import static org.easymock.EasyMock.*;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.io.IOException;
 
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
+
 /**
  * @author Rhett Sutphin
  */
-public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivityResource> {
+public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<PlannedActivityResource> {
     private AmendmentService amendmentService;
     private AmendedTemplateHelper helper;
     private ActivityDao activityDao;
@@ -60,7 +69,7 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
     }
 
     @Override
-    protected PlannedActivityResource createResource() {
+    protected PlannedActivityResource createAuthorizedResource() {
         PlannedActivityResource res = new PlannedActivityResource();
         res.setAmendedTemplateHelper(helper);
         res.setAmendmentService(amendmentService);
@@ -79,16 +88,16 @@ public class PlannedActivityResourceTest extends ResourceTestCase<PlannedActivit
 
     public void testPutAllowedForStudyCoordinator() throws Exception {
         expectSuccessfulDrillDown();
-        doInit();
-        assertEquals(1, getResource().authorizedRoles(Method.PUT).size());
-        assertEquals(Role.STUDY_COORDINATOR, getResource().authorizedRoles(Method.PUT).iterator().next());
+        replayMocks();
+        assertLegacyRolesAllowedForMethod(Method.PUT, Role.STUDY_COORDINATOR);
+        verifyMocks();
     }
 
     public void testDeleteAllowedForStudyCoordinator() throws Exception {
         expectSuccessfulDrillDown();
-        doInit();
-        assertEquals(1, getResource().authorizedRoles(Method.DELETE).size());
-        assertEquals(Role.STUDY_COORDINATOR, getResource().authorizedRoles(Method.DELETE).iterator().next());
+        replayMocks();
+        assertLegacyRolesAllowedForMethod(Method.DELETE, Role.STUDY_COORDINATOR);
+        verifyMocks();
     }
 
     public void testPutPreventedUnlessInDevelopment() throws Exception {

@@ -47,7 +47,7 @@ public class AuthorizingFinder extends SpringBeanFinder {
                 // this should not be possible
                 throw new StudyCalendarSystemException("Cannot authorize an unauthenticated request");
             }
-            Collection<Role> requiredRoles = ((AuthorizedResource) handler).authorizedRoles(request.getMethod());
+            Collection<Role> requiredRoles = ((AuthorizedResource) handler).legacyAuthorizedRoles(request.getMethod());
             if (requiredRoles == null) {
                 log.debug("Guarded resource is open to all authenticated users for {}", request.getMethod());
                 return true;

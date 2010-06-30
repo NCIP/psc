@@ -128,7 +128,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     }
 
     public void testGetWithAuthorizedRole() {
-        assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
+        assertLegacyRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
     }
 
     ////// POST
@@ -230,7 +230,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     }
 
     public void testPutWithAuthorizedRole() {
-        assertRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
+        assertLegacyRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
     ////// Helper Methods
