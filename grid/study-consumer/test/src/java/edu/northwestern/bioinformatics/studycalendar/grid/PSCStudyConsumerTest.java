@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Date;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +16,13 @@ import org.springframework.test.AbstractTransactionalSpringContextTests;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import org.easymock.classextension.EasyMock;
+import static org.easymock.EasyMock.expect;
+
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 
 
 public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTests {
@@ -28,32 +37,79 @@ public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTest
 
 	private String ccIdentifier = "TEST_STUDY";
 	
+	private StudyGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
+	private PscUserDetailsService pscUserDetailsService;
+	private PscUser user;
+	
+	protected void onSetUpInTransaction() throws Exception {
+		
+		DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf-psc/services/cagrid/StudyConsumer"));
+		regFile = System.getProperty("psc.test.sampleStudyFile");
+	
+		gridServicesAuthorizationHelper=EasyMock.createMock(StudyGridServiceAuthorizationHelper.class);
+		pscUserDetailsService=EasyMock.createMock(PscUserDetailsService.class);
+
+		SuiteRoleMembership suiteRoleMembership = new SuiteRoleMembership(SuiteRole.STUDY_CREATOR, null, null);
+		suiteRoleMembership.addSite("TEST_SITE");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.STUDY_CREATOR,
+				suiteRoleMembership);
+
+		user = new PscUser(null, expectedMemberships);
+
+	}
+	
 	public void testCreateStudyLocal() throws Exception {
 		logger.info("### Running test create study local method");
-//		gov.nih.nci.cabig.ccts.domain.Study study = populateStudyDTO();
+		gov.nih.nci.cabig.ccts.domain.Study study = populateStudyDTO();
+		
+		studyConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		studyConsumer.setPscUserDetailsService(pscUserDetailsService);
 
-//		studyConsumer.createStudy(study);
-//
-//		Study pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
-//		assertNotNull("must create study", pscStudy);
-//		assertNotNull("must create study", pscStudy.getId());
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(user);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		studyConsumer.createStudy(study);
+		
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+
+		Study pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
+		assertNotNull("must create study", pscStudy);
+		assertNotNull("must create study", pscStudy.getId());
 	}
 	
 	public void testRollbackStudyLocal() throws Exception {
 		logger.info("### Running test rollback study local method");
-//		gov.nih.nci.cabig.ccts.domain.Study study = populateStudyDTO();
-//		logger.info("Creating local study");
-//		studyConsumer.createStudy(study);
-//		
-//		Study pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
-//		assertNotNull("must create study", pscStudy);
-//		assertNotNull("must create study", pscStudy.getId());
-//		
-//		logger.info("Calling Rollback study method");
-//		
-//		studyConsumer.rollback(study);
-//		pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
-//		assertNull("Study rollback error : ", pscStudy);
+		gov.nih.nci.cabig.ccts.domain.Study study = populateStudyDTO();
+		logger.info("Creating local study");
+		
+		studyConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		studyConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(user);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		
+		studyConsumer.createStudy(study);
+		
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		Study pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
+		assertNotNull("must create study", pscStudy);
+		assertNotNull("must create study", pscStudy.getId());
+		
+		logger.info("Calling Rollback study method");
+		
+		studyConsumer.rollback(study);
+		pscStudy = studyService.getStudyByAssignedIdentifier(ccIdentifier);
+		assertNull("Study rollback error : ", pscStudy);
 	}
 
 
@@ -82,13 +138,6 @@ public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTest
 
 		String[] configs = {"classpath:applicationContext-studyConsumer-grid.xml"};
 		return configs;
-	}
-
-	protected void onSetUpInTransaction() throws Exception {
-
-		DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf-psc/services/cagrid/StudyConsumer"));
-		regFile = System.getProperty("psc.test.sampleStudyFile");
-
 	}
 
 	protected void onTearDownAfterTransaction() throws Exception {
