@@ -3,30 +3,30 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.easymock.IExpectationSetters;
 import org.restlet.data.Method;
 import org.restlet.resource.Resource;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.easymock.EasyMock.expect;
-
 /**
  * @author John Dzak
  */
 public abstract class AuthorizedResourceTestCase<R extends Resource & AuthorizedResource> extends ResourceTestCase<R> {
     private User user;
-    private UserService userService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
         user = Fixtures.createUser("josephine");
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(user, "dc", new Role[] { Role.SUBJECT_COORDINATOR }));
-        userService = registerMockFor(UserService.class);
+        setCurrentUser(user);
+    }
+
+    protected void setCurrentUser(User u) {
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(
+            u, "dc", u.getAuthorities()));
     }
 
     protected User getCurrentUser() {
@@ -35,18 +35,10 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
 
     @Override
     protected final R createResource() {
-        R resource = createAuthorizedResource();
-        if (resource instanceof AbstractPscResource) {
-            ((AbstractPscResource) resource).setUserService(userService);
-        }
-        return resource;
+        return createAuthorizedResource();
     }
 
     protected abstract R createAuthorizedResource();
-
-    protected IExpectationSetters<User> expectGetCurrentUser() {
-        return expect(userService.getUserByName(user.getName())).andReturn(user);
-    }
 
     protected void assertLegacyRolesAllowedForMethod(Method method, Role... roles) {
         doInitOnly();

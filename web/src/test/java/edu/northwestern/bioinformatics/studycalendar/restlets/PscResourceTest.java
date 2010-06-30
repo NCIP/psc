@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
@@ -48,7 +48,6 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
 
     public void testCurrentUserCanBeLoadedWhenThereIsAnAuthentication() throws Exception {
         assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
-        expectGetCurrentUser();
 
         replayMocks();
         assertSame(getCurrentUser(), getResource().getCurrentUser());
@@ -63,17 +62,18 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         verifyMocks();
     }
 
-    public void testCurrentUserIsOnlyLoadedOnce() throws Exception {
-        User expected = getCurrentUser();
-        assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
-        expectGetCurrentUser().once();
+    public void testCurrentUserThrowsExceptionForUnexpectedPrincipalType() throws Exception {
+        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken("fred", "frob"));
 
         replayMocks();
-        assertSame(expected, getResource().getCurrentUser());
-        assertSame(expected, getResource().getCurrentUser());
-        assertSame(expected, getResource().getCurrentUser());
-        assertSame(expected, getResource().getCurrentUser());
-        // expect no failures on verify
+        try {
+            getResource().getCurrentUser();
+            fail("Exception not thrown");
+        } catch (ClassCastException cce) {
+            assertEquals("Wrong message",
+                "PSC's Prinicpal is expected to always be a edu.northwestern.bioinformatics.studycalendar.domain.User.  Right now it is a java.lang.String.",
+                cce.getMessage());
+        }
         verifyMocks();
     }
 

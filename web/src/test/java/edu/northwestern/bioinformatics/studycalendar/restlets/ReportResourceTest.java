@@ -1,27 +1,42 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
-import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.easymock.IArgumentMatcher;
-import org.restlet.data.*;
-import java.util.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Status;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Nataliya Shurupova
@@ -153,7 +168,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        expect(getResource().getCurrentUser()).andReturn(userOne);
+        setCurrentUser(userOne);
 
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -174,7 +189,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        expect(getResource().getCurrentUser()).andReturn(userOne);
+        setCurrentUser(userOne);
         ScheduledActivitiesReportRow row3 = new ScheduledActivitiesReportRow();
         row3.setId(1003);
         ScheduledActivityState sa3State = new Conditional();
@@ -206,7 +221,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        expect(getResource().getCurrentUser()).andReturn(userOne);
+        setCurrentUser(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -226,7 +241,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        expect(getResource().getCurrentUser()).andReturn(userOne);
+        setCurrentUser(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -371,7 +386,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.ACTIVITY_TYPE.putIn(request, activityTypeString);
         expect(activityTypeDao.getById(new Integer(activityType.getId()))).andReturn(activityType);
         replayMocks();
-            ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
+        ScheduledActivitiesReportFilters actualFilter = getResource().getFilters();
         verifyMocks();
         assertNotNull("Actual Filter is Null", actualFilter);
         assertSame("Actual Filter doesn't contain activity type", activityType, actualFilter.getActivityType());
@@ -398,7 +413,7 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
                 createUserRole(user, Role.SUBJECT_COORDINATOR, siteZ)
             );
         user.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        expect(getResource().getCurrentUser()).andReturn(user);
+        setCurrentUser(user);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);

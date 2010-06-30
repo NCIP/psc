@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -17,7 +16,6 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.util.Series;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,9 +39,6 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
 
     private Map<Method, Collection<Role>> legacyRoleAuthorizations;
     private String clientErrorReason;
-
-    private User currentUser;
-    private UserService userService;
 
     public AbstractPscResource() { }
     public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
@@ -75,11 +70,12 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
         if (token == null) {
             return null;
+        } else if (token.getPrincipal() instanceof User) {
+            return (User) token.getPrincipal();
         } else {
-            if (currentUser == null) {
-                currentUser = userService.getUserByName(token.getPrincipal().toString());
-            }
-            return currentUser;
+            throw new ClassCastException(
+                "PSC's Prinicpal is expected to always be a " + User.class.getName() + 
+                    ".  Right now it is a " + token.getPrincipal().getClass().getName() + '.');
         }
     }
 
@@ -159,12 +155,5 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     public String getApplicationBaseUrl() {
         String baseURL = (getRequest().getRootRef().toString().split("/api/v1"))[0];
         return baseURL;
-    }
-
-    ////// CONFIGURATION
-
-    @Required
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 }

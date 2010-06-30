@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -12,23 +10,24 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Arrays;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.expect;
 
 
 /**
@@ -85,7 +84,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     }
 
     public void testGetScheduledCalendarXml() throws Exception {
-        expectGetCurrentUser();
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
@@ -105,7 +103,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     }
 
     public void test403WhenUserCannotAccessSchedule() throws Exception {
-        expectGetCurrentUser();
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(new ArrayList<StudySubjectAssignment>());
@@ -122,7 +119,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
 
     public void testGetJSONRepresentation() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".json",SUBJECT_IDENTIFIER);
-        expectGetCurrentUser();
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
@@ -135,7 +131,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
 
     public void testGetICSCalendarRepresentation() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".ics",SUBJECT_IDENTIFIER);
-        expectGetCurrentUser();
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
                 (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
