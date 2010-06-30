@@ -42,4 +42,64 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBeanTest extends TestC
 
         assertEquals("Config name not taken from system prop", expected, bean.getDatabaseConfigurationName());
     }
+
+    public void testCsmDatasourcePropertiesDefaultToPscDatasourceProperties() {
+        Properties properties = bean.getProperties();
+
+        properties.clear();
+
+        String url = "hsqldb", driver = "org.hsqldb.driver", username = "foo", password = "bar", dialect = "spanish";
+
+        properties.setProperty("datasource.url", url);
+        properties.setProperty("datasource.driver", driver);
+        properties.setProperty("datasource.username", username);
+        properties.setProperty("datasource.password", password);
+        properties.setProperty("datasource.dialect", dialect);
+
+        bean.computeProperties();
+
+        assertEquals("Config name not taken from psc datasource prop", url, properties.getProperty("csm.datasource.url"));
+        assertEquals("Config name not taken from psc datasource prop", driver, properties.getProperty("csm.datasource.driver"));
+        assertEquals("Config name not taken from psc datasource prop", username, properties.getProperty("csm.datasource.username"));
+        assertEquals("Config name not taken from psc datasource prop", password, properties.getProperty("csm.datasource.password"));
+        assertEquals("Config name not taken from psc datasource prop", password, properties.getProperty("csm.datasource.password"));
+        assertEquals("Config name not taken from psc datasource prop", dialect, properties.getProperty("csm.datasource.dialect"));
+    }
+
+    public void testCsmDatasourcePropertiesOverrideDefaults() {
+        Properties properties = bean.getProperties();
+
+        String url = "hsqldb", driver = "org.hsqldb.driver", username = "foo", password = "bar", dialect = "spanish";
+
+        properties.setProperty("csm.datasource.url", url);
+        properties.setProperty("csm.datasource.driver", driver);
+        properties.setProperty("csm.datasource.username", username);
+        properties.setProperty("csm.datasource.password", password);
+        properties.setProperty("csm.datasource.dialect", dialect);
+
+        bean.computeProperties();
+
+        assertEquals("Config name not taken from csm datasource prop", url, properties.getProperty("csm.datasource.url"));
+        assertEquals("Config name not taken from csm datasource prop", driver, properties.getProperty("csm.datasource.driver"));
+        assertEquals("Config name not taken from csm datasource prop", username, properties.getProperty("csm.datasource.username"));
+        assertEquals("Config name not taken from csm datasource prop", password, properties.getProperty("csm.datasource.password"));
+        assertEquals("Config name not taken from csm datasource prop", dialect, properties.getProperty("csm.datasource.dialect"));
+    }
+
+    public void testCsmContextNameDefaultsCorrectly() {
+        Properties properties = bean.getProperties();
+        assertEquals("Config name not taken from csm datasource prop", "study_calendar", properties.getProperty("csm.application.context"));
+    }
+
+    public void testCsmContextNameIsOverrideable() {
+        Properties properties = bean.getProperties();
+
+        String context = "CTMS_SUITE";
+
+        properties.setProperty("csm.application.context", context);
+
+        bean.computeProperties();
+
+        assertEquals("Config name not taken from csm datasource prop", context, properties.getProperty("csm.application.context"));
+    }
 }

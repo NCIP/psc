@@ -8,6 +8,8 @@ import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -23,6 +25,8 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     private AuthorizationManager authorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private LegacyModeSwitch legacyModeSwitch;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
