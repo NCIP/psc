@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -51,10 +50,10 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     public List<Study> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
         if (q == null) {
-            return authorizationService.filterStudiesForVisibility(studyDao.getAll(), getCurrentUser());
+            return authorizationService.filterStudiesForVisibility(studyDao.getAll(), getLegacyCurrentUser());
         } else {
             List<Study> studyToFilter = studyDao.searchStudiesByStudyName(q);
-            List<Study> filteredStudies = authorizationService.filterStudiesForVisibility(studyToFilter, getCurrentUser().getUserRole(Role.SITE_COORDINATOR));
+            List<Study> filteredStudies = authorizationService.filterStudiesForVisibility(studyToFilter, getLegacyCurrentUser().getUserRole(Role.SITE_COORDINATOR));
             return filteredStudies;
         }
     }

@@ -1,13 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Status;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
@@ -17,7 +14,7 @@ import static org.easymock.EasyMock.expect;
 /**
  * @author Saurabh Agrawal
  */
-public class SiteResourceTest extends ResourceTestCase<SiteResource> {
+public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
     public static final String SITE_IDENTIFIER = "site_id";
     public static final String SITE_NAME = "site_name";
 
@@ -36,7 +33,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
     }
 
     @Override
-    protected SiteResource createResource() {
+    protected SiteResource createAuthorizedResource() {
         SiteResource resource = new SiteResource();
         resource.setSiteService(siteService);
         resource.setXmlSerializer(xmlSerializer);
@@ -48,8 +45,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
     }
 
     public void testGetXmlForExistingSite() throws Exception {
-        User user = createUser("studyCo", STUDY_ADMIN);
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(user,"studyCo", new Role[] {STUDY_ADMIN}));
+        setLegacyCurrentUser(createUser("studyCo", STUDY_ADMIN));
         expectFoundSite(site);
         expectObjectXmlized(site);
 
@@ -60,8 +56,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
     }
 
     public void testGet403ForUnauthorizedUser() throws Exception {
-        User user = createUser("subjectCo",SUBJECT_COORDINATOR);
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(user,"subjectCo", new Role[] {SUBJECT_COORDINATOR}));
+        setLegacyCurrentUser(createUser("subjectCo",SUBJECT_COORDINATOR));
         expectFoundSite(site);
         expectObjectXmlized(site);
 

@@ -86,7 +86,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     public void testGetScheduledCalendarXml() throws Exception {
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
+                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         expect(xmlSerializer.createDocumentString(studySubjectAssignments)).andReturn(MOCK_XML);
 
         doGet();
@@ -105,7 +105,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     public void test403WhenUserCannotAccessSchedule() throws Exception {
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments,getCurrentUser())).andReturn(new ArrayList<StudySubjectAssignment>());
+                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(new ArrayList<StudySubjectAssignment>());
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
@@ -121,7 +121,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".json",SUBJECT_IDENTIFIER);
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
+                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
@@ -133,7 +133,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".ics",SUBJECT_IDENTIFIER);
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
         expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments,getCurrentUser())).andReturn(studySubjectAssignments);
+                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         makeRequestType(MediaType.TEXT_CALENDAR);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);

@@ -73,9 +73,9 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     public Representation represent(Variant variant) throws ResourceException {
         List<StudySubjectAssignment> allAssignments = new ArrayList<StudySubjectAssignment> (getAllObjects());
         List<StudySubjectAssignment> visibleAssignments
-                = authorizationService.filterAssignmentsForVisibility(allAssignments, getCurrentUser());
+                = authorizationService.filterAssignmentsForVisibility(allAssignments, getLegacyCurrentUser());
         if (visibleAssignments.isEmpty()) {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "User " +getCurrentUser().getDisplayName()+" doesn't have permission to access schedule of " +subject.getFullName() );
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "User " + getLegacyCurrentUser().getDisplayName()+" doesn't have permission to access schedule of " +subject.getFullName() );
         }
         Set<StudySubjectAssignment> hiddenAssignments
                 = new LinkedHashSet<StudySubjectAssignment>(allAssignments);

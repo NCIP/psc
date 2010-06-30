@@ -58,7 +58,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
         List<Study> justA = Arrays.asList(a);
 
         expect(studyDao.getAll()).andReturn(aAndB);
-        expect(authorizationService.filterStudiesForVisibility(aAndB, getCurrentUser())).andReturn(justA);
+        expect(authorizationService.filterStudiesForVisibility(aAndB, getLegacyCurrentUser())).andReturn(justA);
         expect(xmlSerializer.createDocumentString(justA)).andReturn(MOCK_XML);
 
         setAcceptedMediaTypes(MediaType.TEXT_XML);
@@ -74,7 +74,7 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
         List<Study> justA = Arrays.asList(a);
 
         expect(studyDao.getAll()).andReturn(aAndB);
-        expect(authorizationService.filterStudiesForVisibility(aAndB, getCurrentUser())).andReturn(justA);
+        expect(authorizationService.filterStudiesForVisibility(aAndB, getLegacyCurrentUser())).andReturn(justA);
 
         setAcceptedMediaTypes(MediaType.APPLICATION_JSON);
         doGet();

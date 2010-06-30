@@ -50,7 +50,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertNotNull("Test setup failure", PscGuard.getCurrentAuthenticationToken(request));
 
         replayMocks();
-        assertSame(getCurrentUser(), getResource().getCurrentUser());
+        assertSame(getLegacyCurrentUser(), getResource().getLegacyCurrentUser());
         verifyMocks();
     }
 
@@ -58,7 +58,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         PscGuard.setCurrentAuthenticationToken(request, null);
 
         replayMocks();
-        assertNull(getResource().getCurrentUser());
+        assertNull(getResource().getLegacyCurrentUser());
         verifyMocks();
     }
 
@@ -67,11 +67,11 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
 
         replayMocks();
         try {
-            getResource().getCurrentUser();
+            getResource().getLegacyCurrentUser();
             fail("Exception not thrown");
         } catch (ClassCastException cce) {
             assertEquals("Wrong message",
-                "PSC's Prinicpal is expected to always be a edu.northwestern.bioinformatics.studycalendar.domain.User.  Right now it is a java.lang.String.",
+                "PSC's Principal is expected to always be a edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser.  Right now it is a java.lang.String.",
                 cce.getMessage());
         }
         verifyMocks();

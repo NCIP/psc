@@ -83,7 +83,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     public Representation represent(Variant variant) throws ResourceException {
         Representation representation = super.represent(variant);
         if (getRequestedObject() != null ) {
-           for (UserRole userRole : getCurrentUser().getUserRoles()) {
+           for (UserRole userRole : getLegacyCurrentUser().getUserRoles()) {
                 if (userRole.getRole().equals(Role.SYSTEM_ADMINISTRATOR) || userRole.getRole().equals(Role.STUDY_ADMIN) || userRole.getRole().equals(Role.STUDY_COORDINATOR)) {
                     return representation;
                 }
@@ -92,7 +92,7 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
                         return representation;
                     }
                 }
-                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,"User is not allowed " +getCurrentUser().getDisplayName());
+                throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,"User is not allowed " + getLegacyCurrentUser().getDisplayName());
            }
        }
        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,"Unknown Site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));

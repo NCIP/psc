@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -66,17 +67,23 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         return legacyRoleAuthorizations;
     }
 
-    protected User getCurrentUser() {
+    protected PscUser getCurrentUser() {
         Authentication token = PscGuard.getCurrentAuthenticationToken(getRequest());
         if (token == null) {
             return null;
-        } else if (token.getPrincipal() instanceof User) {
-            return (User) token.getPrincipal();
+        } else if (token.getPrincipal() instanceof PscUser) {
+            return (PscUser) token.getPrincipal();
         } else {
             throw new ClassCastException(
-                "PSC's Prinicpal is expected to always be a " + User.class.getName() + 
+                "PSC's Principal is expected to always be a " + PscUser.class.getName() +
                     ".  Right now it is a " + token.getPrincipal().getClass().getName() + '.');
         }
+    }
+
+    @Deprecated
+    protected User getLegacyCurrentUser() {
+        PscUser current = getCurrentUser();
+        return current == null ? null : current.getLegacyUser();
     }
 
     @Override

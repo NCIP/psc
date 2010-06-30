@@ -80,7 +80,7 @@ public class SubjectsResource extends AbstractPscResource {
 
 
             List<StudySubjectAssignment> visibleAssignments
-                = authorizationService.filterAssignmentsForVisibility(studySubjectAssignments, getCurrentUser());
+                = authorizationService.filterAssignmentsForVisibility(studySubjectAssignments, getLegacyCurrentUser());
 
             Set<StudySubjectAssignment> hiddenAssignments
                 = new LinkedHashSet<StudySubjectAssignment>(studySubjectAssignments);

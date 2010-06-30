@@ -162,13 +162,13 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.STATE.putIn(request, "1");
 
         filters = getResource().getFilters();
-        User userOne = getCurrentUser();
+        User userOne = getLegacyCurrentUser();
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setCurrentUser(userOne);
+        setLegacyCurrentUser(userOne);
 
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -183,13 +183,13 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
         FilterParameters.STUDY.putIn(request, "1001");
 
         filters = getResource().getFilters();
-        User userOne = getCurrentUser();
+        User userOne = getLegacyCurrentUser();
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setCurrentUser(userOne);
+        setLegacyCurrentUser(userOne);
         ScheduledActivitiesReportRow row3 = new ScheduledActivitiesReportRow();
         row3.setId(1003);
         ScheduledActivityState sa3State = new Conditional();
@@ -215,13 +215,13 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
     public void test200ForSupportedCSVMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
-        User userOne = getCurrentUser();
+        User userOne = getLegacyCurrentUser();
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setCurrentUser(userOne);
+        setLegacyCurrentUser(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -235,13 +235,13 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
     public void test200ForSupportedJSONMediaType() throws Exception {
         FilterParameters.STATE.putIn(request, "1");
         filters = getResource().getFilters();
-        User userOne = getCurrentUser();
+        User userOne = getLegacyCurrentUser();
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(userOne, Role.SITE_COORDINATOR, siteB),
                 createUserRole(userOne, Role.SUBJECT_COORDINATOR, siteZ)
             );
         userOne.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setCurrentUser(userOne);
+        setLegacyCurrentUser(userOne);
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, userOne.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
@@ -406,14 +406,14 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
         filters = getResource().getFilters();
         expect(scheduledActivitiesReportRowDao.search(eqFilters(filters))).andReturn(rows);
-        User user = getCurrentUser();
+        User user = getLegacyCurrentUser();
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(user, Role.SITE_COORDINATOR, siteB),
                 createUserRole(user, Role.SUBJECT_COORDINATOR, siteZ)
             );
         user.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
-        setCurrentUser(user);
+        setLegacyCurrentUser(user);
         expect(studyDao.getAll()).andReturn(studies);
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(authorizationService.filterStudySitesForVisibilityFromStudiesList(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudySites);
