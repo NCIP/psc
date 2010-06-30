@@ -71,18 +71,34 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
     
     private PscUserDetailsService pscUserDetailsService;
+    
+    private SuiteRoleMembership suiteRoleMembership;
 
+    private RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
+    /**
+     * This method authorize the caller for REGISTRAR Role
+     * @return boolean
+     */
     public boolean authorizedRegistrationConsumer(){
-    	String gridIdentity = SecurityManager.getManager().getCaller();
-    	String userName = gridIdentity.substring(gridIdentity.indexOf("/CN=")+4, gridIdentity.length());
-    	PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
-    	Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
-    	SuiteRoleMembership suiteRoleMembership = memberships.get(SuiteRole.REGISTRAR);
-    	if(suiteRoleMembership == null){
-    		return false;
-    	}else{
-    		return true;
+    	
+    	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	if (userName != null){
+    		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
+    		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
+    		suiteRoleMembership = memberships.get(SuiteRole.REGISTRAR);
+    		if(suiteRoleMembership != null){
+    			return true;
+    		}
     	}
+    	return false;
+    }
+    
+    public boolean authorizedStudyIdentifier(String studyIdentifier ){
+    	return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    }
+    
+    public boolean authorizedSiteIdentifier(String siteidentifier){
+    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
     }
 
     /**
@@ -207,14 +223,18 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
             RegistrationConsumptionException {
     	
     	try{
-    		// Check for Role
-    		// 1. If Assigned Role is Registrar, then process, otherwise Access Denied.
+    		//Authorization
     		if(!authorizedRegistrationConsumer()){
     			String message = "Access Denied";
     			throw getInvalidRegistrationException(message);
     		}
 
     		String ccIdentifier = findCoordinatingCenterIdentifier(registration);
+    		// Authorization
+    		if(!authorizedStudyIdentifier(ccIdentifier)){
+    			String message = "Access Denied: Registrar is not authorized for this Study";
+    			throw getInvalidRegistrationException(message);
+    		}
     		Study study = fetchStudy(ccIdentifier);
 
     		if (study == null) {
@@ -235,6 +255,11 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     				throw getInvalidRegistrationException(message);
     			}
 
+    		}
+    		// Authorization
+    		if(!authorizedSiteIdentifier(siteNCICode)){
+    			String message = "Access Denied: Registrar is not authorized for this Site";
+    			throw getInvalidRegistrationException(message);
     		}
     		String mrn = findMedicalRecordNumber(registration.getParticipant());
 
@@ -466,5 +491,16 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
 	@Required
 	public void setPscUserDetailsService(PscUserDetailsService pscUserDetailsService) {
 		this.pscUserDetailsService = pscUserDetailsService;
+	}
+	
+	public RegistrationGridServiceAuthorizationHelper getGridServicesAuthorizationHelper() {
+		if(gridServicesAuthorizationHelper==null){
+			gridServicesAuthorizationHelper = new RegistrationGridServiceAuthorizationHelper();
+		}
+		return gridServicesAuthorizationHelper;
+	}
+	public void setGridServicesAuthorizationHelper(
+			RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper) {
+		this.gridServicesAuthorizationHelper = gridServicesAuthorizationHelper;
 	}
 }
