@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
@@ -36,35 +37,68 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
         @Override protected DateFormat initialValue() { return new SimpleDateFormat("yyyy-MM-dd"); }
     };
 
-    private static final Collection<Role> NO_AUTH = Collections.emptySet();
+    @Deprecated private static final Collection<Role> NO_ROLES = Collections.emptySet();
+    private static final Collection<ResourceAuthorization> NO_AUTHORIZATION_REQUIRED = Collections.emptySet();
 
-    private Map<Method, Collection<Role>> legacyRoleAuthorizations;
+    @Deprecated private Map<Method, Collection<Role>> legacyRoleAuthorizations;
+    private Map<Method, Collection<ResourceAuthorization>> authorizations;
     private String clientErrorReason;
 
     public AbstractPscResource() { }
     public AbstractPscResource(Context context, Request request, Response response) { super(context, request, response); }
 
+    @Deprecated
     public Collection<Role> legacyAuthorizedRoles(Method method) {
         if (getLegacyRoleAuthorizations().containsKey(method)) {
             return getLegacyRoleAuthorizations().get(method);
         } else {
-            return NO_AUTH;
+            return NO_ROLES;
+        }
+    }
+
+    public Collection<ResourceAuthorization> authorizations(Method method) {
+        if (getAuthorizationsByMethod().containsKey(method)) {
+            return getAuthorizationsByMethod().get(method);
+        } else {
+            return NO_AUTHORIZATION_REQUIRED;
         }
     }
 
     protected void setAllAuthorizedFor(Method method) {
         getLegacyRoleAuthorizations().put(method, null);
+        getAuthorizationsByMethod().put(method, null);
     }
 
+    @Deprecated
     protected void setAuthorizedFor(Method method, Role... roles) {
         getLegacyRoleAuthorizations().put(method, Arrays.asList(roles));
     }
 
+    protected void addAuthorizationsFor(Method method, PscRole... roles) {
+        ResourceAuthorization[] authorizations = new ResourceAuthorization[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            authorizations[i] = ResourceAuthorization.create(roles[i]);
+        }
+        addAuthorizationsFor(method, authorizations);
+    }
+
+    protected void addAuthorizationsFor(Method method, ResourceAuthorization... authorizations) {
+        getAuthorizationsByMethod().put(method, Arrays.asList(authorizations));
+    }
+
+    @Deprecated
     private Map<Method, Collection<Role>> getLegacyRoleAuthorizations() {
         if (legacyRoleAuthorizations == null) {
             legacyRoleAuthorizations = new HashMap<Method, Collection<Role>>();
         }
         return legacyRoleAuthorizations;
+    }
+
+    private Map<Method, Collection<ResourceAuthorization>> getAuthorizationsByMethod() {
+        if (authorizations == null) {
+            authorizations = new HashMap<Method, Collection<ResourceAuthorization>>();
+        }
+        return authorizations;
     }
 
     protected PscUser getCurrentUser() {

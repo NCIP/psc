@@ -11,7 +11,19 @@ import java.util.Collection;
  */
 public interface AuthorizedResource {
     /**
-     * Returns an array containing the roles which are allowed to perform
+     * Returns a collection of {@link ResourceAuthorization}s for
+     * the specified method on this resource.  If it returns an empty collection,
+     * no roles/scopes are permitted to perform the method.. If it returns null, any
+     * role/scope is permitted.
+     * <p>
+     * Implementors are not required to ensure that it returns the correct value
+     * for every possible method -- just those that the resource actually
+     * implements.
+     */
+    Collection<ResourceAuthorization> authorizations(Method method);
+
+    /**
+     * Returns a collection containing the roles which are allowed to perform
      * the specified method on this resource.  If it returns an empty collection,
      * no roles are permitted to perform the method.. If it returns null, any
      * role is permitted.

@@ -1,7 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
@@ -9,6 +14,7 @@ import org.restlet.util.Series;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
@@ -20,6 +26,16 @@ import static org.restlet.data.Method.*;
  * @author Rhett Sutphin
  */
 public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.TestResource> {
+    private Site siteA;
+    private Study studyB;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        siteA = Fixtures.createSite("A", "a?");
+        studyB = Fixtures.createReleasedTemplate("B");
+    }
+
     @Override
     protected TestResource createAuthorizedResource() {
         return new TestResource();
@@ -27,6 +43,7 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
 
     public void testAllAuthorizedMethodReturnsNull() throws Exception {
         assertNull(getResource().legacyAuthorizedRoles(GET));
+        assertNull(getResource().authorizations(GET));
     }
 
     public void testProperLegacyRolesReturnedForLimitedAuthorizationResources() throws Exception {
@@ -42,6 +59,49 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
     
     public void testNoLegacyRolesReturnedForUnmentionedMethods() throws Exception {
         Collection<Role> lockRoles = getResource().legacyAuthorizedRoles(LOCK);
+        assertNotNull(lockRoles);
+        assertEquals(0, lockRoles.size());
+    }
+
+    public void testProperAuthorizationReturnedForRoleAuthorizedMethod() throws Exception {
+        Collection<ResourceAuthorization> putAuth = getResource().authorizations(PUT);
+        assertEquals(1, putAuth.size());
+        assertAuthorization("Wrong sole authorization", PscRole.SYSTEM_ADMINISTRATOR, putAuth.iterator().next());
+    }
+
+    protected void assertAuthorization(String message, PscRole expectedRole, ResourceAuthorization actual) {
+        assertEquals(message + ": wrong role", expectedRole, actual.getRole());
+        assertNull(message + ": should not be site scoped", actual.getScope(ScopeType.SITE));
+        assertNull(message + ": should not be study scoped", actual.getScope(ScopeType.STUDY));
+    }
+
+    protected void assertAuthorization(
+        String message, PscRole expectedRole, String expectedSiteIdent, ResourceAuthorization actual
+    ) {
+        assertEquals(message + ": wrong role", expectedRole, actual.getRole());
+        assertEquals(message + ": wrong site scope", expectedSiteIdent, actual.getScope(ScopeType.SITE));
+        assertNull(message + ": should not be study scoped", actual.getScope(ScopeType.STUDY));
+    }
+
+    protected void assertAuthorization(
+        String message, PscRole expectedRole,
+        String expectedSiteIdent, String expectedStudyIdent, ResourceAuthorization actual
+    ) {
+        assertEquals(message + ": wrong role", expectedRole, actual.getRole());
+        assertEquals(message + ": wrong site scope", expectedSiteIdent, actual.getScope(ScopeType.SITE));
+        assertEquals(message + ": wrong study scope", expectedStudyIdent, actual.getScope(ScopeType.STUDY));
+    }
+
+    public void testProperAuthorizationReturnedForAuthorizationAuthorizedMethod() throws Exception {
+        Collection<ResourceAuthorization> postAuth = getResource().authorizations(POST);
+        assertEquals(2, postAuth.size());
+        Iterator<ResourceAuthorization> it = postAuth.iterator();
+        assertAuthorization("Wrong 1st auth", PscRole.STUDY_QA_MANAGER, "a?", it.next());
+        assertAuthorization("Wrong 2nd auth", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "a?", "B", it.next());
+    }
+
+    public void testNoAuthorizationsReturnedForUnmentionedMethods() throws Exception {
+        Collection<ResourceAuthorization> lockRoles = getResource().authorizations(LOCK);
         assertNotNull(lockRoles);
         assertEquals(0, lockRoles.size());
     }
@@ -105,11 +165,16 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertEquals("no-cache", actualHeaders.getFirstValue("Pragma"));
     }
 
-    public static class TestResource extends AbstractPscResource {
+    public class TestResource extends AbstractPscResource {
         public TestResource() {
             setAllAuthorizedFor(GET);
             setAuthorizedFor(PUT, SYSTEM_ADMINISTRATOR);
             setAuthorizedFor(POST, STUDY_ADMIN, STUDY_COORDINATOR);
+
+            addAuthorizationsFor(PUT, PscRole.SYSTEM_ADMINISTRATOR);
+            addAuthorizationsFor(POST,
+                ResourceAuthorization.create(PscRole.STUDY_QA_MANAGER, siteA),
+                ResourceAuthorization.create(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, siteA, studyB));
         }
     }
 }

@@ -23,7 +23,9 @@
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
 
-    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>
+    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter">
+        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
+    </bean>
 
     <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
 
