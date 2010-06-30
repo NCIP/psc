@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -16,6 +17,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -23,10 +26,13 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
 import gov.nih.nci.cabig.ccts.ae.domain.AENotificationType;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.cagrid.common.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.easymock.classextension.EasyMock;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.test.AbstractTransactionalSpringContextTests;
@@ -35,7 +41,9 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
@@ -69,6 +77,10 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
 	
 	private StudySubjectAssignment studySubjectAssignment;
+	
+	private AdverseEventGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
+	private PscUserDetailsService pscUserDetailsService;
+	private PscUser user;
 
 	protected void onSetUpInTransaction() throws Exception {
 
@@ -83,18 +95,39 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		}
 		
 		createAssignmentAndAeNotifications();
+		
+		gridServicesAuthorizationHelper=EasyMock.createMock(AdverseEventGridServiceAuthorizationHelper.class);
+		pscUserDetailsService=EasyMock.createMock(PscUserDetailsService.class);
+
+		SuiteRoleMembership suiteRoleMembership = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership.addSite("SITE_01");
+		suiteRoleMembership.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.AE_REPORTER,
+				suiteRoleMembership);
+
+		user = new PscUser(null, expectedMemberships);
 
 	}
 	
 
 	public void testCreateNotificationLocal() throws Exception {
 		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(user);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		adverseEventConsumer.register(ae);
 		
-//		adverseEventConsumer.register(ae);
-//		
-//		Notification notification = studySubjectAssignment.getNotifications().get(0);
-//
-//		assertNotNull("AdverseEvent create test failed: ", notification);
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		Notification notification = studySubjectAssignment.getNotifications().get(0);
+		assertNotNull("AdverseEvent create test failed: ", notification);
 	}
 
 	private AENotificationType getNotification() throws Exception {
