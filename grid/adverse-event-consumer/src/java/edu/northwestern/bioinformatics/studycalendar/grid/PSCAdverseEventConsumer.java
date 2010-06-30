@@ -5,7 +5,11 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumerI;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.RegistrationFailed;
@@ -39,20 +43,33 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     private ScheduledCalendarService scheduledCalendarService;
     
     private PscUserDetailsService pscUserDetailsService;
+    
+    private SuiteRoleMembership suiteRoleMembership;
+    
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
+    
+    private AdverseEventGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
 
     public boolean authorizedAdverseEventConsumer(){
-    	String gridIdentity = SecurityManager.getManager().getCaller();
-    	String userName = gridIdentity.substring(gridIdentity.indexOf("/CN=")+4, gridIdentity.length());
-    	PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
-    	Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
-    	SuiteRoleMembership suiteRoleMembership = memberships.get(SuiteRole.AE_REPORTER);
-    	if(suiteRoleMembership == null){
-    		return false;
-    	}else{
-    		return true;
+    	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	if (userName != null){
+    		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
+    		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
+    		suiteRoleMembership = memberships.get(SuiteRole.AE_REPORTER);
+    		if(suiteRoleMembership != null){
+    			return true;
+    		}
     	}
+    	return false;
     }
 
+    public boolean authorizedStudyIdentifier(String studyIdentifier ){
+    	return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    }
+    
+    public boolean authorizedSiteIdentifier(String siteidentifier){
+    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    }
 
     public void register(final AENotificationType aeNotification) throws java.rmi.RemoteException, InvalidRegistration, RegistrationFailed {
     	try{
@@ -69,6 +86,28 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     			logger.error("No registrationGridId provided");
     			throw new InvalidRegistration();
     		}
+    		// get the StudySubjectAssignment
+    		StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(gridId);
+    		StudySite studySite = studySubjectAssignment.getStudySite();
+    		Study study = studySite.getStudy();
+    		String studyAssignedIdentifier = study.getAssignedIdentifier();
+    		// Authorization
+    		if(!authorizedStudyIdentifier(studyAssignedIdentifier)){
+    			String message = "Access Denied: AE_REPORTER is not authorized for this Study Identifier : " + studyAssignedIdentifier;
+    			logger.error(message);
+    			throw new RegistrationFailed();
+    		}
+    		
+    		Site site = studySite.getSite();
+    		
+    		String siteAssignedIdentifier = site.getAssignedIdentifier();
+    		// Authorization
+    		if(!authorizedSiteIdentifier(siteAssignedIdentifier)){
+    			String message = "Access Denied: AE_REPORTER is not authorized for this Site Identifier : " + siteAssignedIdentifier;
+    			logger.error(message);
+    			throw new RegistrationFailed();
+    		}
+    		
     		String description = aeNotification.getDescription();
     		if (description == null) {
     			logger.error("No description provided");
@@ -123,5 +162,25 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
 	@Required
 	public void setPscUserDetailsService(PscUserDetailsService pscUserDetailsService) {
 		this.pscUserDetailsService = pscUserDetailsService;
+	}
+
+	public StudySubjectAssignmentDao getStudySubjectAssignmentDao() {
+		return studySubjectAssignmentDao;
+	}
+	@Required
+	public void setStudySubjectAssignmentDao(
+			StudySubjectAssignmentDao studySubjectAssignmentDao) {
+		this.studySubjectAssignmentDao = studySubjectAssignmentDao;
+	}
+	
+	public AdverseEventGridServiceAuthorizationHelper getGridServicesAuthorizationHelper() {
+		if(gridServicesAuthorizationHelper==null){
+			gridServicesAuthorizationHelper = new AdverseEventGridServiceAuthorizationHelper();
+		}
+		return gridServicesAuthorizationHelper;
+	}
+	public void setGridServicesAuthorizationHelper(
+			AdverseEventGridServiceAuthorizationHelper gridServicesAuthorizationHelper) {
+		this.gridServicesAuthorizationHelper = gridServicesAuthorizationHelper;
 	}
 }
