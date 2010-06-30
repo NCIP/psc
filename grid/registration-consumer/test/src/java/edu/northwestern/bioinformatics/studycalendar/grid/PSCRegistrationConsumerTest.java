@@ -1,20 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.easymock.classextension.EasyMock;
 
 import org.springframework.test.AbstractTransactionalSpringContextTests;
 import org.springframework.beans.factory.annotation.Required;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.cabig.ccts.domain.Registration;
 import gov.nih.nci.cagrid.common.Utils;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.FileReader;
@@ -27,39 +36,34 @@ import java.io.InputStreamReader;
  */
 public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringContextTests {
 
-
 	public static final Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
 
 	private PSCRegistrationConsumer registrationConsumer;
-
 	private String regFile;
 	private StudyService studyService;
 
-
 	private String assignedIdentifier = "TEST_STUDY";
-
 	private String nciCode = "SITE_01";
 	private SiteDao siteDao;
 	private String shortTitle = "SMOTE_TEST";
 	private String longTitle = "Test long title";
-	private StudySubjectAssignmentDao studySubjectAssignmentDao;
-
-	private SubjectService subjectService;
-
-	private StudyDao studyDao;
-
-	private SubjectDao subjectDao;
 	private String assignmentGridId = "6115c43c-851e-425c-8312-fd78367aaef3"; 
-
 	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
-
+	
+	private StudySubjectAssignmentDao studySubjectAssignmentDao;
+	private SubjectService subjectService;
+	private StudyDao studyDao;
+	private SubjectDao subjectDao;
 	private StudySubjectAssignmentXmlSerializer studySubjectAssignmentXmlSerializer;
 	private SiteService siteService;
 	private AmendmentService amendmentService;
 	private Study study;
 	private StudySite studySite;
 
-
+	private RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
+	private PscUserDetailsService pscUserDetailsService;
+	private PscUser user;
+	
 	protected void onSetUpInTransaction() throws Exception {
 
 		DataAuditInfo.setLocal(new DataAuditInfo("test", "localhost", new Date(), "/wsrf-psc/services/cagrid/RegistrationConsumer"));
@@ -70,7 +74,16 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			createStudy(); //create study and re-run the test case..
 		}
 
+		gridServicesAuthorizationHelper=EasyMock.createMock(RegistrationGridServiceAuthorizationHelper.class);
+		pscUserDetailsService=EasyMock.createMock(PscUserDetailsService.class);
 
+		SuiteRoleMembership suiteRoleMembership = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership.addSite("SITE_01");
+		suiteRoleMembership.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.REGISTRAR,
+				suiteRoleMembership);
+
+		user = new PscUser(null, expectedMemberships);
 	}
 
 	protected void onTearDownAfterTransaction() throws Exception {
@@ -82,37 +95,60 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 	public void testCreateRegistrationLocal() throws Exception {
 		logger.info("### Running test create Registration local method");
 		Registration registration = getRegistration();
-//		try {
-//			registrationConsumer.register(registration);
-//			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
-//
-//			assertNotNull("must create assignment", assignment);
-//			assertNotNull("must create assignment", assignment.getId());  
-//		}
-//		catch (Exception ex) {
-//			ex.printStackTrace();
-//			fail("Error creating registration: " + ex.getMessage());
-//		}
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(user);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		try {
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			EasyMock.verify(gridServicesAuthorizationHelper);
+			EasyMock.verify(pscUserDetailsService);
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());  
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error creating registration: " + ex.getMessage());
+		}
 	}
 
 	public void testRollbackRegistrationLocal() throws Exception {
 		logger.info("### Running test rollback Registration local method");
 		Registration registration = getRegistration();
-//		try {           
-//			registrationConsumer.register(registration);
-//			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
-//
-//			assertNotNull("must create assignment", assignment);
-//			assertNotNull("must create assignment", assignment.getId());
-//			registrationConsumer.rollback(registration);
-//
-//			Subject subject =  subjectDao.findSubjectByPersonId("TEST_MRN");
-//			assertNull("Subject not deleted", subject);
-//		}
-//		catch (Exception ex) {
-//			ex.printStackTrace();
-//			fail("Error creating/rollback registration: " + ex.getMessage());
-//		}
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(user);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try {           
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			EasyMock.verify(gridServicesAuthorizationHelper);
+			EasyMock.verify(pscUserDetailsService);
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());
+			registrationConsumer.rollback(registration);
+
+			Subject subject =  subjectDao.findSubjectByPersonId("TEST_MRN");
+			assertNull("Subject not deleted", subject);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error creating/rollback registration: " + ex.getMessage());
+		}
 	}
 
 
@@ -136,7 +172,6 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 				site.setAssignedIdentifier(nciCode);
 				site.setName(nciCode);
 				siteService.createOrUpdateSite(site);
-
 			}
 			studySite = new StudySite();
 			studySite.setSite(site);
@@ -152,7 +187,6 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			study.getPlannedCalendar().addEpoch(epoch);
 
 			studyService.save(study);
-
 			amendmentService.amend(study);
 
 			AmendmentApproval approvals = new AmendmentApproval();
@@ -168,14 +202,12 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 
 
 	protected String[] getConfigLocations() {
-
 		String[] configs = {"classpath:applicationContext-grid.xml"};
 		return configs;
 	}
 
 
 	private Registration getRegistration() {
-
 		Registration reg = null;
 		try {
 			InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream("gov/nih/nci/ccts/grid/client/client-config.wsdd");
@@ -184,7 +216,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 				reader = new FileReader(regFile);
 			}else{
 				reader = new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(
-						"SampleRegistrationMessage.xml"));
+				"SampleRegistrationMessage.xml"));
 			}
 			reg = (Registration) Utils.deserializeObject(reader, Registration.class, config);
 		}
