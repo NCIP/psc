@@ -254,7 +254,7 @@ define "psc" do
       compile.with project('plugin-api').and_dependencies, SPRING_OSGI,
         project('domain').and_dependencies, EHCACHE
       test.with UNIT_TESTING,
-        project('authentication:local-plugin'),
+        project.parent.project('local-plugin'),
         project('plugin-api').test_dependencies,
         project('domain').test_dependencies
       package(:jar)
@@ -363,7 +363,7 @@ define "psc" do
         "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
         "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
         "gov.nih.nci.cabig.ctms.domain"
-      compile.with project('providers:api').and_dependencies, SPRING
+      compile.with parent.project('api').and_dependencies, SPRING
       test.with UNIT_TESTING, project('domain').test_dependencies
       package(:jar)
     end
@@ -379,7 +379,7 @@ define "psc" do
           "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
           "gov.nih.nci.cabig.ctms.domain"
 
-        compile.with project('providers:api').and_dependencies, SPRING, OSGI,
+        compile.with parent.project('api').and_dependencies, SPRING, OSGI,
           GLOBUS, CAGRID, COPPA
         test.using(:junit).with UNIT_TESTING, project('domain').test_dependencies
         package(:jar)
@@ -409,7 +409,7 @@ define "psc" do
     desc "Commands for interacting with the providers from the felix console"
     define "felix-commands" do
       compile.with FELIX.shell, OSGI.core,
-        project('providers:api').and_dependencies
+        parent.project('api').and_dependencies
       test.with UNIT_TESTING, project('domain').test_dependencies
 
       bnd.wrap!
@@ -917,7 +917,7 @@ define "psc" do
       project('core').and_dependencies,
       project('authentication:plugin-api').and_dependencies,
       project('authentication:socket').and_dependencies,
-      project('osgi-layer:host-services').and_dependencies,
+      project('psc:osgi-layer:host-services').and_dependencies,
       SPRING_WEB, RESTLET, WEB, DYNAMIC_JAVA,
       FELIX.main
 
