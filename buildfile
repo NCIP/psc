@@ -489,10 +489,10 @@ define "psc" do
     # packages may be repeated across bundles
     task :find_duplicate_packages => [:build_test_da_launcher] do
       Dir[_('target', 'test', 'da-launcher') + "/**/*.jar"].inject({}) { |h, jar|
-        `jar tf #{jar}`.split(/\n/).grep(/.class$/).collect { |path| 
+        `jar tf #{jar}`.split(/\n/).grep(/.class$/).collect { |path|
           path.sub(/\/[^\/]+$/, '').gsub('/', '.')
-        }.uniq.each { |package| 
-          h[package] ||= [] 
+        }.uniq.each { |package|
+          h[package] ||= []
           h[package] << jar
         }
         h
@@ -507,7 +507,7 @@ define "psc" do
     end
 
     define "console" do
-      compile.with SLF4J, LOGBACK, DYNAMIC_JAVA, FELIX.main, 
+      compile.with SLF4J, LOGBACK, DYNAMIC_JAVA, FELIX.main,
         project('core').and_dependencies
 
       task :run => [:build_test_da_launcher, 'psc:osgi-layer:console:compile'] do
@@ -645,12 +645,12 @@ define "psc" do
   desc "Grid Services, includes Registration Consumer, Study Consumer and AE Service"
   define "grid" do
     project.no_iml
-    
+
     ##creating work folders for mimicking the tomcat directory structure.
     rm_rf _('target/work-tomcat')
     mkdir_p _('target/work-tomcat/webapps/wsrf')
     mkdir_p _('target/work-tomcat/common/lib')
-      
+
     task :check_globus do |task|
       raise "GLOBUS_LOCATION not set. Cannot build grid services without globus" unless ENV['GLOBUS_LOCATION']
     end
@@ -684,14 +684,14 @@ define "psc" do
 
     ##this will grid secure the tomcat and then deploy all the implementation.
     task :deploy_with_globus => [:deploy_globus , :deploy]
-    
+
     ## packaging the war file by deploying the grid services on the work tomcat folder.
     package(:war, :file => _('target/'+wsrf_dir_name+'.war')).clean.include(:from=>_('target/work-tomcat/webapps/wsrf')).enhance do
       ENV['CATALINA_HOME']=_('target/work-tomcat').to_s
       ENV['WSRF_DIR_NAME']='wsrf'
       task(:deploy_with_globus).invoke
     end
-    
+
     ##Project src and test compiling successfully but test cases are failing.
     desc "AdverseEvent Grid Service"
     define "adverse-event-consumer-impl", :base_dir => _('adverse-event-consumer') do
@@ -1146,7 +1146,7 @@ define "psc" do
   desc "Common test code for both the module unit tests and the integrated tests"
   define "test-infrastructure", :base_dir => _('test/infrastructure') do
     compile.with UNIT_TESTING, INTEGRATED_TESTING, SPRING_WEB, OSGI,
-      project('core').and_dependencies, project('jdbc-mock'), 
+      project('core').and_dependencies, project('jdbc-mock'),
       project('mocks').and_dependencies
     test.with project('core').test_dependencies
     package(:jar)
@@ -1169,7 +1169,7 @@ define "psc" do
         project('test-infrastructure').test.compile.dependencies
       ).using(
         :gems => { 'rest-open-uri' => '1.0.0', 'builder' => '2.1.2', 'json_pure' => '>1.1.3', 'icalendar' => '1.1.0', 'haml' => '~>2.2.0' },
-        :requires => 
+        :requires =>
           %w(spec http static_data template).collect { |help| _("src/spec/ruby/#{help}_helper.rb") } +
           [_("src/spec/ruby/request_logger_formatter.rb")],
         :properties => {
