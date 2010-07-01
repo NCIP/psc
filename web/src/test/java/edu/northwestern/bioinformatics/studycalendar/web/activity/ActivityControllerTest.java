@@ -150,6 +150,43 @@ public class ActivityControllerTest extends ControllerTestCase {
         assertEquals("Incorrect numberOfPages model object ", 1, actualModel.get("numberOfPages"));
     }
 
+    @SuppressWarnings({"unchecked"})
+    public void testSourceAllForGET() throws Exception {
+        Activity a11, a12;
+        ActivityType at11, at12;
+        at11 = Fixtures.createActivityType("Desease Measure");
+        at12 = Fixtures.createActivityType("Lab Test");
+        a11 = Fixtures.createActivity("Activity One", "Code1", setId(123, createNamedInstance("Test Source 1", Source.class)), at11);
+        a12 = Fixtures.createActivity("Two Activity", "Code2", setId(126, createNamedInstance("Test Source 2", Source.class)), at12);
+        List<Activity> listOfActivitiesLocal = new ArrayList<Activity>();
+        listOfActivitiesLocal.add(a11);
+        listOfActivitiesLocal.add(a12);
+        List<ActivityType> listOfActivityTypes = new ArrayList<ActivityType>();
+        listOfActivityTypes.add(at11);
+        listOfActivityTypes.add(at12);
+
+        Source s = Fixtures.createSource("All sources");
+
+        request.addParameter("sourceId", "selectAll");
+        request.addParameter("index", "0");
+        request.setMethod("GET");
+
+        List<Source> sources = new ArrayList<Source>();
+        sources.add(s);
+        expect(activityDao.getAll()).andReturn(listOfActivitiesLocal);
+        expect(activityTypeDao.getAll()).andReturn(listOfActivityTypes);
+        expect(sourceDao.getAll()).andReturn(sources);
+        Map<String, Object> actualModel;
+
+        replayMocks();
+            actualModel = controller.handleRequestInternal(request, response).getModel();
+        verifyMocks();
+
+        assertTrue("Missing model object", actualModel.containsKey("activitiesPerSource"));
+        assertTrue("Missing source object", actualModel.containsKey("sourceId"));
+        assertEquals("Wrong source", "selectAll", actualModel.get("sourceId"));
+    }
+
     @SuppressWarnings({ "unchecked" })
     public void testHandleRequestInternalWithNegativeIndex() throws Exception {
         Activity a11, a12, a13, a14;
