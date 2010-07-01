@@ -7,6 +7,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
@@ -170,7 +171,7 @@ public class CreateUserCommand implements Validatable, Serializable {
     private void refreshUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            User authenticatedUser = (User) authentication.getPrincipal();
+            User authenticatedUser = ((PscUser) authentication.getPrincipal()).getLegacyUser();
             if (user != null && user.getName().equals(authenticatedUser.getName())) {
                 installedAuthenticationSystem.reloadAuthorities();
             }
