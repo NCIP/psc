@@ -49,7 +49,7 @@ public class ActivityController extends PscAbstractController {
             } else {
                 String sourceId = ServletRequestUtils.getRequiredStringParameter(request, "sourceId");
                 model = processRequest(model, sourceId, 0, sortOrderEnum, sortItem);
-                model.put("sourceId", new Integer(sourceId));
+                model.put("sourceId", sourceId);
                 model.put("sources", sourceDao.getAll());
             }
 
