@@ -88,6 +88,10 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     		}
     		// get the StudySubjectAssignment
     		StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(gridId);
+    		if(studySubjectAssignment == null){
+    			logger.error("Invalid Registration GridId provided");
+    			throw new InvalidRegistration();
+    		}
     		StudySite studySite = studySubjectAssignment.getStudySite();
     		Study study = studySite.getStudy();
     		String studyAssignedIdentifier = study.getAssignedIdentifier();
