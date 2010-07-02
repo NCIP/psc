@@ -60,7 +60,20 @@
         <resource path="studies">
             <method name="GET">
                 <doc>
-                    <html:p>List all the studies in the system.</html:p>
+                    <html:p>List all the studies for which the user is authorized.</html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Study QA Manager</html:li>
+						    <html:li>Study Calendar Template Builder</html:li>
+						    <html:li>Study Site Participation Administrator</html:li>
+						    <html:li>Data Importer</html:li>
+						    <html:li>Study Team Administrator</html:li>
+						    <html:li>Study Creator</html:li>
+						    <html:li>Study Subject Calendar Manager</html:li>
+						    <html:li>Data Reader</html:li>
+						</html:ul>
+					</html:div>
                 </doc>
                 <response>
                     <representation href="#studies-xml"/>
@@ -77,7 +90,13 @@
                         If there is already a study with the given assigned identifier,
                         it will return HTTP 400.
                     </html:p>
-                    <html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Study Calendar Template Builder</html:li>
+						</html:ul>
+					</html:div> 
+                   <html:p>
                         This method/resource is similar to PUT on <html:code>studies/{study-identifier}/template</html:code>.
                         However, they differ in several crucial ways.
                     </html:p>
@@ -139,7 +158,20 @@
                 </param>
                 <method name="GET">
                     <doc>
-                        Returns the template for the study, decomposed into amendments.
+                        <html:p>Returns the template for the study, decomposed into amendments.</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study QA Manager</html:li>
+							    <html:li>Study Calendar Template Builder</html:li>
+							    <html:li>Study Site Participation Administrator</html:li>
+							    <html:li>Data Importer</html:li>
+							    <html:li>Study Team Administrator</html:li>
+							    <html:li>Study Creator</html:li>
+							    <html:li>Study Subject Calendar Manager</html:li>
+							    <html:li>Data Reader</html:li>
+							</html:ul>
+						</html:div>
                     </doc>
                     <response>
                         <representation href="#study-xml"/>
@@ -153,6 +185,13 @@
                             may be updated using this method, but nothing else.  (Released
                             amendments will not be modified.)
                         </html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Calendar Template Builder</html:li>
+							    <html:li>Data Importer</html:li>
+							</html:ul>
+						</html:div>
                         <html:p>
                             This has different semantics from POST to <html:code>studies</html:code>.
                             See that resource for details.
@@ -203,7 +242,24 @@
                         </doc>
                     </param>
                     <method name="GET">
-                        <doc>Retrieve the realized template as it existed for the given amendment.</doc>
+                        <doc>
+	                        <html:p>
+                                Retrieve the realized template as it existed for the given amendment.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study QA Manager</html:li>
+								    <html:li>Study Calendar Template Builder</html:li>
+								    <html:li>Study Site Participation Administrator</html:li>
+								    <html:li>Data Importer</html:li>
+								    <html:li>Study Team Administrator</html:li>
+								    <html:li>Study Creator</html:li>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								    <html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>					    
+					    </doc>
                         <response>
                             <representation href="#study-snapshot-xml"/>
                         </response>
@@ -221,9 +277,28 @@
                                 template.  This allows the user to see what a schedule for a template
                                 would look like before going through the release and approval process.
                             </html:p>
+
                         </doc>
                         <method name="GET">
-                            <param name="segment[n]" style="query">
+                            <doc>
+		                        <html:p>
+	                                Retrieve a sample schedule for a template.
+								</html:p>
+                            	<html:div class="roles">
+								    Authorized to:
+									<html:ul>
+									    <html:li>Study QA Manager</html:li>
+									    <html:li>Study Calendar Template Builder</html:li>
+									    <html:li>Study Site Participation Administrator</html:li>
+									    <html:li>Data Importer</html:li>
+									    <html:li>Study Team Administrator</html:li>
+									    <html:li>Study Creator</html:li>
+									    <html:li>Study Subject Calendar Manager</html:li>
+									    <html:li>Data Reader</html:li>
+									</html:ul>
+								</html:div> 								
+                            </doc> 
+                           <param name="segment[n]" style="query">
                                 <doc>
                                     The identifier for one of the study segments to be included in the preview.
                                     <html:code>n</html:code> may be any value, so long as there's a
@@ -270,13 +345,35 @@
                                     <html:em class="pending">Pending</html:em>
                                     The list of planned activities.
                                 </html:p>
+                            	<html:div class="roles">
+								    Authorized to:
+									<html:ul>
+									    <html:li>Study QA Manager</html:li>
+									    <html:li>Study Calendar Template Builder</html:li>
+									    <html:li>Study Site Participation Administrator</html:li>
+									    <html:li>Data Importer</html:li>
+									    <html:li>Study Team Administrator</html:li>
+									    <html:li>Study Creator</html:li>
+									    <html:li>Study Subject Calendar Manager</html:li>
+									    <html:li>Data Reader</html:li>
+									</html:ul>
+								</html:div>
                             </doc>
+
                         </method>
                         <method name="POST">
                             <doc>
-                                Add another planned activity to the period.
-                                Only allowed when <html:tt>amendment-identifer</html:tt>
-                                is <html:em>development</html:em>.
+	                            <html:p>
+                                    Add another planned activity to the period.
+                                    Only allowed when <html:tt>amendment-identifer</html:tt>
+                                    is <html:em>development</html:em>.
+                                </html:p>
+                            	<html:div class="roles">
+								    Authorized to:
+									<html:ul>
+									    <html:li>Study Calendar Template Builder</html:li>
+									</html:ul>
+								</html:div>
                             </doc>
                             <request>
                                 <representation href="#planned-activity-form"/>
@@ -297,15 +394,38 @@
                                 <doc>The generated identifier for the planned activity.</doc>
                             </param>
                             <method name="GET">
+	                            <doc>
+	                            	<html:div class="roles">
+									    Authorized to:
+										<html:ul>
+										    <html:li>Study QA Manager</html:li>
+										    <html:li>Study Calendar Template Builder</html:li>
+										    <html:li>Study Site Participation Administrator</html:li>
+										    <html:li>Data Importer</html:li>
+										    <html:li>Study Team Administrator</html:li>
+										    <html:li>Study Creator</html:li>
+										    <html:li>Study Subject Calendar Manager</html:li>
+										    <html:li>Data Reader</html:li>
+										</html:ul>
+									</html:div>
+	                            </doc>
                                 <response>
                                     <representation href="#planned-activity-form"/>
                                 </response>
                             </method>
                             <method name="PUT">
                                 <doc>
-                                    Update the planned activity's properties.
-                                    Only allowed when <html:tt>amendment-identifer</html:tt>
-                                    is <html:em>development</html:em>.
+	                                <html:p>
+                                        Update the planned activity's properties.
+                                        Only allowed when <html:tt>amendment-identifer</html:tt>
+                                        is <html:em>development</html:em>.
+                                    </html:p>
+	                            	<html:div class="roles">
+									    Authorized to:
+										<html:ul>
+										    <html:li>Study Calendar Template Builder</html:li>
+										</html:ul>
+									</html:div>                
                                 </doc>
                                 <request>
                                     <representation href="#planned-activity-form"/>
@@ -329,15 +449,40 @@
                         </doc>
                     </param>
                     <method name="GET">
-                        <doc>Get the amendment alone.</doc>
+                        <doc>
+	                        <html:p>
+	                        	Get the amendment alone.
+	                        </html:p>
+	                        <html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study QA Manager</html:li>
+								    <html:li>Study Calendar Template Builder</html:li>
+								    <html:li>Study Site Participation Administrator</html:li>
+								    <html:li>Data Importer</html:li>
+								    <html:li>Study Team Administrator</html:li>
+								    <html:li>Study Creator</html:li>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								    <html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>
+	                    </doc>
                         <response>
                             <representation href="#amendment-xml"/>
                         </response>
                     </method>
                     <method name="PUT">
                         <doc>
-                            Create the amendment (if the study doesn't already have a development amendment)
-                            or update the amendment (if it is the current development amendment).
+	                        <html:p>
+                                Create the amendment (if the study doesn't already have a development amendment)
+                                or update the amendment (if it is the current development amendment).
+                            </html:p>
+	                        <html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Calendar Template Builder</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <request>
                             <representation href="#amendment-xml"/>
@@ -348,7 +493,15 @@
                     </method>
                     <method name="DELETE">
                         <doc>
-                            Delete the amendment, if and only if it isn't released.
+	                        <html:p>
+		                        Delete the amendment, if and only if it isn't released.
+		                    </html:p>
+	                        <html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Calendar Template Builder</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                     </method>
                 </resource>
@@ -368,21 +521,53 @@
                     </doc>
                 </param>
                 <method name="GET">
-                    <doc>If successful, the link exists.  Otherwise it doesn't.</doc>
+                    <doc>
+						<html:p>
+							If successful, the link exists.  Otherwise it doesn't.							
+						</html:p>
+                        <html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Site Participation Administrator</html:li>
+							    <html:li>Study QA Manager</html:li>
+							    <html:li>Study Subject Calendar Manager</html:li>
+							    <html:li>Data Reader</html:li>														
+							</html:ul>
+						</html:div>						
+	   				</doc>
                     <response>
                         <representation href="#study-site-link-xml"/>
                     </response>
                 </method>
                 <method name="PUT">
-                    <doc>Associate the site and the study.</doc>
+                    <doc>
+						<html:p>
+							Associate the site and the study.
+						</html:p>
+                        <html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Site Participation Administrator</html:li>
+							</html:ul>
+						</html:div>					
+					</doc>
+
                     <request>
                         <representation href="#study-site-link-xml"/>
                     </request>
                 </method>
                 <method name="DELETE">
                     <doc>
-                        Unassociate the site and the study.  Only possible if there are no subjects
-                        on the study from the site.
+                        <html:p>
+                        	Unassociate the site and the study.  Only possible if there are no subjects
+	                        on the study from the site.	
+                        </html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Site Participation Administrator</html:li>
+							</html:ul>
+						</html:div>
                     </doc>
                 </method>
 
@@ -391,15 +576,36 @@
                         <html:p>The collection of subjects on the study at the named site.</html:p>
                     </doc>
                     <method name="GET">
+						<doc>
+							<html:p>
+								Retrieve list of subjects on the study at the named site.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Team Administrator</html:li>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								    <html:li>Data Reader</html:li>														
+								</html:ul>
+							</html:div>
+						</doc>
                         <response>
                             <representation href="#subject-assignments-xml"/>
                         </response>
                     </method>
                     <method name="POST">
                         <doc>
-                            Accepts a document describing the registration information
-                            for a subject (including the subject information) and assigns
-                            the subject to the the study.
+                            <html:p>
+                        		Accepts a document describing the registration information
+		                        for a subject (including the subject information) and assigns
+		                        the subject to the the study.    	
+                            </html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <request>
                             <representation href="#registration-xml"/>
@@ -421,7 +627,16 @@
                     </doc>
                     <method name="GET">
                         <doc>
-                            Returns the approvals in order by approval date.
+							<html:p>
+	                            Returns the approvals in order by approval date.								
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study QA Manager</html:li>
+									<html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <response>
                             <representation href="#approvals-xml"/>
@@ -429,9 +644,17 @@
                     </method>
                     <method name="POST">
                         <doc>
-                            Accepts a document naming the amendment and the approval date
-                            in order to mark an amendment approved.  This process is not
-                            reversible.
+							<html:p>
+								Accepts a document naming the amendment and the approval date
+	                            in order to mark an amendment approved.  This process is not
+	                            reversible.	
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study QA Manager</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <request>
                             <representation href="#approval-xml"/>
@@ -458,7 +681,19 @@
                     </doc>
                 </param>
                 <method name="GET">
-                    <doc>Retrieve the full schedule for the assignment.</doc>
+                    <doc>
+						<html:p>
+							Retrieve the full schedule for the assignment.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+								<html:li>Study Team Administrator</html:li>
+								<html:li>Data Reader</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
                     <response>
                         <representation href="#schedule-xml"/>
                         <representation mediaType="application/json"/>
@@ -466,10 +701,18 @@
                 </method>
                 <method name="POST">
                     <doc>
-                        Accepts a document describing a scheduled study segment and adds it to
-                        the subject's schedule.  Any activities included in the POSTed scheduled
-                        segment will be ignored (i.e., only activities from the study template
-                        will be scheduled using this method).
+						<html:p>
+							Accepts a document describing a scheduled study segment and adds it to
+	                        the subject's schedule.  Any activities included in the POSTed scheduled
+	                        segment will be ignored (i.e., only activities from the study template
+	                        will be scheduled using this method).
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+							</html:ul>
+						</html:div>
                     </doc>
                     <request>
                         <representation href="#next-scheduled-study-segment-xml"/>
@@ -484,6 +727,19 @@
                     <param style="template" name="month"/>
                     <param style="template" name="day"/>
                     <method name="GET">
+	                    <doc>
+	                        <html:p>
+								A list of activities for the selected day.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+									<html:li>Study Team Administrator</html:li>
+									<html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>							
+	                    </doc>
                         <response>
                             <representation href="#scheduled-activities-xml"/>
                         </response>
@@ -504,8 +760,18 @@
                     </param>
                     <method name="GET">
                         <doc>
-                            Returns the details for the scheduled activity, including the source planned
-                            activity and its modification history.
+							<html:p>
+                            	Returns the details for the scheduled activity, including the source planned
+                            	activity and its modification history.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+									<html:li>Study Team Administrator</html:li>
+									<html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>	
                         </doc>
                         <response>
                             <representation href="#scheduled-activity-xml"/>
@@ -513,8 +779,16 @@
                     </method>
                     <method name="POST">
                         <doc>
-                            Accepts a new scheduled activity state (date, status, and reason) to
-                            update the scheduled activity.
+                            <html:p>
+								Accepts a new scheduled activity state (date, status, and reason) to
+                            	update the scheduled activity.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <request>
                             <representation href="#scheduled-activity-state-xml"/>
@@ -522,7 +796,9 @@
                         </request>
                         <response>
                             <param name="Location" style="header">
-                                <doc>If successful, this action will return 201 Created with a location header pointing back to the original scheduled activity.</doc>
+                                <doc>
+									If successful, this action will return 201 Created with a location header pointing back to the original scheduled activity.
+								</doc>
                             </param>
                         </response>
                     </method>
@@ -540,7 +816,19 @@
                     the person id while creating the subject and use for subject registration</doc>
             </param>
             <method name="GET">
-                <doc>Retrieve the full schedule for the subject from multiple studies</doc>
+                <doc>
+					<html:p>
+						Retrieve the full schedule for the subject from multiple studies
+					</html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Study Subject Calendar Manager</html:li>
+							<html:li>Study Team Administrator</html:li>
+							<html:li>Data Reader</html:li>
+						</html:ul>
+					</html:div>
+				</doc>
                 <response>
                     <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
@@ -553,11 +841,20 @@
                 </doc>
                 <method name="POST">
                     <doc>
-                         Accepts new scheduled activity state (date, status, and reason) to
-                         update the scheduled activity for the list of scheduled activities.
-                         Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
-                         If update sucessful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
-                    </doc>
+						<html:p>
+							Accepts new scheduled activity state (date, status, and reason) to
+	                        update the scheduled activity for the list of scheduled activities.
+	                        Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
+	                        If update sucessful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
+                         
                     <request>
                         <representation mediaType="application/json"/>
                     </request>
@@ -577,7 +874,19 @@
                     the person id while creating the subject and use for subject registration</doc>
             </param>
             <method name="GET">
-                <doc>Retrieve the full schedule for the subject from multiple studies</doc>
+                <doc>
+					<html:p>
+						Retrieve the full schedule for the subject from multiple studies
+					</html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Study Subject Calendar Manager</html:li>
+							<html:li>Study Team Administrator</html:li>
+							<html:li>Data Reader</html:li>
+						</html:ul>
+					</html:div>
+				</doc>
                 <response>
                     <representation href="#subject-assignments-xml"/>
                     <representation mediaType="application/json"/>
@@ -589,10 +898,18 @@
                 </doc>
                 <method name="POST">
                     <doc>
-                         Accepts new scheduled activity state (date, status, and reason) to
-                         update the scheduled activity for the list of scheduled activities.
-                         Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
-                         If update sucessful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+						<html:p>
+                        	Accepts new scheduled activity state (date, status, and reason) to
+                         	update the scheduled activity for the list of scheduled activities.
+                         	Returns 207 Multi-Status with the response entity showing status for individual scheduled activity.
+                         	If update is successful for scheduled activity, response entity will contain Success Code 201 with Location pointing to the original scheduled activity.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+							</html:ul>
+						</html:div>
                     </doc>
                     <request>
                         <representation mediaType="application/json"/>
@@ -610,7 +927,19 @@
                     <doc>The generated identifier for study subject assignment.</doc>
                 </param>
                 <method name="GET">
-                    <doc>Retrieve current notifications for the study subject assignment.</doc>
+                    <doc>
+						<html:p>
+							Retrieve current notifications for the study subject assignment.	
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+								<html:li>Study Team Administrator</html:li>
+								<html:li>Data Reader</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
                     <response>
                         <representation href="#notifications-xml"/>
                         <representation mediaType="application/json"/>
@@ -624,7 +953,19 @@
                         <doc>The generated identifier for notification.</doc>
                     </param>
                     <method name="GET">
-                        <doc>The current notification with identifier for the study subject assignment.</doc>
+                        <doc>
+							<html:p>
+								The current notification with identifier for the study subject assignment.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+									<html:li>Study Team Administrator</html:li>
+									<html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>
+						</doc>
                         <response>
                             <representation href="#notification-xml"/>
                             <representation mediaType="application/json"/>
@@ -632,7 +973,15 @@
                     </method>
                     <method name="POST">
                         <doc>
-                            Accepts notification's dismiss flag value and sets accordingly.
+							<html:p>
+                            	Accepts notification's dismiss flag value and sets accordingly.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Subject Calendar Manager</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                         <request>
                             <representation mediaType="application/json"/>
@@ -647,6 +996,19 @@
                 <html:p>All of the activity sources in the system.</html:p>
             </doc>
             <method name="GET">
+				<doc>
+					<html:p>
+						Retrieve all of the activity sources in the system.
+					</html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Study Calendar Template Builder</html:li>
+						    <html:li>Business Administrator</html:li>
+							<html:li>Data Reader</html:li>
+						</html:ul>
+					</html:div>
+				</doc>
                 <request>
                     <param style="query" name="q" type="xsd:string">
                         <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
@@ -674,7 +1036,19 @@
                 </doc>
                 <param style="template" name="activity-source-name"/>
                 <method name="GET">
-                    <doc>Returns a list of the activities in the source.</doc>
+                    <doc>
+						<html:p>
+							Returns a list of the activities in the source.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Calendar Template Builder</html:li>
+							    <html:li>Business Administrator</html:li>
+								<html:li>Data Reader</html:li>							
+							</html:ul>
+						</html:div>
+					</doc>
                     <request>
                         <param style="query" name="q" type="xsd:string">
                             <doc>If specified, only activities which contain the query value (case-insensitive) in either their name or their code will be returned.</doc>
@@ -697,8 +1071,16 @@
                 </method>
                 <method name="PUT">
                     <doc>
-                        Create or update the named source.  Note that this will not allow you
-                        to remove activities if they are in any existing templates.
+						<html:p>
+							Create or update the named source.  Note that this will not allow you
+	                        to remove activities that are in any existing templates.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Business Administrator</html:li>
+							</html:ul>
+						</html:div>
                     </doc>
                     <request>
                         <representation href="#activity-source-xml"/>
@@ -714,12 +1096,35 @@
                     </doc>
                     <param style="template" name="activity-code"/>
                     <method name="GET">
+	                    <doc>
+							<html:p>
+								Returns a the specified activity.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Study Calendar Template Builder</html:li>
+								    <html:li>Business Administrator</html:li>
+									<html:li>Data Reader</html:li>							
+								</html:ul>
+							</html:div>
+						</doc>
                         <response>
                             <representation href="#activity-xml"/>
                         </response>
                     </method>
                     <method name="PUT">
-                        <doc>Create or update the activity.</doc>
+                        <doc>
+							<html:p>
+								Create or update the activity.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Business Administrator</html:li>
+								</html:ul>
+							</html:div>
+						</doc>
                         <request>
                             <representation href="#activity-xml"/>
                         </request>
@@ -729,8 +1134,16 @@
                     </method>
                     <method name="DELETE">
                         <doc>
-                            Delete the named activity.  Note that this will fail if the activity
-                            is in use in any template.
+							<html:p>
+                            	Delete the named activity.  Note that this will fail if the activity
+                            	is in use in any template.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Business Administrator</html:li>
+								</html:ul>
+							</html:div>
                         </doc>
                     </method>
                 </resource>
@@ -742,6 +1155,20 @@
                 <html:p>A list of the sites in the system.</html:p>
             </doc>
             <method name="GET">
+				<doc>
+					<html:p>
+						Retrieve a list of all of the sites to which the user is authorized.
+					</html:p>
+					<html:div class="roles">
+					    Authorized to:
+						<html:ul>
+						    <html:li>Person and Organization Information Manager</html:li>
+							<html:li>Study Site Participation Administrator</html:li>
+							<html:li>User Administrator</html:li>
+							<html:li>Data Reader</html:li>
+						</html:ul>
+					</html:div>
+				</doc>
                 <response>
                     <representation href="#site-list-xml"/>
                 </response>
@@ -758,18 +1185,52 @@
                     </doc>
                 </param>
                 <method name="GET">
+					<doc>
+						<html:p>
+							Retrieve a site using its identifier or name.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Person and Organization Information Manager</html:li>
+								<html:li>Study Site Participation Administrator</html:li>
+								<html:li>User Administrator</html:li>
+								<html:li>Data Reader</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
                     <response>
                         <representation href="#site-xml"/>
                     </response>
                 </method>
                 <method name="PUT">
-                    <doc>Create or update the site.</doc>
+                    <doc>
+						<html:p>
+							Create or update the site.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Person and Organization Information Manager</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
                     <request>
                         <representation href="#site-xml"/>
                     </request>
                 </method>
                 <method name="DELETE">
-                    <doc>Permanently delete the site if there are no subject assignments, including all user and study associations</doc>
+                    <doc>
+						<html:p>
+							Permanently delete the site if there are no subject assignments, including all user and study associations.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Person and Organization Information Manager</html:li>
+							</html:ul>
+						</html:div>
+					</doc>
                 </method>
 
                 <resource path="blackout-dates">
@@ -777,12 +1238,34 @@
                         <html:p>The blackout dates for the selected site.</html:p>
                     </doc>
                     <method name="GET">
+						<doc>
+							<html:p>
+								Retrieve all of the blackout dates for the specified site.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Person and Organization Information Manager</html:li>
+									<html:li>Data Reader</html:li>
+								</html:ul>
+							</html:div>
+						</doc>
                         <response>
                             <representation href="#blackout-dates-xml"/>
                         </response>
                     </method>
                     <method name="POST">
-                        <doc>Add another blackout date to this site.</doc>
+                        <doc>
+							<html:p>
+								Add another blackout date to this site.
+							</html:p>
+							<html:div class="roles">
+							    Authorized to:
+								<html:ul>
+								    <html:li>Person and Organization Information Manager</html:li>
+ 								</html:ul>
+							</html:div>
+						</doc>
                         <request>
                             <representation href="#blackout-date-xml"/>
                         </request>
@@ -796,7 +1279,17 @@
                             <doc>The generated identifier for the blackout date.</doc>
                         </param>
                         <method name="DELETE">
-                            <doc>Delete the blackout date.</doc>
+                            <doc>
+   								<html:p>
+   									Delete the blackout date.
+   								</html:p>
+   								<html:div class="roles">
+   							    	Authorized to:
+   									<html:ul>
+   								    	<html:li>Person and Organization Information Manager</html:li>
+    								</html:ul>
+   								</html:div>
+							</doc>
                         </method>
                     </resource>
                 </resource>
@@ -817,6 +1310,19 @@
                 </doc>
             </param>
             <method name="GET">
+          		<doc>
+   					<html:p>
+   						Retrieve the list of roles for a user.
+   					</html:p>
+   					<html:div class="roles">
+   	    				Authorized to:
+   						<html:ul>
+   		    				<html:li>User Administrator</html:li>
+							<html:li>System Administrator can see if the user has 'User Administrator' role</html:li>
+							<html:li>Any user can see their own roles</html:li>
+   						</html:ul>
+   					</html:div>
+   				</doc>
                 <response>
                     <representation href="#roles-xml"/>
                 </response>
@@ -836,7 +1342,9 @@
                 </doc>
                 <param style="template" name="rolename">
                     <doc>
-                        <html:p>The role for which details are being requested.</html:p>
+                        <html:p>
+							The role for which details are being requested.
+						</html:p>
                     </doc>
                 </param>
                 <method name="GET">
@@ -850,6 +1358,14 @@
                             user is permitted to see account information, but the account doesn't
                             have the requested role, it returns 404.
                         </html:p>
+						<html:div class="roles">
+	   	    				Authorized to:
+	   						<html:ul>
+	   		    				<html:li>User Administrator</html:li>
+								<html:li>System Administrator can see if the user has 'User Administrator' role</html:li>
+								<html:li>Any user can see their own roles</html:li>
+	   						</html:ul>
+	   					</html:div>
                     </doc>
                     <response>
                         <representation href="#role-xml"/>
@@ -862,7 +1378,19 @@
                        Subject coordinator should able to see her own schedules or for any of her colleagues.</html:p>
                 </doc>
                 <method name="GET">
-                    <doc>Retrieve the full schedules for all subjects belonging to a particular subject coordinator</doc>
+                    <doc>
+						<html:p>
+							Retrieve the full schedules for all subjects belonging to a particular subject coordinator.
+						</html:p>
+						<html:div class="roles">
+						    Authorized to:
+							<html:ul>
+							    <html:li>Study Subject Calendar Manager</html:li>
+								<html:li>Study Team Administrator</html:li>
+								<html:li>Data Reader</html:li>
+							</html:ul>
+						</html:div>	
+					</doc>
                     <response>
                         <representation href="#subject-assignments-xml"/>
                         <representation mediaType="application/json"/>
@@ -876,7 +1404,18 @@
                 <html:p>A list of sites from all enabled SiteProviders</html:p>
             </doc>
             <method name="GET">
-                <request>
+                <doc>
+                    <html:p>
+                        Retrieve a list of sites from all enabled SiteProviders.
+                    </html:p>
+					<html:div class="roles">
+   	    				Authorized to:
+   						<html:ul>
+   		    				<html:li>Public</html:li>
+	   					</html:ul>
+   					</html:div>
+   				</doc>
+				<request>
                     <param style="query" name="q" type="xsd:string">
                         <doc>If specified, only sites which contain the query value (case-insensitive) in either their site name or their assigned identifier will be returned.</doc>
                     </param>
@@ -892,7 +1431,19 @@
                 <html:p>A list of studies from all enabled StudyProviders</html:p>
             </doc>
             <method name="GET">
-                <request>
+ 		        <doc>
+                    <html:p>
+                        Retrieve a list of studies from all enabled SiteProviders.
+                    </html:p>
+					<html:div class="roles">
+   	    				Authorized to:
+   						<html:ul>
+   		    				<html:li>Study Calendar Template Builder</html:li>
+   		    				<html:li>Data Reader</html:li>
+	   					</html:ul>
+   					</html:div>
+   				</doc>		
+               <request>
                     <param style="query" name="q" type="xsd:string">
                         <doc>If specified, only studies which contain the query value (case-insensitive) in either their study title or their identifiers will be returned.</doc>
                     </param>
@@ -909,6 +1460,19 @@
                 <html:p>A list of scheduled activities for all the provided filters</html:p>
             </doc>
             <method name="GET">
+	            <doc>
+                    <html:p>
+                        Retrieve a list of scheduled activities that fit the criteria specified in the filters.
+                    </html:p>
+					<html:div class="roles">
+   	    				Authorized to:
+   						<html:ul>
+   		    				<html:li>Study Subject Calendar Manager</html:li>
+   		    				<html:li>Study Team Administrator</html:li>
+   		    				<html:li>Data Reader</html:li>
+	   					</html:ul>
+   					</html:div>
+   				</doc>
                 <request>
                     <param style="query" name="study" type="xsd:string">
                         <doc>If specified, only collection of scheduled activities report rows which contains the study id value.</doc>
@@ -957,7 +1521,17 @@
                     </doc>
                 </param>
                 <method name="GET">
-                    <doc>A single JSON object describing the bundle with the given ID.</doc>
+                    <doc>
+						<html:p>
+							A single JSON object describing the bundle with the given ID.
+						</html:p>
+						<html:div class="roles">
+	   	    				Authorized to:
+	   						<html:ul>
+	   		    				<html:li>System Administrator</html:li>
+		   					</html:ul>
+	   					</html:div>
+					</doc>
                     <response>
                         <representation mediaType="application/json"/>
                     </response>
@@ -965,10 +1539,18 @@
                 <resource path="state">
                     <method name="GET">
                         <doc>
-                            An object with the key <html:code>state</html:code>
-                            and the value matching one of the six bundle
-                            state constant names defined by the OSGi
-                            <html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+							<html:p>
+                            	An object with the key <html:code>state</html:code>
+                            	and the value matching one of the six bundle
+                            	state constant names defined by the OSGi
+                            	<html:a href="http://www.osgi.org/javadoc/r4v41/org/osgi/framework/Bundle.html">Bundle interface</html:a>.
+							</html:p>
+							<html:div class="roles">
+		   	    				Authorized to:
+		   						<html:ul>
+		   		    				<html:li>System Administrator</html:li>
+			   					</html:ul>
+		   					</html:div>
                         </doc>
                         <response>
                             <representation mediaType="application/json"/>
@@ -987,6 +1569,12 @@
                                 <html:code>STARTING</html:code> or
                                 <html:code>STOPPING</html:code> is supported.
                             </html:p>
+							<html:div class="roles">
+		   	    				Authorized to:
+		   						<html:ul>
+		   		    				<html:li>System Administrator</html:li>
+			   					</html:ul>
+		   					</html:div>
                         </doc>
                         <request>
                             <representation mediaType="application/json"/>
@@ -1022,6 +1610,12 @@
                             <html:blockquote>
                                 { a: { b: { c: 'foo', d: 'bar' }, e: 'baz' }
                             </html:blockquote>
+							<html:div class="roles">
+		   	    				Authorized to:
+		   						<html:ul>
+		   		    				<html:li>System Administrator</html:li>
+			   					</html:ul>
+		   					</html:div>
                         </doc>
                         <response>
                             <representation mediaType="application/json"/>
@@ -1052,6 +1646,12 @@
                                 property updates are asynchronous, it may not expose the new
                                 values even if the service eventually will apply them.
                             </html:p>
+							<html:div class="roles">
+		   	    				Authorized to:
+		   						<html:ul>
+		   		    				<html:li>System Administrator</html:li>
+			   					</html:ul>
+		   					</html:div>
                         </doc>
                         <request>
                             <representation mediaType="application/json"/>
@@ -1068,6 +1668,12 @@
                         Returns an array of objects describing all the
                         installed bundles.
                     </html:p>
+					<html:div class="roles">
+   	    				Authorized to:
+   						<html:ul>
+   		    				<html:li>System Administrator</html:li>
+	   					</html:ul>
+   					</html:div>
                 </doc>
                 <response>
                     <representation mediaType="application/json"/>
