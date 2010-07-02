@@ -53,6 +53,11 @@
     </listener>
 
     <listener>
+        <!-- This listener has to be after the SeparateApplicationContextBeringContextListener -->
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.LegacyUserProvisioningRecordExporter</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
