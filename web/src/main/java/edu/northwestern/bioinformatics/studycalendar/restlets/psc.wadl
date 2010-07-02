@@ -1498,6 +1498,9 @@
                     <param style="query" name="responsible-user" type="xsd:string">
                         <doc>If specified, only collection of scheduled activities report rows whose subject coordinator is the specified responsible-user.</doc>
                     </param>
+                    <param style="query" name="person-id" type="xsd:string">
+                        <doc>If specified, only collection of scheduled activities report rows which belongs to the specified person-id.</doc>
+                    </param>
                 </request>
                 <response>
                     <doc>A single JSON object describing the selected filters, along with the corresponding array of the properties of scheduled activities.</doc>
