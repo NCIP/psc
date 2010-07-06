@@ -123,10 +123,10 @@
         }
 
         function executeAddSource(input) {
-            var data = ''
+            var data = '';
             data = data+"source"+"="+$('addSource').value+"&";
-            var href = '<c:url value="/pages/activities/addSource"/>'
-            href= href+"?"+data
+            var href = '<c:url value="/pages/activities/addSource"/>';
+            href= href+"?"+data;
             var lastRequest = new Ajax.Request(href,
             {
                 method: 'post',

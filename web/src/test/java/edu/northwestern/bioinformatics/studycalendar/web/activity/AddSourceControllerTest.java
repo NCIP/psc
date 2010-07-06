@@ -65,4 +65,18 @@ public class AddSourceControllerTest extends ControllerTestCase {
         assertTrue("Missing model object", actualModel.containsKey("source"));
         assertTrue("Model contains the wrong object", actualModel.containsValue(source2));
     }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testEmptySource() throws Exception {
+        request.setParameter("source", "");
+        Map<String, Object> actualModel;
+
+        replayMocks();
+        actualModel = controller.handleRequestInternal(request, response).getModel();
+        verifyMocks();
+
+        assertFalse("Model object is empty", actualModel.isEmpty());
+        assertTrue("Model object does not contains error", actualModel.containsKey("error"));
+
+    }
 }

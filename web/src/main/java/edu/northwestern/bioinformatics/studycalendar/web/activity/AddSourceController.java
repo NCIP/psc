@@ -27,20 +27,25 @@ public class AddSourceController extends PscAbstractController {
 
     public AddSourceController() {
     }
-
+                                    
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         String sourceName = ServletRequestUtils.getRequiredStringParameter(request, "source");
-        Source sourceInDB = sourceDao.getByName(sourceName);
-        if (sourceInDB == null) {
-            Source source = new Source();
-            source.setName(sourceName);
-            sourceDao.save(source);
-            model.put("source", source);
-            model.put("displayCreateNewActivity", Boolean.TRUE);
-            model.put("activityTypes", activityTypeDao.getAll());
-            model.put("showtable", Boolean.TRUE);
+        if (sourceName == null || sourceName.trim().length()==0) {
+            model.put("error", "The source name is invalid");
+            model.put("displayCreateNewActivity", Boolean.FALSE);
+        } else {
+            Source sourceInDB = sourceDao.getByName(sourceName);
+            if (sourceInDB == null) {
+                Source source = new Source();
+                source.setName(sourceName);
+                sourceDao.save(source);
+                model.put("source", source);
+                model.put("displayCreateNewActivity", Boolean.TRUE);
+                model.put("activityTypes", activityTypeDao.getAll());
+                model.put("showtable", Boolean.TRUE);
+            }
         }
         return new ModelAndView("template/ajax/activityTableUpdate", model);
      }
