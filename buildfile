@@ -640,6 +640,24 @@ define "psc" do
     package(:jar)
     package(:sources)
 
+    iml.add_facet("Spring", "Spring") do |facet|
+      facet.configuration do |conf|
+        conf.fileset(:id => 'core-common', :name => 'Core Common ApplicationContext') do |fs|
+          Dir[_(:source, :main, :java) + "/applicationContext*xml"].reject { |f| f =~ /osgi/ }.each do |f|
+            fs.file "file://$MODULE_DIR$/#{f.sub(_(), '')}"
+          end
+        end
+        conf.fileset(:id => 'core-prod', :name => 'Core Production ApplicationContext') do |fs|
+          fs.dependency "core-common"
+          fs.file "file://$MODULE_DIR$/src/main/java/applicationContext-core-osgi.xml"
+        end
+        conf.fileset(:id => 'core-testing', :name => 'Core Testing ApplicationContext') do |fs|
+          fs.dependency "core-common"
+          fs.file "file://$MODULE_DIR$/src/main/java/applicationContext-core-testing-osgi.xml"
+        end
+      end
+    end
+
     check do
       acSetup = File.read(_('target/resources/applicationContext-setup.xml'))
 
@@ -945,17 +963,54 @@ define "psc" do
     end
     package(:sources)
 
-    iml.add_component("FacetManager") do |component|
-      component.facet :type => 'web', :name => 'Web' do |facet|
-        facet.configuration do |conf|
-          conf.descriptors do |desc|
-            desc.deploymentDescriptor :name => 'web.xml',
-              :url => "file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml",
-              :optional => "false", :version => "2.4"
+    iml.add_facet('Web', 'web') do |facet|
+      facet.configuration do |conf|
+        conf.descriptors do |desc|
+          desc.deploymentDescriptor :name => 'web.xml',
+            :url => "file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml",
+            :optional => "false", :version => "2.4"
+        end
+        conf.webroots do |webroots|
+          webroots.root :url => "file://$MODULE_DIR$/src/main/webapp", :relative => "/"
+        end
+      end
+    end
+
+    iml.add_facet('Spring', 'Spring') do |facet|
+      facet.configuration do |conf|
+        conf.fileset(:id => 'web-common', :name => 'Web Common ApplicationContext') do |fs|
+          Dir[project('psc:core')._(:source, :main, :java) + "/applicationContext*xml"].reject { |f| f =~ /osgi/ }.each do |f|
+            fs.file "file://$MODULE_DIR$/../core#{f.sub(project('psc:core')._(), '')}"
           end
-          conf.webroots do |webroots|
-            webroots.root :url => "file://$MODULE_DIR$/src/main/webapp", :relative => "/"
+          Dir[_(:source, :main, :java) + "/applicationContext*xml"].reject { |f| f =~ /osgi/ }.each do |f|
+            fs.file "file://$MODULE_DIR$#{f.sub(_(), '')}"
           end
+        end
+        conf.fileset(:id => 'web: application context', :name => 'Web Production ApplicationContext') do |fs|
+          fs.dependency('web-common')
+          fs.file "file://$MODULE_DIR$/../core/src/main/java/applicationContext-core-osgi.xml"
+          fs.file "file://$MODULE_DIR$/src/main/java/applicationContext-web-osgi.xml"
+        end
+        conf.fileset(:id => 'web-testing', :name => 'Web Testing ApplicationContext') do |fs|
+          fs.dependency('web-common')
+          fs.file "file://$MODULE_DIR$/../core/src/test/java/applicationContext-core-testing-osgi.xml"
+          fs.file "file://$MODULE_DIR$/src/test/java/applicationContext-web-testing-osgi.xml"
+        end
+        conf.fileset(:id => 'web: spring servlet context', :name => 'MVC spring servlet context') do |fs|
+          fs.dependency('web: application context')
+          fs.file "file://$MODULE_DIR$/src/main/webapp/WEB-INF/spring-servlet.xml"
+        end
+        conf.fileset(:id => 'web: setup servlet context', :name => 'MVC setup servlet context') do |fs|
+          fs.dependency('web: application context')
+          fs.file "file://$MODULE_DIR$/src/main/webapp/WEB-INF/setup-servlet.xml"
+        end
+        conf.fileset(:id => 'web: public servlet context', :name => 'MVC public servlet context') do |fs|
+          fs.dependency('web: application context')
+          fs.file "file://$MODULE_DIR$/src/main/webapp/WEB-INF/public-servlet.xml"
+        end
+        conf.fileset(:id => 'api-servlet', :name => 'Restlet API servlet context') do |fs|
+          fs.dependency('web: application context')
+          fs.file "file://$MODULE_DIR$/src/main/webapp/WEB-INF/restful-api-servlet.xml"
         end
       end
     end
