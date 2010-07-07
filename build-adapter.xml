@@ -76,6 +76,12 @@
         <install_gem name="buildr"/>
     </target>
 
+    <property name="gems.buildr-iidea.version" value="0.0.7"/>
+    <gem_available name="buildr-iidea"/>
+    <target name="install:gem:buildr-iidea" unless="buildr-iidea.exists" depends="install:jruby" description="Installs buildr-iidea gem">
+        <install_gem name="buildr-iidea"/>
+    </target>
+
     <property name="gems.haml.version" value="2.2.23"/>
     <gem_available name="haml"/>
     <target name="install:gem:haml" unless="haml.exists" depends="install:jruby" description="Installs haml gem">

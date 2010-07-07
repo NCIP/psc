@@ -8,6 +8,7 @@ require "shenandoah/buildr"
 require "buildr/core/filter"
 require 'fileutils'
 require 'rexml/document'
+require 'buildr_iidea'
 
 ###### buildr script for PSC
 # In order to use this, you'll need buildr.  See http://buildr.apache.org/ .
@@ -39,6 +40,8 @@ define "psc" do
 
   test.using(:properties => { "psc.config.datasource" => db_name })
   test.enhance [:check_module_packages]
+
+  iml.local_repository_env_override = nil
 
   ipr.add_component("CompilerConfiguration") do |component|
     component.option :name => 'DEFAULT_COMPILER', :value => 'Javac'
@@ -363,6 +366,7 @@ define "psc" do
         "edu.northwestern.bioinformatics.studycalendar.domain.delta" <<
         "edu.northwestern.bioinformatics.studycalendar.domain.tools" <<
         "gov.nih.nci.cabig.ctms.domain"
+      iml.id = "providers-mock"
       compile.with parent.project('api').and_dependencies, SPRING
       test.with UNIT_TESTING, project('domain').test_dependencies
       package(:jar)
@@ -411,6 +415,7 @@ define "psc" do
       compile.with FELIX.shell, OSGI.core,
         parent.project('api').and_dependencies
       test.with UNIT_TESTING, project('domain').test_dependencies
+      iml.id = "providers-felix-commands"
 
       bnd.wrap!
       bnd.name = "PSC Data Provider Felix Shell Commands"
@@ -573,6 +578,7 @@ define "psc" do
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.mock.Activator"
       bnd.name = "PSC OSGi Layer Mock Services"
+      iml.id = "osgi-layer-mock"
 
       compile.with project('utility').and_dependencies, OSGI
       package(:jar)
@@ -584,6 +590,7 @@ define "psc" do
       bnd['Bundle-Activator'] =
         "edu.northwestern.bioinformatics.studycalendar.osgi.commands.Activator"
       bnd.name = "PSC Utility Felix Commands"
+      iml.id = "osgi-layer-felix-commands"
 
       compile.with FELIX.shell, OSGI.core, JAKARTA_COMMONS.lang
       test.with UNIT_TESTING, project('utility').and_dependencies
