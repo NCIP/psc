@@ -1,4 +1,16 @@
 <dataset>
-  <USERS id="-100" name="Zorro" active_flag="1" first_name="Douglas" last_name="Fairbanks"  csm_user_id="-100"/>
-  <USERS id="-101" name="Zena" active_flag="0" first_name="Lucy" last_name="Lawless" csm_user_id="-101"/>
+  <SITES id="-1" name="Alpha Centauri"/>
+  <SITES id="-2" name="Canopus"/>
+
+  <STUDIES id="-50" assigned_identifier="Artichoke Study" />
+  <STUDIES id="-51" assigned_identifier="Cartwheel Study" />
+
+  <USERS id="-100" name="Al" active_flag="1" first_name="Alphonse" last_name="Capone" csm_user_id="-100"/>
+  <USERS id="-101" name="Captain" active_flag="0" first_name="Captain" last_name="Hook"  csm_user_id="-101"/>
+
+  <USER_ROLES id="-200" user_id="-100" csm_group_name="STUDY_ADMIN" />
+  <USER_ROLES id="-201" user_id="-100" csm_group_name="SUBJECT_COORDINATOR" />
+
+  <USER_ROLE_SITES user_role_id="-201" site_id="-1"/>
+  <USER_ROLE_SITES user_role_id="-201" site_id="-2"/>
 </dataset>

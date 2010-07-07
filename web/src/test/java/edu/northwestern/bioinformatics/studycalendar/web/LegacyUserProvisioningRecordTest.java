@@ -9,13 +9,13 @@ public class LegacyUserProvisioningRecordTest extends TestCase {
                     "fflintstone",
                     "Fred",
                     "Flintstone",
-                    "Bedrock",
-                    "Excavation",
+                    "1",
                     "STUDY_COORDINATOR",
-                    "1"
+                    "Bedrock",
+                    "Excavation"
                 );
 
-        String expected = "fflintstone,Fred,Flintstone,Bedrock,Excavation,STUDY_COORDINATOR,1";
+        String expected = "fflintstone,Fred,Flintstone,1,STUDY_COORDINATOR,Bedrock,Excavation";
 
         assertEquals("Wrong csv format", expected, r.csv());
     }
@@ -26,13 +26,13 @@ public class LegacyUserProvisioningRecordTest extends TestCase {
             "gslate",
             "George",
             "Slate",
-            "Bedrock",
-            "",
+            "0",
             "SITE_COORDINATOR",
-            "0"
+            "Bedrock",
+            ""
         );
 
-        String expected = "gslate,George,Slate,Bedrock,,SITE_COORDINATOR,0";
+        String expected = "gslate,George,Slate,0,SITE_COORDINATOR,Bedrock,";
 
         assertEquals("Wrong csv format", expected, r.csv());
     }

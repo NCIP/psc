@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.apache.commons.lang.StringUtils.join;
+
 public class LegacyUserProvisioningRecordDao {
     private DataSource dataSource;
 
@@ -19,7 +21,17 @@ public class LegacyUserProvisioningRecordDao {
     @SuppressWarnings("unchecked")
     public List<LegacyUserProvisioningRecord> getAll() {
         JdbcTemplate template = new JdbcTemplate(dataSource);
-        return template.query("select name, first_name, last_name, name as csm_group_name, name as site_name, name as study_name, active_flag from Users order by name", new PersonRowMapper());
+
+        String[] query = new String[] {
+            "select name, first_name, last_name, csm_group_name,  s.name as site_name, '' as study_name, active_flag",
+            "from Users u",
+            "left join User_Roles ur on u.id = ur.user_id",
+            "left join User_Role_Sites urs on ur.id = urs.user_role_id",
+            "left join Sites s on urs.site_id = s.id",
+            "order by name, csm_group_name, site_name, study_name"
+        };
+
+        return template.query(join(query, ' '), new PersonRowMapper());
     }
 
     public class PersonRowMapper implements RowMapper {
@@ -37,10 +49,10 @@ public class LegacyUserProvisioningRecordDao {
                 rs.getString("name"),
                 rs.getString("first_name"),
                 rs.getString("last_name"),
-                rs.getString("name"),
-                rs.getString("name"),
-                rs.getString("name"),
-                rs.getString("active_flag")
+                rs.getString("active_flag"),
+                rs.getString("csm_group_name"),
+                rs.getString("site_name"),
+                rs.getString("study_name")
             );
         }
 
