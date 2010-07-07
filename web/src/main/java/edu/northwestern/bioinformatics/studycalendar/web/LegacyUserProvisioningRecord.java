@@ -3,10 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import static java.lang.String.format;
 
 public class LegacyUserProvisioningRecord {
-    String username, firstName, lastName, siteName, studyName, role, active;
+    private String userName, firstName, lastName, siteName, studyName, role, active;
 
-    public LegacyUserProvisioningRecord(String username, String firstName, String lastName, String siteName, String studyName, String role, String active) {
-        this.username = username;
+    public LegacyUserProvisioningRecord(String userName, String firstName, String lastName, String siteName, String studyName, String role, String active) {
+        this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.siteName = siteName;
@@ -16,6 +16,34 @@ public class LegacyUserProvisioningRecord {
     }
 
     public String csv() {
-        return format("%s,%s,%s,%s,%s,%s,%s", username, firstName, lastName, siteName, studyName, role, active);
+        return format("%s,%s,%s,%s,%s,%s,%s", userName, firstName, lastName, siteName, studyName, role, active);
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public String getStudyName() {
+        return studyName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getActive() {
+        return active;
     }
 }

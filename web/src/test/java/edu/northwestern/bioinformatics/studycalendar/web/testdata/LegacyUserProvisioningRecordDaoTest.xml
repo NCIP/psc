@@ -1,0 +1,4 @@
+<dataset>
+  <USERS id="-100" name="Zorro" active_flag="1" first_name="Douglas" last_name="Fairbanks"  csm_user_id="-100"/>
+  <USERS id="-101" name="Zena" active_flag="0" first_name="Lucy" last_name="Lawless" csm_user_id="-101"/>
+</dataset>
