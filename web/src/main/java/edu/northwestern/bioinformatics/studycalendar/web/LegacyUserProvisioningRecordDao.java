@@ -19,7 +19,7 @@ public class LegacyUserProvisioningRecordDao {
     @SuppressWarnings("unchecked")
     public List<LegacyUserProvisioningRecord> getAll() {
         JdbcTemplate template = new JdbcTemplate(dataSource);
-        return template.query("select name, first_name, last_name, name, name, active_flag from Users order by name", new PersonRowMapper());
+        return template.query("select name, first_name, last_name, name as csm_group_name, name as site_name, name as study_name, active_flag from Users order by name", new PersonRowMapper());
     }
 
     public class PersonRowMapper implements RowMapper {
