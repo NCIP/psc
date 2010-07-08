@@ -5,6 +5,9 @@
   <STUDIES id="-50" assigned_identifier="Artichoke Study" />
   <STUDIES id="-51" assigned_identifier="Cartwheel Study" />
 
+  <STUDY_SITES id="-75" study_id="-50" site_id="-1"/>
+  <STUDY_SITES id="-76" study_id="-51" site_id="-1"/>
+
   <USERS id="-100" name="Al" active_flag="1" first_name="Alphonse" last_name="Capone" csm_user_id="-100"/>
   <USERS id="-101" name="Captain" active_flag="0" first_name="Captain" last_name="Hook"  csm_user_id="-101"/>
 
@@ -13,4 +16,7 @@
 
   <USER_ROLE_SITES user_role_id="-201" site_id="-1"/>
   <USER_ROLE_SITES user_role_id="-201" site_id="-2"/>
+
+  <USER_ROLE_STUDY_SITES user_role_id="-201" study_site_id="-75"/>
+  <USER_ROLE_STUDY_SITES user_role_id="-201" study_site_id="-76"/>
 </dataset>
