@@ -17,6 +17,8 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.springframework.beans.factory.annotation.Required;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  * @author John Dzak
@@ -31,6 +33,12 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET, getSite(), getStudy(),
+                STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER);
+        addAuthorizationsFor(Method.POST, getSite(), getStudy(), STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     @Override

@@ -5,10 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -41,7 +43,33 @@ public class SiteResourceTest extends AuthorizedResourceTestCase<SiteResource> {
     }
 
     public void testGetAndPutAndDeleteAllowed() throws Exception {
+        expectFoundSite(site);
+        replayMocks();
         assertAllowedMethods("PUT", "GET", "DELETE");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        expectFoundSite(site);
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+            USER_ADMINISTRATOR,
+            DATA_READER);
+    }
+
+    public void testPutWithAuthorizedRoles() {
+        expectFoundSite(site);
+        replayMocks();
+        assertRolesAllowedForMethod(Method.PUT,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+    }
+
+    public void testDeleteWithAuthorizedRoles() {
+        expectFoundSite(site);
+        replayMocks();
+        assertRolesAllowedForMethod(Method.DELETE,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
     public void testGetXmlForExistingSite() throws Exception {

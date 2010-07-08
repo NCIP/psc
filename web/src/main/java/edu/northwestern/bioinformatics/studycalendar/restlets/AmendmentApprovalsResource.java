@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -13,6 +15,8 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.springframework.beans.factory.annotation.Required;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  * @author Saruabh Agrawal
@@ -23,8 +27,18 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
+
+        //TODO -- need to delete setAllAuthorizedFor and setAuthorizedFor when deleting the old user roles
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.POST, Role.SITE_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET, getSite(), getStudy(),
+                STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER
+        );
+        addAuthorizationsFor(Method.POST, getSite(), getStudy(), STUDY_SUBJECT_CALENDAR_MANAGER);
+
         ((AmendmentApprovalXmlSerializer) xmlSerializer).setStudy(getStudy());
     }
 

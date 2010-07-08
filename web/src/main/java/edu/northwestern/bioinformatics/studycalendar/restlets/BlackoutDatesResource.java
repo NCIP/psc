@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Saurabh Agrawal
  */
@@ -32,6 +34,12 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Bl
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
         setAuthorizedFor(Method.POST, Role.SYSTEM_ADMINISTRATOR);
+
+        addAuthorizationsFor(Method.GET, site,
+                PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+                DATA_READER);
+        addAuthorizationsFor(Method.POST, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
+
     }
 
     public Collection<BlackoutDate> getAllObjects() throws ResourceException {

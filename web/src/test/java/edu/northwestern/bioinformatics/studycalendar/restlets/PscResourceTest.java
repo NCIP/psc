@@ -100,6 +100,21 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
         assertAuthorization("Wrong 2nd auth", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "a?", "B", it.next());
     }
 
+    public void testProperAuthorizationReturnedForSiteRoleAuthorizedMethod() throws Exception {
+        Collection<ResourceAuthorization> deleteAuth = getResource().authorizations(DELETE);
+        assertEquals(2, deleteAuth.size());
+        Iterator<ResourceAuthorization> it = deleteAuth.iterator();
+        assertAuthorization("Wrong 1st auth", PscRole.USER_ADMINISTRATOR, "a?", it.next());
+        assertAuthorization("Wrong 2nd auth", PscRole.REGISTRAR, "a?", it.next());
+    }
+
+    public void testProperAuthorizationReturnedForSiteStudyRoleAuthorizedMethod() throws Exception {
+        Collection<ResourceAuthorization> moveAuth = getResource().authorizations(MOVE);
+        assertEquals(1, moveAuth.size());
+        Iterator<ResourceAuthorization> it = moveAuth.iterator();
+        assertAuthorization("Wrong 1st auth", PscRole.LAB_DATA_USER, "a?", "B", it.next());
+    }
+
     public void testNoAuthorizationsReturnedForUnmentionedMethods() throws Exception {
         Collection<ResourceAuthorization> lockRoles = getResource().authorizations(LOCK);
         assertNotNull(lockRoles);
@@ -175,6 +190,8 @@ public class PscResourceTest extends AuthorizedResourceTestCase<PscResourceTest.
             addAuthorizationsFor(POST,
                 ResourceAuthorization.create(PscRole.STUDY_QA_MANAGER, siteA),
                 ResourceAuthorization.create(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, siteA, studyB));
+            addAuthorizationsFor(DELETE, siteA, PscRole.USER_ADMINISTRATOR, PscRole.REGISTRAR);
+            addAuthorizationsFor(MOVE, siteA, studyB, PscRole.LAB_DATA_USER);
         }
     }
 }

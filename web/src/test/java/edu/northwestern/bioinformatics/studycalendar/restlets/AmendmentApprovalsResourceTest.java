@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
@@ -113,8 +114,20 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testPutWithAuthorizedRole() {
+    public void testLegacyPutWithAuthorizedRole() {
         assertLegacyRolesAllowedForMethod(Method.POST, Role.SITE_COORDINATOR);
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+                STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.POST,
+                STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     ////// Helper Methods

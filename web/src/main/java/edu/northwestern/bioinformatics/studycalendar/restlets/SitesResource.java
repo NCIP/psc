@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Saurabh Agrawal
  */
@@ -23,6 +25,12 @@ public class SitesResource extends AbstractCollectionResource<Site> {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SYSTEM_ADMINISTRATOR, Role.STUDY_ADMIN);
+
+        addAuthorizationsFor(Method.GET,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+            USER_ADMINISTRATOR,
+            DATA_READER);
     }
 
     @Override

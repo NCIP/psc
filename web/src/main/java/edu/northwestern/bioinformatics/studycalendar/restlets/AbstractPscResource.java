@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import com.noelios.restlet.http.HttpResponse;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
@@ -84,6 +86,22 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
 
     protected void addAuthorizationsFor(Method method, ResourceAuthorization... authorizations) {
         getAuthorizationsByMethod().put(method, Arrays.asList(authorizations));
+    }
+
+    protected void addAuthorizationsFor(Method method, Site site, PscRole... roles) {
+        ResourceAuthorization[] auths = new ResourceAuthorization[roles.length];
+        for (int i = 0; i < auths.length; i++) {
+            auths[i] = ResourceAuthorization.create(roles[i], site);
+        }
+        addAuthorizationsFor(method, auths);
+    }
+
+    protected void addAuthorizationsFor(Method method, Site site, Study study, PscRole... roles) {
+        ResourceAuthorization[] auths = new ResourceAuthorization[roles.length];
+        for (int i = 0; i < auths.length; i++) {
+            auths[i] = ResourceAuthorization.create(roles[i], site, study);
+        }
+        addAuthorizationsFor(method, auths);
     }
 
     @Deprecated

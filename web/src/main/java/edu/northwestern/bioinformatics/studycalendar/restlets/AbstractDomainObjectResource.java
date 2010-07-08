@@ -60,6 +60,14 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         }
     }
 
+    /**
+     * Returns the requested object if there is one, but continues to defer throwing the
+     * resource exception until outside of init.
+     */
+    protected D getRequestedObjectDuringInit() {
+        return requestedObject;
+    }
+
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {

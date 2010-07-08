@@ -14,6 +14,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Saurabh Agrawal
  */
@@ -24,9 +26,20 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
+        //TODO -- need to delete setAllAuthorizedFor and setAuthorizedFor when deleting the old user roles
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
         setAuthorizedFor(Method.DELETE, Role.SYSTEM_ADMINISTRATOR);
+
+        Site site = getRequestedObjectDuringInit();
+
+        addAuthorizationsFor(Method.PUT, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
+        addAuthorizationsFor(Method.DELETE, ResourceAuthorization.create(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER, site));
+        addAuthorizationsFor(Method.GET, site,
+                PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                USER_ADMINISTRATOR,
+                DATA_READER);
     }
 
 
@@ -35,7 +48,6 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
         String assignedIdentifier = UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request);
         return siteService.getByAssignedIdentifier(assignedIdentifier);
     }
-
 
     @Override
     public void remove(final Site site) {

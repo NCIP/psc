@@ -6,7 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.SpecificDateBlackout
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 /**
  * @author Saurabh Agrawal
  */
-public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesResource> {
+public class BlackoutDatesResourceTest extends AuthorizedResourceTestCase<BlackoutDatesResource> {
 
     public static final String SITE_IDENTIFIER = "site_id";
 
@@ -51,7 +53,7 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
     }
 
     @Override
-    protected BlackoutDatesResource createResource() {
+    protected BlackoutDatesResource createAuthorizedResource() {
         BlackoutDatesResource resource = new BlackoutDatesResource();
         resource.setSiteService(siteService);
         resource.setXmlSerializer(xmlSerializer);
@@ -61,6 +63,17 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
 
     public void testGetAndPostAllowed() throws Exception {
         assertAllowedMethods("GET", "POST");
+    }
+    
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER,
+            DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.POST,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
     public void testPostBlackoutDateToSite() throws Exception {

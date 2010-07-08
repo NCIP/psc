@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Required;
 import java.io.IOException;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  */
@@ -41,6 +43,18 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
+
+       addAuthorizationsFor(Method.GET,
+            STUDY_QA_MANAGER,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+            DATA_IMPORTER,
+            STUDY_TEAM_ADMINISTRATOR,
+            STUDY_CREATOR,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            DATA_READER);
+        addAuthorizationsFor(Method.POST, STUDY_CALENDAR_TEMPLATE_BUILDER);       
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -10,6 +11,7 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Method;
 import org.restlet.resource.Resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +80,30 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
         }
 
         for (Role role : actual) {
+            assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", expected.contains(role));
+        }
+    }
+
+    protected void assertRolesAllowedForMethod(Method method, PscRole... roles) {
+        doInitOnly();
+
+        Collection<PscRole> expected = Arrays.asList(roles);
+        Collection<ResourceAuthorization> resourceAuthorizations = getResource().authorizations(method);
+        Collection<PscRole> actual = new ArrayList<PscRole>();
+        if (resourceAuthorizations == null) {
+            actual = Arrays.asList(PscRole.values());
+        } else {
+            for (ResourceAuthorization actualResourceAuthorization : resourceAuthorizations) {
+                actual.add(actualResourceAuthorization.getRole());
+            }
+        }
+
+        for (PscRole role : expected) {
+            assertTrue(method.toString() + " for " + role.getDisplayName() + " should be allowed",
+                actual.contains(role));
+        }
+
+        for (PscRole role : actual) {
             assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", expected.contains(role));
         }
     }

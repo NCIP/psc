@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.classextension.EasyMock.expect;
 
 /**
@@ -43,6 +44,23 @@ public class StudiesResourceTest extends AuthorizedResourceTestCase<StudiesResou
 
     public void testGetAndPostAllowed() throws Exception {
         assertAllowedMethods("GET", "POST");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+         assertRolesAllowedForMethod(Method.GET,
+             STUDY_QA_MANAGER,
+             STUDY_CALENDAR_TEMPLATE_BUILDER,
+             STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+             DATA_IMPORTER,
+             STUDY_TEAM_ADMINISTRATOR,
+             STUDY_CREATOR,
+             STUDY_SUBJECT_CALENDAR_MANAGER,
+             DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+         assertRolesAllowedForMethod(Method.POST,
+             STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testIsNotAvailableToSysadmins() throws Exception {

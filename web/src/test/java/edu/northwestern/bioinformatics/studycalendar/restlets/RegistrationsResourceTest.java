@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.TestingAuthenticationToken;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -129,6 +130,22 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
     public void testGetWithAuthorizedRole() {
         assertLegacyRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
+    }
+
+    public void testGetAndPutAndDeleteAllowed() throws Exception {
+        assertAllowedMethods("POST", "GET");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_TEAM_ADMINISTRATOR,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.POST,
+            STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     ////// POST
