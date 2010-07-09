@@ -19,7 +19,7 @@
 
  <!--Standard sub project build TARGETS -->
     <target name="install"
-        depends="install:gem:buildr,install:gem:haml,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
+        depends="install:gem:buildr,install:gem:buildr-iidea,install:gem:haml,install:gem:shenandoah,install:gem:facets,install:gem:json_pure,install:gem:rest-client"
         description="Downloads JRuby and installs required gems">
     </target>
 
