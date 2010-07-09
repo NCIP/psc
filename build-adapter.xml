@@ -70,8 +70,8 @@
         </sequential>
     </macrodef>
 
-    <property name="gems.buildr.version" value="1.4.0"/>
-    <gem_available name="buildr" path="buildr-1.4.0-java"/>
+    <property name="gems.buildr.version" value="1.4.1"/>
+    <gem_available name="buildr" path="buildr-1.4.1-java"/>
     <target name="install:gem:buildr" unless="buildr.exists" depends="install:jruby" description="Installs buildr gem">
         <install_gem name="buildr"/>
     </target>
