@@ -29,12 +29,21 @@ class UpgradeToCsm42 extends edu.northwestern.bioinformatics.bering.Migration {
     }
 
     void down() {
-        // Down skipped for time.  If necessary, we can build this later.
-        /*
+        // Down reverts table changes & new/removed objects only -- does not
+        // revert the recreated tables to their CSM 3.2 state.
         dropColumn('csm_application', 'csm_version')
 
         dropColumn('csm_user', 'migrated_flag')
         dropColumn('csm_user', 'premgrt_login_name')
-        */
+
+        if (databaseMatches('hsqldb')) {
+            // Note: as PSC uses it, it's not possible to run down migrations 
+            // on hsqldb. This script should work if that ever changes.
+            external("001_csm42_limited_down_hsqldb.sql")
+        } else if (databaseMatches('oracle')) {
+            external("001_csm42_limited_down_oracle.sql")
+        } else {
+            external("001_csm42_limited_down_postgresql.sql")
+        }
     }
 }
