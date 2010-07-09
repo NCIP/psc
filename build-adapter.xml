@@ -112,28 +112,28 @@
         <install_gem name="rest-client"/>
     </target>
 
-    <target name="build:war" depends="install">
+    <target name="build:war" depends="install" description="Builds PSC webapp war">
         <jruby line="-S buildr clean build test=no"/>
     </target>
 
-    <target name="deploy:psc:webapp" description="Deploy pre-built war file">
+    <target name="deploy:psc:webapp" description="Deploys pre-built war file">
         <delete dir="${tomcat.relative.path}/webapps/psc.war" />
         <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
     </target>
 
-    <target name="build:deploy:psc:webapp" depends="build:war" description="Build and Deploy war file ">
+    <target name="build:deploy:psc:webapp" depends="build:war" description="Builds and deploy war file ">
         <delete dir="${tomcat.relative.path}/webapps/psc.war" />
         <copy todir="${tomcat.relative.path}/webapps" file="${basedir}/web/target/psc.war"/>
     </target>
 
-    <target name="build:grid" depends="install" description="Build psc grid services">
+    <target name="build:grid" depends="install" description="Builds PSC grid services">
         <jruby line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no">
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </jruby>
     </target>
 
-    <target name="deploy:psc:grid" depends="install" description="Deploy psc grid services">
+    <target name="deploy:psc:grid" depends="install" description="Deploys PSC grid services">
         <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc">
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
