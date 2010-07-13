@@ -78,31 +78,19 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     }
 
     protected void addAuthorizationsFor(Method method, PscRole... roles) {
-        ResourceAuthorization[] authorizations = new ResourceAuthorization[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            authorizations[i] = ResourceAuthorization.create(roles[i]);
-        }
-        addAuthorizationsFor(method, authorizations);
+        addAuthorizationsFor(method, ResourceAuthorization.createSeveral(roles));
+    }
+
+    protected void addAuthorizationsFor(Method method, Site site, PscRole... roles) {
+        addAuthorizationsFor(method, ResourceAuthorization.createSeveral(site, roles));
+    }
+
+    protected void addAuthorizationsFor(Method method, Site site, Study study, PscRole... roles) {
+        addAuthorizationsFor(method, ResourceAuthorization.createSeveral(site, study, roles));
     }
 
     protected void addAuthorizationsFor(Method method, ResourceAuthorization... authorizations) {
         getAuthorizationsByMethod().put(method, Arrays.asList(authorizations));
-    }
-
-    protected void addAuthorizationsFor(Method method, Site site, PscRole... roles) {
-        ResourceAuthorization[] auths = new ResourceAuthorization[roles.length];
-        for (int i = 0; i < auths.length; i++) {
-            auths[i] = ResourceAuthorization.create(roles[i], site);
-        }
-        addAuthorizationsFor(method, auths);
-    }
-
-    protected void addAuthorizationsFor(Method method, Site site, Study study, PscRole... roles) {
-        ResourceAuthorization[] auths = new ResourceAuthorization[roles.length];
-        for (int i = 0; i < auths.length; i++) {
-            auths[i] = ResourceAuthorization.create(roles[i], site, study);
-        }
-        addAuthorizationsFor(method, auths);
     }
 
     @Deprecated

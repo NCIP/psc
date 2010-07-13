@@ -40,6 +40,22 @@ public class ResourceAuthorization {
         return ra;
     }
 
+    public static ResourceAuthorization[] createSeveral(PscRole... roles) {
+        return createSeveral(null, null, roles);
+    }
+
+    public static ResourceAuthorization[] createSeveral(Site site, PscRole... roles) {
+        return createSeveral(site, null, roles);
+    }
+
+    public static ResourceAuthorization[] createSeveral(Site site, Study study, PscRole... roles) {
+        ResourceAuthorization[] ras = new ResourceAuthorization[roles.length];
+        for (int i = 0; i < roles.length; i++) {
+            ras[i] = create(roles[i], site, study);
+        }
+        return ras;
+    }
+
     private ResourceAuthorization(PscRole role) {
         this.role = role;
         this.scopes = new LinkedHashSet<ScopeDescription>();

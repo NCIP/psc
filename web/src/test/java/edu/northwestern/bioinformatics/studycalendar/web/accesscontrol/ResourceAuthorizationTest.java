@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import junit.framework.TestCase;
@@ -97,6 +98,52 @@ public class ResourceAuthorizationTest extends TestCase {
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitForMismatchedSite() throws Exception {
         assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
             createUser(createMembership(PscRole.DATA_READER).forSites(siteB).forStudies(studyB))));
+    }
+
+    public void testCreateMultipleAuthorizationsByRoleOnly() throws Exception {
+        ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
+            PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertEquals("Wrong number of RAs", 2, actual.length);
+        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, null, null, actual[0]);
+        assertResourceAuthorization("Wrong 2nd RA",
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, null, null, actual[1]);
+    }
+
+    public void testCreateMultipleAuthorizationsByRoleAndSite() throws Exception {
+        ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
+            siteA, PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertEquals("Wrong number of RAs", 2, actual.length);
+        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, "a!", null, actual[0]);
+        assertResourceAuthorization("Wrong 2nd RA",
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "a!", null, actual[1]);
+    }
+
+    public void testCreateMultipleAuthorizationsByRoleSiteAndStudy() throws Exception {
+        ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
+            siteB, studyB, PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertEquals("Wrong number of RAs", 2, actual.length);
+        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, "b!", "B", actual[0]);
+        assertResourceAuthorization("Wrong 2nd RA",
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "b!", "B", actual[1]);
+    }
+
+    private void assertResourceAuthorization(
+        String message,
+        PscRole expectedRole, String expectedSiteIdent, String expectedStudyIdent,
+        ResourceAuthorization actual
+    ) {
+        assertNotNull(message + ": RA not present", actual);
+        assertEquals(message + ": wrong role", expectedRole, actual.getRole());
+        if (expectedSiteIdent == null) {
+            assertNull(message + ": expected no site", actual.getScope(ScopeType.SITE));
+        } else {
+            assertEquals(message + ": wrong site", expectedSiteIdent, actual.getScope(ScopeType.SITE));
+        }
+        if (expectedStudyIdent == null) {
+            assertNull(message + ": expected no study", actual.getScope(ScopeType.STUDY));
+        } else {
+            assertEquals(message + ": wrong study", expectedStudyIdent, actual.getScope(ScopeType.STUDY));
+        }
     }
 
     private PscUser createUser(PscRole role) {
