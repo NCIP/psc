@@ -26,11 +26,18 @@
         <property name="osgiLayerTools" ref="osgiLayerTools"/>
         <property name="controllerRequiredAuthorityExtractor"
                   ref="controllerRequiredAuthorityExtractor"/>
+        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
     </bean>
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ControllerRequiredAuthorityExtractor"
           id="controllerRequiredAuthorityExtractor">
         <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
+    </bean>
+
+    <bean class="edu.northwestern.bioinformatics.studycalendar.web.tools.PscAuthorizationInterceptor"
+        id="authorizationInterceptor">
+        <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
     </bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -49,6 +56,7 @@
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
         <property name="interceptors">
             <list>
+                <ref bean="authorizationInterceptor"/>
                 <ref bean="breadcrumbInterceptor"/>
                 <ref bean="sectionInterceptor"/>
             </list>

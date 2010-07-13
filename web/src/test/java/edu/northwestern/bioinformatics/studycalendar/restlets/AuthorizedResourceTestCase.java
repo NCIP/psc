@@ -1,12 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.restlet.data.Method;
@@ -15,7 +13,6 @@ import org.restlet.resource.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author John Dzak
@@ -27,15 +24,8 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
     protected void setUp() throws Exception {
         super.setUp();
 
-        User csmUser = new User();
-        csmUser.setLoginName("josephine");
-        user = new PscUser(
-            csmUser, Collections.singletonMap(
-                SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER,
-                new SuiteRoleMembership(SuiteRole.STUDY_SUBJECT_CALENDAR_MANAGER, null, null)
-            ),
-            Fixtures.createUser("josephine")
-        );
+        user = AuthorizationObjectFactory.
+            createLegacyPscUser("josephine", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
         setCurrentUser(user);
     }
 

@@ -7,7 +7,8 @@ import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 
 public class SecurityContextHolderTestHelper {
     public static void setSecurityContext(PscUser principal, String password) {
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(principal, password);
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+            principal, password, principal.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authRequest);
     }
 

@@ -1,5 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+
 /**
  * Spring-configured singleton which indicates whether to use the legacy
  * (local domain) or new (CSM-based unified auth) authorization system.
@@ -7,7 +11,9 @@ package edu.northwestern.bioinformatics.studycalendar.security.authorization;
  * @author Rhett Sutphin
  */
 @Deprecated
-public class LegacyModeSwitch {
+public class LegacyModeSwitch implements InitializingBean {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private boolean on;
 
     public LegacyModeSwitch() {
@@ -16,6 +22,10 @@ public class LegacyModeSwitch {
 
     public LegacyModeSwitch(boolean on) {
         this.on = on;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        log.info("Authorization is in {} mode", isOn() ? "legacy" : "unified");
     }
 
     public boolean isOn() {

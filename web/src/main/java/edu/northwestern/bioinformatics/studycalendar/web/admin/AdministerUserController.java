@@ -6,7 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AuthorizedFor;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
@@ -22,17 +23,23 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-@AuthorizedFor({ PscRole.SYSTEM_ADMINISTRATOR, PscRole.USER_ADMINISTRATOR })
-public class AdministerUserController extends PscAbstractCommandController<ProvisionUserCommand> {
+public class AdministerUserController extends PscAbstractCommandController<ProvisionUserCommand> implements PscAuthorizedHandler {
     private AuthorizationManager authorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private ProvisioningSessionFactory provisioningSessionFactory;
     private SiteDao siteDao;
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        // TODO: this is incomplete
+        return ResourceAuthorization.createCollection(PscRole.USER_ADMINISTRATOR);
+    }
 
     @Override
     protected ProvisionUserCommand getCommand(HttpServletRequest request) throws Exception {

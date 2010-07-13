@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import static edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder.createWebApplicationContextForServlet;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import junit.framework.TestCase;
 import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.servlet.mvc.Controller;
 
 import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.web.StudyCalendarTestWebApplicationContextBuilder.createWebApplicationContextForServlet;
 
 /**
  * @author Rhett Sutphin
@@ -60,6 +66,33 @@ public class DispatcherServletInitializationTest extends TestCase {
             Object firstTime = ctxt.getBean(beanName);
             Object secondTime = ctxt.getBean(beanName);
             assertNotSame(beanName + " is not a prototype", firstTime, secondTime);
+        }
+    }
+
+    public void testAllUiControllersHaveAuthorizationInformation() throws Exception {
+        ApplicationContext ctxt = createWebApplicationContextForServlet("spring", servletContext);
+
+        String[] beanNames = ctxt.getBeanNamesForType(Controller.class);
+        Set<String> noAuthorizationInfo = new LinkedHashSet<String>();
+
+        for (String beanName : beanNames) {
+            Object controller = ctxt.getBean(beanName);
+            if (!(controller instanceof PscAuthorizedHandler)) {
+                noAuthorizationInfo.add(controller.getClass().getName());
+            }
+        }
+
+        StringBuilder msg = new StringBuilder().append("The following ").
+            append(noAuthorizationInfo.size()).
+            append(" controllers contain no unified authorization information and therefore will never execute: ");
+        for (String s : noAuthorizationInfo) {
+            msg.append("\n  ").append(s);
+        }
+
+        if (((LegacyModeSwitch) ctxt.getBean("authorizationLegacyModeSwitch")).isOn()) {
+            System.out.println(msg.toString());
+        } else {
+            fail(msg.toString());
         }
     }
 

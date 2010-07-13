@@ -4,14 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Authoriz
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import junit.framework.TestCase;
-
-import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -147,16 +145,11 @@ public class ResourceAuthorizationTest extends TestCase {
     }
 
     private PscUser createUser(PscRole role) {
-        User csmUser = new User();
-        csmUser.setLoginName("josephine");
-        SuiteRoleMembership srm = createMembership(role);
-        return new PscUser(csmUser, Collections.singletonMap(role.getSuiteRole(), srm));
+        return AuthorizationObjectFactory.createPscUser("josephine", role);
     }
 
     private PscUser createUser(SuiteRoleMembership membership) {
-        User csmUser = new User();
-        csmUser.setLoginName("josephine");
-        return new PscUser(csmUser, Collections.singletonMap(membership.getRole(), membership));
+        return AuthorizationObjectFactory.createPscUser("josephine", membership);
     }
 
     private SuiteRoleMembership createMembership(PscRole role) {

@@ -42,8 +42,8 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
             for (Task task : section.getTasks()) {
                 Controller controller = (Controller) beanFactory.getBean(task.getLinkName(), Controller.class);
                 allowed.addAll(Arrays.asList(
-                    controllerRequiredAuthorityExtractor.getRequiredAuthoritiesForController(
-                        controller.getClass())));
+                    controllerRequiredAuthorityExtractor.
+                        getAllowedAuthoritiesForController(controller)));
             }
 
             for (GrantedAuthority role : allowed) {

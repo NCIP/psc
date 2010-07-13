@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.security.FilterSecurityInterceptorConfigurer;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
@@ -27,11 +29,13 @@ import java.util.Vector;
  * @author John Dzak
  * @author Rhett Sutphin
  */
+@Deprecated // need to remove the acegi filter that depends on the url list, too
 public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ordered, FactoryBean {
     private static Logger log = LoggerFactory.getLogger(ControllerSecureUrlCreator.class);
     private ControllerUrlResolver urlResolver;
     private Map<String, GrantedAuthority[]> pathRoleMap;
     private OsgiLayerTools osgiLayerTools;
+    private LegacyModeSwitch legacyModeSwitch;
     private ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor;
 
     // Must occur after BeanNameControllerUrlResolver
@@ -43,8 +47,7 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         String[] controllerNames = beanFactory.getBeanNamesForType(Controller.class, false, false);
         for (String controllerName : controllerNames) {
             ResolvedControllerReference controller = urlResolver.resolve(controllerName);
-            GrantedAuthority[] authorities = controllerRequiredAuthorityExtractor.
-                getRequiredAuthoritiesForController(controller.getControllerClass());
+            GrantedAuthority[] authorities = getAllowedAuthorities(beanFactory, controllerName, controller);
 
             String url = controller.getUrl(true);
             if (log.isDebugEnabled()) {
@@ -58,6 +61,17 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
         String servicePid = FilterSecurityInterceptorConfigurer.SERVICE_PID;
 
         osgiLayerTools.updateConfiguration(upd, servicePid);
+    }
+
+    private GrantedAuthority[] getAllowedAuthorities(ConfigurableListableBeanFactory beanFactory, String controllerName, ResolvedControllerReference controller) {
+        if (legacyModeSwitch.isOn()) {
+            return controllerRequiredAuthorityExtractor.
+                getAllowedAuthoritiesForController(
+                    (Controller) beanFactory.getBean(controllerName, controller.getControllerClass()));
+        } else {
+            // In the new auth mode, authorization is handled elsewhere
+            return PscRole.values();
+        }
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
@@ -109,6 +123,11 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     @Required
     public void setControllerRequiredAuthorityExtractor(ControllerRequiredAuthorityExtractor controllerRequiredAuthorityExtractor) {
         this.controllerRequiredAuthorityExtractor = controllerRequiredAuthorityExtractor;
+    }
+
+    @Required
+    public void setLegacyModeSwitch(LegacyModeSwitch legacyModeSwitch) {
+        this.legacyModeSwitch = legacyModeSwitch;
     }
 
     private class ApacheAntPattern {

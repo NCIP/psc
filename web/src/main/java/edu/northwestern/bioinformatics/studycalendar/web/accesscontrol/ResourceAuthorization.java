@@ -8,6 +8,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ScopeDescription;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -56,6 +57,18 @@ public class ResourceAuthorization {
         return ras;
     }
 
+    public static Collection<ResourceAuthorization> createCollection(PscRole... roles) {
+        return Arrays.asList(createSeveral(roles));
+    }
+
+    public static Collection<ResourceAuthorization> createCollection(Site site, PscRole... roles) {
+        return Arrays.asList(createSeveral(site, roles));
+    }
+
+    public static Collection<ResourceAuthorization> createCollection(Site site, Study study, PscRole... roles) {
+        return Arrays.asList(createSeveral(site, study, roles));
+    }
+
     private ResourceAuthorization(PscRole role) {
         this.role = role;
         this.scopes = new LinkedHashSet<ScopeDescription>();
@@ -93,5 +106,16 @@ public class ResourceAuthorization {
 
     public PscRole getRole() {
         return role;
+    }
+
+    ////// OBJECT METHODS
+
+    public String toString() {
+        return new StringBuilder().
+            append(getClass().getSimpleName()).
+            append("[role=").append(getRole().getCsmName()).
+            append("; scopes=").append(scopes).
+            append(']').
+            toString();
     }
 }

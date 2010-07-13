@@ -35,6 +35,7 @@ public class ControllerSecureUrlCreatorLegacyModeTest extends StudyCalendarTestC
     private DefaultListableBeanFactory beanFactory;
     private BeanNameControllerUrlResolver resolver;
     private OsgiLayerTools osgiLayerTools;
+    private LegacyModeSwitch lmSwitch;
 
     @Override
     protected void setUp() throws Exception {
@@ -51,9 +52,11 @@ public class ControllerSecureUrlCreatorLegacyModeTest extends StudyCalendarTestC
         creator = new ControllerSecureUrlCreator();
         creator.setUrlResolver(resolver);
         creator.setOsgiLayerTools(osgiLayerTools);
+        lmSwitch = new LegacyModeSwitch();
         ControllerRequiredAuthorityExtractor extractor = new ControllerRequiredAuthorityExtractor();
-        extractor.setLegacyModeSwitch(new LegacyModeSwitch());
+        extractor.setLegacyModeSwitch(lmSwitch);
         creator.setControllerRequiredAuthorityExtractor(extractor);
+        creator.setLegacyModeSwitch(lmSwitch);
 
         beanFactory = new DefaultListableBeanFactory();
     }
