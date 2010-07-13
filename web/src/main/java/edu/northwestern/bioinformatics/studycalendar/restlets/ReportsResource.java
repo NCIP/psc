@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.Date;
 import java.text.ParseException;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Nataliya Shurupova
  */
@@ -39,6 +41,12 @@ public class ReportsResource extends AbstractCollectionResource<ScheduledActivit
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            DATA_READER);
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(PscMetadataService.TEXT_CSV));
         getVariants().add(new Variant(MediaType.APPLICATION_EXCEL));

@@ -7,7 +7,7 @@ import org.osgi.framework.BundleException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -36,6 +36,10 @@ public class OsgiBundleStateResourceTest extends AuthorizedResourceTestCase<Osgi
 
     public void testAllowedMethods() throws Exception {
         assertAllowedMethods("GET", "PUT");
+    }
+    
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET, SYSTEM_ADMINISTRATOR);
     }
     
     public void testSysAdminsOnlyCanGet() throws Exception {

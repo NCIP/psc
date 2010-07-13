@@ -4,8 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.*;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.Arrays;
@@ -14,7 +17,7 @@ import java.util.List;
 /**
  * @author Jalpa Patel
  */
-public class ProvidedStudiesResourceTest extends ResourceTestCase<ProvidedStudiesResource> {
+public class ProvidedStudiesResourceTest extends AuthorizedResourceTestCase<ProvidedStudiesResource> {
     private StudyConsumer studyConsumer;
 
     public void setUp() throws Exception {
@@ -23,7 +26,7 @@ public class ProvidedStudiesResourceTest extends ResourceTestCase<ProvidedStudie
     }
 
     @SuppressWarnings({"unchecked"})
-    protected ProvidedStudiesResource createResource() {
+    protected ProvidedStudiesResource createAuthorizedResource() {
         ProvidedStudiesResource resource = new ProvidedStudiesResource();
         resource.setXmlSerializer(xmlSerializer);
         resource.setStudyConsumer(studyConsumer);
@@ -32,6 +35,12 @@ public class ProvidedStudiesResourceTest extends ResourceTestCase<ProvidedStudie
 
     public void testGetAllowed() throws Exception {
         assertAllowedMethods("GET");
+    }
+    
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            DATA_READER);
     }
 
     @SuppressWarnings({"unchecked"})

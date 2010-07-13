@@ -7,11 +7,13 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import java.util.Calendar;
 import java.util.Arrays;
 
 import static org.easymock.EasyMock.expect;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -19,7 +21,7 @@ import org.restlet.data.Preference;
 /**
  * @author Jalpa Patel
  */
-public class NotificationsResourceTest extends ResourceTestCase<NotificationsResource> {
+public class NotificationsResourceTest extends AuthorizedResourceTestCase<NotificationsResource> {
 
     public static final String ASSIGNMENT_IDENTIFIER = "assignment_id";
 
@@ -44,7 +46,7 @@ public class NotificationsResourceTest extends ResourceTestCase<NotificationsRes
     }
 
     @Override
-    protected NotificationsResource createResource() {
+    protected NotificationsResource createAuthorizedResource() {
         NotificationsResource resource = new NotificationsResource();
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         resource.setXmlSerializer(xmlSerializer);
@@ -52,12 +54,23 @@ public class NotificationsResourceTest extends ResourceTestCase<NotificationsRes
     }
 
     public void testGetAllowed() throws Exception {
+        expectFoundStudySubjectAssignment(studySubjectAssignment);
+        replayMocks();
+
         assertAllowedMethods("GET");
     }
 
-    public void testGetNotificationsXml() throws Exception {
-        expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(studySubjectAssignment);
+    public void testGetWithAuthorizedRoles() {
+        expectFoundStudySubjectAssignment(studySubjectAssignment);
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            DATA_READER);
+    }
 
+    public void testGetNotificationsXml() throws Exception {
+        expectFoundStudySubjectAssignment(studySubjectAssignment);
         expect(xmlSerializer.createDocumentString(studySubjectAssignment.getNotifications())).andReturn(MOCK_XML);
 
         doGet();
@@ -66,8 +79,7 @@ public class NotificationsResourceTest extends ResourceTestCase<NotificationsRes
     }
 
     public void testGet404WhenUnknownSubjectAssignment() throws Exception {
-        expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(null);
-
+        expectFoundStudySubjectAssignment(null);
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
@@ -80,7 +92,7 @@ public class NotificationsResourceTest extends ResourceTestCase<NotificationsRes
     }
 
     public void testGetJSONRepresentation() throws Exception {
-        expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(studySubjectAssignment);
+        expectFoundStudySubjectAssignment(studySubjectAssignment);
         requestJson();
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
@@ -92,4 +104,7 @@ public class NotificationsResourceTest extends ResourceTestCase<NotificationsRes
     }
 
 
+    private void expectFoundStudySubjectAssignment(StudySubjectAssignment expectedStudySubjectAssignmnent) {
+        expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(expectedStudySubjectAssignmnent).anyTimes();
+    }
 }

@@ -20,9 +20,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.EasyMock.*;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 
@@ -32,7 +34,7 @@ import java.util.Calendar;
 /**
  * @author Jalpa Patel
  */
-public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResource>  {
+public class BatchUpdatesResourceTest extends AuthorizedResourceTestCase<BatchUpdatesResource>  {
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
     private ScheduledActivity sa1, sa2;
@@ -71,7 +73,7 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
     }
 
     @Override
-    protected BatchUpdatesResource createResource() {
+    protected BatchUpdatesResource createAuthorizedResource() {
         BatchUpdatesResource resource = new BatchUpdatesResource();
         resource.setScheduledActivityDao(scheduledActivityDao);
         resource.setScheduleService(scheduleService);
@@ -80,6 +82,10 @@ public class BatchUpdatesResourceTest extends ResourceTestCase<BatchUpdatesResou
 
     public void testAllowedMethods() throws Exception {
         assertAllowedMethods("POST", "GET");
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.POST, STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     public void testPostWithInvalidActivityId() throws Exception {

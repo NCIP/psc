@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Saurabh Agrawal
  */
@@ -30,6 +32,11 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
+        
+        addAuthorizationsFor(Method.GET,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                BUSINESS_ADMINISTRATOR,
+                DATA_READER);
     }
 
     @Override

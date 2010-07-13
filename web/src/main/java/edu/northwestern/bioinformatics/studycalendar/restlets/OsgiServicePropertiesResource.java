@@ -27,6 +27,8 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
+
 /**
  * @author Rhett Sutphin
  */
@@ -42,6 +44,7 @@ public class OsgiServicePropertiesResource extends OsgiSingleBundleResource {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
+        addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 
     @Override public boolean allowPut() { return true; }

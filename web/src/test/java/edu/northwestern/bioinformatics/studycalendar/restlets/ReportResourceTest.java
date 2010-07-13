@@ -24,6 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationServic
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.easymock.IArgumentMatcher;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 
@@ -36,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -156,6 +158,13 @@ public class ReportResourceTest extends AuthorizedResourceTestCase<ReportsResour
 
     public void testGetAllowed() throws Exception {
         assertAllowedMethods("GET");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            DATA_READER);
     }
 
     public void testFilteredRowsForUserWithoutRightStudySitePermissions() throws Exception {

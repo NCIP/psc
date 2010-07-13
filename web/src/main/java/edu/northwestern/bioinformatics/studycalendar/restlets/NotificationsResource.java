@@ -15,6 +15,10 @@ import org.json.JSONArray;
 
 import java.util.Collection;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 /**
  * @author Jalpa Patel
  */
@@ -27,6 +31,24 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
+
+        StudySubjectAssignment assignment = getStudySubjectAssignment();
+        Study study = null;
+        Site site = null;
+        if (assignment!= null) {
+            StudySite ss = assignment.getStudySite();
+
+            if (ss!=null) {
+                study = ss.getStudy();
+                site = ss.getSite();
+            }
+        }
+
+        addAuthorizationsFor(Method.GET, site, study,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+        
     }
 
     public Collection<Notification> getAllObjects() throws ResourceException {
@@ -34,11 +56,20 @@ public class NotificationsResource extends AbstractCollectionResource<Notificati
         if (assignmentIdentifier == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No Assignment Identifier in request");
         }
-        StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentIdentifier);
+        StudySubjectAssignment assignment = getStudySubjectAssignment();
         if(assignment == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No Assignment with given Id found");
         }
         return assignment.getNotifications();
+    }
+
+    protected StudySubjectAssignment getStudySubjectAssignment() {
+        StudySubjectAssignment studySubjectAssignment = null;
+        String assignmentIdentifier = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(getRequest());
+        if (assignmentIdentifier != null ) {
+            return studySubjectAssignmentDao.getByGridId(assignmentIdentifier);
+        }
+        return studySubjectAssignment;
     }
 
     @Override

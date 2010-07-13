@@ -27,6 +27,8 @@ import java.util.SortedMap;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author John Dzak
  */
@@ -45,9 +47,23 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
+
+        ScheduledCalendar scheduledCalendar = getRequestedObjectDuringInit();
+        Study study = null;
+        Site site = null;
+        if (scheduledCalendar != null){
+            study = scheduledCalendar.getAssignment().getStudySite().getStudy();
+            site = scheduledCalendar.getAssignment().getStudySite().getSite();
+        }
+
+        addAuthorizationsFor(Method.GET, site, study,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+        addAuthorizationsFor(Method.POST, site, study, STUDY_SUBJECT_CALENDAR_MANAGER);
+
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
     }
-
 
     @Override
     public boolean allowPost() {

@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+
 /**
  * @author Jalpa Patel
  */
@@ -28,6 +31,11 @@ public class ProvidedStudiesResource extends AbstractCollectionResource<Study> {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            DATA_READER);
+       
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 

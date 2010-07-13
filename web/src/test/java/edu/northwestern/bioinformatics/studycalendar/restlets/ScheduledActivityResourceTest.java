@@ -13,9 +13,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractScheduledActivityStateXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 import static org.easymock.EasyMock.*;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.InputRepresentation;
@@ -32,7 +37,7 @@ import java.util.List;
  * @author Saurabh Agrawal
  * @author Rhett Sutphin
  */
-public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledActivityResource> {
+public class ScheduledActivityResourceTest extends AuthorizedResourceTestCase<ScheduledActivityResource> {
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduleService scheduleService;
@@ -73,7 +78,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
 
     @Override
     @SuppressWarnings({"unchecked"})
-    protected ScheduledActivityResource createResource() {
+    protected ScheduledActivityResource createAuthorizedResource() {
         ScheduledActivityResource resource = new ScheduledActivityResource();
         resource.setScheduledActivityDao(scheduledActivityDao);
         resource.setXmlSerializer(xmlSerializer);
@@ -84,7 +89,24 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     }
 
     public void testGetAndPostAllowed() throws Exception {
+        expectGetScheduledActivity();
+        replayMocks();
         assertAllowedMethods("GET", "POST");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        expectGetScheduledActivity();
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        expectGetScheduledActivity();
+        replayMocks();
+        assertRolesAllowedForMethod(Method.POST, STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     ////// GET

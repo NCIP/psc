@@ -7,7 +7,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.classextension.EasyMock.expect;
+
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.Collections;
@@ -15,7 +21,7 @@ import java.util.Collections;
 /**
  * @author Rhett Sutphin
  */
-public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceResource> {
+public class ActivitySourceResourceTest extends AuthorizedResourceTestCase<ActivitySourceResource> {
     public static final String SOURCE_NAME = "House of Activities";
     public static final String SOURCE_NAME_ENCODED = "House%20of%20Activities";
 
@@ -40,7 +46,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     }
 
     @Override
-    protected ActivitySourceResource createResource() {
+    protected ActivitySourceResource createAuthorizedResource() {
         ActivitySourceResource resource = new ActivitySourceResource();
         resource.setSourceDao(sourceDao);
         resource.setXmlSerializer(xmlSerializer);
@@ -52,6 +58,18 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
 
     public void testGetAndPutAllowed() throws Exception {
         assertAllowedMethods("PUT", "GET");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            BUSINESS_ADMINISTRATOR,
+            DATA_READER);
+    }
+
+    public void testPutWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.PUT,
+            BUSINESS_ADMINISTRATOR);
     }
 
     public void testGetXmlForExistingSource() throws Exception {

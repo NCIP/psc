@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import org.restlet.Context;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.Collection;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 /**
  * @author Saurabh Agrawal
  * @author Rhett Sutphin
@@ -43,8 +41,14 @@ public class ScheduledActivitiesResource extends AbstractCollectionResource<Sche
 
         String assignmentId = UriTemplateParameters.ASSIGNMENT_IDENTIFIER.extractFrom(request);
         studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
-
         assignment = studySubjectAssignmentDao.getByGridId(assignmentId);
+
+        StudySite ss = assignment.getStudySite();
+
+        addAuthorizationsFor(Method.GET, ss.getSite(), ss.getStudy(),
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
 
         if (assignment != null) {
             scheduledCalendar = assignment.getScheduledCalendar();

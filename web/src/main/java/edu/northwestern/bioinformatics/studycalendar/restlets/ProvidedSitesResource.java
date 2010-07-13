@@ -26,6 +26,9 @@ public class ProvidedSitesResource extends  AbstractCollectionResource<Site> {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR, Role.SYSTEM_ADMINISTRATOR);
+
+        setAllAuthorizedFor(Method.GET);
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 

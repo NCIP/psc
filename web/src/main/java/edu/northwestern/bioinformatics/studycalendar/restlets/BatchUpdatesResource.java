@@ -25,6 +25,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+
 /**
  * @author Jalpa Patel
  */
@@ -36,6 +38,10 @@ public class BatchUpdatesResource extends AbstractPscResource{
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
+
+        addAuthorizationsFor(Method.POST,
+                STUDY_SUBJECT_CALENDAR_MANAGER);
+        
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
 

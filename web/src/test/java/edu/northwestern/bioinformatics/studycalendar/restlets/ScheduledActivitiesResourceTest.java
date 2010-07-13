@@ -8,7 +8,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
+
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.Arrays;
@@ -20,7 +26,7 @@ import java.util.List;
  * @author Saurabh Agrawal
  * @author Rhett Sutphin
  */
-public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledActivitiesResource> {
+public class ScheduledActivitiesResourceTest extends AuthorizedResourceTestCase<ScheduledActivitiesResource> {
     private static final Date REQUESTED_DATE = DateTools.createDate(2008, Calendar.AUGUST, 12);
 
     private ScheduledActivityDao scheduledActivityDao;
@@ -51,7 +57,7 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
     }
 
     @Override
-    protected ScheduledActivitiesResource createResource() {
+    protected ScheduledActivitiesResource createAuthorizedResource() {
         ScheduledActivitiesResource resource = new ScheduledActivitiesResource();
         resource.setScheduledActivityDao(scheduledActivityDao);
         resource.setScheduledActivityXmlSerializer(xmlSerializer);
@@ -60,7 +66,20 @@ public class ScheduledActivitiesResourceTest extends ResourceTestCase<ScheduledA
     }
 
     public void testGetAllowed() throws Exception {
+        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId()))
+            .andReturn(studySubjectAssignment);
+        replayMocks();
         assertAllowedMethods("GET");
+    }
+    
+    public void testGetWithAuthorizedRoles() {
+        expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId()))
+            .andReturn(studySubjectAssignment);
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
     }
 
     public void testGetXmlForAllScheduledActivitiesForASelectedDate() throws Exception {

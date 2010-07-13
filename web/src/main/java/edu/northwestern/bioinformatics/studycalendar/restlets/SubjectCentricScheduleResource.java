@@ -31,6 +31,10 @@ import java.util.Set;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 /**
  * @author Jalpa Patel
  */
@@ -45,7 +49,14 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
+        //TODO - has to delete setAllAuthorizedFor when refactored
         setAllAuthorizedFor(Method.GET);
+
+        addAuthorizationsFor(Method.GET,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setSubjectCentric(true);

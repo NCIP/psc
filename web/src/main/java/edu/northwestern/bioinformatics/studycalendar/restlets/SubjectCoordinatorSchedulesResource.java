@@ -23,6 +23,7 @@ import java.util.*;
 import net.fortuna.ical4j.model.Calendar;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 /**
  * @author Jalpa Patel
  */
@@ -38,6 +39,12 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setIncludeScheduledCalendar(true);

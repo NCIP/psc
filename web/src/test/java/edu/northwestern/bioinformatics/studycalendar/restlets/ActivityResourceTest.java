@@ -8,7 +8,13 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityService;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.classextension.EasyMock.expect;
+
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.ArrayList;
@@ -17,7 +23,7 @@ import java.util.List;
 /**
  * @author Saurabh Agrarwal
  */
-public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
+public class ActivityResourceTest extends AuthorizedResourceTestCase<ActivityResource> {
     public static final String SOURCE_NAME = "House of Activities";
     public static final String SOURCE_NAME_ENCODED = "House%20of%20Activities";
     public static final String ACTIVITY_NAME = "Activities";
@@ -44,7 +50,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    protected ActivityResource createResource() {
+    protected ActivityResource createAuthorizedResource() {
         ActivityResource resource = new ActivityResource();
         resource.setActivityDao(activityDao);
         resource.setActivityService(activityService);
@@ -56,6 +62,23 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
 
     public void testGetAndPutAndDeleteAllowed() throws Exception {
         assertAllowedMethods("PUT", "GET", "DELETE");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            BUSINESS_ADMINISTRATOR,
+            DATA_READER);
+    }
+
+    public void testPutWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.PUT,
+            BUSINESS_ADMINISTRATOR);
+    }
+
+    public void testDeleteWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.DELETE,
+            BUSINESS_ADMINISTRATOR);
     }
 
     public void testGetXmlForExistingActivity() throws Exception {

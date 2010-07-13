@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
+
 /**
  * @author Rhett Sutphin
  */
@@ -32,6 +34,7 @@ public class OsgiBundleStateResource extends OsgiSingleBundleResource {
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.PUT, Role.SYSTEM_ADMINISTRATOR);
+        addAuthorizationsFor(Method.PUT, SYSTEM_ADMINISTRATOR);
     }
 
     @Override public boolean allowPut() { return true; }

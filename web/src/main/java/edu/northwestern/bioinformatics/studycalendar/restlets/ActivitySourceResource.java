@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+
 /**
  * Resource representing a single {@link Source}.
  *
@@ -32,6 +36,13 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
+
+        addAuthorizationsFor(Method.GET,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                BUSINESS_ADMINISTRATOR,
+                DATA_READER);
+
+        addAuthorizationsFor(Method.PUT, BUSINESS_ADMINISTRATOR);
     }
 
     @Override

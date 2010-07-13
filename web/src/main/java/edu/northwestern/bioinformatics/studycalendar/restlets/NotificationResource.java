@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
 
 import org.restlet.resource.ResourceException;
@@ -15,19 +15,50 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 /**
  * @author Jalpa Patel
  */
 public class NotificationResource extends AbstractStorableDomainObjectResource<Notification> {
     public NotificationDao notificationDao;
+    private StudySubjectAssignment assignment;
 
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.SUBJECT_COORDINATOR);
+
+        Study study = null;
+        Site site = null;
+
+        Notification notification = getRequestedObjectDuringInit();
+        if (notification != null) {
+            StudySubjectAssignment assignment = notification.getAssignment();
+
+            if (assignment!= null) {
+                StudySite ss = assignment.getStudySite();
+
+                if (ss!=null) {
+                    study = ss.getStudy();
+                    site = ss.getSite();
+                }
+            }
+        }
+        addAuthorizationsFor(Method.GET, site, study,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+
+        addAuthorizationsFor(Method.PUT, site, study, STUDY_SUBJECT_CALENDAR_MANAGER);
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
+
+    //todo need to check that notification_identifier corresponds to assignment_identifier
     protected Notification loadRequestedObject(Request request) throws ResourceException {
         String notificationIdentifier = UriTemplateParameters.NOTIFICATION_IDENTIFIER.extractFrom(request);
         if (notificationIdentifier == null) {
@@ -40,7 +71,7 @@ public class NotificationResource extends AbstractStorableDomainObjectResource<N
         return notification;
     }
 
-    @Override
+     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(getRequestedObject());

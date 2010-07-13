@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStu
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
@@ -82,6 +83,31 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         resource.setNextScheduledStudySegmentXmlSerializer(nextScheduledStudySegmentSerializer);
         resource.setScheduleService(scheduleService);
         return resource;
+    }
+
+    public void testGetAndPutAndDeleteAllowed() throws Exception {
+        expectResolvedSubjectAssignment();
+        expectSerializeScheduledCalendar();
+        replayMocks();
+        assertAllowedMethods("POST", "GET");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        expectResolvedSubjectAssignment();
+        expectSerializeScheduledCalendar();
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                DATA_READER);
+    }
+
+    public void testPostWithAuthorizedRoles() {
+        expectResolvedSubjectAssignment();
+        expectSerializeScheduledCalendar();
+        replayMocks();
+        assertRolesAllowedForMethod(Method.POST,
+            STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     ////// GET tests

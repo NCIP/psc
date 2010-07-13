@@ -971,7 +971,7 @@
                             <representation mediaType="application/json"/>
                         </response>
                     </method>
-                    <method name="POST">
+                    <method name="PUT">
                         <doc>
 							<html:p>
                             	Accepts notification's dismiss flag value and sets accordingly.

@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.test.osgi.PscMockBundle;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 import static org.easymock.EasyMock.*;
 import org.json.JSONObject;
 import org.osgi.framework.BundleContext;
@@ -50,6 +51,10 @@ public class OsgiServicePropertiesResourceTest extends AuthorizedResourceTestCas
 
     public void testPutAndGetAllowed() throws Exception {
         assertAllowedMethods("GET", "PUT");
+    }
+
+    public void testGetWithAuthorizedRoles() {
+        assertRolesAllowedForMethod(Method.GET, SYSTEM_ADMINISTRATOR);
     }
 
     public void testSysAdminsOnlyCanGet() throws Exception {

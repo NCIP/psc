@@ -10,6 +10,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  */
@@ -22,6 +24,8 @@ public abstract class OsgiAdminResource extends AbstractPscResource {
         setReadable(true);
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         setAuthorizedFor(Method.GET, Role.SYSTEM_ADMINISTRATOR);
+
+        addAuthorizationsFor(Method.GET, SYSTEM_ADMINISTRATOR);
     }
 
     protected BundleContext getBundleContext() {
