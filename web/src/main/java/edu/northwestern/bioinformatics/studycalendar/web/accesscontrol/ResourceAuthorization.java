@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.restlets;
+package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -17,11 +17,9 @@ import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.A
  * Indicates that a particular resource should be available to someone with
  * the given scoping parameters.
  *
- * @see AuthorizedResource
+ * @see edu.northwestern.bioinformatics.studycalendar.restlets.AuthorizedResource
  * @author Rhett Sutphin
  */
-// TODO: there's not really anything resource-specific about this.
-// Maybe commands/controllers should use a similar approach.
 public class ResourceAuthorization {
     private PscRole role;
     private Collection<ScopeDescription> scopes;
