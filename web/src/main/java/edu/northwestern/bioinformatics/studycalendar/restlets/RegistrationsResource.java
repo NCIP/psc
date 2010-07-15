@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;

@@ -2,24 +2,33 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.providers.TestingAuthenticationToken;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 
-import static java.util.Calendar.APRIL;
 import java.util.Collection;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static java.util.Calendar.APRIL;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -191,8 +200,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
         User subjCoord = Fixtures.createUser("subjectCo", SUBJECT_COORDINATOR);
         subjCoord.getUserRole(SUBJECT_COORDINATOR).addStudySite(studySite);
-        Authentication auth = new TestingAuthenticationToken(subjCoord, null, null);
-        request.getAttributes().put(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+        setLegacyCurrentUser(subjCoord);
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
@@ -214,8 +222,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         Registration posted = Registration.create(expectedSegment, expectedDate, existedSubject, expectedAssignmentId);
         User subjCoord = Fixtures.createUser("subjectCo", SUBJECT_COORDINATOR);
         subjCoord.getUserRole(SUBJECT_COORDINATOR).addStudySite(studySite);
-        Authentication auth = new TestingAuthenticationToken(subjCoord, null, null);
-        request.getAttributes().put(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+        setLegacyCurrentUser(subjCoord);
 
         expectResolvedStudyAndSite(study, site);
         expectReadXmlFromRequestAs(posted);
