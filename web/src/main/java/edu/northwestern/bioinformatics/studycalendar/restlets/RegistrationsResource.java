@@ -1,17 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.RegistrationService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.acegisecurity.Authentication;
 import org.restlet.Context;
-import org.restlet.data.*;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -52,8 +56,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
         try {
             registrationService.resolveRegistration(value);
             if (value.getSubjectCoordinator() == null) {
-                Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
-                value.setSubjectCoordinator((User) auth.getPrincipal());
+                value.setSubjectCoordinator(getLegacyCurrentUser());
             }
             for (StudySite studySite : value.getSubjectCoordinator().getUserRole(Role.SUBJECT_COORDINATOR).getStudySites() ) {
                 if (studySite.equals(getStudySite())) {
