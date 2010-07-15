@@ -5,7 +5,7 @@
     <property name="download" value="${basedir}/temp/download"/>
     <property name="jruby.version" value="1.4.0"/>
     <property name="jruby.dist.filename" value="jruby-bin-${jruby.version}.zip"/>
-    <property name="jruby.dist.url" value="http://jruby.kenai.com/downloads/${jruby.version}/${jruby.dist.filename}"/>
+    <property name="jruby.dist.url" value="http://jruby.org.s3.amazonaws.com/downloads/${jruby.version}/${jruby.dist.filename}"/>
     <property name="jruby.dist.local" value="${download}/${jruby.dist.filename}"/>
     <property name="jruby.local.base"   value="${download}/jruby-${jruby.version}"/>
     <property name="jruby.local.script" value="${jruby.local.base}/bin/jruby"/>
