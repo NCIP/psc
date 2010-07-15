@@ -76,7 +76,7 @@
         <install_gem name="buildr"/>
     </target>
 
-    <property name="gems.buildr-iidea.version" value="0.0.7"/>
+    <property name="gems.buildr-iidea.version" value="0.0.8"/>
     <gem_available name="buildr-iidea"/>
     <target name="install:gem:buildr-iidea" unless="buildr-iidea.exists" depends="install:jruby" description="Installs buildr-iidea gem">
         <install_gem name="buildr-iidea"/>
