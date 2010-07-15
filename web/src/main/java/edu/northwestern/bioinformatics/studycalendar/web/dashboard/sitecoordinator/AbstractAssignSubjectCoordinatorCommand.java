@@ -4,13 +4,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.AbstractGridCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
-
-import java.util.List;
-
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContextHolder;
+
+import java.util.List;
 
 /**
  * @author John Dzak
@@ -47,8 +47,8 @@ public abstract class AbstractAssignSubjectCoordinatorCommand<R extends Named, C
     protected void refreshUser(User user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            User authenticatedUser = (User) authentication.getPrincipal();
-            if (user.getName().equals(authenticatedUser.getName())) {
+            PscUser authenticatedUser = (PscUser) authentication.getPrincipal();
+            if (user.getName().equals(authenticatedUser.getUsername())) {
                 installedAuthenticationSystem.reloadAuthorities();
             }
         }
