@@ -59,7 +59,6 @@ public class SiteDaoTest extends DaoTestCase {
 
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
-        List<BlackoutDate> list = actual.getBlackoutDates();
         actual.getBlackoutDates().remove(1);
         siteDao.save(actual);
 
