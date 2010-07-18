@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -12,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -20,6 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -29,9 +32,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static org.easymock.EasyMock.*;
 
 public class StudyServiceTest extends StudyCalendarTestCase {
@@ -67,6 +73,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.setNowFactory(staticNowFactory);
         service.setScheduledActivityDao(scheduledActivityDao);
         service.setNotificationService(notificationService);
+        service.setApplicationSecurityManager(applicationSecurityManager);
 
         study = setId(1 , new Study());
 
@@ -75,6 +82,12 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         subjectAssignment = new StudySubjectAssignment();
         subjectAssignment.setSubject(createSubject("John", "Doe"));
         subjectAssignment.setScheduledCalendar(calendar);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        applicationSecurityManager.removeUserSession();
     }
 
     public void testScheduleReconsentAfterScheduledActivityOnOccurredEvent() throws Exception{
@@ -169,6 +182,101 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testDefaultManagingSitesSetFromUser() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(
+            createPscUser("sherry",
+                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+                    forSites(createSite("A", "A"), createSite("B", "B"))),
+            "secret"
+        );
+
+        Study expected = createNamedInstance("A", Study.class);
+
+        studyDao.save(expected);
+        replayMocks();
+
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Wrong number of managing sites", 2, expected.getManagingSites().size());
+        Iterator<Site> siteIterator = expected.getManagingSites().iterator();
+        assertEquals("Wrong 1st managing site", "A", siteIterator.next().getAssignedIdentifier());
+        assertEquals("Wrong 2nd managing site", "B", siteIterator.next().getAssignedIdentifier());
+    }
+
+    public void testDefaultManagingSitesForAllSitesUser() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(
+            createPscUser("sherry",
+                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites()),
+                "secret"
+        );
+
+        Study expected = createNamedInstance("A", Study.class);
+
+        studyDao.save(expected);
+        replayMocks();
+
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Wrong number of managing sites", 0, expected.getManagingSites().size());
+    }
+
+    public void testNoManagingSitesSetFromNonBuilderUser() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(
+            createPscUser("sherry",
+                createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).
+                    forSites(createSite("A", "A"), createSite("B", "B"))),
+            "secret"
+        );
+
+        Study expected = createNamedInstance("A", Study.class);
+
+        studyDao.save(expected);
+        replayMocks();
+
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Wrong number of managing sites", 0, expected.getManagingSites().size());
+    }
+
+    public void testNoManagingSitesSetWithNoUser() throws Exception {
+        applicationSecurityManager.removeUserSession();
+
+        Study expected = createNamedInstance("A", Study.class);
+
+        studyDao.save(expected);
+        replayMocks();
+
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Wrong number of managing sites", 0, expected.getManagingSites().size());
+    }
+
+    public void testManagingSitesNotChangedForUpdates() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(
+            createPscUser("sherry",
+                createSuiteRoleMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+                    forSites(createSite("A", "A"), createSite("B", "B"))),
+            "secret"
+        );
+
+        Study expected = setId(4, createNamedInstance("A", Study.class));
+        expected.addManagingSite(createSite("C"));
+
+        studyDao.save(expected);
+        replayMocks();
+
+        service.save(expected);
+        verifyMocks();
+
+        assertEquals("Wrong number of managing sites", 1, expected.getManagingSites().size());
+        Iterator<Site> siteIterator = expected.getManagingSites().iterator();
+        assertEquals("Wrong 1st managing site", "C", siteIterator.next().getName());
+    }
+    
     public void testGetNewStudyName() {
         Study study1 = createNamedInstance("[ABC 1000]", Study.class);
         Study study2 = createNamedInstance("[ABC temp]", Study.class);
