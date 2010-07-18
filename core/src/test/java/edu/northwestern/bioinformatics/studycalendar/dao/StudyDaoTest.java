@@ -53,7 +53,8 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         List<Study> studies = getDao().searchStudiesByStudyName("NCi");
         assertEquals("there must be 2 studies", 2, studies.size());
         for (Study study : studies) {
-            assertTrue("study must have assigned identifer matching %nci% string", study.getName().toLowerCase().indexOf("nci") >= 0);
+            assertTrue("study must have assigned identifier matching %nci% string",
+                study.getName().toLowerCase().contains("nci"));
         }
         Collection<Integer> ids = DomainObjectTools.collectIds(studies);
         assertContains("Wrong study found", ids, -100);
@@ -64,7 +65,8 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         studies = getDao().searchStudiesByStudyName(identifierWhichDoesNotExists);
         assertEquals("there must be 3 studies", 3, studies.size());
         for (Study study : studies) {
-            assertTrue("study must not have assigned identifer matching %nci identifier which does not exists% string", study.getName().toLowerCase().indexOf(identifierWhichDoesNotExists) < 0);
+            assertTrue("study must not have assigned identifier matching %nci identifier which does not exists% string",
+                !study.getName().toLowerCase().contains(identifierWhichDoesNotExists));
         }
         ids = DomainObjectTools.collectIds(studies);
         assertContains("Wrong study found", ids, -100);
@@ -115,7 +117,8 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
 
         {
             Study reloaded = getDao().getById(-100);
-            assertEquals("Wrong number of idents after delete", 2, reloaded.getSecondaryIdentifiers().size());
+            assertEquals("Wrong number of idents after delete", 2,
+                reloaded.getSecondaryIdentifiers().size());
             Iterator<StudySecondaryIdentifier> it = reloaded.getSecondaryIdentifiers().iterator();
             assertSecondaryIdentifier("Wrong remaining ident", "NCT", "NCT100", it.next());
             assertSecondaryIdentifier("Wrong remaining ident", "Organization", "SWOG-100", it.next());
@@ -139,7 +142,9 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         }
     }
 
-    private void assertSecondaryIdentifier(String message, String expectedType, String expectedIdent, StudySecondaryIdentifier actual) {
+    private void assertSecondaryIdentifier(
+        String message, String expectedType, String expectedIdent, StudySecondaryIdentifier actual
+    ) {
         assertEquals(message + ": wrong type",  expectedType,  actual.getType());
         assertEquals(message + ": wrong value", expectedIdent, actual.getValue());
     }
@@ -157,7 +162,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         Integer savedId;
         {
             Study study = new Study();
-            study.setName("New study");
+            study.setAssignedIdentifier("New study");
             study.setLongTitle("New study");
             getDao().save(study);
             savedId = study.getId();
@@ -178,7 +183,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         Integer savedId;
         {
             Study study = new Study();
-            study.setName("New study");
+            study.setAssignedIdentifier("New study");
             study.setLongTitle("New study");
             Population population = new Population();
             population.setName("pop1");

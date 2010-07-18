@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
@@ -24,7 +23,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import static org.easymock.EasyMock.*;
 import org.easymock.classextension.EasyMock;
 
 import java.sql.Timestamp;
@@ -32,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
 
 public class StudyServiceTest extends StudyCalendarTestCase {
     private static final Timestamp NOW = DateTools.createTimestamp(2001, Calendar.FEBRUARY, 4);
@@ -47,6 +48,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -152,18 +154,18 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSave() {
-        Study study = createNamedInstance("Study A", Study.class);
+        Study expected = createNamedInstance("Study A", Study.class);
         Amendment amend0 = Fixtures.createAmendments("Amendment A");
         Amendment amend1 = Fixtures.createAmendments("Amendment B");
         amend1.setPreviousAmendment(amend0);
-        study.setAmendment(amend1);
+        expected.setAmendment(amend1);
 
-        studyDao.save(study);
+        studyDao.save(expected);
         deltaService.saveRevision(amend1);
         deltaService.saveRevision(amend0);
         replayMocks();
 
-        service.save(study);
+        service.save(expected);
         verifyMocks();
     }
 
@@ -176,10 +178,6 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         studies.add(study1);
         studies.add(study2);
         studies.add(study3);
-
-        List<Study> filteredStudies = new ArrayList<Study>();
-        filteredStudies.add(study1);
-        filteredStudies.add(study3);
 
         expect(service.getStudyDao().searchStudiesByAssignedIdentifier("[ABC %]")).andReturn(studies);
 
