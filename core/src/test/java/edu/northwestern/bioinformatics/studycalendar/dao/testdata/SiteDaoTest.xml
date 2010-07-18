@@ -41,4 +41,11 @@
         month="12"
         description="Xmas"
         />
+
+    <STUDIES
+        id="-1"
+        assigned_identifier="EL 5203"/>
+    <MANAGING_SITES
+        study_id="-1"
+        site_id="-4"/>
 </dataset>

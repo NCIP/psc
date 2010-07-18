@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,12 +21,16 @@ public class SiteDaoTest extends DaoTestCase {
 
     public void testGetById() throws Exception {
         Site actual = siteDao.getById(-4);
-        assertNotNull("Study not found", actual);
+        assertNotNull("Site not found", actual);
         assertEquals("Wrong id", -4, (int) actual.getId());
         assertEquals("Wrong name", "default", actual.getName());
         assertEquals("Wrong provider", "coppa-direct", actual.getProvider());
         assertDayOfDate("Wrong last refresh", 2007, Calendar.MARCH, 23, actual.getLastRefresh());
         assertTimeOfDate("Wrong last refresh", 13, 45, 7, 0, actual.getLastRefresh());
+        assertEquals("Wrong number of managed studies", 1, actual.getManagedStudies().size());
+        Study actualManagedStudy = actual.getManagedStudies().iterator().next();
+        assertEquals("Wrong managed study", "EL 5203", actualManagedStudy.getAssignedIdentifier());
+        assertSame("Birdirectional relationship not loaded for managed study", actual, actualManagedStudy.getManagingSites().iterator().next());
     }
 
     public void testGetByAssignedIdentifier() throws Exception {
@@ -97,15 +102,22 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testCount() throws Exception {
-        assertEquals("Should be two sites, to start", 5, siteDao.getCount());
+        assertEquals("Should be five sites, to start", 5, siteDao.getCount());
 
         Site newSite = new Site();
         newSite.setName("Hampshire");
         siteDao.save(newSite);
         interruptSession();
-        assertEquals("Should be three sites after saving", 6, siteDao.getCount());
+        assertEquals("Should be six sites after saving", 6, siteDao.getCount());
 
-        getJdbcTemplate().update("DELETE FROM sites");
-        assertEquals("And now there should be none", 0, siteDao.getCount());
+        siteDao.delete(siteDao.getById(-4));
+        interruptSession();
+        assertEquals("And now there should be five again", 5, siteDao.getCount());
+    }
+
+    public void testDeleteWithManagedStudies() throws Exception {
+        siteDao.delete(siteDao.getById(-4));
+        interruptSession();
+        assertNull(siteDao.getById(-4));
     }
 }

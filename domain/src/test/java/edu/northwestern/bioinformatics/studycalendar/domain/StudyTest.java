@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -11,6 +9,9 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 
 /**
  * @author Rhett Sutphin
@@ -292,5 +293,47 @@ public class StudyTest extends TestCase {
         addSecondaryIdentifier(study, "foo", "B");
 
         assertEquals("A", study.getSecondaryIdentifierValue("foo"));
+    }
+
+    public void testIsNotManagedWithNoManagers() throws Exception {
+        assertFalse("Should not be managed", new Study().isManaged());
+    }
+
+    public void testIsManagedWithOneManagingSite() throws Exception {
+        Site b = createSite("B");
+        study.addManagingSite(b);
+        assertTrue("Should be managed", study.isManaged());
+    }
+
+    public void testAddManagingSiteAddsTheSite() throws Exception {
+        Site q = createSite("Q");
+        study.addManagingSite(q);
+        assertTrue("Missing new site", study.getManagingSites().contains(q));
+    }
+
+    public void testAddManagingSiteMaintainsBidirectionalRelationship() throws Exception {
+        Site q = createSite("Q");
+        study.addManagingSite(q);
+        assertTrue("Site missing new study", q.getManagedStudies().contains(study));
+    }
+
+    public void testRemoveManagingSiteRemovesTheSite() throws Exception {
+        Site q = createSite("Q");
+        study.addManagingSite(q);
+        study.removeManagingSite(q);
+        assertFalse("Site still present", study.getManagingSites().contains(q));
+    }
+
+    public void testRemoveManagingSiteRemovesBidirectionalRelationship() throws Exception {
+        Site q = createSite("Q");
+        study.addManagingSite(q);
+        study.removeManagingSite(q);
+        assertFalse("Site still has study", q.getManagedStudies().contains(study));
+    }
+
+    public void testRemoveNonManagingSiteDoesNothing() throws Exception {
+        Site q = createSite("Q");
+        study.removeManagingSite(q);
+        // no exception
     }
 }

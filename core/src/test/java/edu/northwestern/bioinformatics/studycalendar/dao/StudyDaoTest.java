@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -223,5 +224,16 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong provider", "NCT", actual.getProvider());
         assertDayOfDate("Wrong last refresh", 2007, Calendar.MARCH, 29, actual.getLastRefresh());
         assertTimeOfDate("Wrong last refresh", 13, 45, 7, 0, actual.getLastRefresh());
+        assertEquals("Wrong managing site count", 1, actual.getManagingSites().size());
+        Site actualManager = actual.getManagingSites().iterator().next();
+        assertEquals("Wrong managing site", -40, (int) actualManager.getId());
+        assertSame("Managing site does not have link back to study", actual,
+            actualManager.getManagedStudies().iterator().next());
+    }
+
+    public void testDeleteStudy() throws Exception {
+        getDao().delete(getDao().getById(-100));
+        // no exceptions
+        assertNull(getDao().getById(-100));
     }
 }

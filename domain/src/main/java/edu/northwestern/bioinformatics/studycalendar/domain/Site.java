@@ -6,12 +6,14 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +31,7 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
     private String name;
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
+    private Set<Study> managedStudies = new LinkedHashSet<Study>();
 
     private String assignedIdentifier;
 
@@ -87,6 +90,25 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
         }
     }
 
+    public void addManagedStudy(Study study) {
+        study.addManagingSite(this);
+    }
+
+    public void removeManagedStudy(Study study) {
+        study.removeManagingSite(this);
+    }
+
+    /**
+     * Stops managing any and all managed studies
+     */
+    public void stopManaging() {
+        // copy to avoid simultaneous modification exception
+        Collection<Study> managees = new LinkedHashSet<Study>(getManagedStudies());
+        for (Study managee : managees) {
+            managee.removeManagingSite(this);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
@@ -129,6 +151,15 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
 
     public void setAssignedIdentifier(final String assignedIdentifier) {
         this.assignedIdentifier = assignedIdentifier;
+    }
+
+    @ManyToMany(mappedBy = "managingSites")
+    public Set<Study> getManagedStudies() {
+        return managedStudies;
+    }
+
+    public void setManagedStudies(Set<Study> managedStudies) {
+        this.managedStudies = managedStudies;
     }
 
     ////// OBJECT METHODS

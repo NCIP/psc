@@ -10,14 +10,16 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.Where;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -72,6 +74,7 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
     private Set<Population> populations = new LinkedHashSet<Population>();
+    private Set<Site> managingSites = new LinkedHashSet<Site>();
 
     private boolean memoryOnly = false;
 
@@ -327,6 +330,21 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
         return new Differences();
     }
 
+    @Transient
+    public boolean isManaged() {
+        return !getManagingSites().isEmpty();
+    }
+
+    public void addManagingSite(Site newManager) {
+        getManagingSites().add(newManager);
+        newManager.getManagedStudies().add(this);
+    }
+
+    public void removeManagingSite(Site oldManager) {
+        getManagingSites().remove(oldManager);
+        oldManager.getManagedStudies().remove(this);
+    }
+
     ////// BEAN PROPERTIES
 
     /**
@@ -428,6 +446,20 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
 
     public void setLongTitle(String longTitle) {
         this.longTitle = longTitle;
+    }
+
+    @ManyToMany
+    @JoinTable(
+        name="managing_sites",
+        joinColumns = @JoinColumn(name = "study_id", nullable = false),
+        inverseJoinColumns = @JoinColumn(name = "site_id", nullable = false)
+    )
+    public Set<Site> getManagingSites() {
+        return managingSites;
+    }
+
+    public void setManagingSites(Set<Site> managingSites) {
+        this.managingSites = managingSites;
     }
 
     ////// OBJECT METHODS

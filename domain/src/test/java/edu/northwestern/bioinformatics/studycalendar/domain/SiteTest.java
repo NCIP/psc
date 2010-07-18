@@ -44,6 +44,32 @@ public class SiteTest extends TestCase {
         assertSame(site, site.getStudySite(s3).getSite());
     }
     
+    public void testAddManagedStudyAddsTheStudy() throws Exception {
+        Study s = new Study();
+        site.addManagedStudy(s);
+        assertTrue(site.getManagedStudies().contains(s));
+    }
+
+    public void testAddManagedStudyMaintainsTheBidirectionalRelationship() throws Exception {
+        Study s = new Study();
+        site.addManagedStudy(s);
+        assertTrue(s.getManagingSites().contains(site));
+    }
+
+    public void testRemoveManagedStudyRemovesTheStudy() throws Exception {
+        Study s = new Study();
+        site.addManagedStudy(s);
+        site.removeManagedStudy(s);
+        assertFalse(site.getManagedStudies().contains(s));
+    }
+
+    public void testAddManagedStudyRemovesTheBidirectionalRelationship() throws Exception {
+        Study s = new Study();
+        site.addManagedStudy(s);
+        site.removeManagedStudy(s);
+        assertFalse(s.getManagingSites().contains(site));
+    }
+
     public void testToString() throws Exception {
         site.setId(49);
         site.setName("An Area");

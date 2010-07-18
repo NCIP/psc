@@ -17,6 +17,10 @@ public class StudyCalendarNamingStrategyTest extends TestCase {
         assertEquals("planned_activity_id", strategy.foreignKeyColumnName("plannedActivity", DC, DC, DC));
     }
 
+    public void testForeignKeyColumnWithNoPropertyName() throws Exception {
+        assertEquals("planned_activity_id", strategy.foreignKeyColumnName(null, "PlannedActivity", "planned_activities", DC));
+    }
+
     public void testTableName() throws Exception {
         assertEquals("subjects", strategy.classToTableName(Subject.class.getName()));
         assertEquals("study_subject_assignments", strategy.classToTableName(StudySubjectAssignment.class.getName()));

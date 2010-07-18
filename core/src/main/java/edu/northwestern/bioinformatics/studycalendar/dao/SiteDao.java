@@ -92,10 +92,12 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
      * @param  site the site to delete
      */
     public void delete(final Site site) {
+        site.stopManaging(); // it's bogus that hibernate apparently can't do this itself
         getHibernateTemplate().delete(site);
     }
 
     public void deleteAll(List<Site> t) {
+        for (Site site : t) site.stopManaging();
         getHibernateTemplate().deleteAll(t);
     }
 
