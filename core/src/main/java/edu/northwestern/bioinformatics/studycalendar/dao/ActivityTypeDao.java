@@ -18,6 +18,7 @@ public class ActivityTypeDao extends StudyCalendarMutableDomainObjectDao<Activit
     *
     * @return      list of all the Activity types currently available
     */
+    @Override
     @SuppressWarnings({ "unchecked" })
     public List<ActivityType> getAll() {
         return getHibernateTemplate().find("from ActivityType order by name");

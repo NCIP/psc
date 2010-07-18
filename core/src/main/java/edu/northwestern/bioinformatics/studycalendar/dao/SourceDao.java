@@ -15,6 +15,7 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
      *
      * @return      a list of all the available activity sources
      */
+    @Override
     @SuppressWarnings({ "unchecked" })
     public List<Source> getAll()  {
         return getHibernateTemplate().find("from Source order by name");

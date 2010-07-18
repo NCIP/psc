@@ -30,9 +30,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
     *
     * @return      list of all the Activities currently available
     */
+    @Override
     @SuppressWarnings({ "unchecked" })
     public List<Activity> getAll() {
-        List<Activity> sortedList = getHibernateTemplate().find("from Activity");
+        List<Activity> sortedList = super.getAll();
         Collections.sort(sortedList);
         return sortedList;
     }

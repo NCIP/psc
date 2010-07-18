@@ -39,11 +39,6 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     }
 
     @SuppressWarnings({ "unchecked" })
-    public List<Amendment> getAll() {
-        return getHibernateTemplate().find("from Amendment");
-    }
-
-    @SuppressWarnings({ "unchecked" })
     public Amendment getByNaturalKey(String key, Study study) {
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {

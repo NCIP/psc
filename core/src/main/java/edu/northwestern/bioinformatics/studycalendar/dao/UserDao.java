@@ -16,6 +16,7 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implement
         return User.class;
     }
 
+    @Override
     @SuppressWarnings({"unchecked"})
     public List<User> getAll() {
         return getHibernateTemplate().find("from User order by name");

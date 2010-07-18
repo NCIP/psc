@@ -1,19 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-
-import java.util.List;
-import java.util.Collections;
-import java.sql.SQLException;
-
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.transaction.annotation.Transactional;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao<PlannedActivityLabel> implements DeletableDomainObjectDao<PlannedActivityLabel>{
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -48,9 +47,10 @@ public class PlannedActivityLabelDao extends StudyCalendarMutableDomainObjectDao
     *
     * @return      list of all the Activities currently available
     */
+    @Override
     @SuppressWarnings({ "unchecked" })
     public List<PlannedActivityLabel> getAll() {
-        List<PlannedActivityLabel> sortedList = getHibernateTemplate().find("from PlannedActivityLabels");
+        List<PlannedActivityLabel> sortedList = super.getAll();
         Collections.sort(sortedList);
         return sortedList;
     }

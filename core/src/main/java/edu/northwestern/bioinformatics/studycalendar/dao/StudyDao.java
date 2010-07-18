@@ -27,16 +27,6 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     }
 
     /**
-     * Finds all the studies available
-     *
-     * @return a list of all the available studies
-     */
-    @SuppressWarnings({"unchecked"})
-    public List<Study> getAll() {
-        return getHibernateTemplate().find("from Study");
-    }
-
-    /**
      * Finds the assignments for a particular study
      *
      * @param studyId the study to get the assignments for

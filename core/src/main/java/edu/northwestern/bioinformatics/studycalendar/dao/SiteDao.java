@@ -29,8 +29,10 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
      *
      * @return      a list of all the available sites
      */
+    @Override
+    @SuppressWarnings({ "unchecked" })
     public List<Site> getAll() {
-        return getHibernateTemplate().find("from Site order by name asc ");
+        return getHibernateTemplate().find("from Site order by name asc");
     }
 
     /**

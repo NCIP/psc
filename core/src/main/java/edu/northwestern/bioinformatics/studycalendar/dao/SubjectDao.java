@@ -29,6 +29,8 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> imp
      *
      * @return      a list of all the subjects
      */
+    @Override
+    @SuppressWarnings({ "unchecked" })
     public List<Subject> getAll() {
         return getHibernateTemplate().find("from Subject p order by p.lastName, p.firstName");
     }
