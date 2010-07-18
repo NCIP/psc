@@ -109,6 +109,25 @@ public class PscUserTest extends TestCase {
         assertTrue(create().isAccountNonExpired());
     }
 
+    public void testGetMembershipByPscRole() throws Exception {
+        SuiteRoleMembership actual = create(
+            createMembership(SuiteRole.AE_REPORTER),
+            createMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)
+        ).getMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+
+        assertNotNull("Not found", actual);
+        assertEquals(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actual.getRole());
+    }
+
+    public void testGetNonExistentMembershipByPscRoleIsNull() throws Exception {
+        SuiteRoleMembership actual = create(
+            createMembership(SuiteRole.AE_REPORTER),
+            createMembership(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER)
+        ).getMembership(PscRole.USER_ADMINISTRATOR);
+
+        assertNull("Found", actual);
+    }
+
     public void testToStringIsUsername() throws Exception {
         assertEquals("jo", create().toString());
     }
