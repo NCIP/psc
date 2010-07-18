@@ -5,13 +5,20 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
+ * @author Rhett Sutphin
  */
 @Entity
 @Table(name = "sites")
@@ -55,6 +62,31 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
         return getAssignedIdentifier();
     }
 
+    @Transient
+    public boolean isBlackoutDatePresent(final BlackoutDate blackoutDate) {
+        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
+            if (existingBlackoutDate.getId() != null && blackoutDate != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transient
+    public void removeBlackoutDate(final BlackoutDate blackoutDate) {
+        BlackoutDate holidayToRemove = null;
+        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
+            if (existingBlackoutDate.getId() != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
+                holidayToRemove = existingBlackoutDate;
+                break;
+            }
+        }
+
+        if (holidayToRemove != null) {
+            getBlackoutDates().remove(holidayToRemove);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
@@ -65,16 +97,22 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
         this.name = name;
     }
 
+    @OneToMany(mappedBy = "site")
+    @OrderBy // order by ID for testing consistency
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
+
     public void setStudySites(final List<StudySite> studySites) {
         this.studySites = studySites;
     }
 
     @OneToMany(mappedBy = "site")
-    @OrderBy
-    // order by ID for testing consistency
+    @OrderBy // order by ID for testing consistency
     @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<StudySite> getStudySites() {
-        return studySites;
+    public List<BlackoutDate> getBlackoutDates() {
+        return blackoutDates;
     }
 
     public void setBlackoutDates(final List<BlackoutDate> blackoutDates) {
@@ -91,67 +129,6 @@ public class Site extends AbstractProvidableDomainObject implements Named, Seria
 
     public void setAssignedIdentifier(final String assignedIdentifier) {
         this.assignedIdentifier = assignedIdentifier;
-    }
-
-    @OneToMany(mappedBy = "site")
-    @OrderBy
-    // order by ID for testing consistency
-    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<BlackoutDate> getBlackoutDates() {
-        return blackoutDates;
-    }
-
-    @Transient
-    public boolean checkIfHolidayExists(final BlackoutDate blackoutDate) {
-
-        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
-            if (existingBlackoutDate.getId() != null && blackoutDate != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Transient
-    public void removeHoliday(final BlackoutDate blackoutDate) {
-        BlackoutDate holidayToRemove = null;
-        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
-            if (existingBlackoutDate.getId() != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
-                holidayToRemove = existingBlackoutDate;
-                break;
-            }
-        }
-
-        if (holidayToRemove != null) {
-            getBlackoutDates().remove(holidayToRemove);
-        }
-
-    }
-
-    /**
-     * Adds the holiday if holiday does not exists. Or updates the holiday if holiday already exists
-     *
-     * @param blackoutDate
-     */
-    @Transient
-    public void addOrMergeExistingHoliday(final BlackoutDate blackoutDate) {
-
-        BlackoutDate holidayToAddOrMerge = null;
-        for (BlackoutDate existingBlackoutDate : this.getBlackoutDates()) {
-            if (existingBlackoutDate.getId() != null && existingBlackoutDate.getId().equals(blackoutDate.getId())) {
-                holidayToAddOrMerge = existingBlackoutDate;
-                break;
-            }
-        }
-
-        if (holidayToAddOrMerge != null) {
-            holidayToAddOrMerge.mergeAnotherHoliday(blackoutDate);
-
-        } else {
-            getBlackoutDates().add(blackoutDate);
-
-        }
-
     }
 
     ////// OBJECT METHODS

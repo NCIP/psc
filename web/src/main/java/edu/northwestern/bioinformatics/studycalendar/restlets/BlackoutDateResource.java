@@ -62,7 +62,7 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
     @Override
     public void remove(final BlackoutDate blackoutDate) {
         try {
-            site.removeHoliday(blackoutDate);
+            site.removeBlackoutDate(blackoutDate);
             siteService.createOrUpdateSite(site);
         } catch (Exception e) {
             String message = "Can not delete the holiday" + UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.extractFrom(getRequest()) +
@@ -83,7 +83,7 @@ public class BlackoutDateResource extends AbstractRemovableStorableDomainObjectR
         super.verifyRemovable(blackoutDate);
         boolean holidayExists = false;
 
-        holidayExists = site.checkIfHolidayExists(blackoutDate);
+        holidayExists = site.isBlackoutDatePresent(blackoutDate);
         if (!holidayExists) {
             String message = "Can not delete the blackoutDate " + UriTemplateParameters.BLACKOUT_DATE_IDENTIFIER.extractFrom(getRequest()) +
                     " on the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()) + " because blackoutDate does not exists on this site.";
