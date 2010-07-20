@@ -701,6 +701,20 @@ define "psc" do
           subant.property :name => "webapp.name", :value => wsrf_dir_name
         end
       end
+      ##using filtertask to filter the server-config.wsdd. Migrated the update-wsdd ant task to buildr. Added a custom mapper for filters
+      ##Wasnt able to do an inplace filtering hence creating a work directory and then deleting it.
+      ##Tested and working
+      ## 1093 task
+       FileUtils.mkdir_p _('target/work')
+       filter.from(wsrf_dir+"/WEB-INF/etc/globus_wsrf_core").into(_('target/work')).include("server-config.wsdd").using(
+           :xml, :xpath => "/deployment/globalConfiguration", 
+	   :insert_type => :under, 
+	   :xml_content => "<parameter name=\"disableDNS\" value=\"true\"/>
+                            <parameter name=\"logicalHost\" value=\"${tomcat.hostname}\"/>"
+       ).run
+       FileUtils.rm wsrf_dir+"/WEB-INF/etc/globus_wsrf_core/server-config.wsdd"
+       filter.from(_('target/work')).into(wsrf_dir+"/WEB-INF/etc/globus_wsrf_core").include("server-config.wsdd").run
+       FileUtils.remove_dir _('target/work')
     end
 
     ##this will deploy all the psc implementations together with the grid services provided PSC. Consider this for CCTS deployments since the
