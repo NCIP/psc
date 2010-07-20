@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.activity;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityCommand;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
@@ -15,12 +17,14 @@ import org.springframework.validation.BindException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
-public class AddActivityController extends PscAbstractCommandController<NewActivityCommand> {
+public class AddActivityController extends PscAbstractCommandController<NewActivityCommand> implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
     private SourceDao sourceDao;
@@ -31,6 +35,10 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
         setValidator(new ValidatableValidator());
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
+    }
+    
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
         return new NewActivityCommand(activityDao);

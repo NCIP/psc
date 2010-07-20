@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationServic
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -25,16 +27,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * @author Rhett Sutphin
  */
-public class SubjectCentricScheduleController extends PscAbstractController {
+public class SubjectCentricScheduleController extends PscAbstractController implements PscAuthorizedHandler {
     private SubjectDao subjectDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
@@ -44,6 +44,10 @@ public class SubjectCentricScheduleController extends PscAbstractController {
 
     public SubjectCentricScheduleController() {
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     @Override

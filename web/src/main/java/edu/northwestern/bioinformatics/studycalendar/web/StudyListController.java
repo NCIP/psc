@@ -11,20 +11,21 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import org.restlet.data.Method;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class StudyListController extends PscAbstractController {
+public class StudyListController extends PscAbstractController implements PscAuthorizedHandler{
     private StudyDao studyDao;
     private TemplateService templateService;
     private UserDao userDao;
@@ -33,6 +34,18 @@ public class StudyListController extends PscAbstractController {
 
     public StudyListController() {
         setCrumb(new DefaultCrumb("Studies"));
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(
+                DATA_IMPORTER,
+                STUDY_QA_MANAGER, STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                STUDY_CREATOR,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER
+        );
     }
 
     @Override   

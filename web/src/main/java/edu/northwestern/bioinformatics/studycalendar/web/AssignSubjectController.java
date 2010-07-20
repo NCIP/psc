@@ -23,11 +23,14 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,12 +47,15 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SUBJECT_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+
 /**
  * @author Padmaja Vedula
  * @author Jalpa Patel
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class AssignSubjectController extends PscSimpleFormController {
+public class AssignSubjectController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SubjectDao subjectDao;
     private SubjectService subjectService;
     private StudyDao studyDao;
@@ -57,6 +63,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     private SiteDao siteDao;
     private PopulationDao populationDao;
     private ApplicationSecurityManager applicationSecurityManager;
+    private String radioButton;
 
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
@@ -68,6 +75,24 @@ public class AssignSubjectController extends PscSimpleFormController {
         setValidator(new ValidatableValidator());
     }
 
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        if (getRadioButton() == null) {
+            return ResourceAuthorization.createCollection(SUBJECT_MANAGER);
+        } else {
+            if (httpMethod.toLowerCase().equals("post")) {
+                if (getRadioButton().equals("new")) {
+                    return ResourceAuthorization.createCollection(SUBJECT_MANAGER);
+                }
+                else {
+                    return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+                }
+            } else {
+                return ResourceAuthorization.createCollection(SUBJECT_MANAGER);
+            }
+        }
+    }
+
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
@@ -77,6 +102,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "subject", subjectDao);
         getControllerTools().registerDomainObjectEditor(binder, "populations", populationDao);
+        setRadioButton(ServletRequestUtils.getStringParameter(request, "radioButton"));
     }
 
     @Override
@@ -163,6 +189,15 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     ////// CONFIGURATION
+
+
+    public String getRadioButton() {
+        return radioButton;
+    }
+
+    public void setRadioButton(String radioButton) {
+        this.radioButton = radioButton;
+    }
 
     @Required
     public void setSubjectDao(SubjectDao subjectDao) {

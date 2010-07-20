@@ -3,10 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SUBJECT_MANAGER;
 import static org.easymock.classextension.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.notNull;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -23,6 +26,11 @@ public class NewSubjectControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
     }
 
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
+    }
+    
     public void testReferenceData() throws Exception {
         Map<String, Object> refdata = controller.referenceData(request);
         Map<String, String> genders = (Map<String, String>) refdata.get("genders");

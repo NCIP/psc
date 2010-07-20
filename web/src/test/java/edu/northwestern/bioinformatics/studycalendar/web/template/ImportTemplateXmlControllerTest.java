@@ -4,10 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 
 import javax.servlet.http.HttpServletRequest;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Collection;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_IMPORTER;
 
 public class ImportTemplateXmlControllerTest extends ControllerTestCase {
     private ImportTemplateXmlController controller;
@@ -36,6 +40,10 @@ public class ImportTemplateXmlControllerTest extends ControllerTestCase {
         multipartRequest.setSession(session);
     }
 
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, DATA_IMPORTER);
+    }
 
     public void testSubmit() throws Exception {
         assertEquals("Wrong view", "redirectToStudyList", getOnSubmitData().getViewName());

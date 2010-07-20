@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -14,16 +16,19 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SUBJECT_MANAGER;
 
 /**
  * @author Padmaja Vedula
  */
 // TODO: this class needs to be cleaned up
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class NewSubjectController extends PscSimpleFormController {
+public class NewSubjectController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SubjectDao subjectDao;
 
     public NewSubjectController() {
@@ -31,6 +36,10 @@ public class NewSubjectController extends PscSimpleFormController {
         setFormView("createSubject");
         setSuccessView("assignSubject");
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(SUBJECT_MANAGER);
+    }    
 
     protected void initBinder(HttpServletRequest request,
         ServletRequestDataBinder binder) throws Exception {

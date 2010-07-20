@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -16,15 +18,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
 * @author Jalpa Patel
  * Date: Aug 26, 2008
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class CycleController extends PscAbstractCommandController<CycleCommand> {
+public class CycleController extends PscAbstractCommandController<CycleCommand> implements PscAuthorizedHandler {
     private StudySegmentDao studySegmentDao;
     private TemplateService templateService;
     private AmendmentService amendmentService;
@@ -32,6 +37,10 @@ public class CycleController extends PscAbstractCommandController<CycleCommand> 
     public CycleController() {
         setCommandClass(CycleCommand.class);
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }    
 
     protected Object getCommand(HttpServletRequest httpServletRequest) throws Exception {
         return new CycleCommand(templateService,amendmentService);

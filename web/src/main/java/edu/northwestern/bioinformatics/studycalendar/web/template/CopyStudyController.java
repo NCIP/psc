@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -14,16 +16,24 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Saurabh Agrawal
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class CopyStudyController extends PscAbstractCommandController<CopyStudyCommand> {
+public class CopyStudyController extends PscAbstractCommandController<CopyStudyCommand> implements PscAuthorizedHandler {
 	private StudyService studyService;
 	private StudyDao studyDao;
 
-	@Override
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }
+
+    @Override
 	protected Object getCommand(HttpServletRequest request) throws Exception {
 		return new CopyStudyCommand(studyService);
 	}

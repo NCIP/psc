@@ -15,6 +15,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -24,16 +26,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
 
 /**
  * @author John Dzak
  */
 @AccessControl(roles = {Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR})
-public class ScheduledActivitiesReportController extends PscAbstractCommandController {
+public class ScheduledActivitiesReportController extends PscAbstractCommandController implements PscAuthorizedHandler {
     private ScheduledActivitiesReportRowDao dao;
     private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
@@ -45,6 +48,14 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     public ScheduledActivitiesReportController() {
         setCommandClass(ScheduledActivitiesReportCommand.class);
         setCrumb(new DefaultCrumb("Report"));
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(
+            DATA_READER,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR
+        );
     }
 
     protected Object getCommand(HttpServletRequest request) throws Exception {

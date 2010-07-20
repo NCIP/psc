@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -16,18 +18,25 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class DeleteDevelopmentAmendmentController extends PscSimpleFormController {
+public class DeleteDevelopmentAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler {
 
     private StudyDao studyDao;
     private AmendmentService amendmentService;
     private TemplateDevelopmentService templateDevelopmentService;
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }
 
     public DeleteDevelopmentAmendmentController() {
         setCommandClass(DeleteDevelopmentAmendmentCommand.class);

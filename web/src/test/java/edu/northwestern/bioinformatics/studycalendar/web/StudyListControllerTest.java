@@ -9,19 +9,20 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.EasyMock.notNull;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -92,6 +93,18 @@ public class StudyListControllerTest extends ControllerTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         DataAuditInfo.setLocal(null);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations,
+                DATA_IMPORTER,
+                STUDY_QA_MANAGER, STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                STUDY_CREATOR,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER);
     }
 
     public void testModelAndViewForStudyAndSubjectCoordinator() throws Exception {

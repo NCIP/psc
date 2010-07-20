@@ -9,27 +9,36 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityTypeService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
 /**
  * @author Nataliya Shurupova
  */
 @AccessControl(roles = Role.STUDY_ADMIN)
-public class AddEditActivityTypeController extends PscAbstractController {
+public class AddEditActivityTypeController extends PscAbstractController implements PscAuthorizedHandler {
     private ActivityTypeDao activityTypeDao;
     private ActivityDao activityDao;
     private ActivityTypeService activityTypeService;
 
     public AddEditActivityTypeController() {
         setCrumb(new DefaultCrumb("Activity types"));
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
     }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -26,8 +26,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedT
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -35,18 +38,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR, Role.SITE_COORDINATOR})
-public class DisplayTemplateController extends PscAbstractController {
+public class DisplayTemplateController extends PscAbstractController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
@@ -57,6 +58,19 @@ public class DisplayTemplateController extends PscAbstractController {
     private StudyConsumer studyConsumer;
     private TemplateService templateService;
     private OsgiLayerTools osgiLayerTools;
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(
+                DATA_IMPORTER,
+                STUDY_QA_MANAGER,
+                STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                STUDY_CREATOR,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER
+        );
+    }
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());

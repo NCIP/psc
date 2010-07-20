@@ -5,18 +5,23 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 
-public class EditActivityController extends PscAbstractController {
+
+public class EditActivityController extends PscAbstractController implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     private ActivityTypeDao activityTypeDao;
     private PlannedActivityDao plannedActivityDao;
@@ -58,6 +63,9 @@ public class EditActivityController extends PscAbstractController {
         return new ModelAndView("template/ajax/activityTableUpdate", model);
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
+    }
 
     //// CONFIGURATION
 

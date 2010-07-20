@@ -10,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -19,6 +21,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -29,16 +33,10 @@ import org.springframework.validation.BindException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimpleFormController {
+public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimpleFormController implements PscAuthorizedHandler {
     private UserDao userDao;
     private StudySiteService studySiteService;
     private UserService userService;
@@ -47,11 +45,13 @@ public class AssignSubjectToSubjectCoordinatorByUserController extends PscSimple
     private SiteDao siteDao;
     private ApplicationSecurityManager applicationSecurityManager;
 
-
-
     public AssignSubjectToSubjectCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/assignSubjectToSubjectCoordinator");
         setSuccessView("studyList");
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_TEAM_ADMINISTRATOR);
     }
 
     //We have to remember 2 cases to process here: when selected is "unassigned" and when selected is actually the existing user

@@ -9,11 +9,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
 
 public class DeleteControllerTest extends ControllerTestCase {
@@ -56,6 +59,11 @@ public class DeleteControllerTest extends ControllerTestCase {
         a2.setId(30);
 
         PlannedActivity pa = Fixtures.createPlannedActivity(a2.getName(), 2);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, BUSINESS_ADMINISTRATOR);
     }
 
     @SuppressWarnings({ "unchecked" })

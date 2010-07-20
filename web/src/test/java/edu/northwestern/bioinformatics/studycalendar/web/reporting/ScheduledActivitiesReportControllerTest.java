@@ -12,8 +12,12 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Security
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.apache.commons.lang.StringUtils;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
 import static org.easymock.EasyMock.expect;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -89,6 +93,14 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         expect(studyDao.getAll()).andReturn(studies);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
         expect(authorizationService.filterStudiesForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies).anyTimes();
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations,
+            DATA_READER,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR);
     }
 
     @SuppressWarnings({"unchecked"})

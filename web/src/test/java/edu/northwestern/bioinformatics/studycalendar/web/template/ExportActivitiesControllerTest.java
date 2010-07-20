@@ -2,11 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import java.util.Collection;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
 
 
@@ -37,6 +40,11 @@ public class ExportActivitiesControllerTest extends ControllerTestCase {
         controller.setSourceSerializer(sourceSerializer);
 
         source = setId(11, createNamedInstance("Test Source", Source.class));
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, BUSINESS_ADMINISTRATOR);
     }
 
     public void testTreatIdentAsSourcedFirst() throws Exception {

@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -10,9 +12,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 
-public class ImportTemplateXmlController extends PscSimpleFormController {
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_IMPORTER;
+
+public class ImportTemplateXmlController extends PscSimpleFormController implements PscAuthorizedHandler {
     private TemplateImportService templateImportService;
 
     public ImportTemplateXmlController() {
@@ -22,6 +27,10 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
         setSuccessView("redirectToStudyList");
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(DATA_IMPORTER);
+    }
+    
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object o, BindException errors) throws Exception {
 
         ImportTemplateXmlCommand command = (ImportTemplateXmlCommand) o;

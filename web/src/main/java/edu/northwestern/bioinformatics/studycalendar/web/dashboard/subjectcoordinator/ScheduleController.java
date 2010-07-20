@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationServic
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -20,13 +22,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class ScheduleController extends PscSimpleFormController {
+public class ScheduleController extends PscSimpleFormController implements PscAuthorizedHandler {
 
     private ScheduledActivityDao scheduledActivityDao;
     private StudyDao studyDao;
@@ -40,6 +41,10 @@ public class ScheduleController extends PscSimpleFormController {
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);
         setBindOnNewForm(true);
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     @Override

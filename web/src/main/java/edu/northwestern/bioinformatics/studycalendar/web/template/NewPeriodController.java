@@ -10,20 +10,25 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopment
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class NewPeriodController extends AbstractPeriodController<PeriodCommand> {
+public class NewPeriodController extends AbstractPeriodController<PeriodCommand> implements PscAuthorizedHandler {
     private TemplateDevelopmentService templateDevelopmentService;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
@@ -34,6 +39,10 @@ public class NewPeriodController extends AbstractPeriodController<PeriodCommand>
     public NewPeriodController() {
         super(PeriodCommand.class);
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override

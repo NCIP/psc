@@ -9,9 +9,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 import static org.easymock.classextension.EasyMock.expect;
 
 import static java.util.Calendar.*;
@@ -23,7 +26,7 @@ import java.util.Iterator;
 /**
  * @author Rhett Sutphin
  */
-public class SiteCoordinatorControllerTest extends WebTestCase {
+public class SiteCoordinatorControllerTest extends ControllerTestCase {
     private SiteCoordinatorController controller;
 
     private UserDao userDao;
@@ -69,6 +72,11 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
         SecurityContextHolderTestHelper.setSecurityContext(user, null);
 
         expect(applicationSecurityManager.getFreshUser()).andReturn(user).anyTimes();
+    }
+
+    public void testAllowedAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_TEAM_ADMINISTRATOR);
     }
 
     public void testUserInModel() throws Exception {

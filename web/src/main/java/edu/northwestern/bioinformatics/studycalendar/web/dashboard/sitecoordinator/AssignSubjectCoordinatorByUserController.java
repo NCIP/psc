@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -14,15 +16,22 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubjectCoordinatorController {
+public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubjectCoordinatorController implements PscAuthorizedHandler {
 
     public AssignSubjectCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/siteCoordinatorDashboard");
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_TEAM_ADMINISTRATOR);
+    }     
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         AssignSubjectCoordinatorByUserCommand command = (AssignSubjectCoordinatorByUserCommand) o;

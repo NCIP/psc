@@ -2,15 +2,19 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.easymock.classextension.EasyMock;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -43,6 +47,11 @@ public class CycleControllerTest extends ControllerTestCase {
         command = registerMockFor(CycleCommand.class);
         errors = new BindException(command, "command");
         EasyMock.expect(command.getStudySegment()).andStubReturn(studySegment);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     private ModelAndView doHandle() throws Exception {

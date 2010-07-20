@@ -18,15 +18,14 @@ import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScheduleControllerTest extends ControllerTestCase {
     private ScheduleController controller;
@@ -106,6 +105,11 @@ public class ScheduleControllerTest extends ControllerTestCase {
         request.addParameter("id", "15");
 
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     public void testReferenceData() throws Exception {

@@ -13,7 +13,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.classextension.EasyMock.expect;
+
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
@@ -76,6 +80,11 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         user = createUser("jimbo", Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
     }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }    
 
     private ModelAndView doHandle() throws Exception {
         expect(periodDao.getById(15)).andReturn(period);

@@ -10,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -17,12 +19,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
-public class ImportActivitiesController extends PscSimpleFormController {
+public class ImportActivitiesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ImportActivitiesService importActivitiesService;
     private SourceDao sourceDao;
 
@@ -31,6 +36,10 @@ public class ImportActivitiesController extends PscSimpleFormController {
         setValidator(new ValidatableValidator());
         setFormView("template/importActivities");
         setSuccessView("redirectToActivities");
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
     }
 
     @Override

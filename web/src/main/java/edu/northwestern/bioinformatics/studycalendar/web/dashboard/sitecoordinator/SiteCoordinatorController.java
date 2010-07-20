@@ -12,6 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparato
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -25,18 +27,24 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+
 /**
  * Subclass to apply the access control annotation.
  *
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SITE_COORDINATOR)
-public class SiteCoordinatorController extends PscAbstractController {
+public class SiteCoordinatorController extends PscAbstractController implements PscAuthorizedHandler {
     private UserDao userDao;
     private ApplicationSecurityManager applicationSecurityManager;
 
     public SiteCoordinatorController() {
         setCrumb(new DefaultCrumb("Site coordinator"));
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_TEAM_ADMINISTRATOR);
     }
 
     @Override

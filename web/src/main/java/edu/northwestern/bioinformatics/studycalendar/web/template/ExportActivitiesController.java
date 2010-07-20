@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.SourceSerializer;
 import org.apache.commons.io.IOUtils;
@@ -14,17 +16,25 @@ import org.springframework.util.FileCopyUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+
 // TODO: update the source resource to support CSV (#692) then replace all uses of this controller
 // with the resource.
-public class ExportActivitiesController extends AbstractController {
+public class ExportActivitiesController extends AbstractController implements PscAuthorizedHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Pattern ID_PATTERN = Pattern.compile("/([^/]+)\\.");
     private SourceDao sourceDao;
     private ActivitySourceXmlSerializer activitySourceXmlSerializer;
     private SourceSerializer sourceSerializer;
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
+    }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

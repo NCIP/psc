@@ -5,12 +5,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createNamedInstance;
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
 
 public class AddSourceControllerTest extends ControllerTestCase {
@@ -33,6 +35,11 @@ public class AddSourceControllerTest extends ControllerTestCase {
 
         source1 = setId(111, createNamedInstance("Test Source 1", Source.class));
         source2 = setId(222, createNamedInstance("Test Source 2", Source.class));
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, BUSINESS_ADMINISTRATOR);
     }
 
     @SuppressWarnings({ "unchecked" })

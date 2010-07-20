@@ -18,9 +18,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.Study
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.reset;
 import org.springframework.web.servlet.ModelAndView;
@@ -120,6 +122,17 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         nowFactory.setNowTimestamp(NOW);
     }
 
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations,
+                DATA_IMPORTER,
+                STUDY_QA_MANAGER, STUDY_TEAM_ADMINISTRATOR,
+                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+                STUDY_CREATOR,
+                STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_SUBJECT_CALENDAR_MANAGER,
+                DATA_READER);
+    }
 
     public void testGetStudyByAssignedIdentifier() throws Exception {
         request.addParameter("study", study.getName());

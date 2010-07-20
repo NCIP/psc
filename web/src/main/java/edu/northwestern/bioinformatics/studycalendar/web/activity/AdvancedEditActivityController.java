@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.Errors;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -17,11 +19,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+
 /**
  * @author Jalpa Patel
  */
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
-public class AdvancedEditActivityController extends PscSimpleFormController {
+public class AdvancedEditActivityController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     Activity activity;
     private ActivityTypeDao activityTypeDao;
@@ -31,8 +35,13 @@ public class AdvancedEditActivityController extends PscSimpleFormController {
         setFormView("advancedEditActivity");
         setSuccessView("viewActivity");
         setBindOnNewForm(true);
-     }
-        @Override
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
+    }
+    
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer activityId = ServletRequestUtils.getIntParameter(request, "activityId");
         if (activityId == null) {

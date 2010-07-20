@@ -10,7 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
@@ -103,6 +105,11 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
         createStudySubjectAssignment(subject2, studySite2, subjectCoord0);
         createStudySubjectAssignment(subject3, studySite2, subjectCoord0);
         createStudySubjectAssignment(subjectUnassigned, studySite4, null);
+    }
+    
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_TEAM_ADMINISTRATOR);
     }
 
     public void testBuildDisplayMap() throws Exception {

@@ -8,13 +8,17 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
+
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import static java.util.Arrays.asList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,6 +67,12 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         activityResult = new ArrayList<Activity>();
 
         request.setMethod("GET");
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations,
+            STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testHandle() throws Exception {

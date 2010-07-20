@@ -8,11 +8,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.service.ActivityTypeService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -47,7 +50,11 @@ public class AddEditActivityTypeControllerTest extends ControllerTestCase {
 
         Activity activity = Fixtures.createActivity("activity 1", activityType);
         activities.add(activity);
+    }
 
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, BUSINESS_ADMINISTRATOR);
     }
 
     @SuppressWarnings({ "unchecked" })

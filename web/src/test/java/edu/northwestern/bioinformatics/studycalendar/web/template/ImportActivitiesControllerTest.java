@@ -10,13 +10,16 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
 import static org.easymock.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -56,29 +59,27 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         sources = new ArrayList<Source>();
         activityTypes = new ArrayList<ActivityType>();
         sources.add(source);
-//        command.setSourceId(source.getId());
         multipartRequest = new MockMultipartHttpServletRequest();
         multipartRequest.setMethod("POST");
         multipartRequest.setSession(session);
         multipartRequest.addParameter("activitySource", source.getId().toString());
         expect(sourceDao.getById(source.getId())).andReturn(source).anyTimes();
         List<Activity> activities = new ArrayList<Activity>();
-
-//        List<Source> sourcesAfterAdding = new ArrayList<Source>();
-//        expect(sourceDao.getAll()).andReturn(sourcesAfterAdding).anyTimes();
         expect(activityDao.getBySourceId(source.getId())).andReturn(activities).anyTimes();
+    }
+    
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, BUSINESS_ADMINISTRATOR);
     }
 
     public void testSubmit() throws Exception {
-//        List<Source> sources = new ArrayList<Source>();
-//        sources.add(source);
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
         assertEquals("Wrong view", "redirectToActivities", getOnSubmitData().getViewName());
     }
 
     public void testSubmitWithReturnToActivity() throws Exception {
-//        List<Source> sources = new ArrayList<Source>();
         expect(sourceDao.getAll()).andReturn(sources).anyTimes();
         expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
         ModelAndView mv = getOnSubmitData();

@@ -20,7 +20,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SUBJECT_MANAGER;
 import static org.easymock.EasyMock.expect;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -99,6 +102,29 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         subjects = new LinkedList<Subject>();
 
         SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
+    }
+
+    public void testAuthorizedRolesForNullRadioButton() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
+    }
+
+    public void testAuthorizedRolesForPostAndNewSubj() {
+        controller.setRadioButton("new");
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("POST", null);
+        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
+    }
+    
+    public void testAuthorizedRolesForPostAndExistingSubj() {
+        controller.setRadioButton("existing");
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("POST", null);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
+    }
+
+    public void testAuthorizedRolesForGet() {
+        controller.setRadioButton("existing");
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("GET", null);
+        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
     }
 
     public void testSubjectAssignedOnSubmit() throws Exception {
