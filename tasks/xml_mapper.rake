@@ -18,11 +18,11 @@ module Buildr
         puts "parent_xml_element= #{parent_xml_element}"
         Document.new(xml_content).root.elements.each { |xml_element_to_insert| 
           puts "xml_element_to_insert= #{xml_element_to_insert}"
-          if(type == :before)
+          if(type == :before.to_s)
             doc.root.insert_before parent_xml_element, xml_element_to_insert
-          elsif(type == :after)
+          elsif(type == :after.to_s)
             doc.root.insert_after parent_xml_element, xml_element_to_insert
-          elsif(type == :under)
+          elsif(type == :under.to_s)
             parent_xml_element.add_element(xml_element_to_insert)
           end 
         }
