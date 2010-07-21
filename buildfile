@@ -219,7 +219,7 @@ define "psc" do
       "org.acegisecurity" <<
       "org.springframework.core" <<
       "gov.nih.nci.cabig.ctms.domain"
-    compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm,
+    compile.with SECURITY.acegi, project('domain').and_dependencies, SECURITY.csm, SECURITY.clm,
       SECURITY.suite_authorization
     test.with UNIT_TESTING, project('domain').test_dependencies
     package(:jar)
