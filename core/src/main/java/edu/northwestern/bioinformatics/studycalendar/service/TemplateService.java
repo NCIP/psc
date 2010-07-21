@@ -294,19 +294,9 @@ public class TemplateService {
         for (Map.Entry<TemplateWorkflowStatus, List<UserTemplateRelationship>> entry : results.entrySet()) {
             Comparator<UserTemplateRelationship> comparator;
             if (entry.getKey() == TemplateWorkflowStatus.IN_DEVELOPMENT) {
-                comparator = new Comparator<UserTemplateRelationship>() {
-                    public int compare(UserTemplateRelationship o1, UserTemplateRelationship o2) {
-                        return o1.getStudy().getDevelopmentDisplayName().toLowerCase().compareTo(
-                            o2.getStudy().getDevelopmentDisplayName().toLowerCase());
-                    }
-                };
+                comparator = UserTemplateRelationship.byDevelopmentDisplayName();
             } else {
-                comparator = new Comparator<UserTemplateRelationship>() {
-                    public int compare(UserTemplateRelationship o1, UserTemplateRelationship o2) {
-                        return o1.getStudy().getReleasedDisplayName().toLowerCase().compareTo(
-                            o2.getStudy().getReleasedDisplayName().toLowerCase());
-                    }
-                };
+                comparator = UserTemplateRelationship.byReleaseDisplayName();
             }
 
             Collections.sort(entry.getValue(), comparator);
