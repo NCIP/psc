@@ -53,8 +53,8 @@ public class UserTemplateRelationship {
      */
     public boolean getCanSeeDevelopmentVersion() {
         return getStudy().isInDevelopment() &&
-            isManagingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_CREATOR) ||
-            hasGlobalRole(DATA_IMPORTER);
+            (isManagingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_CREATOR) ||
+                hasGlobalRole(DATA_IMPORTER));
     }
 
     /**
