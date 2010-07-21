@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
  * @author Rhett Sutphin
  */
 public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
+    private static final int ALL_STUDIES_COUNT = 5;
+
     public void testGetById() throws Exception {
         Study study = getDao().getById(-100);
         assertIsTestStudy100(study);
@@ -63,7 +66,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         // now search with another string such that no study maatches for the given serach string
         String identifierWhichDoesNotExists = "identifier which does not exists";
         studies = getDao().searchStudiesByStudyName(identifierWhichDoesNotExists);
-        assertEquals("there must be 3 studies", 3, studies.size());
+        assertEquals("there must be 3 studies", ALL_STUDIES_COUNT, studies.size());
         for (Study study : studies) {
             assertTrue("study must not have assigned identifier matching %nci identifier which does not exists% string",
                 !study.getName().toLowerCase().contains(identifierWhichDoesNotExists));
@@ -151,7 +154,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
 
     public void testGetAll() throws Exception {
         List<Study> actual = getDao().getAll();
-        assertEquals(3, actual.size());
+        assertEquals(ALL_STUDIES_COUNT, actual.size());
         Collection<Integer> ids = DomainObjectTools.collectIds(actual);
         assertContains("Wrong study found", ids, -100);
         assertContains("Wrong study found", ids, -101);
@@ -240,5 +243,51 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         getDao().delete(getDao().getById(-100));
         // no exceptions
         assertNull(getDao().getById(-100));
+    }
+
+    public void testGetVisibleStudiesWhenAllStudies() throws Exception {
+        Collection<Study> actual =
+            getDao().getVisibleStudies(new VisibleStudyParameters().forAllManagingSites());
+        assertEquals("Wrong number returned", ALL_STUDIES_COUNT, actual.size());
+    }
+
+    public void testGetVisibleForSomeManagingAndSomeParticipating() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
+            forManagingSiteIdentifiers(Arrays.asList("NP")).
+            forParticipatingSiteIdentifiers(Arrays.asList("Ant")));
+
+        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertStudyPresent(-100, actual); // Managed by NP
+        assertStudyPresent(-101, actual); // Unmanaged
+        assertStudyPresent(-104, actual); // Participating at Ant
+    }
+
+    public void testGetVisibleForAllParticipating() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
+            forAllParticipatingSites());
+
+        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertStudyPresent(-100, actual);
+        assertStudyPresent(-101, actual);
+        assertStudyPresent(-104, actual);
+    }
+
+    public void testGetVisibleForAllParticipatingPlusSpecific() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
+            forAllParticipatingSites().forSpecificStudyIdentifiers(
+                Arrays.asList("NCI-IS-WATCHING", "another nci study")));
+
+        assertEquals("Wrong number returned: " + actual, 4, actual.size());
+        assertStudyPresent(-100, actual); // Participating & by ident
+        assertStudyPresent(-101, actual); // Participating
+        assertStudyPresent(-102, actual); // By ident
+        assertStudyPresent(-104, actual); // Participating
+    }
+
+    private void assertStudyPresent(int expectedId, Collection<Study> actualStudies) {
+        for (Study actualStudy : actualStudies) {
+            if (actualStudy.getId().equals(expectedId)) return;
+        }
+        fail("Missing study " + expectedId);
     }
 }

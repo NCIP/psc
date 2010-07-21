@@ -3,18 +3,25 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySecondaryIdentifier;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -56,8 +63,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     @SuppressWarnings({ "unchecked" })
     public List<Study> getByAssignedIdentifiers(List<String> assignedIdentifiers) {
         List<Study> fromDatabase = getHibernateTemplate().findByCriteria(
-            DetachedCriteria.forClass(Study.class).add(
-                MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
+            criteria().add(MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
         List<Study> inOrder = new ArrayList<Study>();
         for (String assignedIdentifier : assignedIdentifiers) {
             for (Iterator<Study> foundIt = fromDatabase.iterator(); foundIt.hasNext();) {
@@ -142,6 +148,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         List<Study> studies = getHibernateTemplate().find(
             "from Study s where lower(s.assignedIdentifier) LIKE ? ORDER BY s.assignedIdentifier DESC ", searchText);
 
+        // TODO: WTF?
         if (studies.isEmpty()) {
             return getAll();
         }
@@ -152,5 +159,46 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     public List<Study> searchStudiesByAssignedIdentifier(final String studySearchText) {
         return (List<Study>) getHibernateTemplate().find(
             "from Study s where s.assignedIdentifier LIKE ? ORDER BY s.assignedIdentifier", studySearchText);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Study> getVisibleStudies(VisibleStudyParameters parameters) {
+        log.debug("Getting visible studies for {}", parameters);
+        if (parameters.isAllManagingSites()) {
+            return getAll();
+        } else {
+            // These are implemented as separate queries and then merged because
+            // the criteria are too complex to reliably express in a single statement.
+            List<DetachedCriteria> separateCriteria = new LinkedList<DetachedCriteria>();
+            
+            if (!parameters.getSpecificStudyIdentifiers().isEmpty()) {
+                separateCriteria.add(criteria().add(MoreRestrictions.
+                    in("assignedIdentifier", parameters.getSpecificStudyIdentifiers())));
+            }
+            if (!parameters.getManagingSiteIdentifiers().isEmpty()) {
+                separateCriteria.add(criteria().createAlias("managingSites", "ms", Criteria.LEFT_JOIN).add(
+                    Restrictions.disjunction().
+                        add(MoreRestrictions.in("ms.assignedIdentifier", parameters.getManagingSiteIdentifiers())).
+                        add(Restrictions.isNull("ms.assignedIdentifier")) // <- unmanaged studies
+                ));
+            }
+            if (parameters.isAllParticipatingSites()) {
+                separateCriteria.add(criteria().createAlias("studySites", "ss").
+                    add(Restrictions.isNotNull("ss.id")));
+            } else if (!parameters.getParticipatingSiteIdentifiers().isEmpty()) {
+                separateCriteria.add(criteria().createAlias("studySites", "ss").createAlias("ss.site", "s").
+                    add(MoreRestrictions.in("s.assignedIdentifier", parameters.getParticipatingSiteIdentifiers())));
+            }
+
+            Set<Integer> ids = new LinkedHashSet<Integer>();
+            for (DetachedCriteria criteria : separateCriteria) {
+                ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
+            }
+            return getHibernateTemplate().findByCriteria(criteria().add(MoreRestrictions.in("id", ids)));
+        }
+    }
+
+    private DetachedCriteria criteria() {
+        return DetachedCriteria.forClass(Study.class);
     }
 }
