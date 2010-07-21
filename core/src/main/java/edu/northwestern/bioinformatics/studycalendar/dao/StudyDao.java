@@ -10,6 +10,8 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -136,23 +138,13 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
 
     /**
      * Search studies by matching study name (or assigned identifier of study) to search text.
-     * Returns all studies if no study found matching with given search text
-     *
-     * @param studySearchText
-     *
-     * @return
      */
     @SuppressWarnings({ "unchecked" })
     public List<Study> searchStudiesByStudyName(final String studySearchText) {
-        String searchText = '%' + studySearchText.toLowerCase() + '%';
-        List<Study> studies = getHibernateTemplate().find(
-            "from Study s where lower(s.assignedIdentifier) LIKE ? ORDER BY s.assignedIdentifier DESC ", searchText);
-
-        // TODO: WTF?
-        if (studies.isEmpty()) {
-            return getAll();
-        }
-        return studies;
+        return (List<Study>) getHibernateTemplate().findByCriteria(
+            criteria().add(Restrictions.ilike(
+                "assignedIdentifier", studySearchText, MatchMode.ANYWHERE)).
+                addOrder(Order.desc("assignedIdentifier")));
     }
 
     @SuppressWarnings({ "unchecked" })

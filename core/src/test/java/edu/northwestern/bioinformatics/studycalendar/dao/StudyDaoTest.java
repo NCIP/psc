@@ -66,15 +66,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         // now search with another string such that no study maatches for the given serach string
         String identifierWhichDoesNotExists = "identifier which does not exists";
         studies = getDao().searchStudiesByStudyName(identifierWhichDoesNotExists);
-        assertEquals("there must be 3 studies", ALL_STUDIES_COUNT, studies.size());
-        for (Study study : studies) {
-            assertTrue("study must not have assigned identifier matching %nci identifier which does not exists% string",
-                !study.getName().toLowerCase().contains(identifierWhichDoesNotExists));
-        }
-        ids = DomainObjectTools.collectIds(studies);
-        assertContains("Wrong study found", ids, -100);
-        assertContains("Wrong study found", ids, -101);
-        assertContains("Wrong study found", ids, -102);
+        assertEquals("there must be no studies", 0, studies.size());
     }
 
     public void testLoadAmendments() throws Exception {
