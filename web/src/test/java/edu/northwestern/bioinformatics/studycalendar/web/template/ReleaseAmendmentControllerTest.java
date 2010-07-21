@@ -8,10 +8,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
 import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -54,6 +57,11 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setControllerTools(controllerTools);
         controller.setDeltaService(deltaService);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_QA_MANAGER);
     }
 
     public void testBindStudy() throws Exception {

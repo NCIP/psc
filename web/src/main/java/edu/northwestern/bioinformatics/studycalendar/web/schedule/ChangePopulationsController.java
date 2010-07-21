@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
@@ -7,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,13 +18,16 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * @author Rhett Sutphin
  */
-public class ChangePopulationsController extends PscSimpleFormController {
+public class ChangePopulationsController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SubjectService subjectService;
     private StudySubjectAssignmentDao assignmentDao;
     private PopulationDao populationDao;
@@ -30,6 +37,21 @@ public class ChangePopulationsController extends PscSimpleFormController {
         setCrumb(new Crumb());
         setCommandClass(ChangePopulationsCommand.class);
         setFormView("schedule/changePopulations");
+    }
+    
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        String[] studySubjectAssignmentArray = queryParameters.get("assignment");
+        try {
+            String studySubjectAssignmentString = studySubjectAssignmentArray[0];
+            Integer studySubjectAssignmentId = Integer.parseInt(studySubjectAssignmentString);
+            StudySubjectAssignment studySubjectAssignment = assignmentDao.getById(studySubjectAssignmentId);
+            StudySite studySite = studySubjectAssignment.getStudySite();
+            Site site = studySite.getSite();
+            return ResourceAuthorization.createCollection(site, STUDY_SUBJECT_CALENDAR_MANAGER);
+        } catch (Exception e) {
+            log.error("Assignment parameter is invalid " + e);
+            return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        }
     }
 
     @Override

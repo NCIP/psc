@@ -2,11 +2,16 @@ package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -15,15 +20,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SITE_COORDINATOR)
-public class ApproveAmendmentsController extends PscSimpleFormController {
+public class ApproveAmendmentsController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudySiteDao studySiteDao;
     private NowFactory nowFactory;
     private AmendmentService amendmentService;
@@ -34,6 +42,21 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
         setFormView("delta/approveAmendments");
         setCrumb(new Crumb());
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        String[] studySiteArray = queryParameters.get("studySite");
+        try {
+            String studySiteString = studySiteArray[0];
+            Integer studySiteId = Integer.parseInt(studySiteString);
+            StudySite studySite = studySiteDao.getById(studySiteId);
+            Site site = studySite.getSite();
+            return ResourceAuthorization.createCollection(site, STUDY_QA_MANAGER);
+        } catch (Exception e) {
+            log.error("StudySite parameter is invalid " + e);
+            return ResourceAuthorization.createCollection(STUDY_QA_MANAGER);
+        }
+    }
+    
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,14 +28,17 @@ import org.springframework.validation.Errors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class EditPopulationController extends PscSimpleFormController {
+public class EditPopulationController extends PscSimpleFormController implements PscAuthorizedHandler {
     private PopulationDao populationDao;
     private PopulationService populationService;
     private AmendmentService amendmentService;
@@ -45,6 +50,10 @@ public class EditPopulationController extends PscSimpleFormController {
         setValidator(new ValidatableValidator());
         setFormView("template/population");
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override

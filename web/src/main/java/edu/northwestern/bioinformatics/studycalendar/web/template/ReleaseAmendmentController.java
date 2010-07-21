@@ -10,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessCon
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
@@ -18,16 +20,19 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
 
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class ReleaseAmendmentController extends PscSimpleFormController {
+public class ReleaseAmendmentController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
@@ -39,6 +44,11 @@ public class ReleaseAmendmentController extends PscSimpleFormController {
         setSuccessView("redirectToStudyList");
         setBindOnNewForm(true);
         setCrumb(new Crumb());
+    }
+
+//Study QA Manager (for lead site)
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_QA_MANAGER);
     }
 
     @Override

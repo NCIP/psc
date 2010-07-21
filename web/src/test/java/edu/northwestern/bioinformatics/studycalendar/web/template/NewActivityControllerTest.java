@@ -9,10 +9,13 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.create
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityCommand;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -42,6 +45,11 @@ public class NewActivityControllerTest extends ControllerTestCase {
 
         source = createNamedInstance("Manual Activity Target", Source.class);
         source.setManualFlag(true);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testFormView() throws Exception {

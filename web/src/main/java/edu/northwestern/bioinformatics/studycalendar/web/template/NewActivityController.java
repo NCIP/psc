@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.activity.AdvancedEditActivityCommand;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
@@ -20,16 +22,19 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Jaron Sampson
  * @author Jalpa Patel
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class NewActivityController extends PscSimpleFormController {
+public class NewActivityController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     Activity activity;
     private SourceDao sourceDao;
@@ -44,6 +49,10 @@ public class NewActivityController extends PscSimpleFormController {
         setFormView("advancedEditActivity");
         setSuccessView("viewActivity");
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override

@@ -8,20 +8,24 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class ViewAmendmentsControllerTest extends WebTestCase {
+public class ViewAmendmentsControllerTest extends ControllerTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private ViewAmendmentsController controller;
@@ -63,6 +67,11 @@ public class ViewAmendmentsControllerTest extends WebTestCase {
         controller = new ViewAmendmentsController();
         controller.setStudyDao(studyDao);
         controller.setControllerTools(controllerTools);
+    }
+    
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     public void testDevelopmentAmendmentIncludedIfPresentAndUserIsStudyCoordinator() throws Exception {

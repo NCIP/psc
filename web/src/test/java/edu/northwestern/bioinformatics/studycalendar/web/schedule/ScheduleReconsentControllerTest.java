@@ -3,13 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.Collection;
 
 public class ScheduleReconsentControllerTest extends ControllerTestCase {
 
@@ -39,6 +42,11 @@ public class ScheduleReconsentControllerTest extends ControllerTestCase {
         controller.setStudyService(studyService);
         controller.setNowFactory(nowFactory);
         controller.setControllerTools(controllerTools);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testBindDate() throws Exception {

@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -17,12 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+
 /**
  *
  * @author Nataliya Shurupova
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class ExternalStudyController extends PscSimpleFormController {
+public class ExternalStudyController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
 
     public ExternalStudyController() {
@@ -32,6 +36,10 @@ public class ExternalStudyController extends PscSimpleFormController {
         setCrumb(new Crumb());
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }
+    
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();

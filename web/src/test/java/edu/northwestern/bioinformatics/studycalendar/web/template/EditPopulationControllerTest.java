@@ -18,7 +18,9 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.create
 
 import java.util.*;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -77,6 +79,11 @@ public class EditPopulationControllerTest extends ControllerTestCase {
 
         expect(populationDao.getById(10)).andReturn(originalPopulation).anyTimes();
         expect(studyDao.getById(100)).andReturn(study).anyTimes();
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testCommandForRegularNewPopulation() throws Exception {

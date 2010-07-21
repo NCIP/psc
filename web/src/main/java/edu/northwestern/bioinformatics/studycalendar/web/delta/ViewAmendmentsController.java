@@ -1,14 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -16,11 +16,10 @@ import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.IOException;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * Note that this class also contains tests for AmendmentView, since it was once a inner class
@@ -28,12 +27,16 @@ import java.io.IOException;
  *
  * @author Rhett Sutphin
  */
-public class ViewAmendmentsController extends PscAbstractController {
+public class ViewAmendmentsController extends PscAbstractController implements PscAuthorizedHandler {
     private DaoFinder daoFinder;
     private StudyDao studyDao;
 
     public ViewAmendmentsController() {
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
 
     @Override

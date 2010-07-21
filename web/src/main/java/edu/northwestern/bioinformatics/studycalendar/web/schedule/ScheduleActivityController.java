@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -20,15 +22,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class ScheduleActivityController extends PscSimpleFormController {
+public class ScheduleActivityController extends PscSimpleFormController implements PscAuthorizedHandler {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduleService scheduleService;
@@ -38,6 +43,10 @@ public class ScheduleActivityController extends PscSimpleFormController {
         setCommandClass(ScheduleActivityCommand.class);
         setCrumb(new Crumb());
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }    
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new ScheduleActivityCommand(scheduledCalendarDao);

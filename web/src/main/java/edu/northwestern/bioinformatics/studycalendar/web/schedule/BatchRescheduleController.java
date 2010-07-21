@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
@@ -15,12 +17,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class BatchRescheduleController extends PscAbstractCommandController<BatchRescheduleCommand> {
+public class BatchRescheduleController extends PscAbstractCommandController<BatchRescheduleCommand> implements PscAuthorizedHandler {
 
     private ScheduledActivityDao scheduledActivityDao;
     private ScheduledCalendarDao scheduledCalendarDao;
@@ -28,6 +34,10 @@ public class BatchRescheduleController extends PscAbstractCommandController<Batc
     public BatchRescheduleController() {
         setCommandClass(BatchRescheduleCommand.class);
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+    }    
 
     protected Object getCommand(HttpServletRequest request) throws Exception {
         return new BatchRescheduleCommand(scheduledCalendarDao);
