@@ -157,11 +157,15 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
         studySite.setStudy(this);
     }
 
-    public void addSite(Site site) {
-        if (!getSites().contains(site)) {
+    public StudySite addSite(Site site) {
+        StudySite ss = getStudySite(site);
+        if (ss == null) {
             StudySite newSS = new StudySite();
             newSS.setSite(site);
             addStudySite(newSS);
+            return newSS;
+        } else {
+            return ss;
         }
     }
 

@@ -108,9 +108,10 @@ public class StudyTest extends TestCase {
 
     public void testBasicAddSite() throws Exception {
         Site expectedSite = createNamedInstance("Site 1", Site.class);
-        study.addSite(expectedSite);
+        StudySite returned = study.addSite(expectedSite);
         assertEquals("No studySite added", 1, study.getStudySites().size());
         assertSame("StudySite added not for passed site", expectedSite, study.getStudySites().get(0).getSite());
+        assertSame("New StudySite not returned", returned, study.getStudySites().get(0));
     }
 
     public void testAddSiteWhenExists() throws Exception {
@@ -118,8 +119,9 @@ public class StudyTest extends TestCase {
         createStudySite(study, expectedSite);
         assertEquals("Test setup incorrect", 1, study.getStudySites().size());
 
-        study.addSite(expectedSite);
+        StudySite returned = study.addSite(expectedSite);
         assertEquals("Extra studySite added", 1, study.getStudySites().size());
+        assertSame("Existing StudySite not returned", returned, study.getStudySites().get(0));
     }
 
     public void testAddPopulation() throws Exception {
