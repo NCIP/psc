@@ -1,80 +1,81 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * @author Saurabh Agrawal
+ * @author Rhett Sutphin
  */
-public class SearchTemplatesController extends PscAbstractCommandController<SearchTemplateCommand> implements PscAuthorizedHandler {
-    private StudyDao studyDao;
+// TODO: use the API instead of this.
+public class SearchTemplatesController extends PscAbstractController implements PscAuthorizedHandler {
     private TemplateService templateService;
     private ApplicationSecurityManager applicationSecurityManager;
-
-    public SearchTemplatesController() {
-        setCommandClass(SearchTemplateCommand.class);
-    }
+    private static final String SEARCH_TEXT_PARAMETER_NAME = "searchText";
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        // TODO: this is insufficient
         return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        super.initBinder(request, binder);
-    }
-
-    protected ModelAndView handle(SearchTemplateCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if ("GET".equals(request.getMethod())) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            String searchText = command.getSearchText() != null ? command.getSearchText() : EMPTY;
-
-            List<Study> studies = studyDao.searchStudiesByStudyName(searchText);
-            log.debug("{} studies found total", studies.size());
-            User user = applicationSecurityManager.getUser().getLegacyUser();
-
-            List<DevelopmentTemplate> results = templateService.getInDevelopmentTemplates(studies, user);
-
-            log.debug("{} in development studies found ", studies.size());
-
-            List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies,user);
-            log.debug("{} in released studies found ", studies.size());
-
-            model.put("inDevelopmentTemplates", results);
-            model.put("releasedTemplates", releasedTemplates);
-
-            return new ModelAndView("template/ajax/templates", model);
-        } else {
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (!request.getMethod().equals("GET")) {
             getControllerTools().sendGetOnlyError(response);
             return null;
         }
+        if (request.getParameter(SEARCH_TEXT_PARAMETER_NAME) == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "searchText parameter is required");
+            return null;
+        }
+        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates = templateService.searchVisibleTemplates(
+            applicationSecurityManager.getUser(), getEffectiveSearchText(request));
+
+        ModelAndView mv = new ModelAndView("template/ajax/templates");
+        mv.addObject("inDevelopmentTemplates", templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT));
+        mv.addObject("releasedTemplates", allReleased(templates));
+        return mv;
     }
 
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
+    private List<UserTemplateRelationship> allReleased(Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> source) {
+        Set<UserTemplateRelationship> unique = new HashSet<UserTemplateRelationship>();
+        unique.addAll(source.get(TemplateWorkflowStatus.PENDING));
+        unique.addAll(source.get(TemplateWorkflowStatus.AVAILABLE));
+        List<UserTemplateRelationship> result = new ArrayList<UserTemplateRelationship>(unique);
+        Collections.sort(result, UserTemplateRelationship.byReleaseDisplayName());
+        return result;
     }
+
+    private String getEffectiveSearchText(HttpServletRequest request) {
+        String text = request.getParameter(SEARCH_TEXT_PARAMETER_NAME);
+        if (StringUtils.isBlank(text)) {
+            return null;
+        } else {
+            return text;
+        }
+    }
+
+    ////// CONFIGURATION
 
     @Required
     public void setTemplateService(TemplateService templateService) {

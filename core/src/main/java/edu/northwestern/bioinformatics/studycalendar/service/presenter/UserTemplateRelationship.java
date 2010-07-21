@@ -209,6 +209,37 @@ public class UserTemplateRelationship {
         return getUser().getMembership(role) != null;
     }
 
+    ////// OBJECT METHODS
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserTemplateRelationship)) return false;
+
+        UserTemplateRelationship that = (UserTemplateRelationship) o;
+
+        if (study != null ? !study.equals(that.study) : that.study != null) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = user != null ? user.hashCode() : 0;
+        result = 31 * result + (study != null ? study.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[user=").append(user).
+            append("; template=").append(study.getAssignedIdentifier()).
+            append("]").
+            toString();
+    }
+
     ////// COMPARATORS
 
     public static Comparator<UserTemplateRelationship> byReleaseDisplayName() {
