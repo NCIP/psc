@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-
 /**
  * @author Saurabh Agrawal
  * @author Rhett Sutphin
@@ -34,8 +33,7 @@ public class SearchTemplatesController extends PscAbstractController implements 
     private static final String SEARCH_TEXT_PARAMETER_NAME = "searchText";
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        // TODO: this is insufficient
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        return ResourceAuthorization.createCollection(PscRole.valuesWithStudyAccess());
     }
 
     @Override

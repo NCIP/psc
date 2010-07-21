@@ -6,9 +6,13 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.acegisecurity.GrantedAuthority;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -40,6 +44,7 @@ public enum PscRole implements GrantedAuthority {
     private Collection<PscRoleUse> uses;
 
     private static Properties roleProperties;
+    private static PscRole[] withStudyAccess;
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
@@ -120,5 +125,22 @@ public enum PscRole implements GrantedAuthority {
             }
         }
         return roleProperties;
+    }
+
+    /**
+     * Those roles which have any sort of access to a study.
+     */
+    public static synchronized PscRole[] valuesWithStudyAccess() {
+        if (withStudyAccess == null) {
+            List<PscRole> filtered = new ArrayList<PscRole>(Arrays.asList(values()));
+            for (Iterator<PscRole> it = filtered.iterator(); it.hasNext();) {
+                PscRole pscRole = it.next();
+                if (!pscRole.getUses().contains(PscRoleUse.SITE_PARTICIPATION) && !pscRole.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
+                    it.remove();
+                }
+            }
+            withStudyAccess = filtered.toArray(new PscRole[filtered.size()]);
+        }
+        return withStudyAccess;
     }
 }

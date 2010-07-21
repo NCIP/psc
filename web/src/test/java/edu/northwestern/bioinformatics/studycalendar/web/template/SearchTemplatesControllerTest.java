@@ -50,6 +50,10 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
         request.setMethod("GET");
     }
 
+    public void testAuthorizations() throws Exception {
+        assertRolesAllowed(controller.authorizations("GET", null), PscRole.valuesWithStudyAccess());
+    }
+
     public void testErrorIfNotGET() throws Exception {
         request.setMethod("POST");
         request.addParameter("searchText", "whatever");

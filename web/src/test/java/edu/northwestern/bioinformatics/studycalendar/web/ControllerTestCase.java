@@ -2,16 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import junit.framework.TestCase;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -23,20 +21,19 @@ public abstract class ControllerTestCase extends WebTestCase {
         assertEquals("There were errors for field " + fieldName + ": " + fieldErrors, 0, fieldErrors.size());
     }
 
-    protected void assertRolesAllowed(Collection<ResourceAuthorization> resourceAuthorizations, PscRole... roles) {
-        Collection<PscRole> expected = Arrays.asList(roles);
-        Collection<PscRole> actual = new ArrayList<PscRole>();
-        if (resourceAuthorizations == null) {
-            actual = Arrays.asList(PscRole.values());
+    protected void assertRolesAllowed(Collection<ResourceAuthorization> actual, PscRole... expected) {
+        Collection<PscRole> actualRoles = new ArrayList<PscRole>();
+        if (actual == null) {
+            actualRoles = Arrays.asList(PscRole.values());
         } else {
-            for (ResourceAuthorization actualResourceAuthorization : resourceAuthorizations) {
-                actual.add(actualResourceAuthorization.getRole());
+            for (ResourceAuthorization actualResourceAuthorization : actual) {
+                actualRoles.add(actualResourceAuthorization.getRole());
             }
         }
 
         for (PscRole role : expected) {
             assertTrue(role.getDisplayName() + " should be allowed",
-                actual.contains(role));
+                actualRoles.contains(role));
         }
     }
 }
