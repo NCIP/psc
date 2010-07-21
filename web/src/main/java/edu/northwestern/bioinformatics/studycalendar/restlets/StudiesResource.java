@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.StudyListJsonRepresentation;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Required;
 import java.io.IOException;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Rhett Sutphin
@@ -36,7 +36,6 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
 
     private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
-    private AuthorizationService authorizationService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -44,16 +43,8 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         setAuthorizedFor(Method.GET, Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
         setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
 
-       addAuthorizationsFor(Method.GET,
-            STUDY_QA_MANAGER,
-            STUDY_CALENDAR_TEMPLATE_BUILDER,
-            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-            DATA_IMPORTER,
-            STUDY_TEAM_ADMINISTRATOR,
-            STUDY_CREATOR,
-            STUDY_SUBJECT_CALENDAR_MANAGER,
-            DATA_READER);
-        addAuthorizationsFor(Method.POST, STUDY_CALENDAR_TEMPLATE_BUILDER);       
+        addAuthorizationsFor(Method.GET, PscRole.valuesWithStudyAccess());
+        addAuthorizationsFor(Method.POST, STUDY_CALENDAR_TEMPLATE_BUILDER);
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
     }
@@ -63,13 +54,7 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Override
     public List<Study> getAllObjects() {
         String q = QueryParameters.Q.extractFrom(getRequest());
-        if (q == null) {
-            return authorizationService.filterStudiesForVisibility(studyDao.getAll(), getLegacyCurrentUser());
-        } else {
-            List<Study> studyToFilter = studyDao.searchStudiesByStudyName(q);
-            List<Study> filteredStudies = authorizationService.filterStudiesForVisibility(studyToFilter, getLegacyCurrentUser().getUserRole(Role.SITE_COORDINATOR));
-            return filteredStudies;
-        }
+        return studyDao.searchVisibleStudies(getCurrentUser().getVisibleStudyParameters(), q);
     }
 
     @Override
@@ -132,10 +117,5 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
-    }
-
-    @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
     }
 }
