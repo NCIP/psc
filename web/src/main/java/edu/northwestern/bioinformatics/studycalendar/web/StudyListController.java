@@ -2,24 +2,28 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.restlet.data.Method;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
@@ -28,7 +32,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 public class StudyListController extends PscAbstractController implements PscAuthorizedHandler{
     private StudyDao studyDao;
     private TemplateService templateService;
-    private UserDao userDao;
     private ApplicationSecurityManager applicationSecurityManager;
     private StudySiteService studySiteService;
 
@@ -50,44 +53,38 @@ public class StudyListController extends PscAbstractController implements PscAut
 
     @Override   
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<Study> studies = studyDao.getAll();
+        PscUser user = applicationSecurityManager.getUser();
 
-        studySiteService.refreshStudySitesForStudies(studies);
+        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates =
+            templateService.getVisibleTemplates(user);
 
-        User user = applicationSecurityManager.getUser().getLegacyUser();
+        studySiteService.refreshStudySitesForStudies(extractStudies(templates));
 
-        List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
-        List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
-        List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
-        List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
-
-        log.debug("{} released templates visible to {}", releasedTemplates.size(), user.getName());
-        log.debug("{} studies open for editing by {}", inDevelopmentTemplates.size(), user.getName());
+        log.debug("{} available templates visible to {}",
+            templates.get(TemplateWorkflowStatus.AVAILABLE).size(), user.getUsername());
+        log.debug("{} pending templates visible to {}",
+            templates.get(TemplateWorkflowStatus.PENDING).size(), user.getUsername());
+        log.debug("{} studies open for editing by {}",
+            templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT).size(), user.getUsername());
+        log.trace("All visible templates: {}", templates);
 
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("pendingTemplates", pendingTemplates);
-        model.put("releasedAndAssignedTemplate", releasedAndAssignedTemplates);
-        model.put("releasedAndAssignedTemplatesSize", releasedAndAssignedTemplates.size());
-
-        model.put("releasedTemplates", releasedTemplates);
-        model.put("inDevelopmentTemplates", inDevelopmentTemplates);
+        model.put("pendingTemplates", templates.get(TemplateWorkflowStatus.PENDING));
+        model.put("availableTemplates", templates.get(TemplateWorkflowStatus.AVAILABLE));
+        model.put("inDevelopmentTemplates", templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT));
 
         return new ModelAndView("studyList", model);
     }
 
-    private List<Study> collectStudies(List<List<StudySite>> studySiteLists) {
-        List<Study> result = new ArrayList<Study>();
-        for (List<StudySite> studySites : studySiteLists) {
-            for (StudySite studySite : studySites) {
-                Study study = studySite.getStudy();
-                if (!result.contains(study)) {
-                    result.add(study);
-                }
+    private List<Study> extractStudies(Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates) {
+        Set<Study> studies = new LinkedHashSet<Study>();
+        for (List<UserTemplateRelationship> utrs : templates.values()) {
+            for (UserTemplateRelationship utr : utrs) {
+                studies.add(utr.getStudy());
             }
         }
-        return result;
+        return new ArrayList<Study>(studies);
     }
-
 
     ////// CONFIGURATION
 
@@ -99,11 +96,6 @@ public class StudyListController extends PscAbstractController implements PscAut
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Required

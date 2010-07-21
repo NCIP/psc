@@ -4,8 +4,10 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
-
-<%@taglib prefix="commons1" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
+<jsp:useBean id="inDevelopmentTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
+<jsp:useBean id="pendingTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
+<jsp:useBean id="availableTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
+<jsp:useBean id="configuration" scope="request" type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
 
 <html>
 <title>Calendars</title>
@@ -243,16 +245,16 @@
                 <ul class="menu">
                     <c:forEach items="${inDevelopmentTemplates}" var="template" varStatus="status">
                         <li class="autoclear ${commons:parity(status.count)}">
-                            <a href="<c:url value="/pages/cal/template?study=${template.id}&amendment=${template.developmentAmendmentId}"/>" class="primary">
-                                ${template.displayName}
+                            <a href="<c:url value="/pages/cal/template?study=${template.study.id}&amendment=${template.study.developmentAmendment.id}"/>" class="primary">
+                                ${template.study.developmentDisplayName}
                             </a>
                             <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/template/deleteDevelopmentAmendment" queryString="study=${template.id}" >
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/template/deleteDevelopmentAmendment" queryString="study=${template.study.id}" >
                                     Delete
                                 </tags:restrictedListItem>
                             </ul>
                             <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy" queryString="study=${template.id}&amendment=${template.developmentAmendmentId}" >
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy" queryString="study=${template.study.id}&amendment=${template.study.developmentAmendment.id}" >
                                     Copy
                                 </tags:restrictedListItem>
                             </ul>
@@ -267,10 +269,11 @@
                 <ul class="menu">
                     <c:forEach items="${pendingTemplates}" var="template" varStatus="status">
                         <li class="autoclear ${commons:parity(status.count)}">
-                            <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
-                                ${template.displayName}
+                            <a href="<c:url value="/pages/cal/template?study=${template.study.id}"/>" class="primary">
+                                ${template.study.releasedDisplayName}
                             </a>
 
+                            <%-- Removed old workflow bits pending fixup in #1078
                              <c:if test="${empty template.study.studySites}">
                                 <div style="width:80%;float:right;">
                                     <c:set var="canAssignTemplateToStudy" value="false"/>
@@ -311,14 +314,14 @@
                                  </c:forEach>
 
                              </c:if>
-
+                            --%>
                          </li>
                     </c:forEach>
                 </ul>
             </laf:division>
         </c:if>
 
-        <c:if test="${not empty releasedAndAssignedTemplate}">
+        <c:if test="${not empty availableTemplates}">
             <h3>Released templates</h3>
             <laf:division>
                 <label for="add-template">Search for study: </label>
@@ -334,7 +337,7 @@
                         <c:set var="myCount" value="0"/>
                         <c:set var="divId" value="0"/>
                         <ul class="menu">
-                            <c:forEach items="${releasedAndAssignedTemplate}" var="template" varStatus="status">
+                            <c:forEach items="${availableTemplates}" var="template" varStatus="status">
                                 <c:if test="${status.count-1 == 0 || myCount == 10}">
                                     <c:set var="myCount" value="0"/>
                                     <c:if test="${status.count > 1}">
@@ -346,12 +349,12 @@
 
                                 <li class="autoclear ${commons:parity(status.count)}">
                                     <c:set var="myCount" value="${myCount +1}"/>
-                                    <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
-                                        ${template.displayName}
+                                    <a href="<c:url value="/pages/cal/template?study=${template.study.id}"/>" class="primary">
+                                        ${template.study.releasedDisplayName}
                                     </a>
                               <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy"
-                                                                 queryString="study=${template.id}"> Copy </tags:restrictedListItem>
+                                                                 queryString="study=${template.study.id}"> Copy </tags:restrictedListItem>
                             </ul>
                                 </li>
                                 <c:if test="${status.last}">
@@ -365,7 +368,7 @@
                         <c:set var="myCount" value="0"/>
                         <c:set var="divId" value="0"/>
                         <ul class="menu">
-                            <c:forEach items="${releasedAndAssignedTemplate}" var="template" varStatus="status">
+                            <c:forEach items="${availableTemplates}" var="template" varStatus="status">
                                 <c:if test="${status.count-1 == 0 || myCount == 10}">
                                     <c:set var="myCount" value="0"/>
                                     <c:if test="${status.count > 1}">
@@ -377,12 +380,12 @@
 
                                 <li class="autoclear ${commons:parity(status.count)}">
                                     <c:set var="myCount" value="${myCount +1}"/>
-                                    <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
-                                        ${template.displayName}
+                                    <a href="<c:url value="/pages/cal/template?study=${template.study.id}"/>" class="primary">
+                                        ${template.study.releasedDisplayName}
                                     </a>
                                     <ul class="controls">
                                         <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy"
-                                                                 queryString="study=${template.id}"> Copy </tags:restrictedListItem>
+                                                                 queryString="study=${template.study.id}"> Copy </tags:restrictedListItem>
                                     </ul>
                                 </li>
                                 <c:if test="${status.last}">

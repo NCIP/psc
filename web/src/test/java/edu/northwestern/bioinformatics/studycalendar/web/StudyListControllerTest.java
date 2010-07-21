@@ -1,28 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.EasyMock.notNull;
-import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
-import static java.util.Arrays.asList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static java.util.Arrays.*;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -34,14 +37,11 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     private StudyListController controller;
 
-    private StudyDao studyDao;
-    private UserDao userDao;
     private TemplateService templateService;
 
-    private User user;
-    private Study complete;
-    private Study incomplete;
-    private Study both;
+    private PscUser user;
+    private Study completeStudy, incompleteStudy, bothStudy;
+    private UserTemplateRelationship complete, incomplete, both;
     private List<Study> allStudies;
     private StudySiteService studySiteService;
     private List<List<StudySite>> allStudySites;
@@ -50,43 +50,38 @@ public class StudyListControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         controller = new StudyListController();
-        studyDao = registerDaoMockFor(StudyDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
+        StudyDao studyDao = registerDaoMockFor(StudyDao.class);
         templateService = registerMockFor(TemplateService.class);
         studySiteService = registerMockFor(StudySiteService.class);
 
         controller.setStudyDao(studyDao);
-        controller.setUserDao(userDao);
         controller.setTemplateService(templateService);
         controller.setStudySiteService(studySiteService);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
-        user = createUser("jimbo");
+        user = AuthorizationObjectFactory.createPscUser("jimbo", new PscRole[0]);
         SecurityContextHolderTestHelper.setSecurityContext(user, "password");
 
-        complete = setId(COMPLETE_ID, createSingleEpochStudy("Complete", "E1"));
-        complete.setAmendment(new Amendment());
+        completeStudy = setId(COMPLETE_ID, createSingleEpochStudy("Complete", "E1"));
+        completeStudy.setAmendment(new Amendment());
+        complete = new UserTemplateRelationship(user, completeStudy);
 
-        incomplete = setId(INCOMPLETE_ID, createSingleEpochStudy("Incomplete", "E1"));
-        incomplete.setAmendment(null);
-        incomplete.setDevelopmentAmendment(new Amendment());
+        incompleteStudy = setId(INCOMPLETE_ID, createSingleEpochStudy("Incomplete", "E1"));
+        incompleteStudy.setAmendment(null);
+        incompleteStudy.setDevelopmentAmendment(new Amendment());
+        incomplete = new UserTemplateRelationship(user, incompleteStudy);
 
-        both = setId(BOTH_ID, createSingleEpochStudy("Available but amending", "E1"));
-        both.setDevelopmentAmendment(new Amendment());
-        both.setAmendment(new Amendment());
+        bothStudy = setId(BOTH_ID, createSingleEpochStudy("Available but amending", "E1"));
+        bothStudy.setDevelopmentAmendment(new Amendment());
+        bothStudy.setAmendment(new Amendment());
+        both = new UserTemplateRelationship(user, bothStudy);
 
-        allStudies = asList(incomplete, complete, both);
+        allStudies = asList(incompleteStudy, bothStudy, completeStudy);
         allStudySites = asList(
-                asList(createStudySite(incomplete, null)),
-                asList(createStudySite(complete, null)),
-                asList(createStudySite(both, null))
+                asList(createStudySite(incompleteStudy, null)),
+                asList(createStudySite(completeStudy, null)),
+                asList(createStudySite(bothStudy, null))
         );
-        expect(studyDao.getAll()).andReturn(allStudies).anyTimes();
-        expect(studySiteService.refreshStudySitesForStudies((List<Study>) notNull())).andReturn(allStudySites).anyTimes();
-
-//        expect(templateService.filterForVisibility(allStudies, null))
-//            .andReturn(Collections.<Study>emptyList()).anyTimes();
-
     }
 
     @Override
@@ -107,105 +102,26 @@ public class StudyListControllerTest extends ControllerTestCase {
                 DATA_READER);
     }
 
-    public void testModelAndViewForStudyAndSubjectCoordinator() throws Exception {
-        setUserRoles(user, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
-
-        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
-        inDevelopment.add(0, (new DevelopmentTemplate(incomplete)));
-        inDevelopment.add(1, (new DevelopmentTemplate(both)));
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        releasedTemplates.add(new ReleasedTemplate(complete, true));
-        releasedTemplates.add(new ReleasedTemplate(both, true));
-        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
-        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
-
-        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
-        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
-        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
-        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
+    public void testModelAndView() throws Exception {
+        expect(templateService.getVisibleTemplates(user)).andReturn(
+            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
+                put(TemplateWorkflowStatus.IN_DEVELOPMENT, Arrays.asList(incomplete, both)).
+                put(TemplateWorkflowStatus.PENDING, Collections.singletonList(complete)).
+                put(TemplateWorkflowStatus.AVAILABLE, Collections.singletonList(both)).
+                toMap());
+        expect(studySiteService.refreshStudySitesForStudies(allStudies)).andReturn(allStudySites);
 
         replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
+        ModelAndView actual = controller.handleRequest(request, response);
         verifyMocks();
 
-        assertDevelopmentTemplateList(asList(incomplete, both), mv);
-        assertReleasedTemplateList(asList(complete, both), new boolean[] { true, true }, mv);
-        assertEquals("studyList", mv.getViewName());
-    }
+        assertEquals("Wrong in development templates",
+            Arrays.asList(incomplete, both), actual.getModel().get("inDevelopmentTemplates"));
+        assertEquals("Wrong pending templates",
+            Arrays.asList(complete), actual.getModel().get("pendingTemplates"));
+        assertEquals("Wrong available templates",
+            Arrays.asList(both), actual.getModel().get("availableTemplates"));
 
-    public void testModelForSubjectCoordinatorAndResearchAssociate() throws Exception {
-        setUserRoles(user, Role.SUBJECT_COORDINATOR);
-
-        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        releasedTemplates.add(new ReleasedTemplate(complete, true));
-        releasedTemplates.add(new ReleasedTemplate(both, false));
-        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
-        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
-
-        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
-        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
-        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
-        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
-
-        replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
-        System.out.println("mv " + mv);
-        verifyMocks();
-
-        assertDevelopmentTemplateList(Collections.<Study>emptyList(), mv);
-        assertReleasedTemplateList(asList(complete, both), new boolean[] { true, false }, mv);
-    }
-    
-    public void testModelForSiteCoordinator() throws Exception {
-        setUserRoles(user, Role.SITE_COORDINATOR);
-
-        List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        releasedTemplates.add(new ReleasedTemplate(complete, false));
-        releasedTemplates.add(new ReleasedTemplate(both, false));
-        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
-        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
-
-        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
-        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
-        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
-        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
-
-        replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
-        verifyMocks();
-
-        assertDevelopmentTemplateList(Collections.<Study>emptyList(), mv);
-        assertReleasedTemplateList(asList(complete, both), new boolean[] { false, false }, mv);
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private void assertDevelopmentTemplateList(List<Study> expected, ModelAndView mv) {
-        assertDevelopmentTemplateList(expected,
-            (List<DevelopmentTemplate>) mv.getModel().get("inDevelopmentTemplates"));
-    }
-
-    private void assertDevelopmentTemplateList(List<Study> expected, List<DevelopmentTemplate> actual) {
-        assertEquals("Wrong number of development templates", expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); i++) {
-            assertEquals("Dev template mismatch at index " + i, (int) expected.get(i).getId(), actual.get(i).getId());
-        }
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private void assertReleasedTemplateList(List<Study> expected, boolean[] expectedAssignable, ModelAndView mv) {
-        assertReleasedTemplateList(expected, expectedAssignable, (List<ReleasedTemplate>) mv.getModel().get("releasedTemplates"));
-    }
-
-    private void assertReleasedTemplateList(List<Study> expected, boolean[] expectedAssignable, List<ReleasedTemplate> actual) {
-        assertEquals("Wrong number of released templates", expected.size(), actual.size());
-        assertEquals("Test setup failure", expected.size(), expectedAssignable.length);
-        for (int i = 0; i < expected.size(); i++) {
-            assertEquals("Released template mismatch at index " + i,
-                (int) expected.get(i).getId(), actual.get(i).getId());
-            assertEquals("Released template assignable flag mismatch at " + i,
-                expectedAssignable[i], actual.get(i).getCanAssignSubjects());
-        }
+        assertEquals("Wrong view", "studyList", actual.getViewName());
     }
 }
