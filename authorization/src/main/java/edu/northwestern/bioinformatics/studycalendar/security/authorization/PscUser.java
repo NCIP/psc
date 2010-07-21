@@ -19,6 +19,7 @@ import java.util.Map;
 public class PscUser implements UserDetails {
     private User user;
     private Map<SuiteRole, SuiteRoleMembership> memberships;
+    private VisibleStudyParameters visibleStudyParameters;
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
     private Map<String, Object> attributes;
@@ -116,6 +117,13 @@ public class PscUser implements UserDetails {
 
     public boolean isEnabled() {
         return isAccountNonExpired();
+    }
+
+    public synchronized VisibleStudyParameters getVisibleStudyParameters() {
+        if (visibleStudyParameters == null) {
+            visibleStudyParameters = VisibleStudyParameters.create(this);
+        }
+        return visibleStudyParameters;
     }
 
     ////// OBJECT METHODS
