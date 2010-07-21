@@ -276,6 +276,13 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertStudyPresent(-104, actual); // Participating
     }
 
+    public void testGetVisibleWithNoMatches() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
+            forSpecificStudyIdentifiers(Arrays.asList("Bogon 14")));
+
+        assertEquals("Wrong number returned: " + actual, 0, actual.size());
+    }
+
     public void testGetVisibleForAllWithFiltering() throws Exception {
         Collection<Study> actual = getDao().searchVisibleStudies(new VisibleStudyParameters().
             forAllManagingSites(), "nCi");

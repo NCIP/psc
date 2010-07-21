@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -195,7 +196,11 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
                 }
                 ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
             }
-            return getHibernateTemplate().findByCriteria(criteria().add(MoreRestrictions.in("id", ids)));
+            if (ids.isEmpty()) {
+                return Collections.emptyList();
+            } else {
+                return getHibernateTemplate().findByCriteria(criteria().add(MoreRestrictions.in("id", ids)));
+            }
         }
     }
 
