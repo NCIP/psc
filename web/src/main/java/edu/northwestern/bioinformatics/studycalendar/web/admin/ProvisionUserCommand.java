@@ -89,6 +89,10 @@ public class ProvisionUserCommand {
             } else if (change.isRemove()) {
                 base.removeSite(change.getScopeIdentifier());
             }
+
+            ////// TODO: temporary
+            if (base.getRole().isStudyScoped()) base.forAllStudies();
+
             provisioningSession.replaceRole(base);
         }
     }
@@ -101,6 +105,10 @@ public class ProvisionUserCommand {
             } else if (change.isRemove()) {
                 base.notForAllSites();
             }
+
+            ////// TODO: temporary
+            if (base.getRole().isStudyScoped()) base.forAllStudies();
+
             provisioningSession.replaceRole(base);
         }
     }
