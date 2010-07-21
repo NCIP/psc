@@ -710,7 +710,7 @@ define "psc" do
            :xml, :xpath => "/deployment/globalConfiguration", 
 	   :insert_type => :under, 
 	   :xml_content => "<parameter name=\"disableDNS\" value=\"true\"/>
-                            <parameter name=\"logicalHost\" value=\"${tomcat.hostname}\"/>"
+                            <parameter name=\"logicalHost\" value=\"" + tomcat_hostname + "\"/>"
        ).run
        FileUtils.rm wsrf_dir+"/WEB-INF/etc/globus_wsrf_core/server-config.wsdd"
        filter.from(_('target/work')).into(wsrf_dir+"/WEB-INF/etc/globus_wsrf_core").include("server-config.wsdd").run
