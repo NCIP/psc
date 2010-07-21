@@ -21,10 +21,6 @@ public class DevelopmentTemplate {
     }
 
     public String getDisplayName() {
-        StringBuilder sb = new StringBuilder(study.getName());
-        if (study.isInAmendmentDevelopment()) {
-            sb.append(" [").append(study.getDevelopmentAmendment().getDisplayName()).append(']');
-        }
-        return sb.toString();
+        return study.getDevelopmentDisplayName();
     }
 }

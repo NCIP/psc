@@ -336,4 +336,41 @@ public class StudyTest extends TestCase {
         study.removeManagingSite(q);
         // no exception
     }
+
+    public void testReleasedDisplayNameIncludesAmendmentIfAmended() throws Exception {
+        Study amended = createReleasedTemplate("Etc");
+        Amendment cur = createAmendment("No", DateTools.createDate(2007, Calendar.JUNE, 3));
+        cur.setPreviousAmendment(amended.getAmendment());
+        amended.setAmendment(cur);
+        assertEquals("Etc [2007-06-03 (No)]", amended.getReleasedDisplayName());
+    }
+
+    public void testReleasedDisplayNameDoesNotIncludesAmendmentIfInitial() throws Exception {
+        assertEquals("Etc", createReleasedTemplate("Etc").getReleasedDisplayName());
+    }
+
+    public void testReleasedDisplayNameIsNullIfNeverReleased() throws Exception {
+        assertNull(study.getReleasedDisplayName());
+    }
+
+    public void testDevelopmentDisplayNameIncludesDevelopmentAmendmentNameWhenPreviouslyReleased() throws Exception {
+        study.setAssignedIdentifier("Etc");
+        study.setDevelopmentAmendment(new Amendment());
+        study.getDevelopmentAmendment().setName(null);
+        study.getDevelopmentAmendment().setDate(DateTools.createDate(2006, Calendar.JULY, 9));
+        study.setAmendment(createAmendments(DateTools.createDate(2006, Calendar.MARCH, 3)));
+
+        assertEquals("Etc [2006-07-09]", study.getDevelopmentDisplayName());
+    }
+
+    public void testDevelopmentDisplayNameDoesNotIncludeDevAmendmentNameWhenInitial() throws Exception {
+        study.setAssignedIdentifier("Etc");
+        study.setDevelopmentAmendment(new Amendment());
+        assertEquals("Etc", study.getDevelopmentDisplayName());
+    }
+
+    public void testDevelopmentDisplayNameIsNullWhenNotInDevelopment() throws Exception {
+        study.setAssignedIdentifier("Etc");
+        assertNull(study.getDevelopmentDisplayName());
+    }
 }

@@ -126,6 +126,32 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
         return getAmendment().getPreviousAmendment() != null;
     }
 
+    @Transient
+    public String getReleasedDisplayName() {
+        if (isReleased()) {
+            StringBuilder sb = new StringBuilder(getName());
+            if (isAmended()) {
+                sb.append(" [").append(getAmendment().getDisplayName()).append(']');
+            }
+            return sb.toString();
+        } else {
+            return null;
+        }
+    }
+
+    @Transient
+    public String getDevelopmentDisplayName() {
+        if (isInDevelopment()) {
+            StringBuilder sb = new StringBuilder(this.getName());
+            if (isInAmendmentDevelopment()) {
+                sb.append(" [").append(getDevelopmentAmendment().getDisplayName()).append(']');
+            }
+            return sb.toString();
+        } else {
+            return null;
+        }
+    }
+
     public void addStudySite(StudySite studySite) {
         getStudySites().add(studySite);
         studySite.setStudy(this);

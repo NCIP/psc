@@ -23,11 +23,7 @@ public class ReleasedTemplate {
     }
 
     public String getDisplayName() {
-        StringBuilder sb = new StringBuilder(study.getName());
-        if (study.isAmended()) {
-            sb.append(" [").append(study.getAmendment().getDisplayName()).append(']');
-        }
-        return sb.toString();
+        return study.getReleasedDisplayName();
     }
 
     public Study getStudy() {
