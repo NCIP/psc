@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
@@ -24,16 +25,25 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -45,6 +55,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private DaoFinder daoFinder;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
+    private StudyDao studyDao;
 
     private DeletableDomainObjectDao domainObjectDao;
 
@@ -54,6 +65,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
+        studyDao = registerMockFor(StudyDao.class);
         AuthorizationService authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
@@ -61,6 +73,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service = new TemplateService();
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
+        service.setStudyDao(studyDao);
         service.setDaoFinder(daoFinder);
         service.setAuthorizationService(authorizationService);
 
@@ -473,5 +486,43 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setGridId(sameGridId);
 
         assertSame(expectedNode, service.findEquivalentChild(study, parameter));
+    }
+
+    public void testGetVisibleTemplates() throws Exception {
+        Site nu = createSite("NU", "IL090");
+        Study readyAndInDev = createBasicTemplate("R");
+        StudySite nuR = readyAndInDev.addSite(nu);
+        nuR.approveAmendment(readyAndInDev.getAmendment(), new Date());
+        readyAndInDev.setDevelopmentAmendment(new Amendment());
+
+        Study pending = createBasicTemplate("P");
+        Study inDev = createInDevelopmentBasicTemplate("D");
+
+        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
+            createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
+
+        expect(studyDao.getVisibleStudies(user.getVisibleStudyParameters())).
+            andReturn(Arrays.asList(pending, readyAndInDev, inDev));
+
+        replayMocks();
+        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> actual
+            = service.getVisibleTemplates(user);
+        verifyMocks();
+
+        System.out.println(actual);
+
+        List<UserTemplateRelationship> actualPending = actual.get(TemplateWorkflowStatus.PENDING);
+        assertEquals("Wrong number of pending templates", 1, actualPending.size());
+        assertEquals("Wrong pending template", "P", actualPending.get(0).getStudy().getAssignedIdentifier());
+
+        List<UserTemplateRelationship> actualAvailable = actual.get(TemplateWorkflowStatus.AVAILABLE);
+        assertEquals("Wrong number of available templates", 1, actualAvailable.size());
+        assertEquals("Wrong available template", "R", actualAvailable.get(0).getStudy().getAssignedIdentifier());
+
+        List<UserTemplateRelationship> actualDev = actual.get(TemplateWorkflowStatus.IN_DEVELOPMENT);
+        assertEquals("Wrong number of dev templates", 2, actualDev.size());
+        assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
+        assertEquals("Wrong 2nd dev template", "R", actualDev.get(1).getStudy().getAssignedIdentifier());
     }
 }

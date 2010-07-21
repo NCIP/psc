@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
@@ -18,8 +19,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -36,6 +41,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
@@ -55,6 +61,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.*;
 public class TemplateService {
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
+    private StudyDao studyDao;
     private AuthorizationService authorizationService;
     private DaoFinder daoFinder;
 
@@ -249,6 +256,57 @@ public class TemplateService {
         return (idMatch || gridIdMatch);
     }
 
+    /**
+     * Returns all the templates the user can see, sorted by workflow status.  A template may
+     * show up in more than one status for the same user.  (E.g., a template can both be in
+     * development [for the next amendment] and available [for the current one].)
+     */
+    public Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> getVisibleTemplates(PscUser user) {
+        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> results =
+            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
+                put(TemplateWorkflowStatus.IN_DEVELOPMENT, new LinkedList<UserTemplateRelationship>()).
+                put(TemplateWorkflowStatus.PENDING, new LinkedList<UserTemplateRelationship>()).
+                put(TemplateWorkflowStatus.AVAILABLE, new LinkedList<UserTemplateRelationship>()).
+                toMap();
+
+        for (Study visible : studyDao.getVisibleStudies(user.getVisibleStudyParameters())) {
+            UserTemplateRelationship utr = new UserTemplateRelationship(user, visible);
+            if (utr.getCanSeeDevelopmentVersion()) {
+                results.get(TemplateWorkflowStatus.IN_DEVELOPMENT).add(utr);
+            }
+            // TODO: this is too simple and will need to be revisited when refactoring the workflow for real.
+            if (utr.getCanAssignSubjects()) {
+                results.get(TemplateWorkflowStatus.AVAILABLE).add(utr);
+            } else if (utr.getStudy().isReleased()) {
+                results.get(TemplateWorkflowStatus.PENDING).add(utr);
+            }
+        }
+
+        for (Map.Entry<TemplateWorkflowStatus, List<UserTemplateRelationship>> entry : results.entrySet()) {
+            Comparator<UserTemplateRelationship> comparator;
+            if (entry.getKey() == TemplateWorkflowStatus.IN_DEVELOPMENT) {
+                comparator = new Comparator<UserTemplateRelationship>() {
+                    public int compare(UserTemplateRelationship o1, UserTemplateRelationship o2) {
+                        return o1.getStudy().getDevelopmentDisplayName().toLowerCase().compareTo(
+                            o2.getStudy().getDevelopmentDisplayName().toLowerCase());
+                    }
+                };
+            } else {
+                comparator = new Comparator<UserTemplateRelationship>() {
+                    public int compare(UserTemplateRelationship o1, UserTemplateRelationship o2) {
+                        return o1.getStudy().getReleasedDisplayName().toLowerCase().compareTo(
+                            o2.getStudy().getReleasedDisplayName().toLowerCase());
+                    }
+                };
+            }
+
+            Collections.sort(entry.getValue(), comparator);
+        }
+
+        return results;
+    }
+
+    @Deprecated
     public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -299,6 +357,7 @@ public class TemplateService {
         }
     }
 
+    @Deprecated
     public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -339,6 +398,7 @@ public class TemplateService {
         return releasedAndAssignedTemplates;
     }
 
+    @Deprecated
     public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -363,6 +423,7 @@ public class TemplateService {
         return releasedTemplates;
     }
 
+    @Deprecated
     public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -377,7 +438,6 @@ public class TemplateService {
         log.debug("in-development templates are {}", inDevelopmentTemplates);
         return inDevelopmentTemplates;
     }
-
 
     private List<Study> union(List<Study>... lists) {
         Set<Study> union = new LinkedHashSet<Study>();
@@ -457,5 +517,10 @@ public class TemplateService {
     @Required
     public void setAuthorizationService(AuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 }
