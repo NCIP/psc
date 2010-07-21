@@ -127,14 +127,14 @@
     </target>
 
     <target name="build:grid" depends="install" description="Builds PSC grid services">
-        <jruby line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no">
+        <jruby line="-S buildr psc:grid:package wsrf_dir_name=wsrf-psc test=no tomcat_hostname=${tomcat.hostname}">
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
         </jruby>
     </target>
 
     <target name="deploy:psc:grid" depends="install" description="Deploys PSC grid services">
-        <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc">
+        <jruby line="-S buildr psc:grid:deploy_with_globus test=no wsrf_dir_name=wsrf-psc tomcat_hostname=${tomcat.hostname}">
             <env key="CATALINA_HOME" value="${tomcat.relative.path}"/>
             <env key="CCTS_HOME" value="${ccts.common.grid.src.dir}"/>
             <env key="GLOBUS_LOCATION" value="${env.GLOBUS_LOCATION}"/>
