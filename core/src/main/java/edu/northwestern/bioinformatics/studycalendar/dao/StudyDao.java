@@ -155,9 +155,15 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
 
     @SuppressWarnings({"unchecked"})
     public List<Study> getVisibleStudies(VisibleStudyParameters parameters) {
-        log.debug("Getting visible studies for {}", parameters);
+        return searchVisibleStudies(parameters, null);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Study> searchVisibleStudies(VisibleStudyParameters parameters, String search) {
+        log.debug("Searching visible studies for {} with {}", parameters,
+            search == null ? "no term" : "term \"" + search + "\"");
         if (parameters.isAllManagingSites()) {
-            return getAll();
+            return search == null ? getAll() : searchStudiesByStudyName(search);
         } else {
             // These are implemented as separate queries and then merged because
             // the criteria are too complex to reliably express in a single statement.
@@ -184,6 +190,9 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
 
             Set<Integer> ids = new LinkedHashSet<Integer>();
             for (DetachedCriteria criteria : separateCriteria) {
+                if (search != null) {
+                    criteria.add(Restrictions.ilike("assignedIdentifier", search, MatchMode.ANYWHERE));
+                }
                 ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
             }
             return getHibernateTemplate().findByCriteria(criteria().add(MoreRestrictions.in("id", ids)));

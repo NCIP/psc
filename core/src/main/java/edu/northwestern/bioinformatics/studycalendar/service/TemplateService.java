@@ -262,6 +262,15 @@ public class TemplateService {
      * development [for the next amendment] and available [for the current one].)
      */
     public Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> getVisibleTemplates(PscUser user) {
+        return searchVisibleTemplates(user, null);
+    }
+
+    /**
+     * Returns all the templates the user can see, sorted by workflow status.  A template may
+     * show up in more than one status for the same user.  (E.g., a template can both be in
+     * development [for the next amendment] and available [for the current one].)
+     */
+    public Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> searchVisibleTemplates(PscUser user, String term) {
         Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> results =
             new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
                 put(TemplateWorkflowStatus.IN_DEVELOPMENT, new LinkedList<UserTemplateRelationship>()).
@@ -269,7 +278,7 @@ public class TemplateService {
                 put(TemplateWorkflowStatus.AVAILABLE, new LinkedList<UserTemplateRelationship>()).
                 toMap();
 
-        for (Study visible : studyDao.getVisibleStudies(user.getVisibleStudyParameters())) {
+        for (Study visible : studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), term)) {
             UserTemplateRelationship utr = new UserTemplateRelationship(user, visible);
             if (utr.getCanSeeDevelopmentVersion()) {
                 results.get(TemplateWorkflowStatus.IN_DEVELOPMENT).add(utr);

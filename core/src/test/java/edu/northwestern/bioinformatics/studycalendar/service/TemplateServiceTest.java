@@ -502,7 +502,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
             createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
 
-        expect(studyDao.getVisibleStudies(user.getVisibleStudyParameters())).
+        expect(studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), null)).
             andReturn(Arrays.asList(pending, readyAndInDev, inDev));
 
         replayMocks();
@@ -524,5 +524,30 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of dev templates", 2, actualDev.size());
         assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
         assertEquals("Wrong 2nd dev template", "R", actualDev.get(1).getStudy().getAssignedIdentifier());
+    }
+
+    public void testSearchVisibleTemplates() throws Exception {
+        Study inDev = createInDevelopmentBasicTemplate("D");
+
+        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
+            createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
+
+        expect(studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), "d")).
+            andReturn(Arrays.asList(inDev));
+
+        replayMocks();
+        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> actual
+            = service.searchVisibleTemplates(user, "d");
+        verifyMocks();
+
+        System.out.println(actual);
+
+        assertEquals("Wrong number of pending templates", 0, actual.get(TemplateWorkflowStatus.PENDING).size());
+        assertEquals("Wrong number of available templates", 0, actual.get(TemplateWorkflowStatus.AVAILABLE).size());
+
+        List<UserTemplateRelationship> actualDev = actual.get(TemplateWorkflowStatus.IN_DEVELOPMENT);
+        assertEquals("Wrong number of dev templates", 1, actualDev.size());
+        assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
     }
 }
