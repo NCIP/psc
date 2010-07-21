@@ -68,4 +68,9 @@ public class PscRoleTest extends TestCase {
     public void testGetCorrespondingSuiteRoleWhenNone() throws Exception {
         assertNull(PscRole.valueOf(SuiteRole.DATA_ANALYST));
     }
+
+    public void testUsesLoaded() throws Exception {
+        assertTrue(PscRole.STUDY_QA_MANAGER.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT));
+        assertTrue(PscRole.STUDY_QA_MANAGER.getUses().contains(PscRoleUse.SITE_PARTICIPATION));
+    }
 }

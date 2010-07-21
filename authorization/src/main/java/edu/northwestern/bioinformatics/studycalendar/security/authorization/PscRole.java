@@ -1,9 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.acegisecurity.GrantedAuthority;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -31,9 +37,13 @@ public enum PscRole implements GrantedAuthority {
     ;
 
     private SuiteRole corresponding;
+    private Collection<PscRoleUse> uses;
+
+    private static Properties roleProperties;
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
+        this.uses = createUses();
     }
 
     public static PscRole valueOf(SuiteRole suiteRole) {
@@ -77,5 +87,38 @@ public enum PscRole implements GrantedAuthority {
 
     public String getAuthority() {
         return getCsmName();
+    }
+
+    public Collection<PscRoleUse> getUses() {
+        return uses;
+    }
+
+    private Set<PscRoleUse> createUses() {
+        String prop = getRoleProperties().getProperty(getCsmName() + ".uses");
+        if (prop == null) {
+            return Collections.emptySet();
+        } else {
+            Set<PscRoleUse> creating = new LinkedHashSet<PscRoleUse>();
+            for (String scope : prop.split("\\s+")) {
+                creating.add(PscRoleUse.valueOf(scope.toUpperCase()));
+            }
+            return Collections.unmodifiableSet(creating);
+        }
+    }
+
+    /**
+     * Loads and returns the role.properties resource.  This resource contains all non-default
+     * information about each role.
+     */
+    private synchronized static Properties getRoleProperties() {
+        if (roleProperties == null) {
+            roleProperties = new Properties();
+            try {
+                roleProperties.load(PscRole.class.getResourceAsStream("psc-role.properties"));
+            } catch (IOException e) {
+                throw new StudyCalendarError("Cannot load role info from properties", e);
+            }
+        }
+        return roleProperties;
     }
 }

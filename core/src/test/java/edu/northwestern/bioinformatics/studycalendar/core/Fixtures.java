@@ -40,7 +40,7 @@ public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.doma
     }
 
     public static Study createBlankTemplate() {
-        return createApprovedTemplate(TemplateSkeletonCreator.BLANK);
+        return createReleasedTemplate(TemplateSkeletonCreator.BLANK);
     }
 
     public static Study createBasicTemplate() {
@@ -48,7 +48,7 @@ public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.doma
     }
 
     public static Study createBasicTemplate(String name) {
-        Study study = createApprovedTemplate(TemplateSkeletonCreator.BASIC);
+        Study study = createReleasedTemplate(TemplateSkeletonCreator.BASIC);
         study.setAssignedIdentifier(name);
         return study;
     }
@@ -57,7 +57,8 @@ public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.doma
         return TemplateSkeletonCreator.BASIC.create(name);
     }
 
-    private static Study createApprovedTemplate(TemplateSkeletonCreator skeletonCreator) {
+    @SuppressWarnings({ "MethodOverridesStaticMethodOfSuperclass" }) // <- because it doesn't
+    private static Study createReleasedTemplate(TemplateSkeletonCreator skeletonCreator) {
         log.debug("Creating concrete template from skeleton");
         Study dev = skeletonCreator.create(null);
         amendmentService.amend(dev);
