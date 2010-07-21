@@ -7,6 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * Encapsulates PSC's configured date format.  Instances are immutable but,
+ * because they include a {@link SimpleDateFormat}, are not thread-safe.
+ * However, the class provides accessors for a {@link ThreadLocal} instance.
+ *
  * @author Rhett Sutphin
  * @author Nataliya Shurupova
  */
@@ -20,7 +24,7 @@ public class FormatTools {
     private static ThreadLocal<FormatTools> instance = new ThreadLocal<FormatTools>();
 
     public FormatTools(String format) {
-        setDateFormatString(format);
+        this.dateFormatString = format;
     }
 
     ////// INSTANCE ACCESS
@@ -32,7 +36,8 @@ public class FormatTools {
         return instance.get();
     }
 
-    private static FormatTools createDefaultInstance() {
+    // package level for testing
+    static FormatTools createDefaultInstance() {
         return new FormatTools(UNCONFIGURED_FORMAT);
     }
 
@@ -70,16 +75,11 @@ public class FormatTools {
         return dateFormatString;
     }
 
-    public void setDateFormatString(String dateFormat) {
-        this.dateFormatString = dateFormat;
-    }
-
     public DateFormat getDateFormat() {
-        return new SimpleDateFormat(dateFormatString);
+        return new SimpleDateFormat(getDateFormatString());
     }
 
     public DateFormat getMonthDayFormat() {
         return new SimpleDateFormat(getMonthDayFormatString());
-//        throw new UnsupportedOperationException("getMonthDayFormat not implemented yet.");
     }
 }

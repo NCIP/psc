@@ -1,19 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
+import org.springframework.mock.web.MockFilterChain;
+
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.ServletException;
-
-import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
-
 import java.io.IOException;
-
-import org.springframework.mock.web.MockFilterChain;
 
 /**
  * @author Nataliya Shurupova
@@ -31,6 +29,12 @@ public class FormatToolsConfigurationFilterTest extends WebTestCase {
         request.setAttribute("configuration", configuration);
 
         filter = new FormatToolsConfigurationFilter();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        FormatTools.clearLocalInstance();
     }
 
     public void testExceptionIfConfigurationNotAvailable() throws Exception {

@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
 
 /**
  * @author Rhett Sutphin
@@ -39,9 +40,15 @@ public class StudySiteTest extends TestCase {
         Site site = Fixtures.createNamedInstance("Galesburg", Site.class);
         studySite = Fixtures.createStudySite(study, site);
 
-        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
+        FormatTools.setLocal(new FormatTools("MM/dd/yyyy"));
     }
-    
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        FormatTools.clearLocalInstance();
+    }
+
     public void testUsedWhenUsed() throws Exception {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         studySite.getStudySubjectAssignments().add(assignment);

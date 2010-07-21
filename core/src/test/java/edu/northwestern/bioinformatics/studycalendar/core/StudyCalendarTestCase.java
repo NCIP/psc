@@ -44,7 +44,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         applicationSecurityManager = new ApplicationSecurityManager();
-        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
+        FormatTools.setLocal(new FormatTools("MM/dd/yyyy"));
     }
 
     @Override

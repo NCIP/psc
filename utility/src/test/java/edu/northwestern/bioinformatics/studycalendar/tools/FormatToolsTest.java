@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.tools;
 
-import junit.framework.TestCase;
-import gov.nih.nci.cabig.ctms.lang.DateTools;
-
-import java.util.Calendar;
-import java.text.DateFormat;
-
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import junit.framework.TestCase;
+
+import java.text.DateFormat;
+import java.util.Calendar;
 
 /**
  * @author Nataliya Shurupova
@@ -32,9 +31,8 @@ public class FormatToolsTest extends TestCase {
     }
 
     public void testUsesAlternativeFormatIfConfigured() throws Exception {
-        tools.setDateFormatString("dd/MM/yyyy");
         assertEquals("Not formatted correctly",
-                "01/12/2003", tools.formatDate(DateTools.createDate(2003, Calendar.DECEMBER, 1)));
+                "01/12/2003", new FormatTools("dd/MM/yyyy").formatDate(DateTools.createDate(2003, Calendar.DECEMBER, 1)));
     }
 
     public void testGetDateFormat() throws Exception {
@@ -48,19 +46,16 @@ public class FormatToolsTest extends TestCase {
     }
 
     public void testGetMonthDayFormatStringForAlternativeFormat() throws Exception {
-        tools.setDateFormatString("dd/MM/yyyy");
-        assertEquals("Wrong format", "dd/MM", tools.getMonthDayFormatString());
+        assertEquals("Wrong format", "dd/MM", new FormatTools("dd/MM/yyyy").getMonthDayFormatString());
     }
 
     public void testGetMonthDayFormatStringForUnconfiguredFormat() throws Exception {
-        tools.setDateFormatString(FormatTools.UNCONFIGURED_FORMAT);
-        assertEquals("Wrong format", "MM-dd", tools.getMonthDayFormatString());
+        assertEquals("Wrong format", "MM-dd", FormatTools.createDefaultInstance().getMonthDayFormatString());
     }
 
     public void testGetMonthDayFailsForUnknownDateFormat() throws Exception {
-        tools.setDateFormatString("yyyy/MM/dd");
         try {
-            tools.getMonthDayFormatString();
+            new FormatTools("yyyy/MM/dd").getMonthDayFormatString();
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
             assertEquals("Wrong message", "Unsupported base date format for month-day: yyyy/MM/dd", scse.getMessage());
@@ -74,8 +69,7 @@ public class FormatToolsTest extends TestCase {
     }
 
     public void testUsesAlternativeFormatGetMonthDay() throws Exception {
-        tools.setDateFormatString("dd/MM/yyyy");
-        DateFormat actual = tools.getMonthDayFormat();
+        DateFormat actual = new FormatTools("dd/MM/yyyy").getMonthDayFormat();
         assertEquals("Not formatted correctly",
                 "31/05", actual.format(DateTools.createDate(2009, Calendar.MAY, 31)));
     }

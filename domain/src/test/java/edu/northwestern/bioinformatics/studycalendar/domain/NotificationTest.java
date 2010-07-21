@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
@@ -9,6 +8,8 @@ import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 /**
  * @author Saurabh Agrawal
@@ -46,7 +47,13 @@ public class NotificationTest extends TestCase {
         study.setId(3);
         studySite = Fixtures.createStudySite(study, new Site());
         subject = Fixtures.createSubject("first", "last");
-        FormatTools.getLocal().setDateFormatString("MM/dd/yyyy");
+        FormatTools.setLocal(new FormatTools("MM/dd/yyyy"));
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        FormatTools.clearLocalInstance();
     }
 
     public void testCrateNotificationForAdverseEvent() {
