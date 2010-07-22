@@ -35,5 +35,9 @@ public abstract class ControllerTestCase extends WebTestCase {
             assertTrue(role.getDisplayName() + " should be allowed",
                 actualRoles.contains(role));
         }
+
+        for (PscRole role : actualRoles) {
+            assertTrue(role.getDisplayName() + " should not be allowed", Arrays.asList(expected).contains(role));
+        }
     }
 }
