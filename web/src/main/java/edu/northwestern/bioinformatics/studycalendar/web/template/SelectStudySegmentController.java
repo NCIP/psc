@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +26,17 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class SelectStudySegmentController implements Controller {
+public class SelectStudySegmentController implements Controller, PscAuthorizedHandler {
     private TemplateService templateService;
     private DeltaService deltaService;
     private ControllerTools controllerTools;
     private StudySegmentDao studySegmentDao;
     private static final Logger log = LoggerFactory.getLogger(SelectStudySegmentController.class.getName());
+
+    //todo -- this access should be modified based on the fact if study is in development, or released - ticket #1097
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(PscRole.valuesWithStudyAccess());
+    }
 
     @SuppressWarnings({"unchecked"})
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

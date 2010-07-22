@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -12,14 +14,23 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 
+import java.util.Collection;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER;
+
 /**
  * @author Jalpa Patel
  */
 @AccessControl(roles = {Role.SYSTEM_ADMINISTRATOR})
-public class NewProvidedSiteController extends PscAbstractController {
+public class NewProvidedSiteController extends PscAbstractController implements PscAuthorizedHandler {
     private SiteService siteService;
-    public NewProvidedSiteController() {
+    public NewProvidedSiteController() {}
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
+
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -33,6 +44,7 @@ public class NewProvidedSiteController extends PscAbstractController {
         siteService.createOrUpdateSite(site);
         return null;
     }
+
     @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;

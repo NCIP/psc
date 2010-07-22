@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandContr
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,7 +25,7 @@ import java.util.*;
 /**
  * @author John Dzak
  */
-public class SearchActivitiesController extends PscAbstractCommandController<SearchActivitiesCommand> {
+public class SearchActivitiesController extends PscAbstractCommandController<SearchActivitiesCommand> implements PscAuthorizedHandler {
     private ActivityDao activityDao;
     private SourceDao sourceDao;
     private ActivityTypeDao activityTypeDao;

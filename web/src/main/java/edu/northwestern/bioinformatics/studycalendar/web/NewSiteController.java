@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -18,8 +21,10 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessCon
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER;
+
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
-public class NewSiteController extends PscSimpleFormController {
+public class NewSiteController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SiteService siteService;
 
     public NewSiteController() {
@@ -30,6 +35,20 @@ public class NewSiteController extends PscSimpleFormController {
         setBindOnNewForm(true);
         setCrumb(new Crumb());
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        String[] siteArray = queryParameters.get("id");
+        try {
+            String siteString = siteArray[0];
+            Integer siteId = Integer.parseInt(siteString);
+            Site site = siteService.getById(siteId);
+            return ResourceAuthorization.createCollection(site, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        } catch (Exception e) {
+            log.error("StudySite parameter is invalid " + e);
+            return ResourceAuthorization.createCollection(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        }
+    }    
+
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Site site;

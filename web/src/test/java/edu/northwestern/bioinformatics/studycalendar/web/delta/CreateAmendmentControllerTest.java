@@ -6,12 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Date;
 import java.util.Calendar;
@@ -44,6 +47,10 @@ public class CreateAmendmentControllerTest extends ControllerTestCase {
         study = new Study();
     }
 
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }
 
     public void testSaveValidAmendment() throws Exception {
         request.addParameter("date", "01/01/2009");

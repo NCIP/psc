@@ -1,21 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubjectOffStudyController extends PscSimpleFormController {
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+
+public class SubjectOffStudyController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SubjectService subjectService;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
 
@@ -25,6 +33,22 @@ public class SubjectOffStudyController extends PscSimpleFormController {
         setSuccessView("redirectToSchedule");
         setBindOnNewForm(true);
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        String[] assignmentArray = queryParameters.get("assignment");
+        try {
+            String assignmentString = assignmentArray[0];
+            Integer assignmentId = Integer.parseInt(assignmentString);
+            StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getById(assignmentId);
+            StudySite studySite = studySubjectAssignment.getStudySite();
+            Site site = studySite.getSite();
+            Study study = studySite.getStudy();
+            return ResourceAuthorization.createCollection(site, study, STUDY_SUBJECT_CALENDAR_MANAGER);
+        } catch (Exception e) {
+            log.error("StudySite parameter is invalid " + e);
+            return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        }
     }
 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {

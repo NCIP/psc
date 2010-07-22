@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -14,10 +16,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class CreateAmendmentController extends PscCancellableFormController {
+public class CreateAmendmentController extends PscCancellableFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private StudyService studyService;
@@ -29,6 +35,10 @@ public class CreateAmendmentController extends PscCancellableFormController {
         setValidator(new ValidatableValidator());
         setSuccessView("redirectToStudyList");
         setCancelView("redirectToStudyList");
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override

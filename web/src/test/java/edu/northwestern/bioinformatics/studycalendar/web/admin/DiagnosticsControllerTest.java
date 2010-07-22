@@ -1,14 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import java.util.Collection;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 
 /**
  * @author Saurabh Agrawal
  * @crated Sep 25, 2008
  */
-public class DiagnosticsControllerTest extends WebTestCase {
+public class DiagnosticsControllerTest extends ControllerTestCase {
 
     private DiagnosticsController diagnosticsController;
     private Configuration configuration
@@ -24,6 +28,11 @@ public class DiagnosticsControllerTest extends WebTestCase {
         diagnosticsController.setConfiguration(configuration);
         diagnosticsController.setMailSender(mailSender);
 
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = diagnosticsController.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, SYSTEM_ADMINISTRATOR);
     }
 
     public void testInvokeSmokeTestService() throws Exception {

@@ -3,8 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
-
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import java.util.Collection;
 import java.util.List;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 
 /**
  * @author Rhett Sutphin
@@ -19,6 +21,11 @@ public class ConfigurationControllerTest extends ControllerTestCase {
 
         controller = new ConfigurationController();
         controller.setConfiguration(configuration);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, SYSTEM_ADMINISTRATOR);
     }
 
     public void testBindListProperty() throws Exception {

@@ -3,6 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import java.util.Collection;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -17,6 +20,11 @@ public class NewProvidedSiteControllerTest extends ControllerTestCase {
         siteService = registerMockFor(SiteService.class);
         controller = new NewProvidedSiteController();
         controller.setSiteService(siteService);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
     public void testAddNewProvidedSite() throws Exception {

@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
@@ -24,14 +26,14 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.USER_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 @Deprecated // don't remove until all features are supported by AdministerUserController
-public class CreateUserController extends PscCancellableFormController {
+public class CreateUserController extends PscCancellableFormController implements PscAuthorizedHandler {
     private UserService userService;
     private SiteDao siteDao;
     private UserRoleService userRoleService;
@@ -45,6 +47,10 @@ public class CreateUserController extends PscCancellableFormController {
         setSuccessView("listUsers");
         setCancelView("listUsers");
         setCrumb(new Crumb());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(USER_ADMINISTRATOR, SYSTEM_ADMINISTRATOR);
     }
 
     @Override

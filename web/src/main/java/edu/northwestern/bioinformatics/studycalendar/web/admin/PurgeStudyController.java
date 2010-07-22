@@ -8,19 +8,25 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-public class PurgeStudyController extends PscCancellableFormController {
+public class PurgeStudyController extends PscCancellableFormController implements PscAuthorizedHandler {
     private StudySiteDao studySiteDao;
     private StudyDao studyDao;
     private StudyService studyService;
@@ -29,6 +35,11 @@ public class PurgeStudyController extends PscCancellableFormController {
         setFormView("admin/purgeStudy");
         setSuccessView("purgeStudy");
         setCommandClass(PurgeStudyCommand.class);
+    }
+
+//    Study QA Manager (Lead site only)
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(STUDY_QA_MANAGER);
     }
 
     @Override

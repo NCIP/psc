@@ -5,11 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -44,6 +48,11 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         expect(studySegmentDao.getById(STUDY_SEGMENT_ID)).andReturn(studySegment).anyTimes();
         request.setParameter("studySegment", Integer.toString(STUDY_SEGMENT_ID));
         request.setMethod("GET");
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, PscRole.valuesWithStudyAccess());
     }
 
     // TODO: test the inclusion of the plan tree hierarchy

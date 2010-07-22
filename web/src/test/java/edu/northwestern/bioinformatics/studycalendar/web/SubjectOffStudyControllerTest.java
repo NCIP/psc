@@ -2,14 +2,19 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
 import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SubjectOffStudyControllerTest extends ControllerTestCase{
 
@@ -37,6 +42,35 @@ public class SubjectOffStudyControllerTest extends ControllerTestCase{
         assignment = setId(10, new StudySubjectAssignment());
         assignment.setScheduledCalendar(setId(20, new ScheduledCalendar()));
     }
+
+    public void testAuthorizedRoles() {
+        Study study = setId(100, edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate());
+        study.setAssignedIdentifier("100");
+        Site site = Fixtures.createSite("site", "5");
+        site.setId(5);
+        StudySite studySite = Fixtures.createStudySite(study, site);
+        assignment.setStudySite(studySite);
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        String[] assignmentId = {assignment.getId().toString()};
+        params.put("assignment", assignmentId);
+        expect(assignmentDao.getById(assignment.getId())).andReturn(assignment);
+
+        replayMocks();
+
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, params);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
+    }
+
+    //todo, what actually is tested is the error message in the log. we don't have a good way to capture it.
+    //todo, leaving test and will add espected login message, once we have this functionality.
+    public void testAuthorizedRolesWithErroLog() {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        String[] assignmentId = {"15"};
+        params.put("assignment", assignmentId);
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, params);
+        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
+    }
+    
 
     public void testSubjectAssignedOnSubmit() throws Exception {
         expect(command.takeSubjectOffStudy()).andReturn(assignment);

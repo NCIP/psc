@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationPropertyEditor;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
@@ -14,11 +16,15 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 
+import java.util.Collection;
+import java.util.Map;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
+
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-public class ConfigurationController extends PscSimpleFormController {
+public class ConfigurationController extends PscSimpleFormController implements PscAuthorizedHandler {
     private Configuration configuration;
 
     public ConfigurationController() {
@@ -27,6 +33,10 @@ public class ConfigurationController extends PscSimpleFormController {
         setFormView("admin/configure");
     }
 
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(SYSTEM_ADMINISTRATOR);
+    }    
+    
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new ConfigurationCommand(configuration);

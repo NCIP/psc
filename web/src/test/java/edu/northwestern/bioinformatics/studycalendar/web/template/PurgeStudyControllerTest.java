@@ -5,9 +5,13 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.admin.PurgeStudyController;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_QA_MANAGER;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Collection;
 
 public class PurgeStudyControllerTest extends ControllerTestCase {
     private PurgeStudyController controller;
@@ -24,6 +28,11 @@ public class PurgeStudyControllerTest extends ControllerTestCase {
         controller = new PurgeStudyController();
         controller.setStudyDao(studyDao);
         controller.setStudyService(studyService);
+    }
+
+    public void testAuthorizedRoles() {
+        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
+        assertRolesAllowed(actualAuthorizations, STUDY_QA_MANAGER);
     }
 
     public void testSubmitWithNoAssignedIdentifier() throws Exception {

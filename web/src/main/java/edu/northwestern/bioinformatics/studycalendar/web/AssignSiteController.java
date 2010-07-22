@@ -5,9 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -18,15 +21,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SITE_PARTICIPATION_ADMINISTRATOR;
 
 /**
  * @author Padmaja Vedula
  */
 @AccessControl(roles = Role.STUDY_ADMIN)
-public class AssignSiteController extends PscSimpleFormController {
+public class AssignSiteController extends PscSimpleFormController implements PscAuthorizedHandler {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private SiteService siteService;
@@ -36,6 +42,19 @@ public class AssignSiteController extends PscSimpleFormController {
         setCommandClass(AssignSiteCommand.class);
         setValidator(new ValidatableValidator());
         setFormView("assignSite");
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        String[] studyArray = queryParameters.get("id");
+        try {
+            String studyString = studyArray[0];
+            Integer studyId = Integer.parseInt(studyString);
+            Study study = studyDao.getById(studyId);
+            return ResourceAuthorization.createTemplateManagementAuthorizations(study, STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
+        } catch (Exception e) {
+            log.error("StudySite parameter is invalid " + e);
+            return ResourceAuthorization.createCollection(STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
+        }
     }
 
     @Override

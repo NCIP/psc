@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -14,12 +16,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.BUSINESS_ADMINISTRATOR;
+
 /**
  * @author Jalpa Patel
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-public class ManageSourcesController extends PscSimpleFormController {
+public class ManageSourcesController extends PscSimpleFormController implements PscAuthorizedHandler {
     private SourceDao sourceDao;
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(BUSINESS_ADMINISTRATOR);
+    }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Collection<Source> sources = sourceDao.getAll();

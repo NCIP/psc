@@ -2,20 +2,26 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import static edu.northwestern.bioinformatics.studycalendar.configuration.Configuration.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
+
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.mail.SimpleMailMessage;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-public class DiagnosticsController extends PscSimpleFormController {
+public class DiagnosticsController extends PscSimpleFormController implements PscAuthorizedHandler {
 
     private Configuration configuration;
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -27,6 +33,10 @@ public class DiagnosticsController extends PscSimpleFormController {
         setCommandClass(DiagnosticsCommand.class);
         setFormView("admin/diagnostics");
     }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(SYSTEM_ADMINISTRATOR);
+    }    
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

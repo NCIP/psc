@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.utility.osgimosis.Membrane;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
@@ -19,14 +21,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SYSTEM_ADMINISTRATOR;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class AuthenticationSystemSelectorController
-    extends PscAbstractCommandController<AuthenticationSystemSelectorCommand>
+    extends PscAbstractCommandController<AuthenticationSystemSelectorCommand> implements PscAuthorizedHandler
 {
     private InstalledAuthenticationSystem installedAuthenticationSystem;
     private BundleContext bundleContext;
@@ -36,6 +41,10 @@ public class AuthenticationSystemSelectorController
     public AuthenticationSystemSelectorController() {
         setCrumb(new DefaultCrumb("Configure authentication system"));
         setValidator(new ValidatableValidator());
+    }
+
+    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        return ResourceAuthorization.createCollection(SYSTEM_ADMINISTRATOR);
     }
 
     @Override
