@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -45,6 +47,7 @@ public enum PscRole implements GrantedAuthority {
 
     private static Properties roleProperties;
     private static PscRole[] withStudyAccess;
+    private static Map<PscRoleUse, PscRole[]> byUse = new HashMap<PscRoleUse, PscRole[]>();
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
@@ -132,15 +135,22 @@ public enum PscRole implements GrantedAuthority {
      */
     public static synchronized PscRole[] valuesWithStudyAccess() {
         if (withStudyAccess == null) {
-            List<PscRole> filtered = new ArrayList<PscRole>(Arrays.asList(values()));
-            for (Iterator<PscRole> it = filtered.iterator(); it.hasNext();) {
-                PscRole pscRole = it.next();
-                if (!pscRole.getUses().contains(PscRoleUse.SITE_PARTICIPATION) && !pscRole.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
-                    it.remove();
-                }
-            }
-            withStudyAccess = filtered.toArray(new PscRole[filtered.size()]);
+            Set<PscRole> union = new LinkedHashSet<PscRole>();
+            union.addAll(Arrays.asList(valuesUsedFor(PscRoleUse.SITE_PARTICIPATION)));
+            union.addAll(Arrays.asList(valuesUsedFor(PscRoleUse.TEMPLATE_MANAGEMENT)));
+            withStudyAccess = union.toArray(new PscRole[union.size()]);
         }
         return withStudyAccess;
+    }
+
+    public static synchronized PscRole[] valuesUsedFor(PscRoleUse use) {
+        if (!byUse.containsKey(use)) {
+            List<PscRole> filtered = new ArrayList<PscRole>(Arrays.asList(values()));
+            for (Iterator<PscRole> it = filtered.iterator(); it.hasNext();) {
+                if (!it.next().getUses().contains(use)) it.remove();
+            }
+            byUse.put(use, filtered.toArray(new PscRole[filtered.size()]));
+        }
+        return byUse.get(use);
     }
 }
