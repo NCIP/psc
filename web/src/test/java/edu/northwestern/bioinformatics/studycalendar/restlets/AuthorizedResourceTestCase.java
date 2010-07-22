@@ -18,13 +18,11 @@ import java.util.Collection;
  * @author John Dzak
  */
 public abstract class AuthorizedResourceTestCase<R extends Resource & AuthorizedResource> extends ResourceTestCase<R> {
-    private PscUser user;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        user = AuthorizationObjectFactory.
+        PscUser user = AuthorizationObjectFactory.
             createLegacyPscUser("josephine", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
         setCurrentUser(user);
     }
@@ -78,10 +76,10 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
     protected void assertRolesAllowedForMethod(Method method, PscRole... roles) {
         doInitOnly();
 
-        Collection<PscRole> expected = Arrays.asList(roles);
         Collection<ResourceAuthorization> resourceAuthorizations = getResource().authorizations(method);
         Collection<PscRole> actual = new ArrayList<PscRole>();
         if (resourceAuthorizations == null) {
+            // if authorizations == null, that means everything is allowed
             actual = Arrays.asList(PscRole.values());
         } else {
             for (ResourceAuthorization actualResourceAuthorization : resourceAuthorizations) {
@@ -89,13 +87,13 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
             }
         }
 
-        for (PscRole role : expected) {
+        for (PscRole role : roles) {
             assertTrue(method.toString() + " for " + role.getDisplayName() + " should be allowed",
                 actual.contains(role));
         }
 
         for (PscRole role : actual) {
-            assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", expected.contains(role));
+            assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", Arrays.asList(roles).contains(role));
         }
     }
 

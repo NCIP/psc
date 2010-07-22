@@ -11,116 +11,124 @@ import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import junit.framework.TestCase;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+
 /**
  * @author Rhett Sutphin
  */
 public class ResourceAuthorizationTest extends TestCase {
+    private static final String SITE_A_IDENT = "a!";
+    private static final String SITE_B_IDENT = "b!";
+
     private Site siteA, siteB;
     private Study studyA, studyB;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        siteA = Fixtures.createSite("A", "a!");
-        siteB = Fixtures.createSite("B", "b!");
+        siteA = Fixtures.createSite("A", SITE_A_IDENT);
+        siteB = Fixtures.createSite("B", SITE_B_IDENT);
 
         studyA = Fixtures.createReleasedTemplate("A");
         studyB = Fixtures.createReleasedTemplate("B");
     }
 
     public void testRoleOnlyAuthorizationPermitsRoleOnlyMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.SYSTEM_ADMINISTRATOR).permits(
-            createUser(PscRole.SYSTEM_ADMINISTRATOR)));
+        assertTrue(ResourceAuthorization.create(SYSTEM_ADMINISTRATOR).permits(
+            createUser(SYSTEM_ADMINISTRATOR)));
     }
 
     public void testRoleOnlyAuthorizationDoesNotPermitOtherRoleMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_IMPORTER).permits(
-            createUser(PscRole.BUSINESS_ADMINISTRATOR)));
+        assertFalse(ResourceAuthorization.create(DATA_IMPORTER).permits(
+            createUser(BUSINESS_ADMINISTRATOR)));
     }
 
     public void testRoleAndSiteAuthorizationPermitsMatchingSiteMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.USER_ADMINISTRATOR, siteA).permits(
-            createUser(createMembership(PscRole.USER_ADMINISTRATOR).forSites(siteA))));
+        assertTrue(ResourceAuthorization.create(USER_ADMINISTRATOR, siteA).permits(
+            createUser(createMembership(USER_ADMINISTRATOR).forSites(siteA))));
     }
 
     public void testRoleAndSiteAuthorizationPermitsAllSiteMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.USER_ADMINISTRATOR, siteA).permits(
-            createUser(createMembership(PscRole.USER_ADMINISTRATOR).forAllSites())));
+        assertTrue(ResourceAuthorization.create(USER_ADMINISTRATOR, siteA).permits(
+            createUser(createMembership(USER_ADMINISTRATOR).forAllSites())));
     }
 
     public void testRoleAndSiteAuthorizationDoesNotPermitNonMatchingMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.USER_ADMINISTRATOR, siteA).permits(
-            createUser(createMembership(PscRole.USER_ADMINISTRATOR).forSites(siteB))));
+        assertFalse(ResourceAuthorization.create(USER_ADMINISTRATOR, siteA).permits(
+            createUser(createMembership(USER_ADMINISTRATOR).forSites(siteB))));
     }
 
     public void testRoleAndSiteAuthorizationDoesNotPermitNoSiteMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.USER_ADMINISTRATOR, siteA).permits(
-            createUser(createMembership(PscRole.USER_ADMINISTRATOR))));
+        assertFalse(ResourceAuthorization.create(USER_ADMINISTRATOR, siteA).permits(
+            createUser(createMembership(USER_ADMINISTRATOR))));
     }
 
     public void testRoleSiteAndStudyAuthorizationPermitsMatchingSiteAndStudyMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forSites(siteA).forStudies(studyA, studyB))));
+        assertTrue(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forSites(siteA).forStudies(studyA, studyB))));
     }
 
     public void testRoleSiteAndStudyAuthorizationPermitsAllSiteMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forAllSites().forStudies(studyA, studyB))));
+        assertTrue(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forAllSites().forStudies(studyA, studyB))));
     }
 
     public void testRoleSiteAndStudyAuthorizationPermitsAllStudyMembership() throws Exception {
-        assertTrue(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forSites(siteA, siteB).forAllStudies())));
+        assertTrue(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forSites(siteA, siteB).forAllStudies())));
     }
 
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitUnscopedMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER))));
+        assertFalse(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER))));
     }
 
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitSiteOnlyMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forAllSites())));
+        assertFalse(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forAllSites())));
     }
 
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitStudyOnlyMembership() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forAllStudies())));
+        assertFalse(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forAllStudies())));
     }
 
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitForMismatchedStudy() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forAllSites().forStudies(studyA))));
+        assertFalse(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forAllSites().forStudies(studyA))));
     }
 
     public void testRoleSiteAndStudyAuthorizationDoesNotPermitForMismatchedSite() throws Exception {
-        assertFalse(ResourceAuthorization.create(PscRole.DATA_READER, siteA, studyB).permits(
-            createUser(createMembership(PscRole.DATA_READER).forSites(siteB).forStudies(studyB))));
+        assertFalse(ResourceAuthorization.create(DATA_READER, siteA, studyB).permits(
+            createUser(createMembership(DATA_READER).forSites(siteB).forStudies(studyB))));
     }
 
     public void testCreateMultipleAuthorizationsByRoleOnly() throws Exception {
         ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
-            PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+            DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER);
         assertEquals("Wrong number of RAs", 2, actual.length);
-        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, null, null, actual[0]);
+        assertResourceAuthorization("Wrong 1st RA", DATA_READER, null, null, actual[0]);
         assertResourceAuthorization("Wrong 2nd RA",
-            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, null, null, actual[1]);
+            STUDY_CALENDAR_TEMPLATE_BUILDER, null, null, actual[1]);
     }
 
     public void testCreateMultipleAuthorizationsByRoleAndSite() throws Exception {
         ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
-            siteA, PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+            siteA, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER);
         assertEquals("Wrong number of RAs", 2, actual.length);
-        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, "a!", null, actual[0]);
+        assertResourceAuthorization("Wrong 1st RA", DATA_READER, SITE_A_IDENT, null, actual[0]);
         assertResourceAuthorization("Wrong 2nd RA",
-            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "a!", null, actual[1]);
+            STUDY_CALENDAR_TEMPLATE_BUILDER, SITE_A_IDENT, null, actual[1]);
     }
 
     public void testCreateMultipleAuthorizationsByRoleSiteAndStudy() throws Exception {
         ResourceAuthorization[] actual = ResourceAuthorization.createSeveral(
-            siteB, studyB, PscRole.DATA_READER, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+            siteB, studyB, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER);
         assertEquals("Wrong number of RAs", 2, actual.length);
-        assertResourceAuthorization("Wrong 1st RA", PscRole.DATA_READER, "b!", "B", actual[0]);
+        assertResourceAuthorization("Wrong 1st RA", DATA_READER, SITE_B_IDENT, "B", actual[0]);
         assertResourceAuthorization("Wrong 2nd RA",
             PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, "b!", "B", actual[1]);
     }
