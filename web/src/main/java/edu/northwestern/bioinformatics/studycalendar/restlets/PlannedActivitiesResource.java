@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -32,7 +32,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     private ActivityDao activityDao;
     private PopulationDao populationDao;
     private TemplateService templateService;
-    private StudyService studyService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -124,11 +123,6 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
-    }
-
-    @Required
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
     }
 }
 

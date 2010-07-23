@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
@@ -13,17 +14,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Status;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -48,12 +48,11 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
 
     private AmendedTemplateHelper helper;
     private AmendmentService amendmentService;
-    private StudyService studyService;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
 
-    private Study study, revisedStudy;
-    private Period period, revisedPeriod;
+    private Study study;
+    private Period revisedPeriod;
     private Amendment devAmendment;
 
     @Override
@@ -64,12 +63,11 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         EasyMock.expectLastCall().atLeastOnce();
         
         amendmentService = registerMockFor(AmendmentService.class);
-        studyService = registerMockFor(StudyService.class);
         activityDao = registerMockFor(ActivityDao.class);
         populationDao = registerMockFor(PopulationDao.class);
 
         study = createBasicTemplate();
-        study.setName(STUDY_NAME);
+        study.setAssignedIdentifier(STUDY_NAME);
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         epoch.setName(EPOCH_NAME);
         StudySegment segment = epoch.getStudySegments().get(1);
@@ -78,8 +76,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         populations.add(POPULATION);
         study.setPopulations(populations);
 
-
-        period = setId(PERIOD_ID, createPeriod("Z", 4, 8, 12));
+        Period period = setId(PERIOD_ID, createPeriod("Z", 4, 8, 12));
         period.setGridId(PERIOD_GRID_ID);
 
         devAmendment = new Amendment();
@@ -97,7 +94,6 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         PlannedActivitiesResource res = new PlannedActivitiesResource();
         res.setAmendedTemplateHelper(helper);
         res.setTemplateService(new TestingTemplateService());
-        res.setStudyService(studyService);
         res.setAmendmentService(amendmentService);
         res.setActivityDao(activityDao);
         res.setPopulationDao(populationDao);
@@ -279,7 +275,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
     }
 
     private void expectSuccessfulDrillDown() {
-        revisedStudy = revise(study, devAmendment);
+        Study revisedStudy = revise(study, devAmendment);
         revisedPeriod = revisedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1).getPeriods().first();
         expect(helper.drillDown(Period.class)).andReturn(revisedPeriod);
     }

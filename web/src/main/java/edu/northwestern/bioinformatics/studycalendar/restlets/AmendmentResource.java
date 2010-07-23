@@ -2,10 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
@@ -34,7 +33,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     private Study study;
     private StudyService studyService;
 
-    private AmendmentService amendmentService;
     private BeanFactory beanFactory;
     private TemplateDevelopmentService templateDevelopmentService;
 
@@ -61,7 +59,6 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
             log.warn("Study  does not have any modification date. Representation : " + representation);
 
         }
-
 
         return representation;
     }
@@ -94,10 +91,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     @Override
     public void remove(final Amendment amendment) {
         log.debug("Deleting amendment {} for study {}",
-                amendment.getNaturalKey(), study.getAssignedIdentifier());
-//        amendmentService.deleteDevelopmentAmendmentOnly(study);
+            amendment.getNaturalKey(), study.getAssignedIdentifier());
         templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
-
     }
 
     @Override
@@ -106,31 +101,13 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
         if (amendment == null) {
             String message = "Amendment is null";
             log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-                    message);
-
-
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, message);
         } else if (amendment.equals(study.getAmendment()) || amendment.getReleasedDate()!=null) {
-            String message = String.format("Amendment {} can be deleted if and only if it isn't released for the study {}",
+            String message = String.format("Amendment %s can be deleted if and only if it isn't released for the study %s",
                     amendment.getNaturalKey(), study.getAssignedIdentifier());
             log.error(message);
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-                    message);
-
-
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, message);
         }
-        //   You dont need this logic because amendment could be either development amendment or released amendment.
-        // If its not a development amendment and not a released amendment, loadRequestObject will return null
-//        else if (!amendment.equals(study.getDevelopmentAmendment())) {
-//            String message = String.format("Amendment {} can not be deleted because it is not a development amendment of the study {}",
-//                    amendment.getNaturalKey(), study.getAssignedIdentifier());
-//            log.error(message);
-//            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-//                    message);
-//
-//
-//       }
-
     }
 
     @Override
@@ -141,17 +118,11 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
 
     @Override
     public void store(final Amendment amendment) {
-
         if (study.getDevelopmentAmendment() != null) {
-            //first delete the existing development amendment
-//            amendmentService.deleteDevelopmentAmendmentOnly(study);
             templateDevelopmentService.deleteDevelopmentAmendmentOnly(study);
-
         }
         study.setDevelopmentAmendment(amendment);
-
         studyService.save(study);
-
     }
 
     protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
@@ -177,7 +148,8 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
         }
     }
 
-    ////// Bean Setters
+    ////// CONFIGURATION
+
     @Required
     public void setStudyService(final StudyService studyService) {
         this.studyService = studyService;
@@ -189,16 +161,10 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     @Required
-    public void setAmendmentService(final AmendmentService amendmentService) {
-        this.amendmentService = amendmentService;
-    }
-
-    @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
     }
 
-    // Bean Getter and Setter methods
     public BeanFactory getBeanFactory() {
         return beanFactory;
     }
