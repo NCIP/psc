@@ -75,6 +75,7 @@ public class PlannedActivitiesResourceTest extends AuthorizedResourceTestCase<Pl
         assignIds(study);
         populations.add(POPULATION);
         study.setPopulations(populations);
+        expect(helper.getAmendedTemplateOrNull()).andStubReturn(study);
 
         Period period = setId(PERIOD_ID, createPeriod("Z", 4, 8, 12));
         period.setGridId(PERIOD_GRID_ID);

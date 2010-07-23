@@ -1,17 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import static org.easymock.EasyMock.*;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Jalpa Patel
@@ -26,6 +29,7 @@ public class SchedulePreviewResourceTest extends AuthorizedResourceTestCase<Sche
 
         helper = registerMockFor(AmendedTemplateHelper.class);
         helper.setRequest(request);
+        expect(helper.getReadAuthorizations()).andStubReturn(Collections.<ResourceAuthorization>emptySet());
         subjectService =  registerMockFor(SubjectService.class);
         study = createSingleEpochStudy("DC", "Treatment", "A", "B");
         assignIds(study.getPlannedCalendar().getEpochs().get(0), 0);

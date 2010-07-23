@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
-import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -14,12 +13,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.apache.commons.lang.StringUtils;
 import org.restlet.data.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +76,14 @@ public class AmendedTemplateHelper {
         return amendedStudy;
     }
 
+    public Study getAmendedTemplateOrNull() {
+        try {
+            return getAmendedTemplate();
+        } catch (NotFound e) {
+            return null;
+        }
+    }
+
     public Study getRealStudy() {
         if (originalStudy == null) getAmendedTemplate(); // for side effects
         return originalStudy;
@@ -82,6 +92,20 @@ public class AmendedTemplateHelper {
     public boolean isDevelopmentRequest() {
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(getRequest());
         return AmendedTemplateHelper.DEVELOPMENT.equals(amendmentIdentifier);
+    }
+
+    public Collection<ResourceAuthorization> getReadAuthorizations() {
+        Study study;
+        try {
+            study = getAmendedTemplate();
+        } catch (NotFound nf) {
+            study = null;
+        }
+        if (isDevelopmentRequest()) {
+            return ResourceAuthorization.createTemplateManagementAuthorizations(study);
+        } else {
+            return ResourceAuthorization.createAllStudyAuthorizations(study);
+        }
     }
 
     private Study applyDevelopmentAmendment() {

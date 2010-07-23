@@ -90,7 +90,11 @@ public class AbstractPscResource extends Resource implements AuthorizedResource 
     }
 
     protected void addAuthorizationsFor(Method method, ResourceAuthorization... authorizations) {
-        getAuthorizationsByMethod().put(method, Arrays.asList(authorizations));
+        addAuthorizationsFor(method, Arrays.asList(authorizations));
+    }
+
+    protected void addAuthorizationsFor(Method method, Collection<ResourceAuthorization> authorizations) {
+        getAuthorizationsByMethod().put(method, authorizations);
     }
 
     @Deprecated

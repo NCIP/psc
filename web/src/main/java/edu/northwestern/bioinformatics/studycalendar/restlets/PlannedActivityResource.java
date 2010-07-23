@@ -3,13 +3,19 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -17,7 +23,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.*;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Required;
@@ -52,6 +60,15 @@ public class PlannedActivityResource extends AbstractDomainObjectResource<Planne
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
+        addAuthorizationsFor(Method.GET,
+            ResourceAuthorization.createTemplateManagementAuthorizations(
+                helper.getAmendedTemplateOrNull()));
+        addAuthorizationsFor(Method.PUT,
+            ResourceAuthorization.createTemplateManagementAuthorizations(
+                helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
+        addAuthorizationsFor(Method.DELETE,
+            ResourceAuthorization.createTemplateManagementAuthorizations(
+                helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
         setReadable(true);
     }
 

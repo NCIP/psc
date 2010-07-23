@@ -155,6 +155,20 @@ public class ResourceAuthorizationTest extends TestCase {
         assertResourceAuthorization("Missing reader for site B", DATA_READER, SITE_B_IDENT, "A", it.next());
     }
 
+    public void testCreateManagingStudyAuthorizationsForNullStudy() throws Exception {
+        Collection<ResourceAuthorization> actual =
+            ResourceAuthorization.createTemplateManagementAuthorizations(null);
+        assertEquals("Wrong number of authorizations", 6, actual.size());
+
+        Iterator<ResourceAuthorization> it = actual.iterator();
+        assertResourceAuthorization("Missing importer", DATA_IMPORTER, null, null, it.next());
+        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
+        assertResourceAuthorization("Missing creator", STUDY_CREATOR, null, null, it.next());
+        assertResourceAuthorization("Missing SSPA", STUDY_SITE_PARTICIPATION_ADMINISTRATOR, null, null, it.next());
+        assertResourceAuthorization("Missing builder", STUDY_CALENDAR_TEMPLATE_BUILDER, null, null, it.next());
+        assertResourceAuthorization("Missing reader", DATA_READER, null, null, it.next());
+    }
+
     public void testCreateManagingStudyAuthorizationsForUnmanagedStudy() throws Exception {
         assertFalse("Test setup failure", studyA.isManaged());
         Collection<ResourceAuthorization> actual =
@@ -217,6 +231,18 @@ public class ResourceAuthorizationTest extends TestCase {
         assertResourceAuthorization("Missing reader for site B", DATA_READER, SITE_B_IDENT, "A", it.next());
     }
 
+    public void testCreateParticipatingAuthorizationsForNullStudy() throws Exception {
+        Collection<ResourceAuthorization> actual =
+            ResourceAuthorization.createSiteParticipationAuthorizations(null);
+        assertEquals("Wrong number of authorizations", 4, actual.size());
+
+        Iterator<ResourceAuthorization> it = actual.iterator();
+        assertResourceAuthorization("Missing SQM", STUDY_QA_MANAGER, null, null, it.next());
+        assertResourceAuthorization("Missing STA", STUDY_TEAM_ADMINISTRATOR, null, null, it.next());
+        assertResourceAuthorization("Missing SSCM", STUDY_SUBJECT_CALENDAR_MANAGER, null, null, it.next());
+        assertResourceAuthorization("Missing reader", DATA_READER, null, null, it.next());
+    }
+
     public void testCreateAllAuthorizationsForStudy() throws Exception {
         studyB.addSite(siteA);
         studyB.addSite(siteB);
@@ -247,7 +273,7 @@ public class ResourceAuthorizationTest extends TestCase {
 
     ////// HELPERS
 
-    private void assertResourceAuthorization(
+    public static void assertResourceAuthorization(
         String message,
         PscRole expectedRole, String expectedSiteIdent, String expectedStudyIdent,
         ResourceAuthorization actual

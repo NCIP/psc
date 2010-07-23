@@ -89,6 +89,7 @@ public class ResourceAuthorization {
     }
 
     private static Collection<Site> getSitesToAuthorizeForStudyUse(PscRoleUse use, Study study) {
+        if (study == null) return Collections.singleton(null);
         switch (use) {
             case TEMPLATE_MANAGEMENT:
                 return study.isManaged() ? study.getManagingSites() : Collections.<Site>singleton(null);

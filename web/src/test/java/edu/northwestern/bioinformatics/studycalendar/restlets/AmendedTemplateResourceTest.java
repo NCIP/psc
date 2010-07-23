@@ -1,21 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.EasyMock.*;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author John Dzak
  * @author Rhett Sutphin
  */
 public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<AmendedTemplateResource> {
-    private Study study, amendedStudy;
+    private Study amendedStudy;
 
     private AmendedTemplateHelper helper;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
@@ -29,9 +33,14 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         expectLastCall().atLeastOnce();
         studySnapshotXmlSerializer = registerMockFor(StudySnapshotXmlSerializer.class);
 
-        study = createBasicTemplate();
+        Study study = createBasicTemplate("J");
         study.getAmendment().setReleasedDate(null);
+        study.addSite(createSite("A"));
         amendedStudy = study.transientClone();
+
+        expect(helper.isDevelopmentRequest()).andStubReturn(false);
+        expect(helper.getAmendedTemplate()).andStubReturn(amendedStudy);
+        expect(helper.getReadAuthorizations()).andStubReturn(ResourceAuthorization.createCollection(PscRole.DATA_READER));
     }
 
     @Override
@@ -72,6 +81,13 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
         assertEntityTextContains("404");
         assertEntityTextContains("It's not there.  I checked twice.");
+    }
+
+    public void testAuthorizedForReadsPerHelper() throws Exception {
+        expect(helper.getReadAuthorizations()).andReturn(
+            ResourceAuthorization.createCollection(PscRole.DATA_READER, PscRole.DATA_IMPORTER));
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET, PscRole.DATA_READER, PscRole.DATA_IMPORTER);
     }
 
     ////// EXPECTATIONS

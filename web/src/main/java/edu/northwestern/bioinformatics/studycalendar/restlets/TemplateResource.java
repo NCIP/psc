@@ -4,8 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -45,6 +47,10 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
+        Study study = getRequestedObjectDuringInit();
+        addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
+        addAuthorizationsFor(Method.PUT,
+            ResourceAuthorization.createTemplateManagementAuthorizations(study, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
 
         useDownloadMode = request.getResourceRef().getQueryAsForm().getNames().contains("download");
     }

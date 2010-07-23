@@ -40,8 +40,10 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
         helper.setRequest(request);
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
+        addAuthorizationsFor(Method.GET, helper.getReadAuthorizations());
+
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-     }
+    }
 
     @Override
     protected ScheduledCalendar loadRequestedObject(Request request) throws ResourceException {
@@ -49,7 +51,7 @@ public class SchedulePreviewResource extends AbstractDomainObjectResource<Schedu
         try {
             study = helper.getAmendedTemplate();
         } catch (AmendedTemplateHelper.NotFound notFound) {
-             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, notFound.getMessage());
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, notFound.getMessage());
         }
         Form query  = request.getResourceRef().getQueryAsForm();
 

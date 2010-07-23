@@ -5,8 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
@@ -42,6 +44,12 @@ public class AmendmentResource extends AbstractRemovableStorableDomainObjectReso
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.DELETE, Role.STUDY_COORDINATOR);
         setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
+        getRequestedObjectDuringInit(); // for side effects
+        addAuthorizationsFor(Method.GET, ResourceAuthorization.createAllStudyAuthorizations(study));
+        addAuthorizationsFor(Method.PUT,
+            ResourceAuthorization.createTemplateManagementAuthorizations(study, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
+        addAuthorizationsFor(Method.DELETE,
+            ResourceAuthorization.createTemplateManagementAuthorizations(study, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
     }
 
     @Override

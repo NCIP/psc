@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -39,6 +40,9 @@ public class PlannedActivitiesResource extends AbstractDomainObjectResource<Peri
 
         super.init(context, request, response);
         setAuthorizedFor(Method.POST, Role.STUDY_COORDINATOR);
+        addAuthorizationsFor(Method.POST,
+            ResourceAuthorization.createTemplateManagementAuthorizations(
+                helper.getAmendedTemplateOrNull(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER));
         setReadable(false); // pending
         getVariants().add(new Variant(MediaType.APPLICATION_WWW_FORM));
     }

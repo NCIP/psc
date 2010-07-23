@@ -1,31 +1,33 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.importer.TemplateImportService;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
+import static org.easymock.classextension.EasyMock.expect;
+
 /**
  * @author Rhett Sutphin
  */
-public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
+public class TemplateResourceTest extends AuthorizedResourceTestCase<TemplateResource> {
     private static final String STUDY_IDENT = "elf";
 
     private StudyDao studyDao;
@@ -44,11 +46,13 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         studyService = registerMockFor(StudyService.class);
         studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
 
+        request.setMethod(Method.GET);
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
         study.setDevelopmentAmendment(new Amendment());
         Delta<Epoch> delta = Delta.createDeltaFor(new Epoch(), PropertyChange.create("name", "A", "B"));
         study.getDevelopmentAmendment().addDelta(delta);
+        study.addSite(Fixtures.createSite("T"));
         delta.getChanges().get(0).setUpdatedDate(lastModifiedDate);
         Fixtures.assignIds(study);
         fullStudy = study.transientClone();
@@ -58,7 +62,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     @Override
-    protected TemplateResource createResource() {
+    protected TemplateResource createAuthorizedResource() {
         TemplateResource templateResource = new TemplateResource();
         templateResource.setStudyDao(studyDao);
         templateResource.setXmlSerializer(studyXmlSerializer);
@@ -71,6 +75,16 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         request.setMethod(Method.PUT);
         replayMocks();
         assertAllowedMethods("GET", "PUT");
+    }
+
+    public void testAllAuthorizedForGet() throws Exception {
+        replayMocks();
+        assertRolesAllowedForMethod(Method.GET, PscRole.valuesWithStudyAccess());
+    }
+
+    public void testBuilderAuthorizedForPut() throws Exception {
+        replayMocks();
+        assertRolesAllowedForMethod(Method.PUT, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testGetReturnsXml() throws Exception {

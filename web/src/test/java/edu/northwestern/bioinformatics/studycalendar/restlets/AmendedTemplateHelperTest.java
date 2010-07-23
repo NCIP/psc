@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -11,11 +10,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import static org.easymock.EasyMock.*;
 
 import java.util.Calendar;
+import java.util.Collection;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author John Dzak
@@ -247,6 +250,44 @@ public class AmendedTemplateHelperTest extends RestletTestCase {
         segment.addPeriod(p);
 
         assertSame(pa, doDrillDown(PlannedActivity.class));
+    }
+
+    public void testGetReadAuthorizationsForReleasedTemplate() throws Exception {
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(),
+            AmendedTemplateHelper.CURRENT);
+        study.addSite(createSite("B", "Bi"));
+        study.addSite(createSite("T", "Ti"));
+        study.addManagingSite(createSite("M", "Mi"));
+
+        expectFoundStudy();
+        expectAmendClonedStudy(amendment1);
+
+        replayMocks();
+        Collection<ResourceAuthorization> actual = helper.getReadAuthorizations();
+        verifyMocks();
+
+        assertEquals("Wrong number of authorizations", 14, actual.size());
+        // specifics are tested in ResourceAuthorizationTest
+    }
+
+    public void testGetReadAuthorizationsForDevelopmentTemplate() throws Exception {
+        request.getAttributes().put(
+            UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(),
+            AmendedTemplateHelper.DEVELOPMENT);
+        study.addSite(createSite("B", "Bi"));
+        study.addSite(createSite("T", "Ti"));
+        study.addManagingSite(createSite("M", "Mi"));
+
+        expectFoundStudy();
+        expectRevised(devAmendment);
+
+        replayMocks();
+        Collection<ResourceAuthorization> actual = helper.getReadAuthorizations();
+        verifyMocks();
+
+        assertEquals("Wrong number of authorizations", 6, actual.size());
+        // specifics are tested in ResourceAuthorizationTest
     }
 
     ////// EXPECTATIONS
