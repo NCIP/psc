@@ -46,7 +46,7 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        study = createBasicTemplate();
+        study = createBasicTemplate("F");
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         epoch.setName("testEpoch");
         StudySegment segment = epoch.getStudySegments().get(1);
@@ -61,6 +61,7 @@ public class PlannedActivityResourceTest extends AuthorizedResourceTestCase<Plan
         helper = registerMockFor(AmendedTemplateHelper.class);
         helper.setRequest(request);
         expectLastCall().atLeastOnce();
+        expect(helper.getAmendedTemplateOrNull()).andStubReturn(study);
         expect(helper.getRealStudy()).andReturn(study).anyTimes();
         amendmentService = registerMockFor(AmendmentService.class);
         activityDao = registerMockFor(ActivityDao.class);
