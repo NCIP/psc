@@ -79,7 +79,7 @@ public class ResourceAuthorization {
      * for the study (i.e., taking into account the managing sites for the study).
      */
     public static Collection<ResourceAuthorization> createTemplateManagementAuthorizations(Study study) {
-        return createTemplateManagementAuthorizations(study, PscRole.valuesUsedFor(TEMPLATE_MANAGEMENT));
+        return createTemplateManagementAuthorizations(study, TEMPLATE_MANAGEMENT.roles());
     }
 
     public static Collection<ResourceAuthorization> createTemplateManagementAuthorizations(
@@ -105,7 +105,7 @@ public class ResourceAuthorization {
      * for the study (i.e., taking into account the study sites).
      */
     public static Collection<ResourceAuthorization> createSiteParticipationAuthorizations(Study study) {
-        return createSiteParticipationAuthorizations(study, PscRole.valuesUsedFor(SITE_PARTICIPATION));
+        return createSiteParticipationAuthorizations(study, SITE_PARTICIPATION.roles());
     }
 
     public static Collection<ResourceAuthorization> createSiteParticipationAuthorizations(

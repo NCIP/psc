@@ -1,5 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An enumeration of the large-scale sorts of uses to which PscRoles apply.
  *
@@ -10,4 +13,22 @@ public enum PscRoleUse {
     TEMPLATE_MANAGEMENT,
     SITE_PARTICIPATION,
     GRID_SERVICES
+    ;
+
+    private PscRole[] roles;
+
+    /**
+     * Returns the roles which have this use.
+     * @see PscRole#getUses()
+     */
+    public synchronized PscRole[] roles() {
+        if (roles == null) {
+            List<PscRole> uses = new ArrayList<PscRole>(PscRole.values().length);
+            for (PscRole role : PscRole.values()) {
+                if (role.getUses().contains(this)) uses.add(role);
+            }
+            this.roles = uses.toArray(new PscRole[uses.size()]);
+        }
+        return roles;
+    }
 }

@@ -6,15 +6,10 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.acegisecurity.GrantedAuthority;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -47,7 +42,6 @@ public enum PscRole implements GrantedAuthority {
 
     private static Properties roleProperties;
     private static PscRole[] withStudyAccess;
-    private static Map<PscRoleUse, PscRole[]> byUse = new HashMap<PscRoleUse, PscRole[]>();
 
     private PscRole() {
         this.corresponding = SuiteRole.valueOf(name());
@@ -136,21 +130,10 @@ public enum PscRole implements GrantedAuthority {
     public static synchronized PscRole[] valuesWithStudyAccess() {
         if (withStudyAccess == null) {
             Set<PscRole> union = new LinkedHashSet<PscRole>();
-            union.addAll(Arrays.asList(valuesUsedFor(PscRoleUse.SITE_PARTICIPATION)));
-            union.addAll(Arrays.asList(valuesUsedFor(PscRoleUse.TEMPLATE_MANAGEMENT)));
+            union.addAll(Arrays.asList(PscRoleUse.SITE_PARTICIPATION.roles()));
+            union.addAll(Arrays.asList(PscRoleUse.TEMPLATE_MANAGEMENT.roles()));
             withStudyAccess = union.toArray(new PscRole[union.size()]);
         }
         return withStudyAccess;
-    }
-
-    public static synchronized PscRole[] valuesUsedFor(PscRoleUse use) {
-        if (!byUse.containsKey(use)) {
-            List<PscRole> filtered = new ArrayList<PscRole>(Arrays.asList(values()));
-            for (Iterator<PscRole> it = filtered.iterator(); it.hasNext();) {
-                if (!it.next().getUses().contains(use)) it.remove();
-            }
-            byUse.put(use, filtered.toArray(new PscRole[filtered.size()]));
-        }
-        return byUse.get(use);
     }
 }
