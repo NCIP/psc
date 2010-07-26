@@ -8,13 +8,17 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.Errors;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,11 @@ public abstract class EditTemplateCommand implements EditCommand {
     private Study revisedStudy;
     private Epoch revisedEpoch;
     private StudySegment revisedStudySegment;
+
+    public Collection<ResourceAuthorization> authorizations(Errors bindErrors) {
+        return ResourceAuthorization.createTemplateManagementAuthorizations(
+            getStudy(), PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
+    }
 
     public boolean apply() {
         Study target = getStudy();
