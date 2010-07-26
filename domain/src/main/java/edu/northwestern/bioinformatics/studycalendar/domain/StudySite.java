@@ -1,19 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
-import javax.persistence.*;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Ram Chilukuri
@@ -143,6 +153,26 @@ public class StudySite extends AbstractProvidableDomainObject implements Seriali
             }
         }
         return null;
+    }
+
+    @Transient
+    public List<StudySubjectAssignment> getOnStudyAssignments() {
+        List<StudySubjectAssignment> matches
+            = new ArrayList<StudySubjectAssignment>(getStudySubjectAssignments());
+        for (Iterator<StudySubjectAssignment> it = matches.iterator(); it.hasNext();) {
+            if (it.next().isOff()) it.remove();
+        }
+        return matches;
+    }
+
+    @Transient
+    public List<StudySubjectAssignment> getOffStudyAssignments() {
+        List<StudySubjectAssignment> matches
+            = new ArrayList<StudySubjectAssignment>(getStudySubjectAssignments());
+        for (Iterator<StudySubjectAssignment> it = matches.iterator(); it.hasNext();) {
+            if (!it.next().isOff()) it.remove();
+        }
+        return matches;
     }
 
     ////// BEAN PROPERTIES

@@ -1,22 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
@@ -24,10 +17,13 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Rhett Sutphin
  */
 public class UserTemplateRelationship {
+    private UserRelationshipTools tools;
+
     private PscUser user;
     private Study study;
 
     public UserTemplateRelationship(PscUser pscUser, Study study) {
+        tools = new UserRelationshipTools(pscUser, study);
         this.user = pscUser;
         this.study = study;
     }
@@ -37,7 +33,7 @@ public class UserTemplateRelationship {
      * already is a development amendment regardless of role.
      */
     public boolean getCanStartAmendment() {
-        return !getStudy().isInDevelopment() && isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        return !getStudy().isInDevelopment() && tools.isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     /**
@@ -45,7 +41,7 @@ public class UserTemplateRelationship {
      * development amendment regardless of role.
      */
     public boolean getCanDevelop() {
-        return getStudy().isInDevelopment() && isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        return getStudy().isInDevelopment() && tools.isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     /**
@@ -54,15 +50,15 @@ public class UserTemplateRelationship {
      */
     public boolean getCanSeeDevelopmentVersion() {
         return getStudy().isInDevelopment() &&
-            (isManagingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_CREATOR) ||
-                hasGlobalRole(DATA_IMPORTER));
+            (tools.isManagingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_CALENDAR_TEMPLATE_BUILDER,
+                STUDY_CREATOR, DATA_IMPORTER));
     }
 
     /**
      * The user can change or clear the set of managing sites.
      */
     public boolean getCanChangeManagingSites() {
-        return isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_QA_MANAGER);
+        return tools.isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_QA_MANAGER);
     }
 
     /**
@@ -70,7 +66,7 @@ public class UserTemplateRelationship {
      * no development amendment regardless of role.
      */
     public boolean getCanRelease() {
-        return study.isInDevelopment() && isManagingAsOneOf(STUDY_QA_MANAGER);
+        return study.isInDevelopment() && tools.isManagingAsOneOf(STUDY_QA_MANAGER);
     }
 
     /**
@@ -78,7 +74,7 @@ public class UserTemplateRelationship {
      * no released amendment regardless of role.
      */
     public boolean getCanSetParticipation() {
-        return study.isReleased() && isManagingAsOneOf(STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
+        return study.isReleased() && tools.isManagingAsOneOf(STUDY_SITE_PARTICIPATION_ADMINISTRATOR);
     }
 
     /**
@@ -86,14 +82,24 @@ public class UserTemplateRelationship {
      * sites.  False if there are no unapproved amendments regardless or role.
      */
     public boolean getCanApprove() {
-        Collection<StudySite> candidates = getParticipatingStudySites(STUDY_QA_MANAGER);
+        Collection<StudySite> candidates = tools.getParticipatingStudySites(STUDY_QA_MANAGER);
         for (StudySite candidate : candidates) {
             if (!candidate.getUnapprovedAmendments().isEmpty()) return true;
         }
         return false;
     }
 
-    // TODO: maybe getApprovableStudySitesAndAmendments ?
+    /**
+     * The user may schedule a reconsent, and there is at least one assignment which
+     * will receive it.
+     */
+    public boolean getCanScheduleReconsent() {
+        if (!tools.isManagingAsOneOf(PscRole.STUDY_QA_MANAGER)) return false;
+        for (StudySite ss : getStudy().getStudySites()) {
+            if (ss.isUsed()) return true;
+        }
+        return false;
+    }
 
     /**
      * The template is released and approved at at at least one site for which the
@@ -109,7 +115,7 @@ public class UserTemplateRelationship {
      */
     public Collection<StudySite> getSubjectAssignableStudySites() {
         Collection<StudySite> subjectAssignable =
-            getParticipatingStudySites(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+            tools.getParticipatingStudySites(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
         for (Iterator<StudySite> it = subjectAssignable.iterator(); it.hasNext();) {
             StudySite candidate = it.next();
             if (candidate.getAmendmentApprovals().isEmpty()) it.remove();
@@ -123,11 +129,21 @@ public class UserTemplateRelationship {
      */
     public boolean getCanSeeReleasedVersions() {
         return study.isReleased() &&
-            (isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER, STUDY_QA_MANAGER, STUDY_SITE_PARTICIPATION_ADMINISTRATOR, DATA_READER, STUDY_CREATOR) ||
-                hasGlobalRole(DATA_IMPORTER) ||
-                isParticipatingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR) ||
+            (tools.isManaging() ||
+                tools.isParticipatingAsOneOf(STUDY_QA_MANAGER, DATA_READER, STUDY_TEAM_ADMINISTRATOR) ||
                 getCanAssignSubjects()); 
     }
+
+    public Collection<UserStudySiteRelationship> getVisibleStudySites() {
+        List<UserStudySiteRelationship> visible = new LinkedList<UserStudySiteRelationship>();
+        for (StudySite ss : study.getStudySites()) {
+            UserStudySiteRelationship rel = new UserStudySiteRelationship(getUser(), ss);
+            if (rel.isVisible()) visible.add(rel);
+        }
+        return visible;
+    }
+
+    ////// ACCESSORS
 
     public PscUser getUser() {
         return user;
@@ -137,81 +153,10 @@ public class UserTemplateRelationship {
         return study;
     }
 
-    ////// HELPERS
-
-    /**
-     * Indicates that the user has at least one of the given roles, scoped appropriately for
-     * "managing" actions. This is not intended to be used for authorization -- the specific
-     * action authorizations should be used instead. It's exposed so that it can be tested in
-     * isolation.
-     */
-    protected boolean isManagingAsOneOf(PscRole... roles) {
-        for (PscRole role : roles) {
-            SuiteRoleMembership manager = getUser().getMembership(role);
-            if (manager == null) continue;
-            if (isManagingMembership(manager)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Indicates that the user has at least one of the given roles, scoped appropriately for
-     * "participating" actions. This is not intended to be used for authorization -- the specific
-     * action authorizations should be used instead. It's exposed so that it can be tested in 
-     * isolation.
-     */
-    protected boolean isParticipatingAsOneOf(PscRole... roles) {
-        for (PscRole role : roles) {
-            if (!getParticipatingStudySites(role).isEmpty()) return true;
-        }
-        return false;
-    }
-
-    private Collection<StudySite> getParticipatingStudySites(PscRole role) {
-        if (!role.getUses().contains(PscRoleUse.SITE_PARTICIPATION)) {
-            throw new StudyCalendarError("%s is not a site participation role", role);
-        }
-        SuiteRoleMembership participant = getUser().getMembership(role);
-        if (participant == null || !hasMatchingStudyScope(participant)) return Collections.emptySet();
-        if (participant.isAllSites()) return study.getStudySites();
-
-        Set<StudySite> matches = new LinkedHashSet<StudySite>();
-        for (StudySite studySite : study.getStudySites()) {
-            if (participant.getSites().contains(studySite.getSite())) matches.add(studySite);
-        }
-        return matches;
-    }
-
-    private boolean isManagingMembership(SuiteRoleMembership membership) {
-        if (!PscRole.valueOf(membership.getRole()).getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
-            throw new StudyCalendarError("%s is not a template management role", membership.getRole());
-        }
-        if (!hasMatchingStudyScope(membership)) return false;
-        if (!study.isManaged()) return true;
-        if (membership.isAllSites()) return true;
-        for (Site site : getStudy().getManagingSites()) {
-            if (membership.getSites().contains(site)) return true;
-        }
-        return false;
-    }
-
-    private boolean hasMatchingStudyScope(SuiteRoleMembership membership) {
-        return !membership.getRole().isStudyScoped() ||
-            membership.isAllStudies() ||
-            membership.getStudyIdentifiers().contains(
-                AuthorizationScopeMappings.STUDY_MAPPING.getSharedIdentity(study));
-    }
-
-    private boolean hasGlobalRole(PscRole role) {
-        if (role.isScoped()) {
-            throw new StudyCalendarSystemException("Use a scoped accessor for %s", role.getDisplayName());
-        }
-        return getUser().getMembership(role) != null;
-    }
-
     ////// OBJECT METHODS
 
     @Override
+    @SuppressWarnings({"RedundantIfStatement"})
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserTemplateRelationship)) return false;

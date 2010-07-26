@@ -1,19 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 
 /**
  * @author Rhett Sutphin
@@ -86,7 +94,7 @@ public class AuthorizationService {
      * @return
      * @throws Exception
      */
-    public List<StudySubjectAssignment> filterStudySubjectAssignmentsByStudySite(List<StudySite> studySites, List<StudySubjectAssignment> assignments) {
+    public List<StudySubjectAssignment> filterStudySubjectAssignmentsByStudySite(Collection<StudySite> studySites, Collection<StudySubjectAssignment> assignments) {
         List <StudySubjectAssignment> filtered = new ArrayList<StudySubjectAssignment>();
         for (StudySubjectAssignment ssa : assignments) {
             if (studySites.contains(ssa.getStudySite())){

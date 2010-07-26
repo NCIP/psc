@@ -10,19 +10,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -30,7 +25,6 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthor
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -38,9 +32,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
@@ -54,21 +50,19 @@ public class DisplayTemplateController extends PscAbstractController implements 
     private DaoFinder daoFinder;
     private ApplicationSecurityManager applicationSecurityManager;
     private NowFactory nowFactory;
-    private AuthorizationService authorizationService;
     private StudyConsumer studyConsumer;
-    private TemplateService templateService;
     private OsgiLayerTools osgiLayerTools;
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         return ResourceAuthorization.createCollection(
-                DATA_IMPORTER,
-                STUDY_QA_MANAGER,
-                STUDY_TEAM_ADMINISTRATOR,
-                STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-                STUDY_CREATOR,
-                STUDY_CALENDAR_TEMPLATE_BUILDER,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                DATA_READER
+            DATA_IMPORTER,
+            STUDY_QA_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
+            STUDY_CREATOR,
+            STUDY_CALENDAR_TEMPLATE_BUILDER,
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            DATA_READER
         );
     }
 
@@ -78,59 +72,34 @@ public class DisplayTemplateController extends PscAbstractController implements 
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String studyStringIdentifier = ServletRequestUtils.getRequiredStringParameter(request, "study");
+        String identifier = ServletRequestUtils.getRequiredStringParameter(request, "study");
         Integer selectedStudySegmentId = ServletRequestUtils.getIntParameter(request, "studySegment");
         Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
         Map<String, Object> model = new HashMap<String, Object>();
 
         model.put("anyProvidersAvailable", anyProvidersAvailable());
 
-        Study loaded = getStudyByTheIdentifier(studyStringIdentifier);
+        Study loaded = loadStudy(identifier);
         studyConsumer.refresh(loaded);
-        int studyId = loaded.getId();
-        
-        Study study = selectAmendmentAndReviseStudy(loaded, selectedAmendmentId, model);
-        List<Study> studies = new ArrayList<Study>();
-        studies.add(study);
 
-        User user = applicationSecurityManager.getUser().getLegacyUser();
-        List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
-        List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
-        List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
-        List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
+        Study study = selectAmendmentReviseStudyAndSetUpModel(loaded, selectedAmendmentId, model);
+        PscUser user = applicationSecurityManager.getUser();
         model.put("user", user);
-        if (!inDevelopmentTemplates.isEmpty() || !releasedTemplates.isEmpty() || !pendingTemplates.isEmpty() || !releasedAndAssignedTemplates.isEmpty()) {
+
+        UserTemplateRelationship utr = new UserTemplateRelationship(user, study);
+        model.put("relationship", utr);
+
+        if ((isDevelopmentRequest(model) && utr.getCanSeeDevelopmentVersion()) ||
+            (!isDevelopmentRequest(model) && utr.getCanSeeReleasedVersions())) {
             StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
             getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
             model.put("studySegment", new StudySegmentTemplate(studySegment));
+            model.put("epochs", study.getPlannedCalendar().getEpochs());
 
-            Boolean canEdit = user.hasRole(Role.STUDY_COORDINATOR) && study.isInDevelopment() && !(study.isReleased() && selectedAmendmentId==null);
-            model.put("canEdit", canEdit);
-
-            if (study.isReleased()) {
-                List<StudySite> visibleStudySites = new ArrayList<StudySite>();
-                if (user.hasRole(Role.STUDY_ADMIN) && user.hasRole(Role.SUBJECT_COORDINATOR)) {
-                    visibleStudySites = study.getStudySites();
-                    List<StudySite> subjectAssignableStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
-                    makeOnOrOffAssignments(subjectAssignableStudySites, studyId, model);
-                } else if (user.hasRole(Role.STUDY_ADMIN)) {
-                    visibleStudySites = study.getStudySites();
-                } else if (user.hasRole(Role.SUBJECT_COORDINATOR)) {
-                    visibleStudySites = authorizationService.filterStudySitesForVisibility(study.getStudySites(), user.getUserRole(SUBJECT_COORDINATOR));
-                    makeOnOrOffAssignments(visibleStudySites, studyId, model);
-                }
-                model.put("visibleStudySites", visibleStudySites);
-            }
-
-            List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
-            model.put("epochs", epochs);
-            if(study.getAmendment()!=null && study.getDevelopmentAmendment()!=null) {
-                model.put("disableAddAmendment", study.getAmendment().getReleasedDate());
-            }
+            model.put("canEdit", isDevelopmentRequest(model) && utr.getCanDevelop());
             model.put("todayForApi", AbstractPscResource.getApiDateFormat().format(nowFactory.getNow()));
 
             return new ModelAndView("template/display", model);
-
         } else {
             response.sendError(Status.CLIENT_ERROR_FORBIDDEN.getCode(),
                 "Authenticated account is not authorized for this resource and method");
@@ -138,22 +107,7 @@ public class DisplayTemplateController extends PscAbstractController implements 
         }
     }
 
-    private void makeOnOrOffAssignments(List<StudySite> studySites, int studyId, Map<String, Object> model ) {
-        List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
-        List<StudySubjectAssignment> filteredAssignmnetns = authorizationService.filterStudySubjectAssignmentsByStudySite(studySites, assignments);
-        List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
-        List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
-        for(StudySubjectAssignment currentAssignment: filteredAssignmnetns) {
-            if (currentAssignment.getEndDateEpoch() == null)
-                onStudyAssignments.add(currentAssignment);
-            else
-                offStudyAssignments.add(currentAssignment);
-        }
-        model.put("offStudyAssignments", offStudyAssignments);
-        model.put("onStudyAssignments", onStudyAssignments);
-    }
-
-    public Study getStudyByTheIdentifier(String studyStringIdentifier){
+    public Study loadStudy(String studyStringIdentifier){
         Study study;
         study = studyDao.getByAssignedIdentifier(studyStringIdentifier);
         if (study == null) {
@@ -170,23 +124,23 @@ public class DisplayTemplateController extends PscAbstractController implements 
         return study;
     }
 
-    private Study selectAmendmentAndReviseStudy(Study study, Integer selectedAmendmentId, Map<String, Object> model) {
+    private Study selectAmendmentReviseStudyAndSetUpModel(Study study, Integer selectedAmendmentId, Map<String, Object> model) {
         Amendment amendment = null;
         if (selectedAmendmentId == null) {
             amendment = study.getAmendment();
             if (amendment == null) {
-                amendment = study.getDevelopmentAmendment();
-                if (amendment == null) {
+                if (!study.isInDevelopment()) {
                     throw new StudyCalendarSystemException("No default amendment for " + study.getName());
                 } else {
                     study = reviseStudy(study);
-                    model = insertDevelopmentRevisionInsideModel(study, model);
+                    amendment = study.getDevelopmentAmendment();
+                    model = addDevelopmentRevision(study, model);
                 }
             }
         } else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
-            amendment = study.getDevelopmentAmendment();
             study = reviseStudy(study);
-            model = insertDevelopmentRevisionInsideModel(study, model);
+            amendment = study.getDevelopmentAmendment();
+            model = addDevelopmentRevision(study, model);
         } else if (study.getAmendment() != null && selectedAmendmentId.equals(study.getAmendment().getId())) {
             amendment = study.getAmendment();
         } else {
@@ -211,13 +165,17 @@ public class DisplayTemplateController extends PscAbstractController implements 
         return deltaService.revise(study, study.getDevelopmentAmendment());
     }
 
-    private Map<String, Object> insertDevelopmentRevisionInsideModel(Study study, Map<String, Object> model) {
+    private Map<String, Object> addDevelopmentRevision(Study study, Map<String, Object> model) {
         model.put("developmentRevision", study.getDevelopmentAmendment());
         if (!study.isInInitialDevelopment()) {
             model.put("revisionChanges",
-            new RevisionChanges(daoFinder, study.getDevelopmentAmendment(), study));
+                new RevisionChanges(daoFinder, study.getDevelopmentAmendment(), study));
         }
         return model;
+    }
+
+    private boolean isDevelopmentRequest(Map<String, Object> model) {
+        return model.containsKey("developmentRevision");
     }
 
     private StudySegment selectStudySegment(Study study, Integer selectedStudySegmentId) {
@@ -283,18 +241,8 @@ public class DisplayTemplateController extends PscAbstractController implements 
     }
 
     @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
-    }
-
-    @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
-    }
-
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
     }
 
     private static class Crumb extends DefaultCrumb {

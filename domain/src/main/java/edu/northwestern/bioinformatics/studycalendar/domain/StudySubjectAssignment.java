@@ -23,14 +23,15 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.LinkedHashMap;
 
 
 /**
@@ -44,7 +45,7 @@ import java.util.LinkedHashMap;
         @Parameter(name = "sequence", value = "seq_subject_assignments_id")
                 }
 )
-public class StudySubjectAssignment extends AbstractMutableDomainObject {
+public class StudySubjectAssignment extends AbstractMutableDomainObject implements Comparable<StudySubjectAssignment> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     private String studySubjectId;
@@ -140,6 +141,22 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         getPopulations().add(population);
     }
 
+    public int compareTo(StudySubjectAssignment o) {
+        int result;
+
+        result = getStudySite().getStudy().getAssignedIdentifier().compareTo(
+            o.getStudySite().getStudy().getAssignedIdentifier());
+        if (result != 0) return result;
+
+        result = getSubject().getLastFirst().compareTo(o.getSubject().getLastFirst());
+        if (result != 0) return result;
+
+        result = getStudySite().getSite().getName().compareTo(o.getStudySite().getSite().getName());
+        if (result != 0) return result;
+
+        return 0;
+    }
+
     ////// BEAN PROPERTIES
 
     public void setStudySite(StudySite studySite) {
@@ -231,8 +248,14 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     }
 
     @Transient
+    @Deprecated // this is a weird name
     public boolean isExpired() {
-        return (endDateEpoch != null);
+        return isOff();
+    }
+
+    @Transient
+    public boolean isOff() {
+        return getEndDateEpoch() != null;
     }
 
     @ManyToMany
@@ -293,5 +316,22 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
 
     }
 
-    
+    /////// COMPARATORS
+
+    public static Comparator<StudySubjectAssignment> byOnOrOff() {
+        return OnOffComparator.INSTANCE;
+    }
+
+    private static class OnOffComparator implements Comparator<StudySubjectAssignment> {
+        public static Comparator<StudySubjectAssignment> INSTANCE = new OnOffComparator();
+
+        public int compare(StudySubjectAssignment o1, StudySubjectAssignment o2) {
+            int result = o1.isOff() ? (o2.isOff() ? 0 : 1) : (o2.isOff() ? -1 : 0);
+            if (result != 0) {
+                return result;
+            } else {
+                return o1.compareTo(o2);
+            }
+        }
+    }
 }

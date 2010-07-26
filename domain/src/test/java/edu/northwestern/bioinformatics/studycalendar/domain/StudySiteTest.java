@@ -8,6 +8,7 @@ import gov.nih.nci.cabig.ctms.lang.DateTools;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -163,5 +164,30 @@ public class StudySiteTest extends TestCase {
     public void testGetNameWithNullStudy() throws Exception {
         studySite.setStudy(null);
         assertEquals("<none>: Galesburg", studySite.getName());
+    }
+
+    public void testGetOnStudyAssignments() throws Exception {
+        createAssignment(studySite, createSubject("A", "A"));
+        createAssignment(studySite, createSubject("B", "B"));
+        createAssignment(studySite, createSubject("C", "C"));
+
+        studySite.getStudySubjectAssignments().get(1).setEndDateEpoch(new Date());
+
+        List<StudySubjectAssignment> actual = studySite.getOnStudyAssignments();
+        assertEquals("Wrong number of on-study assignments", 2, actual.size());
+        assertEquals("Wrong assignment", "A", actual.get(0).getSubject().getFirstName());
+        assertEquals("Wrong assignment", "C", actual.get(1).getSubject().getFirstName());
+    }
+
+    public void testGetOffStudyAssignments() throws Exception {
+        createAssignment(studySite, createSubject("A", "A"));
+        createAssignment(studySite, createSubject("B", "B"));
+        createAssignment(studySite, createSubject("C", "C"));
+
+        studySite.getStudySubjectAssignments().get(1).setEndDateEpoch(new Date());
+
+        List<StudySubjectAssignment> actual = studySite.getOffStudyAssignments();
+        assertEquals("Wrong number of off-study assignments", 1, actual.size());
+        assertEquals("Wrong user", "B", actual.get(0).getSubject().getFirstName());
     }
 }

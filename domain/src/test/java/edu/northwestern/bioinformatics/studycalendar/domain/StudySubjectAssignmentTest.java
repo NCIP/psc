@@ -1,15 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertContains;
 import junit.framework.TestCase;
 
-import static java.util.Calendar.AUGUST;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+import static java.util.Calendar.*;
 
 /**
  * @author Rhett Sutphin
@@ -17,7 +18,7 @@ import java.util.List;
 public class StudySubjectAssignmentTest extends TestCase {
     private StudySubjectAssignment assignment;
     private Site augusta, portland;
-    private Subject joe;
+    private Subject joe, jane;
     private Study studyA, studyB;
 
     @Override
@@ -27,6 +28,7 @@ public class StudySubjectAssignmentTest extends TestCase {
         augusta = createNamedInstance("Augusta", Site.class);
         portland = createNamedInstance("Portland", Site.class);
         joe = createSubject("Joe", "B");
+        jane = createSubject("Jane", "D");
 
         studyA = createSingleEpochStudy("A", "E");
         studyB = createSingleEpochStudy("B", "E");
@@ -117,6 +119,75 @@ public class StudySubjectAssignmentTest extends TestCase {
         assertEquals("B at Portland (1)", b1.getName());
         assertEquals("B at Augusta", b2.getName());
         assertEquals("B at Portland (2)", b3.getName());
+    }
+
+    public void testIsOffWhenOff() throws Exception {
+        assignment.setEndDateEpoch(new Date());
+        assertTrue(assignment.isOff());
+    }
+
+    public void testIsOffWhenNotOff() throws Exception {
+        assignment.setEndDateEpoch(null);
+        assertFalse(assignment.isOff());
+    }
+
+    public void testOrderIsEqualForEqualAssignments() throws Exception {
+        StudySubjectAssignment a0 = createAssignment(studyA, portland, joe);
+        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe);
+
+        assertEquals(0, a0.compareTo(a1));
+        assertEquals(0, a1.compareTo(a0));
+    }
+
+    public void testDefaultOrderingIsByStudyFirst() throws Exception {
+        StudySubjectAssignment a = createAssignment(studyA, portland, joe);
+        StudySubjectAssignment b = createAssignment(studyB, augusta, joe);
+
+        assertNegative(a.compareTo(b));
+        assertPositive(b.compareTo(a));
+    }
+
+    public void testDefaultOrderingIsBySubjectNext() throws Exception {
+        StudySubjectAssignment b = createAssignment(studyA, portland, joe);
+        StudySubjectAssignment d = createAssignment(studyA, augusta, jane);
+
+        assertNegative(b.compareTo(d));
+        assertPositive(d.compareTo(b));
+    }
+
+    public void testDefaultOrderingIsBySiteNext() throws Exception {
+        StudySubjectAssignment a = createAssignment(studyA, augusta,  joe);
+        StudySubjectAssignment p = createAssignment(studyA, portland, joe);
+
+        assertNegative(a.compareTo(p));
+        assertPositive(p.compareTo(a));
+    }
+
+    public void testOnOffOrderingIsByOnOrOffFirst() throws Exception {
+        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe);
+        StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
+        a2.setEndDateEpoch(new Date());
+
+        assertNegative(StudySubjectAssignment.byOnOrOff().compare(a1, a2));
+        assertPositive(StudySubjectAssignment.byOnOrOff().compare(a2, a1));
+    }
+
+    public void testOnOffOrderingZeroWhenEquivalent() throws Exception {
+        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe);
+        a1.setEndDateEpoch(new Date());
+        StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
+        a2.setEndDateEpoch(new Date());
+
+        assertEquals(0, StudySubjectAssignment.byOnOrOff().compare(a1, a2));
+        assertEquals(0, StudySubjectAssignment.byOnOrOff().compare(a2, a1));
+    }
+
+    public void testOnOffOrderingIsByDefaultOrderNext() throws Exception {
+        StudySubjectAssignment b = createAssignment(studyA, portland, joe);
+        StudySubjectAssignment d = createAssignment(studyA, portland, jane);
+
+        assertNegative(StudySubjectAssignment.byOnOrOff().compare(b, d));
+        assertPositive(StudySubjectAssignment.byOnOrOff().compare(d, b));
     }
 
     private void addAdverseEventNotification(int aeId) {

@@ -158,7 +158,7 @@
                         <div class="content" style="display: none">
                             <laf:division>
                                 <ul class="noMargin" >
-                                    <c:forEach items="${ownedStudySites}" var="studySites" varStatus="studySiteStatus">
+                                    <c:forEach items="${ownedStudySites}" var="studySites" varStatus="ssStatus">
                                         <c:if test="${studySites.study.id == study.id}">
                                             <li class="noMargin ">
                                                  <h3 class="site">${studySites.site.name} </h3>

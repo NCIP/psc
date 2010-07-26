@@ -38,121 +38,10 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
 
         StudySite nuSS = study.addSite(nu);
         nuSS.approveAmendment(study.getAmendment(), new Date());
+        createAssignment(nuSS, createSubject("T", "F"));
         study.addSite(vanderbilt);
 
         otherStudy = createBasicTemplate("Boo");
-    }
-
-    ////// isManagingAs
-
-    public void testStudyCalendarTemplateBuilderFromManagingSiteIsManaging() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(nu).forAllStudies()).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderForAllSitesIsManagingForManagedTemplate() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies()).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderForAnySiteIsManagingForUnmanagedTemplate() throws Exception {
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(mayo).forAllStudies()).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderForOtherSiteIsNotManagingForManagedTemplate() throws Exception {
-        study.addManagingSite(nu);
-        assertFalse(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(mayo).forAllStudies()).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderWithSpecificStudyAccessIsNotManaging() throws Exception {
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(mayo).forStudies(study)).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderWithSpecificStudyAccessToAnotherStudyIsNotManaging() throws Exception {
-        assertFalse(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(mayo).forStudies(otherStudy)).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testStudyCalendarTemplateBuilderWithSpecificStudyAccessButNotFromManagingSiteIsNotManaging() throws Exception {
-        study.addManagingSite(nu);
-        assertFalse(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(mayo).forStudies(study)).
-                isManagingAsOneOf(STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    public void testIsManagingAsIsTrueForAtLeastOneMatch() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites(nu).forAllStudies()).
-                isManagingAsOneOf(STUDY_QA_MANAGER, STUDY_CALENDAR_TEMPLATE_BUILDER));
-    }
-
-    ////// isParticipatingAs
-
-    public void testMembershipFromPureManagingSiteIsNotParticipating() throws Exception {
-        study.addManagingSite(mayo);
-        assertFalse(
-            actual(createSuiteRoleMembership(DATA_READER).forSites(mayo).forAllStudies()).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipFromParticipatingSiteIsParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(DATA_READER).forSites(vanderbilt).forAllStudies()).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipForTheSpecificStudyIsParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forStudies(study)).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipForSomeOtherStudyIsParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertTrue(
-            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forStudies(study)).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipFromOtherSiteIsNotParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertFalse(
-            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forStudies(otherStudy)).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipFromOtherSiteButThisStudyIsNotParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertFalse(
-            actual(createSuiteRoleMembership(DATA_READER).forSites(mayo).forStudies(study)).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testMembershipFromParticipatingSiteButOtherStudyIsNotParticipating() throws Exception {
-        study.addManagingSite(nu);
-        assertFalse(
-            actual(createSuiteRoleMembership(DATA_READER).forSites(nu).forStudies(otherStudy)).
-                isParticipatingAsOneOf(DATA_READER));
-    }
-
-    public void testIsParticipatingAsIsTrueForAtLeastOneMatch() throws Exception {
-        assertTrue(
-            actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
-                isParticipatingAsOneOf(STUDY_QA_MANAGER, DATA_READER));
     }
 
     ////// canStartAmendment
@@ -453,6 +342,34 @@ public class UserTemplateRelationshipTest extends StudyCalendarTestCase {
         assertFalse(
             actual(createSuiteRoleMembership(SUBJECT_MANAGER).forSites(nu)).
                 getCanAssignSubjects());
+    }
+
+    ////// canScheduleReconsent
+
+    public void testCanScheduleReconsentIfManagingQaManager() throws Exception {
+        study.addManagingSite(mayo);
+        assertTrue(actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(mayo)).
+            getCanScheduleReconsent());
+    }
+
+    public void testCannotScheduleReconsentIfOtherManagingRole() throws Exception {
+        study.addManagingSite(mayo);
+        assertFalse(actual(createSuiteRoleMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).
+            forSites(mayo).forAllStudies()).
+            getCanScheduleReconsent());
+    }
+
+    public void testCannotScheduleReconsentIfParticipatingQaManager() throws Exception {
+        study.addManagingSite(mayo);
+        assertFalse(actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(nu)).
+            getCanScheduleReconsent());
+    }
+    
+    public void testCannotScheduleReconsentIfNoAssignments() throws Exception {
+        study.addManagingSite(mayo);
+        study.getStudySite(nu).getStudySubjectAssignments().clear();
+        assertFalse(actual(createSuiteRoleMembership(STUDY_QA_MANAGER).forSites(mayo)).
+            getCanScheduleReconsent());
     }
 
     ////// getSubjectAssignableStudySites

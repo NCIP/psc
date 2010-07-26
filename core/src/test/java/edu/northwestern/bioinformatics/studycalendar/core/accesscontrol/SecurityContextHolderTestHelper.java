@@ -12,6 +12,12 @@ public class SecurityContextHolderTestHelper {
         SecurityContextHolder.getContext().setAuthentication(authRequest);
     }
 
+    public static void setSecurityContext(PscUser principal) {
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+            principal, "hmsbadpass", principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authRequest);
+    }
+
     @Deprecated
     public static void setSecurityContext(
         edu.northwestern.bioinformatics.studycalendar.domain.User principal, String password

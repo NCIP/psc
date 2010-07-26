@@ -18,39 +18,32 @@ Event.observe(window, "load", SC.Main.registerClickForwarders)
 
 
 SC.Main.registerGoToScheduleControl = function() {
-    if ($('go-to-schedule-control')) {
-        Event.observe('go-to-schedule-control', "click", function(e) {
-            Event.stop(e)
-            var a = $('go-to-schedule-control')
-            var scheduleId = $F('assigned-subject-selector')
-            window.location.href = a.href + "?calendar=" + scheduleId;
-        })
-    }
-}
-Event.observe(window, "load", SC.Main.registerGoToScheduleControl)
-
-
-SC.Main.registerOffStudyGoToScheduleControl = function() {
-    if ($('offstudy-go-to-schedule-control')) {
-        Event.observe('offstudy-go-to-schedule-control', "click", function(e) {
-            Event.stop(e)
-            var a = $('offstudy-go-to-schedule-control')
-            var scheduleId = $F('offstudy-assigned-subject-selector')
-            window.location.href = a.href + "?calendar=" + scheduleId;
-        })
-    }
-}
-Event.observe(window, "load", SC.Main.registerOffStudyGoToScheduleControl)
-
+    $$('.go-to-schedule-control').each(function (elt) {
+        Event.observe(elt, "click", function(evt) {
+            Event.stop(evt);
+            var a = Event.element(evt);
+            var ssId = a.id.substring('go-to-schedule-control-'.length);
+            var scheduleId = $F('assigned-subject-selector-' + ssId);
+            window.location.href = a.href + "?assignment=" + scheduleId;
+        });
+    });
+};
+Event.observe(window, "load", SC.Main.registerGoToScheduleControl);
 
 SC.Main.registerTakeSubjectOffStudy = function() {
-    if ($('take-subject-off-study')) {
-        Event.observe('take-subject-off-study', "click", function(e) {
-            Event.stop(e)
-            var a = $('take-subject-off-study')
-            var assignment = jQuery('#assigned-subject-selector option:selected').attr('assignment')
-            window.location.href = a.href + "?assignment=" + assignment;
+    $$('.take-subject-off-study').each(function (elt) {
+        Event.observe(elt, "click", function(evt) {
+            Event.stop(evt);
+            var a = Event.element(evt);
+            var ssId = a.id.substring('take-subject-off-study-'.length);
+            var selected = jQuery('#assigned-subject-selector-' + ssId + ' option:selected');
+            if (selected.attr('off') == 'false') {
+                var assignment = selected.attr('assignment');
+                window.location.href = a.href + "?assignment=" + assignment;
+            } else {
+                alert("That subject is already off the study");
+            }
         })
-    }
-}
-Event.observe(window, "load", SC.Main.registerTakeSubjectOffStudy)
+    });
+};
+Event.observe(window, "load", SC.Main.registerTakeSubjectOffStudy);

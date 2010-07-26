@@ -12,6 +12,7 @@ import java.util.List;
 public enum PscRoleUse {
     TEMPLATE_MANAGEMENT,
     SITE_PARTICIPATION,
+    SUBJECT_MANAGEMENT,
     GRID_SERVICES
     ;
 

@@ -9,9 +9,23 @@
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<jsp:useBean id="study" class="edu.northwestern.bioinformatics.studycalendar.domain.Study" scope="request"/>
-<jsp:useBean id="amendment" class="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment" scope="request"/>
-<jsp:useBean id="todayInApi" class="java.lang.String" scope="request"/>
+<jsp:useBean scope="request" id="canEdit" type="java.lang.Boolean"/>
+<jsp:useBean scope="request" id="study" type="edu.northwestern.bioinformatics.studycalendar.domain.Study"/>
+<jsp:useBean scope="request" id="relationship" type="edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship"/>
+<jsp:useBean scope="request" id="amendment" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"/>
+<jsp:useBean scope="request" id="plannedCalendar" type="edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar"/>
+<jsp:useBean scope="request" id="epochs" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.domain.Epoch>"/>
+<jsp:useBean scope="request" id="studySegment" type="edu.northwestern.bioinformatics.studycalendar.web.template.StudySegmentTemplate"/>
+<c:if test="${not empty requestScope['developmentRevision']}">
+    <jsp:useBean scope="request" id="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision"/>
+</c:if>
+<c:if test="${not empty requestScope['revisionChanges']}">
+    <jsp:useBean scope="request" id="revisionChanges" type="edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges"/>
+</c:if>
+<jsp:useBean scope="request" id="todayForApi" type="java.lang.String"/>
+
+<jsp:useBean scope="request" id="user" type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser"/>
+<jsp:useBean scope="request" id="configuration" type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
 
 <html>
     <head>
@@ -164,11 +178,28 @@
                 padding: 0.5em;
                 margin: 0;
             }
-            ul#admin-options li {
+            ul#admin-options li, .study-site ul li {
                 display: inline;
                 padding: 2px 4px;
                 margin: 0;
                 list-style-type: none;
+            }
+            #study-sites {
+                border-top: 1px solid #444;
+            }
+            #study-sites ul {
+                padding: 0;
+                margin: 0;
+            }
+            #study-sites div.row {
+                padding: 0.3em;
+            }
+            #study-sites div.label {
+                width: 10em;
+                text-align: right;
+            }
+            #study-sites div.value {
+                margin-left: 10em;
             }
 
             #revision-changes {
@@ -176,7 +207,7 @@
                 width: 5%;
             }
 
-            #with-changes #selected-studySegment {
+            #selected-studySegment.with-changes {
                 width: 93%;
                 float: left;
             }
@@ -197,7 +228,7 @@
             }
 
             div.row div.label {
-                text-align:left;
+                text-align:right;
                 display:inline;
                 width:auto;
                 margin-right:10px;
@@ -245,7 +276,7 @@
             }
         </style>
 
-        <c:if test="${not empty developmentRevision}">
+        <c:if test="${canEdit}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
         </c:if>
         <script type="text/javascript">
@@ -665,10 +696,6 @@
 				}
 			}
 
-            function studyManipulationSetup(){
-                $('admin-options').show()
-            }
-
             // Temporary.  Validation should really be on the server side.
             function isCorrectCycleLength() {
                 var isCorrectInput = true;
@@ -710,7 +737,6 @@
 
             function generalSetup() {
                 epochsAreaSetup();
-                studyManipulationSetup();
             }
 
             function arrowsHideShowSetup(){
@@ -795,7 +821,7 @@
                                 <c:if test="${!canEdit}">${population.abbreviation}: ${population.name}</c:if>
                             </li>
                         </c:forEach>
-                        <li class="controls addPopulationButton" studyId='${study.id}' studyInInitialDevelopment='${study.inInitialDevelopment}' studyInAmendmentDevelopment='${study.inAmendmentDevelopment}'/>
+                        <li class="controls addPopulationButton" studyId='${study.id}' studyInInitialDevelopment='${study.inInitialDevelopment}' studyInAmendmentDevelopment='${study.inAmendmentDevelopment}'></li>
                     </ul>
                 </div>
             </div>
@@ -816,135 +842,107 @@
             </div>
         </div>
         <div id="study-manipulations" class="controls-card card">
-            <div class="header">Manipulate study</div>
-                <div id="enterStudyName" style="display:none;">
-                    <h1 id="enterStudyNameSentence"></h1>
-                </div>
+            <div class="header">Study controls</div>
+            <div id="enterStudyName" style="display:none;">
+                <h1 id="enterStudyNameSentence"></h1>
+            </div>
 
-                <div id="errorMessages" class="error" style="display:none;">
-                    <tags:replaceErrorMessagesForTemplate/>
-                </div>
+            <div id="errorMessages" class="error" style="display:none;">
+                <tags:replaceErrorMessagesForTemplate/>
+            </div>
 
-                <ul id="admin-options" style="display:none;">
+            <ul id="admin-options">
+                <li><a class="control" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
+                    Preview schedule
+                </a></li>
+                <tags:conditionalListItemLink
+                    showIf="${relationship.canRelease && not empty developmentRevision}"
+                    url="/pages/cal/template/release?study=${study.id}"
+                    cssClass="control">
+                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                </tags:conditionalListItemLink>
+                <tags:conditionalListItemLink
+                    showIf="${relationship.canSetParticipation && empty developmentRevision}"
+                    url="/pages/cal/assignSite?id=${study.id}"
+                    cssClass="control">
+                    Assign sites
+                </tags:conditionalListItemLink>
+                <tags:conditionalListItemLink
+                    showIf="${relationship.canScheduleReconsent && empty developmentRevision}"
+                    url="/pages/cal/scheduleReconsent?study=${study.id}"
+                    cssClass="control">
+                    Schedule reconsent
+                </tags:conditionalListItemLink>
+                <tags:conditionalListItemLink
+                    showIf="${relationship.canStartAmendment}"
+                    url="/pages/cal/amendment?study=${study.id}"
+                    cssClass="control">
+                    Add amendment
+                </tags:conditionalListItemLink>
+                <c:set var="studyUrl"><tags:urlFromTemplate property="studyPageUrl"/></c:set>
+                <tags:conditionalListItemLink
+                    showIf="${configuration.studyPageUrlConfigured}"
+                    url="${studyUrl}">
+                    ${configuration.map.ctmsName} study record
+                </tags:conditionalListItemLink>
+            </ul>
 
-                    <div class="row">
-                        <div class="value" style="margin:0px;">
-                            <c:if test="${not empty developmentRevision}">
-                                <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
-                                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                                </tags:restrictedListItem>
-                            </c:if>
-                            <c:if test="${empty developmentRevision}">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-                                <%--<c:if test="${canAssignSubjects}">--%>
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">
-                                        Schedule reconsent
-                                    </tags:restrictedListItem>
-
-                                <%--</c:if>--%>
-                                <c:if test="${empty disableAddAmendment}">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
-                                    Add amendment
-                                </tags:restrictedListItem>
-                               </c:if>
+            <c:if test="${empty developmentRevision}">
+                <div id="study-sites">
+                    <c:forEach items="${relationship.visibleStudySites}" var="ssRelationship" varStatus="ssStatus">
+                        <div class="row study-site ${ssStatus.count % 2 == 0 ? 'even' : 'odd'}">
+                            <div class="label" >
+                                ${ssRelationship.studySite.site.name}
+                            </div>
+                            <div class="value">
+                                <ul>
+                                    <tags:conditionalListItemLink
+                                        showIf="${ssRelationship.canAssignSubjects}"
+                                        url="/pages/cal/assignSubject?study=${study.id}&site=${ssRelationship.studySite.site.id}"
+                                        cssClass="control">
+                                        Assign subject
+                                    </tags:conditionalListItemLink>
+                                    <tags:conditionalListItemLink
+                                        showIf="${ssRelationship.canApproveAmendments}"
+                                        url="/pages/cal/template/approve?studySite=${ssRelationship.studySite.id}"
+                                        cssClass="control">
+                                        Approve amendment
+                                    </tags:conditionalListItemLink>
+                                    <c:if test="${ssRelationship.canSeeSubjectInformation}">
+                                        <li>
+                                            <label>
+                                                Schedule for
+                                                <select id="assigned-subject-selector-${ssRelationship.studySite.id}" class="assigned-subject-selector">
+                                                    <c:forEach items="${ssRelationship.visibleAssignments}" var="aRel">
+                                                        <option value="${aRel.assignment.scheduledCalendar.id}"
+                                                            assignment="${aRel.assignment.id}"
+                                                            off="${aRel.assignment.off}"
+                                                            >
+                                                            ${aRel.assignment.subject.lastFirst}
+                                                            <c:if test="${aRel.assignment.off}">(off study)</c:if>
+                                                        </option>
+                                                    </c:forEach>
+                                                </select>
+                                                <a id="go-to-schedule-control-${ssRelationship.studySite.id}" class="control go-to-schedule-control"
+                                                   href="<c:url value="/pages/subject"/>">View</a>
+                                                <a id="take-subject-off-study-${ssRelationship.studySite.id}" class="control take-subject-off-study"
+                                                   href="<c:url value="/pages/cal/takeSubjectOffStudy"/>">
+                                                    Take off study
+                                                </a>
+                                            </label>
+                                        </li>
+                                    </c:if>
+                                </ul>
                             </div>
                         </div>
-
-                        <c:forEach items="${visibleStudySites}" var="studySite" varStatus="studySiteStatus">
-                            <div class="row">
-                                <div class="label" >
-                                    ${studySite.site.name}
-                                </div>
-                                <div class="value">
-                                    <c:if test="${not empty studySite.unapprovedAmendments}">
-                                        Waiting for approval at site ${studySite.site.name}. A <b>Site Coordinator</b> can do that
-                                        <c:if test="${not empty studySite.amendmentApprovals}">
-                                            <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
-                                                Assign Subject
-                                            </tags:restrictedListItem>
-                                        </c:if>
-                                    </c:if>
-                                    <c:if test="${empty studySite.unapprovedAmendments}">
-                                        <c:set var="isSubjectCoordinatorAssigned" value="false"/>
-                                        <c:set var="canAssignSubject" value="false"/>
-                                        <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
-                                            <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
-                                                <c:set var="isSubjectCoordinatorAssigned" value="true"/>
-                                            </c:if>
-                                            <c:if test="${userRole.user.name == user.name && userRole.role == 'SUBJECT_COORDINATOR'}">
-                                                <c:set var="canAssignSubject" value="true"/>
-                                            </c:if>
-                                        </c:forEach>
-                                        <c:if test="${!isSubjectCoordinatorAssigned}">
-                                            Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
-                                        </c:if>
-                                        <c:if test="${canAssignSubject}">
-                                            <c:if test="${configuration.map.enableAssigningSubject}">
-                                                <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySite.site.id}" cssClass="control">
-                                                    Assign Subject
-                                                </tags:restrictedListItem>
-                                            </c:if>
-                                        </c:if>
-                                    </c:if>
-                                </div>
-                            </div>
-                        </c:forEach>
-
-
-
-                        <c:if test="${not empty onStudyAssignments}">
-                            <security:secureOperation element="/pages/cal/schedule">
-                            <li>View schedule (On Study) for
-                                <select id="assigned-subject-selector">
-                                    <c:forEach items="${onStudyAssignments}" var="assignment">
-                                        <option value="${assignment.scheduledCalendar.id}" assignment="${assignment.id}">${assignment.subject.lastFirst}</option>
-
-                                    </c:forEach>
-                                </select>
-                                <a class="control" href="<c:url value="/pages/subject"/>" id="go-to-schedule-control">Go</a>
-
-                                <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy"/>" id="take-subject-off-study">Take
-                                        subject off study</a>
-                            </li>
-                            </security:secureOperation>
-                        </c:if>
-                        <c:if test="${not empty offStudyAssignments}">
-                            <security:secureOperation element="/pages/cal/schedule">
-                            <li>View schedule (Off Study) for
-                                <select id="offstudy-assigned-subject-selector">
-                                    <c:forEach items="${offStudyAssignments}" var="assignment">
-                                        <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
-                                    </c:forEach>
-                                </select>
-                                <a class="control" href="<c:url value="/pages/subject"/>" id="offstudy-go-to-schedule-control">Go</a>
-                            </li>
-                            </security:secureOperation>
-                        </c:if>
-                    </c:if>
-                </ul>
-
-                <div id="outside-links">
-                    <c:if test="${configuration.studyPageUrlConfigured}">
-                        <c:set var="studyPageUrlAvail" value="${not empty configuration.map.studyPageUrl}"/>
-                        <c:if test="${studyPageUrlAvail}">
-                            <a href="<tags:urlFromTemplate property="studyPageUrl" />" class="control">${configuration.map.ctmsName} study record</a>
-                        </c:if>
-
-                    </c:if>
+                    </c:forEach>
                 </div>
-            <div id="schedule-preview" style="margin-left:8px;">
-                <div class="row">
-                    <div class="value" style="margin:3px;">
-                        <a class="control" href="<c:url value="/pages/cal/template/preview?study=${study.id}&amendment=${amendment.id}#segment[0]=${studySegment.base.gridId}&start_date[0]=${todayForApi}"/>">
-                            Schedule Preview
-                        </a>
-                    </div>
-                </div>
-            </div>
+            </c:if>
         </div>
+
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
-                <p class="controls" id="addEpoch"/>
+                <p class="controls" id="addEpoch"></p>
 
                 <laf:division>
                     <div id="epochAndSegmentErrors" class="error"></div>
@@ -955,19 +953,13 @@
 
         <c:set var="showChanges" value="${not empty developmentRevision and not study.inInitialDevelopment}"/>
         <c:if test="${showChanges}">
-            <div id="with-changes" >
-                <div id="revision-changes" class="section">
-                    <a id="showChanges" class="showChanges" href="#" name="showChanges" style="visibility: visible;">Show changes</a>
-                    <templ:changes revision="${developmentRevision}" changes="${revisionChanges}"/>
-                </div>
-            <%-- #with-changes is closed below --%>
+            <div id="revision-changes" class="section">
+                <a id="showChanges" class="showChanges" href="#" name="showChanges" style="visibility: visible;">Show changes</a>
+                <templ:changes revision="${developmentRevision}" changes="${revisionChanges}"/>
+            </div>
         </c:if>
-
-        <div id="selected-studySegment" class="section">
+        <div id="selected-studySegment" class="section ${showChanges ? 'with-changes' : ''}">
             <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true" canEdit="${canEdit}"/>
         </div>
-
-        <c:if test="${showChanges}"></div></c:if>
-
     </body>
 </html>

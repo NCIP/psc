@@ -13,4 +13,6 @@
     Template uriTemplate = (Template) ((Configuration) request.getAttribute("configuration")).getMap().get(property);
 %>
 
-<c:url value="<%= uriTemplate.format(GeneratedUriTemplateVariable.getAllTemplateValues(context, studySubjectAssignment)) %>"/>
+<c:if test="${not empty pageScope['uriTemplate']}">
+    <c:url value="<%= uriTemplate.format(GeneratedUriTemplateVariable.getAllTemplateValues(context, studySubjectAssignment)) %>"/>
+</c:if>
