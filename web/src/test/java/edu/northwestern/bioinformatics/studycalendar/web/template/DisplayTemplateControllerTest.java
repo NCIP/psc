@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
@@ -24,7 +23,6 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
@@ -34,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static org.easymock.classextension.EasyMock.*;
 
@@ -102,7 +101,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         user = AuthorizationObjectFactory.createPscUser("jo",
             AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
             AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.STUDY_TEAM_ADMINISTRATOR).forAllSites());
-        SecurityContextHolderTestHelper.setSecurityContext(user);
+        setSecurityContext(user);
 
         expect(osgiTools.getServices(StudyProvider.class)).andStubReturn(Collections.<StudyProvider>emptyList());
         nowFactory.setNowTimestamp(NOW);
@@ -266,35 +265,35 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     }
 
     public void testIsForbiddenForNoDevelopmentUserToRequestDevelopmentAmendment() throws Exception {
-        setUserAndReturnMembership(PscRole.STUDY_TEAM_ADMINISTRATOR).forAllSites();
+        setUserAndReturnMembership("jo", PscRole.STUDY_TEAM_ADMINISTRATOR).forAllSites();
 
         expectSelectDevelopmentAmendment();
         assertForbidden();
     }
 
     public void testAccessIsForbiddenForUserWithoutAccess() throws Exception {
-        setUserAndReturnMembership(PscRole.DATA_READER).forSites(createSite("O", "Other one"));
+        setUserAndReturnMembership("jo", PscRole.DATA_READER).forSites(createSite("O", "Other one"));
 
         assertForbidden();
     }
 
     public void testStudyCalendarTemplateBuilderCanEditDevelopmentAmendment() throws Exception {
         expectSelectDevelopmentAmendment();
-        setUserAndReturnMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+        setUserAndReturnMembership("jo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
             forAllStudies().forAllSites();
 
         assertTrue((Boolean) getAndReturnModel().get("canEdit"));
     }
 
     public void testStudyCalendarTemplateBuilderCannotEditReleasedAmendment() throws Exception {
-        setUserAndReturnMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
+        setUserAndReturnMembership("jo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).
             forAllStudies().forAllSites();
 
         assertFalse((Boolean) getAndReturnModel().get("canEdit"));
     }
 
     public void testDataReaderCannotEditDevelopmentAmendment() throws Exception {
-        setUserAndReturnMembership(PscRole.DATA_READER).
+        setUserAndReturnMembership("jo", PscRole.DATA_READER).
             forAllStudies().forAllSites();
 
         assertFalse((Boolean) getAndReturnModel().get("canEdit"));
@@ -330,12 +329,5 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private void assertForbidden() throws Exception {
         assertNull("Should be no MV", doHandle());
         assertEquals("Wrong code", 403, response.getStatus());
-    }
-
-    private SuiteRoleMembership setUserAndReturnMembership(PscRole role) {
-        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
-            AuthorizationScopeMappings.createSuiteRoleMembership(role));
-        SecurityContextHolderTestHelper.setSecurityContext(user);
-        return user.getMembership(role);
     }
 }

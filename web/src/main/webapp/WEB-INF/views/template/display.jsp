@@ -527,9 +527,8 @@
                         var href=   '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId;
 
                         <c:if test="${not empty developmentRevision}">
-                             href = href + '&developmentRevision=true';
+                             href = href + '&development=true';
                         </c:if>
-                        href = href +'&canEdit=' +${canEdit};
                         aElement.href = href;
 
                         lastRequest = new Ajax.Request(aElement.href,

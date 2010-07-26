@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,21 +21,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 public class SelectStudySegmentController implements Controller, PscAuthorizedHandler {
+    private ApplicationSecurityManager applicationSecurityManager;
     private TemplateService templateService;
     private DeltaService deltaService;
     private ControllerTools controllerTools;
     private StudySegmentDao studySegmentDao;
-    private static final Logger log = LoggerFactory.getLogger(SelectStudySegmentController.class.getName());
 
-    //todo -- this access should be modified based on the fact if study is in development, or released - ticket #1097
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+        // further authorization done in handleRequest
         return ResourceAuthorization.createCollection(PscRole.valuesWithStudyAccess());
     }
 
@@ -44,27 +44,28 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
         StudySegment studySegment = studySegmentDao.getById(id);
         Map<String, Object> model = new HashMap<String, Object>();
         Study study = templateService.findStudy(studySegment);
+        UserTemplateRelationship utr =
+            new UserTemplateRelationship(applicationSecurityManager.getUser(), study);
 
-        Study theRevisedStudy = null;
+        boolean isDevelopmentRequest = !StringUtils.isBlank(request.getParameter("development"));
+        if ((isDevelopmentRequest && utr.getCanSeeDevelopmentVersion()) ||
+            (!isDevelopmentRequest && utr.getCanSeeReleasedVersions())) {
+            if (study.getDevelopmentAmendment() != null && isDevelopmentRequest) {
+                studySegment = deltaService.revise(studySegment);
+                model.put("developmentRevision", study.getDevelopmentAmendment());
+                model.put("canEdit", utr.getCanDevelop());
+            } else {
+                model.put("canEdit", false);
+            }
+            controllerTools.addHierarchyToModel(studySegment, model);
 
-        if (study.getDevelopmentAmendment() != null && !StringUtils.isBlank(request.getParameter("developmentRevision"))) {
-            studySegment = deltaService.revise(studySegment);
-            model.put("developmentRevision", study.getDevelopmentAmendment());
-            theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
+            model.put("studySegment", new StudySegmentTemplate(studySegment));
+            return new ModelAndView("template/ajax/selectStudySegment", model);
         } else {
-            theRevisedStudy = study;
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return null;
         }
-
-        controllerTools.addHierarchyToModel(studySegment, model);
-
-
-        List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
-        model.put("canEdit",ServletRequestUtils.getBooleanParameter(request, "canEdit"));
-        model.put("epochs", epochs);
-        model.put("studySegment", new StudySegmentTemplate(studySegment));
-        return new ModelAndView("template/ajax/selectStudySegment", model);
     }
-
 
     @Required
     public void setControllerTools(ControllerTools controllerTools) {
@@ -84,5 +85,10 @@ public class SelectStudySegmentController implements Controller, PscAuthorizedHa
     @Required
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
+    }
+
+    @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
     }
 }
