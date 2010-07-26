@@ -71,7 +71,7 @@
     <bean id="authorizationLegacyModeSwitch"
           class="edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch">
         <!-- set this to false to use the unified auth system -->
-        <property name="on" value="true"/>
+        <property name="on" value="false"/>
     </bean>
 
     <bean id="authorizationSiteMapping" class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscSiteMapping">
