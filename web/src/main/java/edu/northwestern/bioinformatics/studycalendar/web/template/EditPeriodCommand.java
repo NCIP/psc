@@ -3,18 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.tools.DefaultDayRange;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.validation.Errors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,12 @@ public class EditPeriodCommand implements PeriodCommand {
         this.period = (Period) period.transientClone();
         this.amendmentService = amendmentService;
         this.templateService = templateService;
+    }
+
+    public Collection<ResourceAuthorization> authorizations(Errors bindErrors) {
+        return ResourceAuthorization.createTemplateManagementAuthorizations(
+            originalPeriod == null ? null : templateService.findStudy(originalPeriod),
+            PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public Period getPeriod() {

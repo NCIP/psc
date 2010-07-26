@@ -4,14 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.MissingRequiredBoundProperty;
-import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
+
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
  */
-public class CopyPeriodCommandTest extends StudyCalendarTestCase {
+public class CopyPeriodCommandTest extends WebTestCase {
     private CopyPeriodCommand command;
     private TemplateDevelopmentService templateDevelopmentService;
 
@@ -25,7 +26,7 @@ public class CopyPeriodCommandTest extends StudyCalendarTestCase {
         selectedPeriod = Fixtures.createPeriod(2, 3, 4);
         templateDevelopmentService = registerMockFor(TemplateDevelopmentService.class);
 
-        command = new CopyPeriodCommand(templateDevelopmentService);
+        command = new CopyPeriodCommand(templateService, templateDevelopmentService);
         command.setSelectedPeriod(selectedPeriod);
         command.setStudySegment(studySegment);
     }

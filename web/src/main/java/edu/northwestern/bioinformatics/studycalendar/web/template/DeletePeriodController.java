@@ -2,27 +2,23 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class DeletePeriodController extends PscSimpleFormController implements PscAuthorizedHandler {
@@ -32,14 +28,8 @@ public class DeletePeriodController extends PscSimpleFormController implements P
     private StudySegmentDao studySegmentDao;
     private TemplateService templateService;
 
-    private static final Logger log = LoggerFactory.getLogger(DeletePeriodController.class.getName());
-
     public DeletePeriodController() {
         setCommandClass(DeletePeriodCommand.class);
-    }
-
-    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override
@@ -49,7 +39,7 @@ public class DeletePeriodController extends PscSimpleFormController implements P
 
         Period period = periodDao.getById(periodId);
         StudySegment studySegment = studySegmentDao.getById(studySegmentId);
-        return new DeletePeriodCommand(period, studySegment, amendmentService);
+        return new DeletePeriodCommand(period, studySegment, amendmentService, templateService);
     }
 
     @Override
@@ -61,21 +51,15 @@ public class DeletePeriodController extends PscSimpleFormController implements P
 
         Study study = templateService.findStudy(command.getStudySegment());
         StudySegment studySegment = command.getStudySegment();
-        if (study.getDevelopmentAmendment() != null) {
-            studySegment = deltaService.revise(studySegment);
-            model.put("developmentRevision", study.getDevelopmentAmendment());
-            model.put("canEdit", "true");
-        }
+        studySegment = deltaService.revise(studySegment);
+        model.put("developmentRevision", study.getDevelopmentAmendment());
+        model.put("canEdit", true);  // okay since you can't execute this code unless you can edit
 
-        Study theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
-        List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
-        model.put("epochs", epochs);
         model.put("studySegment", new StudySegmentTemplate(studySegment));
         return new ModelAndView("template/ajax/selectStudySegment", model);
     }
 
     ////// CONFIGURATION
-
 
     @Required
     public void setPeriodDao(PeriodDao periodDao) {

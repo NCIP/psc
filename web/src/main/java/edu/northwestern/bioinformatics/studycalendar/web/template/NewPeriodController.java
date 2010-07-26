@@ -6,29 +6,24 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateDevelopmentService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class NewPeriodController extends AbstractPeriodController<PeriodCommand> implements PscAuthorizedHandler {
+public class NewPeriodController extends AbstractPeriodController<PeriodCommand> {
     private TemplateDevelopmentService templateDevelopmentService;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
@@ -41,16 +36,12 @@ public class NewPeriodController extends AbstractPeriodController<PeriodCommand>
         setCrumb(new Crumb());
     }
 
-    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
-    }
-
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         if (request.getParameter("selectedPeriod") == null) {
-            return new NewPeriodCommand(amendmentService);
+            return new NewPeriodCommand(amendmentService, templateService);
         } else {
-            return new CopyPeriodCommand(templateDevelopmentService);
+            return new CopyPeriodCommand(templateService, templateDevelopmentService);
         }
     }
 

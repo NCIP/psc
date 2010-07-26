@@ -47,8 +47,14 @@ public class PscAuthorizationInterceptor extends HandlerInterceptorAdapter {
                 return forbidden(response);
             }
 
-            Collection<ResourceAuthorization> authorizations =
-                ((PscAuthorizedHandler) handler).authorizations(request.getMethod(), request.getParameterMap());
+            Collection<ResourceAuthorization> authorizations;
+            try {
+                authorizations = ((PscAuthorizedHandler) handler).authorizations(request.getMethod(), request.getParameterMap());
+            } catch (Exception e) {
+                log.error("Extracting authorizations from " + handler + " failed.  Locking down.", e);
+                return forbidden(response);
+            }
+
             for (ResourceAuthorization authorization : authorizations) {
                 if (authorization.permits(user)) return true;
             }

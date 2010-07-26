@@ -101,7 +101,7 @@ public class PscAuthorizationInterceptorTest extends WebTestCase {
         verifyMocks();
     }
 
-    private void expectControllerRequiresRole(PscRole expectedRole) {
+    private void expectControllerRequiresRole(PscRole expectedRole) throws Exception {
         expect(controller.authorizations((String) notNull(), (Map<String, String[]>) notNull())).
             andReturn(Arrays.asList(ResourceAuthorization.create(expectedRole)));
     }

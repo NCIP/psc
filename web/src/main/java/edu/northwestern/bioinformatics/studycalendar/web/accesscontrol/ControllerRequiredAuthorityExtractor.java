@@ -4,6 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import org.acegisecurity.GrantedAuthority;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.Controller;
 
 import java.util.Collection;
@@ -17,6 +19,8 @@ import java.util.Set;
 // TODO: once ControllerSecureUrlCreator is removed, this will only be used by SecureSectionInterceptor
 // Consider pushing its behavior down to that class and removing this one.
 public class ControllerRequiredAuthorityExtractor {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private LegacyModeSwitch legacyModeSwitch;
 
     public GrantedAuthority[] getAllowedAuthoritiesForController(Controller controller) {
@@ -27,8 +31,14 @@ public class ControllerRequiredAuthorityExtractor {
             if (!(controller instanceof PscAuthorizedHandler)) {
                 return new GrantedAuthority[0];
             }
-            Collection<ResourceAuthorization> auths = ((PscAuthorizedHandler) controller).
-                authorizations("GET", Collections.<String, String[]>emptyMap());
+            Collection<ResourceAuthorization> auths = null;
+            try {
+                auths = ((PscAuthorizedHandler) controller).
+                    authorizations("GET", Collections.<String, String[]>emptyMap());
+            } catch (Exception e) {
+                log.error("Extracting authorizations from " + controller + " failed.  Will lock down.", e);
+                auths = PscAuthorizedHandler.NONE_AUTHORIZED;
+            }
             Set<PscRole> roles = new LinkedHashSet<PscRole>();
             for (ResourceAuthorization auth : auths) roles.add(auth.getRole());
             return roles.toArray(new PscRole[roles.size()]);

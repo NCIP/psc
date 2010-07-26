@@ -137,8 +137,13 @@ public class SecureOperation extends TagSupport {
             if (matcher.matchStart(handledPath, relPath)) {
                 Object handler = map.get(handledPath);
                 if (handler instanceof PscAuthorizedHandler) {
-                    return ((PscAuthorizedHandler) handler).authorizations(
-                        "GET", Collections.<String, String[]>emptyMap());
+                    try {
+                        return ((PscAuthorizedHandler) handler).authorizations(
+                            "GET", Collections.<String, String[]>emptyMap());
+                    } catch (Exception e) {
+                        log.error("Extracting authorizations for " + handledPath + " (" + handler + ") failed.  SecureOperation will never show its body.", e);
+                        return PscAuthorizedHandler.NONE_AUTHORIZED;
+                    }
                 } else {
                     log.error("Handler for {} ({}) does not implement PscAuthorizedHandler.  SecureOperation will never show its body.", handledPath, handler);
                     return PscAuthorizedHandler.NONE_AUTHORIZED;

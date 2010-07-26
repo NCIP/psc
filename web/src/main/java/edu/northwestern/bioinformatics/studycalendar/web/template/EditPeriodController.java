@@ -6,27 +6,22 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Collections;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class EditPeriodController extends AbstractPeriodController<EditPeriodCommand> implements PscAuthorizedHandler {
+public class EditPeriodController extends AbstractPeriodController<EditPeriodCommand> {
     private PeriodDao periodDao;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
@@ -35,10 +30,6 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
         super(EditPeriodCommand.class);
         setFormView("editPeriod");
         setCrumb(new Crumb());
-    }
-
-    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     @Override
@@ -59,6 +50,7 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
     }
 
     @Override
+    @SuppressWarnings({"unchecked"})
     protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
         Map<String, Object> refdata = super.referenceData(request, oCommand, errors);
         // include period in refdata for breadcrumbs

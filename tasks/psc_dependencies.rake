@@ -271,7 +271,7 @@ CAGRID = struct(
       version = File.basename(jar).split('_')[1].gsub(/.jar/, '')
       artifact("org.globus:edu.northwestern.bioinformatics.osgi.gov.nih.nci.cagrid.all:jar:#{version}").from(jar)
     }.last,
-  :globus_adapter => 
+  :globus_adapter =>
     artifact("gov.nih.nci.cagrid:edu.northwestern.bioinformatics.osgi.cagrid-globus-adapter:jar:1.3.0.PSC001").
       from(static_lib("cagrid/cagrid-globus-adapter-1.3.0.PSC001.jar"))
 )
@@ -381,7 +381,9 @@ WEB = [
   artifact("gov.nih.nci.ccts:smoketest-client:jar:1.1").from(static_lib("SmokeTestService-client.jar")),
   eponym('displaytag', '1.1.1'),
   "displaytag:displaytag-export-poi:jar:1.1.1",
-  "org.codehaus.jackson:jackson-core-lgpl:jar:1.2.0"
+  "org.codehaus.jackson:jackson-core-lgpl:jar:1.2.0",
+  # Request mocks are used in production web-layer code
+  "org.springframework:spring-test:jar:#{SPRING_VERSION}"
 ]
 
 RESTLET = struct({

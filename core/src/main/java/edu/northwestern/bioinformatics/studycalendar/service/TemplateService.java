@@ -142,6 +142,7 @@ public class TemplateService {
     @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     @Transactional(propagation = Propagation.SUPPORTS)
     public <T extends Child> T findAncestor(Child node, Class<T> klass) {
+        if (node == null) throw new NullPointerException("node must be specified");
         boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
         boolean parentable = PlanTreeNode.class.isAssignableFrom(node.parentClass());
         if (moreSpecific && parentable) {

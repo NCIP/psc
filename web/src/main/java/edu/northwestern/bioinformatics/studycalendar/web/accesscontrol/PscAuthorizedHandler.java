@@ -37,5 +37,5 @@ public interface PscAuthorizedHandler {
      * @see #ALL_AUTHORIZED
      * @see #NONE_AUTHORIZED
      */
-    Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters);
+    Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) throws Exception;
 }
