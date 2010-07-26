@@ -15,11 +15,12 @@
       var INTERNAL_URI_BASE_PATH = '<c:url value="/"/>'
     </script>
 
+    <tags:stylesheetLink name="lightbox"/>
+    <tags:stylesheetLink name="calendar-blue"/>
+
     <tags:stylesheetLink name="debug"/>
     <tags:stylesheetLink name="common"/>
     <tags:stylesheetLink name="fields"/>
-    <tags:stylesheetLink name="calendar-blue"/>
-    <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="error-console"/>
 
     <tags:javascriptLink name="jquery/jquery"/>
