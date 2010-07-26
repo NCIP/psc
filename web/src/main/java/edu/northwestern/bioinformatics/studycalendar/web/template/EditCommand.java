@@ -4,6 +4,7 @@ import java.util.Map;
 
 /**
  * @author nshurupova
+ * @author Rhett Sutphin
  */
 public interface EditCommand {
     boolean apply();

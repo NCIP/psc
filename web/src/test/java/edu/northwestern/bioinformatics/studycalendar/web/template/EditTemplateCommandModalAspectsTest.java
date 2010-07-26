@@ -86,14 +86,17 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
             this.name = name;
         }
 
+        @Override
         public String getRelativeViewName() {
             return name;
         }
 
+        @Override
         public Map<String, Object> getModel() {
             throw new UnsupportedOperationException("getModel not implemented");
         }
 
+        @Override
         public void performEdit() {
             throw new UnsupportedOperationException("performEdit not implemented");
         }

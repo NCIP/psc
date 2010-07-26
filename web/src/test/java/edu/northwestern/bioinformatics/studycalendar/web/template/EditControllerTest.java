@@ -25,24 +25,16 @@ public class EditControllerTest extends ControllerTestCase {
     private EditController controller;
     private EditTemplateCommand command;
 
-    private StudyDao studyDao;
-    private EpochDao epochDao;
-    private StudySegmentDao studySegmentDao;
-    private ActivityDao activityDao;
-    private PopulationDao populationDao;
-    private PeriodDao periodDao;
-    private ApplicationContext applicationContext;
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = registerDaoMockFor(StudyDao.class);
-        epochDao = registerDaoMockFor(EpochDao.class);
-        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
-        applicationContext = registerMockFor(ApplicationContext.class);
-        activityDao = registerDaoMockFor(ActivityDao.class);
-        populationDao = registerDaoMockFor(PopulationDao.class);
-        periodDao = registerDaoMockFor(PeriodDao.class);
+        StudyDao studyDao = registerDaoMockFor(StudyDao.class);
+        EpochDao epochDao = registerDaoMockFor(EpochDao.class);
+        StudySegmentDao studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
+        ApplicationContext applicationContext = registerMockFor(ApplicationContext.class);
+        ActivityDao activityDao = registerDaoMockFor(ActivityDao.class);
+        PopulationDao populationDao = registerDaoMockFor(PopulationDao.class);
+        PeriodDao periodDao = registerDaoMockFor(PeriodDao.class);
         command = registerMockFor(EditTemplateCommand.class);
 
         controller = new EditController();

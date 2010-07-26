@@ -40,6 +40,7 @@ public class MoveCommand extends EditTemplateCommand {
     private abstract class MoveMode<T extends PlanTreeNode<?>> extends Mode {
         boolean changed = false;
 
+        @Override
         public void performEdit() {
             int currentIndex = toMutateRevised().indexOf(toMoveRevised());
             int targetIndex = targetIndex(currentIndex);
@@ -60,23 +61,23 @@ public class MoveCommand extends EditTemplateCommand {
             return targetIndex;
         }
 
+        @Override
         @SuppressWarnings({ "unchecked" })
         public Map<String, Object> getModel() {
             ModelMap model = new ModelMap("changed", changed);
             if (changed) {
                 int newIndex = toMutateRevised().indexOf(toMoveRevised());
                 if (newIndex == toMutateRevised().size() - 1) {
-                    model.addObject("position", "after")
-                        .addObject("relativeTo", toMutateRevised().get(newIndex - 1));
+                    model.addAttribute("position", "after")
+                        .addAttribute("relativeTo", toMutateRevised().get(newIndex - 1));
                 } else {
-                    model.addObject("position", "before")
-                        .addObject("relativeTo", toMutateRevised().get(newIndex + 1));
+                    model.addAttribute("position", "before")
+                        .addAttribute("relativeTo", toMutateRevised().get(newIndex + 1));
                 }
             }
             return model;
         }
 
-        protected abstract List<T> toMutate();
         protected abstract T toMove();
 
         protected abstract List<T> toMutateRevised();
@@ -86,10 +87,6 @@ public class MoveCommand extends EditTemplateCommand {
     }
 
     private class MoveStudySegment extends MoveMode<StudySegment> {
-        @Override
-        protected List<StudySegment> toMutate() {
-            return getStudySegment().getEpoch().getStudySegments();
-        }
 
         @Override
         protected StudySegment toMove() {
@@ -106,6 +103,7 @@ public class MoveCommand extends EditTemplateCommand {
             return getRevisedStudySegment();
         }
 
+        @Override
         public String getRelativeViewName() {
             return "moveStudySegment";
         }
@@ -117,10 +115,6 @@ public class MoveCommand extends EditTemplateCommand {
     }
 
     private class MoveEpoch extends MoveMode<Epoch> {
-        @Override
-        protected List<Epoch> toMutate() {
-            return getEpoch().getPlannedCalendar().getEpochs();
-        }
 
         @Override
         protected Epoch toMove() {
@@ -137,6 +131,7 @@ public class MoveCommand extends EditTemplateCommand {
             return getRevisedEpoch();
         }
 
+        @Override
         public String getRelativeViewName() {
             return "moveEpoch";
         }

@@ -24,16 +24,19 @@ public class AddToCommand extends EditTemplateCommand {
     }
 
     private class AddStudySegment extends Mode {
+        @Override
         public String getRelativeViewName() {
             return "addStudySegment";
         }
 
+        @Override
         public void performEdit() {
             StudySegment studySegment = new StudySegment();
             studySegment.setName("[Unnamed study segment]");
             updateRevision(getEpoch(), Add.create(studySegment, getRevisedEpoch().getStudySegments().size()));
         }
 
+        @Override
         @SuppressWarnings({"unchecked"})
         public Map<String, Object> getModel() {
             List<StudySegment> studySegments = getRevisedEpoch().getStudySegments();
@@ -42,16 +45,19 @@ public class AddToCommand extends EditTemplateCommand {
     }
 
     private class AddEpoch extends Mode {
+        @Override
         public String getRelativeViewName() {
             return "addEpoch";
         }
 
+        @Override
         @SuppressWarnings({"unchecked"})
         public Map<String, Object> getModel() {
             List<Epoch> epochs = getRevisedStudy().getPlannedCalendar().getEpochs();
             return new ModelMap("epoch", epochs.get(epochs.size() - 1));
         }
 
+        @Override
         public void performEdit() {
             Epoch epoch = Epoch.create("[Unnamed epoch]");
             PlannedCalendar cal = getStudy().getPlannedCalendar();

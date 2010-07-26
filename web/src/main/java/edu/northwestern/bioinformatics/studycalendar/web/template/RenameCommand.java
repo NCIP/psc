@@ -29,10 +29,12 @@ public class RenameCommand extends EditTemplateCommand {
     @Override protected Mode studySegmentMode()   { return new RenameStudySegment(); }
 
     private abstract class RenameMode extends Mode {
+        @Override
         public Map<String, Object> getModel() {
             return null;
         }
 
+        @Override
         public String getRelativeViewName() {
             return "rename";
         }
@@ -46,19 +48,19 @@ public class RenameCommand extends EditTemplateCommand {
     // Rename study is unique in that it does not result in a Change
     // TODO: decide if this is reasonable
     private class RenameStudy extends RenameMode {
+        @Override
         public void performEdit() {
-            getStudy().setName(getValue());
+            getStudy().setAssignedIdentifier(getValue());
         }
 
+        @Override
         public boolean validAction() {
-            if (getStudyService().getStudyDao().getByAssignedIdentifier(getValue())!=null){
-                return false;
-            }
-            return true;
+            return getStudyService().getStudyDao().getByAssignedIdentifier(getValue()) == null;
         }
     }
 
     private class RenameEpoch extends RenameMode {
+        @Override
         public void performEdit() {
             rename(getEpoch());
             if (!getEpoch().isMultipleStudySegments()) {
@@ -68,6 +70,7 @@ public class RenameCommand extends EditTemplateCommand {
             }
         }
 
+        @Override
         public boolean validAction() {
             Epoch e = getRevisedEpoch();
             PlannedCalendar pc = getTemplateService().findParent(e);
@@ -82,6 +85,7 @@ public class RenameCommand extends EditTemplateCommand {
     }
 
     private class RenameStudySegment extends RenameMode {
+        @Override
         public void performEdit() {
             rename(getStudySegment());
             if (getStudySegment().getEpoch() != null && !getStudySegment().getEpoch().isMultipleStudySegments()) {
@@ -89,6 +93,7 @@ public class RenameCommand extends EditTemplateCommand {
             }
         }
 
+        @Override
         public boolean validAction() {
             StudySegment ss = getRevisedStudySegment();
             Epoch e = getTemplateService().findParent(ss);

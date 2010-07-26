@@ -25,11 +25,13 @@ public class DeleteCommand extends EditTemplateCommand {
     }
 
     private abstract class DeleteMode<T extends PlanTreeNode<? extends PlanTreeInnerNode>> extends Mode {
+        @Override
         public final void performEdit() {
             if (getObjectParent().getChildren().size() < 2) return;
             updateRevision(getObjectParent(), Remove.create(getObject()));
         }
 
+        @Override
         public Map<String, Object> getModel() {
             Map<String, Object> map = new HashMap<String, Object>();
             Epoch epoch = null;
@@ -42,7 +44,7 @@ public class DeleteCommand extends EditTemplateCommand {
             } else if (getObjectParent() instanceof PlannedCalendar) {
                 PlannedCalendar calendar = (PlannedCalendar)getObjectParent();
                 epoch = calendar.getEpochs().get(0);
-                if(epoch.getId()==getObject().getId()) {
+                if (epoch.getId().equals(getObject().getId())) {
                     epoch = calendar.getEpochs().get(1);
                 }
                 studySegment = epoch.getStudySegments().get(0);
@@ -60,6 +62,7 @@ public class DeleteCommand extends EditTemplateCommand {
     }
 
     private class DeleteEpoch extends DeleteMode<Epoch> {
+        @Override
         public String getRelativeViewName() {
             return "deleteEpoch";
         }
@@ -76,6 +79,7 @@ public class DeleteCommand extends EditTemplateCommand {
     }
 
     private class DeleteStudySegment extends DeleteMode<StudySegment> {
+        @Override
         public String getRelativeViewName() {
             return "deleteStudySegment";
         }
