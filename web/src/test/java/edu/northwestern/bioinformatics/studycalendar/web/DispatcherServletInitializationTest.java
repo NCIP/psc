@@ -82,17 +82,19 @@ public class DispatcherServletInitializationTest extends TestCase {
             }
         }
 
-        StringBuilder msg = new StringBuilder().append("The following ").
-            append(noAuthorizationInfo.size()).
-            append(" controllers contain no unified authorization information and therefore will never execute: ");
-        for (String s : noAuthorizationInfo) {
-            msg.append("\n  ").append(s);
-        }
+        if (!noAuthorizationInfo.isEmpty()) {
+            StringBuilder msg = new StringBuilder().append("The following ").
+                append(noAuthorizationInfo.size()).
+                append(" controllers contain no unified authorization information and therefore will never execute: ");
+            for (String s : noAuthorizationInfo) {
+                msg.append("\n  ").append(s);
+            }
 
-        if (((LegacyModeSwitch) ctxt.getBean("authorizationLegacyModeSwitch")).isOn()) {
-            System.out.println(msg.toString());
-        } else {
-            fail(msg.toString());
+            if (((LegacyModeSwitch) ctxt.getBean("authorizationLegacyModeSwitch")).isOn()) {
+                System.out.println(msg.toString());
+            } else {
+                fail(msg.toString());
+            }
         }
     }
 
