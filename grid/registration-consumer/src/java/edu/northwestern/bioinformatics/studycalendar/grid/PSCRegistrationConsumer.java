@@ -71,34 +71,38 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     private ApplicationSecurityManager applicationSecurityManager= new ApplicationSecurityManager();
     
     private PscUserDetailsService pscUserDetailsService;
-    
-    private SuiteRoleMembership suiteRoleMembership;
 
     private RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
     /**
      * This method authorize the caller for REGISTRAR Role
      * @return boolean
      */
-    public boolean authorizedRegistrationConsumer(){
-    	
+    private SuiteRoleMembership getUserSuiteRoleMembership(){
     	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	SuiteRoleMembership suiteRoleMembership;
     	if (userName != null){
     		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
     		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
     		suiteRoleMembership = memberships.get(SuiteRole.REGISTRAR);
-    		if(suiteRoleMembership != null){
-    			return true;
-    		}
+    		return suiteRoleMembership;
     	}
-    	return false;
+    	return null;
     }
     
-    public boolean authorizedStudyIdentifier(String studyIdentifier ){
-    	return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    public boolean authorizedStudyIdentifier(String studyIdentifier,SuiteRoleMembership suiteRoleMembership ){
+    	if(suiteRoleMembership.isAllStudies()){
+    		return true;
+    	}else {
+    		return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    	}
     }
     
-    public boolean authorizedSiteIdentifier(String siteidentifier){
-    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    public boolean authorizedSiteIdentifier(String siteidentifier,SuiteRoleMembership suiteRoleMembership){
+    	if(suiteRoleMembership.isAllSites()){
+    		return true;
+    	}else {
+    		return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    	}
     }
 
     /**
@@ -223,18 +227,21 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
             RegistrationConsumptionException {
     	
     	try{
-    		//Authorization
-    		if(!authorizedRegistrationConsumer()){
+    		// Check for Role
+    		// 1. If Role is Registrar, then process, otherwise Access Denied.
+    		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
+    		if(suiteRoleMembership == null){
     			String message = "Access Denied";
     			throw getInvalidRegistrationException(message);
     		}
 
     		String ccIdentifier = findCoordinatingCenterIdentifier(registration);
-    		// Authorization
-    		if(!authorizedStudyIdentifier(ccIdentifier)){
+    		// Authorization for study
+    		if(!authorizedStudyIdentifier(ccIdentifier, suiteRoleMembership)){
     			String message = "Access Denied: Registrar is not authorized for this Study";
     			throw getInvalidRegistrationException(message);
     		}
+
     		Study study = fetchStudy(ccIdentifier);
 
     		if (study == null) {
@@ -256,11 +263,12 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     			}
 
     		}
-    		// Authorization
-    		if(!authorizedSiteIdentifier(siteNCICode)){
+    		// Authorization for site
+    		if(!authorizedSiteIdentifier(siteNCICode, suiteRoleMembership)){
     			String message = "Access Denied: Registrar is not authorized for this Site";
     			throw getInvalidRegistrationException(message);
     		}
+    		
     		String mrn = findMedicalRecordNumber(registration.getParticipant());
 
     		Subject subject = fetchCommitedSubject(mrn);
