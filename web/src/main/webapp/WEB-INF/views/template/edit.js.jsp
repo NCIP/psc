@@ -11,7 +11,7 @@ function createAllStudySegmentControls() {
 }
 
 //have to call this function separately in selectStudySegment.jsp        
-function epochControlls() {
+function epochControls() {
     $$('.deletePeriod').each(function(td) {
         deletePeriodControls(td);
     })

@@ -658,12 +658,10 @@
 
             function epochsAreaSetup() {
                 registerSelectStudySegmentHandlers()
-                <c:if test="${not empty developmentRevision}">
-                    if (typeof createAllStudySegmentControls == 'function')
-                            createAllStudySegmentControls()
-                            epochControlls()
-                    if (typeof createAllEpochControls == 'function')
-                        createAllEpochControls()
+                <c:if test="${canEdit}">
+                createAllStudySegmentControls()
+                epochControls()
+                createAllEpochControls()
                 </c:if>
             }
 			function arrowSetup(){

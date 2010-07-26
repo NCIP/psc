@@ -38,6 +38,6 @@ SC.slideAndShow('selected-studySegment-content')
     <tags:replaceErrorMessagesForTemplate/>
 </jsgen:replaceHtml>
 if (${not empty developmentRevision && canEdit}) {
-    epochControlls()
+    epochControls()
 }
 hideShowReleaseTemplateButton()

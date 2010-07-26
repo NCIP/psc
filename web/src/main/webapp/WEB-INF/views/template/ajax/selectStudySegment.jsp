@@ -21,6 +21,6 @@ initializeNewStudySegment();
 </jsgen:replaceHtml>
 <c:if test="${canEdit}">
     hideShowReleaseTemplateButton()
-    epochControlls()
+    epochControls()
 </c:if>
  

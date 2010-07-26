@@ -19,7 +19,7 @@ Element.addClassName(epochDivs.last(), "last")
 </jsgen:replaceHtml>
 
 if (${not empty developmentRevision && canEdit}) {
-    epochControlls()
+    epochControls()
 }
 
 Element.addClassName("studySegment-${studySegment.id}-item", "selected")
