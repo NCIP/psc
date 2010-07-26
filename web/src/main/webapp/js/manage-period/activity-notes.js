@@ -32,6 +32,7 @@ psc.template.mpa.ActivityNotes = (function ($) {
   }
   
   function editNotes(rowN) {
+    if (!psc.template.mpa.canEdit) return;
     var activity = Model.activity(rowN);
     var notesRow = Model.findRow('notes', rowN);
     $(["notes", "days", "activities"]).each(function () {

@@ -173,11 +173,13 @@ psc.template.mpa.ActivityRows = (function ($) {
 
   return {
     init: function () {
-      createActivitiesAutocompleter();
-      $('#days').
-        bind('action-started', updateUsedOnAction).
-        bind('action-error', updateUsedOnAction).
-        bind('action-completed', updateUsedOnAction)
+      if (psc.template.mpa.canEdit) {
+        createActivitiesAutocompleter();
+        $('#days').
+          bind('action-started', updateUsedOnAction).
+          bind('action-error', updateUsedOnAction).
+          bind('action-completed', updateUsedOnAction)
+      }
       var rowCount = $('#days tr.activity').length;
       for (var i = 0; i < rowCount; i++) {
         updateUsedUnused(i);

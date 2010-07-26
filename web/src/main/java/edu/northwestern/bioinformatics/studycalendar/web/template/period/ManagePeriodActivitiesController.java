@@ -1,17 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -19,9 +29,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -42,9 +54,17 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
+        Study study;
+        try {
+            study = templateService.findStudy(loadPeriod(Integer.parseInt(queryParameters.get("period")[0])));
+        } catch (RuntimeException e) {
+            log.warn("Error while determining authorization information for request", e);
+            study = null;
+        }
+        return ResourceAuthorization.createTemplateManagementAuthorizations(study);
     }
 
+    @Override
     protected ModelAndView handleRequestInternal(
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
@@ -54,7 +74,7 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
     @SuppressWarnings({ "unchecked" })
     protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
         int periodId = ServletRequestUtils.getRequiredIntParameter(request, "period");
-        Period period = deltaService.revise(periodDao.getById(periodId));
+        Period period = loadPeriod(periodId);
         Study study = templateService.findStudy(period);
         StudySegment studySegment = templateService.findParent(period);
 
@@ -70,14 +90,9 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
         if (selectedActivityId != null) {
             model.put("selectedActivity", activityDao.getById(selectedActivityId));
         }
-        Set<UserRole> userRoles = applicationSecurityManager.getUser().getLegacyUser().getUserRoles();
-        Boolean hasRightsToEdit = false;
-        for (UserRole userRole: userRoles) {
-            if (userRole.getRole().equals(Role.STUDY_COORDINATOR)) {
-                hasRightsToEdit = true;
-            }
-        }
-        model.put("hasRightsToEdit", hasRightsToEdit);
+
+        model.put("canEdit",
+            new UserTemplateRelationship(applicationSecurityManager.getUser(), study).getCanDevelop());
         
         model.put("activitySources", sourceDao.getAll());
         model.put("activityTypes", activityTypeDao.getAll());
@@ -88,6 +103,10 @@ public class ManagePeriodActivitiesController extends PscAbstractController impl
         getControllerTools().addHierarchyToModel(period, model);
 
         return model;
+    }
+
+    private Period loadPeriod(int periodId) {
+        return deltaService.revise(periodDao.getById(periodId));
     }
 
     private Collection<Activity> collectActivities(Study study) {

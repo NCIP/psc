@@ -2,8 +2,23 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
+<jsp:useBean scope="request" id="study" type="edu.northwestern.bioinformatics.studycalendar.domain.Study"/>
+<jsp:useBean scope="request" id="epoch" type="edu.northwestern.bioinformatics.studycalendar.domain.Epoch"/>
+<jsp:useBean scope="request" id="studySegment" type="edu.northwestern.bioinformatics.studycalendar.domain.StudySegment"/>
+<jsp:useBean scope="request" id="period" type="edu.northwestern.bioinformatics.studycalendar.domain.Period"/>
+<jsp:useBean scope="request" id="grid" type="edu.northwestern.bioinformatics.studycalendar.web.template.period.PeriodActivitiesGrid"/>
+
+<jsp:useBean scope="request" id="activityTypes" type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.ActivityType>"/>
+<jsp:useBean scope="request" id="activitySources" type="java.util.Collection<edu.northwestern.bioinformatics.studycalendar.domain.Source>"/>
+<c:if test="${requestScope['selectedActivity']}">
+    <jsp:useBean scope="request" id="selectedActivity" type="edu.northwestern.bioinformatics.studycalendar.domain.Activity"/>
+</c:if>
+
+<jsp:useBean scope="request" id="canEdit" type="java.lang.Boolean"/>
+
 <tags:escapedUrl var="collectionResource"
     value="api~v1~studies~${study.name}~template~development~epochs~${epoch.name}~study-segments~${studySegment.name}~periods~${period.gridId}~planned-activities"/>
+
 <html>
 <head>
     <title>Manage ${period.displayName} activities</title>
@@ -16,7 +31,6 @@
     <tags:javascriptLink name="manage-period/activity-notes" />
     <tags:javascriptLink name="manage-period/pa-labels" />
     <tags:javascriptLink name="manage-period/presentation" />
-    <tags:javascriptLink name="manage-period/wiring" />
     <tags:javascriptLink name="resig-templates" />
 
     <tags:resigTemplate id="new_activity_row_template">
@@ -36,11 +50,9 @@
     <tags:resigTemplate id="new_notes_row_template">
         <tr class="new-row unused activity">
             <td>
-                <c:if test="${hasRightsToEdit}">
-                    <a class="notes-edit" href="#notes-edit">
-                        View/Edit
-                    </a>
-                </c:if>
+                <a class="notes-edit" href="#notes-edit">
+                    View<c:if test="${canEdit}">/Edit</c:if>
+                </a>
                 <div class="notes-content">
                     <span class="details note" style="display: none"></span>
                     <span class="condition note" style="display: none"></span>
@@ -99,108 +111,24 @@
     <tags:sassLink name="manage-period-activities"/>
     <style type="text/css">
         .days table { width: <%= Math.min(40, ((Period) request.getAttribute("period")).getDuration().getQuantity() * 4) %>em; }
-
-        td.noHover {
-            background-color: white;
-         }
-        .action-add #days tr.activity td.noHover:hover {
-            background-color:white;
-            cursor:inherit;
-        }
-
-        #tools-section #tool-palette li.noHover{
-            background-color:#CCCCCC;
-            border-right:1px solid #444444;
-            cursor:pointer;
-            height:2em;
-            width:2em;
-        }
-
-        #tools-section #tool-palette li.noHover:hover{
-            background-color:#CCCCCC;
-            cursor: inherit;
-        }
-
-        li.noHover img {
-            display:block;
-            left:50%;
-            margin-left:-8px;
-            margin-top:-8px;
-            position:absolute;
-            top:50%;
-        }
-
-        .activities-input a.noHover:hover{
-            background-color:#CCCCCC;
-            cursor:inherit;
-        }
-
-        a.noHover:hover {
-            background-color:#CCCCCC;
-            border:1px solid #999999;
-            color:#444444 !important;
-            margin:0 2px;
-            padding:2px;}
-
-        a.noHover {
-            background-color:#CCCCCC;
-            border:1px solid #999999;
-            color:#444444 !important;
-            margin:0 2px;
-            padding:2px;
-        }
-
-        .error {
-            margin-left:20px;
-        }
-
     </style>
 
     <script type="text/javascript">
         psc.template.mpa.Actions.collectionUri = '${collectionResource}';
-
-        $(document).observe('dom:loaded', function() {
-            if (${not hasRightsToEdit}) {
-                toggleDisabled($('activities-input'));
-                toggleDisabled($('tool-palette'))
-                toggleDisabled($('days'))
-                disableHovers()
-            }
-        })
-
-        function disableHovers() {
-            $$('.cell').each(function(liItem) {
-                liItem.className="noHover"
-            })
-
-            $('add-tool').addClassName('noHover');
-            $('move-tool').className = 'noHover';
-            $('delete-tool').className = 'noHover';
-        }
-
-        function toggleDisabled(el) {
-            try {
-                el.disabled = true;
-            }
-            catch(E){}
-
-            if (el.childNodes && el.childNodes.length > 0) {
-                for (var x = 0; x < el.childNodes.length; x++) {
-                    toggleDisabled(el.childNodes[x]);
-                }
-            }
-        }
+        psc.template.mpa.canEdit = ${canEdit};
     </script>
+    <tags:javascriptLink name="manage-period/wiring" />
 </head>
 <body>
 
-<laf:box title="Manage ${period.displayName} activities">
+<laf:box title="${canEdit ? 'Manage' : 'View'} ${period.displayName} activities">
 <laf:division>
 
 <!--
     TOOL SECTION
  -->
 
+<c:if test="${canEdit}">
 <div class='section' id='tools-section'>
     <div id='tool-palette'>
         <h2>Tools</h2>
@@ -215,7 +143,7 @@
                 <img alt='Delete' src='<c:url value="/images/delete.png"/>' />
             </li>
             <li id='tool-details'>
-                <div class='tool-detail' id='add-tool-detail'>
+                <div class='tool-detail' id='add-tool-detail'><label>
                     Add a new activity for
                     <select id='population-selector'>
                         <option value=''>all subjects</option>
@@ -224,7 +152,7 @@
                         </c:forEach>
                     </select>
                     by clicking in the grid.
-                </div>
+                </label></div>
                 <div class='tool-detail' id='move-tool-detail'>
                     <span class='step-0'>
                         First, click on the one you want to move.
@@ -241,6 +169,7 @@
         </ul>
     </div>
 </div>
+</c:if>
 
 <!--
     HEADING SECTION
@@ -285,8 +214,6 @@
             <li class='condition'>
                 <a href='#condition'>Condition</a>
             </li>
-            <!-- Labels will be enabled in 2.2.1 -->
-            <%--<li class='labels' style="display: none">--%>
             <li class='labels'>
                 <a href='#labels'>Labels</a>
             </li>
@@ -400,7 +327,9 @@
                 <dt>Weight</dt>
                 <dd class='none' id='weight-preview'>None</dd>
             </dl>
-            <p id="notes-preview-edit">Click to edit</p>
+            <c:if test="${canEdit}">
+                <p id="notes-preview-edit">Click to edit</p>
+            </c:if>
         </div>
         <table>
             <c:forEach items="${grid.rowGroups}" var="typeAndRows">
@@ -414,11 +343,9 @@
                     <c:forEach items="${typeAndRows.value}" var="row">
                         <tr class="activity">
                             <td>
-                                <c:if test="${hasRightsToEdit}">
-                                    <a id="notes-edit" class='notes-edit' href='#notes-edit'>
-                                        View/Edit
-                                    </a>
-                                </c:if>
+                                <a id="notes-edit" class='notes-edit' href='#notes-edit'>
+                                    View<c:if test="${canEdit}">/Edit</c:if><c:if test="${not canEdit}"> all notes</c:if>
+                                </a>
                                 <div class='notes-content'>
                                     <span class='note details' style='display: none'>
                                         ${row.details}
@@ -472,36 +399,36 @@
     NEW ACTIVITY
  -->
 
-<laf:division title="Add another activity">
+<c:if test="${canEdit}">
+    <laf:division title="Add another activity">
+        <div id="activities-input">
+            <label for="activities-autocompleter-input">Pick an activity from:</label>
+            <select id="activity-source-filter">
+                <option value="">Any source</option>
+                <c:forEach items="${activitySources}" var="source">
+                    <option>${source.name}</option>
+                </c:forEach>
+            </select>
+            <select id="activity-type-filter">
+                <option value="">Any type</option>
+                <c:forEach items="${activityTypes}" var="activityType">
+                    <option>${activityType.name}</option>
+                </c:forEach>
+            </select>
+            <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
+                   hint="With this name or code"/>
 
-    <div id="activities-input">
-        <label for="activities-autocompleter-input">Pick an activity from:</label>
-        <select id="activity-source-filter">
-            <option value="">Any source</option>
-            <c:forEach items="${activitySources}" var="source">
-                <option>${source.name}</option>
-            </c:forEach>
-        </select>
-        <select id="activity-type-filter">
-            <option value="">Any type</option>
-            <c:forEach items="${activityTypes}" var="activityType">
-                <option>${activityType.name}</option>
-            </c:forEach>
-        </select>
-        <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
-               hint="With this name or code"/>
-        
-        <tags:restrictedItem url="/pages/newActivity" queryString="returnToPeriod=${period.id}" cssClass="control">
-          Create new activity
-        </tags:restrictedItem>
-        
+            <tags:restrictedItem url="/pages/newActivity" queryString="returnToPeriod=${period.id}" cssClass="control">
+              Create new activity
+            </tags:restrictedItem>
 
-        <div style="position: relative">
-            <div id="activities-autocompleter-div" class="autocomplete" style="display: none"></div>
+
+            <div style="position: relative">
+                <div id="activities-autocompleter-div" class="autocomplete" style="display: none"></div>
+            </div>
         </div>
-    </div>
-
-</laf:division>
+    </laf:division>
+</c:if>
 
 <laf:division>
     <a class="control" href="<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>">
@@ -518,8 +445,7 @@
         if ($('days').getWidth() >= $$("#days table").first().getWidth()) {
             $$("#heading-section .trailer").invoke("hide")
         }
-        // TODO: port this to the new style
-        <c:if test="${not empty selectedActivity}">
+        <c:if test="${canEdit && not empty selectedActivity}">
         psc.template.mpa.ActivityRows.addSelectedActivityRow({
             name: '${selectedActivity.name}',
             code: '${selectedActivity.code}',
@@ -527,7 +453,7 @@
         }, {
             selector: "activity-type-" + '${selectedActivity.type.name}'.toLowerCase().replace(" ","_"),
             name: '${selectedActivity.type.name}'
-        })
+        });
         </c:if>
     })
 </script>
@@ -560,7 +486,7 @@
                 <!--<input type="text" class="text" id="edit-notes-labels" hint="No labels" />-->
                 <input id="edit-notes-labels" class="autocomplete" type="text" hint="No labels" autocomplete="off" />
                 <div style="position: relative">
-                    <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"/>
+                    <div id="edit-notes-labels-div" class="autocomplete" style="display: none;"></div>
                 </div>
             </div>
         </div>

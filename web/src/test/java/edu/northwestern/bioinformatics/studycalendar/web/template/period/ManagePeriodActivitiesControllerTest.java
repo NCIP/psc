@@ -1,27 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.easymock.classextension.EasyMock.expect;
-
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import org.springframework.web.servlet.ModelAndView;
 
-import static java.util.Arrays.asList;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static java.util.Arrays.*;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -39,9 +47,7 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     private ActivityTypeDao activityTypeDao;
     private List<Source> sources;
     private StudySegment studySegment;
-    private ActivityType a1;
     private List<ActivityType> activityTypes = new ArrayList<ActivityType>();
-    private User user;
 
     @Override
     protected void setUp() throws Exception {
@@ -73,17 +79,17 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
         controller.setActivityTypeDao(activityTypeDao);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
-        a1 = Fixtures.createActivityType("LAB_TEST");
+        ActivityType a1 = Fixtures.createActivityType("LAB_TEST");
         activityTypes.add(a1);
 
         request.addParameter("period", "15");
-        user = createUser("jimbo", Role.STUDY_COORDINATOR, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
-        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
+        SecurityContextHolderTestHelper.
+            setUserAndReturnMembership("jimbo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies();
     }
 
     public void testAuthorizedRoles() {
         Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
+        assertRolesAllowed(actualAuthorizations, PscRoleUse.TEMPLATE_MANAGEMENT.roles());
     }    
 
     private ModelAndView doHandle() throws Exception {
@@ -179,5 +185,15 @@ public class ManagePeriodActivitiesControllerTest extends ControllerTestCase {
     public void testReferenceDataEmptyIfNoNewActivity() throws Exception {
         request.removeParameter("selectedActivity");
         assertNotContains(doHandle().getModel().keySet(), "selectedActivity");
+    }
+
+    public void testCanEditIfTemplateBuilder() throws Exception {
+        assertTrue((Boolean) doHandle().getModel().get("canEdit"));
+    }
+
+    public void testCannotEditIfNotTemplateBuilder() throws Exception {
+        SecurityContextHolderTestHelper.
+            setUserAndReturnMembership("carla", PscRole.STUDY_QA_MANAGER).forAllSites();
+        assertFalse((Boolean) doHandle().getModel().get("canEdit"));
     }
 }

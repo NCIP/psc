@@ -17,7 +17,7 @@ psc.template.mpa.GridControls = (function ($) {
     var cell = $(this).closest('.cell');
     
     if (cell.is('.in-progress')) {
-      return;
+      return false;
     }
     
     var clickData = Model.cellData(cell);
