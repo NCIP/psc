@@ -1,39 +1,39 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
+import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
 
-import static org.easymock.EasyMock.expect;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Nataliya Shurupova
+ * @author Rhett Sutphin
  */
 public class EditPopulationCommandTest extends StudyCalendarTestCase {
-    private Population population;
-    private Population originalPopulation;
+    private static final String STUDY_NAME = "NU-1066";
 
+    private Population originalPopulation;
 
     private PopulationService populationService;
     private AmendmentService amendmentService;
-    private PopulationDao populationDao;
     private Study study;
-    private static final String STUDY_NAME = "NU-1066";
-    private Amendment a1, a2;
 
     private EditPopulationCommand command;
 
@@ -43,8 +43,6 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
         originalPopulation = Fixtures.createPopulation("Abbreviation", "Name");
         amendmentService = registerMockFor(AmendmentService.class);
         populationService = registerMockFor(PopulationService.class);
-        populationDao = registerDaoMockFor(PopulationDao.class);
-
 
         originalPopulation = Fixtures.createPopulation("Abbr", "name");
         originalPopulation.setId(10);
@@ -52,27 +50,22 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
         pops.add(originalPopulation);
 
         study = setId(100, Fixtures.createBasicTemplate());
-        study.setName(STUDY_NAME);
+        study.setAssignedIdentifier(STUDY_NAME);
 
-        a2 = setId(2, createAmendments("A0", "A1", "A2"));
-        a1 = setId(1, a2.getPreviousAmendment());
+        Amendment a2 = setId(2, createAmendments("A0", "A1", "A2"));
+        Amendment a1 = setId(1, a2.getPreviousAmendment());
 
         study.setAmendment(a2);
         study.setDevelopmentAmendment(a1);
-
         study.setPopulations(pops);
-        initCommand();
-    }
 
-    private void initCommand() {
-        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, populationDao, study);
+        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, study);
     }
 
     public void testIsEdit() throws Exception {
         originalPopulation.setId(null);
         assertFalse("Population is not in edit state", command.isEdit());
     }
-
 
     public void testIsEditTrue() throws Exception {
         command.getPopulation().setId(25);
@@ -91,5 +84,19 @@ public class EditPopulationCommandTest extends StudyCalendarTestCase {
         replayMocks();
         command.apply();
         verifyMocks();
+    }
+
+    public void testAuthorizedForBuilder() throws Exception {
+        study.addManagingSite(createSite("T", "T'"));
+
+        replayMocks();
+        Collection<ResourceAuthorization> actualAuths = command.authorizations(null);
+        verifyMocks();
+
+        assertEquals("Wrong number of authorizations", 1, actualAuths.size());
+        ResourceAuthorization actual = actualAuths.iterator().next();
+        assertEquals("Wrong role", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER, actual.getRole());
+        assertEquals("Wrong study", study.getAssignedIdentifier(), actual.getScope(ScopeType.STUDY));
+        assertEquals("Wrong site", "T'", actual.getScope(ScopeType.SITE));
     }
 }

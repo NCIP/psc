@@ -1,38 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.service.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
@@ -43,8 +40,6 @@ public class EditPopulationController extends PscSimpleFormController implements
     private PopulationService populationService;
     private AmendmentService amendmentService;
     private StudyDao studyDao;
-    private DeltaService deltaService;
-    private TemplateService templateService;
 
     protected EditPopulationController() {
         setValidator(new ValidatableValidator());
@@ -52,6 +47,7 @@ public class EditPopulationController extends PscSimpleFormController implements
         setCrumb(new Crumb());
     }
 
+    @Override
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         return ResourceAuthorization.createCollection(STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
@@ -67,7 +63,7 @@ public class EditPopulationController extends PscSimpleFormController implements
             pop = populationDao.getById(popId);
         }
         Study study = studyDao.getById(studyId);
-        return new EditPopulationCommand(pop, populationService, amendmentService, populationDao, study);
+        return new EditPopulationCommand(pop, populationService, amendmentService, study);
     }
 
     @Override
@@ -128,18 +124,7 @@ public class EditPopulationController extends PscSimpleFormController implements
         this.amendmentService = amendmentService;
     }
 
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
-
-    @Required
-    public void setDeltaService(final DeltaService deltaService) {
-        this.deltaService = deltaService;
-    }
-
     private static class Crumb extends DefaultCrumb {
-        Logger log = LoggerFactory.getLogger(getClass());
         @Override
         public String getName(DomainContext context) {
             Population pop = context.getPopulation();

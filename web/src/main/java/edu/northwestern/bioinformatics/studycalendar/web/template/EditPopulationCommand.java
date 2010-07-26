@@ -2,40 +2,36 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.ACTIVITY_VALIDATOR_INSTANCE;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
+import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
-import static org.springframework.validation.ValidationUtils.invokeValidator;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class EditPopulationCommand implements Validatable {
+public class EditPopulationCommand implements Validatable, PscAuthorizedCommand {
     private Population population;
     private Population originalPopulation;
 
-
     private PopulationService populationService;
     private AmendmentService amendmentService;
-    private PopulationDao populationDao;
     private Study study;
 
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
-    public EditPopulationCommand(Population population, PopulationService populationService,
-                                 AmendmentService amendmentService, PopulationDao populationDao, Study study) {
+    public EditPopulationCommand(
+        Population population, PopulationService populationService,
+        AmendmentService amendmentService, Study study
+    ) {
         this.originalPopulation = population;
         this.population = new Population();
         this.population.setName(population.getName());
@@ -44,13 +40,17 @@ public class EditPopulationCommand implements Validatable {
         this.population.setStudy(null);
         this.populationService = populationService;
         this.amendmentService = amendmentService;
-        this.populationDao = populationDao;
 
         if (this.populationService == null) throw new IllegalArgumentException("populationService required");
     }
 
     public boolean isEdit() {
         return originalPopulation.getId() != null;
+    }
+
+    public Collection<ResourceAuthorization> authorizations(Errors bindErrors) {
+        return ResourceAuthorization.createTemplateManagementAuthorizations(
+            study, PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void apply() {
@@ -80,11 +80,6 @@ public class EditPopulationCommand implements Validatable {
         return population;
     }
 
-    public void setPopulation(Population population) {
-        this.population = population;
-    }
-
-
     public Study getStudy() {
         return study;
     }
@@ -96,7 +91,6 @@ public class EditPopulationCommand implements Validatable {
     public void validate(Errors errors) {
         if (population != null && population.getAbbreviation().contains(" ")) {
             errors.reject("error.population.contains.spaces");
-            return;
         }
     }
 }

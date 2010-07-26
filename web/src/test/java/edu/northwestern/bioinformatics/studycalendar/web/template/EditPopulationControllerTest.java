@@ -1,64 +1,55 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createInDevelopmentBasicTemplate;
-
-import java.util.*;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER;
-import static org.easymock.EasyMock.expect;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.PopulationService;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Nataliya Shurupova
  */
 public class EditPopulationControllerTest extends ControllerTestCase {
-    private PopulationDao populationDao;
+    private static final String STUDY_NAME = "NU-1066";
+
     private StudyDao studyDao;
 
-    private PopulationService populationService;
     private AmendmentService amendmentService;
-    private DeltaService deltaService;
-    private TemplateService templateService;
 
     private EditPopulationController controller;
     private EditPopulationCommand command;
 
     private Population originalPopulation;
     private Study study;
-    private static final String STUDY_NAME = "NU-1066";
-    private Amendment a1, a2;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         amendmentService = registerMockFor(AmendmentService.class);
-        templateService = registerMockFor(TemplateService.class);
-        populationService = registerMockFor(PopulationService.class);
-        deltaService = registerMockFor(DeltaService.class);
-        populationDao = registerDaoMockFor(PopulationDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
+        PopulationService populationService = registerMockFor(PopulationService.class);
+        PopulationDao populationDao = registerDaoMockFor(PopulationDao.class);
 
         controller = new EditPopulationController();
         controller.setControllerTools(controllerTools);
         controller.setAmendmentService(amendmentService);
         controller.setPopulationService(populationService);
-        controller.setDeltaService(deltaService);
-        controller.setTemplateService(templateService);
 
         controller.setPopulationDao(populationDao);
         controller.setStudyDao(studyDao);
@@ -69,21 +60,16 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         pops.add(originalPopulation);
 
         study = setId(100, Fixtures.createBasicTemplate());
-        study.setName(STUDY_NAME);
-        a2 = setId(2, createAmendments("A0", "A1", "A2"));
-        a1 = setId(1, a2.getPreviousAmendment());
+        study.setAssignedIdentifier(STUDY_NAME);
+        Amendment a2 = setId(2, createAmendments("A0", "A1", "A2"));
+        Amendment a1 = setId(1, a2.getPreviousAmendment());
         study.setAmendment(a2);
         study.setDevelopmentAmendment(a1);
         study.setPopulations(pops);
-        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, populationDao, study);
+        command = new EditPopulationCommand(originalPopulation, populationService, amendmentService, study);
 
         expect(populationDao.getById(10)).andReturn(originalPopulation).anyTimes();
         expect(studyDao.getById(100)).andReturn(study).anyTimes();
-    }
-
-    public void testAuthorizedRoles() {
-        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, STUDY_CALENDAR_TEMPLATE_BUILDER);
     }
 
     public void testCommandForRegularNewPopulation() throws Exception {
@@ -94,6 +80,7 @@ public class EditPopulationControllerTest extends ControllerTestCase {
         assertTrue(actual instanceof EditPopulationCommand);
     }
 
+    @SuppressWarnings({"unchecked"})
     public void testRefData() throws Exception {
         Map<String, Object> refdata = controller.referenceData(request, command, null);
         assertNotNull("Study is Null", refdata.get("study"));
