@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -26,18 +25,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author John Dzak
  */
 @AccessControl(roles = {Role.SUBJECT_COORDINATOR, Role.SITE_COORDINATOR})
-public class ScheduledActivitiesReportController extends PscAbstractCommandController implements PscAuthorizedHandler {
-    private ScheduledActivitiesReportRowDao dao;
+public class ScheduledActivitiesReportController
+    extends PscAbstractCommandController<ScheduledActivitiesReportCommand>
+    implements PscAuthorizedHandler
+{
     private UserDao userDao;
     private ActivityTypeDao activityTypeDao;
     private ApplicationSecurityManager applicationSecurityManager;
@@ -50,7 +53,10 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
         setCrumb(new DefaultCrumb("Report"));
     }
 
-    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
+    @Override
+    public Collection<ResourceAuthorization> authorizations(
+        String httpMethod, Map<String, String[]> queryParameters
+    ) {
         return ResourceAuthorization.createCollection(
             DATA_READER,
             STUDY_SUBJECT_CALENDAR_MANAGER,
@@ -58,10 +64,12 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
         );
     }
 
+    @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
         return new ScheduledActivitiesReportCommand(new ScheduledActivitiesReportFilters());
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
@@ -74,8 +82,10 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     }
 
     @Override
-    protected ModelAndView handle(Object oCommand, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ScheduledActivitiesReportCommand command = (ScheduledActivitiesReportCommand) oCommand;
+    protected ModelAndView handle(
+        ScheduledActivitiesReportCommand command, BindException errors,
+        HttpServletRequest request, HttpServletResponse response
+    ) throws Exception {
         return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, command));
     }
 
@@ -139,9 +149,6 @@ public class ScheduledActivitiesReportController extends PscAbstractCommandContr
     }
 
     ////// Bean Setters
-    public void setScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao dao) {
-        this.dao = dao;
-    }
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;

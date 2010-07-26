@@ -1,36 +1,44 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.apache.commons.lang.StringUtils;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static org.easymock.EasyMock.expect;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author John Dzak
  */
 public class ScheduledActivitiesReportControllerTest extends ControllerTestCase {
     private ScheduledActivitiesReportController controller;
-    private ScheduledActivitiesReportRowDao dao;
     private ScheduledActivitiesReportCommand command;
     private ScheduledActivitiesReportFilters filters;
     private UserDao userDao;
@@ -52,7 +60,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     protected void setUp() throws Exception {
         super.setUp();
 
-        dao = registerDaoMockFor(ScheduledActivitiesReportRowDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         activityTypeDao = registerDaoMockFor(ActivityTypeDao.class);
 
@@ -60,6 +67,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         command = new ScheduledActivitiesReportCommand(filters);
 
         controller = new ScheduledActivitiesReportController() {
+            @Override
             protected Object getCommand(HttpServletRequest request) throws Exception {
                 return command;
             }
@@ -82,7 +90,6 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         authorizationService = registerMockFor(AuthorizationService.class);
         controller.setAuthorizationService(authorizationService);
         controller.setStudyDao(studyDao);
-        controller.setScheduledActivitiesReportRowDao(dao);
         controller.setControllerTools(controllerTools);
         controller.setUserDao(userDao);
         controller.setActivityTypeDao(activityTypeDao);
