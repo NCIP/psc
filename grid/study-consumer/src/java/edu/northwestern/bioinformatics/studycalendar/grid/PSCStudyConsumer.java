@@ -90,25 +90,26 @@ public class PSCStudyConsumer implements StudyConsumerI {
     
     private PscUserDetailsService pscUserDetailsService;
     
-    private SuiteRoleMembership suiteRoleMembership;
-    
     private StudyGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
     
-    public boolean authorizedStudyConsumer(){
+    private SuiteRoleMembership getUserSuiteRoleMembership(){
     	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	SuiteRoleMembership suiteRoleMembership;
     	if (userName != null){
     		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
     		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
     		suiteRoleMembership = memberships.get(SuiteRole.STUDY_CREATOR);
-    		if(suiteRoleMembership != null){
-    			return true;
-    		}
+    		return suiteRoleMembership;
     	}
-    	return false;
+    	return null;
     }
     
-    public boolean authorizedSiteIdentifier(String siteidentifier){
-    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    public boolean authorizedSiteIdentifier(String siteidentifier, SuiteRoleMembership suiteRoleMembership){
+    	if(suiteRoleMembership.isAllSites()){
+    		return true;
+    	}else { 
+    		return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    	}
     }
 
     public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -116,7 +117,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
     	try{
     		// Check for Role
     		// 1. If Role is Study_creator, then process, otherwise Access Denied.
-    		if(!authorizedStudyConsumer()){
+    		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
+    		if(suiteRoleMembership == null){
     			String message = "Access Denied";
     			throw getInvalidStudyException(message);
     		}
@@ -170,7 +172,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
     		study.setLongTitle(studyDto.getLongTitleText());
 
     		gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes = studyDto.getStudyOrganization();
-    		populateStudySite(study, studyOrganizationTypes);
+    		populateStudySite(study, studyOrganizationTypes, suiteRoleMembership);
 
     		// now add epochs and arms to the planned calendar of study
     		populateEpochsAndArms(studyDto, study);
@@ -320,7 +322,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @param studyOrganizationTypes
      * @throws InvalidStudyException
      */
-    private void populateStudySite(final Study study, final gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes)
+    private void populateStudySite(final Study study, final gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes,
+    		SuiteRoleMembership suiteRoleMembership)
             throws StudyCreationException, InvalidStudyException {
 
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -329,7 +332,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
                 StudySite studySite = null;
                 if (studyOrganizationType instanceof StudySiteType) {
                     studySite = new StudySite();
-                    studySite.setSite(fetchSite(studyOrganizationType));
+                    studySite.setSite(fetchSite(studyOrganizationType, suiteRoleMembership));
                     studySite.setStudy(study);
                     studySite.setGridId(studyOrganizationType.getGridId());
                     studySites.add(studySite);
@@ -352,14 +355,16 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @param studyOrganizationType
      * @return
      */
-    private Site fetchSite(final StudyOrganizationType studyOrganizationType) throws StudyCreationException {
+    private Site fetchSite(final StudyOrganizationType studyOrganizationType,
+    		SuiteRoleMembership suiteRoleMembership) throws StudyCreationException {
 
     	String assignedIdentifier = studyOrganizationType.getHealthcareSite(0).getNciInstituteCode();
     	// Authorization
-		if(!authorizedSiteIdentifier(assignedIdentifier)){
+		if(!authorizedSiteIdentifier(assignedIdentifier, suiteRoleMembership)){
 			String message = "Access Denied: Study_Creator is not authorized for the Site Identifier : " + assignedIdentifier;
 			throw getStudyCreationException(message);
 		}
+		
     	String siteName = studyOrganizationType.getHealthcareSite(0).getName();
         Site site = siteDao.getByAssignedIdentifier(assignedIdentifier);
         
