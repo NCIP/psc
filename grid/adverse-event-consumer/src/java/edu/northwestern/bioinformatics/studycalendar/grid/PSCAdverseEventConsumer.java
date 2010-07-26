@@ -44,38 +44,44 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     
     private PscUserDetailsService pscUserDetailsService;
     
-    private SuiteRoleMembership suiteRoleMembership;
-    
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     
     private AdverseEventGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
 
-    public boolean authorizedAdverseEventConsumer(){
+    private SuiteRoleMembership getUserSuiteRoleMembership(){
     	String userName = getGridServicesAuthorizationHelper().getCurrentUsername();
+    	SuiteRoleMembership suiteRoleMembership;
     	if (userName != null){
     		PscUser loadedUser = pscUserDetailsService.loadUserByUsername(userName);
     		Map<SuiteRole, SuiteRoleMembership> memberships = loadedUser.getMemberships();
     		suiteRoleMembership = memberships.get(SuiteRole.AE_REPORTER);
-    		if(suiteRoleMembership != null){
-    			return true;
-    		}
+    		return suiteRoleMembership;
     	}
-    	return false;
+    	return null;
     }
 
-    public boolean authorizedStudyIdentifier(String studyIdentifier ){
-    	return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    public boolean authorizedStudyIdentifier(String studyIdentifier,SuiteRoleMembership suiteRoleMembership ){
+    	if(suiteRoleMembership.isAllStudies()){
+    		return true;
+    	}else {
+    		return suiteRoleMembership.getStudyIdentifiers().contains(studyIdentifier);
+    	}
     }
     
-    public boolean authorizedSiteIdentifier(String siteidentifier){
-    	return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    public boolean authorizedSiteIdentifier(String siteidentifier,SuiteRoleMembership suiteRoleMembership){
+    	if(suiteRoleMembership.isAllSites()){
+    		return true;
+    	}else {
+    		return suiteRoleMembership.getSiteIdentifiers().contains(siteidentifier);
+    	}
     }
 
     public void register(final AENotificationType aeNotification) throws java.rmi.RemoteException, InvalidRegistration, RegistrationFailed {
     	try{
     		// Check for Role
     		// 1. If Assigned Role is AE_REPORTER, then process, otherwise Access Denied.
-    		if(!authorizedAdverseEventConsumer()){
+    		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
+    		if(suiteRoleMembership == null){
     			logger.error("Access Denied");
     			throw new RegistrationFailed();
     		}
@@ -95,8 +101,8 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     		StudySite studySite = studySubjectAssignment.getStudySite();
     		Study study = studySite.getStudy();
     		String studyAssignedIdentifier = study.getAssignedIdentifier();
-    		// Authorization
-    		if(!authorizedStudyIdentifier(studyAssignedIdentifier)){
+    		// Authorization for study
+    		if(!authorizedStudyIdentifier(studyAssignedIdentifier, suiteRoleMembership)){
     			String message = "Access Denied: AE_REPORTER is not authorized for this Study Identifier : " + studyAssignedIdentifier;
     			logger.error(message);
     			throw new RegistrationFailed();
@@ -105,8 +111,8 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     		Site site = studySite.getSite();
     		
     		String siteAssignedIdentifier = site.getAssignedIdentifier();
-    		// Authorization
-    		if(!authorizedSiteIdentifier(siteAssignedIdentifier)){
+    		// Authorization for site
+    		if(!authorizedSiteIdentifier(siteAssignedIdentifier, suiteRoleMembership)){
     			String message = "Access Denied: AE_REPORTER is not authorized for this Site Identifier : " + siteAssignedIdentifier;
     			logger.error(message);
     			throw new RegistrationFailed();
