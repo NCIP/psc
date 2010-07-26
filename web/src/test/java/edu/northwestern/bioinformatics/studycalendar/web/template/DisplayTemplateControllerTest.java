@@ -1,14 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createAmendments;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dataproviders.api.StudyProvider;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
@@ -22,15 +27,21 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceA
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.reset;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.EMPTY_LIST;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -45,18 +56,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private DeltaService deltaService;
     private AuthorizationService authorizationService;
     private AmendmentService amendmentService;
-    private StaticNowFactory nowFactory;
     private StudyConsumer studyConsumer;
-    private TemplateService templateService;
 
     private Study study;
     private List<Study> studies = new ArrayList<Study>();
-    private Site site;
-    private StudySite studySite;
-    private StudySegment seg1, seg0a, seg0b;
-    private Amendment a0, a1, a2;
-    private User subjectCoord;
-    private OsgiLayerTools osgiTools;
+    private StudySegment seg0a;
+    private StudySegment seg0b;
+    private Amendment a1;
 
     @Override
     protected void setUp() throws Exception {
@@ -66,28 +72,28 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         authorizationService = registerMockFor(AuthorizationService.class);
         amendmentService = registerMockFor(AmendmentService.class);
         studyConsumer = registerMockFor(StudyConsumer.class);
-        nowFactory = new StaticNowFactory();
-        templateService = registerMockFor(TemplateService.class);
-        osgiTools = registerMockFor(OsgiLayerTools.class);
+        StaticNowFactory nowFactory = new StaticNowFactory();
+        TemplateService templateService = registerMockFor(TemplateService.class);
+        OsgiLayerTools osgiTools = registerMockFor(OsgiLayerTools.class);
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setAssignedIdentifier(STUDY_NAME);
+        study.setGridId("Eleventy-hundred");
         studies.add(study);
         seg0a = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         seg0b = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(1);
-        seg1 =  study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
         int id = 50;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(id++);
             for (StudySegment studySegment : epoch.getStudySegments()) { studySegment.setId(id++); }
         }
 
-        a2 = setId(2, createAmendments("A0", "A1", "A2"));
+        Amendment a2 = setId(2, createAmendments("A0", "A1", "A2"));
         a1 = setId(1, a2.getPreviousAmendment());
-        a0 = setId(0, a1.getPreviousAmendment());
+        setId(0, a1.getPreviousAmendment());
         study.setAmendment(a2);
-        site = Fixtures.createSite("Site");
-        studySite = Fixtures.createStudySite(study, site);
+        Site site = Fixtures.createSite("Site");
+        StudySite studySite = Fixtures.createStudySite(study, site);
         controller = new DisplayTemplateController();
         controller.setStudyDao(studyDao);
         controller.setDeltaService(deltaService);
@@ -101,9 +107,9 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller.setOsgiLayerTools(osgiTools);
 
         request.setMethod("GET");
-        request.addParameter("study", study.getId().toString());
+        request.setParameter("study", study.getId().toString());
 
-        subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
+        User subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord, "asdf");
 
         List<DevelopmentTemplate> inDevelopment = new ArrayList<DevelopmentTemplate>();
@@ -118,7 +124,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(templateService.getReleasedTemplates(studies, subjectCoord)).andReturn(releasedTemplates);
 
         expect(authorizationService.filterStudySitesForVisibility(study.getStudySites(), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
-                .andReturn(singletonList(studySite)).anyTimes();
+            .andReturn(singletonList(studySite)).anyTimes();
+
+        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andStubReturn(expectedAssignments);
+        expect(authorizationService.filterStudySubjectAssignmentsByStudySite(study.getStudySites(), expectedAssignments)).andStubReturn(expectedAssignments);
+
+        expect(osgiTools.getServices(StudyProvider.class)).andStubReturn(Collections.<StudyProvider>emptyList());
         nowFactory.setNowTimestamp(NOW);
     }
 
@@ -134,30 +146,43 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
                 DATA_READER);
     }
 
-    public void testGetStudyByAssignedIdentifier() throws Exception {
-        request.addParameter("study", study.getName());
-        Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(study, actualModel.get("study"));
-    }
-
     public void testGetStudyByStudyId() throws Exception {
-        request.addParameter("study", study.getId().toString());
+        request.setParameter("study", study.getId().toString());
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(study, actualModel.get("study"));
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public void testGetStudyByAssignedIdentifier() throws Exception {
+        request.setParameter("study", study.getName());
+
+        expect(studyDao.getByAssignedIdentifier(study.getName())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
+
+        replayMocks();
+        Map<String, Object> actualModel = controller.handleRequest(request, response).getModel();
+        verifyMocks();
+
+        assertSame(study, actualModel.get("study"));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public void testGetStudyByStudyGridId() throws Exception {
+        request.setParameter("study", study.getGridId());
+
+        expect(studyDao.getByAssignedIdentifier(study.getGridId())).andReturn(null);
+        expect(studyDao.getByGridId(study.getGridId())).andReturn(study);
+        expect(studyConsumer.refresh(study)).andReturn(study);
+
+        replayMocks();
+        Map<String, Object> actualModel = controller.handleRequest(request, response).getModel();
+        verifyMocks();
+
+        assertSame(study, actualModel.get("study"));
+    }
 
     public void testView() throws Exception {
-        expectGetStudyProviders();
-        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
-        expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(studyConsumer.refresh(study)).andReturn(study);
-        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
-        expect(authorizationService.filterStudySubjectAssignmentsByStudySite(study.getStudySites(), expectedAssignments)).andReturn(expectedAssignments).anyTimes();
-        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
-        replayMocks();
-        assertEquals("template/display", controller.handleRequest(request, response).getViewName());
-        verifyMocks();
+        assertEquals("template/display", doHandle().getViewName());
     }
 
     public void testNonStudySegmentModel() throws Exception {
@@ -185,20 +210,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         assertSame(seg0a, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
+    @SuppressWarnings({ "unchecked" })
     public void testOnStudyAssignmentsIncludedWhenComplete() throws Exception {
-        expectGetStudyProviders();
-        reset(studyDao);
-        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
-        expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(studyConsumer.refresh(study)).andReturn(study);
-
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(authorizationService.filterStudySubjectAssignmentsByStudySite(study.getStudySites(), expectedAssignments)).andReturn(expectedAssignments).anyTimes();
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
-        replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
-        verifyMocks();
-        Map<String, Object> actualModel = (Map<String, Object>) mv.getModel();
+
+        Map<String, Object> actualModel = getAndReturnModel();
         assertEquals(expectedAssignments, actualModel.get("onStudyAssignments"));
     }
 
@@ -260,15 +278,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Study amended = study.transientClone();
 
         expect(deltaService.revise(study, dev)).andReturn(amended);
-        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
-        expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(studyConsumer.refresh(study)).andReturn(study);
-        expectGetStudyProviders();
-
-        replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
-        verifyMocks();
-        Map<String, Object> actualModel = (Map<String, Object>) mv.getModel();
+        Map<String, Object> actualModel = getAndReturnModel();
 
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("amendment"));
@@ -294,20 +304,17 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     private Map<String, Object> getAndReturnModel() throws Exception {
-        expectGetStudyProviders();
+        return (Map<String, Object>) doHandle().getModel();
+    }
+
+    private ModelAndView doHandle() throws Exception {
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
         expect(studyConsumer.refresh(study)).andReturn(study);
-        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
-        expect(authorizationService.filterStudySubjectAssignmentsByStudySite(study.getStudySites(), expectedAssignments)).andReturn(expectedAssignments).anyTimes();
-        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
+
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
-        return (Map<String, Object>) mv.getModel();
-    }
-
-    private void expectGetStudyProviders() {
-        expect(osgiTools.getServices(StudyProvider.class)).andReturn(EMPTY_LIST);
+        return mv;
     }
 }
