@@ -5,15 +5,15 @@ import junit.framework.TestCase;
 public class LegacyUserProvisioningRecordTest extends TestCase {
     public void testCsvFormat() throws Exception {
         LegacyUserProvisioningRecord r =
-                new LegacyUserProvisioningRecord(
-                    "fflintstone",
-                    "Fred",
-                    "Flintstone",
-                    "1",
-                    "STUDY_COORDINATOR",
-                    "Bedrock",
-                    "Excavation"
-                );
+            new LegacyUserProvisioningRecord(
+                "fflintstone",
+                "Fred",
+                "Flintstone",
+                "1",
+                "STUDY_COORDINATOR",
+                "Bedrock",
+                "Excavation"
+            );
 
         String expected = "fflintstone,Fred,Flintstone,1,STUDY_COORDINATOR,Bedrock,Excavation";
 
@@ -22,15 +22,15 @@ public class LegacyUserProvisioningRecordTest extends TestCase {
 
     public void testCsvFormatWithBlanks() throws Exception {
         LegacyUserProvisioningRecord r =
-        new LegacyUserProvisioningRecord(
-            "gslate",
-            "George",
-            "Slate",
-            "0",
-            "SITE_COORDINATOR",
-            "Bedrock",
-            ""
-        );
+            new LegacyUserProvisioningRecord(
+                "gslate",
+                "George",
+                "Slate",
+                "0",
+                "SITE_COORDINATOR",
+                "Bedrock",
+                ""
+            );
 
         String expected = "gslate,George,Slate,0,SITE_COORDINATOR,Bedrock,";
 

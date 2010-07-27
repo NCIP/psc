@@ -23,14 +23,13 @@ public class LegacyUserProvisioningRecordDao {
         JdbcTemplate template = new JdbcTemplate(dataSource);
 
         String[] query = new String[] {
-            "select distinct u.name, first_name, last_name, csm_group_name, s.name as site_name, st.assigned_identifier as study_name, active_flag",
+            "select u.name, first_name, last_name, csm_group_name, s.name as site_name, st.assigned_identifier as study_name, active_flag",
             "from Users u",
             "left join User_Roles ur on u.id = ur.user_id",
             "left join User_Role_Sites urs on ur.id = urs.user_role_id",
-            "left join User_Role_Study_Sites urss ON ur.id = urss.user_role_id",
-            "left join Study_Sites ss ON urss.study_site_id = ss.id AND urs.site_id = ss.site_id",
-            "left join Studies st ON ss.study_id = st.id",
-            "left join Sites s on ss.site_id = s.id",
+            "left join (select user_role_id, study_id, site_id from user_role_study_sites urss inner join study_sites ss on urss.study_site_id = ss.id) t1 on (ur.id = t1.user_role_id and urs.site_id = t1.site_id)",
+            "left join Studies st ON t1.study_id = st.id",
+            "left join Sites s on urs.site_id = s.id",
             "order by name, csm_group_name, site_name, study_name"
         };
 
