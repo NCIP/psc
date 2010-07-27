@@ -24,12 +24,24 @@
 # Required for local installs
 # Require for all installs
 database.type=Type of database current database types supported by BDA Templates are Oracle, MySQL or PostgreSQL. Acceptable values are oracle|mysql|postgresql.
+database.host=The hostname where the database resides. Example: ncidbhostname.nci.nih.gov.
 database.server=The hostname where the database resides. Example: ncidbhostname.nci.nih.gov.
 database.port=The port the database listens on. Example: 3306.
 database.name=The database name on the database server. Example: cagwasdb.
 database.user=The user the application uses to connect to the database. cagwasuser.
 database.password=The password for the above user. Example: cAgwASpaSS.
 database.url=The JDBC url for that user above, value referes to other properties and should not be changed. Example: jdbc:mysql://${database.server}:${database.port}/${database.name}
+###########################
+###  CSM DATABASE SETTINGS  ###
+###########################
+database.csm.type=Type of database current database types supported by BDA Templates are Oracle, MySQL or PostgreSQL. Acceptable values are oracle|mysql|postgresql.
+database.csm.host=The hostname where the database resides. Example: ncidbhostname.nci.nih.gov.
+database.csm.port=The port the database listens on. Example: 3306.
+database.csm.name=The database name on the database server. Example: cagwasdb.
+database.csm.user=The user the application uses to connect to the database. cagwasuser.
+database.csm.password=The password for the above user. Example: cAgwASpaSS.
+database.csm.url=The JDBC url for that user above, value referes to other properties and should not be changed. Example: jdbc:mysql://${database.server}:${database.port}/${database.name}
+
 # Only one of the two properties below can be set at a time.
 #database.drop-schema=This property will drop all the objects under the database.name
 #database.re-create=This property when set will drop and recreate the database.user and database.name

@@ -136,6 +136,31 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
 				<fail message="Invalid database type ${database.type}"/>
 			</default>
 		</switch>
+		<!-- CSM database-->
+		<echo message="########## ${database.csm.type} ############"></echo>
+				<switch value="${database.csm.type}">
+					<case value="oracle">
+						<property name="database.csm.dialect" value="org.hibernate.dialect.OracleDialect"/>
+						<property name="database.csm.driver.file" value="${bda-utils.dir}/ojdbc14-10.2.0.4.0.jar"/>
+						<property name="database.csm.driver" value="oracle.jdbc.driver.OracleDriver"/>
+						<property name="database.csm.schema" value="${database.csm.name}"/>
+					</case>
+					<case value="mysql">
+						<property name="database.csm.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+						<property name="database.csm.driver.file" value="${bda-utils.dir}/mysql-connector-java-5.0.8.jar"/>
+						<property name="database.csm.driver" value="com.mysql.jdbc.Driver"/>
+						<property name="database.csm.schema" value="${database.csm.name}"/>
+					</case>
+					<case value="postgresql">
+						<property name="database.csm.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+						<property name="database.csm.driver.file" value="${bda-utils.dir}/postgresql-jdbc3-8.3-604.jar"/>
+						<property name="database.csm.driver" value="org.postgresql.Driver"/>
+						<property name="database.csm.schema" value="public"/>
+					</case>
+					<default>
+						<fail message="Invalid database type ${database.csm.type}"/>
+					</default>
+				</switch>
 
 		<path id="jdbc.driver.classpath">
 			<pathelement location="${database.driver.file}"/>
@@ -566,6 +591,11 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
             <entry key="datasource.username" value="${database.user}" />
             <entry key="datasource.password" value="${database.password}" />
             <entry key="datasource.driver" value="${database.driver}" />
+			<!-- Added for csm database properties-->
+			<entry key="csm.datasource.url" value="${database.csm.url}" />
+            <entry key="csm.datasource.username" value="${database.csm.user}" />
+            <entry key="csm.datasource.password" value="${database.csm.password}" />
+            <entry key="csm.datasource.driver" value="${database.csm.driver}" />
         </propertyfile>
 		</target>
 
