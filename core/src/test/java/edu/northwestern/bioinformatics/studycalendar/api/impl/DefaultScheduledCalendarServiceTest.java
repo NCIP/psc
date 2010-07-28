@@ -141,7 +141,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         StudySite studySite = loadedStudy.getStudySites().get(0);
         assignment.setSubject(loadedSubject);
         assignment.setStudySite(studySite);
-        assignment.setStartDateEpoch(new Date());
+        assignment.setStartDate(new Date());
         studySite.getStudySubjectAssignments().add(assignment);
         loadedSubject.addAssignment(assignment);
         assignment.setScheduledCalendar(new ScheduledCalendar());

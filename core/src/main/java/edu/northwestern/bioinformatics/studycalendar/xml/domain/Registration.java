@@ -34,7 +34,7 @@ public class Registration {
     public static Registration create(StudySubjectAssignment assignment) {
         Registration reg = new Registration();
         reg.setDesiredStudySubjectAssignmentId(assignment.getGridId());
-        reg.setDate(assignment.getStartDateEpoch());
+        reg.setDate(assignment.getStartDate());
         reg.setFirstStudySegment(assignment.getScheduledCalendar().getScheduledStudySegments().get(0).getStudySegment());
         reg.setSubject(assignment.getSubject());
         reg.setSubjectCoordinator(assignment.getSubjectCoordinator());

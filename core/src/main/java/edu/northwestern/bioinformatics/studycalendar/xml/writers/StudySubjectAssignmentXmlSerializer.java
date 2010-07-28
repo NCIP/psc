@@ -26,8 +26,8 @@ public class StudySubjectAssignmentXmlSerializer extends AbstractStudyCalendarXm
         Element elt = SUBJECT_ASSIGNMENT.create();
         ASSIGNMENT_STUDY_NAME.addTo(elt,  assignment.getStudySite().getStudy().getName());
         ASSIGNMENT_SITE_NAME.addTo(elt,  assignment.getStudySite().getSite().getName());
-        ASSIGNMENT_START_DATE.addTo(elt,  assignment.getStartDateEpoch());
-        ASSIGNMENT_END_DATE.addTo(elt,  assignment.getEndDateEpoch());
+        ASSIGNMENT_START_DATE.addTo(elt,  assignment.getStartDate());
+        ASSIGNMENT_END_DATE.addTo(elt,  assignment.getEndDate());
         ASSIGNMENT_SUBJECT_COORD.addTo(elt,  assignment.getSubjectCoordinator().getName());
         ASSIGNMENT_CURRENT_AMENDMENT.addTo(elt, assignment.getCurrentAmendment().getNaturalKey());
         ASSIGNMENT_ID.addTo(elt, assignment.getGridId());

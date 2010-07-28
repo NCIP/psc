@@ -28,11 +28,11 @@
 
 
     <SUBJECT_ASSIGNMENTS id="-1" subject_id="-1" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30" subject_coordinator_id="-200"/>
+        start_date="2006-09-30" subject_coordinator_id="-200"/>
     <SUBJECT_ASSIGNMENTS id="-2" subject_id="-2" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-08-08" subject_coordinator_id="-200"/>
+        start_date="2006-08-08" subject_coordinator_id="-200"/>
     <SUBJECT_ASSIGNMENTS id="-3" subject_id="-3" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-09" subject_coordinator_id="-200"/>
+        start_date="2006-09-09" subject_coordinator_id="-200"/>
 
     <SCHEDULED_CALENDARS
         id="-20"

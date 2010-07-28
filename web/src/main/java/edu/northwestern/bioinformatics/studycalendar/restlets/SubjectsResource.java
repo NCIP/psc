@@ -90,8 +90,8 @@ public class SubjectsResource extends AbstractPscResource {
 
             for(StudySubjectAssignment studySubjectAssignemt : visibleAssignments) {
                 JSONObject jsonStudySiteInfoObject = new JSONObject();
-                Date startDate = studySubjectAssignemt.getStartDateEpoch();
-                Date endDate = studySubjectAssignemt.getEndDateEpoch();
+                Date startDate = studySubjectAssignemt.getStartDate();
+                Date endDate = studySubjectAssignemt.getEndDate();
                 jsonStudySiteInfoObject.put("site", studySubjectAssignemt.getStudySite().getSite().getName());
                 jsonStudySiteInfoObject.put("study", studySubjectAssignemt.getStudySite().getStudy().getName());
                 if (startDate != null){

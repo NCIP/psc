@@ -10,7 +10,6 @@ import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -41,9 +40,9 @@ import java.util.Set;
 @Entity
 @Table(name = "subject_assignments")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
+    parameters = {
         @Parameter(name = "sequence", value = "seq_subject_assignments_id")
-                }
+    }
 )
 public class StudySubjectAssignment extends AbstractMutableDomainObject implements Comparable<StudySubjectAssignment> {
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -52,8 +51,8 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
     private StudySite studySite;
     private Subject subject;
 
-    private Date startDateEpoch;
-    private Date endDateEpoch;
+    private Date startDate;
+    private Date endDate;
     private User subjectCoordinator;
 
     private Amendment currentAmendment;
@@ -189,22 +188,20 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         this.subjectCoordinator = subjectCoordinator;
     }
 
-    public void setStartDateEpoch(Date startDateEpoch) {
-        this.startDateEpoch = startDateEpoch;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    @Column(name = "first_epoch_stdate")
-    public Date getStartDateEpoch() {
-        return startDateEpoch;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setEndDateEpoch(Date endDateEpoch) {
-        this.endDateEpoch = endDateEpoch;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
-    @Column(name = "last_epoch_enddate")
-    public Date getEndDateEpoch() {
-        return endDateEpoch;
+    public Date getEndDate() {
+        return endDate;
     }
 
     @OneToOne(mappedBy = "assignment")
@@ -255,7 +252,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
     @Transient
     public boolean isOff() {
-        return getEndDateEpoch() != null;
+        return getEndDate() != null;
     }
 
     @ManyToMany
@@ -280,7 +277,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
 
         final StudySubjectAssignment that = (StudySubjectAssignment) o;
 
-        if (startDateEpoch != null ? !startDateEpoch.equals(that.startDateEpoch) : that.startDateEpoch != null)
+        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null)
             return false;
         if (studySite != null ? !studySite.equals(that.studySite) : that.studySite != null)
             return false;
@@ -297,7 +294,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject implemen
         int result;
         result = (studySite != null ? studySite.hashCode() : 0);
         result = 29 * result + (subject != null ? subject.hashCode() : 0);
-        result = 29 * result + (startDateEpoch != null ? startDateEpoch.hashCode() : 0);
+        result = 29 * result + (startDate != null ? startDate.hashCode() : 0);
         result = 29 * result + (currentAmendment != null ? currentAmendment.hashCode() : 0);
         return result;
     }

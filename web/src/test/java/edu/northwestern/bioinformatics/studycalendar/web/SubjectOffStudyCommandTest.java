@@ -1,18 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
-import static org.easymock.classextension.EasyMock.expect;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static org.easymock.classextension.EasyMock.expect;
 
 public class SubjectOffStudyCommandTest extends StudyCalendarTestCase{
     private SubjectOffStudyCommand command;
     private SubjectService subjectService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -27,7 +29,7 @@ public class SubjectOffStudyCommandTest extends StudyCalendarTestCase{
         Date expectedEndDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 1);
 
         StudySubjectAssignment expectedAssignment = new StudySubjectAssignment();
-        expectedAssignment.setEndDateEpoch(expectedEndDate);
+        expectedAssignment.setEndDate(expectedEndDate);
 
         command.setAssignment(assignment);
         command.setExpectedEndDate(expectedEndDate);
@@ -35,9 +37,7 @@ public class SubjectOffStudyCommandTest extends StudyCalendarTestCase{
         expect(subjectService.takeSubjectOffStudy(assignment, expectedEndDate)).andReturn(expectedAssignment);
         replayMocks();
 
-        assertSame("Wrong end date", expectedAssignment.getEndDateEpoch(), command.takeSubjectOffStudy().getEndDateEpoch());
+        assertSame("Wrong end date", expectedAssignment.getEndDate(), command.takeSubjectOffStudy().getEndDate());
         verifyMocks();
-
-
     }
 }

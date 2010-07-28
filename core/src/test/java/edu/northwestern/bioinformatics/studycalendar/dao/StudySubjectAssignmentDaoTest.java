@@ -36,9 +36,9 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertEquals("Wrong id", -10, (int) assignment.getId());
         CoreTestCase.assertDayOfDate("Wrong start date", 2003, Calendar.FEBRUARY, 1,
-                assignment.getStartDateEpoch());
+                assignment.getStartDate());
         CoreTestCase.assertDayOfDate("Wrong end date", 2003, Calendar.SEPTEMBER, 1,
-                assignment.getEndDateEpoch());
+                assignment.getEndDate());
         assertEquals("Wrong subject", -20, (int) assignment.getSubject().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
         assertEquals("Wrong study id", "A", assignment.getStudySubjectId());

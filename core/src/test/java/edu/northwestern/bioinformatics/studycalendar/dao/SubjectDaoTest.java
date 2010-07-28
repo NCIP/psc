@@ -8,16 +8,6 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import java.util.Date;
 import java.util.List;
 
-import org.postgresql.util.PSQLException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.validation.BindException;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-import org.easymock.EasyMock;
-
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
@@ -52,8 +42,8 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             StudySubjectAssignment spa = new StudySubjectAssignment();
             spa.setSubject(subject);
             spa.setStudySite(studySite);
-            spa.setStartDateEpoch(new Date());
-            spa.setEndDateEpoch(DateUtils.createDate(2008, 12, 1));
+            spa.setStartDate(new Date());
+            spa.setEndDate(DateUtils.createDate(2008, 12, 1));
             spa.setCurrentAmendment(amendmentDao.getById(-55));
 
             subject.addAssignment(spa);
@@ -69,8 +59,8 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         StudySubjectAssignment newAssignment = loaded.getAssignments().get(1);
         assertEquals("Wrong subject", -100, (int) newAssignment.getSubject().getId());
         assertEquals("Wrong study site", -3001, (int) newAssignment.getStudySite().getId());
-        assertSameDay("Wrong start date", new Date(), newAssignment.getStartDateEpoch());
-        assertSameDay("Wrong end date", DateUtils.createDate(2008, 12, 1), newAssignment.getEndDateEpoch());
+        assertSameDay("Wrong start date", new Date(), newAssignment.getStartDate());
+        assertSameDay("Wrong end date", DateUtils.createDate(2008, 12, 1), newAssignment.getEndDate());
     }
 
     public void testSaveNewSubject() throws Exception {

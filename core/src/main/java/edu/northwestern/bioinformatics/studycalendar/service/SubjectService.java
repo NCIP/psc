@@ -50,7 +50,7 @@ public class SubjectService {
         StudySubjectAssignment spa = new StudySubjectAssignment();
         spa.setSubject(subject);
         spa.setStudySite(studySite);
-        spa.setStartDateEpoch(startDate);
+        spa.setStartDate(startDate);
         spa.setGridId(assignmentGridIdentifier);
         spa.setSubjectCoordinator(subjectCoordinator);
         spa.setCurrentAmendment(currentAmendment);
@@ -77,7 +77,7 @@ public class SubjectService {
     public ScheduledStudySegment scheduleStudySegment(
         StudySubjectAssignment assignment, StudySegment studySegment, Date startDate, NextStudySegmentMode mode
     ) {
-        if (assignment.getEndDateEpoch() != null) return null;
+        if (assignment.getEndDate() != null) return null;
         ScheduledCalendar calendar = assignment.getScheduledCalendar();
         if (calendar == null) {
             calendar = new ScheduledCalendar();
@@ -387,7 +387,7 @@ public class SubjectService {
             }
         }
 
-        studyAssignment.setEndDateEpoch(offStudyDate);
+        studyAssignment.setEndDate(offStudyDate);
         subjectDao.save(studyAssignment.getSubject());
         return studyAssignment;
     }

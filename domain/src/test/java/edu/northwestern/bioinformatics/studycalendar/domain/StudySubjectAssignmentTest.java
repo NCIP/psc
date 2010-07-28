@@ -104,7 +104,7 @@ public class StudySubjectAssignmentTest extends TestCase {
     }
 
     public void testStudyNameForMultipleAssignmentsToTheSameStudyAtTheSameSite() throws Exception {
-        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe); a1.setStartDateEpoch(new Date());
+        StudySubjectAssignment a1 = createAssignment(studyA, portland, joe); a1.setStartDate(new Date());
         StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
 
         assertEquals("A (1)", a1.getName());
@@ -112,7 +112,7 @@ public class StudySubjectAssignmentTest extends TestCase {
     }
 
     public void testStudyNameForMultipleAssignmentsToTheSameStudyAtTheSameSitePlusAnAssignmentAtAnotherSite() throws Exception {
-        StudySubjectAssignment b1 = createAssignment(studyB, portland, joe); b1.setStartDateEpoch(new Date());
+        StudySubjectAssignment b1 = createAssignment(studyB, portland, joe); b1.setStartDate(new Date());
         StudySubjectAssignment b2 = createAssignment(studyB, augusta, joe);
         StudySubjectAssignment b3 = createAssignment(studyB, portland, joe);
 
@@ -122,12 +122,12 @@ public class StudySubjectAssignmentTest extends TestCase {
     }
 
     public void testIsOffWhenOff() throws Exception {
-        assignment.setEndDateEpoch(new Date());
+        assignment.setEndDate(new Date());
         assertTrue(assignment.isOff());
     }
 
     public void testIsOffWhenNotOff() throws Exception {
-        assignment.setEndDateEpoch(null);
+        assignment.setEndDate(null);
         assertFalse(assignment.isOff());
     }
 
@@ -166,7 +166,7 @@ public class StudySubjectAssignmentTest extends TestCase {
     public void testOnOffOrderingIsByOnOrOffFirst() throws Exception {
         StudySubjectAssignment a1 = createAssignment(studyA, portland, joe);
         StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
-        a2.setEndDateEpoch(new Date());
+        a2.setEndDate(new Date());
 
         assertNegative(StudySubjectAssignment.byOnOrOff().compare(a1, a2));
         assertPositive(StudySubjectAssignment.byOnOrOff().compare(a2, a1));
@@ -174,9 +174,9 @@ public class StudySubjectAssignmentTest extends TestCase {
 
     public void testOnOffOrderingZeroWhenEquivalent() throws Exception {
         StudySubjectAssignment a1 = createAssignment(studyA, portland, joe);
-        a1.setEndDateEpoch(new Date());
+        a1.setEndDate(new Date());
         StudySubjectAssignment a2 = createAssignment(studyA, portland, joe);
-        a2.setEndDateEpoch(new Date());
+        a2.setEndDate(new Date());
 
         assertEquals(0, StudySubjectAssignment.byOnOrOff().compare(a1, a2));
         assertEquals(0, StudySubjectAssignment.byOnOrOff().compare(a2, a1));

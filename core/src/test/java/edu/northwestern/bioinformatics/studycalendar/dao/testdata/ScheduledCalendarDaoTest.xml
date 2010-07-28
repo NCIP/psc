@@ -14,11 +14,11 @@
     <SUBJECTS id="-3" first_name="Catherine" last_name="Childress" birth_date="1960-01-08" gender="F" person_id="UNIVERSAL"/>
     <SUBJECTS id="-4" first_name="Daphne" last_name="Childress" birth_date="1960-01-08" gender="F" person_id="UNIVERSAL"/>
     <SUBJECT_ASSIGNMENTS id="-1" subject_id="-1" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
     <SUBJECT_ASSIGNMENTS id="-2" subject_id="-3" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
     <SUBJECT_ASSIGNMENTS id="-3" subject_id="-2" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
 
     <PLANNED_CALENDARS
         id="-1" study_id="-1"
@@ -186,11 +186,11 @@
     <STUDY_SITES id="-2" site_id="-1" study_id="-2"/>
     <STUDY_SITES id="-3" site_id="-2" study_id="-2"/>
     <SUBJECT_ASSIGNMENTS id="-11" subject_id="-1" study_site_id="-3" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
     <SUBJECT_ASSIGNMENTS id="-12" subject_id="-4" study_site_id="-1" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
     <SUBJECT_ASSIGNMENTS id="-13" subject_id="-3" study_site_id="-2" current_amendment_id="-17"
-        first_epoch_stdate="2006-09-30"/>
+        start_date="2006-09-30"/>
 
     <SCHEDULED_CALENDARS id="-201" assignment_id="-11"/> <!-- study -2, site -2 -->
     <SCHEDULED_CALENDARS id="-202" assignment_id="-12"/> <!-- study -1, site -1 -->

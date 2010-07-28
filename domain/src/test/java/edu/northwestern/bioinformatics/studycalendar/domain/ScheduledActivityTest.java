@@ -130,7 +130,7 @@ public class ScheduledActivityTest extends TestCase {
         calendar.addStudySegment(new ScheduledStudySegment());
         calendar.getScheduledStudySegments().get(0).addEvent(scheduledActivity);
         scheduledActivity.changeState(new Canceled("Canceled",DateTools.createDate(2007, Calendar.SEPTEMBER, 2)));
-        assignment.setEndDateEpoch(DateTools.createDate(2007, Calendar.SEPTEMBER, 1));
+        assignment.setEndDate(DateTools.createDate(2007, Calendar.SEPTEMBER, 1));
         
         //scheduledActivity.changeState(new Occurred());
         assertEquals("Wrong states size", 2, scheduledActivity.getAllStates().size());

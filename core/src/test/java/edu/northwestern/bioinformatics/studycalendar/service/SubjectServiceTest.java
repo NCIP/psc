@@ -91,7 +91,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         Subject subjectExpectedSave = createSubject("Alice", "Childress");
 
         StudySubjectAssignment expectedAssignment = new StudySubjectAssignment();
-        expectedAssignment.setStartDateEpoch(startDate);
+        expectedAssignment.setStartDate(startDate);
         expectedAssignment.setSubject(subjectExpectedSave);
         expectedAssignment.setStudySite(studySite);
         expectedAssignment.setStudySubjectId(studySubjectId);
@@ -505,7 +505,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         Date expectedEndDate = DateUtils.createDate(2007, SEPTEMBER, 4);
 
         StudySubjectAssignment expectedAssignment = setId(1, new StudySubjectAssignment());
-        expectedAssignment.setStartDateEpoch(startDate);
+        expectedAssignment.setStartDate(startDate);
 
         ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
         studySegment0.addEvent(createScheduledActivityWithStudy("ABC", 2007, SEPTEMBER, 2, new Occurred()));
@@ -532,7 +532,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySubjectAssignment actualAssignment = service.takeSubjectOffStudy(expectedAssignment, expectedEndDate);
         verifyMocks();
 
-        CoreTestCase.assertDayOfDate("Wrong off study day", 2007, SEPTEMBER, 4, actualAssignment.getEndDateEpoch());
+        CoreTestCase.assertDayOfDate("Wrong off study day", 2007, SEPTEMBER, 4, actualAssignment.getEndDate());
 
         assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, studySegment0.getActivities().get(2).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, studySegment0.getActivities().get(3).getCurrentState().getMode());
@@ -546,7 +546,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     public void testScheduleStudySegmentWithOffStudySubject() {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setSubject(createSubject("Alice", "Childress"));
-        assignment.setEndDateEpoch(DateUtils.createDate(2006, APRIL, 1));
+        assignment.setEndDate(DateUtils.createDate(2006, APRIL, 1));
 
         StudySite studySite = new StudySite();
         studySite.setSite(new Site());

@@ -106,8 +106,8 @@ public class ScheduledActivity extends AbstractMutableDomainObject implements Co
         if (scheduledStudySegment != null
                 && scheduledStudySegment.getScheduledCalendar() != null
                 && scheduledStudySegment.getScheduledCalendar().getAssignment() != null
-                && scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDateEpoch() != null) {
-            endDate = scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDateEpoch();
+                && scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDate() != null) {
+            endDate = scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDate();
             return getActualDate().before(endDate);
         }
         return true;

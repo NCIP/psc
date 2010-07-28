@@ -110,7 +110,7 @@
         id="-10"
         subject_id="-20"
         study_site_id="-15"
-        first_epoch_stdate="2003-02-01"
+        start_date="2003-02-01"
         study_subject_id="004-12"
         current_amendment_id="-45"
         />
@@ -118,7 +118,7 @@
         id="-11"
         subject_id="-21"
         study_site_id="-15"
-        first_epoch_stdate="2003-02-07"
+        start_date="2003-02-07"
         study_subject_id="004-13"
         current_amendment_id="-45"
         />
@@ -126,7 +126,7 @@
         id="-12"
         subject_id="-22"
         study_site_id="-16"
-        first_epoch_stdate="2003-02-07"
+        start_date="2003-02-07"
         study_subject_id="005-01"
         current_amendment_id="-45"
         />

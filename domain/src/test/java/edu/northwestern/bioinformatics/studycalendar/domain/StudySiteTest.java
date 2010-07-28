@@ -171,7 +171,7 @@ public class StudySiteTest extends TestCase {
         createAssignment(studySite, createSubject("B", "B"));
         createAssignment(studySite, createSubject("C", "C"));
 
-        studySite.getStudySubjectAssignments().get(1).setEndDateEpoch(new Date());
+        studySite.getStudySubjectAssignments().get(1).setEndDate(new Date());
 
         List<StudySubjectAssignment> actual = studySite.getOnStudyAssignments();
         assertEquals("Wrong number of on-study assignments", 2, actual.size());
@@ -184,7 +184,7 @@ public class StudySiteTest extends TestCase {
         createAssignment(studySite, createSubject("B", "B"));
         createAssignment(studySite, createSubject("C", "C"));
 
-        studySite.getStudySubjectAssignments().get(1).setEndDateEpoch(new Date());
+        studySite.getStudySubjectAssignments().get(1).setEndDate(new Date());
 
         List<StudySubjectAssignment> actual = studySite.getOffStudyAssignments();
         assertEquals("Wrong number of off-study assignments", 1, actual.size());

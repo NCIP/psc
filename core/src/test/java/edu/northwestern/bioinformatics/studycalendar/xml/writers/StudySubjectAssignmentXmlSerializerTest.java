@@ -98,8 +98,8 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assignment.setSubject(subject);
         assignment.setCurrentAmendment(amend);
         assignment.setSubjectCoordinator(subjCoord);
-        assignment.setStartDateEpoch(createDate(2008, Calendar.JANUARY, 1));
-        assignment.setEndDateEpoch(createDate(2008, Calendar.MARCH, 1));
+        assignment.setStartDate(createDate(2008, Calendar.JANUARY, 1));
+        assignment.setEndDate(createDate(2008, Calendar.MARCH, 1));
         return assignment;
     }
 

@@ -15,8 +15,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.configuration.MockConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.EasyMock.expect;
 
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,7 +101,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assignment.setSubject(subject);
         assignment.setStudySite(studySite);
-        assignment.setStartDateEpoch(new Date());
+        assignment.setStartDate(new Date());
         assignment.setScheduledCalendar(calendar);
         List<StudySubjectAssignment> studySubjectAssignment = new ArrayList<StudySubjectAssignment>();
         studySubjectAssignment.add(assignment);
@@ -182,7 +179,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assignment.setSubject(subject);
         assignment.setStudySite(studySite);
-        assignment.setStartDateEpoch(new Date());
+        assignment.setStartDate(new Date());
         assignment.setScheduledCalendar(calendar);
         List<StudySubjectAssignment> studySubjectAssignment = new ArrayList<StudySubjectAssignment>();
         studySubjectAssignment.add(assignment);
@@ -280,12 +277,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);
-        assignment.setStartDateEpoch(new Date());
+        assignment.setStartDate(new Date());
         assignment.setScheduledCalendar(calendar);
 
         assignmentTwo.setSubject(subjectTwo);
         assignmentTwo.setStudySite(studySite);
-        assignmentTwo.setStartDateEpoch(paService.shiftStartDayByNumberOfDays(new Date(), 2));
+        assignmentTwo.setStartDate(paService.shiftStartDayByNumberOfDays(new Date(), 2));
         assignmentTwo.setScheduledCalendar(calendarTwo);
 
         List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
@@ -421,12 +418,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);
-        assignment.setStartDateEpoch(new Date());
+        assignment.setStartDate(new Date());
         assignment.setScheduledCalendar(calendar);
 
         assignmentTwo.setSubject(subjectTwo);
         assignmentTwo.setStudySite(studySite);
-        assignmentTwo.setStartDateEpoch(paService.shiftStartDayByNumberOfDays(new Date(), 2));
+        assignmentTwo.setStartDate(paService.shiftStartDayByNumberOfDays(new Date(), 2));
         assignmentTwo.setScheduledCalendar(calendarTwo);
 
         List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();

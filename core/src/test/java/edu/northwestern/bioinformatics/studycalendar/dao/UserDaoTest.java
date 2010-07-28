@@ -105,9 +105,9 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertNotNull("StudySubjectAssignments not found", studySubjectAssignments);
         assertEquals("Wrong quantity of assignments", 3, studySubjectAssignments.size());
 
-        assertEquals("Wrong first date", "2008-01-01 00:00:00.0", studySubjectAssignments.get(0).getStartDateEpoch().toString());
-        assertEquals("Wrong second date", "2007-10-10 00:00:00.0", studySubjectAssignments.get(1).getStartDateEpoch().toString());
-        assertEquals("Wrong third date", "2006-09-15 00:00:00.0", studySubjectAssignments.get(2).getStartDateEpoch().toString());
+        assertEquals("Wrong first date", "2008-01-01 00:00:00.0", studySubjectAssignments.get(0).getStartDate().toString());
+        assertEquals("Wrong second date", "2007-10-10 00:00:00.0", studySubjectAssignments.get(1).getStartDate().toString());
+        assertEquals("Wrong third date", "2006-09-15 00:00:00.0", studySubjectAssignments.get(2).getStartDate().toString());
     }
 
     public void testLoadAndSave() throws Exception {
