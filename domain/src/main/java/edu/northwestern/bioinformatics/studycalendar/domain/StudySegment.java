@@ -31,7 +31,9 @@ import java.util.*;
     }
 )
 public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
-    private String name;
+    public static final String TEMPORARY_NAME = "[Unnamed study segment]";
+
+    private String name = TEMPORARY_NAME;
     private Integer cycleLength;
 
     ////// LOGIC
@@ -80,6 +82,11 @@ public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Per
         found = findMatchingChildrenByGridId(key);
         if (found.size() == 1) return found.iterator().next();
         return null;
+    }
+
+    @Transient
+    public boolean getHasTemporaryName() {
+        return TEMPORARY_NAME.equals(getName());
     }
 
     ////// BEAN PROPERTIES

@@ -167,4 +167,16 @@ public class StudySegmentTest extends DomainTestCase {
         assertEquals("StudySegments are equals", "Period name P1 differs to P2",
                 differences.getChildDifferences().get("StudySegment Segment1").getMessages().get(0));
     }
+
+    public void testDefaultName() throws Exception {
+        assertEquals("[Unnamed study segment]", new StudySegment().getName());
+    }
+
+    public void testHasTemporaryNameWhenHas() throws Exception {
+        assertTrue(new StudySegment().getHasTemporaryName());
+    }
+
+    public void testHasTemporaryNameWhenDoesNot() throws Exception {
+        assertFalse(Fixtures.createNamedInstance("Foo", StudySegment.class).getHasTemporaryName());
+    }
 }

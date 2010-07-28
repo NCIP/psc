@@ -88,7 +88,6 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     }
 
     public void testNodeNameForNamedWithNoName() throws Exception {
-        assertEquals("unnamed studySegment", RevisionChanges.getNodeName(new StudySegment()));
         assertEquals("unnamed period", RevisionChanges.getNodeName(new Period()));
     }
 

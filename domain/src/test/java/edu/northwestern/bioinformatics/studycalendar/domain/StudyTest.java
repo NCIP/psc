@@ -375,4 +375,19 @@ public class StudyTest extends TestCase {
         study.setAssignedIdentifier("Etc");
         assertNull(study.getDevelopmentDisplayName());
     }
+
+    public void testHasTemporaryAssignedIdentifierIfEnclosedInBrackets() throws Exception {
+        study.setAssignedIdentifier("[ABC 4522]");
+        assertTrue(study.getHasTemporaryAssignedIdentifier());
+    }
+
+    public void testDoesNotHaveTemporaryAssignedIdentifierIfNotEnclosedInBrackets() throws Exception {
+        study.setAssignedIdentifier("ABC 4522");
+        assertFalse(study.getHasTemporaryAssignedIdentifier());
+    }
+
+    public void testDoesNotHaveTemporaryAssignedIdentifierIfBracketsInTheMiddle() throws Exception {
+        study.setAssignedIdentifier("ABC[]4522");
+        assertFalse(study.getHasTemporaryAssignedIdentifier());
+    }
 }

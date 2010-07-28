@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * Represents a study, its planned template, and all amendments.
@@ -62,6 +63,9 @@ import java.util.TreeSet;
 )
 @Where(clause = "load_status > 0")
 public class Study extends AbstractProvidableDomainObject implements Serializable, Named, Cloneable, NaturallyKeyed, Parent<Population, Set<Population>> {
+    // TODO: somehow the temporary identifier generator and this pattern should be kept together
+    private static final Pattern TEMPORARY_ASSIGNED_IDENTIFIER = Pattern.compile("^\\[.*?\\]$");
+
     private String assignedIdentifier;
     private String longTitle;
     private SortedSet<StudySecondaryIdentifier> secondaryIdentifiers
@@ -373,6 +377,11 @@ public class Study extends AbstractProvidableDomainObject implements Serializabl
     public void removeManagingSite(Site oldManager) {
         getManagingSites().remove(oldManager);
         oldManager.getManagedStudies().remove(this);
+    }
+
+    @Transient
+    public boolean getHasTemporaryAssignedIdentifier() {
+        return TEMPORARY_ASSIGNED_IDENTIFIER.matcher(getAssignedIdentifier()).find();
     }
 
     ////// BEAN PROPERTIES

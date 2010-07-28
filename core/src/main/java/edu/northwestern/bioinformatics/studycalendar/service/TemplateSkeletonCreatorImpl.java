@@ -39,7 +39,7 @@ public class TemplateSkeletonCreatorImpl {
                 newStudyName = studyName;
             }
            Study study = createBase(newStudyName);
-           addEpoch(study, 0, Epoch.create("[Unnamed epoch]"));
+           addEpoch(study, 0, Epoch.create(Epoch.TEMPORARY_NAME));
            return study;
        }
    }

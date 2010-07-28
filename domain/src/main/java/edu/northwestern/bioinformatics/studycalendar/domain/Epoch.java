@@ -28,9 +28,15 @@ import java.util.List;
     }
 )
 public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegment> implements Named {
-    private String name;
+    public static final String TEMPORARY_NAME = "[Unnamed epoch]";
+
+    private String name = TEMPORARY_NAME;
 
     ////// FACTORY
+
+    public static Epoch create() {
+        return create(TEMPORARY_NAME);
+    }
 
     public static Epoch create(String epochName, String... studySegmentNames) {
         Epoch epoch = new Epoch();
@@ -79,6 +85,11 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
         Collection<StudySegment> found = findMatchingChildrenByName(key);
         if (found.size() == 1) return found.iterator().next();
         return null;
+    }
+
+    @Transient
+    public boolean getHasTemporaryName() {
+        return TEMPORARY_NAME.equals(getName());
     }
 
     ////// BEAN PROPERTIES

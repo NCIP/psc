@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import org.springframework.ui.ModelMap;
@@ -31,9 +30,8 @@ public class AddToCommand extends EditTemplateCommand {
 
         @Override
         public void performEdit() {
-            StudySegment studySegment = new StudySegment();
-            studySegment.setName("[Unnamed study segment]");
-            updateRevision(getEpoch(), Add.create(studySegment, getRevisedEpoch().getStudySegments().size()));
+            updateRevision(getEpoch(),
+                Add.create(new StudySegment(), getRevisedEpoch().getStudySegments().size()));
         }
 
         @Override
@@ -59,11 +57,8 @@ public class AddToCommand extends EditTemplateCommand {
 
         @Override
         public void performEdit() {
-            Epoch epoch = Epoch.create("[Unnamed epoch]");
-            PlannedCalendar cal = getStudy().getPlannedCalendar();
-
             updateRevision(getStudy().getPlannedCalendar(),
-                    Add.create(epoch, getRevisedStudy().getPlannedCalendar().getEpochs().size()));
+                Add.create(Epoch.create(), getRevisedStudy().getPlannedCalendar().getEpochs().size()));
         }
     }
 }

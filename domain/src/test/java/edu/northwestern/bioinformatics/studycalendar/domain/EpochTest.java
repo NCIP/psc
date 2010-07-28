@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import org.easymock.EasyMock;
+
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.assertNotEquals;
 
 /**
  * @author Rhett Sutphin
@@ -10,6 +11,7 @@ import org.easymock.EasyMock;
 public class EpochTest extends DomainTestCase {
     private Epoch epoch;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         epoch = new Epoch();
@@ -44,6 +46,13 @@ public class EpochTest extends DomainTestCase {
         assertFalse(new Epoch().isMultipleStudySegments());
         assertFalse(Epoch.create("Holocene").isMultipleStudySegments());
         assertTrue(Epoch.create("Holocene", "A", "B").isMultipleStudySegments());
+    }
+
+    public void testCreateNoArgs() throws Exception {
+        Epoch defaultE = Epoch.create();
+        assertEquals(Epoch.TEMPORARY_NAME, defaultE.getName());
+        assertEquals("Wrong number of study segments", 1, defaultE.getStudySegments().size());
+        assertEquals("Wrong name for sole study segment", Epoch.TEMPORARY_NAME, defaultE.getStudySegments().get(0).getName());
     }
 
     public void testCreateNoStudySegments() throws Exception {
@@ -124,5 +133,17 @@ public class EpochTest extends DomainTestCase {
         Differences differences = e1.deepEquals(e2);
         assertFalse(differences.getChildDifferences().isEmpty());
         assertEquals("StudySegment name A2 differs to A4", differences.getChildDifferences().get("Epoch E1").getMessages().get(0));
+    }
+
+    public void testDefaultName() throws Exception {
+        assertEquals("[Unnamed epoch]", new Epoch().getName());
+    }
+
+    public void testHasTemporaryNameWhenHas() throws Exception {
+        assertTrue(new Epoch().getHasTemporaryName());
+    }
+
+    public void testHasTemporaryNameWhenDoesNot() throws Exception {
+        assertFalse(Fixtures.createNamedInstance("Foo", Epoch.class).getHasTemporaryName());
     }
 }
