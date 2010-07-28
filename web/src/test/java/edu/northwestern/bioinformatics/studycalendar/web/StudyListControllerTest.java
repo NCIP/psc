@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -104,10 +104,10 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     public void testModelAndView() throws Exception {
         expect(templateService.getVisibleTemplates(user)).andReturn(
-            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
-                put(TemplateWorkflowStatus.IN_DEVELOPMENT, Arrays.asList(incomplete, both)).
-                put(TemplateWorkflowStatus.PENDING, Collections.singletonList(complete)).
-                put(TemplateWorkflowStatus.AVAILABLE, Collections.singletonList(both)).
+            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, Arrays.asList(incomplete, both)).
+                put(TemplateAvailability.PENDING, Collections.singletonList(complete)).
+                put(TemplateAvailability.AVAILABLE, Collections.singletonList(both)).
                 toMap());
         expect(studySiteService.refreshStudySitesForStudies(allStudies)).andReturn(allStudySites);
 

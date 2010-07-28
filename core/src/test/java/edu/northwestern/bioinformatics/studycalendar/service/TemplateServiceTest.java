@@ -29,7 +29,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
@@ -506,21 +506,21 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(pending, readyAndInDev, inDev));
 
         replayMocks();
-        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> actual
+        Map<TemplateAvailability, List<UserTemplateRelationship>> actual
             = service.getVisibleTemplates(user);
         verifyMocks();
 
         System.out.println(actual);
 
-        List<UserTemplateRelationship> actualPending = actual.get(TemplateWorkflowStatus.PENDING);
+        List<UserTemplateRelationship> actualPending = actual.get(TemplateAvailability.PENDING);
         assertEquals("Wrong number of pending templates", 1, actualPending.size());
         assertEquals("Wrong pending template", "P", actualPending.get(0).getStudy().getAssignedIdentifier());
 
-        List<UserTemplateRelationship> actualAvailable = actual.get(TemplateWorkflowStatus.AVAILABLE);
+        List<UserTemplateRelationship> actualAvailable = actual.get(TemplateAvailability.AVAILABLE);
         assertEquals("Wrong number of available templates", 1, actualAvailable.size());
         assertEquals("Wrong available template", "R", actualAvailable.get(0).getStudy().getAssignedIdentifier());
 
-        List<UserTemplateRelationship> actualDev = actual.get(TemplateWorkflowStatus.IN_DEVELOPMENT);
+        List<UserTemplateRelationship> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
         assertEquals("Wrong number of dev templates", 2, actualDev.size());
         assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
         assertEquals("Wrong 2nd dev template", "R", actualDev.get(1).getStudy().getAssignedIdentifier());
@@ -537,16 +537,16 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(inDev));
 
         replayMocks();
-        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> actual
+        Map<TemplateAvailability, List<UserTemplateRelationship>> actual
             = service.searchVisibleTemplates(user, "d");
         verifyMocks();
 
         System.out.println(actual);
 
-        assertEquals("Wrong number of pending templates", 0, actual.get(TemplateWorkflowStatus.PENDING).size());
-        assertEquals("Wrong number of available templates", 0, actual.get(TemplateWorkflowStatus.AVAILABLE).size());
+        assertEquals("Wrong number of pending templates", 0, actual.get(TemplateAvailability.PENDING).size());
+        assertEquals("Wrong number of available templates", 0, actual.get(TemplateAvailability.AVAILABLE).size());
 
-        List<UserTemplateRelationship> actualDev = actual.get(TemplateWorkflowStatus.IN_DEVELOPMENT);
+        List<UserTemplateRelationship> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
         assertEquals("Wrong number of dev templates", 1, actualDev.size());
         assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
     }

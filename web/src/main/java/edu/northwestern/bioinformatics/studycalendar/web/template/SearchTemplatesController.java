@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -46,19 +46,19 @@ public class SearchTemplatesController extends PscAbstractController implements 
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "searchText parameter is required");
             return null;
         }
-        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates = templateService.searchVisibleTemplates(
+        Map<TemplateAvailability, List<UserTemplateRelationship>> templates = templateService.searchVisibleTemplates(
             applicationSecurityManager.getUser(), getEffectiveSearchText(request));
 
         ModelAndView mv = new ModelAndView("template/ajax/templates");
-        mv.addObject("inDevelopmentTemplates", templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT));
+        mv.addObject("inDevelopmentTemplates", templates.get(TemplateAvailability.IN_DEVELOPMENT));
         mv.addObject("releasedTemplates", allReleased(templates));
         return mv;
     }
 
-    private List<UserTemplateRelationship> allReleased(Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> source) {
+    private List<UserTemplateRelationship> allReleased(Map<TemplateAvailability, List<UserTemplateRelationship>> source) {
         Set<UserTemplateRelationship> unique = new HashSet<UserTemplateRelationship>();
-        unique.addAll(source.get(TemplateWorkflowStatus.PENDING));
-        unique.addAll(source.get(TemplateWorkflowStatus.AVAILABLE));
+        unique.addAll(source.get(TemplateAvailability.PENDING));
+        unique.addAll(source.get(TemplateAvailability.AVAILABLE));
         List<UserTemplateRelationship> result = new ArrayList<UserTemplateRelationship>(unique);
         Collections.sort(result, UserTemplateRelationship.byReleaseDisplayName());
         return result;

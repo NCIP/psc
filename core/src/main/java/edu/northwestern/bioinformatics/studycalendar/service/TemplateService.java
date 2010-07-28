@@ -22,7 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
@@ -262,7 +262,7 @@ public class TemplateService {
      * show up in more than one status for the same user.  (E.g., a template can both be in
      * development [for the next amendment] and available [for the current one].)
      */
-    public Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> getVisibleTemplates(PscUser user) {
+    public Map<TemplateAvailability, List<UserTemplateRelationship>> getVisibleTemplates(PscUser user) {
         return searchVisibleTemplates(user, null);
     }
 
@@ -271,30 +271,30 @@ public class TemplateService {
      * show up in more than one status for the same user.  (E.g., a template can both be in
      * development [for the next amendment] and available [for the current one].)
      */
-    public Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> searchVisibleTemplates(PscUser user, String term) {
-        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> results =
-            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
-                put(TemplateWorkflowStatus.IN_DEVELOPMENT, new LinkedList<UserTemplateRelationship>()).
-                put(TemplateWorkflowStatus.PENDING, new LinkedList<UserTemplateRelationship>()).
-                put(TemplateWorkflowStatus.AVAILABLE, new LinkedList<UserTemplateRelationship>()).
+    public Map<TemplateAvailability, List<UserTemplateRelationship>> searchVisibleTemplates(PscUser user, String term) {
+        Map<TemplateAvailability, List<UserTemplateRelationship>> results =
+            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, new LinkedList<UserTemplateRelationship>()).
+                put(TemplateAvailability.PENDING, new LinkedList<UserTemplateRelationship>()).
+                put(TemplateAvailability.AVAILABLE, new LinkedList<UserTemplateRelationship>()).
                 toMap();
 
         for (Study visible : studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), term)) {
             UserTemplateRelationship utr = new UserTemplateRelationship(user, visible);
             if (utr.getCanSeeDevelopmentVersion()) {
-                results.get(TemplateWorkflowStatus.IN_DEVELOPMENT).add(utr);
+                results.get(TemplateAvailability.IN_DEVELOPMENT).add(utr);
             }
             // TODO: this is too simple and will need to be revisited when refactoring the workflow for real.
             if (utr.getCanAssignSubjects()) {
-                results.get(TemplateWorkflowStatus.AVAILABLE).add(utr);
+                results.get(TemplateAvailability.AVAILABLE).add(utr);
             } else if (utr.getStudy().isReleased()) {
-                results.get(TemplateWorkflowStatus.PENDING).add(utr);
+                results.get(TemplateAvailability.PENDING).add(utr);
             }
         }
 
-        for (Map.Entry<TemplateWorkflowStatus, List<UserTemplateRelationship>> entry : results.entrySet()) {
+        for (Map.Entry<TemplateAvailability, List<UserTemplateRelationship>> entry : results.entrySet()) {
             Comparator<UserTemplateRelationship> comparator;
-            if (entry.getKey() == TemplateWorkflowStatus.IN_DEVELOPMENT) {
+            if (entry.getKey() == TemplateAvailability.IN_DEVELOPMENT) {
                 comparator = UserTemplateRelationship.byDevelopmentDisplayName();
             } else {
                 comparator = UserTemplateRelationship.byReleaseDisplayName();

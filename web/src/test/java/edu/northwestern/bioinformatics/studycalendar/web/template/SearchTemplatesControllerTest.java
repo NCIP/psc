@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
@@ -71,12 +71,12 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     public void testSuccessModel() throws Exception {
         request.addParameter("searchText", "baz");
         expect(mockTemplateService.searchVisibleTemplates(user, "baz")).andReturn(
-            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
-                put(TemplateWorkflowStatus.IN_DEVELOPMENT, singletonList(new UserTemplateRelationship(user, d))).
-                put(TemplateWorkflowStatus.PENDING, asList(
+            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, singletonList(new UserTemplateRelationship(user, d))).
+                put(TemplateAvailability.PENDING, asList(
                     new UserTemplateRelationship(user, p),
                     new UserTemplateRelationship(user, r))).
-                put(TemplateWorkflowStatus.AVAILABLE, asList(
+                put(TemplateAvailability.AVAILABLE, asList(
                     new UserTemplateRelationship(user, a),
                     new UserTemplateRelationship(user, r))).
                 toMap());
@@ -101,10 +101,10 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     public void testReturnsAllVisibleWithBlankSearch() throws Exception {
         request.addParameter("searchText", " ");
         expect(mockTemplateService.searchVisibleTemplates(user, null)).andReturn(
-            new MapBuilder<TemplateWorkflowStatus, List<UserTemplateRelationship>>().
-                put(TemplateWorkflowStatus.IN_DEVELOPMENT, Collections.<UserTemplateRelationship>emptyList()).
-                put(TemplateWorkflowStatus.PENDING, Collections.<UserTemplateRelationship>emptyList()).
-                put(TemplateWorkflowStatus.AVAILABLE, asList(
+            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, Collections.<UserTemplateRelationship>emptyList()).
+                put(TemplateAvailability.PENDING, Collections.<UserTemplateRelationship>emptyList()).
+                put(TemplateAvailability.AVAILABLE, asList(
                     new UserTemplateRelationship(user, a))).
                 toMap());
 

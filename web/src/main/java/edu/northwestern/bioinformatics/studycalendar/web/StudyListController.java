@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -55,28 +55,28 @@ public class StudyListController extends PscAbstractController implements PscAut
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         PscUser user = applicationSecurityManager.getUser();
 
-        Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates =
+        Map<TemplateAvailability, List<UserTemplateRelationship>> templates =
             templateService.getVisibleTemplates(user);
 
         studySiteService.refreshStudySitesForStudies(extractStudies(templates));
 
         log.debug("{} available templates visible to {}",
-            templates.get(TemplateWorkflowStatus.AVAILABLE).size(), user.getUsername());
+            templates.get(TemplateAvailability.AVAILABLE).size(), user.getUsername());
         log.debug("{} pending templates visible to {}",
-            templates.get(TemplateWorkflowStatus.PENDING).size(), user.getUsername());
+            templates.get(TemplateAvailability.PENDING).size(), user.getUsername());
         log.debug("{} studies open for editing by {}",
-            templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT).size(), user.getUsername());
+            templates.get(TemplateAvailability.IN_DEVELOPMENT).size(), user.getUsername());
         log.trace("All visible templates: {}", templates);
 
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("pendingTemplates", templates.get(TemplateWorkflowStatus.PENDING));
-        model.put("availableTemplates", templates.get(TemplateWorkflowStatus.AVAILABLE));
-        model.put("inDevelopmentTemplates", templates.get(TemplateWorkflowStatus.IN_DEVELOPMENT));
+        model.put("pendingTemplates", templates.get(TemplateAvailability.PENDING));
+        model.put("availableTemplates", templates.get(TemplateAvailability.AVAILABLE));
+        model.put("inDevelopmentTemplates", templates.get(TemplateAvailability.IN_DEVELOPMENT));
 
         return new ModelAndView("studyList", model);
     }
 
-    private List<Study> extractStudies(Map<TemplateWorkflowStatus, List<UserTemplateRelationship>> templates) {
+    private List<Study> extractStudies(Map<TemplateAvailability, List<UserTemplateRelationship>> templates) {
         Set<Study> studies = new LinkedHashSet<Study>();
         for (List<UserTemplateRelationship> utrs : templates.values()) {
             for (UserTemplateRelationship utr : utrs) {
