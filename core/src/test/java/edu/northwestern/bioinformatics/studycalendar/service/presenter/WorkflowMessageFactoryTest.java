@@ -38,7 +38,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         expect(participation.getStudySite()).andStubReturn(ss);
 
         factory = new WorkflowMessageFactory();
-        factory.setApplicationContextPath("/psc-prod");
+        factory.setWebContextPath("/psc-prod");
     }
 
     public void testMessageForStudyIdentWhenCanPerform() throws Exception {

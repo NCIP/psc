@@ -3,15 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.tools.spring.WebContextPathAware;
 
 /**
  * @author Rhett Sutphin
  */
-public class WorkflowMessageFactory {
-    private String applicationMountPoint;
+public class WorkflowMessageFactory implements WebContextPathAware {
+    private String webContextPath;
 
     public WorkflowMessage createMessage(WorkflowStep step, UserTemplateRelationship template) {
-        return new WorkflowMessage(step, applicationMountPoint, mayPerform(step, template)).
+        return new WorkflowMessage(step, webContextPath, mayPerform(step, template)).
             setUriVariable("study-id", template.getStudy().getId().toString()).
             setMessageVariable("template-or-amendment",
                 template.getStudy().isReleased() ? "amendment" : "initial template");
@@ -31,7 +32,7 @@ public class WorkflowMessageFactory {
     }
 
     public WorkflowMessage createMessage(WorkflowStep step, UserStudySiteRelationship participation) {
-        return new WorkflowMessage(step, applicationMountPoint, mayPerform(step, participation)).
+        return new WorkflowMessage(step, webContextPath, mayPerform(step, participation)).
             setUriVariable("study-site-id", participation.getStudySite().getId().toString()).
             setMessageVariable("site-name", participation.getStudySite().getSite().getName())
             ;
@@ -72,7 +73,7 @@ public class WorkflowMessageFactory {
 
     ////// CONFIGURATION
 
-    public void setApplicationContextPath(String applicationMountPoint) {
-        this.applicationMountPoint = applicationMountPoint;
+    public void setWebContextPath(String contextPath) {
+        this.webContextPath = contextPath;
     }
 }

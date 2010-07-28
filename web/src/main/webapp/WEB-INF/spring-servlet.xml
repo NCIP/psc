@@ -7,6 +7,8 @@
     <bean id="controllerTools" class="edu.northwestern.bioinformatics.studycalendar.web.ControllerTools"
           autowire="byType"/>
 
+    <bean class="edu.northwestern.bioinformatics.studycalendar.tools.spring.ServletWebContextPathPostProcessor"/>
+
     <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
         <property name="location" value="/WEB-INF/special-views.xml"/>
     </bean>
