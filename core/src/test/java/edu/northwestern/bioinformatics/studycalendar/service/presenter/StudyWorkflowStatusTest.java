@@ -1,14 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import junit.framework.TestCase;
 
 import java.util.Collection;
@@ -22,6 +25,7 @@ import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
  */
 public class StudyWorkflowStatusTest extends TestCase {
     private Study study;
+    private Site nu, vanderbilt;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,13 +39,17 @@ public class StudyWorkflowStatusTest extends TestCase {
                 segment.addPeriod(p);
             }
         }
-        StudySite ss = study.addSite(createSite("NU", "IL675"));
+        nu = createSite("NU", "IL675");
+        vanderbilt = createSite("VU", "TN054");
+        StudySite ss = study.addSite(nu);
         ss.approveAmendment(study.getAmendment(), new Date());
     }
 
     private StudyWorkflowStatus actual() {
+        SuiteRoleMembership mem = AuthorizationScopeMappings.
+            createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forSites(nu, vanderbilt);
         return new StudyWorkflowStatus(study,
-            AuthorizationObjectFactory.createPscUser("jo", PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER),
+            AuthorizationObjectFactory.createPscUser("jo", mem),
             new WorkflowMessageFactory(),
             Fixtures.getTestingDeltaService());
     }
@@ -50,49 +58,46 @@ public class StudyWorkflowStatusTest extends TestCase {
 
     public void testIncludesIdentifierMessageWhenHasTemporaryIdentifier() throws Exception {
         study.setAssignedIdentifier("[ABC 1450]");
-        assertMessages(WorkflowStep.SET_ASSIGNED_IDENTIFIER);
+        assertMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER);
     }
 
     public void testDoesNotIncludeIdentifierMessageWhenDoesNotHaveTemporaryIdentifier() throws Exception {
         study.setAssignedIdentifier("ABC 1450");
-        assertNoMessages();
+        assertNoMessage();
     }
 
     public void testIncludesAssignSitesMessageWhenNoSites() throws Exception {
         study.getStudySites().clear();
-        assertMessages(WorkflowStep.ASSIGN_SITE);
+        assertMessage(WorkflowStep.ASSIGN_SITE);
     }
 
     public void testDoesNotIncludeAssignSitesMessageWhenNoSitesButNotReleased() throws Exception {
         study.getStudySites().clear();
         study.setAmendment(null);
-        assertMessages(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
+        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
     }
 
     public void testIncludesReleaseMessageWhenNotReleased() throws Exception {
         study.setAmendment(null);
-        assertMessages(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
+        assertMessage(WorkflowStep.COMPLETE_AND_RELEASE_INITIAL_TEMPLATE);
     }
 
     public void testDoesNotIncludeReleaseMessageWhenReleasedAtLeastOnce() throws Exception {
         study.setDevelopmentAmendment(new Amendment());
-        assertNoMessages();
+        assertNoMessage();
     }
 
-    private void assertNoMessages() {
-        assertMessages();
+    private void assertNoMessage() {
+        assertNull(actual().getMessage());
     }
 
-    private void assertMessages(WorkflowStep... expectedSteps) {
-        List<WorkflowMessage> actualMessages = actual().getMessages();
-        assertEquals("Wrong number of messages: " + actualMessages, expectedSteps.length, actualMessages.size());
-        for (int i = 0; i < expectedSteps.length; i++) {
-            WorkflowMessage actual = actualMessages.get(i);
-            assertEquals("Message " + i + " is for wrong step", expectedSteps[i], actual.getStep());
-            assertNotNull("Message HTML is not generatable", actual.getHtml());
-            if (actual.getStep().getUriTemplate() != null) {
-                assertNotNull("Message link is not generatable", actual.getActionLink());
-            }
+    private void assertMessage(WorkflowStep expectedStep) {
+        WorkflowMessage actual = actual().getMessage();
+        assertNotNull("No message", actual);
+        assertEquals("Message is for wrong step", expectedStep, actual.getStep());
+        assertNotNull("Message HTML is not generatable", actual.getHtml());
+        if (actual.getStep().getUriTemplate() != null) {
+            assertNotNull("Message link is not generatable", actual.getActionLink());
         }
     }
 
@@ -117,14 +122,12 @@ public class StudyWorkflowStatusTest extends TestCase {
         assertTrue("But an empty one", actual.isEmpty());
     }
 
-    public void testStudySiteWorkflowsHasOnePerStudySite() throws Exception {
-        study.addSite(createSite("mayo", "MN567"));
+    public void testStudySiteWorkflowsHasOnePerVisibleStudySite() throws Exception {
+        study.addSite(createSite("mayo", "MN567")); // not visible
         List<StudySiteWorkflowStatus> actual = actual().getStudySiteWorkflowStatuses();
-        assertEquals("Wrong number of statuses", 2, actual.size());
+        assertEquals("Wrong number of statuses", 1, actual.size());
         assertEquals("1st status is for wrong study site", "IL675",
             actual.get(0).getStudySite().getSite().getAssignedIdentifier());
-        assertEquals("2nd status is for wrong study site", "MN567",
-            actual.get(1).getStudySite().getSite().getAssignedIdentifier());
     }
 
     /////// availability
@@ -155,7 +158,7 @@ public class StudyWorkflowStatusTest extends TestCase {
     }
 
     public void testBothAvailableAndPendingWhenOneStudySiteIsReadyAndAnotherIsNot() throws Exception {
-        setId(81, study.addSite(setId(108, createSite("mayo", "MN459"))));
+        setId(81, study.addSite(vanderbilt));
         assertAvailabilityPresent(TemplateAvailability.AVAILABLE);
         assertAvailabilityPresent(TemplateAvailability.PENDING);
     }

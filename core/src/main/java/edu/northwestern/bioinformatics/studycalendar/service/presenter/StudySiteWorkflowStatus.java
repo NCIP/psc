@@ -3,10 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @author Rhett Sutphin
  */
@@ -24,12 +20,11 @@ public class StudySiteWorkflowStatus {
         this.ussr = new UserStudySiteRelationship(user, studySite);
     }
 
-    public List<WorkflowMessage> getMessages() {
-        List<WorkflowMessage> messages = new LinkedList<WorkflowMessage>();
+    public WorkflowMessage getMessage() {
         if (studySite.getAmendmentApprovals().isEmpty()) {
-            messages.add(workflowMessageFactory.createMessage(WorkflowStep.APPROVE_AMENDMENT, ussr));
+            return workflowMessageFactory.createMessage(WorkflowStep.APPROVE_AMENDMENT, ussr);
         }
-        return messages;
+        return null;
     }
 
     public StudySite getStudySite() {
