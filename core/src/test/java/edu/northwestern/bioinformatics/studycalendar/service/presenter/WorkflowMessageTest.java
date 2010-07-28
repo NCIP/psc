@@ -74,9 +74,10 @@ public class WorkflowMessageTest extends TestCase {
         WorkflowMessage actual = new WorkflowMessage(
             WorkflowStep.PERIOD_NO_PLANNED_ACTIVITIES, null, true);
         actual.setMessageVariable("period-name", "P1");
+        actual.setMessageVariable("segment-name", "Alfa");
         actual.setUriVariable("period-id", "5");
         assertEquals("Wrong message HTML",
-            "Period P1 does not have any planned activities.  <a href=\"/pages/cal/managePeriodActivities?period=5\" class=\"control\">Add one.</a>",
+            "Period P1 in Alfa does not have any planned activities.  <a href=\"/pages/cal/managePeriodActivities?period=5\" class=\"control\">Add some.</a>",
             actual.getHtml());
     }
 
@@ -84,8 +85,9 @@ public class WorkflowMessageTest extends TestCase {
         WorkflowMessage actual = new WorkflowMessage(
             WorkflowStep.PERIOD_NO_PLANNED_ACTIVITIES, null, true);
         actual.setMessageVariable("period-name", "P1");
+        actual.setMessageVariable("segment-name", "Alfa");
         assertEquals("Wrong message text",
-            "Period P1 does not have any planned activities.  Add one.  You can do this.",
+            "Period P1 in Alfa does not have any planned activities.  Add some.  You can do this.",
             actual.getText());
     }
 

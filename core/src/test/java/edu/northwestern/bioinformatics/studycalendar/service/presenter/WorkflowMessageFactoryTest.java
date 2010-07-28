@@ -246,7 +246,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one revision released.",
+            "Needs at least one revision completed and released.",
             msg.getHtml());
     }
 
@@ -258,7 +258,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one revision released.  A <em>Study QA Manager</em> can do this.",
+            "Needs at least one revision completed and released.  A <em>Study QA Manager</em> can do this.",
             msg.getHtml());
     }
 

@@ -72,6 +72,17 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.RegistrationService">
     </bean>
 
+    <!-- the applicationContextPath property is set in the web module -->
+    <bean id="workflowMessageFactory"
+          class="edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory"/>
+
+    <bean id="workflowService"
+          class="edu.northwestern.bioinformatics.studycalendar.service.WorkflowService">
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+        <property name="deltaService" ref="deltaService"/>
+        <property name="workflowMessageFactory" ref="workflowMessageFactory"/>
+    </bean>
+
     <!--shceduling-->
 
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">

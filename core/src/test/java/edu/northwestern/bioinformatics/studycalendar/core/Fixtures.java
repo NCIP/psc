@@ -39,10 +39,6 @@ public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.doma
         });
     }
 
-    public static Study createBlankTemplate() {
-        return createReleasedTemplate(TemplateSkeletonCreator.BLANK);
-    }
-
     public static Study createBasicTemplate() {
         return createBasicTemplate(null);
     }
@@ -55,6 +51,10 @@ public class Fixtures extends edu.northwestern.bioinformatics.studycalendar.doma
 
     public static Study createInDevelopmentBasicTemplate(String name) {
         return TemplateSkeletonCreator.BASIC.create(name);
+    }
+
+    public static Study createInDevelopmentBlankTemplate(String name) {
+        return TemplateSkeletonCreator.BLANK.create(name);
     }
 
     @SuppressWarnings({ "MethodOverridesStaticMethodOfSuperclass" }) // <- because it doesn't
