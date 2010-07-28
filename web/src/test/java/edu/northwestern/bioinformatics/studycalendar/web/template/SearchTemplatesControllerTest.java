@@ -1,13 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.springframework.web.servlet.ModelAndView;
@@ -71,26 +73,26 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     public void testSuccessModel() throws Exception {
         request.addParameter("searchText", "baz");
         expect(mockTemplateService.searchVisibleTemplates(user, "baz")).andReturn(
-            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
-                put(TemplateAvailability.IN_DEVELOPMENT, singletonList(new UserTemplateRelationship(user, d))).
+            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, singletonList(createResultEntry(user, d))).
                 put(TemplateAvailability.PENDING, asList(
-                    new UserTemplateRelationship(user, p),
-                    new UserTemplateRelationship(user, r))).
+                    createResultEntry(user, p),
+                    createResultEntry(user, r))).
                 put(TemplateAvailability.AVAILABLE, asList(
-                    new UserTemplateRelationship(user, a),
-                    new UserTemplateRelationship(user, r))).
+                    createResultEntry(user, a),
+                    createResultEntry(user, r))).
                 toMap());
 
         ModelAndView actual = doHandle();
         assertEquals("Wrong view", "template/ajax/templates", actual.getViewName());
 
-        List<UserTemplateRelationship> actualDev =
-            (List<UserTemplateRelationship>) actual.getModel().get("inDevelopmentTemplates");
+        List<StudyWorkflowStatus> actualDev =
+            (List<StudyWorkflowStatus>) actual.getModel().get("inDevelopmentTemplates");
         assertEquals("Wrong number of development templates", 1, actualDev.size());
         assertEquals("Wrong development template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
 
-        List<UserTemplateRelationship> actualRel =
-            (List<UserTemplateRelationship>) actual.getModel().get("releasedTemplates");
+        List<StudyWorkflowStatus> actualRel =
+            (List<StudyWorkflowStatus>) actual.getModel().get("releasedTemplates");
         assertEquals("Wrong number of released templates: " + actualRel, 3, actualRel.size());
         assertEquals("Wrong 1st released template", "A", actualRel.get(0).getStudy().getAssignedIdentifier());
         assertEquals("Wrong 2nd released template", "P", actualRel.get(1).getStudy().getAssignedIdentifier());
@@ -101,11 +103,11 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     public void testReturnsAllVisibleWithBlankSearch() throws Exception {
         request.addParameter("searchText", " ");
         expect(mockTemplateService.searchVisibleTemplates(user, null)).andReturn(
-            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
-                put(TemplateAvailability.IN_DEVELOPMENT, Collections.<UserTemplateRelationship>emptyList()).
-                put(TemplateAvailability.PENDING, Collections.<UserTemplateRelationship>emptyList()).
+            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, Collections.<StudyWorkflowStatus>emptyList()).
+                put(TemplateAvailability.PENDING, Collections.<StudyWorkflowStatus>emptyList()).
                 put(TemplateAvailability.AVAILABLE, asList(
-                    new UserTemplateRelationship(user, a))).
+                    createResultEntry(user, a))).
                 toMap());
 
         doHandle();
@@ -113,6 +115,10 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     }
 
     ////// HELPERS
+
+    private StudyWorkflowStatus createResultEntry(PscUser user, Study s) {
+        return new StudyWorkflowStatus(s, user, new WorkflowMessageFactory(), Fixtures.getTestingDeltaService());
+    }
 
     private ModelAndView doHandle() throws Exception {
         replayMocks();

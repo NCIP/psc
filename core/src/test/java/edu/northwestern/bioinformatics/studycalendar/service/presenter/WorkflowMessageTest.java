@@ -11,7 +11,7 @@ public class WorkflowMessageTest extends TestCase {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, null, true);
         actual.setUriVariable("study-id", "14");
         assertEquals("Wrong message HTML",
-            "Needs at least one site <a href=\"/pages/cal/assignSite?id=14\" class=\"control\">assigned</a> for participation.",
+            "needs at least one site <a href=\"/pages/cal/assignSite?id=14\" class=\"control\">assigned</a> for participation.",
             actual.getHtml());
     }
 
@@ -19,14 +19,14 @@ public class WorkflowMessageTest extends TestCase {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, "/psc-prod", true);
         actual.setUriVariable("study-id", "14");
         assertEquals("Wrong message HTML",
-            "Needs at least one site <a href=\"/psc-prod/pages/cal/assignSite?id=14\" class=\"control\">assigned</a> for participation.",
+            "needs at least one site <a href=\"/psc-prod/pages/cal/assignSite?id=14\" class=\"control\">assigned</a> for participation.",
             actual.getHtml());
     }
 
     public void testHtmlMessageContainsApplicableRoleWhenCannotPerform() throws Exception {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, null, false);
         assertEquals("Wrong message HTML",
-            "Needs at least one site assigned for participation.  A <em>Study Site Participation Administrator</em> can do this.",
+            "needs at least one site assigned for participation.  A <em>Study Site Participation Administrator</em> can do this.",
             actual.getHtml());
     }
 
@@ -34,14 +34,14 @@ public class WorkflowMessageTest extends TestCase {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, null, true);
         actual.setUriVariable("studyId", "14");
         assertEquals("Wrong message text",
-            "Needs at least one site assigned for participation.  You can do this.",
+            "needs at least one site assigned for participation.  You can do this.",
             actual.getText());
     }
 
     public void testTextMessageContainsApplicableRoleWhenCannotPerform() throws Exception {
         WorkflowMessage actual = new WorkflowMessage(WorkflowStep.ASSIGN_SITE, null, false);
         assertEquals("Wrong message text",
-            "Needs at least one site assigned for participation.  A Study Site Participation Administrator can do this.",
+            "needs at least one site assigned for participation.  A Study Site Participation Administrator can do this.",
             actual.getText());
     }
 

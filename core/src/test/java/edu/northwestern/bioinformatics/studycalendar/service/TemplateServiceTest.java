@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
@@ -29,8 +30,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 import java.util.ArrayList;
@@ -43,8 +45,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
-import static org.easymock.EasyMock.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -70,12 +72,18 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
+        WorkflowService ws = new WorkflowService();
+        ws.setWorkflowMessageFactory(new WorkflowMessageFactory());
+        ws.setDeltaService(Fixtures.getTestingDeltaService());
+        ws.setApplicationSecurityManager(applicationSecurityManager);
+
         service = new TemplateService();
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
         service.setStudyDao(studyDao);
         service.setDaoFinder(daoFinder);
         service.setAuthorizationService(authorizationService);
+        service.setWorkflowService(ws);
 
         createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
     }
@@ -489,14 +497,14 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetVisibleTemplates() throws Exception {
-        Site nu = createSite("NU", "IL090");
-        Study readyAndInDev = createBasicTemplate("R");
-        StudySite nuR = readyAndInDev.addSite(nu);
+        Site nu = setId(18, createSite("NU", "IL090"));
+        Study readyAndInDev = assignIds(createBasicTemplate("R"));
+        StudySite nuR = setId(81, readyAndInDev.addSite(nu));
         nuR.approveAmendment(readyAndInDev.getAmendment(), new Date());
         readyAndInDev.setDevelopmentAmendment(new Amendment());
 
-        Study pending = createBasicTemplate("P");
-        Study inDev = createInDevelopmentBasicTemplate("D");
+        Study pending = assignIds(createBasicTemplate("P"), 2);
+        Study inDev = assignIds(createInDevelopmentBasicTemplate("D"), 5);
 
         PscUser user = AuthorizationObjectFactory.createPscUser("jo",
             createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
@@ -506,21 +514,21 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(pending, readyAndInDev, inDev));
 
         replayMocks();
-        Map<TemplateAvailability, List<UserTemplateRelationship>> actual
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> actual
             = service.getVisibleTemplates(user);
         verifyMocks();
 
         System.out.println(actual);
 
-        List<UserTemplateRelationship> actualPending = actual.get(TemplateAvailability.PENDING);
+        List<StudyWorkflowStatus> actualPending = actual.get(TemplateAvailability.PENDING);
         assertEquals("Wrong number of pending templates", 1, actualPending.size());
         assertEquals("Wrong pending template", "P", actualPending.get(0).getStudy().getAssignedIdentifier());
 
-        List<UserTemplateRelationship> actualAvailable = actual.get(TemplateAvailability.AVAILABLE);
+        List<StudyWorkflowStatus> actualAvailable = actual.get(TemplateAvailability.AVAILABLE);
         assertEquals("Wrong number of available templates", 1, actualAvailable.size());
         assertEquals("Wrong available template", "R", actualAvailable.get(0).getStudy().getAssignedIdentifier());
 
-        List<UserTemplateRelationship> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
+        List<StudyWorkflowStatus> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
         assertEquals("Wrong number of dev templates", 2, actualDev.size());
         assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
         assertEquals("Wrong 2nd dev template", "R", actualDev.get(1).getStudy().getAssignedIdentifier());
@@ -537,7 +545,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             andReturn(Arrays.asList(inDev));
 
         replayMocks();
-        Map<TemplateAvailability, List<UserTemplateRelationship>> actual
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> actual
             = service.searchVisibleTemplates(user, "d");
         verifyMocks();
 
@@ -546,7 +554,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of pending templates", 0, actual.get(TemplateAvailability.PENDING).size());
         assertEquals("Wrong number of available templates", 0, actual.get(TemplateAvailability.AVAILABLE).size());
 
-        List<UserTemplateRelationship> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
+        List<StudyWorkflowStatus> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
         assertEquals("Wrong number of dev templates", 1, actualDev.size());
         assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
     }

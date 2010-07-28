@@ -4,9 +4,9 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
-<jsp:useBean id="inDevelopmentTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
-<jsp:useBean id="pendingTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
-<jsp:useBean id="availableTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship>"/>
+<jsp:useBean id="inDevelopmentTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus>"/>
+<jsp:useBean id="pendingTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus>"/>
+<jsp:useBean id="availableTemplates" scope="request" type="java.util.List<edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus>"/>
 <jsp:useBean id="configuration" scope="request" type="edu.northwestern.bioinformatics.studycalendar.configuration.Configuration"/>
 
 <html>
@@ -15,7 +15,7 @@
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
-        ul ul.controls {
+        ul.controls {
             display: inline;
         }
         ul.controls li {
@@ -44,6 +44,31 @@
             margin-top: 2em;
         }
 
+        div.study-list .content {
+            width: 98%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        div.study-list div.row {
+            width: 100%;
+            margin: 0;
+        }
+        div.study-list div.row div.label {
+            width: 20%;
+            font-weight: normal;
+            text-align: left;
+        }
+        div.study-list div.value {
+            margin-left: 21%
+        }
+        div.study-list ul.controls {
+            padding: 0; margin: 0;
+        }
+        div.study-list ul.controls li {
+            margin: 0;
+            padding: 3px;
+        }
+
         div.mainDiv {
             width:100%;
             margin-top: 0%;
@@ -57,19 +82,7 @@
             float:left;
         }
 
-            div.row div.label {
-                text-align:left;
-                width:20%;
-            }
-
-            div.row {
-                width: 20%;
-                padding-top:2px;
-                margin:0px;
-                /*text-align:right;*/
-               /*line-height:1px;*/
-            }
-
+        /* TODO: ? */
         ul ul.controls1 {
             display: block;
         }
@@ -241,83 +254,54 @@
      </laf:division>
         <c:if test="${not empty inDevelopmentTemplates}">
             <h3>Templates in design</h3>
-            <laf:division>
-                <ul class="menu">
-                    <c:forEach items="${inDevelopmentTemplates}" var="template" varStatus="status">
-                        <li class="autoclear ${commons:parity(status.count)}">
+            <laf:division cssClass="study-list">
+                <c:forEach items="${inDevelopmentTemplates}" var="template" varStatus="status">
+                    <div class="row ${commons:parity(status.count)}">
+                        <div class="label">
                             <a href="<c:url value="/pages/cal/template?study=${template.study.id}&amendment=${template.study.developmentAmendment.id}"/>" class="primary">
                                 ${template.study.developmentDisplayName}
                             </a>
+                        </div>
+                        <div class="value">
                             <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/template/deleteDevelopmentAmendment" queryString="study=${template.study.id}" >
                                     Delete
                                 </tags:restrictedListItem>
-                            </ul>
-                            <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/copyStudy" queryString="study=${template.study.id}&amendment=${template.study.developmentAmendment.id}" >
                                     Copy
                                 </tags:restrictedListItem>
                             </ul>
-                        </li>
-                    </c:forEach>
-                </ul>
+                        </div>
+                    </div>
+                </c:forEach>
             </laf:division>
         </c:if>
         <c:if test="${not empty pendingTemplates}">
             <h3>Pending</h3>
-            <laf:division>
-                <ul class="menu">
-                    <c:forEach items="${pendingTemplates}" var="template" varStatus="status">
-                        <li class="autoclear ${commons:parity(status.count)}">
+            <laf:division cssClass="study-list">
+                <c:forEach items="${pendingTemplates}" var="template" varStatus="status">
+                    <div class="row ${commons:parity(status.count)}">
+                        <div class="label">
                             <a href="<c:url value="/pages/cal/template?study=${template.study.id}"/>" class="primary">
                                 ${template.study.releasedDisplayName}
                             </a>
-
-                            <%-- Removed old workflow bits pending fixup in #1078
-                             <c:if test="${empty template.study.studySites}">
-                                <div style="width:80%;float:right;">
-                                    <c:set var="canAssignTemplateToStudy" value="false"/>
-                                    Must
-                                    <tags:restrictedItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}">
-                                        <c:set var="canAssignTemplateToStudy" value="true"/> assign
-                                    </tags:restrictedItem>
-                                    <c:if test="${not canAssignTemplateToStudy}">
-                                        assign
-                                    </c:if>
-                                        the template to a site. A <b>Study Administrator</b> can do this.
-                                    <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
-                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
-                                </div>
-                             </c:if>
-                             <c:if test="${not empty template.study.studySites}">
-                                 <c:forEach items="${template.study.studySites}" var="studySite" varStatus="studySiteStatus">
-                                     <c:if test="${not empty studySite.unapprovedAmendments}">
-                                  <div style="width:80%;float:right;">      Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.
-                                  <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
-                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
-                                  </div>
-                                     </c:if>
-                                     <c:if test="${empty studySite.unapprovedAmendments}">
-                                         <c:set var="isSubjectCoordinatorAssigned" value="false"/>
-                                         <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
-                                             <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
-                                                <c:set var="isSubjectCoordinatorAssigned" value="true"/>
-                                             </c:if>
-                                         </c:forEach>
-                                         <c:if test="${isSubjectCoordinatorAssigned == false}">
-                                             <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.
-                                             <tags:restrictedItem cssClass="control" url="/pages/cal/copyStudy"
-                                                                      queryString="study=${template.id}"> Copy </tags:restrictedItem>
-                                             </div>
-                                         </c:if>
-                                     </c:if>
-                                 </c:forEach>
-
-                             </c:if>
-                            --%>
-                         </li>
-                    </c:forEach>
-                </ul>
+                        </div>
+                        <div class="value">
+                            <c:choose>
+                                <c:when test="${not empty template.message}">
+                                    ${template.message.html}
+                                </c:when>
+                                <c:when test="${not empty template.studySiteWorkflowStatuses}">
+                                    <c:forEach items="${template.studySiteWorkflowStatuses}" var="ss">
+                                        <c:if test="${not empty ss.message}">
+                                            For <strong>${ss.studySite.site.name}</strong> it ${ss.message.html}
+                                        </c:if>
+                                    </c:forEach>
+                                </c:when>
+                            </c:choose>
+                         </div>
+                    </div>
+                </c:forEach>
             </laf:division>
         </c:if>
 

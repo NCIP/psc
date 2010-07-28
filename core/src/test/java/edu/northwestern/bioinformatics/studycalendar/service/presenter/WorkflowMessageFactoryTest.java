@@ -49,7 +49,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
             createMessage(WorkflowStep.SET_ASSIGNED_IDENTIFIER, template);
         verifyMocks();
 
-        assertEquals("Wrong message", "Please set the assigned identifier.", msg.getHtml());
+        assertEquals("Wrong message", "needs the assigned identifier set.", msg.getHtml());
     }
 
     public void testMessageForStudyIdentWhenCannotPerform() throws Exception {
@@ -61,7 +61,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Please set the assigned identifier.  A <em>Study Calendar Template Builder</em> can do this.",
+            "needs the assigned identifier set.  A <em>Study Calendar Template Builder</em> can do this.",
             msg.getHtml());
     }
 
@@ -246,7 +246,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one revision completed and released.",
+            "needs at least one revision completed and released.",
             msg.getHtml());
     }
 
@@ -258,7 +258,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one revision completed and released.  A <em>Study QA Manager</em> can do this.",
+            "needs at least one revision completed and released.  A <em>Study QA Manager</em> can do this.",
             msg.getHtml());
     }
 
@@ -270,7 +270,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one site <a href=\"/psc-prod/pages/cal/assignSite?id=0\" class=\"control\">assigned</a> for participation.",
+            "needs at least one site <a href=\"/psc-prod/pages/cal/assignSite?id=0\" class=\"control\">assigned</a> for participation.",
             msg.getHtml());
     }
 
@@ -282,7 +282,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs at least one site assigned for participation.  A <em>Study Site Participation Administrator</em> can do this.",
+            "needs at least one site assigned for participation.  A <em>Study Site Participation Administrator</em> can do this.",
             msg.getHtml());
     }
 
@@ -294,7 +294,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs to be <a href=\"/psc-prod/pages/cal/template/approve?studySite=9\" class=\"control\">approved</a>.",
+            "needs to be <a href=\"/psc-prod/pages/cal/template/approve?studySite=9\" class=\"control\">approved</a>.",
             msg.getHtml());
     }
 
@@ -306,7 +306,7 @@ public class WorkflowMessageFactoryTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong message",
-            "Needs to be approved.  A <em>Study QA Manager</em> can do this.",
+            "needs to be approved.  A <em>Study QA Manager</em> can do this.",
             msg.getHtml());
     }
 

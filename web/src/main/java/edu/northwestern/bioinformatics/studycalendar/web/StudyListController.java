@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -55,7 +55,7 @@ public class StudyListController extends PscAbstractController implements PscAut
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         PscUser user = applicationSecurityManager.getUser();
 
-        Map<TemplateAvailability, List<UserTemplateRelationship>> templates =
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> templates =
             templateService.getVisibleTemplates(user);
 
         studySiteService.refreshStudySitesForStudies(extractStudies(templates));
@@ -76,11 +76,11 @@ public class StudyListController extends PscAbstractController implements PscAut
         return new ModelAndView("studyList", model);
     }
 
-    private List<Study> extractStudies(Map<TemplateAvailability, List<UserTemplateRelationship>> templates) {
+    private List<Study> extractStudies(Map<TemplateAvailability, List<StudyWorkflowStatus>> templates) {
         Set<Study> studies = new LinkedHashSet<Study>();
-        for (List<UserTemplateRelationship> utrs : templates.values()) {
-            for (UserTemplateRelationship utr : utrs) {
-                studies.add(utr.getStudy());
+        for (List<StudyWorkflowStatus> list : templates.values()) {
+            for (StudyWorkflowStatus sws : list) {
+                studies.add(sws.getStudy());
             }
         }
         return new ArrayList<Study>(studies);

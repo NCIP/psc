@@ -10,8 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
@@ -24,8 +25,8 @@ import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static java.util.Arrays.*;
-import static org.easymock.classextension.EasyMock.*;
+import static java.util.Arrays.asList;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -41,7 +42,9 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     private PscUser user;
     private Study completeStudy, incompleteStudy, bothStudy;
-    private UserTemplateRelationship complete, incomplete, both;
+    private StudyWorkflowStatus complete;
+    private StudyWorkflowStatus incomplete;
+    private StudyWorkflowStatus both;
     private List<Study> allStudies;
     private StudySiteService studySiteService;
     private List<List<StudySite>> allStudySites;
@@ -64,17 +67,17 @@ public class StudyListControllerTest extends ControllerTestCase {
 
         completeStudy = setId(COMPLETE_ID, createSingleEpochStudy("Complete", "E1"));
         completeStudy.setAmendment(new Amendment());
-        complete = new UserTemplateRelationship(user, completeStudy);
+        complete = new StudyWorkflowStatus(completeStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
 
         incompleteStudy = setId(INCOMPLETE_ID, createSingleEpochStudy("Incomplete", "E1"));
         incompleteStudy.setAmendment(null);
         incompleteStudy.setDevelopmentAmendment(new Amendment());
-        incomplete = new UserTemplateRelationship(user, incompleteStudy);
+        incomplete = new StudyWorkflowStatus(incompleteStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
 
         bothStudy = setId(BOTH_ID, createSingleEpochStudy("Available but amending", "E1"));
         bothStudy.setDevelopmentAmendment(new Amendment());
         bothStudy.setAmendment(new Amendment());
-        both = new UserTemplateRelationship(user, bothStudy);
+        both = new StudyWorkflowStatus(bothStudy, user, new WorkflowMessageFactory(), getTestingDeltaService());
 
         allStudies = asList(incompleteStudy, bothStudy, completeStudy);
         allStudySites = asList(
@@ -104,7 +107,7 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     public void testModelAndView() throws Exception {
         expect(templateService.getVisibleTemplates(user)).andReturn(
-            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
+            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
                 put(TemplateAvailability.IN_DEVELOPMENT, Arrays.asList(incomplete, both)).
                 put(TemplateAvailability.PENDING, Collections.singletonList(complete)).
                 put(TemplateAvailability.AVAILABLE, Collections.singletonList(both)).

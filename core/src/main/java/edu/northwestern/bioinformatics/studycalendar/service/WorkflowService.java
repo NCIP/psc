@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -15,9 +16,11 @@ public class WorkflowService {
     private ApplicationSecurityManager applicationSecurityManager;
 
     public StudyWorkflowStatus build(Study study) {
-        return new StudyWorkflowStatus(
-            study, applicationSecurityManager.getUser(),
-            workflowMessageFactory, deltaService);
+        return build(study, applicationSecurityManager.getUser());
+    }
+
+    public StudyWorkflowStatus build(Study study, PscUser user) {
+        return new StudyWorkflowStatus(study, user, workflowMessageFactory, deltaService);
     }
 
     ////// CONFIGURATION

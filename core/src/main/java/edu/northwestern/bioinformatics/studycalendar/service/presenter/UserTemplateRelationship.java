@@ -184,34 +184,4 @@ public class UserTemplateRelationship {
             append("]").
             toString();
     }
-
-    ////// COMPARATORS
-
-    public static Comparator<UserTemplateRelationship> byReleaseDisplayName() {
-        return ByPropertyComparator.RELEASE_NAME;
-    }
-
-    public static Comparator<UserTemplateRelationship> byDevelopmentDisplayName() {
-        return ByPropertyComparator.DEVELOPMENT_NAME;
-    }
-
-    private abstract static class ByPropertyComparator implements Comparator<UserTemplateRelationship> {
-        public static final Comparator<UserTemplateRelationship> RELEASE_NAME = new ByPropertyComparator() {
-            protected String comparableProperty(UserTemplateRelationship utr) {
-                return utr.getStudy().getReleasedDisplayName().toLowerCase();
-            }
-        };
-
-        public static final Comparator<UserTemplateRelationship> DEVELOPMENT_NAME = new ByPropertyComparator() {
-            protected String comparableProperty(UserTemplateRelationship utr) {
-                return utr.getStudy().getDevelopmentDisplayName().toLowerCase();
-            }
-        };
-
-        public int compare(UserTemplateRelationship o1, UserTemplateRelationship o2) {
-            return comparableProperty(o1).compareTo(comparableProperty(o2));
-        }
-
-        protected abstract String comparableProperty(UserTemplateRelationship o1);
-    }
 }

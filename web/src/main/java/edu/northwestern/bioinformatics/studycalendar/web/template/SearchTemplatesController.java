@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
@@ -46,7 +46,7 @@ public class SearchTemplatesController extends PscAbstractController implements 
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "searchText parameter is required");
             return null;
         }
-        Map<TemplateAvailability, List<UserTemplateRelationship>> templates = templateService.searchVisibleTemplates(
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> templates = templateService.searchVisibleTemplates(
             applicationSecurityManager.getUser(), getEffectiveSearchText(request));
 
         ModelAndView mv = new ModelAndView("template/ajax/templates");
@@ -55,12 +55,12 @@ public class SearchTemplatesController extends PscAbstractController implements 
         return mv;
     }
 
-    private List<UserTemplateRelationship> allReleased(Map<TemplateAvailability, List<UserTemplateRelationship>> source) {
-        Set<UserTemplateRelationship> unique = new HashSet<UserTemplateRelationship>();
+    private List<StudyWorkflowStatus> allReleased(Map<TemplateAvailability, List<StudyWorkflowStatus>> source) {
+        Set<StudyWorkflowStatus> unique = new HashSet<StudyWorkflowStatus>();
         unique.addAll(source.get(TemplateAvailability.PENDING));
         unique.addAll(source.get(TemplateAvailability.AVAILABLE));
-        List<UserTemplateRelationship> result = new ArrayList<UserTemplateRelationship>(unique);
-        Collections.sort(result, UserTemplateRelationship.byReleaseDisplayName());
+        List<StudyWorkflowStatus> result = new ArrayList<StudyWorkflowStatus>(unique);
+        Collections.sort(result, StudyWorkflowStatus.byReleaseDisplayName());
         return result;
     }
 

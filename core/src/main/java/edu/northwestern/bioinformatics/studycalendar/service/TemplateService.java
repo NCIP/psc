@@ -22,8 +22,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 
 /**
  * This service provides methods for:
@@ -63,6 +63,7 @@ public class TemplateService {
     private UserRoleDao userRoleDao;
     private StudyDao studyDao;
     private AuthorizationService authorizationService;
+    private WorkflowService workflowService;
     private DaoFinder daoFinder;
 
     public static final String USER_IS_NULL = "User is null";
@@ -262,7 +263,7 @@ public class TemplateService {
      * show up in more than one status for the same user.  (E.g., a template can both be in
      * development [for the next amendment] and available [for the current one].)
      */
-    public Map<TemplateAvailability, List<UserTemplateRelationship>> getVisibleTemplates(PscUser user) {
+    public Map<TemplateAvailability, List<StudyWorkflowStatus>> getVisibleTemplates(PscUser user) {
         return searchVisibleTemplates(user, null);
     }
 
@@ -271,33 +272,27 @@ public class TemplateService {
      * show up in more than one status for the same user.  (E.g., a template can both be in
      * development [for the next amendment] and available [for the current one].)
      */
-    public Map<TemplateAvailability, List<UserTemplateRelationship>> searchVisibleTemplates(PscUser user, String term) {
-        Map<TemplateAvailability, List<UserTemplateRelationship>> results =
-            new MapBuilder<TemplateAvailability, List<UserTemplateRelationship>>().
-                put(TemplateAvailability.IN_DEVELOPMENT, new LinkedList<UserTemplateRelationship>()).
-                put(TemplateAvailability.PENDING, new LinkedList<UserTemplateRelationship>()).
-                put(TemplateAvailability.AVAILABLE, new LinkedList<UserTemplateRelationship>()).
+    public Map<TemplateAvailability, List<StudyWorkflowStatus>> searchVisibleTemplates(PscUser user, String term) {
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> results =
+            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, new LinkedList<StudyWorkflowStatus>()).
+                put(TemplateAvailability.PENDING, new LinkedList<StudyWorkflowStatus>()).
+                put(TemplateAvailability.AVAILABLE, new LinkedList<StudyWorkflowStatus>()).
                 toMap();
 
         for (Study visible : studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), term)) {
-            UserTemplateRelationship utr = new UserTemplateRelationship(user, visible);
-            if (utr.getCanSeeDevelopmentVersion()) {
-                results.get(TemplateAvailability.IN_DEVELOPMENT).add(utr);
-            }
-            // TODO: this is too simple and will need to be revisited when refactoring the workflow for real.
-            if (utr.getCanAssignSubjects()) {
-                results.get(TemplateAvailability.AVAILABLE).add(utr);
-            } else if (utr.getStudy().isReleased()) {
-                results.get(TemplateAvailability.PENDING).add(utr);
+            StudyWorkflowStatus sws = workflowService.build(visible, user);
+            for (TemplateAvailability availability : sws.getTemplateAvailabilities()) {
+                results.get(availability).add(sws);
             }
         }
 
-        for (Map.Entry<TemplateAvailability, List<UserTemplateRelationship>> entry : results.entrySet()) {
-            Comparator<UserTemplateRelationship> comparator;
+        for (Map.Entry<TemplateAvailability, List<StudyWorkflowStatus>> entry : results.entrySet()) {
+            Comparator<StudyWorkflowStatus> comparator;
             if (entry.getKey() == TemplateAvailability.IN_DEVELOPMENT) {
-                comparator = UserTemplateRelationship.byDevelopmentDisplayName();
+                comparator = StudyWorkflowStatus.byDevelopmentDisplayName();
             } else {
-                comparator = UserTemplateRelationship.byReleaseDisplayName();
+                comparator = StudyWorkflowStatus.byReleaseDisplayName();
             }
 
             Collections.sort(entry.getValue(), comparator);
@@ -512,6 +507,11 @@ public class TemplateService {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
     }
 
     @Required

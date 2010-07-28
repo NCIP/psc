@@ -15,7 +15,7 @@ import static edu.northwestern.bioinformatics.studycalendar.service.presenter.Wo
 public enum WorkflowStep {
     SET_ASSIGNED_IDENTIFIER(
         STUDY, STUDY_CALENDAR_TEMPLATE_BUILDER /* TODO: should be Study Creator */,
-        "Please set the assigned identifier.", null, null),
+        "needs the assigned identifier set.", null, null),
     ADD_AT_LEAST_ONE_EPOCH(
         REVISION, STUDY_CALENDAR_TEMPLATE_BUILDER,
         "Please add at least one epoch.", null, null),
@@ -39,14 +39,14 @@ public enum WorkflowStep {
         "/pages/cal/template/release?study={study-id}"),
     COMPLETE_AND_RELEASE_INITIAL_TEMPLATE( // TODO: the description for this one isn't very helpful.
         STUDY, STUDY_QA_MANAGER,
-        "Needs at least one revision completed and released.", null, null),
+        "needs at least one revision completed and released.", null, null),
     ASSIGN_SITE(
         STUDY, STUDY_SITE_PARTICIPATION_ADMINISTRATOR,
-        "Needs at least one site {action} for participation.", "assigned",
+        "needs at least one site {action} for participation.", "assigned",
         "/pages/cal/assignSite?id={study-id}"),
     APPROVE_AMENDMENT(
         STUDY_SITE, STUDY_QA_MANAGER,
-        "Needs to be {action}.", "approved",
+        "needs to be {action}.", "approved",
         "/pages/cal/template/approve?studySite={study-site-id}"),
     /* TODO: The following two steps aren't actually implemented due to #1107. */
     ADD_SSCM_FOR_SITE(
