@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import static java.lang.String.format;
 
