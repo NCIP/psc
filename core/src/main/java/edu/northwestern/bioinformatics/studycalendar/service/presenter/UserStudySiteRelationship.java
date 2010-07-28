@@ -56,6 +56,21 @@ public class UserStudySiteRelationship {
     }
 
     /**
+     * Returns true if the user can create and modify users for the site.
+     */
+    public boolean getCanAdministerUsers() {
+        return hasMatchingRole(USER_ADMINISTRATOR);
+    }
+
+    /**
+     * Returns true if the user can grant access to this study site for particular
+     * subject calendar managers.
+     */
+    public boolean getCanAdministerTeam() {
+        return hasMatchingRole(STUDY_TEAM_ADMINISTRATOR);
+    }
+
+    /**
      * Returns true if the user is allowed to see subject information for the
      * study site and there are any subjects associated with it.
      */

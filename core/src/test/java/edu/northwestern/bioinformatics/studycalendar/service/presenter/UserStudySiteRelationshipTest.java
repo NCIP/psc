@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.service.presenter;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -256,6 +255,58 @@ public class UserStudySiteRelationshipTest extends TestCase {
         assertFalse(
             actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
                 getCanSeeSubjectInformation());
+    }
+
+    ////// canAdministerUsers
+
+    public void testCanAdministerUsersIfAllScopesUserAdministrator() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(USER_ADMINISTRATOR).forAllSites()).
+                getCanAdministerUsers());
+    }
+
+    public void testCanAdministerUsersIfSpecificSiteUserAdministrator() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(USER_ADMINISTRATOR).forSites(nu)).
+                getCanAdministerUsers());
+    }
+
+    public void testCannotAdministerUsersIfWrongSiteUserAdministrator() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(USER_ADMINISTRATOR).forSites(mayo)).
+                getCanAdministerUsers());
+    }
+
+    public void testCannotAdministerUsersIfOtherRole() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
+                getCanAdministerUsers());
+    }
+
+    ////// canAdministerTeam
+
+    public void testCanAdministerTeamIfAllScopesStudyTeamAdministrator() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forAllSites()).
+                getCanAdministerTeam());
+    }
+
+    public void testCanAdministerTeamIfSpecificSiteStudyTeamAdministrator() throws Exception {
+        assertTrue(
+            actual(createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forSites(nu)).
+                getCanAdministerTeam());
+    }
+
+    public void testCannotAdministerTeamIfWrongSiteStudyTeamAdministrator() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(STUDY_TEAM_ADMINISTRATOR).forSites(mayo)).
+                getCanAdministerTeam());
+    }
+
+    public void testCannotAdministerTeamIfOtherRole() throws Exception {
+        assertFalse(
+            actual(createSuiteRoleMembership(DATA_READER).forAllSites().forAllStudies()).
+                getCanAdministerTeam());
     }
 
     ////// HELPERS
