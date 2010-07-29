@@ -12,5 +12,10 @@
         <property name="timestamp" value="@buildInfo.timestamp@"/>
     </bean>
 
-    <bean id="setupStatus" class="edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus" autowire="byName"/>
+    <bean id="setupStatus" class="edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus">
+        <property name="authorizationService" ref="authorizationService"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="sourceDao" ref="sourceDao"/>
+    </bean>
 </beans>

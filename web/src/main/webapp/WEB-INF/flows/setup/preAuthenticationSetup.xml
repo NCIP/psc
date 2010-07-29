@@ -7,7 +7,8 @@
 
     <action-state id="decide">
         <bean-action bean="setupStatus" method="preAuthenticationSetup"/>
-        <transition to="selectAuthenticationSystem" on="ADMINISTRATOR"/>
+        <transition to="selectAuthenticationSystem" on="AUTHENTICATION_SYSTEM"/>
+        <transition to="firstAdministrator" on="ADMINISTRATOR"/>
         <transition to="preAuthenticationSetupComplete" on="null"/>
     </action-state>
 
@@ -38,7 +39,7 @@
 
     <action-state id="saveAuthenticationSystem">
         <evaluate-action expression="${flowScope.authenticationSystemSetupCommand.apply()}"/>
-        <transition to="firstAdministrator"/>
+        <transition to="decide"/>
     </action-state>
 
     <view-state id="firstAdministrator" view="setup/adminForm">

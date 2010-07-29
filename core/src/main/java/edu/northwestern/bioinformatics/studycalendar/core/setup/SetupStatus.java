@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,10 +20,14 @@ import static edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStat
  * @author Rhett Sutphin
  */
 public class SetupStatus implements InitializingBean {
+    protected static final String AUTHENTICATION_SYSTEM_SET_QUERY =
+        "SELECT COUNT(prop) FROM authentication_system_conf WHERE value IS NOT NULL AND prop='authenticationSystem'";
+
     private Map<InitialSetupElement, SetupChecker> checkers;
     private SiteDao siteDao;
     private SourceDao sourceDao;
     private AuthorizationService authorizationService;
+    private JdbcTemplate jdbcTemplate;
 
     private boolean[] prepared;
 
@@ -43,6 +48,11 @@ public class SetupStatus implements InitializingBean {
         checkers.put(ADMINISTRATOR, new SetupChecker() {
             public boolean isPrepared() {
                 return !authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR).isEmpty();
+            }
+        });
+        checkers.put(AUTHENTICATION_SYSTEM, new SetupChecker() {
+            public boolean isPrepared() {
+                return jdbcTemplate.queryForInt(AUTHENTICATION_SYSTEM_SET_QUERY) > 0;
             }
         });
     }
@@ -67,8 +77,8 @@ public class SetupStatus implements InitializingBean {
 
     public InitialSetupElement preAuthenticationSetup() {
         recheck();
-        if (isAdministratorMissing())
-            return InitialSetupElement.ADMINISTRATOR;
+        if (isAuthenticationSystemNotConfigured()) return InitialSetupElement.AUTHENTICATION_SYSTEM;
+        if (isAdministratorMissing()) return InitialSetupElement.ADMINISTRATOR;
         return null;
     }
 
@@ -95,6 +105,10 @@ public class SetupStatus implements InitializingBean {
         return !prepared[SOURCE.ordinal()];
     }
 
+    public boolean isAuthenticationSystemNotConfigured() {
+        return !prepared[AUTHENTICATION_SYSTEM.ordinal()];
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -112,6 +126,11 @@ public class SetupStatus implements InitializingBean {
         this.authorizationService = authorizationService;
     }
 
+    @Required
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     ////// INNER CLASSES
 
     private interface SetupChecker {
@@ -121,6 +140,7 @@ public class SetupStatus implements InitializingBean {
     public enum InitialSetupElement {
         SITE,
         SOURCE,
-        ADMINISTRATOR
+        ADMINISTRATOR,
+        AUTHENTICATION_SYSTEM
     }
 }
