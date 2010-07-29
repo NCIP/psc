@@ -45,11 +45,11 @@ import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.A
 public class ProvisionUserCommand implements Validatable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final String CHANGE_PROP_ROLE = "role";
-    private static final String CHANGE_PROP_KIND = "kind";
-    private static final String CHANGE_PROP_SCOPE_TYPE = "scopeType";
-    private static final String CHANGE_PROP_SCOPE_IDENTIFIER = "scopeIdentifier";
-    private static final String ALL_SCOPE_IDENTIFIER = "__ALL__";
+    public static final String JSON_CHANGE_PROP_ROLE = "role";
+    public static final String JSON_CHANGE_PROP_KIND = "kind";
+    public static final String JSON_CHANGE_PROP_SCOPE_TYPE = "scopeType";
+    public static final String JSON_CHANGE_PROP_SCOPE_IDENTIFIER = "scopeIdentifier";
+    public static final String JSON_ALL_SCOPE_IDENTIFIER = "__ALL__";
 
     private User user;
     private JSONArray roleChanges;
@@ -123,7 +123,7 @@ public class ProvisionUserCommand implements Validatable {
             errors.rejectValue("user.emailId", "error.user.email.invalid");
         }
 
-        if (isNewUser() && authenticationSystem.usesLocalPasswords() && (StringUtils.isBlank(user.getPassword()))) {
+        if (isNewUser() && authenticationSystem.usesLocalPasswords() && (StringUtils.isBlank(getPassword()))) {
             errors.rejectValue("password", "error.user.password.not.specified");
         }
         if (getPassword() != null || getRePassword() != null) {
@@ -317,7 +317,7 @@ public class ProvisionUserCommand implements Validatable {
             if (membership.hasScope(scopeType)) {
                 List<String> identifiers;
                 if (membership.isAll(scopeType)) {
-                    identifiers = Collections.singletonList(ALL_SCOPE_IDENTIFIER);
+                    identifiers = Collections.singletonList(JSON_ALL_SCOPE_IDENTIFIER);
                 } else {
                     identifiers = membership.getIdentifiers(scopeType);
                 }
@@ -393,12 +393,12 @@ public class ProvisionUserCommand implements Validatable {
         private String scopeType;
 
         private SubmittedChange(JSONObject src) {
-            this.kind = src.optString(CHANGE_PROP_KIND, null);
-            this.role = SuiteRole.getByCsmName(src.optString(CHANGE_PROP_ROLE, null));
-            this.scopeType = src.optString(CHANGE_PROP_SCOPE_TYPE, null);
+            this.kind = src.optString(JSON_CHANGE_PROP_KIND, null);
+            this.role = SuiteRole.getByCsmName(src.optString(JSON_CHANGE_PROP_ROLE, null));
+            this.scopeType = src.optString(JSON_CHANGE_PROP_SCOPE_TYPE, null);
             if (this.scopeType != null) {
-                this.all = ALL_SCOPE_IDENTIFIER.equals(src.optString(CHANGE_PROP_SCOPE_IDENTIFIER, null));
-                this.scopeIdentifier = this.all ? null : src.optString(CHANGE_PROP_SCOPE_IDENTIFIER, null);
+                this.all = JSON_ALL_SCOPE_IDENTIFIER.equals(src.optString(JSON_CHANGE_PROP_SCOPE_IDENTIFIER, null));
+                this.scopeIdentifier = this.all ? null : src.optString(JSON_CHANGE_PROP_SCOPE_IDENTIFIER, null);
             }
         }
 

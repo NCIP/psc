@@ -43,12 +43,20 @@
             <tags:errors path="*"/>
             <input type="hidden" name="_eventId" value="save"/>
             <div class="row">
-                <div class="label"><form:label path="user.name">Username</form:label></div>
-                <div class="value"><form:input path="user.name" size="40"/></div>
+                <div class="label"><form:label path="user.loginName">Username</form:label></div>
+                <div class="value"><form:input path="user.loginName" size="40"/></div>
             </div>
             <div class="row">
-                <div class="label"><form:label path="emailAddress">Email address</form:label></div>
-                <div class="value"><form:input path="emailAddress" size="40"/></div>
+                <div class="label"><form:label path="user.emailId">Email address</form:label></div>
+                <div class="value"><form:input path="user.emailId" size="40"/></div>
+            </div>
+            <div class="row">
+                <div class="label"><form:label path="user.firstName">First name</form:label></div>
+                <div class="value"><form:input path="user.firstName" size="40"/></div>
+            </div>
+            <div class="row">
+                <div class="label"><form:label path="user.lastName">Last name</form:label></div>
+                <div class="value"><form:input path="user.lastName" size="40"/></div>
             </div>
             <c:if test="${usesLocalPasswords}">
                 <div class="row">
