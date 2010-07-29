@@ -19,11 +19,13 @@ import java.io.IOException;
 public class PreAuthenticationSetupFilter extends ContextRetainingFilterAdapter {
     private SetupStatus status;
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         super.init(filterConfig);
         status = (SetupStatus) getApplicationContext().getBean("setupStatus");
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (status.isPreAuthenticationSetupNeeded()) {
             log.debug("Initial setup for administrator is required.  Redirecting.");

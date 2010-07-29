@@ -8,11 +8,11 @@
                            http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.0.xsd">
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename"><value>messages</value></property>
+        <property name="basename" value="messages"/>
     </bean>
 
     <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
-        <property name="servletName"><value>setup</value></property>
+        <property name="servletName" value="setup"/>
     </bean>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -32,17 +32,17 @@
         <property name="sections">
             <list>
                 <bean class="gov.nih.nci.cabig.ctms.web.chrome.Section">
-                    <property name="displayName"><value>Setup</value></property>
-                    <property name="mainController"><value>flowController</value></property>
-                    <property name="pathMapping"><value>/**</value></property>
-                    <property name="urlResolver"><ref bean="urlResolver"/></property>
+                    <property name="displayName" value="Setup"/>
+                    <property name="mainController" value="flowController"/>
+                    <property name="pathMapping" value="/**"/>
+                    <property name="urlResolver" ref="urlResolver"/>
 
                     <property name="tasks">
                         <list>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Initial setup</value></property>
-                                <property name="linkName"><value>flowController</value></property>
-                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                                <property name="displayName" value="Initial setup"/>
+                                <property name="linkName" value="flowController"/>
+                                <property name="urlResolver" ref="urlResolver"/>
                             </bean>
                         </list>
                     </property>

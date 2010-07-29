@@ -1,15 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.core.setup;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus.InitialSetupElement.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus.InitialSetupElement.*;
 
 /**
  * Examines the application (via the injected beans) and determines whether any initial setup steps are required.
@@ -56,22 +57,22 @@ public class SetupStatus implements InitializingBean {
         recheck();
     }
 
-    public boolean isPreAuthenticationSetupNeeded(){
-        return !prepared[ADMINISTRATOR.ordinal()];
+    public boolean isPreAuthenticationSetupNeeded() {
+        return isAdministratorMissing();
     }
 
-    public boolean isPostAuthenticationSetupNeeded(){
+    public boolean isPostAuthenticationSetupNeeded() {
         return (isSiteMissing() || isSourceMissing());
     }
 
-    public InitialSetupElement preAuthenticationSetup(){
+    public InitialSetupElement preAuthenticationSetup() {
         recheck();
         if (isAdministratorMissing())
             return InitialSetupElement.ADMINISTRATOR;
         return null;
     }
 
-    public InitialSetupElement postAuthenticationSetup(){
+    public InitialSetupElement postAuthenticationSetup() {
         recheck();
         if (isSiteMissing())
             return InitialSetupElement.SITE;

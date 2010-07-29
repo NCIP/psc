@@ -20,6 +20,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     private UserDao userDao;
     private SourceDao sourceDao;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
@@ -38,7 +39,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSiteMissingWhenMissing() throws Exception {
-        reset(siteDao);
         expect(siteDao.getCount()).andReturn(0);
         replayMocks();
 
@@ -48,7 +48,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
     
     public void testSiteMissingWhenNotMissing() throws Exception {
-        reset(siteDao);
         expect(siteDao.getCount()).andReturn(1);
         replayMocks();
 
@@ -58,7 +57,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSourceMissingWhenMissing() throws Exception {
-        reset(sourceDao);
         expect(sourceDao.getCount()).andReturn(0);
         replayMocks();
 
@@ -68,7 +66,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSourceMissingWhenNotMissing() throws Exception {
-        reset(sourceDao);
         expect(sourceDao.getCount()).andReturn(1);
         replayMocks();
 
@@ -78,7 +75,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testPostAuthenticationSiteSetup() throws Exception {
-        reset(siteDao);
         expect(siteDao.getCount()).andReturn(0);
         replayMocks();
 
@@ -87,7 +83,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testPostAuthenticationSourceSetup() throws Exception {
-        reset(sourceDao);
         expect(sourceDao.getCount()).andReturn(0);
         replayMocks();
 
@@ -96,7 +91,6 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
     
     public void testPreAuthenticationSetup() throws Exception {
-        reset(userDao);
         expect(userDao.getByRole(Role.SYSTEM_ADMINISTRATOR)).andReturn(Collections.<User>emptyList());
         replayMocks();
 
