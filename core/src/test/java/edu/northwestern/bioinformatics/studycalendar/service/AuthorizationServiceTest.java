@@ -8,26 +8,39 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import static org.easymock.EasyMock.*;
+import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
 import java.util.Arrays;
-import static java.util.Arrays.asList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import static java.util.Arrays.asList;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
  */
 public class AuthorizationServiceTest extends StudyCalendarTestCase {
     private AuthorizationService service;
+
     private StudyConsumer studyConsumer;
+    private CsmHelper csmHelper;
+    private AuthorizationManager csmAuthorizationManager;
 
     private User user;
     private Study studyA, studyB, studyAB;
     private Site siteA, siteB;
     private List<Study> allStudies;
+    private Group dataReaderGroup;
 
     @Override
     @SuppressWarnings({ "unchecked" })
@@ -36,8 +49,13 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         studyConsumer = registerMockFor(StudyConsumer.class);
         expect(studyConsumer.refresh((List<Study>) notNull())).andStubReturn(null);
 
+        csmHelper = registerMockFor(CsmHelper.class);
+        csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
+
         service = new AuthorizationService();
         service.setStudyConsumer(studyConsumer);
+        service.setCsmHelper(csmHelper);
+        service.setCsmAuthorizationManager(csmAuthorizationManager);
 
         user = Fixtures.createUser("jimbo");
 
@@ -51,6 +69,10 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
         studyAB.addSite(siteA);
         studyAB.addSite(siteB);
         allStudies = Arrays.asList(studyA, studyB, studyAB);
+
+        dataReaderGroup = new Group();
+        dataReaderGroup.setGroupName(SuiteRole.DATA_READER.getCsmName());
+        dataReaderGroup.setGroupId(6L);
     }
 
     public void testStudyVisibilityForSubjectCoordinator() throws Exception {
@@ -179,5 +201,31 @@ public class AuthorizationServiceTest extends StudyCalendarTestCase {
     private UserRole addRole(Role role) {
         user.addUserRole(new UserRole(user, role));
         return user.getUserRole(role);
+    }
+
+    public void testGetCsmUsersForRole() throws Exception {
+        expect(csmHelper.getRoleCsmGroup(SuiteRole.DATA_READER)).andStubReturn(dataReaderGroup);
+        expect(csmAuthorizationManager.getUsers("6")).
+            andReturn(Collections.singleton(AuthorizationObjectFactory.createCsmUser("jimbo")));
+
+        replayMocks();
+        Collection<gov.nih.nci.security.authorization.domainobjects.User> actual =
+            service.getCsmUsers(PscRole.DATA_READER);
+        verifyMocks();
+
+        assertEquals("Wrong number of users returned", 1, actual.size());
+        assertEquals("Wrong user returned", "jimbo", actual.iterator().next().getLoginName());
+    }
+
+    public void testGetCsmUsersForRoleWhenAuthorizationManagerFails() throws Exception {
+        expect(csmHelper.getRoleCsmGroup(SuiteRole.DATA_READER)).andStubReturn(dataReaderGroup);
+        expect(csmAuthorizationManager.getUsers("6")).andThrow(new CSObjectNotFoundException("Nope"));
+
+        replayMocks();
+        Collection<gov.nih.nci.security.authorization.domainobjects.User> actual =
+            service.getCsmUsers(PscRole.DATA_READER);
+        verifyMocks();
+
+        assertTrue("Should have return no users", actual.isEmpty());
     }
 }

@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.core.setup;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -13,16 +13,16 @@ import java.util.Map;
 import static edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus.InitialSetupElement.*;
 
 /**
- * Examines the application (via the injected beans) and determines whether any initial setup steps are required.
- * Caches its results so that the setup-or-not filter is faster.
+ * Examines the application (via the injected beans) and determines whether any initial setup steps
+ * are required. Caches its results so that the setup-or-not filter is faster.
  *
  * @author Rhett Sutphin
  */
 public class SetupStatus implements InitializingBean {
     private Map<InitialSetupElement, SetupChecker> checkers;
     private SiteDao siteDao;
-    private UserDao userDao;
     private SourceDao sourceDao;
+    private AuthorizationService authorizationService;
 
     private boolean[] prepared;
 
@@ -42,7 +42,7 @@ public class SetupStatus implements InitializingBean {
 
         checkers.put(ADMINISTRATOR, new SetupChecker() {
             public boolean isPrepared() {
-                return userDao.getByRole(Role.SYSTEM_ADMINISTRATOR).size() > 0;
+                return !authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR).isEmpty();
             }
         });
     }
@@ -103,13 +103,13 @@ public class SetupStatus implements InitializingBean {
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
     }
 
     @Required
-    public void setSourceDao(SourceDao sourceDao) {
-        this.sourceDao = sourceDao;
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     ////// INNER CLASSES
