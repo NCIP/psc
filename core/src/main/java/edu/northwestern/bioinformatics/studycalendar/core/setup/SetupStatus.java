@@ -41,7 +41,7 @@ public class SetupStatus implements InitializingBean {
         });
         checkers.put(SOURCE, new SetupChecker() {
             public boolean isPrepared() {
-                return sourceDao.getCount() > 0;
+                return sourceDao.getManualTargetSource() != null;
             }
         });
 

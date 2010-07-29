@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.core.setup;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
@@ -38,7 +39,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
 
         // default behaviors -- satisfied
         expect(siteDao.getCount()).andStubReturn(1);
-        expect(sourceDao.getCount()).andStubReturn(1);
+        expect(sourceDao.getManualTargetSource()).andStubReturn(new Source());
         expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).andStubReturn(
             Collections.singleton(AuthorizationObjectFactory.createCsmUser("jo")));
         expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).
@@ -64,7 +65,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSourceMissingWhenMissing() throws Exception {
-        expect(sourceDao.getCount()).andReturn(0);
+        expect(sourceDao.getManualTargetSource()).andReturn(null);
         replayMocks();
 
         status.recheck();
@@ -73,7 +74,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testSourceMissingWhenNotMissing() throws Exception {
-        expect(sourceDao.getCount()).andReturn(1);
+        expect(sourceDao.getManualTargetSource()).andReturn(new Source());
         replayMocks();
 
         status.recheck();
@@ -119,16 +120,18 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testPostAuthenticationSiteSetup() throws Exception {
+    public void testPostAuthenticationSetupGoesToSiteFirst() throws Exception {
         expect(siteDao.getCount()).andReturn(0);
+        expect(sourceDao.getManualTargetSource()).andReturn(null);
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.SITE, status.postAuthenticationSetup());
         verifyMocks();
     }
 
-    public void testPostAuthenticationSourceSetup() throws Exception {
-        expect(sourceDao.getCount()).andReturn(0);
+    public void testPostAuthenticationSetupGoesToSourceSecond() throws Exception {
+        expect(siteDao.getCount()).andReturn(1);
+        expect(sourceDao.getManualTargetSource()).andReturn(null);
         replayMocks();
 
         assertEquals(SetupStatus.InitialSetupElement.SOURCE, status.postAuthenticationSetup());
