@@ -36,4 +36,21 @@ public class LegacyUserProvisioningRecordTest extends TestCase {
 
         assertEquals("Wrong csv format", expected, r.csv());
     }
+
+    public void testCsvFormatWithNulls() throws Exception {
+    LegacyUserProvisioningRecord r =
+        new LegacyUserProvisioningRecord(
+            "gslate",
+            "George",
+            "Slate",
+            "0",
+            null,
+            null,
+            null
+        );
+
+    String expected = "gslate,George,Slate,0,,,";
+
+    assertEquals("Wrong csv format", expected, r.csv());
+}
 }

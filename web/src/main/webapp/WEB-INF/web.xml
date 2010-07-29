@@ -36,6 +36,11 @@
         </param-value>
     </context-param>
 
+    <context-param>
+      <param-name>legacyUserProvisioningExporterSwitch</param-name>
+      <param-value>false</param-value>
+    </context-param>
+
     <listener>
         <listener-class>org.dynamicjava.osgi.da_launcher.web.servlet.DaLauncherContextListener</listener-class>
     </listener>
@@ -52,13 +57,13 @@
         <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
     </listener>
 
-    <!--<listener>-->
-        <!--&lt;!&ndash; This listener has to be after the SeparateApplicationContextBeringContextListener &ndash;&gt;-->
-        <!--<listener-class>edu.northwestern.bioinformatics.studycalendar.web.LegacyUserProvisioningRecordExporter</listener-class>-->
-    <!--</listener>-->
-
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <listener>
+        <!-- This listener has to be after the SeparateApplicationContextBeringContextListener -->
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.LegacyUserProvisioningRecordExporter</listener-class>
     </listener>
 
     <filter>

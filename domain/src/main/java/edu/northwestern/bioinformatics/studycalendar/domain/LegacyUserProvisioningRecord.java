@@ -16,7 +16,16 @@ public class LegacyUserProvisioningRecord {
     }
 
     public String csv() {
-        return format("%s,%s,%s,%s,%s,%s,%s", userName, firstName, lastName, active, role, siteName, studyName);
+        return format(
+            "%s,%s,%s,%s,%s,%s,%s",
+            nullAsBlank(userName),
+            nullAsBlank(firstName),
+            nullAsBlank(lastName),
+            nullAsBlank(active),
+            nullAsBlank(role),
+            nullAsBlank(siteName),
+            nullAsBlank(studyName)
+        );
     }
 
     public String getUserName() {
@@ -45,5 +54,9 @@ public class LegacyUserProvisioningRecord {
 
     public String getActive() {
         return active;
+    }
+
+    protected String nullAsBlank(String s) {
+        return (s != null) ? s : "";
     }
 }
