@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandContr
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
@@ -35,7 +36,9 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private ProvisioningSessionFactory provisioningSessionFactory;
     private SiteDao siteDao;
+    private InstalledAuthenticationSystem installedAuthenticationSystem;
 
+    @Override
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         // TODO: this is incomplete
         return ResourceAuthorization.createCollection(PscRole.USER_ADMINISTRATOR);
@@ -49,8 +52,8 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
         return new ProvisionUserCommand(
             targetUser,
             suiteRoleMembershipLoader.getProvisioningRoleMemberships(targetUser.getUserId()),
-            provisioningSessionFactory.createSession(targetUser.getUserId()),
-            authorizationManager,
+            provisioningSessionFactory,
+            authorizationManager, installedAuthenticationSystem.getAuthenticationSystem(),
             // TODO: implement authorization limits
             Arrays.asList(SuiteRole.values()), siteDao.getAll(), true);
     }
@@ -91,5 +94,10 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
     @Required
     public void setSuiteRoleMembershipLoader(SuiteRoleMembershipLoader suiteRoleMembershipLoader) {
         this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
+    }
+
+    @Required
+    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+        this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 }

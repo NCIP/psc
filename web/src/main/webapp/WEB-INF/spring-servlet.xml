@@ -546,6 +546,7 @@
         <property name="siteDao" ref="siteDao"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="controllerTools" ref="controllerTools"/>
+        <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
 
     <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"

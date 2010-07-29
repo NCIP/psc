@@ -1,21 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSession;
+import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.json.JSONObject;
+import org.springframework.validation.Errors;
+import org.springframework.validation.MapBindingResult;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -26,33 +33,108 @@ public class ProvisionUserCommandTest extends WebTestCase {
     private User user;
     private ProvisioningSession pSession;
     private AuthorizationManager authorizationManager;
+    private ProvisioningSessionFactory psFactory;
+    private AuthenticationSystem authenticationSystem;
+    private Errors errors;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         user = new User();
+        user.setUserId(15L);
         user.setLoginName("jo");
         user.setUpdateDate(new Date()); // or CSM pukes
+
+        authorizationManager = registerMockFor(AuthorizationManager.class);
+        authorizationManager.modifyUser(user);
+        expectLastCall().asStub();
+        expect(authorizationManager.getUser(user.getLoginName())).andStubReturn(null); // for validation
+
+        psFactory = registerMockFor(ProvisioningSessionFactory.class);
         pSession = registerMockFor(ProvisioningSession.class);
-        authorizationManager = registerNiceMockFor(AuthorizationManager.class);
+        expect(psFactory.createSession(anyLong())).andStubReturn(pSession);
+
+        authenticationSystem = registerMockFor(AuthenticationSystem.class);
+        expect(authenticationSystem.usesLocalPasswords()).andStubReturn(true);
+
+        errors = new MapBindingResult(new HashMap(), "?");
 
         command = new ProvisionUserCommand(user,
             new LinkedHashMap<SuiteRole, SuiteRoleMembership>(),
-            pSession, authorizationManager,
-            Arrays.asList(SuiteRole.values()),
+            psFactory, authorizationManager,
+            authenticationSystem, Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
             true
         );
     }
 
+    ////// create
+
+    public void testCreateWithoutUserSetsBlankUserInfo() throws Exception {
+        ProvisionUserCommand actual = ProvisionUserCommand.createForUnknownUser(psFactory,
+            authorizationManager, authenticationSystem, Arrays.asList(SuiteRole.values()),
+            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
+            true);
+
+        assertNotNull("User not created", actual.getUser());
+        assertNotNull("Current should be set", actual.getCurrentRoles());
+        assertTrue("Current should be set empty", actual.getCurrentRoles().isEmpty());
+    }
+
     ////// apply
 
-    public void testApplyUpdatesUser() throws Exception {
-        authorizationManager.modifyUser(user);
+    public void testApplyUpdatesUserIfAlreadySaved() throws Exception {
+        /* expect */ authorizationManager.modifyUser(user);
         replayMocks();
 
         command.apply();
         verifyMocks();
+    }
+
+    public void testApplyCreatesUserIfNotSaved() throws Exception {
+        user.setUserId(null);
+        /* expect */ authorizationManager.createUser(user);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testApplyCreatesUserIfLookupFailsWhenSoConfigured() throws Exception {
+        user.setUserId(null);
+        command.setLookUpBoundUser(true);
+        
+        expect(authorizationManager.getUser(user.getLoginName())).andReturn(null);
+        /* expect */ authorizationManager.createUser(user);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+    }
+
+    public void testApplyLooksForExistingUserByUsernameIfConfiguredAndProvidedUserNotAlreadySaved() throws Exception {
+        command.setLookUpBoundUser(true);
+
+        user.setUserId(null);
+        user.setEmailId("foo@nihil.it");
+
+        User savedJo = AuthorizationObjectFactory.createCsmUser("jo");
+        savedJo.setUserId(13L);
+        savedJo.setUpdateDate(new Date());
+        savedJo.setFirstName("Josephine");
+        expect(authorizationManager.getUser(user.getLoginName())).andReturn(savedJo);
+
+        /* expect */ authorizationManager.modifyUser(savedJo);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+
+        assertSame("User not replaced with loaded one", savedJo, command.getUser());
+        assertEquals("Bound properties not copied to loaded user",
+            "foo@nihil.it", command.getUser().getEmailId());
+        assertEquals("Not-bound properties blanked on loaded user",
+            "Josephine", command.getUser().getFirstName());
     }
 
     public void testApplyAppliesAddAllScope() throws Exception {
@@ -109,6 +191,52 @@ public class ProvisionUserCommandTest extends WebTestCase {
         assertEquals("Wrong site removed", "i-a", srm.getSiteIdentifiers().get(0));
     }
 
+    public void testApplySetsPasswordToRequestedValueIfUsingLocalPasswordsAndThePasswordIsSet() throws Exception {
+        command.setPassword("hullaballo");
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(true);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertEquals("Password not set", "hullaballo", user.getPassword());
+    }
+
+    public void testApplySetsPasswordToRandomValueIfUsingNotLocalPasswordsAndTheUserIsNew() throws Exception {
+        command.getUser().setUserId(null);
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
+        /* expect */ authorizationManager.createUser(user);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertNotNull("Password not set", user.getPassword());
+        assertTrue("Password not of expected length",
+            16 < user.getPassword().length() && user.getPassword().length() <= 32);
+        String candidate = user.getPassword();
+        for (int i = 0; i < candidate.length(); i++) {
+            assertTrue("Character " + i + " (" + candidate.charAt(i) + ") out of range",
+                ' ' < candidate.charAt(i) && candidate.charAt(i) <= '~');
+        }
+    }
+
+    public void testApplyDoesNotSetPasswordToRandomValueIfNotLocalPasswordsAndTheUserExists() throws Exception {
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertNull("Password should not be set", user.getPassword());
+    }
+
+    public void testApplyDoesNotSetPasswordIfBlank() throws Exception {
+        command.setPassword("\t");
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+        assertNull("Password should not be set", user.getPassword());
+    }
+
     private SuiteRoleMembership expectGetAndReplaceMembership(SuiteRole expectedRole) {
         SuiteRoleMembership srm = new SuiteRoleMembership(expectedRole, null, null);
         expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(srm);
@@ -121,8 +249,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
         ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
             Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            pSession, authorizationManager,
-            Arrays.asList(SuiteRole.USER_ADMINISTRATOR),
+            psFactory, authorizationManager,
+            authenticationSystem, Arrays.asList(SuiteRole.USER_ADMINISTRATOR),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
             true
         );
@@ -137,8 +265,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testSiteChangeWhenDisallowedIgnored() throws Exception {
         ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
             Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            pSession, authorizationManager,
-            Arrays.asList(SuiteRole.values()),
+            psFactory, authorizationManager,
+            authenticationSystem, Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("T", "i-t")),
             true
         );
@@ -153,8 +281,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testAllSiteChangesWhenDisallowedIgnored() throws Exception {
         ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
             Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            pSession, authorizationManager,
-            Arrays.asList(SuiteRole.values()),
+            psFactory, authorizationManager,
+            authenticationSystem, Arrays.asList(SuiteRole.values()),
             Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
             false
         );
@@ -163,6 +291,165 @@ public class ProvisionUserCommandTest extends WebTestCase {
         replayMocks(); // nothing expected
 
         limitedCommand.apply();
+        verifyMocks();
+    }
+
+    ////// validation
+
+    public void testInvalidWhenBlankUsername() throws Exception {
+        command.getUser().setLoginName("\t");
+        doValidate();
+        assertFieldErrorCount("user.loginName", 1);
+    }
+
+    public void testInvalidWhenNewInstanceWithDuplicateUsernameAndLookupNotConfigured() throws Exception {
+        user.setUserId(null);
+        command.setLookUpBoundUser(false);
+        command.getUser().setLoginName("zap");
+
+        User expectedMatch = new User();
+        expectedMatch.setUserId(14L);
+        expect(authorizationManager.getUser("zap")).andReturn(expectedMatch);
+
+        doValidate();
+
+        assertFieldErrorCount("user.loginName", 1);
+    }
+
+    public void testValidWhenNewInstanceWithDuplicateUsernameAndLookupIsConfigured() throws Exception {
+        user.setUserId(null);
+        command.setLookUpBoundUser(true);
+        command.getUser().setLoginName("zap");
+
+        User expectedMatch = new User();
+        expectedMatch.setUserId(14L);
+        expect(authorizationManager.getUser("zap")).andReturn(expectedMatch);
+
+        doValidate();
+
+        assertFieldErrorCount("user.loginName", 0);
+    }
+
+    public void testValidWhenDuplicateUsernameAndEditingSavedInstance() throws Exception {
+        command.getUser().setLoginName("zap");
+        expect(authorizationManager.getUser("zap")).andReturn(user);
+
+        doValidate();
+
+        assertFieldErrorCount("user.loginName", 0);
+    }
+
+    public void testInvalidWhenDuplicateUsernameAndEditingDifferentInstance() throws Exception {
+        command.getUser().setLoginName("zap");
+
+        User expectedMatch = new User();
+        expectedMatch.setUserId(14L);
+        expect(authorizationManager.getUser("zap")).andReturn(expectedMatch);
+
+        doValidate();
+
+        assertFieldErrorCount("user.loginName", 1);
+    }
+
+    public void testInvalidWithBlankEmailAddress() throws Exception {
+        command.getUser().setEmailId("\n\t");
+
+        doValidate();
+        assertFieldErrorCount("user.emailId", 1);
+    }
+
+    public void testInvalidWithNonAddressEmailAddress() throws Exception {
+        command.getUser().setEmailId("hello");
+
+        doValidate();
+        assertFieldErrorCount("user.emailId", 1);
+    }
+
+    public void testValidWithReasonableEmailAddress() throws Exception {
+        command.getUser().setEmailId("someguy@nemo.it");
+
+        doValidate();
+        assertFieldErrorCount("user.emailId", 0);
+    }
+
+    public void testPasswordRequiredForNewUserIfLocalPasswordsUsed() throws Exception {
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(true);
+        user.setUserId(null);
+        command.setPassword(null);
+
+        doValidate();
+        assertFieldErrorCount("password", 1);
+    }
+
+    public void testPasswordNotRequiredForNewUserIfLocalPasswordsNotUsed() throws Exception {
+        expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
+        user.setUserId(null);
+        command.setPassword(null);
+
+        doValidate();
+        assertFieldErrorCount("password", 0);
+    }
+
+    public void testPasswordNotRequiredForExistingUser() throws Exception {
+        command.setPassword(null);
+
+        doValidate();
+        assertFieldErrorCount("password", 0);
+    }
+
+    public void testMismatchedPasswordsAreInvalid() throws Exception {
+        command.setPassword("abc");
+        command.setRePassword("123");
+
+        doValidate();
+        assertFieldErrorCount("rePassword", 1);
+    }
+
+    public void testMatchingPasswordsAreValid() throws Exception {
+        command.setPassword("abc");
+        command.setRePassword("abc");
+
+        doValidate();
+        assertFieldErrorCount("password", 0);
+        assertFieldErrorCount("rePassword", 0);
+    }
+
+    public void testBlankFirstNameIsInvalid() throws Exception {
+        command.getUser().setFirstName(" ");
+        
+        doValidate();
+        assertFieldErrorCount("user.firstName", 1);
+    }
+    
+    public void testSetFirstNameIsValid() throws Exception {
+        command.getUser().setFirstName("Jo");
+        
+        doValidate();
+        assertFieldErrorCount("user.firstName", 0);
+    }
+    
+    public void testBlankLastNameIsInvalid() throws Exception {
+        command.getUser().setLastName(" ");
+        
+        doValidate();
+        assertFieldErrorCount("user.lastName", 1);
+    }
+    
+    public void testSetLastNameIsValid() throws Exception {
+        command.getUser().setLastName("Jo");
+        
+        doValidate();
+        assertFieldErrorCount("user.lastName", 0);
+    }
+    
+    private void assertFieldErrorCount(String field, int expectedCount) {
+        assertEquals("Wrong number of errors for " + field + ": " + errors.getFieldErrors(field),
+            expectedCount, errors.getFieldErrorCount(field));
+    }
+
+    private void doValidate() {
+        replayMocks();
+        command.validate(errors);
         verifyMocks();
     }
 
