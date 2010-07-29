@@ -5,46 +5,46 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="admin" tagdir="/WEB-INF/tags/admin"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<jsp:useBean id="authenticationSystemName" scope="request" type="java.lang.String"/>
+<jsp:useBean id="command" scope="request"
+             type="edu.northwestern.bioinformatics.studycalendar.web.admin.AuthenticationSystemSelectorCommand"/>
+<jsp:useBean id="authenticationSystemKey" scope="request" type="java.lang.String"/>
+<jsp:useBean id="authenticationSystemValue" scope="request" type="java.lang.String"/>
+<c:set var="needsConfiguration" value="${fn:length(command.conf) > 1}"/>
+
 <html>
 <head>
     <tags:stylesheetLink name="admin"/>
-    <style type="text/css">
-        span.textLabel {
-            font-weight: bold;
-            font-style: italic;
-        }
-    </style>
-    <title>Configure authentication system's option</title>
+    <title>Configure selected authentication system</title>
 </head>
 <body>
-<laf:box title="Configure authentication">
+<laf:box title="Configure selected authentication system">
     <laf:division>
         <p class="instructions">
-            Selected authentication system is <span class="textLabel">${authenticationSystemName}</span>
-            .To select other authentication system go
-            <input type="button" value="Back" onclick="window.location.href= SC.relativeUri('setup/preAuthenticationSetup')">
+            PSC will use the <em>${authenticationSystemName}</em> authentication system.
+            To select a different authentication system go 
+            <a href="<c:url value="/setup/preAuthenticationSetup"/>" class="control">back</a>.
         </p>
+        <c:if test="${not needsConfiguration}">
+            <p class="instructions">
+                This system does not require any further configuration.  You can continue on.
+            </p>
+        </c:if>
     </laf:division>
-    <laf:division>
-        <form:form commandName="authenticationSystemSetupCommand">
-            <input type="hidden" name="_eventId" value="save"/>
-            <input name="conf[${authenticationSystemKey}].value" type="hidden" value="${authenticationSystemValue}"/>
-            <div id="errors">
-                <tags:errors path="*"/>
-            </div>
-            <div id="system-configuration">
-                <c:if test="${fn:length(command.conf) < 2}">
-                    <h3>Configuration options for the selected system</h3>
-                    <p class="description">No other options required for <span class="textLabel">
-                    ${authenticationSystemName}</span> authentication system. 
-                </c:if>
-                <admin:authenticationSystemOptions/>
-            </div>
-            <div class="row submit">
-                <input type="submit" value="Save"/>
-            </div>
-        </form:form>
-    </laf:division>
+    <form:form commandName="authenticationSystemSetupCommand">
+        <input type="hidden" name="_eventId" value="save"/>
+        <input name="conf[${authenticationSystemKey}].value" type="hidden" value="${authenticationSystemValue}"/>
+        <div id="errors">
+            <tags:errors path="*"/>
+        </div>
+        <div id="system-configuration">
+            <admin:authenticationSystemOptions/>
+        </div>
+        <div class="row submit">
+            <input type="submit" value="${needsConfiguration ? 'Save' : 'Continue'}"/>
+        </div>
+    </form:form>
 </laf:box>
 </body>
 </html>

@@ -10,12 +10,27 @@
     <title>Select authentication system</title>
 </head>
 <body>
-<laf:box title="Select Authentication System">
+<laf:box title="Tips" autopad="true" id="setup-tips">
+    <ul class="tips">
+        <li>You'll also be able to change the authentication system in the admin section of PSC
+            once setup is complete.</li>
+        <li>If something goes wrong with the authentication system you select, you can always get
+            this page to show up by running the following command on your PSC database and then
+            restarting the container (e.g., Tomcat): 
+            <div>
+                <code>DELETE FROM authentication_system_conf WHERE value='authenticationSystem';</code>
+            </div>
+        </li>
+    </ul>
+</laf:box>
+<laf:box title="Select authentication system" id="setup-input">
     <laf:division>
         <p class="instructions">
-            Every PSC instance needs to select authentication system. You'll be able to change the authentication system later. </p>
+            PSC has built-in support for several different authentication mechanisms.
+            Please select one from the list below.
+        </p>
     </laf:division>
-    <h3>Select authentication system</h3>
+    <h3>Choose one</h3>
     <laf:division>
         <form:form commandName="selectAuthenticationSystemCommand">
             <input type="hidden" name="_eventId" value="next"/>
