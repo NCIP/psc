@@ -27,12 +27,6 @@
                     <bean class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.CsmHibernatePropertiesFactoryBean">
                         <property name="properties">
                             <map>
-                                <!--<entry key="hibernate.connection.url" value="${datasource.url}"/>-->
-                                <!--<entry key="hibernate.connection.driver_class" value="${datasource.driver}"/>-->
-                                <!--<entry key="hibernate.connection.username" value="${datasource.username}"/>-->
-                                <!--<entry key="hibernate.connection.password" value="${datasource.password}"/>-->
-                                <!--<entry key="hibernate.dialect" value="${datasource.dialect}"/>-->
-
                                 <entry key="hibernate.connection.url" value="${csm.datasource.url}"/>
                                 <entry key="hibernate.connection.driver_class" value="${csm.datasource.driver}"/>
                                 <entry key="hibernate.connection.username" value="${csm.datasource.username}"/>
