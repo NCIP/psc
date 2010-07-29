@@ -882,6 +882,11 @@
                     url="${studyUrl}">
                     ${configuration.map.ctmsName} study record
                 </tags:conditionalListItemLink>
+                <tags:restrictedListItem
+                    cssClass="control"
+                    url="/pages/cal/template/associateSite"
+                    queryString="id=${study.id}">Associate sites
+                </tags:restrictedListItem>
             </ul>
 
             <c:if test="${empty developmentRevision}">

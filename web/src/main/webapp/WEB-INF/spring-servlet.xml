@@ -435,6 +435,18 @@
         </property>
     </bean>
 
+    <bean name="/cal/template/associateSite" id="associateSiteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.AssociateSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Associate Site"/>
+                <property name="parent">
+                    <ref local="displayTemplateController"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <bean name="/report/scheduledActivitiesReport" id="scheduledActivitiesReportController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ScheduledActivitiesReportController"/>
 
