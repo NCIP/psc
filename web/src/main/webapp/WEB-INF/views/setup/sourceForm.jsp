@@ -4,20 +4,35 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>Create the first source</title>
+    <title>Create the manually-created activity source</title>
 </head>
 <body>
 <laf:box title="Tips" autopad="true" id="setup-tips">
     <ul class="tips">
-        <li>Default manually activity target source name should be unique to the institution.</li>
-        <li>You'll have the opportunity later to change default source to other source if necessary.</li>
+        <li>The manually-created activity target source name should be unique to this deployment of
+            PSC.  Don't name it something generic like "activities" or "source".  Consider including
+            your organization's name, e.g. "Northwestern University Cancer Trial Activities" or
+            "ECOG PSC".
+        </li>
+        <li>You'll have the opportunity later to change the manually-created activity source to
+            something else if necessary.
+        </li>
     </ul>
 </laf:box>
-<laf:box title="Create the default manually activity target source" id="setup-input">
+<laf:box title="Create the manually-created activity target source" id="setup-input">
     <laf:division>
         <p class="instructions">
-            PSC installation required one manual activity target source. Please enter your default manual activity source here. If you need to change manual activity target source, you'll have the
-            opportunity once this initial setup is complete.
+            Study templates in PSC are built out of "activities."  PSC supports importing libraries
+            of activities, but you (or your users) will need to create other one-off activities.
+            In PSC, a group of activities under a common coding system is called an "activity
+            source."  Manually-created one-off activities go into a special source so that they
+            can be tracked.
+        </p>
+        <p class="instructions">
+            In order to avoid conflicts when sharing templates with other PSC deployments, every
+            PSC deployment needs a uniquely named source for these manually-created activities.
+            Set that name here.  You'll be able to switch to a different manually-created activity
+            source later.
         </p>
     </laf:division>
     <h3>Enter source info</h3>

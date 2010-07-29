@@ -6,9 +6,9 @@
 </head>
 <body>
 <laf:box title="Initial user setup complete" autopad="true">
-    <p>
-        Initial setup of user for this Patient Study Calendar instance is complete.Create first site and default activity source through <a href="<c:url value="/pages/admin/manage/newSite"/>">administration section</a> of
-        the regular PSC interface. (You'll need to log in with a System Administrator account, of course.)
+    <p class="instructions">
+        In order to finish setting up PSC, you'll need to log in with the credentials you
+        just provided.  <a href="<c:url value="/"/>">Log in now.</a>
     </p>
 </laf:box>
 </body>

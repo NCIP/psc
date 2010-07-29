@@ -16,7 +16,7 @@
             once setup is complete.</li>
         <li>If something goes wrong with the authentication system you select, you can always get
             this page to show up by running the following command on your PSC database and then
-            restarting the container (e.g., Tomcat): 
+            restarting the container (e.g., Tomcat):
             <div>
                 <code>DELETE FROM authentication_system_conf WHERE value='authenticationSystem';</code>
             </div>

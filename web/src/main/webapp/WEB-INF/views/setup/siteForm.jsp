@@ -40,10 +40,10 @@
 <laf:box title="Create the first site" id="setup-input">
     <laf:division>
         <p class="instructions">
-            One of the elements of PSC's security model is the site which subject coordinators
-            and site coordinators hail from.  Some installations might have more than one site, but every installation
-            needs at least one.  Please enter your first site here.  If you need to enter more, you'll have the
-            opportunity once this initial setup is complete.
+            An important concept in PSC's model of a clinical trial are the sites which participate
+            in the trial.  Some installations of PSC might have more than one site, but every
+            installation needs at least one.  Please enter your first site here.  If you need to
+            enter more, you'll have the opportunity once this initial setup is complete.
         </p>
     </laf:division>
     <h3>Enter site info</h3>
@@ -63,7 +63,7 @@
             </div>
             <tags:activityIndicator id="provided-site-search-indicator"/>
         </form:form>
-        <div class="site-response"/>
+        <div class="site-response"></div>
     </laf:division>
 </laf:box>
 

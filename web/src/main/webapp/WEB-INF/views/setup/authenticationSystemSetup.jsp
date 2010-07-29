@@ -23,12 +23,13 @@
     <laf:division>
         <p class="instructions">
             PSC will use the <em>${authenticationSystemName}</em> authentication system.
-            To select a different authentication system go 
+            To select a different authentication system go
             <a href="<c:url value="/setup/preAuthenticationSetup"/>" class="control">back</a>.
         </p>
         <c:if test="${not needsConfiguration}">
             <p class="instructions">
-                This system does not require any further configuration.  You can continue on.
+                This particular authentication system does not require any further configuration.
+                Please continue on.
             </p>
         </c:if>
     </laf:division>
