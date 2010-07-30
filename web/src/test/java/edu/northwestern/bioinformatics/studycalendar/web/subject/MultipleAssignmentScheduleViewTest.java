@@ -5,12 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
@@ -21,6 +24,9 @@ import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
 public class MultipleAssignmentScheduleViewTest extends StudyCalendarTestCase {
     private StudySubjectAssignment nu1400assignment;
     private StudySubjectAssignment nu2332assignment;
+    private UserStudySubjectAssignmentRelationship nu1400assignmentForUser;
+    private UserStudySubjectAssignmentRelationship nu2332assignmentForUser;
+    private PscUser user;
 
     private StaticNowFactory nowFactory;
 
@@ -41,19 +47,27 @@ public class MultipleAssignmentScheduleViewTest extends StudyCalendarTestCase {
         nu2332assignment.getScheduledCalendar().addStudySegment(
             createScheduledStudySegment(createDate(2004, Calendar.JULY, 1), 14));
 
+        user = AuthorizationObjectFactory.createPscUser("ji", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER);
+        nu1400assignmentForUser = new UserStudySubjectAssignmentRelationship(user, nu1400assignment);
+        nu2332assignmentForUser = new UserStudySubjectAssignmentRelationship(user, nu2332assignment);
+
         nowFactory = new StaticNowFactory();
     }
 
     private MultipleAssignmentScheduleView createOneStudySchedule() {
-        return new MultipleAssignmentScheduleView(Arrays.asList(nu1400assignment), Collections.<StudySubjectAssignment>emptyList(), nowFactory);
+        return new MultipleAssignmentScheduleView(
+            Arrays.asList(nu1400assignmentForUser), nowFactory);
     }
 
     private MultipleAssignmentScheduleView createTwoStudySchedule() {
-        return new MultipleAssignmentScheduleView(Arrays.asList(nu1400assignment, nu2332assignment), Collections.<StudySubjectAssignment>emptyList(), nowFactory);
+        return new MultipleAssignmentScheduleView(
+            Arrays.asList(nu1400assignmentForUser, nu2332assignmentForUser), nowFactory);
     }
 
     private MultipleAssignmentScheduleView createOneVisibleOneHiddenSchedule() {
-        return new MultipleAssignmentScheduleView(Arrays.asList(nu1400assignment), Arrays.asList(nu2332assignment), nowFactory);
+        user.getMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies("NU 1400");
+        return new MultipleAssignmentScheduleView(
+            Arrays.asList(nu1400assignmentForUser, nu2332assignmentForUser), nowFactory);
     }
 
     public void testCreateRowsWithOneAssignment() throws Exception {

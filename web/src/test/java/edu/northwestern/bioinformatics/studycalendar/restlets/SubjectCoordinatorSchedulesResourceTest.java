@@ -1,35 +1,46 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Arrays;
-
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
-import org.restlet.data.Status;
-import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
-import org.restlet.ext.json.JsonRepresentation;
-import static org.easymock.EasyMock.expect;
-import org.easymock.IExpectationSetters;
-import org.json.JSONObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import org.easymock.IExpectationSetters;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Status;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.nwu.bioinformatics.commons.DateUtils.*;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author Jalpa Patel
  */
-public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<SubjectCoordinatorSchedulesResource>{
+public class SubjectCoordinatorSchedulesResourceTest extends AuthorizedResourceTestCase<SubjectCoordinatorSchedulesResource> {
     private UserService userService;
     private StudySiteService studySiteService;
     private static final String USERNAME = "subjectCo";
@@ -46,7 +57,7 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         Role role = SUBJECT_COORDINATOR;
         user = Fixtures.createUser(USERNAME, role);
         Fixtures.setUserRoles(user,role);
-        PscGuard.setCurrentAuthenticationToken(request, new UsernamePasswordAuthenticationToken(USERNAME, USERNAME, new Role[] { Role.SUBJECT_COORDINATOR}));
+        setCurrentUser(AuthorizationObjectFactory.createPscUser(USERNAME, PscRole.STUDY_SUBJECT_CALENDAR_MANAGER));
         nowFactory = new StaticNowFactory();
         xmlSerializer = registerMockFor(StudySubjectAssignmentXmlSerializer.class);
 
@@ -64,7 +75,7 @@ public class SubjectCoordinatorSchedulesResourceTest extends ResourceTestCase<Su
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setIncludeScheduledCalendar(true);
     }
 
-    protected SubjectCoordinatorSchedulesResource createResource() {
+    protected SubjectCoordinatorSchedulesResource createAuthorizedResource() {
         SubjectCoordinatorSchedulesResource resource = new SubjectCoordinatorSchedulesResource();
         resource.setUserService(userService);
         resource.setStudySiteService(studySiteService);

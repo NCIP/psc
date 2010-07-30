@@ -1,17 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import net.fortuna.ical4j.model.Calendar;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -25,15 +27,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import net.fortuna.ical4j.model.Calendar;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.DATA_READER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_TEAM_ADMINISTRATOR;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Jalpa Patel
@@ -41,7 +37,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 public class SubjectCentricScheduleResource extends AbstractCollectionResource<StudySubjectAssignment> {
     private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> xmlSerializer;
     private SubjectDao subjectDao;
-    private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private Subject subject;
     private TemplateService templateService;
@@ -49,22 +44,17 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        //TODO - has to delete setAllAuthorizedFor when refactored
-        setAllAuthorizedFor(Method.GET);
-
         addAuthorizationsFor(Method.GET,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                STUDY_TEAM_ADMINISTRATOR,
-                DATA_READER);
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            DATA_READER);
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setSubjectCentric(true);
-        
     }
 
     @Override
-    @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
     public Collection<StudySubjectAssignment> getAllObjects() throws ResourceException {
         String subjectId = UriTemplateParameters.SUBJECT_IDENTIFIER.extractFrom(getRequest());
         if (subjectId == null) {
@@ -82,30 +72,34 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        List<StudySubjectAssignment> allAssignments = new ArrayList<StudySubjectAssignment> (getAllObjects());
-        List<StudySubjectAssignment> visibleAssignments
-                = authorizationService.filterAssignmentsForVisibility(allAssignments, getLegacyCurrentUser());
-        if (visibleAssignments.isEmpty()) {
-            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "User " + getLegacyCurrentUser().getDisplayName() + " doesn't have permission to view this schedule");
+        Collection<StudySubjectAssignment> allAssignments = getAllObjects();
+        List<UserStudySubjectAssignmentRelationship> relatedAssignments =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(allAssignments.size());
+        List<StudySubjectAssignment> visibleAssignments =
+            new ArrayList<StudySubjectAssignment>(relatedAssignments.size());
+        for (StudySubjectAssignment anAssignment : allAssignments) {
+            UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(getCurrentUser(), anAssignment);
+            relatedAssignments.add(rel);
+            if (rel.isVisible()) visibleAssignments.add(anAssignment);
         }
-        Set<StudySubjectAssignment> hiddenAssignments
-                = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
-        for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
-                hiddenAssignments.remove(visibleAssignment);
+
+        if (visibleAssignments.isEmpty()) {
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,
+                "User " + getCurrentUser() + " doesn't have permission to view this schedule");
         }
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
             return createXmlRepresentation(visibleAssignments);
         } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-            return new ScheduleRepresentationHelper(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory, templateService );
+            return new ScheduleRepresentationHelper(relatedAssignments, nowFactory, templateService);
         } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
-            return  createICSRepresentation(visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments));
+            return  createICSRepresentation(relatedAssignments);
         }
         return null;
     }
 
-    public Representation createICSRepresentation(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments) {
+    public Representation createICSRepresentation(List<UserStudySubjectAssignmentRelationship> relatedAssignments) {
         MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(
-            visibleAssignments, hiddenAssignments, nowFactory);
+            relatedAssignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
             ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(), scheduleDay.getActivities(), getApplicationBaseUrl(), false);
@@ -124,11 +118,6 @@ public class SubjectCentricScheduleResource extends AbstractCollectionResource<S
     @Required
     public void setSubjectDao(SubjectDao subjectDao) {
         this.subjectDao = subjectDao;
-    }
-
-    @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
     }
 
     @Required

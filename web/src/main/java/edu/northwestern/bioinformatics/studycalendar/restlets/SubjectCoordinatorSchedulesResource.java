@@ -1,27 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
+import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ICSRepresentation;
-import org.restlet.Context;
-import org.restlet.resource.Variant;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Representation;
-import org.restlet.data.*;
-import org.springframework.beans.factory.annotation.Required;
-import org.acegisecurity.Authentication;
-
-import java.util.*;
-import net.fortuna.ical4j.model.Calendar;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import net.fortuna.ical4j.model.Calendar;
+import org.acegisecurity.Authentication;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 /**
@@ -38,12 +47,11 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
 
         addAuthorizationsFor(Method.GET,
-                STUDY_SUBJECT_CALENDAR_MANAGER,
-                STUDY_TEAM_ADMINISTRATOR,
-                DATA_READER);
+            STUDY_SUBJECT_CALENDAR_MANAGER,
+            STUDY_TEAM_ADMINISTRATOR,
+            DATA_READER);
 
         getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         getVariants().add(new Variant(MediaType.TEXT_CALENDAR));
@@ -52,6 +60,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
 
     @Override
     @SuppressWarnings({ "ThrowInsideCatchBlockWhichIgnoresCaughtException" })
+    // TODO: although the represent method was updated with #1110, this one is still wrong (waiting for #1105)
     public Collection<StudySubjectAssignment> getAllObjects() throws ResourceException {
         String username = UriTemplateParameters.USERNAME.extractFrom(getRequest());
         if (username == null) {
@@ -73,6 +82,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
         return xmlSerializer;
     }
 
+    // TODO: this is all irrelevant
     private List<StudySubjectAssignment> findColleageStudySubjectAssignments(User user, User currentUser) {
         List<StudySite> userStudySites = studySiteService.getAllStudySitesForSubjectCoordinator(user);
         List<StudySite> currentUserStudySites = studySiteService.getAllStudySitesForSubjectCoordinator(currentUser);
@@ -98,25 +108,38 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment> (getAllObjects());
-        if (!assignments.isEmpty()) {
+        Collection<StudySubjectAssignment> allPossibleAssignments = getAllObjects();
+        List<UserStudySubjectAssignmentRelationship> relatedAssignments =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(allPossibleAssignments.size());
+        List<StudySubjectAssignment> visible =
+            new ArrayList<StudySubjectAssignment>(relatedAssignments.size());
+        for (StudySubjectAssignment assignment : allPossibleAssignments) {
+            UserStudySubjectAssignmentRelationship related = new UserStudySubjectAssignmentRelationship(getCurrentUser(), assignment);
+            relatedAssignments.add(related);
+            if (related.isVisible()) visible.add(assignment);
+        }
+
+        if (!visible.isEmpty()) {
             if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-                return createXmlRepresentation(assignments);
+                return createXmlRepresentation(visible);
             } else if (variant.getMediaType().equals(MediaType.APPLICATION_JSON)) {
-                 return new ScheduleRepresentationHelper(assignments, new ArrayList<StudySubjectAssignment>(), nowFactory, templateService );
+                return new ScheduleRepresentationHelper(relatedAssignments, nowFactory, templateService );
             } else if (variant.getMediaType().equals(MediaType.TEXT_CALENDAR)) {
-                return createICSRepresentation(assignments,new ArrayList<StudySubjectAssignment>());
+                return createICSRepresentation(relatedAssignments);
             }
+        } else if (!allPossibleAssignments.isEmpty()) {
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,
+                "There are no assignments which you are allowed to see here.");
         }
         return null;
     }
 
-    public Representation createICSRepresentation(List<StudySubjectAssignment> assignments, List<StudySubjectAssignment> hiddenAssignments) {
-        MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(assignments, hiddenAssignments, nowFactory);
+    private Representation createICSRepresentation(List<UserStudySubjectAssignmentRelationship> assignments) {
+        MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
             ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(),
-                            scheduleDay.getActivities(), getApplicationBaseUrl(), true);
+                scheduleDay.getActivities(), getApplicationBaseUrl(), true);
         }
         return new ICSRepresentation(icsCalendar, user.getDisplayName());
     }

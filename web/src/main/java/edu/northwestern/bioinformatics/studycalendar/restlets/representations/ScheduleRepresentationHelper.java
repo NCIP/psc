@@ -1,35 +1,46 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayNumber;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
-import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
-import java.util.*;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.*;
 
 /**
  * @author Jalpa Patel
  */
 // TODO: this is split from the Resources that use it along an odd seam -- the two resources still have a
 // bunch of duplicated code related to building the whole object
-    public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
+public class ScheduleRepresentationHelper extends StreamingJsonRepresentation  {
+    private List<UserStudySubjectAssignmentRelationship> relatedAssignments;
     private TemplateService templateService;
 
-    private List<StudySubjectAssignment> visibleAssignments;
     private List<ScheduledStudySegment> segments;
     private SortedMap<Date,List<ScheduledActivity>> activities;
     private MultipleAssignmentScheduleView schedule;
 
-    public ScheduleRepresentationHelper(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments, NowFactory nowFactory, TemplateService templateService ) {
-        this.visibleAssignments = visibleAssignments;
+    public ScheduleRepresentationHelper(List<UserStudySubjectAssignmentRelationship> assignments, NowFactory nowFactory, TemplateService templateService ) {
+        relatedAssignments = assignments;
         this.templateService = templateService;
-        schedule = new MultipleAssignmentScheduleView(visibleAssignments, hiddenAssignments, nowFactory);
+        schedule = new MultipleAssignmentScheduleView(assignments, nowFactory);
     }
 
     public ScheduleRepresentationHelper(SortedMap<Date,List<ScheduledActivity>> activities,  List<ScheduledStudySegment> segments, TemplateService templateService ) {
@@ -60,9 +71,11 @@ import java.io.IOException;
             generator.writeFieldName("study_segments");
             generator.writeStartArray();
                 if (schedule != null) {
-                    for (StudySubjectAssignment studySubjectAssignment: visibleAssignments) {
-                        for (ScheduledStudySegment scheduledStudySegment : studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments()) {
-                            createJSONStudySegment(generator, scheduledStudySegment);
+                    for (UserStudySubjectAssignmentRelationship relationship: relatedAssignments) {
+                        if (relationship.isVisible()) {
+                            for (ScheduledStudySegment scheduledStudySegment : relationship.getAssignment().getScheduledCalendar().getScheduledStudySegments()) {
+                                createJSONStudySegment(generator, scheduledStudySegment);
+                            }
                         }
                     }
                 } else {

@@ -22,6 +22,7 @@ public class DisplayScheduleController extends AbstractController implements Psc
         return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
     }
     
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return new ModelAndView(new RedirectView("/pages/subject", true, true, true), request.getParameterMap());
     }

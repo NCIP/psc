@@ -37,7 +37,10 @@ public class AuthorizationObjectFactory {
     private static Map<SuiteRole, SuiteRoleMembership> createSuiteRoleMemberships(PscRole... roles) {
         Map<SuiteRole, SuiteRoleMembership> memberships = new LinkedHashMap<SuiteRole, SuiteRoleMembership>();
         for (PscRole role : roles) {
-            memberships.put(role.getSuiteRole(), new SuiteRoleMembership(role.getSuiteRole(), null, null));
+            SuiteRoleMembership mem = new SuiteRoleMembership(role.getSuiteRole(), null, null);
+            if (role.isSiteScoped()) mem.forAllSites();
+            if (role.isStudyScoped()) mem.forAllStudies();
+            memberships.put(role.getSuiteRole(), mem);
         }
         return memberships;
     }

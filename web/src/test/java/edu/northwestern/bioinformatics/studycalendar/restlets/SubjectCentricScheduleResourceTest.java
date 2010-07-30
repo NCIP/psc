@@ -10,8 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
@@ -25,30 +25,30 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createBasicTemplate;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAssignment;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
 import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
-import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import static org.easymock.EasyMock.expect;
+import static edu.nwu.bioinformatics.commons.DateUtils.*;
+import static org.easymock.EasyMock.*;
 
 
 /**
  * @author Jalpa Patel
  */
 public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCase<SubjectCentricScheduleResource>{
-    private SubjectDao subjectDao;
-    private AuthorizationService authorizationService;
     private static final String SUBJECT_IDENTIFIER = "1111";
+
+    private SubjectDao subjectDao;
     private Subject subject;
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private NowFactory nowFactory;
-    private ScheduleRepresentationHelper scheduleRepresentationHelper;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         xmlSerializer = registerMockFor(StudySubjectAssignmentXmlSerializer.class);
-        authorizationService = registerMockFor(AuthorizationService.class);
-        scheduleRepresentationHelper = registerMockFor(ScheduleRepresentationHelper.class);
         subjectDao = registerDaoMockFor(SubjectDao.class);
         subject = createSubject("1111", "Perry", "Duglas", createDate(1980, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
         subject.setId(11);
@@ -67,7 +67,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         ((StudySubjectAssignmentXmlSerializer)xmlSerializer).setSubjectCentric(true);
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName(), SUBJECT_IDENTIFIER);
         nowFactory = new StaticNowFactory();
-
     }
 
     @Override
@@ -76,7 +75,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
         SubjectCentricScheduleResource resource = new SubjectCentricScheduleResource();
         resource.setXmlSerializer(xmlSerializer);
         resource.setSubjectDao(subjectDao);
-        resource.setAuthorizationService(authorizationService);
         resource.setNowFactory(nowFactory);
         return resource;
     }
@@ -94,8 +92,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
 
     public void testGetScheduledCalendarXml() throws Exception {
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
-        expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         expect(xmlSerializer.createDocumentString(studySubjectAssignments)).andReturn(MOCK_XML);
 
         doGet();
@@ -113,8 +109,7 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
 
     public void test403WhenUserCannotAccessSchedule() throws Exception {
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
-        expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(new ArrayList<StudySubjectAssignment>());
+        setCurrentUser(AuthorizationObjectFactory.createPscUser("bad", PscRole.SYSTEM_ADMINISTRATOR));
         doGet();
         assertResponseStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
@@ -129,8 +124,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     public void testGetJSONRepresentation() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".json",SUBJECT_IDENTIFIER);
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
-        expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         makeRequestType(MediaType.APPLICATION_JSON);
 
         doGet();
@@ -141,8 +134,6 @@ public class SubjectCentricScheduleResourceTest extends AuthorizedResourceTestCa
     public void testGetICSCalendarRepresentation() throws Exception {
         request.getAttributes().put(UriTemplateParameters.SUBJECT_IDENTIFIER.attributeName()+ ".ics",SUBJECT_IDENTIFIER);
         expect(subjectDao.findSubjectByPersonId(SUBJECT_IDENTIFIER)).andReturn(subject);
-        expect(authorizationService.filterAssignmentsForVisibility
-                (studySubjectAssignments, getLegacyCurrentUser())).andReturn(studySubjectAssignments);
         makeRequestType(MediaType.TEXT_CALENDAR);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);

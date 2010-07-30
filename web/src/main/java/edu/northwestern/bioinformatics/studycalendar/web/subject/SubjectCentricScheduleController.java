@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
 import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -27,9 +27,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 /**
  * @author Rhett Sutphin
@@ -38,7 +41,6 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
     private SubjectDao subjectDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private AuthorizationService authorizationService;
     private NowFactory nowFactory;
     private ApplicationSecurityManager applicationSecurityManager;
 
@@ -70,24 +72,22 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
             return null;
         }
 
-        List<StudySubjectAssignment> allAssignments = subject.getAssignments();
-        List<StudySubjectAssignment> visibleAssignments
-            = authorizationService.filterAssignmentsForVisibility(allAssignments, applicationSecurityManager.getUser().getLegacyUser());
-        Set<StudySubjectAssignment> hiddenAssignments
-            = new LinkedHashSet<StudySubjectAssignment>(allAssignments);
-        for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
-            hiddenAssignments.remove(visibleAssignment);
+        List<UserStudySubjectAssignmentRelationship> assignments =
+            new ArrayList<UserStudySubjectAssignmentRelationship>(subject.getAssignments().size());
+        for (StudySubjectAssignment ssa : subject.getAssignments()) {
+            assignments.add(new UserStudySubjectAssignmentRelationship(
+                applicationSecurityManager.getUser(), ssa));
         }
         MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(
-            visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
+            assignments, nowFactory);
 
         ModelMap model = new ModelMap("schedule", schedule);
-        model.addObject(subject);
+        model.addAttribute(subject);
         model.addAttribute("schedulePreview", false);
-        model.addAttribute("subjectCoordinator", applicationSecurityManager.getUser().getLegacyUser());
         return new ModelAndView("subject/schedule", model);
     }
 
+    @SuppressWarnings({"unchecked"})
     private <T extends GridIdentifiable & DomainObject> T interpretUsingIdOrGridId(
         HttpServletRequest request, String paramName, GridIdentifiableDao<T> dao
     ) throws ServletRequestBindingException {
@@ -111,11 +111,6 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
     @Required
     public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
         this.scheduledCalendarDao = scheduledCalendarDao;
-    }
-
-    @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
     }
 
     @Required

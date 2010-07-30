@@ -1,27 +1,54 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledStudySegment;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityProperty;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserStudySubjectAssignmentRelationship;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
-import static gov.nih.nci.cabig.ctms.lang.DateTools.createDate;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONException;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static org.easymock.EasyMock.expect;
 
-import java.util.*;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static gov.nih.nci.cabig.ctms.lang.DateTools.*;
+import static org.easymock.EasyMock.*;
 
 
 /**
@@ -45,6 +72,7 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
 
@@ -104,14 +132,16 @@ public class ScheduleRepresentationHelperTest extends JsonRepresentationTestCase
         scheduledCalendar.setAssignment(setGridId("GRID-ASSIGN", ssa));
         sa.setScheduledStudySegment(scheduledSegment);
 
-
-
         ssa.getScheduledCalendar().addStudySegment(createScheduledStudySegment(createDate(2006, Calendar.APRIL, 1), 365));
-        scheduleRepresentationHelper = new ScheduleRepresentationHelper(Arrays.asList(ssa), Collections.<StudySubjectAssignment>emptyList(), nowFactory, templateService);
+
+        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
+            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllStudies().forAllSites());
+        UserStudySubjectAssignmentRelationship rel = new UserStudySubjectAssignmentRelationship(user, ssa);
+
+        scheduleRepresentationHelper = new ScheduleRepresentationHelper(Arrays.asList(rel), nowFactory, templateService);
     }
 
     public void testStateInfoInJson() throws Exception {
-
         generator.writeStartObject();
         generator.writeFieldName("activities");
             replayMocks();
