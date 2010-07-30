@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class UserInRequestFilter extends ContextRetainingFilterAdapter {
     ) throws IOException, ServletException {
         String username = getApplicationSecurityManager().getUserName();
         if (username != null) {
-            User user = getApplicationSecurityManager().getUser().getLegacyUser();
+            PscUser user = getApplicationSecurityManager().getUser();
             slog.trace("Adding user {} to request attributes as {}", user, USER_ATTRIBUTE);
             servletRequest.setAttribute(USER_ATTRIBUTE, user);
             // old behavior preserved for backwards compatibility

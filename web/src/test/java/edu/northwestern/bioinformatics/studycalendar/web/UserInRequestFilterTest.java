@@ -1,11 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 
 import javax.servlet.FilterChain;
+
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -24,13 +26,13 @@ public class UserInRequestFilterTest extends ContextRetainingFilterTestCase {
         initFilter(filter);
 
         // should always continue
-        filterChain.doFilter(request, response);
+        /* expect */ filterChain.doFilter(request, response);
         expect(mockApplicationContext.getBean("applicationSecurityManager")).
             andStubReturn(applicationSecurityManager);
     }
 
     public void testAttributeSetWhenLoggedIn() throws Exception {
-        User cab = Fixtures.createUser("cab");
+        PscUser cab = AuthorizationObjectFactory.createPscUser("cab", new PscRole[0]);
         SecurityContextHolderTestHelper.setSecurityContext(cab, "pass");
 
         replayMocks();
