@@ -44,8 +44,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="defaultLogoutFilter"
           class="org.acegisecurity.ui.logout.LogoutFilter">
-        <constructor-arg value="/pages/dashboard"/>
         <!-- URL redirected to after logout -->
+        <constructor-arg value="/"/>
         <constructor-arg>
             <list>
                 <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
