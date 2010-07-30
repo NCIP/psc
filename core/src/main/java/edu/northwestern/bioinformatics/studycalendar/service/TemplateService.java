@@ -20,31 +20,24 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.DevelopmentTemplate;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 
 /**
@@ -62,15 +55,12 @@ public class TemplateService {
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
     private StudyDao studyDao;
-    private AuthorizationService authorizationService;
     private WorkflowService workflowService;
     private DaoFinder daoFinder;
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
     public static final String STUDY_IS_NULL = "Study is null";
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
             Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
@@ -301,170 +291,6 @@ public class TemplateService {
         return results;
     }
 
-    @Deprecated
-    public List<ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
-        log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
-
-        List<Study> visibleStudies = union(
-                devableStudies,
-                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-                subjectAssignableStudies
-        );
-
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        for (Study visibleStudy : visibleStudies) {
-            if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
-            }
-        }
-
-        List<ReleasedTemplate> pendingTemplates = new ArrayList<ReleasedTemplate>();
-
-        for (ReleasedTemplate releasedTemplate : releasedTemplates) {
-            Study releasedTemplateStudy = releasedTemplate.getStudy();
-            List<Site> sites = releasedTemplateStudy.getSites();
-            if (sites.size() == 0) {
-                if (!pendingTemplates.contains(releasedTemplate)) {
-                    pendingTemplates.add(releasedTemplate);
-                }
-            }
-            for (Site site : sites) {
-                if (!isStudyAssignedToAnySite(releasedTemplateStudy) ||
-                        !isStudyApprovedBySite(site, releasedTemplateStudy) ||
-                        !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
-                    if (!pendingTemplates.contains(releasedTemplate)) {
-                        pendingTemplates.add(releasedTemplate);
-                    }
-                }
-            }
-        }
-        Collections.sort(pendingTemplates, new AlphabeticallyOrderedComparator());
-        return pendingTemplates;
-    }
-
-    public static class AlphabeticallyOrderedComparator implements Comparator<ReleasedTemplate> {
-        public static final Comparator<? super ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
-        public int compare(ReleasedTemplate rt1, ReleasedTemplate rt2) {
-            return rt1.getDisplayName().toLowerCase().compareTo(rt2.getDisplayName().toLowerCase());
-        }
-    }
-
-    @Deprecated
-    public List<ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
-        log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-
-        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
-
-        List<Study> visibleStudies = union(
-                devableStudies,
-                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-                subjectAssignableStudies
-        );
-
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        for (Study visibleStudy : visibleStudies) {
-            if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
-            }
-        }
-
-        List<ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<ReleasedTemplate>();
-
-        for (ReleasedTemplate releasedTemplate : releasedTemplates) {
-            Study releasedTemplateStudy = releasedTemplate.getStudy();
-            List<Site> sites = releasedTemplateStudy.getSites();
-            for (Site site : sites) {
-                if (isStudyAssignedToAnySite(releasedTemplateStudy) &&
-                        isStudyApprovedBySite(site, releasedTemplateStudy) &&
-                        isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
-                    if (!releasedAndAssignedTemplates.contains(releasedTemplate)) {
-                        releasedAndAssignedTemplates.add(releasedTemplate);
-                    }
-                }
-            }
-        }
-
-        log.debug("released and assigned templates are {}", releasedAndAssignedTemplates);
-        return releasedAndAssignedTemplates;
-    }
-
-    @Deprecated
-    public List<ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
-        log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-
-        List<Study> subjectAssignableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
-
-        List<Study> visibleStudies = union(
-                devableStudies,
-                authorizationService.filterStudiesForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-                subjectAssignableStudies
-        );
-
-
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        for (Study visibleStudy : visibleStudies) {
-            if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
-            }
-        }
-        log.debug("released templates are {}", releasedTemplates);
-        return releasedTemplates;
-    }
-
-    @Deprecated
-    public List<DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) {
-        log.debug("{} studies found total", studies.size());
-        List<Study> devableStudies = authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, authorizationService.filterStudiesForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-
-        List<DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<DevelopmentTemplate>();
-        for (Study devableStudy : devableStudies) {
-            if (devableStudy.isInDevelopment()) {
-                inDevelopmentTemplates.add(new DevelopmentTemplate(devableStudy));
-            }
-        }
-        log.debug("in-development templates are {}", inDevelopmentTemplates);
-        return inDevelopmentTemplates;
-    }
-
-    private List<Study> union(List<Study>... lists) {
-        Set<Study> union = new LinkedHashSet<Study>();
-        for (List<Study> list : lists) {
-            union.addAll(list);
-        }
-        return new ArrayList<Study>(union);
-    }
-
-    private boolean isStudyAssignedToAnySite(Study study) {
-        return !study.getStudySites().isEmpty();
-    }
-
-    private boolean isStudyApprovedBySite(Site site, Study study) {
-        if (site != null && site.getStudySite(study) != null) {
-            return site.getStudySite(study).getUnapprovedAmendments().isEmpty();
-        }
-        return false;
-    }
-
-    private boolean isSubjectCoordinatorAssignedToStudy(Study study) {
-        for (StudySite studySite : study.getStudySites()) {
-            List<UserRole> userRoles = studySite.getUserRoles();
-            for (UserRole userRole : userRoles) {
-                if (userRole.getRole().equals(SUBJECT_COORDINATOR)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     protected <T extends Changeable> void delete(Collection<T> collection) {
         for (T t : collection) {
             delete(t);
@@ -512,11 +338,6 @@ public class TemplateService {
     @Required
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
-    }
-
-    @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
     }
 
     @Required

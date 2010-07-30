@@ -29,15 +29,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.ReleasedTemplate;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +65,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
         studyDao = registerMockFor(StudyDao.class);
-        AuthorizationService authorizationService = registerMockFor(AuthorizationService.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
@@ -82,7 +78,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setUserRoleDao(userRoleDao);
         service.setStudyDao(studyDao);
         service.setDaoFinder(daoFinder);
-        service.setAuthorizationService(authorizationService);
         service.setWorkflowService(ws);
 
         createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
@@ -116,82 +111,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
         }
-    }
-
-    public void testComparatorForStudyName() throws Exception {
-        Study a = createNamedInstance("a", Study.class);
-        Study aa = createNamedInstance("aa", Study.class);
-        Study A = createNamedInstance("A", Study.class);
-        Study AA = createNamedInstance("AA", Study.class);
-        Study ab = createNamedInstance("ab", Study.class);
-        Study one = createNamedInstance("1", Study.class);
-        Study underscoreOne = createNamedInstance("_1", Study.class);
-        Study y = createNamedInstance("y", Study.class);
-        Study YY = createNamedInstance("YY", Study.class);
-        Study m = createNamedInstance("m", Study.class);
-        Study MM = createNamedInstance("MM", Study.class);
-        Study asdf = createNamedInstance("asdf", Study.class);
-
-        Amendment amendment = createAmendments("a1", "a2", "a3");
-        a.setAmendment(amendment);
-        aa.setAmendment(amendment);
-        A.setAmendment(amendment);
-        AA.setAmendment(amendment);
-        ab.setAmendment(amendment);
-        one.setAmendment(amendment);
-        underscoreOne.setAmendment(amendment);
-        y.setAmendment(amendment);
-        YY.setAmendment(amendment);
-        m.setAmendment(amendment);
-        MM.setAmendment(amendment);
-        asdf.setAmendment(amendment);
-
-        List<Study> allStudies = new ArrayList<Study>();
-        allStudies.add(MM);
-        allStudies.add(a);
-        allStudies.add(ab);
-        allStudies.add(one);
-        allStudies.add(underscoreOne);
-        allStudies.add(y);
-        allStudies.add(aa);
-        allStudies.add(A);
-        allStudies.add(AA);
-        allStudies.add(YY);
-        allStudies.add(m);
-        allStudies.add(asdf);
-
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        for (Study visibleStudy : allStudies) {
-            if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new ReleasedTemplate(visibleStudy, true));
-            }
-        }
-
-        assertEquals("Wrong study before sorting", MM, releasedTemplates.get(0).getStudy());
-        assertEquals("Wrong study before sorting", a, releasedTemplates.get(1).getStudy());
-        assertEquals("Wrong study before sorting", ab, releasedTemplates.get(2).getStudy());
-        assertEquals("Wrong study before sorting", one, releasedTemplates.get(3).getStudy());
-        assertEquals("Wrong study before sorting", underscoreOne, releasedTemplates.get(4).getStudy());
-        assertEquals("Wrong study before sorting", y, releasedTemplates.get(5).getStudy());
-        assertEquals("Wrong study before sorting", aa, releasedTemplates.get(6).getStudy());
-        assertEquals("Wrong study before sorting", A, releasedTemplates.get(7).getStudy());
-        assertEquals("Wrong study before sorting", AA, releasedTemplates.get(8).getStudy());
-        assertEquals("Wrong study before sorting", YY, releasedTemplates.get(9).getStudy());
-        assertEquals("Wrong study before sorting", m, releasedTemplates.get(10).getStudy());
-
-        Collections.sort(releasedTemplates, TemplateService.AlphabeticallyOrderedComparator.INSTANCE);
-
-        assertEquals("Wrong study after sorting", one, releasedTemplates.get(0).getStudy());
-        assertEquals("Wrong study after sorting", underscoreOne, releasedTemplates.get(1).getStudy());
-        assertEquals("Wrong study after sorting", a, releasedTemplates.get(2).getStudy());
-        assertEquals("Wrong study after sorting", A, releasedTemplates.get(3).getStudy());
-        assertEquals("Wrong study after sorting", aa, releasedTemplates.get(4).getStudy());
-        assertEquals("Wrong study after sorting", AA, releasedTemplates.get(5).getStudy());
-        assertEquals("Wrong study after sorting", ab, releasedTemplates.get(6).getStudy());
-        assertEquals("Wrong study after sorting", asdf, releasedTemplates.get(7).getStudy());
-        assertEquals("Wrong study after sorting", m, releasedTemplates.get(8).getStudy());
-        assertEquals("Wrong study after sorting", MM, releasedTemplates.get(9).getStudy());
-        assertEquals("Wrong study after sorting", y, releasedTemplates.get(10).getStudy());
     }
 
     public void testRemoveAssignedTemplateFromSubjectCoordinatorRequiresSite() throws Exception {
