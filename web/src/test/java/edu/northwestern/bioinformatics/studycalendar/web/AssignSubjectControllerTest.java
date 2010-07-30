@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
-import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
@@ -11,32 +10,28 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.SUBJECT_MANAGER;
-import static org.easymock.EasyMock.expect;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import static java.util.Arrays.asList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -53,7 +48,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     private Study study;
     private List<Subject> subjects;
-    private User user;
     private Site seattle, tacoma, olympia;
     private StudySite seattleSS, tacomaSS, olympiaSS;
 
@@ -95,36 +89,11 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         tacomaSS = createStudySite(study, tacoma);
         olympiaSS = createStudySite(study, olympia);
 
-        user = edu.northwestern.bioinformatics.studycalendar.core.Fixtures.createUser("jimbo", Role.SUBJECT_COORDINATOR);
-        user.getUserRole(Role.SUBJECT_COORDINATOR).setSites(new HashSet<Site>(asList(seattle, tacoma, olympia)));
-        user.getUserRole(Role.SUBJECT_COORDINATOR).setStudySites(asList(seattleSS, tacomaSS, olympiaSS));
-
         subjects = new LinkedList<Subject>();
 
-        SecurityContextHolderTestHelper.setSecurityContext(user, "pass");
-    }
-
-    public void testAuthorizedRolesForNullRadioButton() {
-        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations(null, null);
-        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
-    }
-
-    public void testAuthorizedRolesForPostAndNewSubj() {
-        controller.setRadioButton("new");
-        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("POST", null);
-        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
-    }
-    
-    public void testAuthorizedRolesForPostAndExistingSubj() {
-        controller.setRadioButton("existing");
-        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("POST", null);
-        assertRolesAllowed(actualAuthorizations, STUDY_SUBJECT_CALENDAR_MANAGER);
-    }
-
-    public void testAuthorizedRolesForGet() {
-        controller.setRadioButton("existing");
-        Collection<ResourceAuthorization> actualAuthorizations = controller.authorizations("GET", null);
-        assertRolesAllowed(actualAuthorizations, SUBJECT_MANAGER);
+        SecurityContextHolderTestHelper.
+            setUserAndReturnMembership("jimbo", PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).
+            forAllStudies().forSites(seattle, tacoma, olympia);
     }
 
     public void testSubjectAssignedOnSubmit() throws Exception {
@@ -138,7 +107,8 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         mockableController.setPopulationDao(populationDao);
         mockableController.setApplicationSecurityManager(applicationSecurityManager);
 
-        mockCommand.setSubjectCoordinator(user);
+        // TODO #1105
+        mockCommand.setSubjectCoordinator(null);
         mockCommand.setStudy(study);
         StudySubjectAssignment assignment = setId(14, new StudySubjectAssignment());
         expect(mockCommand.assignSubject()).andReturn(assignment);
