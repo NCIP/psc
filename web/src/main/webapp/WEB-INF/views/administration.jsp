@@ -19,22 +19,20 @@
     </head>
     <body>
 
-    <security:secureOperation element="/pages/admin/manage/sites">
-        <laf:box title="Administration">
-            <laf:division>
-                <ul class="menu">
-                    <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/manage/sources">Set manual activity source</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/manage/plugins">Manage plugins (OSGi layer)</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/diagnostics">Grid services configuration</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/admin/manage/purgeStudy">Purge study</tags:restrictedListItem>
-                </ul>
-            </laf:division>
-        </laf:box>
-    </security:secureOperation>
+    <laf:box title="Administration">
+        <laf:division>
+            <ul class="menu">
+                <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/manage/sources">Set manual activity source</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/manage/plugins">Manage plugins (OSGi layer)</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/diagnostics">Grid services configuration</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/manage/purgeStudy">Purge study</tags:restrictedListItem>
+            </ul>
+        </laf:division>
+    </laf:box>
 
     </body>
 </html>

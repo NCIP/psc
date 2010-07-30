@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import java.util.Collection;
 import java.util.Map;
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.*;
 
 @AccessControl(roles =Role.SYSTEM_ADMINISTRATOR)
 public class AdministrationController extends ParameterizableViewController implements CrumbSource, PscAuthorizedHandler {
@@ -22,7 +22,9 @@ public class AdministrationController extends ParameterizableViewController impl
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+        return ResourceAuthorization.createCollection(
+            SYSTEM_ADMINISTRATOR, USER_ADMINISTRATOR, STUDY_QA_MANAGER,
+            PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
     public Crumb getCrumb() {
