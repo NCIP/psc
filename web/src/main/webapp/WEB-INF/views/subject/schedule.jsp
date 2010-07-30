@@ -73,14 +73,14 @@
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
             <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView" scope="request"/>
-            <jsp:useBean id="subjectCoordinator" type="edu.northwestern.bioinformatics.studycalendar.domain.User" scope="request"/>
+            <jsp:useBean id="currentUser" type="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser" scope="request"/>
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {
                     return psc.tools.Uris.relative("/api/v1/subjects/${subject.gridId}/schedules.json?"+new Date().getTime());
                 });
 
                 psc.subject.RealScheduleControls.batchResource('${collectionResource}');
-                psc.subject.ScheduleData.setSubjectCoordinator('${subjectCoordinator.name}');
+                psc.subject.ScheduleData.setSubjectCoordinator('${currentUser.username}');
             </script>
             <c:set var="isNotificationAvailable" value="false"/>
             <c:forEach items="${subject.assignments}" var="assignment" varStatus="outerCounter">
