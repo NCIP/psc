@@ -23,7 +23,7 @@ public class AdministrationController extends ParameterizableViewController impl
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
         return ResourceAuthorization.createCollection(
-            SYSTEM_ADMINISTRATOR, USER_ADMINISTRATOR, STUDY_QA_MANAGER,
+            SYSTEM_ADMINISTRATOR, USER_ADMINISTRATOR, BUSINESS_ADMINISTRATOR, STUDY_QA_MANAGER,
             PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
     }
 
