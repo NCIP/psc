@@ -201,6 +201,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
         assertEquals("Password not set", "hullaballo", user.getPassword());
     }
 
+    // TODO: make this test deterministic via a non-random source of randomness
     public void testApplySetsPasswordToRandomValueIfUsingNotLocalPasswordsAndTheUserIsNew() throws Exception {
         command.getUser().setUserId(null);
         expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
@@ -210,8 +211,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
         command.apply();
         verifyMocks();
         assertNotNull("Password not set", user.getPassword());
-        assertTrue("Password not of expected length",
-            16 < user.getPassword().length() && user.getPassword().length() <= 32);
+        assertTrue("Password not of expected length: " + user.getPassword().length(),
+            16 <= user.getPassword().length() && user.getPassword().length() <= 32);
         String candidate = user.getPassword();
         for (int i = 0; i < candidate.length(); i++) {
             assertTrue("Character at " + i + " ('" + candidate.charAt(i) + "' 0x" + Integer.toHexString(candidate.charAt(i)) + ") out of range",
