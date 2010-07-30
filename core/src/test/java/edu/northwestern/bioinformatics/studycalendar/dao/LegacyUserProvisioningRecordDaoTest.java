@@ -4,22 +4,18 @@ import edu.northwestern.bioinformatics.studycalendar.core.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.LegacyUserProvisioningRecord;
 import junit.framework.Assert;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class LegacyUserProvisioningRecordDaoTest extends DaoTestCase {
-    private DataSource dataSource;
     private LegacyUserProvisioningRecordDao dao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        dataSource = (DataSource) getApplicationContext().getBean("dataSource");
-
-        dao = new LegacyUserProvisioningRecordDao(dataSource);
+        
+        dao = new LegacyUserProvisioningRecordDao(getDataSource());
     }
 
     public void testCorrectNumberOfRecordsSelected() {
