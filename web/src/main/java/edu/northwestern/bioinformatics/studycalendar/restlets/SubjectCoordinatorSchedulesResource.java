@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.web.schedule.ICalTools;
 import edu.northwestern.bioinformatics.studycalendar.restlets.representations.ScheduleRepresentationHelper;
@@ -112,7 +112,7 @@ public class SubjectCoordinatorSchedulesResource extends AbstractCollectionResou
     }
 
     public Representation createICSRepresentation(List<StudySubjectAssignment> assignments, List<StudySubjectAssignment> hiddenAssignments) {
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(assignments, hiddenAssignments, nowFactory);
+        MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(assignments, hiddenAssignments, nowFactory);
         Calendar icsCalendar = ICalTools.generateCalendarSkeleton();
         for (ScheduleDay scheduleDay : schedule.getDays()) {
             ICalTools.generateICSCalendarForActivities(icsCalendar, scheduleDay.getDate(),

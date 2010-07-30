@@ -1,10 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.subject;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.tools.Range;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.tools.MutableRange;
+import edu.northwestern.bioinformatics.studycalendar.tools.Range;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,15 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Presenter for a subject's complete schedule across all studies.
+ * Presenter for a single linear view across multiple schedules.
  *
  * @author Rhett Sutphin
  */
-public class SubjectCentricSchedule {
+public class MultipleAssignmentScheduleView {
     private List<SegmentRow> segmentRows;
     private List<StudySubjectAssignment> visibleAssignments;
     private List<StudySubjectAssignment> hiddenAssignments;
@@ -38,7 +42,7 @@ public class SubjectCentricSchedule {
     private NowFactory nowFactory;
     private final SimpleDateFormat dayMapKeyFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    public SubjectCentricSchedule(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments, NowFactory nowFactory) {
+    public MultipleAssignmentScheduleView(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments, NowFactory nowFactory) {
         this.visibleAssignments = visibleAssignments;
         this.hiddenAssignments = hiddenAssignments;
         this.nowFactory = nowFactory;

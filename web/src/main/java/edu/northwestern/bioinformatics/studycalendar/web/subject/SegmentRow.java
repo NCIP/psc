@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A collection of non-overlapping study segments from a single study for a particular patient.
+ * A collection of non-overlapping study segments from a single study for a particular assignment.
  *
  * @author Rhett Sutphin
  */

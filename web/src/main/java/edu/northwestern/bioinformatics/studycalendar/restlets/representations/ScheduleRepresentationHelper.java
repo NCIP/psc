@@ -3,12 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets.representations;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.AbstractPscResource.getApiDateFormat;
-import edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule;
+import edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView;
 import edu.northwestern.bioinformatics.studycalendar.web.subject.ScheduleDay;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
-import org.json.JSONObject;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
 import java.util.*;
@@ -25,12 +24,12 @@ import java.io.IOException;
     private List<StudySubjectAssignment> visibleAssignments;
     private List<ScheduledStudySegment> segments;
     private SortedMap<Date,List<ScheduledActivity>> activities;
-    private SubjectCentricSchedule schedule;
+    private MultipleAssignmentScheduleView schedule;
 
     public ScheduleRepresentationHelper(List<StudySubjectAssignment> visibleAssignments, List<StudySubjectAssignment> hiddenAssignments, NowFactory nowFactory, TemplateService templateService ) {
         this.visibleAssignments = visibleAssignments;
         this.templateService = templateService;
-        schedule = new SubjectCentricSchedule(visibleAssignments, hiddenAssignments, nowFactory);
+        schedule = new MultipleAssignmentScheduleView(visibleAssignments, hiddenAssignments, nowFactory);
     }
 
     public ScheduleRepresentationHelper(SortedMap<Date,List<ScheduledActivity>> activities,  List<ScheduledStudySegment> segments, TemplateService templateService ) {

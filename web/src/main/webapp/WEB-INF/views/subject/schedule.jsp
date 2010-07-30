@@ -72,7 +72,7 @@
 
             <%-- TODO: there should be a subject in preview mode, too (a fake one) --%>
             <jsp:useBean id="subject" type="edu.northwestern.bioinformatics.studycalendar.domain.Subject" scope="request"/>
-            <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.SubjectCentricSchedule" scope="request"/>
+            <jsp:useBean id="schedule" type="edu.northwestern.bioinformatics.studycalendar.web.subject.MultipleAssignmentScheduleView" scope="request"/>
             <jsp:useBean id="subjectCoordinator" type="edu.northwestern.bioinformatics.studycalendar.domain.User" scope="request"/>
             <script type="text/javascript">
                 psc.subject.ScheduleData.uriGenerator(function () {

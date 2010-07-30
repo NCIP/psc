@@ -78,7 +78,7 @@ public class SubjectCentricScheduleController extends PscAbstractController impl
         for (StudySubjectAssignment visibleAssignment : visibleAssignments) {
             hiddenAssignments.remove(visibleAssignment);
         }
-        SubjectCentricSchedule schedule = new SubjectCentricSchedule(
+        MultipleAssignmentScheduleView schedule = new MultipleAssignmentScheduleView(
             visibleAssignments, new ArrayList<StudySubjectAssignment>(hiddenAssignments), nowFactory);
 
         ModelMap model = new ModelMap("schedule", schedule);
