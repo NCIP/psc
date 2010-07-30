@@ -40,8 +40,7 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
 
     @Override
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        // TODO: this is incomplete
-        return ResourceAuthorization.createCollection(PscRole.USER_ADMINISTRATOR);
+        return ResourceAuthorization.createCollection(PscRole.USER_ADMINISTRATOR, PscRole.SYSTEM_ADMINISTRATOR);
     }
 
     @Override
