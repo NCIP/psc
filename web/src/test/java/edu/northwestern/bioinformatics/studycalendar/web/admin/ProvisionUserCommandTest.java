@@ -214,8 +214,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
             16 < user.getPassword().length() && user.getPassword().length() <= 32);
         String candidate = user.getPassword();
         for (int i = 0; i < candidate.length(); i++) {
-            assertTrue("Character " + i + " (" + candidate.charAt(i) + ") out of range",
-                ' ' < candidate.charAt(i) && candidate.charAt(i) <= '~');
+            assertTrue("Character at " + i + " ('" + candidate.charAt(i) + "' 0x" + Integer.toHexString(candidate.charAt(i)) + ") out of range",
+                ' ' <= candidate.charAt(i) && candidate.charAt(i) <= '~');
         }
     }
 
