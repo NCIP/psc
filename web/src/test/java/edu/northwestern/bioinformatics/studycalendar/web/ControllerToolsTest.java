@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -44,7 +44,7 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
 
     public void testGetCurrentUser() throws Exception {
         assertNull(tools.getCurrentUser(request));
-        User user = Fixtures.createUser("jimbo");
+        PscUser user = AuthorizationObjectFactory.createPscUser("jimbo");
         request.setAttribute("currentUser", user);
         assertSame(user, tools.getCurrentUser(request));
     }

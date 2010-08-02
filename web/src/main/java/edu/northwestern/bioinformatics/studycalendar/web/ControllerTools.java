@@ -13,7 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
@@ -176,8 +176,8 @@ public class ControllerTools {
     /**
      * @see UserInRequestFilter
      */
-    public User getCurrentUser(HttpServletRequest request) {
-        return (User) request.getAttribute("currentUser");
+    public PscUser getCurrentUser(HttpServletRequest request) {
+        return (PscUser) request.getAttribute("currentUser");
     }
 
     ////// CONFIGURATION

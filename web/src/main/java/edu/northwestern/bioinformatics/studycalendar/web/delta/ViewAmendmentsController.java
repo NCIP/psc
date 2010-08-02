@@ -1,30 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.DomainContext;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.UserTemplateRelationship;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 import java.io.IOException;
-
-import static edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole.STUDY_SUBJECT_CALENDAR_MANAGER;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Note that this class also contains tests for AmendmentView, since it was once a inner class
- * of the target controller.
- *
  * @author Rhett Sutphin
  */
 public class ViewAmendmentsController extends PscAbstractController implements PscAuthorizedHandler {
@@ -36,13 +37,20 @@ public class ViewAmendmentsController extends PscAbstractController implements P
     }
 
     public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(STUDY_SUBJECT_CALENDAR_MANAGER);
+        Study study = null;
+        try {
+            String studyId = queryParameters.get("study")[0];
+            study = studyDao.getById(new Integer(studyId));
+        } catch (Exception re) {
+            log.debug("Error while extracting study from request; continuing with role-only authorization", re);
+        }
+        return ResourceAuthorization.createAllStudyAuthorizations(study);
     }
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        User user = getControllerTools().getCurrentUser(request);
+        PscUser user = getControllerTools().getCurrentUser(request);
 
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
         model.put("study", study);
@@ -106,7 +114,8 @@ public class ViewAmendmentsController extends PscAbstractController implements P
     }
 
     private boolean exposeDevelopmentAmendment(HttpServletRequest request, Study study) {
-        return study.isInDevelopment() && getControllerTools().getCurrentUser(request).hasRole(Role.STUDY_COORDINATOR);
+        PscUser user = getControllerTools().getCurrentUser(request);
+        return new UserTemplateRelationship(user, study).getCanSeeDevelopmentVersion();
     }
 
     ////// CONFIGURATION
