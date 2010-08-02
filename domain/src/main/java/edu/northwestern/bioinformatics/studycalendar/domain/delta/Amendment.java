@@ -9,19 +9,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.tools.Differences;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,6 +58,7 @@ public class Amendment
     private List<Delta<?>> deltas;
     private boolean mandatory;
     private Date releasedDate;
+    private List<AmendmentApproval> amendmentApprovals;
 
     public Amendment() {
         this(null);
@@ -262,6 +256,16 @@ public class Amendment
 
     public void setReleasedDate(final Date releasedDate) {
         this.releasedDate = releasedDate;
+    }
+
+    @OneToMany(mappedBy = "amendment")
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<AmendmentApproval> getAmendmentApprovals() {
+        return amendmentApprovals;
+    }
+
+    public void setAmendmentApprovals(List<AmendmentApproval> amendmentApprovals) {
+        this.amendmentApprovals = amendmentApprovals;
     }
 
     ////// OBJECT METHODS
