@@ -156,6 +156,15 @@
             </div>
         </c:if>
         <div class="row">
+            <div class="label">
+                <form:label path="user.endDate">End date</form:label>
+            </div>
+            <div class="value">
+                <laf:dateInput path="user.endDate"/>
+                The day this account stops being valid.  Leave blank to have it never expire, or set it in the past to have it expire immediately.
+            </div>
+        </div>
+        <div class="row">
             <div class="value">
                 <input type="submit" value="Save"/>
             </div>

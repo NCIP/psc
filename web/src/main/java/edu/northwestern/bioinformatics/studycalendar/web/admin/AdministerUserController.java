@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -70,6 +71,8 @@ public class AdministerUserController
     ) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(JSONArray.class, "roleChanges", new JsonArrayEditor());
+        binder.registerCustomEditor(
+            Date.class, "user.endDate", getControllerTools().getDateEditor(false));
     }
 
     @Override
