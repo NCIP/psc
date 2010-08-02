@@ -93,28 +93,73 @@
 <body>
 <laf:box title="Set properties and permissions for ${command.user.loginName}">
     <form:form method="post" id="user-admin">
+        <tags:errors path="*"/>
         <div class="row">
-            <div class="label">Username</div>
-            <div class="value">${command.user.loginName}</div>
+            <c:choose>
+                <c:when test="${command.newUser}">
+                    <div class="label">
+                        <form:label path="user.loginName">Username</form:label>
+                    </div>
+                    <div class="value">
+                        <form:input path="user.loginName"/>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="label">Username</div>
+                    <div class="value">${command.user.loginName}</div>
+                </c:otherwise>
+            </c:choose>
         </div>
         <div class="row">
-            <div class="label">First name</div>
+            <div class="label">
+                <form:label path="user.emailId">E-mail address</form:label>
+            </div>
+            <div class="value">
+                <form:input path="user.emailId"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="label">
+                <form:label path="user.firstName">First name</form:label>
+            </div>
             <div class="value">
                 <form:input path="user.firstName"/>
             </div>
         </div>
         <div class="row">
-            <div class="label">Last name</div>
+            <div class="label">
+                <form:label path="user.lastName">Last name</form:label>
+            </div>
             <div class="value">
                 <form:input path="user.lastName"/>
             </div>
         </div>
+        <c:if test="${command.usesLocalPasswords}">
+            <div class="row">
+                <div class="label">
+                    <form:label path="password">Password</form:label>
+                </div>
+                <div class="value">
+                    <form:password path="password"/>
+                    <c:if test="${not command.newUser}">
+                        If you don't want to change the user's password, leave these fields blank.
+                    </c:if>
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <form:label path="rePassword">Repeat password</form:label>
+                </div>
+                <div class="value">
+                    <form:password path="rePassword"/>
+                </div>
+            </div>
+        </c:if>
         <div class="row">
             <div class="value">
                 <input type="submit" value="Save"/>
             </div>
         </div>
-        <!-- TODO: all fields -->
 
         <form:hidden path="roleChanges" id="role-changes"/>
 

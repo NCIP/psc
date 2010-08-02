@@ -130,7 +130,7 @@ public class ProvisionUserCommand implements Validatable {
             errors.rejectValue("user.emailId", "error.user.email.invalid");
         }
 
-        if (isNewUser() && authenticationSystem.usesLocalPasswords() && (StringUtils.isBlank(getPassword()))) {
+        if (isNewUser() && getUsesLocalPasswords() && (StringUtils.isBlank(getPassword()))) {
             errors.rejectValue("password", "error.user.password.not.specified");
         }
         if (getPassword() != null || getRePassword() != null) {
@@ -140,7 +140,7 @@ public class ProvisionUserCommand implements Validatable {
         }
     }
 
-    private boolean isNewUser() {
+    public boolean isNewUser() {
         return getUser().getUserId() == null;
     }
 
@@ -154,7 +154,7 @@ public class ProvisionUserCommand implements Validatable {
     }
 
     private void applyPassword() {
-        if (authenticationSystem.usesLocalPasswords()) {
+        if (getUsesLocalPasswords()) {
             if (!StringUtils.isBlank(getPassword())) {
                 getUser().setPassword(getPassword());
             }
@@ -372,6 +372,10 @@ public class ProvisionUserCommand implements Validatable {
 
     public void setLookUpBoundUser(boolean lookUpBoundUser) {
         this.lookUpBoundUser = lookUpBoundUser;
+    }
+
+    public boolean getUsesLocalPasswords() {
+        return authenticationSystem.usesLocalPasswords();
     }
 
     ////// BOUND PROPERTIES

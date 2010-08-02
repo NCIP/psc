@@ -2,13 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
@@ -29,7 +27,6 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class AdministerUserController
     extends PscAbstractCommandController<ProvisionUserCommand>
     implements PscAuthorizedHandler
@@ -48,8 +45,13 @@ public class AdministerUserController
 
     @Override
     protected ProvisionUserCommand getCommand(HttpServletRequest request) throws Exception {
-        String username = ServletRequestUtils.getRequiredStringParameter(request, "user");
-        PscUser targetUser = userDetailsService.loadUserByUsername(username);
+        String username = ServletRequestUtils.getStringParameter(request, "user");
+        PscUser targetUser;
+        if (username == null) {
+            targetUser = null;
+        } else {
+            targetUser = userDetailsService.loadUserByUsername(username);
+        }
 
         return ProvisionUserCommand.create(targetUser,
             provisioningSessionFactory, authorizationManager,
