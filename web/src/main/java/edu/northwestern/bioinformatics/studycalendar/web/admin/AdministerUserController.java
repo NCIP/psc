@@ -39,8 +39,11 @@ public class AdministerUserController
     private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     @Override
-    public Collection<ResourceAuthorization> authorizations(String httpMethod, Map<String, String[]> queryParameters) {
-        return ResourceAuthorization.createCollection(PscRole.USER_ADMINISTRATOR, PscRole.SYSTEM_ADMINISTRATOR);
+    public Collection<ResourceAuthorization> authorizations(
+        String httpMethod, Map<String, String[]> queryParameters
+    ) {
+        return ResourceAuthorization.createCollection(
+            PscRole.USER_ADMINISTRATOR, PscRole.SYSTEM_ADMINISTRATOR);
     }
 
     @Override
@@ -60,13 +63,18 @@ public class AdministerUserController
     }
 
     @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+    protected void initBinder(
+        HttpServletRequest request, ServletRequestDataBinder binder
+    ) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(JSONArray.class, "roleChanges", new JsonArrayEditor());
     }
 
     @Override
-    protected ModelAndView handle(ProvisionUserCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handle(
+        ProvisionUserCommand command, BindException errors,
+        HttpServletRequest request, HttpServletResponse response
+    ) throws Exception {
         if ("POST".equals(request.getMethod())) {
             command.apply();
             return new ModelAndView("redirectToUserList");
@@ -83,12 +91,16 @@ public class AdministerUserController
     }
 
     @Required
-    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+    public void setApplicationSecurityManager(
+        ApplicationSecurityManager applicationSecurityManager
+    ) {
         this.applicationSecurityManager = applicationSecurityManager;
     }
 
     @Required
-    public void setProvisioningSessionFactory(ProvisioningSessionFactory provisioningSessionFactory) {
+    public void setProvisioningSessionFactory(
+        ProvisioningSessionFactory provisioningSessionFactory
+    ) {
         this.provisioningSessionFactory = provisioningSessionFactory;
     }
 
@@ -103,7 +115,9 @@ public class AdministerUserController
     }
 
     @Required
-    public void setInstalledAuthenticationSystem(InstalledAuthenticationSystem installedAuthenticationSystem) {
+    public void setInstalledAuthenticationSystem(
+        InstalledAuthenticationSystem installedAuthenticationSystem
+    ) {
         this.installedAuthenticationSystem = installedAuthenticationSystem;
     }
 }
