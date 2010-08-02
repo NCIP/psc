@@ -142,6 +142,24 @@ public class PscUserTest extends TestCase {
         assertEquals("jo", create().toString());
     }
 
+    public void testIsActiveWithNoEndDate() throws Exception {
+        csmUser.setEndDate(null);
+        assertTrue(create().isActive());
+    }
+
+    public void testIsActiveWithFutureEndDate() throws Exception {
+        csmUser.setEndDate(DateTools.createDate(
+            Calendar.getInstance().get(Calendar.YEAR) + 1, 7, 11));
+        assertTrue(create().isActive());
+    }
+
+    public void testIsNotActiveWithPastEndDate() throws Exception {
+        csmUser.setEndDate(DateTools.createDate(2004, 7, 11));
+        assertFalse(create().isActive());
+    }
+
+    ////// displayName
+
     public void testUserDisplayNameWithUsernameOnly() throws Exception {
         csmUser.setFirstName(".");
         csmUser.setLastName("\t");
@@ -167,6 +185,33 @@ public class PscUserTest extends TestCase {
         csmUser.setLastName("Miller");
 
         assertEquals("Miller", create().getDisplayName());
+    }
+
+    public void testLastFirstWithUsernameOnly() throws Exception {
+        csmUser.setFirstName(".");
+        csmUser.setLastName("\t");
+        assertEquals("jo", create().getLastFirst());
+    }
+
+    public void testLastFirstWithFirstAndLastName() throws Exception {
+        csmUser.setFirstName("Josephine");
+        csmUser.setLastName("Miller");
+
+        assertEquals("Miller, Josephine", create().getLastFirst());
+    }
+
+    public void testLastFirstWithFirstNameOnly() throws Exception {
+        csmUser.setFirstName("Josephine");
+        csmUser.setLastName("\n");
+
+        assertEquals("Josephine", create().getLastFirst());
+    }
+
+    public void testLastFirstWithLastNameOnly() throws Exception {
+        csmUser.setFirstName(null);
+        csmUser.setLastName("Miller");
+
+        assertEquals("Miller", create().getLastFirst());
     }
 
     ////// NATURAL ORDER

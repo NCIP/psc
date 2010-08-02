@@ -88,8 +88,26 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
         }
     }
 
+    public String getLastFirst() {
+        List<String> parts = new ArrayList<String>(
+            Arrays.asList(getCsmUser().getLastName(), getCsmUser().getFirstName()));
+        for (Iterator<String> it = parts.iterator(); it.hasNext();) {
+            if (isBlankNamePart(it.next())) it.remove();
+        }
+        if (parts.isEmpty()) {
+            return getUsername();
+        } else {
+            return StringUtils.join(parts, ", ");
+        }
+    }
+
     private boolean isBlankNamePart(String p) {
         return StringUtils.isBlank(p) || p.equals(".");
+    }
+
+    public boolean isActive() {
+        return getCsmUser().getEndDate() == null ||
+            getCsmUser().getEndDate().compareTo(new Date()) > 0;
     }
 
     public int compareTo(PscUser o) {

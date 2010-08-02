@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.Auth
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
@@ -15,6 +16,7 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.easymock.classextension.EasyMock;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -22,6 +24,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,6 +44,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private CsmHelper csmHelper;
     private AuthorizationManager csmAuthorizationManager;
+    private LegacyModeSwitch aSwitch;
 
     @Override
     protected void setUp() throws Exception {
@@ -50,6 +54,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
         suiteRoleMembershipLoader = registerMockFor(SuiteRoleMembershipLoader.class);
         transactionManager = registerMockFor(PlatformTransactionManager.class);
+        aSwitch = new LegacyModeSwitch();
 
         csmHelper = registerMockFor(CsmHelper.class);
         csmAuthorizationManager = registerMockFor(AuthorizationManager.class);
@@ -65,7 +70,7 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         service.setTransactionManager(transactionManager);
         service.setCsmAuthorizationManager(csmAuthorizationManager);
         service.setSuiteRoleMembershipLoader(suiteRoleMembershipLoader);
-        service.setLegacyModeSwitch(new LegacyModeSwitch());
+        service.setLegacyModeSwitch(aSwitch);
         service.setCsmHelper(csmHelper);
 
         csmUser = new User();
@@ -103,6 +108,23 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (UsernameNotFoundException unfe) {
             // good
+        }
+        verifyMocks();
+    }
+
+    public void testDeactivatedCsmUserThrowsException() throws Exception {
+        aSwitch.setOn(false);
+        csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
+        expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
+        expect(suiteRoleMembershipLoader.getRoleMemberships(csmUser.getUserId())).andReturn(
+            Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
+        replayMocks();
+
+        try {
+            service.loadUserByUsername(csmUser.getLoginName());
+            fail("Exception not thrown");
+        } catch (LockedException le) {
+             // good
         }
         verifyMocks();
     }

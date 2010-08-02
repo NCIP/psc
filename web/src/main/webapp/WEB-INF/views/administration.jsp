@@ -23,7 +23,7 @@
         <laf:division>
             <ul class="menu">
                 <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
-                <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/admin/users">Manage users</tags:restrictedListItem>
                 <tags:restrictedListItem url="/pages/admin/manage/sources">Set manual activity source</tags:restrictedListItem>
                 <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
                 <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>

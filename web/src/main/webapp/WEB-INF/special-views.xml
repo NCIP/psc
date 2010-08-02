@@ -65,6 +65,6 @@
 
     <bean id="redirectToUserList" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative" value="true"/>
-        <property name="url" value="/pages/admin/manage/listUsers"/>
+        <property name="url" value="/pages/admin/users"/>
     </bean>
 </beans>

@@ -5,72 +5,59 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 
+<jsp:useBean id="users" scope="request"
+             type="java.util.List<edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser>"/>
+
 <html>
 <head>
     <title>List Users</title>
-    <tags:includeScriptaculous/>
-    <style type="text/css">
-        #container {
-            width: 50em;background-color:#ddd; border:1px solid #999;
-        }
-        h2 {
-            margin-bottom:0px;
-            font-size:15px;
-        }
-        .nameColumn, .rolesColumn, .statusColumn {border-bottom:1px solid #999;}
-        .nameColumn {
-            width:20%;font-weight:bold;
-        }
-        .rolesColumn {
-            width:60%;font-weight:bold;
-        }
-        .statusColumn {
-            width:10%;font-weight:bold;
-        }
-        #container td {
-            vertical-align:top; padding:2px;
-        }
-        tr.oddrow {
-            background-color:#fff;
-        }
-    </style>
+    <tags:stylesheetLink name="yui-sam/2.7.0/datatable"/>
+    <c:forEach items="${fn:split('yahoo-dom-event element-min datasource-min logger-min json-min connection-min get-min datatable-min', ' ')}" var="script">
+        <tags:javascriptLink name="yui/2.7.0/${script}"/>
+    </c:forEach>
+    <script type="text/javascript">
+        var USERS = [
+            <c:forEach items="${users}" var="user" varStatus="uStatus">
+            {
+                username: '${user.username}',
+                active: ${user.active},
+                name: '${user.displayName}',
+                last_first: '${user.lastFirst}'
+            }<c:if test="${not uStatus.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        jQuery(function () {
+            var usersDataSource = new YAHOO.util.LocalDataSource(USERS);
+            usersDataSource.responseSchema = {
+                fields: ['username', 'name', 'active', 'last_first']
+            };
+            var usersDataTable = new YAHOO.widget.DataTable("users", [
+                { key: "username",   label: "Username", sortable: true },
+                { key: "last_first", label: "Name",     sortable: true,
+                    formatter: function (elCell, oRecord, oColumn, oData) {
+                        elCell.innerHTML = "<a href='<c:url value="/pages/admin/users/one?user="/>" + oRecord.getData('username') + "'>" + oData + "</a>";
+                    }
+                },
+                { key: "active",     label: "Status",  sortable: true,
+                    formatter: function (elCell, oRecord, oColumn, oData) {
+                        if (!oData) elCell.innerHTML = "Disabled";
+                    }
+                }
+            ], usersDataSource)
+        });
+    </script>
 </head>
 <body>
-<laf:box title="List User">
+<laf:box title="List users" cssClass="yui-skin-sam">
     <laf:division>
         <div class="row">
-            <a href="<c:url value="/pages/admin/manage/createUser"/>">Create User</a>
+            <a href="<c:url value="/pages/admin/users/one"/>">Create user</a>
         </div>
 
-        <table cellspacing="0" cellpadding="0" border="0" id="container">
-            <tr>
-                <td class="nameColumn">Name</td>
-                <td class="rolesColumn">Role(s)</td>
-                <td class="statusColumn">Status</td>
-            </tr>
-
-            <c:forEach items="${users}" var="user" varStatus="outterCounter">
-                <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
-                    <td>
-                        <a href="<c:url value="/pages/admin/manage/editUser?id=${user.id}"/>">${user.displayName}</a>
-                        <a href="<c:url value="/pages/admin/manage/oneUser?user=${user.name}"/>">(new prov)</a>
-                    </td>
-                    <td>
-                        <c:forEach items="${user.userRoles}" var="userRole" varStatus="innerCounter">
-                            ${userRole.role.displayName}<c:if test="${not innerCounter.last}">,</c:if>
-                        </c:forEach>
-                    </td>
-                    <td>
-                        <c:if test="${user.activeFlag}">
-                            Enabled
-                        </c:if>
-                        <c:if test="${not user.activeFlag}">
-                            Disabled
-                        </c:if>
-                    </td>
-                </tr>
-            </c:forEach>
-        </table>
+        <div id="users">
+            <tags:activityIndicator/> Users loading...
+        </div>
     </laf:division>
 </laf:box>
 </body>

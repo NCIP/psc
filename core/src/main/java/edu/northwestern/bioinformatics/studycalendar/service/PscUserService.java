@@ -14,6 +14,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.DisabledException;
+import org.acegisecurity.LockedException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +44,15 @@ public class PscUserService implements PscUserDetailsService {
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
-        return new PscUser(
+        PscUser pscUser = new PscUser(
             user,
             suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
             legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
         );
+        if (!pscUser.isActive()) {
+            throw new LockedException(username + " is not an active account");
+        }
+        return pscUser;
     }
 
     private User loadCsmUser(String username) {

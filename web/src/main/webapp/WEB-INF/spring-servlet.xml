@@ -518,20 +518,7 @@
         </property>
     </bean>
 
-    <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-        <property name="crumb.parent">
-            <ref local="listUsersController"/>
-        </property>
-    </bean>
-    <bean name="/admin/manage/editUser" id="editUserController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-        <property name="crumb.parent">
-            <ref local="listUsersController"/>
-        </property>
-    </bean>
-
-    <bean name="/admin/manage/oneUser" id="administerUserController"
+    <bean name="/admin/users/one" id="administerUserController"
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.AdministerUserController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
@@ -543,18 +530,18 @@
         </property>
         <property name="authorizationManager" ref="csmAuthorizationManager"/>
         <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
-        <property name="userDetailsService" ref="pscUserDetailsService"/>
+        <property name="userDetailsService" ref="pscUserService"/>
         <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="controllerTools" ref="controllerTools"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>
 
-    <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
+    <bean name="/admin/users" id="listUsersController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="List Users"/>
+                <property name="name" value="Users"/>
                 <property name="parent">
                     <ref local="administrationController"/>
                 </property>
