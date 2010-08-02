@@ -42,8 +42,18 @@ public class PscUserService implements PscUserDetailsService {
     private LegacyModeSwitch legacyModeSwitch;
     private CsmHelper csmHelper;
 
+    public PscUser getProvisionableUser(String username) {
+        User user = loadCsmUser(username);
+        if (user == null) return null;
+        return new PscUser(
+            user, suiteRoleMembershipLoader.getProvisioningRoleMemberships(user.getUserId()),
+            legacyModeSwitch.isOn() ? loadLegacyUser(username) : null
+        );
+    }
+
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
+        if (user == null) throw new UsernameNotFoundException("Unknown user " + username);
         PscUser pscUser = new PscUser(
             user,
             suiteRoleMembershipLoader.getRoleMemberships(user.getUserId()),
@@ -56,9 +66,7 @@ public class PscUserService implements PscUserDetailsService {
     }
 
     private User loadCsmUser(String username) {
-        User user = csmAuthorizationManager.getUser(username);
-        if (user == null) throw new UsernameNotFoundException("Unknown user " + username);
-        return user;
+        return csmAuthorizationManager.getUser(username);
     }
 
     private edu.northwestern.bioinformatics.studycalendar.domain.User loadLegacyUser(String userName) {

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthorizedHandler;
@@ -31,9 +31,11 @@ public class AdministerUserController
     extends PscAbstractCommandController<ProvisionUserCommand>
     implements PscAuthorizedHandler
 {
+    private static final String USER_PARAMETER_NAME = "user";
+
     private AuthorizationManager authorizationManager;
     private ApplicationSecurityManager applicationSecurityManager;
-    private PscUserDetailsService userDetailsService;
+    private PscUserService pscUserService;
     private ProvisioningSessionFactory provisioningSessionFactory;
     private SiteDao siteDao;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
@@ -48,12 +50,12 @@ public class AdministerUserController
 
     @Override
     protected ProvisionUserCommand getCommand(HttpServletRequest request) throws Exception {
-        String username = ServletRequestUtils.getStringParameter(request, "user");
+        String username = ServletRequestUtils.getStringParameter(request, USER_PARAMETER_NAME);
         PscUser targetUser;
         if (username == null) {
             targetUser = null;
         } else {
-            targetUser = userDetailsService.loadUserByUsername(username);
+            targetUser = pscUserService.getProvisionableUser(username);
         }
 
         return ProvisionUserCommand.create(targetUser,
@@ -75,6 +77,12 @@ public class AdministerUserController
         ProvisionUserCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
+        if (command.isNewUser() && request.getParameter(USER_PARAMETER_NAME) != null) {
+            response.sendError(
+                HttpServletResponse.SC_NOT_FOUND,
+                "No user " + request.getParameter(USER_PARAMETER_NAME));
+            return null;
+        }
         if ("POST".equals(request.getMethod())) {
             command.apply();
             return new ModelAndView("redirectToUserList");
@@ -110,8 +118,8 @@ public class AdministerUserController
     }
 
     @Required
-    public void setUserDetailsService(PscUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 
     @Required

@@ -129,6 +129,45 @@ public class PscUserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testGetKnownUserForProvisioning() throws Exception {
+        aSwitch.setOn(false);
+        expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
+        Map<SuiteRole,SuiteRoleMembership> expectedMemberships =
+            Collections.singletonMap(SuiteRole.SYSTEM_ADMINISTRATOR,
+                new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId())).
+            andReturn(expectedMemberships);
+        replayMocks();
+
+        PscUser actual = service.getProvisionableUser("John");
+        assertNotNull(actual);
+        assertSame("Wrong user", "John", actual.getUsername());
+        assertSame("Wrong memberships", expectedMemberships, actual.getMemberships());
+    }
+
+    public void testGetNullCsmUserForProvisioningReturnsNull() throws Exception {
+        aSwitch.setOn(false);
+        expect(csmAuthorizationManager.getUser("John")).andReturn(null);
+        replayMocks();
+
+        assertNull(service.getProvisionableUser(csmUser.getLoginName()));
+        verifyMocks();
+    }
+
+    public void testDeactivatedCsmUserIsReturnedForProvisioning() throws Exception {
+        aSwitch.setOn(false);
+        csmUser.setEndDate(DateTools.createDate(2006, Calendar.MAY, 3));
+        expect(csmAuthorizationManager.getUser("John")).andReturn(csmUser);
+        expect(suiteRoleMembershipLoader.getProvisioningRoleMemberships(csmUser.getUserId())).
+            andReturn(Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
+        replayMocks();
+
+        PscUser actual = service.getProvisionableUser("John");
+        assertNotNull(actual);
+        assertSame("Wrong user", "John", actual.getUsername());
+        verifyMocks();
+    }
+
     public void testGetCsmUsersForRole() throws Exception {
         expect(csmHelper.getRoleCsmGroup(SuiteRole.DATA_READER)).andStubReturn(dataReaderGroup);
         expect(csmAuthorizationManager.getUsers("6")).
