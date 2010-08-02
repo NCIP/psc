@@ -1,7 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
@@ -19,10 +25,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.anyLong;
+import static org.easymock.classextension.EasyMock.expectLastCall;
 
 /**
  * @author Rhett Sutphin
@@ -30,25 +37,32 @@ import static org.easymock.classextension.EasyMock.*;
 public class ProvisionUserCommandTest extends WebTestCase {
     private ProvisionUserCommand command;
 
-    private User user;
+    private User csmUser;
+    private PscUser pscUser;
+    private Site austin, sanAntonio;
+
     private ProvisioningSession pSession;
     private AuthorizationManager authorizationManager;
     private ProvisioningSessionFactory psFactory;
     private AuthenticationSystem authenticationSystem;
+    private SiteDao siteDao;
+
     private Errors errors;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = new User();
-        user.setUserId(15L);
-        user.setLoginName("jo");
-        user.setUpdateDate(new Date()); // or CSM pukes
+        csmUser = new User();
+        csmUser.setUserId(15L);
+        csmUser.setLoginName("jo");
+        csmUser.setUpdateDate(new Date()); // or CSM pukes
+
+        pscUser = new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
 
         authorizationManager = registerMockFor(AuthorizationManager.class);
-        authorizationManager.modifyUser(user);
+        authorizationManager.modifyUser(csmUser);
         expectLastCall().asStub();
-        expect(authorizationManager.getUser(user.getLoginName())).andStubReturn(null); // for validation
+        expect(authorizationManager.getUser(csmUser.getLoginName())).andStubReturn(null); // for validation
 
         psFactory = registerMockFor(ProvisioningSessionFactory.class);
         pSession = registerMockFor(ProvisioningSession.class);
@@ -59,32 +73,138 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
         errors = new MapBindingResult(new HashMap(), "?");
 
-        command = new ProvisionUserCommand(user,
-            new LinkedHashMap<SuiteRole, SuiteRoleMembership>(),
-            psFactory, authorizationManager,
-            authenticationSystem, Arrays.asList(SuiteRole.values()),
-            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
-            true
+        austin = Fixtures.createSite("A", "i-a");
+        sanAntonio = Fixtures.createSite("SA", "i-sa");
+        siteDao = new SiteDao() {
+            @Override
+            public List<Site> getAll() {
+                return Arrays.asList(austin, sanAntonio);
+            }
+        };
+
+        command = actual(pscUser);
+    }
+
+    private ProvisionUserCommand actual(PscUser existingUser) {
+        return actual(existingUser, new PscUserBuilder("sam").
+            add(PscRole.USER_ADMINISTRATOR).forAllSites().
+            toUser());
+    }
+
+    private ProvisionUserCommand actual(PscUser existingUser, PscUser provisioner) {
+        return ProvisionUserCommand.create(existingUser,
+            psFactory, authorizationManager, authenticationSystem, siteDao,
+            provisioner
         );
     }
 
     ////// create
 
     public void testCreateWithoutUserSetsBlankUserInfo() throws Exception {
-        ProvisionUserCommand actual = ProvisionUserCommand.createForUnknownUser(psFactory,
-            authorizationManager, authenticationSystem, Arrays.asList(SuiteRole.values()),
-            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
-            true);
+        ProvisionUserCommand actual = actual(null);
 
         assertNotNull("User not created", actual.getUser());
         assertNotNull("Current should be set", actual.getCurrentRoles());
         assertTrue("Current should be set empty", actual.getCurrentRoles().isEmpty());
     }
 
+    public void testCreateForSysAdminProvisioner() throws Exception {
+        PscUser provisioner = new PscUserBuilder("jo").
+            add(PscRole.SYSTEM_ADMINISTRATOR).
+            toUser();
+        ProvisionUserCommand actual = actual(pscUser, provisioner);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            2, actual.getProvisionableRoles().size());
+        assertTrue("Should be able to provision user admins",
+            actual.getProvisionableRoles().contains(SuiteRole.USER_ADMINISTRATOR));
+        assertTrue("Should be able to provision sys admins",
+            actual.getProvisionableRoles().contains(SuiteRole.SYSTEM_ADMINISTRATOR));
+
+        assertEquals("Should not be able to provision for any specific sites",
+            0, actual.getProvisionableSites().size());
+        assertTrue("Should be able to provision for \"all sites\"",
+            actual.getCanProvisionAllSites());
+
+        /* TODO
+        assertEquals("Should not be able to provision for any specific studies",
+            0, actual.getProvisionableStudies().size());
+        assertFalse("Should be able to provision for \"all sites\"",
+            actual.getCanProvisionAllStudies());
+         */
+    }
+
+    public void testCreateForUnlimitedUserAdministrator() throws Exception {
+        PscUser provisioner = new PscUserBuilder("jo").
+            add(PscRole.USER_ADMINISTRATOR).forAllSites().
+            toUser();
+        ProvisionUserCommand actual = actual(pscUser, provisioner);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            SuiteRole.values().length, actual.getProvisionableRoles().size());
+
+        assertEquals("Should be able to provision for any specific site",
+            2, actual.getProvisionableSites().size());
+        assertTrue("Should be able to provision for austin",
+            actual.getProvisionableSites().contains(austin));
+        assertTrue("Should be able to provision for san antonio",
+            actual.getProvisionableSites().contains(sanAntonio));
+        assertTrue("Should be able to provision for \"all sites\"",
+            actual.getCanProvisionAllSites());
+
+        /* TODO
+        assertEquals("Should not be able to provision for all specific studies",
+            0, actual.getProvisionableStudies().size());
+        assertTrue("Should be able to provision for \"all studies\"",
+            actual.getCanProvisionAllStudies());
+         */
+    }
+
+    public void testCreateForSiteLimitedUserAdministrator() throws Exception {
+        PscUser provisioner = new PscUserBuilder("jo").
+            add(PscRole.USER_ADMINISTRATOR).forSites(sanAntonio).
+            toUser();
+        ProvisionUserCommand actual = actual(pscUser, provisioner);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            SuiteRole.values().length, actual.getProvisionableRoles().size());
+
+        assertEquals("Should be able to provision for the specific site",
+            1, actual.getProvisionableSites().size());
+        assertTrue("Should be able to provision for san antonio",
+            actual.getProvisionableSites().contains(sanAntonio));
+        assertFalse("Should not be able to provision for \"all sites\"",
+            actual.getCanProvisionAllSites());
+
+        /* TODO
+        assertEquals("Should not be able to provision for all specific studies",
+            0, actual.getProvisionableStudies().size());
+        assertTrue("Should be able to provision for \"all studies\"",
+            actual.getCanProvisionAllStudies());
+         */
+    }
+
+    public void testCreateForRandomProvisioner() throws Exception {
+        PscUser provisioner = new PscUserBuilder("jo").
+            add(PscRole.SUBJECT_MANAGER).forSites(sanAntonio).
+            toUser();
+        ProvisionUserCommand actual = actual(pscUser, provisioner);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            0, actual.getProvisionableRoles().size());
+    }
+
+    public void testCreateForNoProvisionerIsBlank() throws Exception {
+        ProvisionUserCommand actual = actual(pscUser, null);
+
+        assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
+            0, actual.getProvisionableRoles().size());
+    }
+
     ////// apply
 
     public void testApplyUpdatesUserIfAlreadySaved() throws Exception {
-        /* expect */ authorizationManager.modifyUser(user);
+        /* expect */ authorizationManager.modifyUser(csmUser);
         replayMocks();
 
         command.apply();
@@ -92,8 +212,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testApplyCreatesUserIfNotSaved() throws Exception {
-        user.setUserId(null);
-        /* expect */ authorizationManager.createUser(user);
+        csmUser.setUserId(null);
+        /* expect */ authorizationManager.createUser(csmUser);
         replayMocks();
 
         command.apply();
@@ -101,11 +221,11 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testApplyCreatesUserIfLookupFailsWhenSoConfigured() throws Exception {
-        user.setUserId(null);
+        csmUser.setUserId(null);
         command.setLookUpBoundUser(true);
         
-        expect(authorizationManager.getUser(user.getLoginName())).andReturn(null);
-        /* expect */ authorizationManager.createUser(user);
+        expect(authorizationManager.getUser(csmUser.getLoginName())).andReturn(null);
+        /* expect */ authorizationManager.createUser(csmUser);
         replayMocks();
 
         command.apply();
@@ -115,14 +235,14 @@ public class ProvisionUserCommandTest extends WebTestCase {
     public void testApplyLooksForExistingUserByUsernameIfConfiguredAndProvidedUserNotAlreadySaved() throws Exception {
         command.setLookUpBoundUser(true);
 
-        user.setUserId(null);
-        user.setEmailId("foo@nihil.it");
+        csmUser.setUserId(null);
+        csmUser.setEmailId("foo@nihil.it");
 
         User savedJo = AuthorizationObjectFactory.createCsmUser("jo");
         savedJo.setUserId(13L);
         savedJo.setUpdateDate(new Date());
         savedJo.setFirstName("Josephine");
-        expect(authorizationManager.getUser(user.getLoginName())).andReturn(savedJo);
+        expect(authorizationManager.getUser(csmUser.getLoginName())).andReturn(savedJo);
 
         /* expect */ authorizationManager.modifyUser(savedJo);
         replayMocks();
@@ -149,14 +269,14 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testApplyAppliesAddSingleScope() throws Exception {
-        expectRoleChange("data_reader", "add", "site", "i-t");
+        expectRoleChange("data_reader", "add", "site", sanAntonio.getAssignedIdentifier());
 
         SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER);
         replayMocks();
 
         command.apply();
         verifyMocks();
-        assertTrue("Membership not made for specified site", srm.getSiteIdentifiers().contains("i-t"));
+        assertTrue("Membership not made for specified site", srm.getSiteIdentifiers().contains(sanAntonio.getAssignedIdentifier()));
     }
 
     public void testApplyAppliesAddGroupOnly() throws Exception {
@@ -180,15 +300,17 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testApplyAppliesRemoveSingleScope() throws Exception {
-        expectRoleChange("data_reader", "remove", "site", "i-t");
+        expectRoleChange("data_reader", "remove", "site", sanAntonio.getAssignedIdentifier());
 
-        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER).forSites("i-t", "i-a");
+        SuiteRoleMembership srm = expectGetAndReplaceMembership(SuiteRole.DATA_READER).
+            forSites(sanAntonio, austin);
         replayMocks();
 
         command.apply();
         verifyMocks();
         assertEquals("Removed site not removed", 1, srm.getSiteIdentifiers().size());
-        assertEquals("Wrong site removed", "i-a", srm.getSiteIdentifiers().get(0));
+        assertEquals("Wrong site removed",
+            austin.getAssignedIdentifier(), srm.getSiteIdentifiers().get(0));
     }
 
     public void testApplySetsPasswordToRequestedValueIfUsingLocalPasswordsAndThePasswordIsSet() throws Exception {
@@ -198,22 +320,22 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
         command.apply();
         verifyMocks();
-        assertEquals("Password not set", "hullaballo", user.getPassword());
+        assertEquals("Password not set", "hullaballo", csmUser.getPassword());
     }
 
     // TODO: make this test deterministic via a non-random source of randomness
     public void testApplySetsPasswordToRandomValueIfUsingNotLocalPasswordsAndTheUserIsNew() throws Exception {
         command.getUser().setUserId(null);
         expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
-        /* expect */ authorizationManager.createUser(user);
+        /* expect */ authorizationManager.createUser(csmUser);
         replayMocks();
 
         command.apply();
         verifyMocks();
-        assertNotNull("Password not set", user.getPassword());
-        assertTrue("Password not of expected length: " + user.getPassword().length(),
-            16 <= user.getPassword().length() && user.getPassword().length() <= 32);
-        String candidate = user.getPassword();
+        assertNotNull("Password not set", csmUser.getPassword());
+        assertTrue("Password not of expected length: " + csmUser.getPassword().length(),
+            16 <= csmUser.getPassword().length() && csmUser.getPassword().length() <= 32);
+        String candidate = csmUser.getPassword();
         for (int i = 0; i < candidate.length(); i++) {
             assertTrue("Character at " + i + " ('" + candidate.charAt(i) + "' 0x" + Integer.toHexString(candidate.charAt(i)) + ") out of range",
                 ' ' <= candidate.charAt(i) && candidate.charAt(i) <= '~');
@@ -226,7 +348,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
         command.apply();
         verifyMocks();
-        assertNull("Password should not be set", user.getPassword());
+        assertNull("Password should not be set", csmUser.getPassword());
     }
 
     public void testApplyDoesNotSetPasswordIfBlank() throws Exception {
@@ -235,11 +357,12 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
         command.apply();
         verifyMocks();
-        assertNull("Password should not be set", user.getPassword());
+        assertNull("Password should not be set", csmUser.getPassword());
     }
 
     private SuiteRoleMembership expectGetAndReplaceMembership(SuiteRole expectedRole) {
-        SuiteRoleMembership srm = new SuiteRoleMembership(expectedRole, null, null);
+        SuiteRoleMembership srm =
+            AuthorizationScopeMappings.createSuiteRoleMembership(PscRole.valueOf(expectedRole));
         expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(srm);
         /* expect */ pSession.replaceRole(srm);
         return srm;
@@ -248,50 +371,32 @@ public class ProvisionUserCommandTest extends WebTestCase {
     ////// authorization
 
     public void testRoleChangesForUnallowedRolesIgnored() throws Exception {
-        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
-            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            psFactory, authorizationManager,
-            authenticationSystem, Arrays.asList(SuiteRole.USER_ADMINISTRATOR),
-            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
-            true
-        );
+        command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR);
 
-        expectRoleChange(limitedCommand, "system_administrator", "add", null, null);
+        expectRoleChange(command, "system_administrator", "add", null, null);
         replayMocks(); // nothing expected
 
-        limitedCommand.apply();
+        command.apply();
         verifyMocks();
     }
 
     public void testSiteChangeWhenDisallowedIgnored() throws Exception {
-        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
-            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            psFactory, authorizationManager,
-            authenticationSystem, Arrays.asList(SuiteRole.values()),
-            Arrays.asList(Fixtures.createSite("T", "i-t")),
-            true
-        );
+        command.setProvisionableSites(Arrays.asList(sanAntonio));
 
-        expectRoleChange(limitedCommand, "data_reader", "add", "site", "i-a");
+        expectRoleChange(command, "data_reader", "add", "site", austin.getAssignedIdentifier());
         replayMocks(); // nothing expected
 
-        limitedCommand.apply();
+        command.apply();
         verifyMocks();
     }
 
     public void testAllSiteChangesWhenDisallowedIgnored() throws Exception {
-        ProvisionUserCommand limitedCommand = new ProvisionUserCommand(user,
-            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            psFactory, authorizationManager,
-            authenticationSystem, Arrays.asList(SuiteRole.values()),
-            Arrays.asList(Fixtures.createSite("A", "i-a"), Fixtures.createSite("T", "i-t")),
-            false
-        );
+        command.setCanProvisionAllSites(false);
 
-        expectRoleChange(limitedCommand, "data_reader", "add", "site", "__ALL__");
+        expectRoleChange(command, "data_reader", "add", "site", "__ALL__");
         replayMocks(); // nothing expected
 
-        limitedCommand.apply();
+        command.apply();
         verifyMocks();
     }
 
@@ -304,7 +409,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testInvalidWhenNewInstanceWithDuplicateUsernameAndLookupNotConfigured() throws Exception {
-        user.setUserId(null);
+        csmUser.setUserId(null);
         command.setLookUpBoundUser(false);
         command.getUser().setLoginName("zap");
 
@@ -318,7 +423,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testValidWhenNewInstanceWithDuplicateUsernameAndLookupIsConfigured() throws Exception {
-        user.setUserId(null);
+        csmUser.setUserId(null);
         command.setLookUpBoundUser(true);
         command.getUser().setLoginName("zap");
 
@@ -333,7 +438,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
     public void testValidWhenDuplicateUsernameAndEditingSavedInstance() throws Exception {
         command.getUser().setLoginName("zap");
-        expect(authorizationManager.getUser("zap")).andReturn(user);
+        expect(authorizationManager.getUser("zap")).andReturn(csmUser);
 
         doValidate();
 
@@ -375,7 +480,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
     public void testPasswordRequiredForNewUserIfLocalPasswordsUsed() throws Exception {
         expect(authenticationSystem.usesLocalPasswords()).andReturn(true);
-        user.setUserId(null);
+        csmUser.setUserId(null);
         command.setPassword(null);
 
         doValidate();
@@ -384,7 +489,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
     public void testPasswordNotRequiredForNewUserIfLocalPasswordsNotUsed() throws Exception {
         expect(authenticationSystem.usesLocalPasswords()).andReturn(false);
-        user.setUserId(null);
+        csmUser.setUserId(null);
         command.setPassword(null);
 
         doValidate();
@@ -461,33 +566,34 @@ public class ProvisionUserCommandTest extends WebTestCase {
     }
 
     public void testJavascriptUserWithOneGroupOnlyRole() throws Exception {
-        command.getCurrentRoles().put(SuiteRole.SYSTEM_ADMINISTRATOR,
-            new SuiteRoleMembership(SuiteRole.SYSTEM_ADMINISTRATOR, null, null));
+        ProvisionUserCommand actual = actual(new PscUserBuilder("jo").add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
         assertEquals("new psc.admin.ProvisionableUser('jo', {\n  system_administrator: {  }\n})",
-            command.getJavaScriptProvisionableUser());
+            actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithOneSiteScopedRole() throws Exception {
-        command.getCurrentRoles().put(SuiteRole.USER_ADMINISTRATOR,
-            new SuiteRoleMembership(SuiteRole.USER_ADMINISTRATOR, null, null).forSites("A", "B"));
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['A', 'B'] }\n})",
-            command.getJavaScriptProvisionableUser());
+        ProvisionUserCommand actual = actual(
+            new PscUserBuilder("jo").add(PscRole.USER_ADMINISTRATOR).forSites(austin).toUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['i-a'] }\n})",
+            actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithOneSitePlusStudyScopedRole() throws Exception {
-        command.getCurrentRoles().put(SuiteRole.DATA_READER,
-            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forSites("A", "B").forAllStudies());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  data_reader: { sites: ['A', 'B'], studies: ['__ALL__'] }\n})",
-            command.getJavaScriptProvisionableUser());
+        ProvisionUserCommand actual = actual(
+            new PscUserBuilder("jo").add(PscRole.DATA_READER).forSites(sanAntonio).forAllStudies().toUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  data_reader: { sites: ['i-sa'], studies: ['__ALL__'] }\n})",
+            actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithMultipleRoles() throws Exception {
-        command.getCurrentRoles().put(SuiteRole.USER_ADMINISTRATOR,
-            new SuiteRoleMembership(SuiteRole.USER_ADMINISTRATOR, null, null).forSites("A", "B"));
-        command.getCurrentRoles().put(SuiteRole.DATA_READER,
-            new SuiteRoleMembership(SuiteRole.DATA_READER, null, null).forAllSites().forStudies("T", "Q"));
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['A', 'B'] },\n  data_reader: { sites: ['__ALL__'], studies: ['T', 'Q'] }\n})",
-            command.getJavaScriptProvisionableUser());
+        ProvisionUserCommand actual = actual(
+            new PscUserBuilder("jo").
+                add(PscRole.USER_ADMINISTRATOR).forSites(austin).
+                add(PscRole.DATA_READER).forAllSites().
+                    forStudies(Fixtures.createBasicTemplate("T"), Fixtures.createBasicTemplate("Q")).
+                toUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['i-a'] },\n  data_reader: { sites: ['__ALL__'], studies: ['T', 'Q'] }\n})",
+            actual.getJavaScriptProvisionableUser());
     }
 
     private void expectRoleChange(String roleKey, String changeKind) {

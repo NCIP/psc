@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.setup;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.web.admin.ProvisionUserCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
@@ -15,9 +14,6 @@ import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.execution.ScopeType;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 
 /**
@@ -37,13 +33,14 @@ public class FirstAdministratorFormAction extends FormAction {
 
     @Override
     protected ProvisionUserCommand createFormObject(RequestContext context) throws Exception {
-        ProvisionUserCommand command = ProvisionUserCommand.createForUnknownUser(
+        ProvisionUserCommand command = ProvisionUserCommand.create(
+            null,
             provisioningSessionFactory, csmAuthorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
-            Arrays.asList(SuiteRole.SYSTEM_ADMINISTRATOR),
-            Collections.<Site>emptyList(), false
+            null, null
         );
         command.setLookUpBoundUser(true);
+        command.setProvisionableRoles(SuiteRole.SYSTEM_ADMINISTRATOR);
         JSONObject addSysAdmin = new JSONObject();
         addSysAdmin.put(ProvisionUserCommand.JSON_CHANGE_PROP_KIND, "add");
         addSysAdmin.put(ProvisionUserCommand.JSON_CHANGE_PROP_ROLE, PscRole.SYSTEM_ADMINISTRATOR.getCsmName());

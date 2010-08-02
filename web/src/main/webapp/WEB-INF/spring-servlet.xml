@@ -542,9 +542,10 @@
             </bean>
         </property>
         <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="applicationSecurityManager" ref="applicationSecurityManager"/>
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
         <property name="provisioningSessionFactory" ref="provisioningSessionFactory"/>
         <property name="siteDao" ref="siteDao"/>
-        <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="controllerTools" ref="controllerTools"/>
         <property name="installedAuthenticationSystem" ref="installedAuthenticationSystem"/>
     </bean>

@@ -1,7 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
@@ -27,15 +31,15 @@ import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.SITE_MAPPING;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
 
 /**
  * @author Rhett Sutphin
@@ -51,75 +55,78 @@ public class ProvisionUserCommand implements Validatable {
     public static final String JSON_CHANGE_PROP_SCOPE_IDENTIFIER = "scopeIdentifier";
     public static final String JSON_ALL_SCOPE_IDENTIFIER = "__ALL__";
 
-    private User user;
+    private PscUser user;
     private JSONArray roleChanges;
-    private final Map<SuiteRole, SuiteRoleMembership> currentRoleMemberships;
 
     private ProvisioningSession provisioningSession;
     private final ProvisioningSessionFactory provisioningSessionFactory;
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
 
-    private final List<SuiteRole> provisionableRoles;
-    private final List<Site> provisionableSites;
-    private final Set<String> provisionableSiteIdentifiers;
-    private final boolean mayProvisionAllSites;
+    private List<SuiteRole> provisionableRoles;
+    private List<Site> provisionableSites;
+    private Set<String> provisionableSiteIdentifiers;
+    private boolean canProvisionAllSites;
     private boolean lookUpBoundUser;
     private String password, rePassword;
 
-    public ProvisionUserCommand(
-        User user,
-        Map<SuiteRole, SuiteRoleMembership> currentRoles,
+    private ProvisionUserCommand(
+        PscUser user,
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
-        AuthenticationSystem authenticationSystem, List<SuiteRole> provisionableRoles,
-        List<Site> provisionableSites, boolean mayProvisionAllSites
+        AuthenticationSystem authenticationSystem
     ) {
         this.user = user;
-        currentRoleMemberships = currentRoles;
         this.provisioningSessionFactory = provisioningSessionFactory;
         this.authorizationManager = authorizationManager;
         this.authenticationSystem = authenticationSystem;
-        this.provisionableRoles = provisionableRoles;
-        this.provisionableSites = provisionableSites;
-        this.provisionableSiteIdentifiers = new LinkedHashSet<String>();
-        for (Site site : provisionableSites) {
-            this.provisionableSiteIdentifiers.add(SITE_MAPPING.getSharedIdentity(site));
-        }
-        this.mayProvisionAllSites = mayProvisionAllSites;
+
+        // locked down by default
+        this.provisionableRoles = Collections.emptyList();
+        this.provisionableSites = Collections.emptyList();
+        this.provisionableSiteIdentifiers = Collections.emptySet();
     }
 
-    public static ProvisionUserCommand createForUnknownUser(
-        ProvisioningSessionFactory psFactory, AuthorizationManager authorizationManager,
-        AuthenticationSystem authenticationSystem, List<SuiteRole> suiteRoles, List<Site> sites, boolean mayProvisionAllSites
-    ) {
-        User user = new User();
-        user.setUpdateDate(new Date()); // because CSM's toString NPEs without it
-        return new ProvisionUserCommand(user,
-            Collections.<SuiteRole, SuiteRoleMembership>emptyMap(),
-            psFactory, authorizationManager,
-            authenticationSystem, suiteRoles, sites, mayProvisionAllSites);
+    public static ProvisionUserCommand create(PscUser existingUser, ProvisioningSessionFactory psFactory, AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem, SiteDao siteDao, PscUser provisioner) {
+        ProvisionUserCommand command = new ProvisionUserCommand(
+            existingUser == null ? AuthorizationObjectFactory.createPscUser() : existingUser,
+            psFactory, authorizationManager, authenticationSystem);
+        if (provisioner == null) return command;
+
+        if (provisioner.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
+            SuiteRoleMembership ua = provisioner.getMembership(PscRole.USER_ADMINISTRATOR);
+            command.setProvisionableRoles(SuiteRole.values());
+            // Cast necessary until upgrade to suite-authorization 0.4.3 or later
+            command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List) ua.getSites());
+            command.setCanProvisionAllSites(ua.isAllSites());
+        } else if (provisioner.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
+            command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR);
+            command.setProvisionableSites(Collections.<Site>emptyList());
+            command.setCanProvisionAllSites(true);
+        }
+
+        return command;
     }
 
     public void validate(Errors errors) {
-        if (StringUtils.isBlank(user.getLoginName())) {
+        if (StringUtils.isBlank(getUser().getLoginName())) {
             errors.rejectValue("user.loginName", "error.user.name.not.specified");
         } else {
-            User existing = authorizationManager.getUser(user.getLoginName());
-            boolean existingMismatch = existing != null && !existing.getUserId().equals(user.getUserId());
+            User existing = authorizationManager.getUser(getUser().getLoginName());
+            boolean existingMismatch = existing != null && !existing.getUserId().equals(getUser().getUserId());
             if (!lookUpBoundUser && ((isNewUser() && existing != null) || existingMismatch)) {
                 errors.rejectValue("user.loginName", "error.user.name.already.exists");
             }
         }
 
-        if (StringUtils.isBlank(user.getFirstName())) {
+        if (StringUtils.isBlank(getUser().getFirstName())) {
             errors.rejectValue("user.firstName", "error.user.firstName.not.specified");
         }
-        if (StringUtils.isBlank(user.getLastName())) {
+        if (StringUtils.isBlank(getUser().getLastName())) {
             errors.rejectValue("user.lastName", "error.user.lastName.not.specified");
         }
 
-        if (!GenericValidator.isEmail(user.getEmailId())) {
+        if (!GenericValidator.isEmail(getUser().getEmailId())) {
             errors.rejectValue("user.emailId", "error.user.email.invalid");
         }
 
@@ -134,7 +141,7 @@ public class ProvisionUserCommand implements Validatable {
     }
 
     private boolean isNewUser() {
-        return user.getUserId() == null;
+        return getUser().getUserId() == null;
     }
 
     public void apply() throws CSTransactionException {
@@ -167,8 +174,8 @@ public class ProvisionUserCommand implements Validatable {
         if (getUser().getUserId() == null && lookUpBoundUser) {
             User found = authorizationManager.getUser(getUser().getLoginName());
             if (found != null) {
-                copyBoundProperties(this.user, found);
-                this.user = found;
+                copyBoundProperties(this.getUser(), found);
+                this.user = AuthorizationObjectFactory.createPscUser(found);
                 authorizationManager.modifyUser(getUser());
             } else {
                 authorizationManager.createUser(getUser());
@@ -277,7 +284,7 @@ public class ProvisionUserCommand implements Validatable {
                 change.getRole(), provisionableRoles);
             return true;
         }
-        if (change.isAllScope() && !this.mayProvisionAllSites) {
+        if (change.isAllScope() && !this.canProvisionAllSites) {
             log.warn("Ignoring unauthorized attempt to change all-sites access.");
             return true;
         }
@@ -331,16 +338,36 @@ public class ProvisionUserCommand implements Validatable {
 
     ////// CONFIGURATION
 
+    public Map<SuiteRole, SuiteRoleMembership> getCurrentRoles() {
+        return user.getMemberships();
+    }
+
     public List<SuiteRole> getProvisionableRoles() {
         return provisionableRoles;
+    }
+
+    public void setProvisionableRoles(SuiteRole... roles) {
+        this.provisionableRoles = Arrays.asList(roles);
     }
 
     public List<Site> getProvisionableSites() {
         return provisionableSites;
     }
 
-    public Map<SuiteRole, SuiteRoleMembership> getCurrentRoles() {
-        return currentRoleMemberships;
+    public void setProvisionableSites(List<Site> provisionableSites) {
+        this.provisionableSites = provisionableSites;
+        this.provisionableSiteIdentifiers = new LinkedHashSet<String>();
+        for (Site site : provisionableSites) {
+            this.provisionableSiteIdentifiers.add(SITE_MAPPING.getSharedIdentity(site));
+        }
+    }
+
+    public boolean getCanProvisionAllSites() {
+        return canProvisionAllSites;
+    }
+
+    public void setCanProvisionAllSites(boolean canProvisionAllSites) {
+        this.canProvisionAllSites = canProvisionAllSites;
     }
 
     public void setLookUpBoundUser(boolean lookUpBoundUser) {
@@ -350,7 +377,8 @@ public class ProvisionUserCommand implements Validatable {
     ////// BOUND PROPERTIES
 
     public User getUser() {
-        return user;
+        // all the bindable properties are on the CSM user object, so this is simpler
+        return user.getCsmUser();
     }
 
     public JSONArray getRoleChanges() {

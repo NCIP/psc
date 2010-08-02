@@ -52,6 +52,10 @@ public class PscUser implements UserDetails {
         return legacyUser;
     }
 
+    public User getCsmUser() {
+        return user;
+    }
+
     public SuiteRoleMembership getMembership(PscRole pscRole) {
         return getMemberships().get(pscRole.getSuiteRole());
     }

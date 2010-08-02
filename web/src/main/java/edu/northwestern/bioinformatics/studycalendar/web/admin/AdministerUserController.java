@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.JsonArrayEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.AccessControl;
@@ -10,10 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.PscAuthor
 import edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.ResourceAuthorization;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 import gov.nih.nci.cabig.ctms.suite.authorization.ProvisioningSessionFactory;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
-import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
 import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -31,9 +30,13 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
-public class AdministerUserController extends PscAbstractCommandController<ProvisionUserCommand> implements PscAuthorizedHandler {
+public class AdministerUserController
+    extends PscAbstractCommandController<ProvisionUserCommand>
+    implements PscAuthorizedHandler
+{
     private AuthorizationManager authorizationManager;
-    private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
+    private ApplicationSecurityManager applicationSecurityManager;
+    private PscUserDetailsService userDetailsService;
     private ProvisioningSessionFactory provisioningSessionFactory;
     private SiteDao siteDao;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
@@ -45,16 +48,13 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
 
     @Override
     protected ProvisionUserCommand getCommand(HttpServletRequest request) throws Exception {
-        String userIdent = ServletRequestUtils.getRequiredStringParameter(request, "user");
-        User targetUser = authorizationManager.getUserById(userIdent);
+        String username = ServletRequestUtils.getRequiredStringParameter(request, "user");
+        PscUser targetUser = userDetailsService.loadUserByUsername(username);
 
-        return new ProvisionUserCommand(
-            targetUser,
-            suiteRoleMembershipLoader.getProvisioningRoleMemberships(targetUser.getUserId()),
-            provisioningSessionFactory,
-            authorizationManager, installedAuthenticationSystem.getAuthenticationSystem(),
-            // TODO: implement authorization limits
-            Arrays.asList(SuiteRole.values()), siteDao.getAll(), true);
+        return ProvisionUserCommand.create(targetUser,
+            provisioningSessionFactory, authorizationManager,
+            installedAuthenticationSystem.getAuthenticationSystem(),
+            siteDao, applicationSecurityManager.getUser());
     }
 
     @Override
@@ -81,6 +81,11 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
     }
 
     @Required
+    public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
+        this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
     public void setProvisioningSessionFactory(ProvisioningSessionFactory provisioningSessionFactory) {
         this.provisioningSessionFactory = provisioningSessionFactory;
     }
@@ -91,8 +96,8 @@ public class AdministerUserController extends PscAbstractCommandController<Provi
     }
 
     @Required
-    public void setSuiteRoleMembershipLoader(SuiteRoleMembershipLoader suiteRoleMembershipLoader) {
-        this.suiteRoleMembershipLoader = suiteRoleMembershipLoader;
+    public void setUserDetailsService(PscUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Required
