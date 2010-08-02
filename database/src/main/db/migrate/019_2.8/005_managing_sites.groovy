@@ -9,6 +9,6 @@ class ManagingSites extends edu.northwestern.bioinformatics.bering.Migration {
     }
 
     void down() {
-        dropColumn('study_sites', 'managing')
+        dropTable('managing_sites');
     }
 }
