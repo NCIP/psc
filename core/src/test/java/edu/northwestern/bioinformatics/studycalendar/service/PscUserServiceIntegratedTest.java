@@ -6,26 +6,35 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 @Deprecated
 public class PscUserServiceIntegratedTest extends DaoTestCase {
-    private PscUserDetailsService service;
+    private PscUserService service;
     private SiteDao siteDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        service = (PscUserDetailsService) getApplicationContext().getBean("pscUserService");
+        service = (PscUserService) getApplicationContext().getBean("pscUserService");
         siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
     }
 
     public void testUserLoading() throws Exception {
         PscUser loaded = service.loadUserByUsername("Joey");
         assertNotNull(loaded);
+    }
+
+    public void testGetUsers() throws Exception {
+        List<PscUser> users = service.getAllUsers();
+        assertEquals("Wrong number of users", 1, users.size());
+        PscUser actualUser = users.get(0);
+        assertEquals("Wrong user", new Long(-14), actualUser.getCsmUser().getUserId());
+        assertEquals("Not expected to have memberships", 0, actualUser.getMemberships().size());
     }
 
     public void testUserModificationsAreNotAutomaticallyPersisted() throws Exception {

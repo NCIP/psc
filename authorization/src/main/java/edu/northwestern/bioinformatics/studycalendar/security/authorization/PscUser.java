@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.security.authorization;
 
+import edu.northwestern.bioinformatics.studycalendar.tools.StringTools;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class PscUser implements UserDetails {
+public class PscUser implements UserDetails, Comparable<PscUser> {
     private User user;
     private Map<SuiteRole, SuiteRoleMembership> memberships;
     private VisibleStudyParameters visibleStudyParameters;
@@ -89,6 +90,19 @@ public class PscUser implements UserDetails {
 
     private boolean isBlankNamePart(String p) {
         return StringUtils.isBlank(p) || p.equals(".");
+    }
+
+    public int compareTo(PscUser o) {
+        if (getCsmUser() != null && o.getCsmUser() != null) {
+            int comp;
+            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
+                compare(getCsmUser().getLastName(), o.getCsmUser().getLastName());
+            if (comp != 0) return comp;
+            comp = StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.
+                compare(getCsmUser().getFirstName(), o.getCsmUser().getFirstName());
+            if (comp != 0) return comp;
+        }
+        return getUsername().compareToIgnoreCase(o.getUsername());
     }
 
     ////// ARBITRARY ATTRIBUTES

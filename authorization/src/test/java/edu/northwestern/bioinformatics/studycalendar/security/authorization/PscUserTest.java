@@ -14,10 +14,13 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+
 /**
  * @author Rhett Sutphin
  */
 public class PscUserTest extends TestCase {
+    private PscUser a, b;
     private User csmUser;
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
@@ -31,6 +34,13 @@ public class PscUserTest extends TestCase {
 
         legacyUser = new edu.northwestern.bioinformatics.studycalendar.domain.User();
         legacyUser.setName(csmUser.getLoginName());
+
+        a = AuthorizationObjectFactory.createPscUser("a");
+        a.getCsmUser().setFirstName("Aeneas");
+        a.getCsmUser().setLastName("Miller");
+        b = AuthorizationObjectFactory.createPscUser("b");
+        a.getCsmUser().setFirstName("Bacchus");
+        a.getCsmUser().setLastName("Vinter");
     }
 
     public void testAuthoritiesAreInternalRolesInLegacyMode() throws Exception {
@@ -158,6 +168,43 @@ public class PscUserTest extends TestCase {
 
         assertEquals("Miller", create().getDisplayName());
     }
+
+    ////// NATURAL ORDER
+
+    public void testNaturalOrderIsByLastNameFirst() throws Exception {
+        a.getCsmUser().setFirstName("Z");
+        b.getCsmUser().setLoginName("a");
+
+        assertNegative(b.compareTo(a));
+        assertPositive(a.compareTo(b));
+    }
+
+    public void testNaturalOrderIsByFirstNameSecond() throws Exception {
+        a.getCsmUser().setLastName(null);
+        b.getCsmUser().setLastName(null);
+
+        a.getCsmUser().setFirstName("Cassandra");
+
+        assertNegative(b.compareTo(a));
+        assertPositive(a.compareTo(b));
+    }
+
+    public void testNaturalOrderIsByUsernameThird() throws Exception {
+        a.getCsmUser().setLastName("Z");
+        a.getCsmUser().setFirstName("Z");
+        b.getCsmUser().setLastName("Z");
+        b.getCsmUser().setFirstName("Z");
+
+        assertNegative(a.compareTo(b));
+        assertPositive(b.compareTo(a));
+    }
+
+    public void testNaturalOrderIsEqualWhenEqual() throws Exception {
+        assertEquals(0, a.compareTo(a));
+        assertEquals(0, b.compareTo(b));
+    }
+
+    ////// HELPERS
 
     private PscUser create(SuiteRoleMembership... memberships) {
         return new PscUser(csmUser, createMembershipMap(memberships), null);

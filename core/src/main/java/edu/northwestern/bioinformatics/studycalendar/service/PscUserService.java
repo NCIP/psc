@@ -5,10 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscR
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
+import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
@@ -20,8 +23,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -90,6 +95,17 @@ public class PscUserService implements PscUserDetailsService {
             log.debug("CSM could not find the group on second load while resolving users for {}", role);
             return Collections.emptySet();
         }
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<PscUser> getAllUsers() {
+        List<User> allCsmUsers = csmAuthorizationManager.getObjects(new UserSearchCriteria(new User()));
+        List<PscUser> users = new ArrayList<PscUser>(allCsmUsers.size());
+        for (User csmUser : allCsmUsers) {
+            users.add(new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap()));
+        }
+        Collections.sort(users);
+        return users;
     }
 
     ////// CONFIGURATION

@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.tools;
 
 import junit.framework.TestCase;
 
+import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
+
 /**
  * @author Rhett Sutphin
  */
@@ -27,5 +29,31 @@ public class StringToolsTest extends TestCase {
 
     public void testHumanizeNull() throws Exception {
         assertNull(StringTools.humanizeClassName(null));
+    }
+
+    public void testCaseInsensitiveOrderWhenFirstNull() throws Exception {
+        assertNegative(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare(null, "abc"));
+    }
+
+    public void testCaseInsensitiveOrderWhenSecondNull() throws Exception {
+        assertPositive(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("abc", null));
+    }
+
+    public void testCaseInsensitiveOrderWhenBothNull() throws Exception {
+        assertEquals(0, StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare(null, null));
+    }
+
+    public void testCaseInsensitiveOrderWhenEquals() throws Exception {
+        assertEquals(0, StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("abc", "abc"));
+    }
+
+    public void testCaseInsensitiveOrderWhenCaseInsensitivelyEquals() throws Exception {
+        assertNegative(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("aBc", "abc"));
+        assertPositive(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("abc", "aBc"));
+    }
+
+    public void testCaseInsensitiveOrderIsCaseInsensitive() throws Exception {
+        assertPositive(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("z", "A"));
+        assertNegative(StringTools.CASE_INSENSITIVE_NULL_SAFE_ORDER.compare("A", "z"));
     }
 }
