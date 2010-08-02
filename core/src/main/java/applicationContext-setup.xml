@@ -13,7 +13,7 @@
     </bean>
 
     <bean id="setupStatus" class="edu.northwestern.bioinformatics.studycalendar.core.setup.SetupStatus">
-        <property name="authorizationService" ref="authorizationService"/>
+        <property name="pscUserService" ref="pscUserService"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="siteDao" ref="siteDao"/>
         <property name="sourceDao" ref="sourceDao"/>

@@ -23,7 +23,7 @@
 
     <bean id="adverseEventConsumer" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCAdverseEventConsumer">
         <property name="scheduledCalendarService" ref="scheduledCalendarService"></property>
-        <property name="pscUserDetailsService" ref="pscUserDetailsService"/>
+        <property name="pscUserDetailsService" ref="pscUserService"/>
         <property name="studySubjectAssignmentDao" ref="studySubjectAssignmentDao"/>
         
     </bean>

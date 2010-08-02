@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.core.setup;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +26,7 @@ public class SetupStatus implements InitializingBean {
     private Map<InitialSetupElement, SetupChecker> checkers;
     private SiteDao siteDao;
     private SourceDao sourceDao;
-    private AuthorizationService authorizationService;
+    private PscUserService pscUserService;
     private JdbcTemplate jdbcTemplate;
 
     private boolean[] prepared;
@@ -47,7 +47,7 @@ public class SetupStatus implements InitializingBean {
 
         checkers.put(ADMINISTRATOR, new SetupChecker() {
             public boolean isPrepared() {
-                return !authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR).isEmpty();
+                return !pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR).isEmpty();
             }
         });
         checkers.put(AUTHENTICATION_SYSTEM, new SetupChecker() {
@@ -122,8 +122,8 @@ public class SetupStatus implements InitializingBean {
     }
 
     @Required
-    public void setAuthorizationService(AuthorizationService authorizationService) {
-        this.authorizationService = authorizationService;
+    public void setPscUserService(PscUserService pscUserService) {
+        this.pscUserService = pscUserService;
     }
 
     @Required

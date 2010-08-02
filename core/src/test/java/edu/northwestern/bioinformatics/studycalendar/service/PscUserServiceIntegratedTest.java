@@ -12,14 +12,14 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
  * @author Rhett Sutphin
  */
 @Deprecated
-public class PscUserDetailsServiceIntegratedTest extends DaoTestCase {
+public class PscUserServiceIntegratedTest extends DaoTestCase {
     private PscUserDetailsService service;
     private SiteDao siteDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        service = (PscUserDetailsService) getApplicationContext().getBean("pscUserDetailsService");
+        service = (PscUserDetailsService) getApplicationContext().getBean("pscUserService");
         siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
     }
 

@@ -6,12 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.service.AuthorizationService;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Collections;
 
-import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -20,7 +20,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     private SetupStatus status;
     private SiteDao siteDao;
     private SourceDao sourceDao;
-    private AuthorizationService authorizationService;
+    private PscUserService pscUserService;
     private JdbcTemplate jdbcTemplate;
 
     @Override
@@ -28,19 +28,19 @@ public class SetupStatusTest extends StudyCalendarTestCase {
         super.setUp();
         siteDao = registerDaoMockFor(SiteDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
-        authorizationService = registerMockFor(AuthorizationService.class);
+        pscUserService = registerMockFor(PscUserService.class);
         jdbcTemplate = registerMockFor(JdbcTemplate.class);
 
         status = new SetupStatus();
         status.setSiteDao(siteDao);
         status.setSourceDao(sourceDao);
-        status.setAuthorizationService(authorizationService);
+        status.setPscUserService(pscUserService);
         status.setJdbcTemplate(jdbcTemplate);
 
         // default behaviors -- satisfied
         expect(siteDao.getCount()).andStubReturn(1);
         expect(sourceDao.getManualTargetSource()).andStubReturn(new Source());
-        expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).andStubReturn(
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).andStubReturn(
             Collections.singleton(AuthorizationObjectFactory.createCsmUser("jo")));
         expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).
             andStubReturn(1);
@@ -83,7 +83,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testAdministratorMissingWhenMissing() throws Exception {
-        expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
             andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
         replayMocks();
 
@@ -93,7 +93,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testAdministratorMissingWhenNotMissing() throws Exception {
-        expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
             andReturn(Collections.singleton(new gov.nih.nci.security.authorization.domainobjects.User()));
         replayMocks();
 
@@ -140,7 +140,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     
     public void testPreAuthenticationSetupGoesToAuthenticationSystemFirst() throws Exception {
         expect(jdbcTemplate.queryForInt(SetupStatus.AUTHENTICATION_SYSTEM_SET_QUERY)).andReturn(0);
-        expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
             andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
         replayMocks();
 
@@ -148,7 +148,7 @@ public class SetupStatusTest extends StudyCalendarTestCase {
     }
 
     public void testPreAuthenticationSetupGoesToAdminSecond() throws Exception {
-        expect(authorizationService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
+        expect(pscUserService.getCsmUsers(PscRole.SYSTEM_ADMINISTRATOR)).
             andReturn(Collections.<gov.nih.nci.security.authorization.domainobjects.User>emptySet());
         replayMocks();
 

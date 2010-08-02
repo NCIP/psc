@@ -7,12 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.service.dataproviders.StudyConsumer;
-import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
-import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,25 +30,6 @@ public class AuthorizationService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyConsumer studyConsumer;
-
-    private CsmHelper csmHelper;
-    private AuthorizationManager csmAuthorizationManager;
-
-    /**
-     * Returns all the users have been designated to have the given role.
-     * Be careful: for performance reasons, this method does not filter out scoped users
-     * who have only been partially provisioned.
-     */
-    @SuppressWarnings({ "unchecked" })
-    public Collection<gov.nih.nci.security.authorization.domainobjects.User> getCsmUsers(PscRole role) {
-        try {
-            Group roleGroup = csmHelper.getRoleCsmGroup(role.getSuiteRole());
-            return csmAuthorizationManager.getUsers(roleGroup.getGroupId().toString());
-        } catch (CSObjectNotFoundException e) {
-            log.debug("CSM could not find the group on second load while resolving users for {}", role);
-            return Collections.emptySet();
-        }
-    }
 
     public List<StudySubjectAssignment> filterAssignmentsForVisibility(List<StudySubjectAssignment> source, User visibleTo) {
         log.debug("Filtering {} assignments for visibility to {}", source.size(), visibleTo);
@@ -207,15 +183,5 @@ public class AuthorizationService {
     @Required
     public void setStudyConsumer(StudyConsumer studyConsumer) {
         this.studyConsumer = studyConsumer;
-    }
-
-    @Required
-    public void setCsmHelper(CsmHelper csmHelper) {
-        this.csmHelper = csmHelper;
-    }
-
-    @Required
-    public void setCsmAuthorizationManager(AuthorizationManager csmAuthorizationManager) {
-        this.csmAuthorizationManager = csmAuthorizationManager;
     }
 }

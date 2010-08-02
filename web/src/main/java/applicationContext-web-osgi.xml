@@ -13,6 +13,6 @@
     <bean id="installedAuthenticationSystem" class="edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem">
         <property name="osgiLayerTools" ref="osgiLayerTools"/>
         <property name="storedAuthenticationSystemConfiguration" ref="storedAuthenticationSystemConfiguration"/>
-        <property name="userDetailsService" ref="pscUserDetailsService"/>
+        <property name="userDetailsService" ref="pscUserService"/>
     </bean>
 </beans>

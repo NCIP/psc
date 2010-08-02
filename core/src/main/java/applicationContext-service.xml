@@ -122,13 +122,14 @@
     <bean id="applicationSecurityManager" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager"/>
 
-    <bean id="pscUserDetailsService"
-        class="edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl">
+    <bean id="pscUserService"
+        class="edu.northwestern.bioinformatics.studycalendar.service.PscUserService">
         <property name="userService" ref="userService"/>
         <property name="transactionManager" ref="transactionManager"/>
-        <property name="authorizationManager" ref="csmAuthorizationManager"/>
+        <property name="csmAuthorizationManager" ref="csmAuthorizationManager"/>
         <property name="suiteRoleMembershipLoader" ref="suiteRoleMembershipLoader"/>
         <property name="legacyModeSwitch" ref="authorizationLegacyModeSwitch"/>
+        <property name="csmHelper" ref="suiteCsmHelper"/>
     </bean>
 
     <!-- DATA PROVIDERS -->

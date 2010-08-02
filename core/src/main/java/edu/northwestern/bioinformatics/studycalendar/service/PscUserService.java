@@ -1,11 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.LegacyModeSwitch;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
+import gov.nih.nci.cabig.ctms.suite.authorization.CsmHelper;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembershipLoader;
 import gov.nih.nci.security.AuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.acegisecurity.DisabledException;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.slf4j.Logger;
@@ -16,17 +20,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @author Rhett Sutphin
  */
-public class PscUserDetailsServiceImpl implements PscUserDetailsService {
+public class PscUserService implements PscUserDetailsService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private UserService userService;
     private PlatformTransactionManager transactionManager;
-    private AuthorizationManager authorizationManager;
+    private AuthorizationManager csmAuthorizationManager;
     private SuiteRoleMembershipLoader suiteRoleMembershipLoader;
     private LegacyModeSwitch legacyModeSwitch;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
+    private CsmHelper csmHelper;
 
     public PscUser loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException, DisabledException {
         User user = loadCsmUser(username);
@@ -38,7 +46,7 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     }
 
     private User loadCsmUser(String username) {
-        User user = authorizationManager.getUser(username);
+        User user = csmAuthorizationManager.getUser(username);
         if (user == null) throw new UsernameNotFoundException("Unknown user " + username);
         return user;
     }
@@ -68,6 +76,22 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
         return def;
     }
 
+    /**
+     * Returns all the users have been designated to have the given role.
+     * Be careful: for performance reasons, this method does not filter out scoped users
+     * who have only been partially provisioned.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public Collection<User> getCsmUsers(PscRole role) {
+        try {
+            Group roleGroup = csmHelper.getRoleCsmGroup(role.getSuiteRole());
+            return csmAuthorizationManager.getUsers(roleGroup.getGroupId().toString());
+        } catch (CSObjectNotFoundException e) {
+            log.debug("CSM could not find the group on second load while resolving users for {}", role);
+            return Collections.emptySet();
+        }
+    }
+
     ////// CONFIGURATION
 
     @Required @Deprecated
@@ -81,8 +105,13 @@ public class PscUserDetailsServiceImpl implements PscUserDetailsService {
     }
 
     @Required
-    public void setAuthorizationManager(AuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
+    public void setCsmAuthorizationManager(AuthorizationManager authorizationManager) {
+        this.csmAuthorizationManager = authorizationManager;
+    }
+
+    @Required
+    public void setCsmHelper(CsmHelper csmHelper) {
+        this.csmHelper = csmHelper;
     }
 
     @Required

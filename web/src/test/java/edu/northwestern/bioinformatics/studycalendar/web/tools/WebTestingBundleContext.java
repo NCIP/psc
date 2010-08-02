@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.security.StubAuthentication
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService;
 import edu.northwestern.bioinformatics.studycalendar.security.internal.CompleteAuthenticationSystemImpl;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
-import edu.northwestern.bioinformatics.studycalendar.service.PscUserDetailsServiceImpl;
+import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
@@ -25,7 +25,7 @@ public class WebTestingBundleContext extends PscTestingBundleContext {
         testingDetails.clear();
         addService(AuthenticationSystem.class, new StubAuthenticationSystem());
         addService(HostBeans.class, new HostBeansImpl());
-        addService(PscUserDetailsService.class, new PscUserDetailsServiceImpl());
+        addService(PscUserDetailsService.class, new PscUserService());
         addService(ConfigurationAdmin.class, new MockConfigurationAdmin());
         addService(FilterSecurityInterceptorConfigurer.class, new FilterSecurityInterceptorConfigurer());
         addService(CompleteAuthenticationSystem.class, new CompleteAuthenticationSystemImpl());

@@ -73,7 +73,7 @@
         <!-- The bundle context is not resolveable when in the core, so we rely on autowiring -->
         <property name="membrane" ref="membrane"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="pscUserDetailsService" ref="pscUserDetailsService"/>
+        <property name="pscUserDetailsService" ref="pscUserService"/>
         <property name="persistenceManager" ref="pscFelixPersistenceManager"/>
     </bean>
 </beans>
