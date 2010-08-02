@@ -5,10 +5,12 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.userdetails.UserDetails;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +72,23 @@ public class PscUser implements UserDetails {
 
     private boolean legacyMode() {
         return this.legacyUser != null;
+    }
+
+    public String getDisplayName() {
+        List<String> parts = new ArrayList<String>(
+            Arrays.asList(getCsmUser().getFirstName(), getCsmUser().getLastName()));
+        for (Iterator<String> it = parts.iterator(); it.hasNext();) {
+            if (isBlankNamePart(it.next())) it.remove();
+        }
+        if (parts.isEmpty()) {
+            return getUsername();
+        } else {
+            return StringUtils.join(parts, ' ');
+        }
+    }
+
+    private boolean isBlankNamePart(String p) {
+        return StringUtils.isBlank(p) || p.equals(".");
     }
 
     ////// ARBITRARY ATTRIBUTES

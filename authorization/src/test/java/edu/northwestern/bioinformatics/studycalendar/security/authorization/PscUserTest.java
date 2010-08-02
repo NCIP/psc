@@ -132,6 +132,33 @@ public class PscUserTest extends TestCase {
         assertEquals("jo", create().toString());
     }
 
+    public void testUserDisplayNameWithUsernameOnly() throws Exception {
+        csmUser.setFirstName(".");
+        csmUser.setLastName("\t");
+        assertEquals("jo", create().getDisplayName());
+    }
+
+    public void testUserDisplayNameWithFirstLastName() throws Exception {
+        csmUser.setFirstName("Josephine");
+        csmUser.setLastName("Miller");
+
+        assertEquals("Josephine Miller", create().getDisplayName());
+    }
+
+    public void testUserDisplayNameWithFirstNameOnly() throws Exception {
+        csmUser.setFirstName("Josephine");
+        csmUser.setLastName("\n");
+
+        assertEquals("Josephine", create().getDisplayName());
+    }
+
+    public void testUserDisplayNameWithLastNameOnly() throws Exception {
+        csmUser.setFirstName(null);
+        csmUser.setLastName("Miller");
+
+        assertEquals("Miller", create().getDisplayName());
+    }
+
     private PscUser create(SuiteRoleMembership... memberships) {
         return new PscUser(csmUser, createMembershipMap(memberships), null);
     }
