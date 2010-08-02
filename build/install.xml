@@ -596,6 +596,7 @@ $HeadURL: http://gforge.nci.nih.gov/svnroot/automation/trunk/software/bda-build-
             <entry key="csm.datasource.username" value="${database.csm.username}" />
             <entry key="csm.datasource.password" value="${database.csm.password}" />
             <entry key="csm.datasource.driver" value="${database.csm.driver}" />
+			<entry key="csm.application.context" value="${database.csm.jaas.config.entry}" />
         </propertyfile>
 		</target>
 
