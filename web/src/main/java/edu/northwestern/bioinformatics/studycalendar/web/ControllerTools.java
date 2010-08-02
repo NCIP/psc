@@ -19,8 +19,6 @@ import edu.northwestern.bioinformatics.studycalendar.tools.FormatTools;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,9 +34,6 @@ import java.util.Map;
  */
 public class ControllerTools {
     private TemplateService templateService;
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
-    // TODO: make date format externally configurable
 
     /**
      * Create a new CustomDateEditor instance, using the given DateFormat
