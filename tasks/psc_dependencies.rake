@@ -285,7 +285,7 @@ GLOBUS = struct(
   :httpclient => JAKARTA_COMMONS.httpclient,
   :codec      => JAKARTA_COMMONS.codec,
   :net        => JAKARTA_COMMONS.net,
-  :servlet    => "javax.servlet:com.springsource.javax.servlet:jar:2.5.0",
+  :servlet    => "javax.servlet:com.springsource.javax.servlet:jar:2.4.0",
   :jms        => "javax.jms:com.springsource.javax.jms:jar:1.1.0",
   :mail       => "javax.mail:com.springsource.javax.mail:jar:1.4.1",
   :wsdl       => "javax.wsdl:com.springsource.javax.wsdl:jar:1.6.1",
@@ -397,7 +397,7 @@ RESTLET = struct({
 })
 
 CONTAINER_PROVIDED = [
-  "javax.servlet:com.springsource.javax.servlet:jar:2.5.0",
+  "javax.servlet:com.springsource.javax.servlet:jar:2.4.0",
   "javax.servlet:com.springsource.javax.servlet.jsp:jar:2.0.0"
 ]
 

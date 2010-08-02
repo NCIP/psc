@@ -15,6 +15,7 @@ public class StudyCalendarTestWebApplicationContextBuilder {
         ServletContext servletContext
     ) {
         return createPscWebApplicationContext(servletContext, new String[] {
+            "classpath:applicationContext-web.xml",
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
             "classpath:applicationContext-web-osgi.xml",
@@ -24,6 +25,7 @@ public class StudyCalendarTestWebApplicationContextBuilder {
 
     public static WebApplicationContext createRealWebApplicationContext(ServletContext servletContext) {
         return createPscWebApplicationContext(servletContext, new String[] {
+            "classpath:applicationContext-web.xml",
             "classpath:applicationContext-command.xml",
             "classpath:applicationContext-webflow.xml",
             "classpath:applicationContext-web-osgi.xml"
