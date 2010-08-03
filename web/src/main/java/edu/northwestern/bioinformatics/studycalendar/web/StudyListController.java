@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -30,7 +29,6 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  * @author Rhett Sutphin
  */
 public class StudyListController extends PscAbstractController implements PscAuthorizedHandler{
-    private StudyDao studyDao;
     private StudyService studyService;
     private ApplicationSecurityManager applicationSecurityManager;
     private StudySiteService studySiteService;
@@ -88,11 +86,6 @@ public class StudyListController extends PscAbstractController implements PscAut
 
     ////// CONFIGURATION
 
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-    
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;

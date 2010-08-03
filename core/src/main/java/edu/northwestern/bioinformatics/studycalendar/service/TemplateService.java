@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Child;
@@ -47,7 +46,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 public class TemplateService {
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
-    private StudyDao studyDao;
     private DaoFinder daoFinder;
 
     public static final String USER_IS_NULL = "User is null";
@@ -282,10 +280,5 @@ public class TemplateService {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
-    }
-
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
     }
 }

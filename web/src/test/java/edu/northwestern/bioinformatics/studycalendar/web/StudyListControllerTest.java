@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -53,11 +52,9 @@ public class StudyListControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         controller = new StudyListController();
-        StudyDao studyDao = registerDaoMockFor(StudyDao.class);
         studyService = registerMockFor(StudyService.class);
         studySiteService = registerMockFor(StudySiteService.class);
 
-        controller.setStudyDao(studyDao);
         controller.setStudyService(studyService);
         controller.setStudySiteService(studySiteService);
         controller.setApplicationSecurityManager(applicationSecurityManager);

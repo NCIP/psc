@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObjectTools;
@@ -41,7 +40,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private DaoFinder daoFinder;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
-    private StudyDao studyDao;
 
     private DeletableDomainObjectDao domainObjectDao;
 
@@ -51,14 +49,12 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
-        studyDao = registerMockFor(StudyDao.class);
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
         service = new TemplateService();
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
-        service.setStudyDao(studyDao);
         service.setDaoFinder(daoFinder);
 
         createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
