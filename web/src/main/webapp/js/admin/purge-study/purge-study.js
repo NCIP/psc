@@ -102,7 +102,7 @@ psc.admin.ps.StudyDetails = (function ($) {
 
     function getStudyDetails(assignedIdentifier, callbacks, failureCallback) {
         var uri = SC.relativeUri(
-                studyResourceUri .replace("\{assigned-identifier\}", assignedIdentifier)
+                studyResourceUri .replace("\{assigned-identifier\}", encodeURIComponent(assignedIdentifier))
                 )
 
         $.ajax({url: uri,
