@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
@@ -28,6 +29,7 @@ import static org.easymock.classextension.EasyMock.expect;
 public class SearchTemplatesControllerTest extends ControllerTestCase {
     private SearchTemplatesController controller;
 
+    private StudyService studyService;
     private TemplateService mockTemplateService;
     private PscUser user;
     private Study a, d, p, r;
@@ -36,12 +38,13 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mockTemplateService = registerMockFor(TemplateService.class);
+        studyService = registerMockFor(StudyService.class);
         user = AuthorizationObjectFactory.createPscUser("jo", new PscRole[0]);
         SecurityContextHolderTestHelper.setSecurityContext(user, "dc");
 
         controller = new SearchTemplatesController();
         controller.setApplicationSecurityManager(applicationSecurityManager);
-        controller.setTemplateService(mockTemplateService);
+        controller.setStudyService(studyService);
         controller.setControllerTools(controllerTools);
 
         a = createBasicTemplate("A");
@@ -72,7 +75,7 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testSuccessModel() throws Exception {
         request.addParameter("searchText", "baz");
-        expect(mockTemplateService.searchVisibleTemplates(user, "baz")).andReturn(
+        expect(studyService.searchVisibleStudies(user, "baz")).andReturn(
             new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
                 put(TemplateAvailability.IN_DEVELOPMENT, singletonList(createResultEntry(user, d))).
                 put(TemplateAvailability.PENDING, asList(
@@ -102,7 +105,7 @@ public class SearchTemplatesControllerTest extends ControllerTestCase {
     @SuppressWarnings({ "unchecked" })
     public void testReturnsAllVisibleWithBlankSearch() throws Exception {
         request.addParameter("searchText", " ");
-        expect(mockTemplateService.searchVisibleTemplates(user, null)).andReturn(
+        expect(studyService.searchVisibleStudies(user, null)).andReturn(
             new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
                 put(TemplateAvailability.IN_DEVELOPMENT, Collections.<StudyWorkflowStatus>emptyList()).
                 put(TemplateAvailability.PENDING, Collections.<StudyWorkflowStatus>emptyList()).

@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
@@ -23,26 +22,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.createSuiteRoleMembership;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -68,17 +55,11 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         daoFinder = registerMockFor(DaoFinder.class);
         domainObjectDao = registerMockFor(DeletableDomainObjectDao.class);
 
-        WorkflowService ws = new WorkflowService();
-        ws.setWorkflowMessageFactory(new WorkflowMessageFactory());
-        ws.setDeltaService(Fixtures.getTestingDeltaService());
-        ws.setApplicationSecurityManager(applicationSecurityManager);
-
         service = new TemplateService();
         service.setDeltaDao(deltaDao);
         service.setUserRoleDao(userRoleDao);
         service.setStudyDao(studyDao);
         service.setDaoFinder(daoFinder);
-        service.setWorkflowService(ws);
 
         createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
     }
@@ -413,68 +394,5 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setGridId(sameGridId);
 
         assertSame(expectedNode, service.findEquivalentChild(study, parameter));
-    }
-
-    public void testGetVisibleTemplates() throws Exception {
-        Site nu = setId(18, createSite("NU", "IL090"));
-        Study readyAndInDev = assignIds(createBasicTemplate("R"));
-        StudySite nuR = setId(81, readyAndInDev.addSite(nu));
-        nuR.approveAmendment(readyAndInDev.getAmendment(), new Date());
-        readyAndInDev.setDevelopmentAmendment(new Amendment());
-
-        Study pending = assignIds(createBasicTemplate("P"), 2);
-        Study inDev = assignIds(createInDevelopmentBasicTemplate("D"), 5);
-
-        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
-            createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
-            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
-
-        expect(studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), null)).
-            andReturn(Arrays.asList(pending, readyAndInDev, inDev));
-
-        replayMocks();
-        Map<TemplateAvailability, List<StudyWorkflowStatus>> actual
-            = service.getVisibleTemplates(user);
-        verifyMocks();
-
-        System.out.println(actual);
-
-        List<StudyWorkflowStatus> actualPending = actual.get(TemplateAvailability.PENDING);
-        assertEquals("Wrong number of pending templates", 1, actualPending.size());
-        assertEquals("Wrong pending template", "P", actualPending.get(0).getStudy().getAssignedIdentifier());
-
-        List<StudyWorkflowStatus> actualAvailable = actual.get(TemplateAvailability.AVAILABLE);
-        assertEquals("Wrong number of available templates", 1, actualAvailable.size());
-        assertEquals("Wrong available template", "R", actualAvailable.get(0).getStudy().getAssignedIdentifier());
-
-        List<StudyWorkflowStatus> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
-        assertEquals("Wrong number of dev templates", 2, actualDev.size());
-        assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
-        assertEquals("Wrong 2nd dev template", "R", actualDev.get(1).getStudy().getAssignedIdentifier());
-    }
-
-    public void testSearchVisibleTemplates() throws Exception {
-        Study inDev = createInDevelopmentBasicTemplate("D");
-
-        PscUser user = AuthorizationObjectFactory.createPscUser("jo",
-            createSuiteRoleMembership(PscRole.STUDY_QA_MANAGER).forAllSites(),
-            createSuiteRoleMembership(PscRole.STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
-
-        expect(studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), "d")).
-            andReturn(Arrays.asList(inDev));
-
-        replayMocks();
-        Map<TemplateAvailability, List<StudyWorkflowStatus>> actual
-            = service.searchVisibleTemplates(user, "d");
-        verifyMocks();
-
-        System.out.println(actual);
-
-        assertEquals("Wrong number of pending templates", 0, actual.get(TemplateAvailability.PENDING).size());
-        assertEquals("Wrong number of available templates", 0, actual.get(TemplateAvailability.AVAILABLE).size());
-
-        List<StudyWorkflowStatus> actualDev = actual.get(TemplateAvailability.IN_DEVELOPMENT);
-        assertEquals("Wrong number of dev templates", 1, actualDev.size());
-        assertEquals("Wrong 1st dev template", "D", actualDev.get(0).getStudy().getAssignedIdentifier());
     }
 }

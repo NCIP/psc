@@ -41,6 +41,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalenda
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
+import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -82,6 +85,7 @@ public class StudyService {
     private ScheduledActivityDao scheduledActivityDao;
     private NotificationService notificationService;
     private DaoFinder daoFinder;
+    private WorkflowService workflowService;
     private ApplicationSecurityManager applicationSecurityManager;
 
     private static final String COPY = "copy";
@@ -162,6 +166,49 @@ public class StudyService {
                 study.addManagingSite((Site) site);
             }
         }
+    }
+
+    /**
+     * Returns all the templates the user can see, sorted by workflow status.  A template may
+     * show up in more than one status for the same user.  (E.g., a template can both be in
+     * development [for the next amendment] and available [for the current one].)
+     */
+    public Map<TemplateAvailability, List<StudyWorkflowStatus>> getVisibleStudies(PscUser user) {
+        return searchVisibleStudies(user, null);
+    }
+
+    /**
+     * Returns all the templates the user can see, sorted by workflow status.  A template may
+     * show up in more than one status for the same user.  (E.g., a template can both be in
+     * development [for the next amendment] and available [for the current one].)
+     */
+    public Map<TemplateAvailability, List<StudyWorkflowStatus>> searchVisibleStudies(PscUser user, String term) {
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> results =
+            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
+                put(TemplateAvailability.IN_DEVELOPMENT, new LinkedList<StudyWorkflowStatus>()).
+                put(TemplateAvailability.PENDING, new LinkedList<StudyWorkflowStatus>()).
+                put(TemplateAvailability.AVAILABLE, new LinkedList<StudyWorkflowStatus>()).
+                toMap();
+
+        for (Study visible : studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), term)) {
+            StudyWorkflowStatus sws = workflowService.build(visible, user);
+            for (TemplateAvailability availability : sws.getTemplateAvailabilities()) {
+                results.get(availability).add(sws);
+            }
+        }
+
+        for (Map.Entry<TemplateAvailability, List<StudyWorkflowStatus>> entry : results.entrySet()) {
+            Comparator<StudyWorkflowStatus> comparator;
+            if (entry.getKey() == TemplateAvailability.IN_DEVELOPMENT) {
+                comparator = StudyWorkflowStatus.byDevelopmentDisplayName();
+            } else {
+                comparator = StudyWorkflowStatus.byReleaseDisplayName();
+            }
+
+            Collections.sort(entry.getValue(), comparator);
+        }
+
+        return results;
     }
 
     public Study copy(final Study study, final Integer selectedAmendmentId) {
@@ -496,6 +543,11 @@ public class StudyService {
     @Required
     public void setApplicationSecurityManager(ApplicationSecurityManager applicationSecurityManager) {
         this.applicationSecurityManager = applicationSecurityManager;
+    }
+
+    @Required
+    public void setWorkflowService(WorkflowService workflowService) {
+        this.workflowService = workflowService;
     }
 
     public void purge(Study study) {

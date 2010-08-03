@@ -8,8 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.WorkflowMessageFactory;
@@ -38,7 +38,8 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     private StudyListController controller;
 
-    private TemplateService templateService;
+    private StudyService studyService;
+    private StudySiteService studySiteService;
 
     private PscUser user;
     private Study completeStudy, incompleteStudy, bothStudy;
@@ -46,7 +47,6 @@ public class StudyListControllerTest extends ControllerTestCase {
     private StudyWorkflowStatus incomplete;
     private StudyWorkflowStatus both;
     private List<Study> allStudies;
-    private StudySiteService studySiteService;
     private List<List<StudySite>> allStudySites;
 
     @Override
@@ -54,11 +54,11 @@ public class StudyListControllerTest extends ControllerTestCase {
         super.setUp();
         controller = new StudyListController();
         StudyDao studyDao = registerDaoMockFor(StudyDao.class);
-        templateService = registerMockFor(TemplateService.class);
+        studyService = registerMockFor(StudyService.class);
         studySiteService = registerMockFor(StudySiteService.class);
 
         controller.setStudyDao(studyDao);
-        controller.setTemplateService(templateService);
+        controller.setStudyService(studyService);
         controller.setStudySiteService(studySiteService);
         controller.setApplicationSecurityManager(applicationSecurityManager);
 
@@ -106,7 +106,7 @@ public class StudyListControllerTest extends ControllerTestCase {
     }
 
     public void testModelAndView() throws Exception {
-        expect(templateService.getVisibleTemplates(user)).andReturn(
+        expect(studyService.getVisibleStudies(user)).andReturn(
             new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
                 put(TemplateAvailability.IN_DEVELOPMENT, Arrays.asList(incomplete, both)).
                 put(TemplateAvailability.PENDING, Collections.singletonList(complete)).

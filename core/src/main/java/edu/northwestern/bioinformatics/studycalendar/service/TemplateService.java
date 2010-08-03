@@ -19,10 +19,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Changeable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
-import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -31,11 +27,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
@@ -55,7 +48,6 @@ public class TemplateService {
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
     private StudyDao studyDao;
-    private WorkflowService workflowService;
     private DaoFinder daoFinder;
 
     public static final String USER_IS_NULL = "User is null";
@@ -248,49 +240,6 @@ public class TemplateService {
         return (idMatch || gridIdMatch);
     }
 
-    /**
-     * Returns all the templates the user can see, sorted by workflow status.  A template may
-     * show up in more than one status for the same user.  (E.g., a template can both be in
-     * development [for the next amendment] and available [for the current one].)
-     */
-    public Map<TemplateAvailability, List<StudyWorkflowStatus>> getVisibleTemplates(PscUser user) {
-        return searchVisibleTemplates(user, null);
-    }
-
-    /**
-     * Returns all the templates the user can see, sorted by workflow status.  A template may
-     * show up in more than one status for the same user.  (E.g., a template can both be in
-     * development [for the next amendment] and available [for the current one].)
-     */
-    public Map<TemplateAvailability, List<StudyWorkflowStatus>> searchVisibleTemplates(PscUser user, String term) {
-        Map<TemplateAvailability, List<StudyWorkflowStatus>> results =
-            new MapBuilder<TemplateAvailability, List<StudyWorkflowStatus>>().
-                put(TemplateAvailability.IN_DEVELOPMENT, new LinkedList<StudyWorkflowStatus>()).
-                put(TemplateAvailability.PENDING, new LinkedList<StudyWorkflowStatus>()).
-                put(TemplateAvailability.AVAILABLE, new LinkedList<StudyWorkflowStatus>()).
-                toMap();
-
-        for (Study visible : studyDao.searchVisibleStudies(user.getVisibleStudyParameters(), term)) {
-            StudyWorkflowStatus sws = workflowService.build(visible, user);
-            for (TemplateAvailability availability : sws.getTemplateAvailabilities()) {
-                results.get(availability).add(sws);
-            }
-        }
-
-        for (Map.Entry<TemplateAvailability, List<StudyWorkflowStatus>> entry : results.entrySet()) {
-            Comparator<StudyWorkflowStatus> comparator;
-            if (entry.getKey() == TemplateAvailability.IN_DEVELOPMENT) {
-                comparator = StudyWorkflowStatus.byDevelopmentDisplayName();
-            } else {
-                comparator = StudyWorkflowStatus.byReleaseDisplayName();
-            }
-
-            Collections.sort(entry.getValue(), comparator);
-        }
-
-        return results;
-    }
-
     protected <T extends Changeable> void delete(Collection<T> collection) {
         for (T t : collection) {
             delete(t);
@@ -333,11 +282,6 @@ public class TemplateService {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
-    }
-
-    @Required
-    public void setWorkflowService(WorkflowService workflowService) {
-        this.workflowService = workflowService;
     }
 
     @Required

@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.Applicat
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -31,7 +31,7 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
  */
 public class StudyListController extends PscAbstractController implements PscAuthorizedHandler{
     private StudyDao studyDao;
-    private TemplateService templateService;
+    private StudyService studyService;
     private ApplicationSecurityManager applicationSecurityManager;
     private StudySiteService studySiteService;
 
@@ -56,7 +56,7 @@ public class StudyListController extends PscAbstractController implements PscAut
         PscUser user = applicationSecurityManager.getUser();
 
         Map<TemplateAvailability, List<StudyWorkflowStatus>> templates =
-            templateService.getVisibleTemplates(user);
+            studyService.getVisibleStudies(user);
 
         studySiteService.refreshStudySitesForStudies(extractStudies(templates));
 
@@ -94,8 +94,8 @@ public class StudyListController extends PscAbstractController implements PscAut
     }
     
     @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 
     @Required

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.StudyWorkflowStatus;
 import edu.northwestern.bioinformatics.studycalendar.service.presenter.TemplateAvailability;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
@@ -28,7 +28,7 @@ import java.util.Set;
  */
 // TODO: use the API instead of this.
 public class SearchTemplatesController extends PscAbstractController implements PscAuthorizedHandler {
-    private TemplateService templateService;
+    private StudyService studyService;
     private ApplicationSecurityManager applicationSecurityManager;
     private static final String SEARCH_TEXT_PARAMETER_NAME = "searchText";
 
@@ -46,7 +46,7 @@ public class SearchTemplatesController extends PscAbstractController implements 
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "searchText parameter is required");
             return null;
         }
-        Map<TemplateAvailability, List<StudyWorkflowStatus>> templates = templateService.searchVisibleTemplates(
+        Map<TemplateAvailability, List<StudyWorkflowStatus>> templates = studyService.searchVisibleStudies(
             applicationSecurityManager.getUser(), getEffectiveSearchText(request));
 
         ModelAndView mv = new ModelAndView("template/ajax/templates");
@@ -76,8 +76,8 @@ public class SearchTemplatesController extends PscAbstractController implements 
     ////// CONFIGURATION
 
     @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 
     @Required
