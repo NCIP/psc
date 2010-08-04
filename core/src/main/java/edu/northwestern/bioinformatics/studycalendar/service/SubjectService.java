@@ -36,16 +36,26 @@ public class SubjectService {
     private SiteService siteService;
     private AmendmentService amendmentService;
 
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator, Set<Population> populations) {
+        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator, populations);
+    }
+
     public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, String studySubjectId, User subjectCoordinator) {
         return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, studySubjectId, subjectCoordinator);
     }
 
     public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, User subjectCoordinator) {
+        return assignSubject(subject, studySite, studySegmentOfFirstEpoch, startDate, assignmentGridIdentifier, studySubjectId, subjectCoordinator, null);
+    }
+
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, String studySubjectId, User subjectCoordinator, Set<Population> populations) {
         Amendment currentAmendment = studySite.getCurrentApprovedAmendment();
         if (currentAmendment == null) {
             throw new StudyCalendarSystemException("The template for %s has not been approved by %s",
                 studySite.getStudy().getName(), studySite.getSite().getName());
         }
+
+        populations = (populations == null) ? Collections.<Population>emptySet() : populations;
 
         StudySubjectAssignment spa = new StudySubjectAssignment();
         spa.setSubject(subject);
@@ -55,6 +65,7 @@ public class SubjectService {
         spa.setSubjectCoordinator(subjectCoordinator);
         spa.setCurrentAmendment(currentAmendment);
         spa.setStudySubjectId(studySubjectId);
+        spa.setPopulations(populations);
         subject.addAssignment(spa);
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
