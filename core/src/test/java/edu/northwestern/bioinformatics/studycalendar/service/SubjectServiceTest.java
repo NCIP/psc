@@ -686,7 +686,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
     StudySegment segment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
 
-    Period period = createPeriod("Period A", 1, 2, 1);
+    Period period = createPeriod("Period A", 1, 1, 1);
     segment.addPeriod(period);
 
     PlannedActivity plannedActivity = createPlannedActivity(a1, 1);
