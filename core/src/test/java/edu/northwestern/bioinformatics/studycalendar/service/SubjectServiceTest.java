@@ -693,10 +693,6 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     plannedActivity.setPopulation(population);
     period.addPlannedActivity(plannedActivity);
 
-    PlannedActivity plannedActivity2 = createPlannedActivity(a1, 2);
-
-    period.addPlannedActivity(plannedActivity2);
-
     Subject subject = createSubject("Bernie", "Mac");
 
     Site site = createSite("NU");
@@ -715,7 +711,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     subjectDao.save((Subject) notNull());
     replayMocks();
 
-    StudySubjectAssignment actual = service.assignSubject(subject, studySite, segment, createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "123", user);
+    StudySubjectAssignment actual = service.assignSubject(subject, studySite, segment, createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "123", user, new HashSet(asList(population)));
     verifyMocks();
 
     assertFalse(actual.getScheduledCalendar().getScheduledStudySegments().get(0).getActivities().isEmpty());
