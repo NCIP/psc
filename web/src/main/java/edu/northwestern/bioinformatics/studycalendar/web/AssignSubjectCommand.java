@@ -112,7 +112,7 @@ public class AssignSubjectCommand implements Validatable, PscAuthorizedCommand {
     public StudySubjectAssignment assignSubject() {
         Subject subject = createAndSaveNewOrExtractExistingSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
-            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getSubjectCoordinator());
+            subject, getStudySite(), getEffectiveStudySegment(), convertStringToDate(getStartDate()), getStudySubjectId(), getSubjectCoordinator(), getPopulations());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
