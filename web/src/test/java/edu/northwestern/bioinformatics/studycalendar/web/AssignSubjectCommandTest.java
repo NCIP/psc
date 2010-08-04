@@ -71,7 +71,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
 
 
         expect(subjectService.assignSubject(subjectEq(subject), EasyMock.eq(studySite), EasyMock.eq(command.getStudySegment()), EasyMock.eq(command.convertStringToDate(command.getStartDate())),
-                EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null))).andReturn(assignment);
+                EasyMock.eq(command.getStudySubjectId()), EasyMock.eq((User)null), (Set<Population>) EasyMock.notNull())).andReturn(assignment);
         subjectService.updatePopulations(assignment, populations);
         replayMocks();
 
