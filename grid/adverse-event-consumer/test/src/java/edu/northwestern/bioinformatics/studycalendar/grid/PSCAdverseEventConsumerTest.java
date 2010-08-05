@@ -169,12 +169,12 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg1");
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		
 		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+		logger.info("### End Authorization test with no AE_REPORTER role");
 	}
 	
 	// User with AE_REPORTER role,Study and No StudySite
@@ -194,12 +194,12 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg2");
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		
 		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+		logger.info("### End Authorization test AE_REPORTER role, associated Study and no studySite");
 	}
 	
 	
@@ -220,18 +220,18 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg3");
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		
 		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+		logger.info("### End Authorization test AE_REPORTER role and no study");
 	}
 	
 
 	// User with AE_REPORTER role, AllStudies and AllSites
 	public void testAuthorizationForAeReporterRoleAllStudiesAllSites() throws Exception{
-		logger.info("### gaurav Running Authorization test AE_REPORTER role, AllStudies and AllSites");
+		logger.info("### Running Authorization test AE_REPORTER role, AllStudies and AllSites");
 		AENotificationType ae = getNotification();
 		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
 		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
@@ -249,6 +249,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		
 		Notification notification = studySubjectAssignment.getNotifications().get(0);
 		assertNotNull("AdverseEvent create test failed: ", notification);
+		logger.info("### End Authorization test AE_REPORTER role, AllStudies and AllSites");
 	}
 	
 	// User with AE_REPORTER role, AllStudies and StudySite
@@ -271,6 +272,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		
 		Notification notification = studySubjectAssignment.getNotifications().get(0);
 		assertNotNull("AdverseEvent create test failed: ", notification);
+		logger.info("### End Authorization test AE_REPORTER role, AllStudies and site");
 	}
 	
 	// User with AE_REPORTER role, associated Study and AllSites
@@ -293,13 +295,14 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		
 		Notification notification = studySubjectAssignment.getNotifications().get(0);
 		assertNotNull("AdverseEvent create test failed: ", notification);
+		logger.info("### End Authorization test AE_REPORTER role, associated Study and AllSites");
 	}
 	
 	
 	
 	
 	public void testCreateNotificationLocal() throws Exception {
-		logger.info("### gaurav Running AdverseEvent Consumer: create Notification test with AE_REPORTER role and correct study and stuDySite");
+		logger.info("### Running AdverseEvent Consumer: create Notification test with AE_REPORTER role and correct study and stuDySite");
 		AENotificationType ae = getNotification();
 		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
 		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
@@ -317,6 +320,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		
 		Notification notification = studySubjectAssignment.getNotifications().get(0);
 		assertNotNull("AdverseEvent create test failed: ", notification);
+		logger.info("### End AdverseEvent Consumer: create Notification test with AE_REPORTER role and correct study and stuDySite");
 	}
 
 	private AENotificationType getNotification() throws Exception {

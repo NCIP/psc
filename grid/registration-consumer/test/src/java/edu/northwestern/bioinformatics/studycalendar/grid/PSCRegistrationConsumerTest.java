@@ -144,7 +144,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 	
 	// User with REGISTRAR role, AllStudies and AllSites
 	public void testAuthorizationForRegistrarRoleAllStudiesAllSites() throws Exception{
-		logger.info("### gaurav Running Authorization test REGISTRAR role, AllStudies and AllSites");
+		logger.info("### Running Authorization test REGISTRAR role, AllStudies and AllSites");
 		Registration registration = getRegistration();
 		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
 		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
@@ -168,6 +168,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			ex.printStackTrace();
 			fail("Test Failed: Error creating registration: " + ex.getMessage());
 		}
+		logger.info("### End Authorization test REGISTRAR role, AllStudies and AllSites");
 	}
 	
 	// User with REGISTRAR role, AllStudies and StudySite
@@ -196,6 +197,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			ex.printStackTrace();
 			fail("Test Failed: Error creating registration: " + ex.getMessage());
 		}
+		logger.info("### End Authorization test REGISTRAR role, AllStudies and site");
 	}
 	
 	// User with REGISTRAR role, associated Study and AllSites
@@ -224,6 +226,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			ex.printStackTrace();
 			fail("Test Failed: Error creating registration: " + ex.getMessage());
 		}
+		logger.info("### End Authorization test REGISTRAR role, associated Study and AllSites");
 	}
 	
 	
@@ -244,7 +247,6 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg1");
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
@@ -252,6 +254,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		EasyMock.verify(pscUserDetailsService);
 
 		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
+		logger.info("### End Authorization test with no REGISTRAR role");
 	}
 	
 	// User with REGISTRAR role,Study and No StudySite
@@ -271,13 +274,13 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg2");
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
+		logger.info("### End Authorization test REGISTRAR role, associated Study and no studySite");
 	}
 	
 	
@@ -298,13 +301,13 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(Exception e){
 			// Test pass
-			logger.info("###gg3");
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
+		logger.info("### End Authorization test REGISTRAR role and no study");
 	}
 
 	protected void onTearDownAfterTransaction() throws Exception {
@@ -338,6 +341,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			ex.printStackTrace();
 			fail("Error creating registration: " + ex.getMessage());
 		}
+		logger.info("### End test create Registration local method");
 	}
 
 	public void testRollbackRegistrationLocal() throws Exception {
@@ -369,6 +373,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 			ex.printStackTrace();
 			fail("Error creating/rollback registration: " + ex.getMessage());
 		}
+		logger.info("### End test rollback Registration local method");
 	}
 
 
