@@ -12,7 +12,7 @@ module Buildr
         xpath = yield :xpath
         puts "xpath= #{xpath}"
         xml_content = yield :xml_content
-        type= yield :insert_type
+        type = (yield :insert_type).to_sym
         xml_content = "<psc_test_root>"+xml_content+"</psc_test_root>"
         parent_xml_element = XPath.first( doc,  xpath)
         puts "parent_xml_element= #{parent_xml_element}"
