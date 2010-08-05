@@ -5,9 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringBlackout;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
@@ -16,6 +19,8 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
  * @author Rhett Sutphin
  */
 public class SiteDaoTest extends DaoTestCase {
+    private static final int ALL_SITES_COUNT = 5;
+
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
     private BlackoutDateDao blackoutDateDao = (BlackoutDateDao) getApplicationContext().getBean("blackoutDateDao");
 
@@ -102,7 +107,7 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testCount() throws Exception {
-        assertEquals("Should be five sites, to start", 5, siteDao.getCount());
+        assertEquals("Should be five sites, to start", ALL_SITES_COUNT, siteDao.getCount());
 
         Site newSite = new Site();
         newSite.setName("Hampshire");
@@ -119,5 +124,46 @@ public class SiteDaoTest extends DaoTestCase {
         siteDao.delete(siteDao.getById(-4));
         interruptSession();
         assertNull(siteDao.getById(-4));
+    }
+
+    public void testGetVisibleSiteIdsForAllManaging() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters().
+            forAllManagingSites());
+        assertNull("Should be null for all", actual);
+    }
+
+    public void testGetVisibleSiteIdsForAllParticipating() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters().
+            forAllParticipatingSites());
+        assertNull("Should be null for all", actual);
+    }
+
+    public void testGetVisibleSiteIdsForNoneRequested() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters());
+        assertEquals("Should be no matches", 0, actual.size());
+    }
+
+    public void testGetVisibleSiteIdsForNoneMatching() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters().
+            forManagingSiteIdentifiers(Collections.singleton("Bogo 12")));
+        assertEquals("Should be no matches", 0, actual.size());
+    }
+
+    public void testGetVisibleSiteIdsForSomeOfEach() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters().
+            forParticipatingSiteIdentifiers(Collections.singleton("TN008")).
+            forManagingSiteIdentifiers(Collections.singleton("IL036")));
+
+        assertEquals("Wrong number of results", 2, actual.size());
+        assertContains("Missing participating site", actual, -11);
+        assertContains("Missing managing site", actual, -10);
+    }
+
+    public void testGetVisibleSiteIdsForAllOfOneSomeOfTheOther() throws Exception {
+        Collection<Integer> actual = siteDao.getVisibleSiteIds(new VisibleSiteParameters().
+            forAllParticipatingSites().
+            forManagingSiteIdentifiers(Collections.singleton("IL036")));
+
+        assertNull("Should be null for all", actual);
     }
 }

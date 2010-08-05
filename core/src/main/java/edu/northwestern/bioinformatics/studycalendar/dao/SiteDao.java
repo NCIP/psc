@@ -1,15 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleSiteParameters;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
@@ -59,8 +65,7 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
     @SuppressWarnings({ "unchecked" })
     public List<Site> getByAssignedIdentifiers(List<String> assignedIdentifiers) {
         List fromDatabase = getHibernateTemplate().findByCriteria(
-            DetachedCriteria.forClass(Site.class).add(
-                MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
+            criteria().add(MoreRestrictions.in("assignedIdentifier", assignedIdentifiers)));
 
         List<Site> inOrder = new ArrayList<Site>();
         for (String assignedIdentifier : assignedIdentifiers) {
@@ -74,6 +79,28 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
             }
         }
         return inOrder;
+    }
+
+    /**
+     * Returns the IDs for all the sites visible according to the given parameters.
+     * If the parameters indicate that all sites should be visible, it may return null.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public Collection<Integer> getVisibleSiteIds(VisibleSiteParameters parameters) {
+        if (parameters.isAllManagingSites() || parameters.isAllParticipatingSites()) {
+            return null; // shortcut for all
+        } else {
+            Set<String> idents = new HashSet<String>();
+            idents.addAll(parameters.getParticipatingSiteIdentifiers());
+            idents.addAll(parameters.getManagingSiteIdentifiers());
+            if (idents.isEmpty()) {
+                return Collections.emptySet();
+            } else {
+                return getHibernateTemplate().findByCriteria(criteria().
+                    add(MoreRestrictions.in("assignedIdentifier", idents)).
+                    setProjection(Projections.id()));
+            }
+        }
     }
 
     /**
@@ -99,5 +126,9 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
     public void deleteAll(List<Site> t) {
         for (Site site : t) site.stopManaging();
         getHibernateTemplate().deleteAll(t);
+    }
+
+    private DetachedCriteria criteria() {
+        return DetachedCriteria.forClass(Site.class);
     }
 }
