@@ -17,7 +17,7 @@
     </bean>
 
     <bean id="csmAuthorizationDao"
-          class="gov.nih.nci.security.dao.AuthorizationDAOImpl"
+          class="gov.nih.nci.cabig.ctms.suite.authorization.csmext.FasterAuthorizationDao"
           >
         <constructor-arg index="0">
             <bean class="gov.nih.nci.security.system.ApplicationSessionFactory"
