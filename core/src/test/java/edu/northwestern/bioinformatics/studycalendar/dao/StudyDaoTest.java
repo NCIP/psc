@@ -237,6 +237,47 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertNull(getDao().getById(-100));
     }
 
+    public void testGetVisibleIdsNullForAll() throws Exception {
+        Collection<Integer> actual = getDao().getVisibleStudyIds(new VisibleStudyParameters().
+            forAllManagingSites());
+
+        assertEquals(null, actual);
+    }
+
+    // further tests for this functionality indirectly via #getVisibleStudies
+    public void testGetVisibleIds() throws Exception {
+        Collection<Integer> actual = getDao().getVisibleStudyIds(new VisibleStudyParameters().
+            forManagingSiteIdentifiers(Arrays.asList("NP")).
+            forParticipatingSiteIdentifiers(Arrays.asList("Ant")));
+
+        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertContains(actual, -100); // Managed by NP
+        assertContains(actual, -101); // Unmanaged
+        assertContains(actual, -104); // Participating at Ant
+    }
+
+    public void testSearchForVisibleIdsWhenAllVisible() throws Exception {
+        Collection<Integer> actual = getDao().searchForVisibleIds(new VisibleStudyParameters().
+            forAllManagingSites(), "nCi");
+
+        assertEquals("Wrong number of results: " + actual, 2, actual.size());
+        assertContains(actual, -100);
+        assertContains(actual, -102);
+    }
+
+    public void testSearchForVisibleIds() throws Exception {
+        Collection<Integer> actual = getDao().searchForVisibleIds(new VisibleStudyParameters().
+            forAllParticipatingSites(), "nCi");
+
+        assertEquals("Wrong number of results: " + actual, 1, actual.size());
+        assertContains(actual, -100);
+    }
+
+    public void testGetVisibleIdsWithNoneRequested() throws Exception {
+        Collection<Integer> actual = getDao().getVisibleStudyIds(new VisibleStudyParameters());
+        assertEquals("Wrong number returned: " + actual, 0, actual.size());
+    }
+
     public void testGetVisibleStudiesWhenAllStudies() throws Exception {
         Collection<Study> actual =
             getDao().getVisibleStudies(new VisibleStudyParameters().forAllManagingSites());
@@ -280,6 +321,11 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
             forSpecificStudyIdentifiers(Arrays.asList("Bogon 14")));
 
+        assertEquals("Wrong number returned: " + actual, 0, actual.size());
+    }
+
+    public void testGetVisibleWithNoneRequested() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters());
         assertEquals("Wrong number returned: " + actual, 0, actual.size());
     }
 

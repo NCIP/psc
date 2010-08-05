@@ -9,6 +9,7 @@ import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -143,8 +145,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     @SuppressWarnings({ "unchecked" })
     public List<Study> searchStudiesByStudyName(final String studySearchText) {
         return (List<Study>) getHibernateTemplate().findByCriteria(
-            criteria().add(Restrictions.ilike(
-                "assignedIdentifier", studySearchText, MatchMode.ANYWHERE)).
+            criteria().add(searchRestriction(studySearchText)).
                 addOrder(Order.desc("assignedIdentifier")));
     }
 
@@ -154,22 +155,34 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
             "from Study s where s.assignedIdentifier LIKE ? ORDER BY s.assignedIdentifier", studySearchText);
     }
 
-    @SuppressWarnings({"unchecked"})
-    public List<Study> getVisibleStudies(VisibleStudyParameters parameters) {
-        return searchVisibleStudies(parameters, null);
+    /**
+     * Returns the IDs for all the studies visible according to the given parameters.
+     * If the parameters indicate that all studies should be visible, it may return null.
+     */
+    public Collection<Integer> getVisibleStudyIds(VisibleStudyParameters parameters) {
+        return searchForVisibleIds(parameters, null);
     }
 
-    @SuppressWarnings({"unchecked"})
-    public List<Study> searchVisibleStudies(VisibleStudyParameters parameters, String search) {
+    /**
+     * Returns the IDs for all the studies visible according to the given parameters whose
+     * assigned identifiers match (case-insensitive substring) the given text.
+     * If the parameters indicate that all studies should be visible, it may return null.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public Collection<Integer> searchForVisibleIds(VisibleStudyParameters parameters, String search) {
         log.debug("Searching visible studies for {} with {}", parameters,
-            search == null ? "no term" : "term \"" + search + "\"");
+            search == null ? "no term" : "term \"" + search + '"');
+        List<DetachedCriteria> separateCriteria = new LinkedList<DetachedCriteria>();
         if (parameters.isAllManagingSites()) {
-            return search == null ? getAll() : searchStudiesByStudyName(search);
+            if (search == null) {
+                return null; // shortcut for all
+            } else {
+                separateCriteria.add(criteria().add(searchRestriction(search)));
+            }
         } else {
             // These are implemented as separate queries and then merged because
             // the criteria are too complex to reliably express in a single statement.
-            List<DetachedCriteria> separateCriteria = new LinkedList<DetachedCriteria>();
-            
+
             if (!parameters.getSpecificStudyIdentifiers().isEmpty()) {
                 separateCriteria.add(criteria().add(MoreRestrictions.
                     in("assignedIdentifier", parameters.getSpecificStudyIdentifiers())));
@@ -189,19 +202,40 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
                     add(MoreRestrictions.in("s.assignedIdentifier", parameters.getParticipatingSiteIdentifiers())));
             }
 
-            Set<Integer> ids = new LinkedHashSet<Integer>();
             for (DetachedCriteria criteria : separateCriteria) {
                 if (search != null) {
-                    criteria.add(Restrictions.ilike("assignedIdentifier", search, MatchMode.ANYWHERE));
+                    criteria.add(searchRestriction(search));
                 }
-                ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
-            }
-            if (ids.isEmpty()) {
-                return Collections.emptyList();
-            } else {
-                return getHibernateTemplate().findByCriteria(criteria().add(MoreRestrictions.in("id", ids)));
             }
         }
+
+        Set<Integer> ids = new LinkedHashSet<Integer>();
+        for (DetachedCriteria criteria : separateCriteria) {
+            ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
+        }
+        return ids;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Study> getVisibleStudies(VisibleStudyParameters parameters) {
+        return searchVisibleStudies(parameters, null);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public List<Study> searchVisibleStudies(VisibleStudyParameters parameters, String search) {
+        Collection<Integer> ids = searchForVisibleIds(parameters, search);
+        if (ids == null) {
+            return getAll();
+        } else if (ids.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return getHibernateTemplate().findByCriteria(
+                criteria().add(MoreRestrictions.in("id", ids)));
+        }
+    }
+
+    private Criterion searchRestriction(String searchText) {
+        return Restrictions.ilike("assignedIdentifier", searchText, MatchMode.ANYWHERE);
     }
 
     private DetachedCriteria criteria() {
