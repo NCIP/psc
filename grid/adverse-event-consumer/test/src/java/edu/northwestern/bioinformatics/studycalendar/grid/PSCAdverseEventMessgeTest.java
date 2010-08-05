@@ -88,11 +88,11 @@ public class PSCAdverseEventMessgeTest /* TODO: renable when working // extends 
     }
 
     public void testCreateNotificationLocal() throws Exception {
-        AENotificationType ae = getNotification();
-        DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-        adverseEventConsumer.register(ae);
-        DataAuditInfo.setLocal(null);
-        Notification notification = studySubjectAssignment.getNotifications().get(0);
+//        AENotificationType ae = getNotification();
+//        DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+//        adverseEventConsumer.register(ae);
+//        DataAuditInfo.setLocal(null);
+//        Notification notification = studySubjectAssignment.getNotifications().get(0);
 
         // TODO: there are no assertions here.  This is not a test.
 

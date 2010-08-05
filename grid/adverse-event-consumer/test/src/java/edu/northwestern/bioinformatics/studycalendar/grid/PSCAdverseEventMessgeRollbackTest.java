@@ -30,22 +30,22 @@ public class PSCAdverseEventMessgeRollbackTest extends AbstractTransactionalSpri
 
 
     public void testRollBackAeNotifications() {
-        StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
-        if (studySubjectAssignment != null) {
-            logger.debug(String.format("Deleting subject's %s ae notifications", studySubjectAssignment.getSubject().getFullName()));
-            studySubjectAssignment.getNotifications().clear();
-            studySubjectAssignmentDao.save(studySubjectAssignment);
-           commitAndStartNewTransaction();
-            studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
-            assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
-            logger.debug(String.format("Sucessfully deleted subject's %s ae notifications", studySubjectAssignment.getSubject().getFullName()));
-
-          createAeNotification();
-
-        } else {
-            logger.error(String.format("no assignment found for given grid id %s", assignmentGridId));
-
-        }
+//        StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
+//        if (studySubjectAssignment != null) {
+//            logger.debug(String.format("Deleting subject's %s ae notifications", studySubjectAssignment.getSubject().getFullName()));
+//            studySubjectAssignment.getNotifications().clear();
+//            studySubjectAssignmentDao.save(studySubjectAssignment);
+//           commitAndStartNewTransaction();
+//            studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
+//            assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+//            logger.debug(String.format("Sucessfully deleted subject's %s ae notifications", studySubjectAssignment.getSubject().getFullName()));
+//
+//          createAeNotification();
+//
+//        } else {
+//            logger.error(String.format("no assignment found for given grid id %s", assignmentGridId));
+//
+//        }
 
 
     }
