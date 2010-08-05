@@ -100,17 +100,4 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
         for (Site site : t) site.stopManaging();
         getHibernateTemplate().deleteAll(t);
     }
-
-    /**
-    * Finds the Sites doing a LIKE search with some search text for sites.
-    *
-    * @param  searchText the text we are searching with
-    * @return      a list of sites found based on the search text
-    */
-
-    public List<Site> searchSitesBySearchText(final String searchText) {
-		String like = "%" + searchText.toLowerCase() + "%";
-		List<Site> sites = getHibernateTemplate().find("from Site s where lower(s.name) LIKE ? ORDER BY s.name DESC ", like);
-		return sites;
-	}
 }
