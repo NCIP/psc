@@ -40,23 +40,23 @@ public class PSCRegistrationConsumerMessgeRollbackTest extends AbstractTransacti
 
 
     public void testRollBackRegistrationMessage() {
-        StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
-        if (studySubjectAssignment != null) {
-            logger.debug(String.format("Deleting assignment for the subject %s", studySubjectAssignment.getSubject().getFullName()));
-            Subject subject = studySubjectAssignment.getSubject();
-            subject.getAssignments().clear();
-            subjectDao.save(subject);
-
-            commitAndStartNewTransaction();
-//            studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
-//            assertNull("assignment must be null for given grid id:" + assignmentGridId, studySubjectAssignment);
-//            logger.info(String.format("Sucessfully deleted assignment for given grid id %s", assignmentGridId));
-
-
-        } else {
-//            logger.error(String.format("no assignment found for given grid id %s", assignmentGridId));
-            createSubjectAssigment();
-        }
+//        StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
+//        if (studySubjectAssignment != null) {
+//            logger.debug(String.format("Deleting assignment for the subject %s", studySubjectAssignment.getSubject().getFullName()));
+//            Subject subject = studySubjectAssignment.getSubject();
+//            subject.getAssignments().clear();
+//            subjectDao.save(subject);
+//
+//            commitAndStartNewTransaction();
+////            studySubjectAssignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
+////            assertNull("assignment must be null for given grid id:" + assignmentGridId, studySubjectAssignment);
+////            logger.info(String.format("Sucessfully deleted assignment for given grid id %s", assignmentGridId));
+//
+//
+//        } else {
+////            logger.error(String.format("no assignment found for given grid id %s", assignmentGridId));
+//            createSubjectAssigment();
+//        }
 
 
     }
