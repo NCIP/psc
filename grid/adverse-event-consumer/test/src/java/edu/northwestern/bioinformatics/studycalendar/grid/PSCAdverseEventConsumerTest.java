@@ -45,6 +45,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
  *
@@ -54,33 +57,31 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 
 	private final Log logger = LogFactory.getLog(getClass());
 	private String assignmentGridId = "48a14190-04d8-4c50-b594-588bb4fe8a7d";  //John Doe
-
-	private PSCAdverseEventConsumer adverseEventConsumer;
-	private String aeFile;
-	private StudyService studyService;
-
 	private String assignedIdentifier = "TEST_STUDY";
 	private String nciCode = "SITE_01";
 	private SiteDao siteDao;
 	private String shortTitle = "SMOTE_TEST";
 	private String longTitle = "Test long title";
-
-
-	private StudySubjectAssignmentDao studySubjectAssignmentDao;
-
-	private SubjectService subjectService;
-
-	private StudyDao studyDao;
-
-	private SubjectDao subjectDao;
-
-	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
 	
+	private PSCAdverseEventConsumer adverseEventConsumer;
+	private String aeFile;
+	private StudyService studyService;
+	private StudySubjectAssignmentDao studySubjectAssignmentDao;
+	private SubjectService subjectService;
+	private StudyDao studyDao;
+	private SubjectDao subjectDao;
+	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
 	private StudySubjectAssignment studySubjectAssignment;
 	
 	private AdverseEventGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
 	private PscUserDetailsService pscUserDetailsService;
 	private PscUser user;
+	private PscUser userWithoutAeReporterRole;
+	private PscUser userWithIncorrectStudy;
+	private PscUser userWithIncorrectStudySite;
+	private PscUser userWithAllStudiesAllSites;
+	private PscUser userWithStudyAllSites;
+	private PscUser userWithAllStudiesStudySite;
 
 	protected void onSetUpInTransaction() throws Exception {
 
@@ -102,15 +103,203 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		SuiteRoleMembership suiteRoleMembership = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
 		suiteRoleMembership.addSite("SITE_01");
 		suiteRoleMembership.addStudy("TEST_STUDY");
-		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.AE_REPORTER,
-				suiteRoleMembership);
-
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership);
 		user = new PscUser(null, expectedMemberships);
+		
+		// User without AE_REPORTER role
+		SuiteRoleMembership suiteRoleMembership1 = new SuiteRoleMembership(SuiteRole.STUDY_CREATOR, null, null);
+		suiteRoleMembership1.addSite("SITE_01");
+		suiteRoleMembership1.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships1 = Collections.singletonMap(SuiteRole.STUDY_CREATOR, suiteRoleMembership1);
+		userWithoutAeReporterRole = new PscUser(null, expectedMemberships1);
+		
+		// User with AE_REPORTER role, No Study
+		SuiteRoleMembership suiteRoleMembership2 = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership2.addSite("SITE_01");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships2 = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership2);
+		userWithIncorrectStudy = new PscUser(null, expectedMemberships2);
+		
+		// User with AE_REPORTER role,Study and No StudySite
+		SuiteRoleMembership suiteRoleMembership3 = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership3.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships3 = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership3);
+		userWithIncorrectStudySite = new PscUser(null, expectedMemberships3);
+		
+		// User with AE_REPORTER role, AllStudies and AllSites
+		SuiteRoleMembership suiteRoleMembership4 = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership4.forAllSites();
+		suiteRoleMembership4.forAllStudies();
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships4 = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership4);
+		userWithAllStudiesAllSites = new PscUser(null, expectedMemberships4);
+		
+		// User with AE_REPORTER role, Study and AllSites
+		SuiteRoleMembership suiteRoleMembership5 = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership5.forAllSites();
+		suiteRoleMembership5.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships5 = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership5);
+		userWithStudyAllSites = new PscUser(null, expectedMemberships5);
+		
+		// User with AE_REPORTER role, AllStudies and StudySite
+		SuiteRoleMembership suiteRoleMembership6 = new SuiteRoleMembership(SuiteRole.AE_REPORTER, null, null);
+		suiteRoleMembership6.addSite("SITE_01");
+		suiteRoleMembership6.forAllStudies();
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships6 = Collections.singletonMap(SuiteRole.AE_REPORTER, suiteRoleMembership6);
+		userWithAllStudiesStudySite = new PscUser(null, expectedMemberships6);
+	}
+	
+	public void testApplicationContextLoads() throws Exception {
+        ApplicationContext loaded = new ClassPathXmlApplicationContext("classpath:applicationContext-grid-ae.xml");
+        assertTrue("No beans loaded", loaded.getBeanDefinitionCount() > 0);
+    }
+	
+	// test the user with no AE_REPORTER role
+	public void testAuthorizationForUserWithoutAeReporterRole() throws Exception{
+		logger.info("### Running Authorization test with no AE_REPORTER role");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
 
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithoutAeReporterRole);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			adverseEventConsumer.register(ae);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg1");
+		}
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+	}
+	
+	// User with AE_REPORTER role,Study and No StudySite
+	public void testAuthorizationForAeReporterRoleWithCorrectStudyNoStudySite() throws Exception{
+		logger.info("### Running Authorization test AE_REPORTER role, associated Study and no studySite");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithIncorrectStudySite);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			adverseEventConsumer.register(ae);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg2");
+		}
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
+	}
+	
+	
+	// User with AE_REPORTER role, No Study
+	public void testAuthorizationForAeReporterRoleWithNoStudy() throws Exception{
+		logger.info("### Running Authorization test AE_REPORTER role and no study");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithIncorrectStudy);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			adverseEventConsumer.register(ae);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg3");
+		}
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		assertTrue("must not have any notificaitons.", studySubjectAssignment.getNotifications().isEmpty());
 	}
 	
 
+	// User with AE_REPORTER role, AllStudies and AllSites
+	public void testAuthorizationForAeReporterRoleAllStudiesAllSites() throws Exception{
+		logger.info("### gaurav Running Authorization test AE_REPORTER role, AllStudies and AllSites");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithAllStudiesAllSites);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		adverseEventConsumer.register(ae);
+		
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		Notification notification = studySubjectAssignment.getNotifications().get(0);
+		assertNotNull("AdverseEvent create test failed: ", notification);
+	}
+	
+	// User with AE_REPORTER role, AllStudies and StudySite
+	public void testAuthorizationForAeReporterRoleAllStudiesStudySite() throws Exception{
+		logger.info("### Running Authorization test AE_REPORTER role, AllStudies and site");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithAllStudiesStudySite);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		adverseEventConsumer.register(ae);
+		
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		Notification notification = studySubjectAssignment.getNotifications().get(0);
+		assertNotNull("AdverseEvent create test failed: ", notification);
+	}
+	
+	// User with AE_REPORTER role, associated Study and AllSites
+	public void testAuthorizationForAeReporterRoleWithCorrectStudyAllSites() throws Exception{
+		logger.info("### Running Authorization test AE_REPORTER role, associated Study and AllSites");
+		AENotificationType ae = getNotification();
+		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);
+
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithStudyAllSites);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+
+		adverseEventConsumer.register(ae);
+		
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		
+		Notification notification = studySubjectAssignment.getNotifications().get(0);
+		assertNotNull("AdverseEvent create test failed: ", notification);
+	}
+	
+	
+	
+	
 	public void testCreateNotificationLocal() throws Exception {
+		logger.info("### gaurav Running AdverseEvent Consumer: create Notification test with AE_REPORTER role and correct study and stuDySite");
 		AENotificationType ae = getNotification();
 		adverseEventConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
 		adverseEventConsumer.setPscUserDetailsService(pscUserDetailsService);

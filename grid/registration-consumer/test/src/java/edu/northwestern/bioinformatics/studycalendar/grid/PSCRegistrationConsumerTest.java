@@ -29,6 +29,9 @@ import java.io.Reader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
  *
@@ -63,6 +66,14 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 	private RegistrationGridServiceAuthorizationHelper gridServicesAuthorizationHelper;
 	private PscUserDetailsService pscUserDetailsService;
 	private PscUser user;
+	private PscUser userWithoutRegistrarRole;
+	private PscUser userWithIncorrectStudy;
+	private PscUser userWithIncorrectStudySite;
+	private PscUser userWithAllStudiesAllSites;
+	private PscUser userWithStudyAllSites;
+	private PscUser userWithAllStudiesStudySite;
+
+	private PscUser userWithStudyCreatorAllSites;
 	
 	protected void onSetUpInTransaction() throws Exception {
 
@@ -77,17 +88,226 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		gridServicesAuthorizationHelper=EasyMock.createMock(RegistrationGridServiceAuthorizationHelper.class);
 		pscUserDetailsService=EasyMock.createMock(PscUserDetailsService.class);
 
+		// User with REGISTRAR role, Study and StudySite
 		SuiteRoleMembership suiteRoleMembership = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
 		suiteRoleMembership.addSite("SITE_01");
 		suiteRoleMembership.addStudy("TEST_STUDY");
-		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.REGISTRAR,
-				suiteRoleMembership);
-
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership);
 		user = new PscUser(null, expectedMemberships);
+		
+		// User without  REGISTRAR role
+		SuiteRoleMembership suiteRoleMembership1 = new SuiteRoleMembership(SuiteRole.STUDY_CREATOR, null, null);
+		suiteRoleMembership1.addSite("SITE_01");
+		suiteRoleMembership1.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships1 = Collections.singletonMap(SuiteRole.STUDY_CREATOR, suiteRoleMembership1);
+		userWithoutRegistrarRole = new PscUser(null, expectedMemberships1);
+		
+		// User with REGISTRAR role, No Study
+		SuiteRoleMembership suiteRoleMembership2 = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership2.addSite("SITE_01");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships2 = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership2);
+		userWithIncorrectStudy = new PscUser(null, expectedMemberships2);
+		
+		// User with REGISTRAR role,Study and No StudySite
+		SuiteRoleMembership suiteRoleMembership3 = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership3.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships3 = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership3);
+		userWithIncorrectStudySite = new PscUser(null, expectedMemberships3);
+		
+		// User with REGISTRAR role, AllStudies and AllSites
+		SuiteRoleMembership suiteRoleMembership4 = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership4.forAllSites();
+		suiteRoleMembership4.forAllStudies();
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships4 = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership4);
+		userWithAllStudiesAllSites = new PscUser(null, expectedMemberships4);
+		
+		// User with REGISTRAR role, Study and AllSites
+		SuiteRoleMembership suiteRoleMembership5 = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership5.forAllSites();
+		suiteRoleMembership5.addStudy("TEST_STUDY");
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships5 = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership5);
+		userWithStudyAllSites = new PscUser(null, expectedMemberships5);
+		
+		// User with REGISTRAR role, AllStudies and StudySite
+		SuiteRoleMembership suiteRoleMembership6 = new SuiteRoleMembership(SuiteRole.REGISTRAR, null, null);
+		suiteRoleMembership6.addSite("SITE_01");
+		suiteRoleMembership6.forAllStudies();
+		Map<SuiteRole,SuiteRoleMembership> expectedMemberships6 = Collections.singletonMap(SuiteRole.REGISTRAR, suiteRoleMembership6);
+		userWithAllStudiesStudySite = new PscUser(null, expectedMemberships6);
+		
+	}
+	
+	public void testApplicationContextLoads() throws Exception {
+        ApplicationContext loaded = new ClassPathXmlApplicationContext("classpath:applicationContext-grid.xml");
+        assertTrue("No beans loaded", loaded.getBeanDefinitionCount() > 0);
+    }
+	
+	// User with REGISTRAR role, AllStudies and AllSites
+	public void testAuthorizationForRegistrarRoleAllStudiesAllSites() throws Exception{
+		logger.info("### gaurav Running Authorization test REGISTRAR role, AllStudies and AllSites");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithAllStudiesAllSites);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try {
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			EasyMock.verify(gridServicesAuthorizationHelper);
+			EasyMock.verify(pscUserDetailsService);
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());  
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Test Failed: Error creating registration: " + ex.getMessage());
+		}
+	}
+	
+	// User with REGISTRAR role, AllStudies and StudySite
+	public void testAuthorizationForRegistrarRoleAllStudiesStudySite() throws Exception{
+		logger.info("### Running Authorization test REGISTRAR role, AllStudies and site");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithAllStudiesStudySite);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try {
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			EasyMock.verify(gridServicesAuthorizationHelper);
+			EasyMock.verify(pscUserDetailsService);
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());  
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Test Failed: Error creating registration: " + ex.getMessage());
+		}
+	}
+	
+	// User with REGISTRAR role, associated Study and AllSites
+	public void testAuthorizationForRegistrarRoleWithCorrectStudyAllSites() throws Exception{
+		logger.info("### Running Authorization test REGISTRAR role, associated Study and AllSites");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithStudyAllSites);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try {
+			registrationConsumer.register(registration);
+			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+			EasyMock.verify(gridServicesAuthorizationHelper);
+			EasyMock.verify(pscUserDetailsService);
+
+			assertNotNull("must create assignment", assignment);
+			assertNotNull("must create assignment", assignment.getId());  
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Test Failed: Error creating registration: " + ex.getMessage());
+		}
+	}
+	
+	
+	// test the user with no REGISTRAR role
+	public void testAuthorizationForUserWithoutRegistrarRole() throws Exception{
+		logger.info("### Running Authorization test with no REGISTRAR role");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithoutRegistrarRole);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			registrationConsumer.register(registration);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg1");
+		}
+		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+
+		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
+	}
+	
+	// User with REGISTRAR role,Study and No StudySite
+	public void testAuthorizationForRegistrarRoleWithCorrectStudyNoStudySite() throws Exception{
+		logger.info("### Running Authorization test REGISTRAR role, associated Study and no studySite");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithIncorrectStudySite);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			registrationConsumer.register(registration);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg2");
+		}
+		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
+	}
+	
+	
+	// User with REGISTRAR role, No Study
+	public void testAuthorizationForRegistrarRoleWithNoStudy() throws Exception{
+		logger.info("### Running Authorization test REGISTRAR role and no study");
+		Registration registration = getRegistration();
+		registrationConsumer.setGridServicesAuthorizationHelper(gridServicesAuthorizationHelper);
+		registrationConsumer.setPscUserDetailsService(pscUserDetailsService);
+		
+		expect(gridServicesAuthorizationHelper.getCurrentUsername()).andReturn("John");
+		expect(pscUserDetailsService.loadUserByUsername("John")).andReturn(userWithIncorrectStudy);
+
+		EasyMock.replay(gridServicesAuthorizationHelper);
+		EasyMock.replay(pscUserDetailsService);
+		try{
+			registrationConsumer.register(registration);
+			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
+		}catch(Exception e){
+			// Test pass
+			logger.info("###gg3");
+		}
+		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+
+		EasyMock.verify(gridServicesAuthorizationHelper);
+		EasyMock.verify(pscUserDetailsService);
+		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
 	}
 
 	protected void onTearDownAfterTransaction() throws Exception {
-
 		DataAuditInfo.setLocal(null);
 	}
 
