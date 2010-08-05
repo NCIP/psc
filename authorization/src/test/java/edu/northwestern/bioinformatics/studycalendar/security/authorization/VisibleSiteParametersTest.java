@@ -11,50 +11,45 @@ import static edu.northwestern.bioinformatics.studycalendar.security.authorizati
 /**
  * @author Rhett Sutphin
  */
-public class VisibleStudyParametersTest extends TestCase {
+public class VisibleSiteParametersTest extends TestCase {
     /////// MANAGING
 
     public void testIsAllManagingSitesForAllInSiteScopedManagingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_QA_MANAGER).forAllSites());
+        VisibleSiteParameters actual = actual(createMembership(STUDY_QA_MANAGER).forAllSites());
         assertAllManagingSites(actual);
-        assertNoSpecificStudies(actual);
     }
 
     public void testParticularManagingSitesForSiteScopedManagingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_QA_MANAGER).forSites("Z", "Y"));
-        assertNoSpecificStudies(actual);
+        VisibleSiteParameters actual = actual(createMembership(STUDY_QA_MANAGER).forSites("Z", "Y"));
         assertManagingSites(actual, "Y", "Z");
     }
 
     public void testIsAllManagingSitesForAllInSiteAndStudyManagingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies());
+        VisibleSiteParameters actual = actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies());
         assertAllManagingSites(actual);
-        assertNoSpecificStudies(actual);
     }
 
     public void testNoManagingSitesForAllInSiteAndSpecificStudyManagingRole() throws Exception {
-        VisibleStudyParameters actual =
+        VisibleSiteParameters actual =
             actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forStudies("ABC"));
-        assertNoManagingSites(actual);
-        assertSpecificStudies(actual, "ABC");
+        assertAllManagingSites(actual);
     }
 
     public void testNoManagingSitesForParticularSiteAndSpecificStudyManagingRole() throws Exception {
-        VisibleStudyParameters actual =
+        VisibleSiteParameters actual =
             actual(createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("Z").forStudies("ABC"));
-        assertNoManagingSites(actual);
-        assertSpecificStudies(actual, "ABC");
+        assertManagingSites(actual, "Z");
     }
 
     public void testAllManagingSitesTrumpsSomeManagingSites() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("Z").forAllStudies(),
             createMembership(STUDY_QA_MANAGER).forAllSites());
         assertAllManagingSites(actual);
     }
 
     public void testManagingSitesListsMerged() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("Z").forAllStudies(),
             createMembership(STUDY_QA_MANAGER).forSites("Y"));
         assertManagingSites(actual, "Z", "Y");
@@ -63,46 +58,41 @@ public class VisibleStudyParametersTest extends TestCase {
     ////// PARTICIPATING
 
     public void testIsAllParticipatingSitesForAllInSiteScopedParticipatingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_TEAM_ADMINISTRATOR).forAllSites());
+        VisibleSiteParameters actual = actual(createMembership(STUDY_TEAM_ADMINISTRATOR).forAllSites());
         assertAllParticipatingSites(actual);
-        assertNoSpecificStudies(actual);
     }
 
     public void testParticularParticipatingSitesForSiteScopedParticipatingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_TEAM_ADMINISTRATOR).forSites("Z", "Y"));
-        assertNoSpecificStudies(actual);
+        VisibleSiteParameters actual = actual(createMembership(STUDY_TEAM_ADMINISTRATOR).forSites("Z", "Y"));
         assertParticipatingSites(actual, "Y", "Z");
     }
 
     public void testIsAllParticipatingSitesForAllInSiteAndStudyParticipatingRole() throws Exception {
-        VisibleStudyParameters actual = actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
+        VisibleSiteParameters actual = actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forAllStudies());
         assertAllParticipatingSites(actual);
-        assertNoSpecificStudies(actual);
     }
 
     public void testNoParticipatingSitesForAllInSiteAndSpecificStudyParticipatingRole() throws Exception {
-        VisibleStudyParameters actual =
+        VisibleSiteParameters actual =
             actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forAllSites().forStudies("ABC"));
-        assertNoParticipatingSites(actual);
-        assertSpecificStudies(actual, "ABC");
+        assertAllParticipatingSites(actual);
     }
 
     public void testNoParticipatingSitesForParticularSiteAndSpecificStudyParticipatingRole() throws Exception {
-        VisibleStudyParameters actual =
+        VisibleSiteParameters actual =
             actual(createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites("Z").forStudies("ABC"));
-        assertNoParticipatingSites(actual);
-        assertSpecificStudies(actual, "ABC");
+        assertParticipatingSites(actual, "Z");
     }
 
     public void testAllParticipatingSitesTrumpsSomeManagingSites() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites("Z").forAllStudies(),
             createMembership(STUDY_QA_MANAGER).forAllSites());
         assertAllParticipatingSites(actual);
     }
-    
+
     public void testParticipatingSitesListsMerged() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_SUBJECT_CALENDAR_MANAGER).forSites("Z").forAllStudies(),
             createMembership(STUDY_TEAM_ADMINISTRATOR).forSites("Y"));
         assertParticipatingSites(actual, "Z", "Y");
@@ -111,15 +101,14 @@ public class VisibleStudyParametersTest extends TestCase {
     ////// GLOBAL
 
     public void testAllManagingSitesForDataImporter() throws Exception {
-        VisibleStudyParameters actual =
+        VisibleSiteParameters actual =
             actual(createMembership(DATA_IMPORTER));
         assertAllManagingSites(actual);
         assertNoParticipatingSites(actual);
-        assertNoSpecificStudies(actual);
     }
 
     public void testDataImporterTrumpsSomeManagingSites() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(DATA_IMPORTER),
             createMembership(STUDY_QA_MANAGER).forSites("T", "K"));
         assertAllManagingSites(actual);
@@ -128,7 +117,7 @@ public class VisibleStudyParametersTest extends TestCase {
     ////// SUBSETS
 
     public void testCreateForSubsetOnlyIncludesTheSubset() throws Exception {
-        VisibleStudyParameters actual = VisibleStudyParameters.create(
+        VisibleSiteParameters actual = VisibleSiteParameters.create(
             AuthorizationObjectFactory.createPscUser("tim",
                 createMembership(DATA_IMPORTER),
                 createMembership(STUDY_QA_MANAGER).forSites("A", "Q"),
@@ -137,11 +126,10 @@ public class VisibleStudyParametersTest extends TestCase {
         );
         assertManagingSites(actual, "A", "Q");
         assertParticipatingSites(actual, "A", "Q");
-        assertNoSpecificStudies(actual);
     }
 
     public void testCreateForSubsetIgnoresRolesTheUserDoesNotHave() throws Exception {
-        VisibleStudyParameters actual = VisibleStudyParameters.create(
+        VisibleSiteParameters actual = VisibleSiteParameters.create(
             AuthorizationObjectFactory.createPscUser("tim",
                 createMembership(DATA_IMPORTER),
                 createMembership(STUDY_QA_MANAGER).forSites("A", "Q"),
@@ -150,55 +138,32 @@ public class VisibleStudyParametersTest extends TestCase {
         );
         assertNoManagingSites(actual);
         assertParticipatingSites(actual, "Q", "J");
-        assertNoSpecificStudies(actual);
     }
 
     ////// toString
 
     public void testToStringWhenLimitedBySites() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_QA_MANAGER).forSites("T"),
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forSites("K").forAllStudies());
-        assertEquals("VisibleStudyParameters[participatingSites=[T]; managingSites=[T, K]; specificStudies=[]]",
+        assertEquals("VisibleSiteParameters[participatingSites=[T]; managingSites=[T, K]]",
             actual.toString());
     }
 
     public void testToStringWhenUnlimited() throws Exception {
-        VisibleStudyParameters actual = actual(
+        VisibleSiteParameters actual = actual(
             createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forAllStudies());
-        assertEquals("VisibleStudyParameters[participatingSites=[]; managingSites=all; specificStudies=[]]",
-            actual.toString());
-    }
-
-    public void testToStringForSpecificStudies() throws Exception {
-        VisibleStudyParameters actual = actual(
-            createMembership(STUDY_TEAM_ADMINISTRATOR).forAllSites(),
-            createMembership(STUDY_CALENDAR_TEMPLATE_BUILDER).forAllSites().forStudies("ABC", "FOO 15"));
-        assertEquals("VisibleStudyParameters[participatingSites=all; managingSites=[]; specificStudies=[ABC, FOO 15]]",
+        assertEquals("VisibleSiteParameters[participatingSites=[]; managingSites=all]",
             actual.toString());
     }
 
     ////// HELPERS
 
-    private void assertNoSpecificStudies(VisibleStudyParameters actual) {
-        assertSpecificStudies(actual);
-    }
-
-    private void assertSpecificStudies(VisibleStudyParameters actual, String... expectedStudies) {
-        Collection<String> actualIdentifiers = actual.getSpecificStudyIdentifiers();
-        assertEquals("Wrong number of study identifiers",
-            expectedStudies.length, actualIdentifiers.size());
-        for (String expectedStudy : expectedStudies) {
-            assertTrue("Missing " + expectedStudy + " from " + actualIdentifiers,
-                actualIdentifiers.contains(expectedStudy));
-        }
-    }
-
-    private void assertNoManagingSites(VisibleStudyParameters actual) {
+    private void assertNoManagingSites(VisibleSiteParameters actual) {
         assertManagingSites(actual);
     }
 
-    private void assertManagingSites(VisibleStudyParameters actual, String... expectedSites) {
+    private void assertManagingSites(VisibleSiteParameters actual, String... expectedSites) {
         Collection<String> actualIdentifiers = actual.getManagingSiteIdentifiers();
         assertFalse("Should not be for all managing sites", actual.isAllManagingSites());
         assertEquals("Wrong number of managing site identifiers",
@@ -209,15 +174,15 @@ public class VisibleStudyParametersTest extends TestCase {
         }
     }
 
-    private void assertAllManagingSites(VisibleStudyParameters actual) {
+    private void assertAllManagingSites(VisibleSiteParameters actual) {
         assertTrue("Should be for all managing sites", actual.isAllManagingSites());
     }
 
-    private void assertNoParticipatingSites(VisibleStudyParameters actual) {
+    private void assertNoParticipatingSites(VisibleSiteParameters actual) {
         assertParticipatingSites(actual);
     }
 
-    private void assertParticipatingSites(VisibleStudyParameters actual, String... expectedSites) {
+    private void assertParticipatingSites(VisibleSiteParameters actual, String... expectedSites) {
         Collection<String> actualIdentifiers = actual.getParticipatingSiteIdentifiers();
         assertEquals("Wrong number of participating site identifiers",
             expectedSites.length, actualIdentifiers.size());
@@ -227,7 +192,7 @@ public class VisibleStudyParametersTest extends TestCase {
         }
     }
 
-    private void assertAllParticipatingSites(VisibleStudyParameters actual) {
+    private void assertAllParticipatingSites(VisibleSiteParameters actual) {
         assertTrue("Should be for all participating sites", actual.isAllParticipatingSites());
     }
 
@@ -235,7 +200,7 @@ public class VisibleStudyParametersTest extends TestCase {
         return new SuiteRoleMembership(role.getSuiteRole(), null, null);
     }
 
-    private VisibleStudyParameters actual(SuiteRoleMembership... memberships) {
+    private VisibleSiteParameters actual(SuiteRoleMembership... memberships) {
         for (SuiteRoleMembership membership : memberships) {
             try {
                 membership.checkComplete();
@@ -244,7 +209,7 @@ public class VisibleStudyParametersTest extends TestCase {
                 fail("Test setup failure: " + save.getMessage());
             }
         }
-        return VisibleStudyParameters.create(
+        return VisibleSiteParameters.create(
             AuthorizationObjectFactory.createPscUser("jo", memberships));
     }
 }

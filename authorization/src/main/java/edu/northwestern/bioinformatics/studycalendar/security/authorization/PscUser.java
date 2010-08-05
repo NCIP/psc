@@ -22,7 +22,6 @@ import java.util.Map;
 public class PscUser implements UserDetails, Comparable<PscUser> {
     private User user;
     private Map<SuiteRole, SuiteRoleMembership> memberships;
-    private VisibleStudyParameters visibleStudyParameters;
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
     private Map<String, Object> attributes;
@@ -174,11 +173,24 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
         return isAccountNonExpired();
     }
 
-    public synchronized VisibleStudyParameters getVisibleStudyParameters() {
-        if (visibleStudyParameters == null) {
-            visibleStudyParameters = VisibleStudyParameters.create(this);
-        }
-        return visibleStudyParameters;
+    ////// DOMAIN RELATIONSHIPS
+
+    /**
+     * Returns a description of the studies visible to the user in the given roles.
+     * If no roles are specified, it returns a description for all the roles the
+     * user has.
+     */
+    public VisibleStudyParameters getVisibleStudyParameters(PscRole... roles) {
+        return VisibleStudyParameters.create(this, roles.length == 0 ? PscRole.values() : roles);
+    }
+
+    /**
+     * Returns a description of the sites visible to the user in the given roles.
+     * If no roles are specified, it returns a description for all the roles the
+     * user has.
+     */
+    public VisibleSiteParameters getVisibleSiteParameters(PscRole... roles) {
+        return VisibleSiteParameters.create(this, roles.length == 0 ? PscRole.values() : roles);
     }
 
     ////// OBJECT METHODS
