@@ -217,7 +217,7 @@ SECURITY = struct(
   :acegi_csm  => ctms_commons_lib("ctms-commons-acegi-csm"),
   :acegi_grid => ctms_commons_lib("ctms-commons-acegi-grid"),
   :suite_authorization => cbiit_lib('gov.nih.nci.cabig.ctms',
-    'ctms-commons-suite-authorization', 'ctms-commons-suite-authorization', '0.4.2.RELEASE'),
+    'ctms-commons-suite-authorization', 'ctms-commons-suite-authorization', '0.4.3.RELEASE'),
   :clm => cbiit_lib(
     "gov.nih.nci.security", "clm", "clm", "4.2.beta",
     "Conditional-Package" => "test.*", "Export-Package" => "gov.nih.nci.*"

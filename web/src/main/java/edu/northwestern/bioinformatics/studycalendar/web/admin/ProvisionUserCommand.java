@@ -87,6 +87,7 @@ public class ProvisionUserCommand implements Validatable {
         this.provisionableSiteIdentifiers = Collections.emptySet();
     }
 
+    @SuppressWarnings({ "unchecked" })
     public static ProvisionUserCommand create(PscUser existingUser, ProvisioningSessionFactory psFactory, AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem, SiteDao siteDao, PscUser provisioner) {
         ProvisionUserCommand command = new ProvisionUserCommand(
             existingUser == null ? AuthorizationObjectFactory.createPscUser() : existingUser,
@@ -96,8 +97,7 @@ public class ProvisionUserCommand implements Validatable {
         if (provisioner.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
             SuiteRoleMembership ua = provisioner.getMembership(PscRole.USER_ADMINISTRATOR);
             command.setProvisionableRoles(SuiteRole.values());
-            // Cast necessary until upgrade to suite-authorization 0.4.3 or later
-            command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List) ua.getSites());
+            command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
             command.setCanProvisionAllSites(ua.isAllSites());
         } else if (provisioner.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
             command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR);

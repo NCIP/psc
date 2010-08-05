@@ -165,7 +165,7 @@ public class AssignSubjectController extends PscSimpleFormController implements 
         if (sscmMembership.isAllSites()) {
             applicableStudySites = study.getStudySites();
         } else {
-            Collection<Object> coordSites = sscmMembership.getSites();
+            Collection<?> coordSites = sscmMembership.getSites();
             applicableStudySites = new LinkedList<StudySite>();
             for (StudySite studySite : study.getStudySites()) {
                 if (coordSites.contains(studySite.getSite())) applicableStudySites.add(studySite);

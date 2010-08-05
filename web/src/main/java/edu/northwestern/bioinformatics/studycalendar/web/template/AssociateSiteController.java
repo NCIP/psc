@@ -60,13 +60,14 @@ public class AssociateSiteController extends PscSimpleFormController implements 
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
     @Override
      protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         PscUser user = applicationSecurityManager.getUser();
         study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
         isAllSites = false;
         List<Site> sites = null;
-        List<Object> listOfSiteObj = new ArrayList<Object>();
+        List<Site> listOfSiteObj = new ArrayList<Site>();
 
         SuiteRoleMembership membershipForStudyQAManager = user.getMembership(PscRole.STUDY_QA_MANAGER);
         SuiteRoleMembership membershipForCalendarTemplateBuilders = user.getMembership(PscRole.STUDY_CALENDAR_TEMPLATE_BUILDER);
@@ -80,7 +81,7 @@ public class AssociateSiteController extends PscSimpleFormController implements 
                 sites = study.getSites();
                 isAllSites = true;
             } else {
-                listOfSiteObj = membershipForStudyQAManager.getSites();
+                listOfSiteObj = (List<Site>) membershipForStudyQAManager.getSites();
             }
         }
 
@@ -92,9 +93,9 @@ public class AssociateSiteController extends PscSimpleFormController implements 
                     isAllSites = true;
                 }
             } else {
-                List<Object> siteObj1 = membershipForCalendarTemplateBuilders.getSites();
+                List<Site> siteObj1 = (List<Site>) membershipForCalendarTemplateBuilders.getSites();
                 if (siteObj1 != null) {
-                    listOfSiteObj.addAll(membershipForCalendarTemplateBuilders.getSites());
+                    listOfSiteObj.addAll(siteObj1);
                 }
             }
         }
