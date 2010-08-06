@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
@@ -12,6 +13,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import java.util.*;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSite;
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.createPscUser;
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.expect;
 
@@ -24,7 +26,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();    //To change body of overridden methods use File | Settings | File Templates.
+        super.setUp();
         csmUser = new User();
         csmUser.setLoginName("jo");
         csmUser.setUpdateDate(new Date());
@@ -38,8 +40,8 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     public void testManageableSitesForAllSites() {
-        PscUser user = create(
-            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
+        PscUser user = createPscUser(
+            "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
         );
 
         expect(siteService.getAll()).andReturn(sites);
@@ -53,8 +55,8 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     public void testManageableSitesForOneSite() {
-        PscUser user = create(
-            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
+        PscUser user = createPscUser(
+            "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
         );
 
         replayMocks();
@@ -66,7 +68,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     public void testManageableSitesForNoRole() {
-        PscUser user = create();
+        PscUser user = createPscUser("jo");
 
         replayMocks();
         List<Site> actual = command(user).getManageableSites();
@@ -76,8 +78,8 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     public void testSiteCreationEnabled() {
-        PscUser user = create(
-            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
+        PscUser user = createPscUser(
+            "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
         );
 
         replayMocks();
@@ -88,8 +90,8 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
     
     public void testSiteCreationEnabledIsFalse() {
-        PscUser user = create(
-            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
+        PscUser user = createPscUser(
+            "jo", createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
         );
 
         replayMocks();
@@ -100,7 +102,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     public void testSiteCreationEnabledWithoutRole() {
-        PscUser user = create();
+        PscUser user = createPscUser("jo");
 
         replayMocks();
         boolean actual = command(user).isSiteCreationEnabled();
@@ -110,21 +112,8 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     ////// HELPERS
-
-    private PscUser create(SuiteRoleMembership... memberships) {
-        return new PscUser(csmUser, createMembershipMap(memberships), null);
-    }
-
     private SuiteRoleMembership createMembership(SuiteRole suiteRole) {
         return new SuiteRoleMembership(suiteRole, AuthorizationScopeMappings.SITE_MAPPING, null);
-    }
-
-    private Map<SuiteRole, SuiteRoleMembership> createMembershipMap(SuiteRoleMembership[] memberships) {
-        Map<SuiteRole, SuiteRoleMembership> map = new LinkedHashMap<SuiteRole, SuiteRoleMembership>();
-        for (SuiteRoleMembership membership : memberships) {
-            map.put(membership.getRole(), membership);
-        }
-        return map;
     }
 
     private ManageSitesCommand command(PscUser user) {
