@@ -169,7 +169,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(RemoteException e){
-			assertEquals("Test failed:","Access Denied: user does not have AE_REPORTER role", e.getFaultReason());
+			assertEquals("Test failed:","Access Denied: user does not have AE_REPORTER role", e.getMessage());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -194,7 +194,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(RemoteException e){
-			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Site Identifier : SITE_01", e.getFaultReason());
+			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Site Identifier : SITE_01", e.getMessage());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -220,7 +220,7 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
 		}catch(RemoteException e){
-			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Study Identifier : TEST_STUDY", e.getFaultReason());
+			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Study Identifier : TEST_STUDY", e.getMessage());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
