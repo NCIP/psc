@@ -18,7 +18,6 @@ import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.expect;
 
 public class ManageSitesCommandTest extends StudyCalendarTestCase {
-    private User csmUser;
     private SiteService siteService;
     private List<Site> sites;
     private Site nu;
@@ -27,9 +26,6 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        csmUser = new User();
-        csmUser.setLoginName("jo");
-        csmUser.setUpdateDate(new Date());
 
         siteService = registerMockFor(SiteService.class);
 
