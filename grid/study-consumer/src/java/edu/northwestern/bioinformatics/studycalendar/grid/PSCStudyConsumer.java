@@ -114,12 +114,12 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
     StudyCreationException {
-    	try{
+    	
     		// Check for Role
     		// 1. If Role is Study_creator, then process, otherwise Access Denied.
     		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
     		if(suiteRoleMembership == null){
-    			String message = "Access Denied";
+    			String message = "Access Denied: user does not have STUDY_CREATOR role";
     			throw getInvalidStudyException(message);
     		}
 
@@ -179,10 +179,6 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     		studyService.save(study);
     		logger.info("Created the study :" + study.getId());
-    	}catch (Exception e) {
-    		logger.error("Error while creating study", e);
-    		throw new RemoteException("Unable to create study", e);
-    	} 
     }
 
 	/**
