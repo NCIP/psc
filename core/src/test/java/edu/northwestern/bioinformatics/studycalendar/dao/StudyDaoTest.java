@@ -346,6 +346,48 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertStudyPresent(-100, actual);
     }
 
+    public void testGetVisibleWithNoneVisible() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters());
+        assertEquals("Wrong number of results", 0, actual.size());
+    }
+
+    public void testGetVisibleForManagingWhenAll() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forAllManagingSites());
+        assertEquals("Wrong number returned", ALL_STUDIES_COUNT, actual.size());
+    }
+
+    public void testGetVisibleForManagingWhenSome() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudiesForTemplateManagement(
+            new VisibleStudyParameters().forManagingSiteIdentifiers(Arrays.asList("NP")).
+                forParticipatingSiteIdentifiers(Arrays.asList("Ant")));
+        // participating should be ignored
+
+        assertEquals("Wrong number returned: " + actual, 2, actual.size());
+        assertStudyPresent(-100, actual); // Managed by NP
+        assertStudyPresent(-101, actual); // Unmanaged
+    }
+
+    public void testGetVisibleForParticipationWhenAll() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forAllParticipatingSites());
+
+        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertStudyPresent(-100, actual);
+        assertStudyPresent(-101, actual);
+        assertStudyPresent(-104, actual);
+    }
+
+    public void testGetVisibleForParticipationForSome() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudiesForSiteParticipation(
+            new VisibleStudyParameters().forParticipatingSiteIdentifiers(Arrays.asList("Ant")).
+                forManagingSiteIdentifiers(Arrays.asList("NP")));
+        // managing should be ignored
+
+        assertEquals("Wrong number returned: " + actual, 1, actual.size());
+        assertStudyPresent(-104, actual);
+    }
+
     private void assertStudyPresent(int expectedId, Collection<Study> actualStudies) {
         for (Study actualStudy : actualStudies) {
             if (actualStudy.getId().equals(expectedId)) return;

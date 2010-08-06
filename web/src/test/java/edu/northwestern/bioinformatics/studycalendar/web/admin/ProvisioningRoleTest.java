@@ -47,4 +47,18 @@ public class ProvisioningRoleTest extends TestCase {
         JSONObject actual = new ProvisioningRole(SuiteRole.SYSTEM_ADMINISTRATOR).toJSON();
         assertNull(actual.optJSONArray("scopes"));
     }
+
+    public void testJSONIncludesPscRoleUsesForPscRole() throws Exception {
+        JSONObject actual = new ProvisioningRole(SuiteRole.STUDY_CALENDAR_TEMPLATE_BUILDER).toJSON();
+        JSONArray uses = actual.optJSONArray("uses");
+        assertNotNull(uses);
+        assertEquals("Wrong number of uses", 1, uses.length());
+        assertEquals("Wrong use", "template_management", uses.get(0));
+    }
+
+    public void testJSONDoesNotIncludesPscRoleUsesForSuiteOnlyRole() throws Exception {
+        JSONObject actual = new ProvisioningRole(SuiteRole.SUPPLEMENTAL_STUDY_INFORMATION_MANAGER).toJSON();
+        JSONArray uses = actual.optJSONArray("uses");
+        assertNull(uses);
+    }
 }

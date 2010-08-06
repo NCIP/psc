@@ -7,29 +7,50 @@ psc.admin.UserAdmin = (function ($) {
     $('a.role').removeClass('selected');
     $('#role-' + roleKey).addClass('selected');
     startEditing(roleKey);
-  };
+  }
 
   function selectRoleTab(evt) {
     var roleKey = evt.target.id.substring("role-".length)
     selectRole(roleKey);
     return false;
-  };
+  }
+
+  function determineProvisionableStudies(role) {
+    var isTM = _(role.uses || []).indexOf("template_management") >= 0;
+    var isSP = _(role.uses || []).indexOf("site_participation") >= 0;
+    if (isTM && isSP) {
+      return PROVISIONABLE_STUDIES['template_management+site_participation'];
+    } else if (isTM) {
+      return PROVISIONABLE_STUDIES['template_management'];
+    } else {
+      // use participation even for roles that don't have uses
+      return PROVISIONABLE_STUDIES['site_participation'];
+    }
+  }
 
   function startEditing(roleKey) {
     var role = _.detect(PROVISIONABLE_ROLES, function (role) { return role.key === roleKey });
     if (role) {
-      $('#role-editor-pane').html(resigTemplate('role_editor_template', { role: role })).
+      $('#role-editor-pane').html(resigTemplate('role_editor_template', {
+          role: role, sites: PROVISIONABLE_SITES, studies: determineProvisionableStudies(role)
+        })).
         find('input.role-group-membership').attr('checked', !!user.memberships[role.key]).
         click(updateGroupMembership).end().
-        find('input.scope-site').each(function (i, siteInput) {
-          $(siteInput).attr(
-            'checked',
-            user.hasMembership(role.key, { site: $(siteInput).attr('site-identifier') }));
-        }).click(_(updateMembershipScope).bind(this, role.key)).end().
         parent().attr('role', roleKey);
+      registerScopeControls('#role-editor-pane', role, 'site', 'sites');
+      registerScopeControls('#role-editor-pane', role, 'study', 'studies');
     } else {
       alert("No such role " + roleKey);
     }
+  }
+
+  function registerScopeControls(pane, role, scopeType, scopeTypePlural) {
+    $(pane).find('input.scope-' + scopeType).each(function (i, input) {
+      var qMembership = {}; qMembership[scopeType] = $(input).attr(scopeType + '-identifier');
+      $(input).attr(
+        'checked',
+        user.hasMembership(role.key, qMembership));
+    }).click(_(updateMembershipScope).bind(this, role.key, scopeType, scopeTypePlural));
   }
 
   function updateGroupMembership(evt) {
@@ -41,12 +62,13 @@ psc.admin.UserAdmin = (function ($) {
     }
   }
 
-  function updateMembershipScope(roleKey, evt) {
-    var scope = evt.target.getAttribute('site-identifier');
+  function updateMembershipScope(roleKey, scopeType, scopeListName, evt) {
+    console.log("Updating user obj", roleKey, scopeType, scopeListName, evt);
+    var scope = {}; scope[scopeListName] = [ evt.target.getAttribute(scopeType + '-identifier') ];
     if ($(evt.target).attr('checked')) {
-      user.add(roleKey, { sites: [ scope ] });
+      user.add(roleKey, scope);
     } else {
-      user.remove(roleKey, { sites: [ scope ] });
+      user.remove(roleKey, scope);
     }
   }
 
@@ -64,7 +86,7 @@ psc.admin.UserAdmin = (function ($) {
     if (role !== editorRole) { return; }
     var input;
     if (data.scopeType) {
-      input = $('#role-editor input#scope-site-' + data.scopeIdentifier);
+      input = $('#role-editor input#scope-' + data.scopeType + '-' + data.scopeIdentifier);
     } else {
       input = $('#role-editor input#group-' + data.role);
     }

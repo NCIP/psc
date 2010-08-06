@@ -9,11 +9,12 @@ psc.admin.ProvisionableUser = function (username, memberships) {
   this.changes = [];
 
   function scopeTypeFromCollectionName(collectionName) {
-    return collectionName.substring(0, collectionName.length - 1);
+    return collectionName == 'studies' ? 'study' :
+      collectionName.substring(0, collectionName.length - 1);
   }
 
   function collectionNameFromScopeType(scopeType) {
-    return scopeType + 's';
+    return scopeType == 'study' ? 'studies' : scopeType + 's';
   }
 
   var registerChange = _(function(newChange) {

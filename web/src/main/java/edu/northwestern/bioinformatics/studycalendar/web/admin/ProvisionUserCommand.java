@@ -3,10 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRoleUse;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
+import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.tools.MapBuilder;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
@@ -32,14 +36,17 @@ import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.SITE_MAPPING;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
 
 /**
  * @author Rhett Sutphin
@@ -65,8 +72,11 @@ public class ProvisionUserCommand implements Validatable {
 
     private List<ProvisioningRole> provisionableRoles;
     private List<Site> provisionableSites;
-    private Set<String> provisionableSiteIdentifiers;
-    private boolean canProvisionAllSites;
+    private List<Study> provisionableManagedStudies, provisionableParticipatingStudies;
+    private Set<String> provisionableSiteIdentifiers, 
+        provisionableManagedStudyIdentifiers, provisionableParticipatingStudyIdentifiers;
+    private boolean canProvisionAllSites,
+        canProvisionManagingAllStudies, canProvisionParticipateInAllStudies;
     private boolean lookUpBoundUser;
     private String password, rePassword;
     static final int JSON_INDENT_DEPTH = 4;
@@ -86,10 +96,18 @@ public class ProvisionUserCommand implements Validatable {
         this.provisionableRoles = Collections.emptyList();
         this.provisionableSites = Collections.emptyList();
         this.provisionableSiteIdentifiers = Collections.emptySet();
+        this.provisionableManagedStudies = Collections.emptyList();
+        this.provisionableManagedStudyIdentifiers = Collections.emptySet();
+        this.provisionableParticipatingStudies = Collections.emptyList();
+        this.provisionableParticipatingStudyIdentifiers = Collections.emptySet();
     }
 
     @SuppressWarnings({ "unchecked" })
-    public static ProvisionUserCommand create(PscUser existingUser, ProvisioningSessionFactory psFactory, AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem, SiteDao siteDao, PscUser provisioner) {
+    public static ProvisionUserCommand create(
+        PscUser existingUser, ProvisioningSessionFactory psFactory,
+        AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem,
+        SiteDao siteDao, StudyDao studyDao, PscUser provisioner
+    ) {
         ProvisionUserCommand command = new ProvisionUserCommand(
             existingUser == null ? AuthorizationObjectFactory.createPscUser() : existingUser,
             psFactory, authorizationManager, authenticationSystem);
@@ -100,6 +118,19 @@ public class ProvisionUserCommand implements Validatable {
             command.setProvisionableRoles(SuiteRole.values());
             command.setProvisionableSites(ua.isAllSites() ? siteDao.getAll() : (List<Site>) ua.getSites());
             command.setCanProvisionAllSites(ua.isAllSites());
+            VisibleStudyParameters provisionable = new VisibleStudyParameters();
+            if (ua.isAllSites()) {
+                provisionable.forAllManagingSites().forAllParticipatingSites();
+            } else {
+                provisionable.forManagingSiteIdentifiers(ua.getSiteIdentifiers()).
+                    forParticipatingSiteIdentifiers(ua.getSiteIdentifiers());
+            }
+            command.setProvisionableManagedStudies(
+                studyDao.getVisibleStudiesForTemplateManagement(provisionable));
+            command.setProvisionableParticipatingStudies(
+                studyDao.getVisibleStudiesForSiteParticipation(provisionable));
+            command.setCanProvisionManagingAllStudies(true);
+            command.setCanProvisionParticipateInAllStudies(true);
         } else if (provisioner.getMembership(PscRole.SYSTEM_ADMINISTRATOR) != null) {
             command.setProvisionableRoles(SuiteRole.USER_ADMINISTRATOR, SuiteRole.SYSTEM_ADMINISTRATOR);
             command.setProvisionableSites(Collections.<Site>emptyList());
@@ -207,13 +238,12 @@ public class ProvisionUserCommand implements Validatable {
         for (SubmittedChange change : specificScopeChanges) {
             SuiteRoleMembership base = getProvisioningSession().getProvisionableRoleMembership(change.getRole());
             if (change.isAdd()) {
-                base.addSite(change.getScopeIdentifier());
+                if (change.getScopeType() == ScopeType.SITE) base.addSite(change.getScopeIdentifier());
+                else base.addStudy(change.getScopeIdentifier());
             } else if (change.isRemove()) {
-                base.removeSite(change.getScopeIdentifier());
+                if (change.getScopeType() == ScopeType.SITE) base.removeSite(change.getScopeIdentifier());
+                else base.removeStudy(change.getScopeIdentifier());
             }
-
-            ////// TODO: temporary
-            if (base.getRole().isStudyScoped()) base.forAllStudies();
 
             getProvisioningSession().replaceRole(base);
         }
@@ -223,13 +253,12 @@ public class ProvisionUserCommand implements Validatable {
         for (SubmittedChange change : allScopeChanges) {
             SuiteRoleMembership base = getProvisioningSession().getProvisionableRoleMembership(change.getRole());
             if (change.isAdd()) {
-                base.forAllSites();
+                if (change.getScopeType() == ScopeType.SITE) base.forAllSites();
+                else base.forAllStudies();
             } else if (change.isRemove()) {
-                base.notForAllSites();
+                if (change.getScopeType() == ScopeType.SITE) base.notForAllSites();
+                else base.notForAllStudies();
             }
-
-            ////// TODO: temporary
-            if (base.getRole().isStudyScoped()) base.forAllStudies();
 
             getProvisioningSession().replaceRole(base);
         }
@@ -285,13 +314,39 @@ public class ProvisionUserCommand implements Validatable {
                 change.getRole(), provisionableRoles);
             return true;
         }
-        if (change.isAllScope() && !this.canProvisionAllSites) {
-            log.warn("Ignoring unauthorized attempt to change all-sites access.");
+        boolean allPermission = false;
+        Set<String> changeableIdents;
+        if (change.getScopeType() == ScopeType.SITE) {
+            allPermission = this.canProvisionAllSites;
+            changeableIdents = this.provisionableSiteIdentifiers;
+        } else {
+            PscRole role = PscRole.valueOf(change.getRole());
+            if (role == null) {
+                // use participation for non-PSC roles
+                allPermission = canProvisionParticipateInAllStudies;
+                changeableIdents = provisionableParticipatingStudyIdentifiers;
+            } else {
+                changeableIdents = new HashSet<String>();
+                if (role.getUses().contains(PscRoleUse.TEMPLATE_MANAGEMENT)) {
+                    changeableIdents.addAll(this.provisionableManagedStudyIdentifiers);
+                    allPermission = this.canProvisionManagingAllStudies;
+                }
+                if (role.getUses().contains(PscRoleUse.SITE_PARTICIPATION)) {
+                    changeableIdents.addAll(this.provisionableParticipatingStudyIdentifiers);
+                    allPermission = allPermission || this.canProvisionParticipateInAllStudies;
+                }
+            }
+        }
+
+        if (change.isAllScope() && !allPermission) {
+            log.warn("Ignoring unauthorized attempt to change all-{} access.",
+                change.getScopeType().getPluralName());
             return true;
         }
-        if (!change.isAllScope() && change.isScopeChange() && !provisionableSiteIdentifiers.contains(change.getScopeIdentifier())) {
-            log.warn("Ignoring unauthorized attempt to change site \"{}\" access.  Authorized to change only {}.",
-                change.getScopeIdentifier(), provisionableSiteIdentifiers);
+        if (!change.isAllScope() && change.isScopeChange() && !changeableIdents.contains(change.getScopeIdentifier())) {
+            log.warn("Ignoring unauthorized attempt to change {} \"{}\" access.  Authorized to change only {}.",
+                new Object[] { change.getScopeType().getName(),
+                    change.getScopeIdentifier(), changeableIdents });
             return true;
         }
         return false;
@@ -334,21 +389,28 @@ public class ProvisionUserCommand implements Validatable {
 
     public String getJavaScriptProvisionableSites() {
         try {
-            JSONArray sites = new JSONArray();
+            return buildJavaScriptProvisionableSites().toString(JSON_INDENT_DEPTH);
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException(
+                "Building JSON for provisionable sites failed", e);
+        }
+    }
+
+    JSONArray buildJavaScriptProvisionableSites() {
+        JSONArray sites = new JSONArray();
+        if (getCanProvisionAllSites()) {
             sites.put(new MapBuilder<String, String>().
                 put("identifier", JSON_ALL_SCOPE_IDENTIFIER).
-                put("name", "All sites  (this user will have access in this role for all sites, including new ones as they are created)").
+                put("name", allName(ScopeType.SITE)).
                 toMap());
-            for (Site site : provisionableSites) {
-                sites.put(new MapBuilder<String, String>().
-                    put("name", site.getName()).
-                    put("identifier", site.getAssignedIdentifier()).
-                    toMap());
-            }
-            return sites.toString(JSON_INDENT_DEPTH);
-        } catch (JSONException e) {
-            throw new StudyCalendarSystemException("Building JSON for provisionable sites failed", e);
         }
+        for (Site site : provisionableSites) {
+            sites.put(new MapBuilder<String, String>().
+                put("name", site.getName()).
+                put("identifier", site.getAssignedIdentifier()).
+                toMap());
+        }
+        return sites;
     }
 
     public String getJavaScriptProvisionableRoles() {
@@ -359,8 +421,62 @@ public class ProvisionUserCommand implements Validatable {
             }
             return roles.toString(JSON_INDENT_DEPTH);
         } catch (JSONException e) {
-            throw new StudyCalendarSystemException("Building JSON for provisionable roles failed", e);
+            throw new StudyCalendarSystemException(
+                "Building JSON for provisionable roles failed", e);
         }
+    }
+
+    public String getJavaScriptProvisionableStudies() {
+        try {
+            return buildJavaScriptProvisionableStudies().toString(JSON_INDENT_DEPTH);
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException(
+                "Building JSON for provisionable studies failed", e);
+        }
+    }
+
+    // package level for testing
+    JSONObject buildJavaScriptProvisionableStudies() throws JSONException {
+        JSONObject studies = new JSONObject();
+        buildJavaScriptStudyList(studies, PscRoleUse.TEMPLATE_MANAGEMENT.name().toLowerCase(),
+            getCanProvisionManagementOfAllStudies(), getProvisionableManagedStudies());
+        buildJavaScriptStudyList(studies, PscRoleUse.SITE_PARTICIPATION.name().toLowerCase(),
+            getCanProvisionParticipationInAllStudies(), getProvisionableParticipatingStudies());
+        Set<Study> allStudies = new HashSet<Study>();
+        allStudies.addAll(getProvisionableParticipatingStudies());
+        allStudies.addAll(getProvisionableManagedStudies());
+        buildJavaScriptStudyList(studies,
+            PscRoleUse.TEMPLATE_MANAGEMENT.name().toLowerCase() + '+' +
+                PscRoleUse.SITE_PARTICIPATION.name().toLowerCase(),
+            getCanProvisionParticipationInAllStudies() || getCanProvisionManagementOfAllStudies(),
+            allStudies);
+        return studies;
+    }
+
+    private void buildJavaScriptStudyList(
+        JSONObject studies, String key, boolean canProvisionAll, Collection<Study> provisionableStudies
+    ) throws JSONException {
+        List<JSONObject> a = new ArrayList<JSONObject>(1 + provisionableStudies.size());
+        if (canProvisionAll) {
+            a.add(new JSONObject(new MapBuilder<String, String>().
+                put("identifier", JSON_ALL_SCOPE_IDENTIFIER).
+                put("name", allName(ScopeType.STUDY)).
+                toMap()));
+        }
+        for (Study study : provisionableStudies) {
+            a.add(new JSONObject(new MapBuilder<String, String>().
+                put("identifier", study.getAssignedIdentifier()).
+                put("name", study.getName()).
+                toMap()));
+        }
+        Collections.sort(a, StudyJSONObjectComparator.INSTANCE);
+        studies.put(key, a);
+    }
+
+    private String allName(ScopeType scopeType) {
+        return String.format(
+            "All %s (this user will have access in this role for all %s, including new ones as they are created)",
+            scopeType.getPluralName(), scopeType.getPluralName());
     }
 
     ////// CONFIGURATION
@@ -398,6 +514,46 @@ public class ProvisionUserCommand implements Validatable {
 
     public void setCanProvisionAllSites(boolean canProvisionAllSites) {
         this.canProvisionAllSites = canProvisionAllSites;
+    }
+
+    public List<Study> getProvisionableManagedStudies() {
+        return provisionableManagedStudies;
+    }
+
+    public void setProvisionableManagedStudies(List<Study> provisionableManagedStudies) {
+        this.provisionableManagedStudies = provisionableManagedStudies;
+        this.provisionableManagedStudyIdentifiers = new LinkedHashSet<String>();
+        for (Study study : provisionableManagedStudies) {
+            this.provisionableManagedStudyIdentifiers.add(STUDY_MAPPING.getSharedIdentity(study));
+        }
+    }
+
+    public boolean getCanProvisionManagementOfAllStudies() {
+        return canProvisionManagingAllStudies;
+    }
+
+    public void setCanProvisionManagingAllStudies(boolean canProvisionManagingAllStudies) {
+        this.canProvisionManagingAllStudies = canProvisionManagingAllStudies;
+    }
+
+    public List<Study> getProvisionableParticipatingStudies() {
+        return provisionableParticipatingStudies;
+    }
+
+    public void setProvisionableParticipatingStudies(List<Study> provisionableParticipatingStudies) {
+        this.provisionableParticipatingStudies = provisionableParticipatingStudies;
+        this.provisionableParticipatingStudyIdentifiers = new LinkedHashSet<String>();
+        for (Study study : provisionableParticipatingStudies) {
+            this.provisionableParticipatingStudyIdentifiers.add(STUDY_MAPPING.getSharedIdentity(study));
+        }
+    }
+
+    public boolean getCanProvisionParticipationInAllStudies() {
+        return canProvisionParticipateInAllStudies;
+    }
+
+    public void setCanProvisionParticipateInAllStudies(boolean canProvisionParticipateInAllStudies) {
+        this.canProvisionParticipateInAllStudies = canProvisionParticipateInAllStudies;
     }
 
     public void setLookUpBoundUser(boolean lookUpBoundUser) {
@@ -453,16 +609,17 @@ public class ProvisionUserCommand implements Validatable {
         private boolean all;
         private String scopeIdentifier;
         private SuiteRole role;
+        private ScopeType scopeType;
         private String kind;
-        private String scopeType;
 
         private SubmittedChange(JSONObject src) {
             this.kind = src.optString(JSON_CHANGE_PROP_KIND, null);
             this.role = SuiteRole.getByCsmName(src.optString(JSON_CHANGE_PROP_ROLE, null));
-            this.scopeType = src.optString(JSON_CHANGE_PROP_SCOPE_TYPE, null);
-            if (this.scopeType != null) {
+            String scopeTypeName = src.optString(JSON_CHANGE_PROP_SCOPE_TYPE, null);
+            if (scopeTypeName != null) {
                 this.all = JSON_ALL_SCOPE_IDENTIFIER.equals(src.optString(JSON_CHANGE_PROP_SCOPE_IDENTIFIER, null));
                 this.scopeIdentifier = this.all ? null : src.optString(JSON_CHANGE_PROP_SCOPE_IDENTIFIER, null);
+                scopeType = ScopeType.valueOf(scopeTypeName.toUpperCase());
             }
         }
 
@@ -482,6 +639,10 @@ public class ProvisionUserCommand implements Validatable {
             return role;
         }
 
+        public ScopeType getScopeType() {
+            return scopeType;
+        }
+
         public boolean isAllScope() {
             return all;
         }
@@ -491,4 +652,24 @@ public class ProvisionUserCommand implements Validatable {
         }
     }
 
+    private static class StudyJSONObjectComparator implements Comparator<JSONObject> {
+        public static final Comparator<? super JSONObject> INSTANCE =
+            new StudyJSONObjectComparator();
+
+        public int compare(JSONObject o1, JSONObject o2) {
+            String id1 = o1.optString("identifier");
+            String id2 = o2.optString("identifier");
+            if (id1.equals(id2)) {
+                return 0;
+            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id1)) {
+                return -1;
+            } else if (JSON_ALL_SCOPE_IDENTIFIER.equals(id2)) {
+                return 1;
+            } else {
+                return id1.compareToIgnoreCase(id2);
+            }
+        }
+
+        private StudyJSONObjectComparator() { }
+    }
 }

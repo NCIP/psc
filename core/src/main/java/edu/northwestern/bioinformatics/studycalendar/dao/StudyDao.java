@@ -168,12 +168,19 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
      * assigned identifiers match (case-insensitive substring) the given text.
      * If the parameters indicate that all studies should be visible, it may return null.
      */
-    @SuppressWarnings({ "unchecked" })
     public Collection<Integer> searchForVisibleIds(VisibleStudyParameters parameters, String search) {
+        return searchForVisibleIds(parameters, search, true, true, true);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private Collection<Integer> searchForVisibleIds(
+        VisibleStudyParameters parameters, String search,
+        boolean includeManaging, boolean includeParticipating, boolean includeSpecific
+    ) {
         log.debug("Searching visible studies for {} with {}", parameters,
             search == null ? "no term" : "term \"" + search + '"');
         List<DetachedCriteria> separateCriteria = new LinkedList<DetachedCriteria>();
-        if (parameters.isAllManagingSites()) {
+        if (parameters.isAllManagingSites() && includeManaging) {
             if (search == null) {
                 return null; // shortcut for all
             } else {
@@ -183,23 +190,25 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
             // These are implemented as separate queries and then merged because
             // the criteria are too complex to reliably express in a single statement.
 
-            if (!parameters.getSpecificStudyIdentifiers().isEmpty()) {
+            if (includeSpecific && !parameters.getSpecificStudyIdentifiers().isEmpty()) {
                 separateCriteria.add(criteria().add(MoreRestrictions.
                     in("assignedIdentifier", parameters.getSpecificStudyIdentifiers())));
             }
-            if (!parameters.getManagingSiteIdentifiers().isEmpty()) {
+            if (includeManaging && !parameters.getManagingSiteIdentifiers().isEmpty()) {
                 separateCriteria.add(criteria().createAlias("managingSites", "ms", Criteria.LEFT_JOIN).add(
                     Restrictions.disjunction().
                         add(MoreRestrictions.in("ms.assignedIdentifier", parameters.getManagingSiteIdentifiers())).
                         add(Restrictions.isNull("ms.assignedIdentifier")) // <- unmanaged studies
                 ));
             }
-            if (parameters.isAllParticipatingSites()) {
-                separateCriteria.add(criteria().createAlias("studySites", "ss").
-                    add(Restrictions.isNotNull("ss.id")));
-            } else if (!parameters.getParticipatingSiteIdentifiers().isEmpty()) {
-                separateCriteria.add(criteria().createAlias("studySites", "ss").createAlias("ss.site", "s").
-                    add(MoreRestrictions.in("s.assignedIdentifier", parameters.getParticipatingSiteIdentifiers())));
+            if (includeParticipating) {
+                if (parameters.isAllParticipatingSites()) {
+                    separateCriteria.add(criteria().createAlias("studySites", "ss").
+                        add(Restrictions.isNotNull("ss.id")));
+                } else if (!parameters.getParticipatingSiteIdentifiers().isEmpty()) {
+                    separateCriteria.add(criteria().createAlias("studySites", "ss").createAlias("ss.site", "s").
+                        add(MoreRestrictions.in("s.assignedIdentifier", parameters.getParticipatingSiteIdentifiers())));
+                }
             }
 
             for (DetachedCriteria criteria : separateCriteria) {
@@ -216,14 +225,24 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         return ids;
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Study> getVisibleStudies(VisibleStudyParameters parameters) {
         return searchVisibleStudies(parameters, null);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<Study> searchVisibleStudies(VisibleStudyParameters parameters, String search) {
-        Collection<Integer> ids = searchForVisibleIds(parameters, search);
+        return getByIds(searchForVisibleIds(parameters, search));
+    }
+
+    public List<Study> getVisibleStudiesForTemplateManagement(VisibleStudyParameters params) {
+        return getByIds(searchForVisibleIds(params, null, true, false, false));
+    }
+
+    public List<Study> getVisibleStudiesForSiteParticipation(VisibleStudyParameters params) {
+        return getByIds(searchForVisibleIds(params, null, false, true, false));
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private List<Study> getByIds(Collection<Integer> ids) {
         if (ids == null) {
             return getAll();
         } else if (ids.isEmpty()) {

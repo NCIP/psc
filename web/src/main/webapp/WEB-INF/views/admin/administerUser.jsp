@@ -18,6 +18,8 @@
         var PROVISIONABLE_SITES = ${command.javaScriptProvisionableSites};
 
         var PROVISIONABLE_ROLES = ${command.javaScriptProvisionableRoles};
+
+        var PROVISIONABLE_STUDIES = ${command.javaScriptProvisionableStudies};
     </script>
 
     <tags:javascriptLink name="admin/provisionable_user"/>
@@ -43,13 +45,26 @@
         <div>
             <h3>Sites</h3>
             <table id="sites" class="content">
-                [# _(PROVISIONABLE_SITES).each(function (site) { #]
-                <tr>
-                    <td><input id="scope-site-[#= site.identifier #]" site-identifier="[#= site.identifier #]" class="scope-site" type="checkbox"/></td>
-                    <td><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></td>
-                </tr>
+                [# _(sites).each(function (site) { #]
+                <div class="row">
+                    <div class="label"><input id="scope-site-[#= site.identifier #]" site-identifier="[#= site.identifier #]" class="scope-site" type="checkbox"/></div>
+                    <div class="value"><label for="scope-site-[#= site.identifier #]">[#= site.name #]</label></div>
+                </div>
                 [# }); #]
             </table>
+        </div>
+        [# } #]
+        [# if (_(role.scopes || []).include("study")) { #]
+        <div>
+            <h3>Studies</h3>
+            <div id="studies" class="content">
+                [# _(studies).each(function (study) { #]
+                <div class="row">
+                    <div class="label"><input id="scope-study-[#= study.identifier #]" study-identifier="[#= study.identifier #]" class="scope-study" type="checkbox"/></div>
+                    <div class="value"><label for="scope-study-[#= study.identifier #]">[#= study.name #]</label></div>
+                </div>
+                [# }); #]
+            </div>
         </div>
         [# } #]
     </tags:resigTemplate>

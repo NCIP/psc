@@ -37,7 +37,7 @@ public class FirstAdministratorFormAction extends FormAction {
             null,
             provisioningSessionFactory, csmAuthorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
-            null, null
+            null, null, null
         );
         command.setLookUpBoundUser(true);
         command.setProvisionableRoles(SuiteRole.SYSTEM_ADMINISTRATOR);

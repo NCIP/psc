@@ -3,11 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
-import gov.nih.nci.cabig.ctms.suite.authorization.ScopeType;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRole;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Collection;
 
 /**
 * @author Rhett Sutphin
@@ -48,13 +49,24 @@ public class ProvisioningRole {
         safePut(o, "key", suiteRole.getCsmName());
         safePut(o, "description", suiteRole.getDescription());
         if (suiteRole.isScoped()) {
-            JSONArray scopes = new JSONArray();
-            for (ScopeType scopeType : suiteRole.getScopes()) {
-                scopes.put(scopeType.name().toLowerCase());
-            }
+            JSONArray scopes = buildEnumArray(suiteRole.getScopes());
             safePut(o, "scopes", scopes);
         }
+        if (pscRole != null) {
+            if (!pscRole.getUses().isEmpty()) {
+                JSONArray uses = buildEnumArray(pscRole.getUses());
+                safePut(o, "uses", uses);
+            }
+        }
         return o;
+    }
+
+    private JSONArray buildEnumArray(Collection<? extends Enum<?>> values) {
+        JSONArray a = new JSONArray();
+        for (Enum<?> use : values) {
+            a.put(use.name().toLowerCase());
+        }
+        return a;
     }
 
     private void safePut(JSONObject target, String key, Object value) {

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.service.PscUserService;
@@ -39,6 +40,7 @@ public class AdministerUserController
     private PscUserService pscUserService;
     private ProvisioningSessionFactory provisioningSessionFactory;
     private SiteDao siteDao;
+    private StudyDao studyDao;
     private InstalledAuthenticationSystem installedAuthenticationSystem;
 
     @Override
@@ -62,7 +64,7 @@ public class AdministerUserController
         return ProvisionUserCommand.create(targetUser,
             provisioningSessionFactory, authorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
-            siteDao, applicationSecurityManager.getUser());
+            siteDao, studyDao, applicationSecurityManager.getUser());
     }
 
     @Override
@@ -118,6 +120,11 @@ public class AdministerUserController
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 
     @Required
