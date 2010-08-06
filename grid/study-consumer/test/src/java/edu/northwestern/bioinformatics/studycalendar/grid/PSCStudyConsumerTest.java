@@ -27,6 +27,8 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import java.rmi.RemoteException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
+import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
 
 
 public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTests {
@@ -94,8 +96,8 @@ public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTest
 		try{
 			studyConsumer.createStudy(study);
 			fail("createStudy() should've thrown an exception!");
-		}catch(RemoteException exp){
-			// this is expected, now pass this test case.
+		}catch(InvalidStudyException e){
+			assertEquals("Test failed:","Access Denied: user does not have STUDY_CREATOR role", e.getFaultReason());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -120,8 +122,8 @@ public class PSCStudyConsumerTest extends AbstractTransactionalSpringContextTest
 		try{
 			studyConsumer.createStudy(study);
 			fail("createStudy().fetchSite() should've thrown an exception!");
-		}catch(RemoteException exp){
-			//Test pass
+		}catch(StudyCreationException e){
+			assertEquals("Test failed:","Access Denied: Study_Creator is not authorized for the Site Identifier : TEST_SITE", e.getFaultReason());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
