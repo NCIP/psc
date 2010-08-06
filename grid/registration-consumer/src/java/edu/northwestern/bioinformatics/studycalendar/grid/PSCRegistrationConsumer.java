@@ -226,19 +226,19 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     public Registration register(final Registration registration) throws RemoteException, InvalidRegistrationException,
             RegistrationConsumptionException {
     	
-    	try{
+
     		// Check for Role
     		// 1. If Role is Registrar, then process, otherwise Access Denied.
     		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
     		if(suiteRoleMembership == null){
-    			String message = "Access Denied";
+    			String message = "Access Denied: user does not have REGISTRAR role";
     			throw getInvalidRegistrationException(message);
     		}
 
     		String ccIdentifier = findCoordinatingCenterIdentifier(registration);
     		// Authorization for study
     		if(!authorizedStudyIdentifier(ccIdentifier, suiteRoleMembership)){
-    			String message = "Access Denied: Registrar is not authorized for this Study";
+    			String message = "Access Denied: Registrar is not authorized for the Study:" + ccIdentifier;
     			throw getInvalidRegistrationException(message);
     		}
 
@@ -265,7 +265,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     		}
     		// Authorization for site
     		if(!authorizedSiteIdentifier(siteNCICode, suiteRoleMembership)){
-    			String message = "Access Denied: Registrar is not authorized for this Site";
+    			String message = "Access Denied: Registrar is not authorized for the associated StudySite:" + siteNCICode;
     			throw getInvalidRegistrationException(message);
     		}
     		
@@ -332,10 +332,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumerI {
     		ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
     		logger.info("Created assignment " + scheduledCalendar.getId());
     		return registration;
-    	}catch (Exception e) {
-    		logger.error("Error while creating registration", e);
-    		throw new RemoteException("Unable to create registration", e);
-    	} 
+    	
     }
 
     private Subject fetchCommitedSubject(String mrn) {
