@@ -31,6 +31,8 @@ import java.io.InputStreamReader;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
+import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
 
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
@@ -245,8 +247,8 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		try{
 			registrationConsumer.register(registration);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(InvalidRegistrationException e){
+			assertEquals("Test failed:","Access Denied: user does not have REGISTRAR role", e.getFaultReason());
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
@@ -272,8 +274,8 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		try{
 			registrationConsumer.register(registration);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(InvalidRegistrationException e){
+			assertEquals("Test failed:","Access Denied: Registrar is not authorized for the associated StudySite:SITE_01", e.getFaultReason());
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
@@ -299,8 +301,8 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		try{
 			registrationConsumer.register(registration);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(InvalidRegistrationException e){
+			assertEquals("Test failed:","Access Denied: Registrar is not authorized for the Study:TEST_STUDY", e.getFaultReason());
 		}
 		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
 
