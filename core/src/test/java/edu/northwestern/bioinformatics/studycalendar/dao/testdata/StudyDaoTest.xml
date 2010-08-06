@@ -47,6 +47,7 @@
 
     <STUDIES id="-103" version="0" assigned_identifier="S 103"/>
     <STUDIES id="-104" version="0" assigned_identifier="S 104"/>
+    <STUDIES id="-105" version="0" assigned_identifier="S 105"/>
 
     <SITES id="-40" name="North Pole" assigned_identifier="NP" />
     <SITES id="-41" name="Antarctica" assigned_identifier="Ant" />
@@ -63,6 +64,9 @@
     <MANAGING_SITES
         site_id="-41"
         study_id="-104"/>
+    <MANAGING_SITES
+        site_id="-41"
+        study_id="-105"/>
 
     <STUDY_SITES
         id="-15"
@@ -81,6 +85,18 @@
         study_id="-104"
         site_id="-41"
         />
+
+    <STUDY_SITES
+        id="-18"
+        study_id="-105"
+        site_id="-41"
+        />
+    <STUDY_SITES
+        id="-19"
+        study_id="-105"
+        site_id="-40"
+        />
+
     <SUBJECTS
             id="-22"
             first_name="Marvin"

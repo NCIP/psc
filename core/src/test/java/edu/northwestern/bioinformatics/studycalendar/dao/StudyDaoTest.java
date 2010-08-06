@@ -22,7 +22,7 @@ import static gov.nih.nci.cabig.ctms.testing.MoreJUnitAssertions.*;
  * @author Rhett Sutphin
  */
 public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
-    private static final int ALL_STUDIES_COUNT = 5;
+    private static final int ALL_STUDIES_COUNT = 6;
 
     public void testGetById() throws Exception {
         Study study = getDao().getById(-100);
@@ -250,10 +250,11 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
             forManagingSiteIdentifiers(Arrays.asList("NP")).
             forParticipatingSiteIdentifiers(Arrays.asList("Ant")));
 
-        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertEquals("Wrong number returned: " + actual, 4, actual.size());
         assertContains(actual, -100); // Managed by NP
         assertContains(actual, -101); // Unmanaged
         assertContains(actual, -104); // Participating at Ant
+        assertContains(actual, -105); // Participating at Ant
     }
 
     public void testSearchForVisibleIdsWhenAllVisible() throws Exception {
@@ -289,20 +290,22 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
             forManagingSiteIdentifiers(Arrays.asList("NP")).
             forParticipatingSiteIdentifiers(Arrays.asList("Ant")));
 
-        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertEquals("Wrong number returned: " + actual, 4, actual.size());
         assertStudyPresent(-100, actual); // Managed by NP
         assertStudyPresent(-101, actual); // Unmanaged
         assertStudyPresent(-104, actual); // Participating at Ant
+        assertStudyPresent(-105, actual); // Participating at Ant
     }
 
     public void testGetVisibleForAllParticipating() throws Exception {
         Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
             forAllParticipatingSites());
 
-        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertEquals("Wrong number returned: " + actual, 4, actual.size());
         assertStudyPresent(-100, actual);
         assertStudyPresent(-101, actual);
         assertStudyPresent(-104, actual);
+        assertStudyPresent(-105, actual);
     }
 
     public void testGetVisibleForAllParticipatingPlusSpecific() throws Exception {
@@ -310,11 +313,12 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
             forAllParticipatingSites().forSpecificStudyIdentifiers(
                 Arrays.asList("NCI-IS-WATCHING", "another nci study")));
 
-        assertEquals("Wrong number returned: " + actual, 4, actual.size());
+        assertEquals("Wrong number returned: " + actual, 5, actual.size());
         assertStudyPresent(-100, actual); // Participating & by ident
         assertStudyPresent(-101, actual); // Participating
         assertStudyPresent(-102, actual); // By ident
         assertStudyPresent(-104, actual); // Participating
+        assertStudyPresent(-105, actual); // Participating
     }
 
     public void testGetVisibleWithNoMatches() throws Exception {
@@ -351,6 +355,14 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong number of results", 0, actual.size());
     }
 
+    public void testGetVisibleDoesNotReturnMultipleForMultipleParticipations() throws Exception {
+        Collection<Study> actual = getDao().getVisibleStudies(new VisibleStudyParameters().
+            forSpecificStudyIdentifiers(Arrays.asList("S 105")));
+
+        assertEquals("Wrong number of results: " + actual, 1, actual.size());
+        assertStudyPresent(-105, actual);
+    }
+
     public void testGetVisibleForManagingWhenAll() throws Exception {
         Collection<Study> actual = getDao().getVisibleStudiesForTemplateManagement(
             new VisibleStudyParameters().forAllManagingSites());
@@ -372,10 +384,11 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         Collection<Study> actual = getDao().getVisibleStudiesForSiteParticipation(
             new VisibleStudyParameters().forAllParticipatingSites());
 
-        assertEquals("Wrong number returned: " + actual, 3, actual.size());
+        assertEquals("Wrong number returned: " + actual, 4, actual.size());
         assertStudyPresent(-100, actual);
         assertStudyPresent(-101, actual);
         assertStudyPresent(-104, actual);
+        assertStudyPresent(-105, actual);
     }
 
     public void testGetVisibleForParticipationForSome() throws Exception {
@@ -384,8 +397,9 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
                 forManagingSiteIdentifiers(Arrays.asList("NP")));
         // managing should be ignored
 
-        assertEquals("Wrong number returned: " + actual, 1, actual.size());
+        assertEquals("Wrong number returned: " + actual, 2, actual.size());
         assertStudyPresent(-104, actual);
+        assertStudyPresent(-105, actual);
     }
 
     private void assertStudyPresent(int expectedId, Collection<Study> actualStudies) {

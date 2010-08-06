@@ -9,12 +9,14 @@ import gov.nih.nci.cabig.ctms.tools.hibernate.MoreRestrictions;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.ResultTransformer;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -177,8 +179,13 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         VisibleStudyParameters parameters, String search,
         boolean includeManaging, boolean includeParticipating, boolean includeSpecific
     ) {
-        log.debug("Searching visible studies for {} with {}", parameters,
-            search == null ? "no term" : "term \"" + search + '"');
+        if (log.isDebugEnabled()) {
+            log.debug("Searching visible studies for {} with {}", parameters,
+                search == null ? "no term" : "term \"" + search + '"');
+            if (!includeManaging) log.debug("- Excluding managing");
+            if (!includeParticipating) log.debug("- Excluding participating");
+            if (!includeSpecific) log.debug("- Excluding specific studies"); 
+        }
         List<DetachedCriteria> separateCriteria = new LinkedList<DetachedCriteria>();
         if (parameters.isAllManagingSites() && includeManaging) {
             if (search == null) {
@@ -222,6 +229,7 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
         for (DetachedCriteria criteria : separateCriteria) {
             ids.addAll(getHibernateTemplate().findByCriteria(criteria.setProjection(Projections.id())));
         }
+        log.debug("Found IDs {}", ids);
         return ids;
     }
 
@@ -234,10 +242,12 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     }
 
     public List<Study> getVisibleStudiesForTemplateManagement(VisibleStudyParameters params) {
+        log.debug("Getting template management studies only from {}", params);
         return getByIds(searchForVisibleIds(params, null, true, false, false));
     }
 
     public List<Study> getVisibleStudiesForSiteParticipation(VisibleStudyParameters params) {
+        log.debug("Getting site participation studies only from {}", params);
         return getByIds(searchForVisibleIds(params, null, false, true, false));
     }
 
@@ -249,7 +259,8 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
             return Collections.emptyList();
         } else {
             return getHibernateTemplate().findByCriteria(
-                criteria().add(MoreRestrictions.in("id", ids)));
+                criteria().add(MoreRestrictions.in("id", ids)).
+                    setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY));
         }
     }
 
