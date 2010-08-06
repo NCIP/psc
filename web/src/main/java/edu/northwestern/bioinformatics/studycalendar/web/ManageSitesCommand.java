@@ -29,7 +29,7 @@ public class ManageSitesCommand {
         if (m.isAllSites()) {
             return siteService.getAll();
         } else {
-            return (List<Site>) user.getMembership(PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).getSites();
+            return (List<Site>) m.getSites();
         }
 
     }
