@@ -47,6 +47,7 @@ import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.rmi.RemoteException;
 
 /**
  * Test class added to validate the clean scripts that were added for CCTS roll-back script requirement
@@ -167,8 +168,8 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		try{
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(RemoteException e){
+			assertEquals("Test failed:","Access Denied: user does not have AE_REPORTER role", e.getFaultReason());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -192,8 +193,8 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		try{
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(RemoteException e){
+			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Site Identifier : SITE_01", e.getFaultReason());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -218,8 +219,8 @@ public class PSCAdverseEventConsumerTest  extends AbstractTransactionalSpringCon
 		try{
 			adverseEventConsumer.register(ae);
 			fail("Authorization Failed: RegsitrationConsumer should've thrown an exception!");
-		}catch(Exception e){
-			// Test pass
+		}catch(RemoteException e){
+			assertEquals("Test failed:","Access Denied: AE_REPORTER is not authorized for this Study Identifier : TEST_STUDY", e.getFaultReason());
 		}
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
