@@ -31,7 +31,6 @@ import org.springframework.validation.Errors;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -39,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.*;
+import static edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings.SITE_MAPPING;
 
 /**
  * @author Rhett Sutphin
@@ -63,7 +62,7 @@ public class ProvisionUserCommand implements Validatable {
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
 
-    private List<SuiteRole> provisionableRoles;
+    private List<ProvisioningRole> provisionableRoles;
     private List<Site> provisionableSites;
     private Set<String> provisionableSiteIdentifiers;
     private boolean canProvisionAllSites;
@@ -279,7 +278,7 @@ public class ProvisionUserCommand implements Validatable {
     }
 
     private boolean shouldSkip(SubmittedChange change) {
-        if (!provisionableRoles.contains(change.getRole())) {
+        if (!provisionableRoles.contains(new ProvisioningRole(change.getRole()))) {
             log.warn("Ignoring unauthorized attempt to change {} membership.  Authorized to change only {}.",
                 change.getRole(), provisionableRoles);
             return true;
@@ -342,12 +341,15 @@ public class ProvisionUserCommand implements Validatable {
         return user.getMemberships();
     }
 
-    public List<SuiteRole> getProvisionableRoles() {
+    public List<ProvisioningRole> getProvisionableRoles() {
         return provisionableRoles;
     }
 
     public void setProvisionableRoles(SuiteRole... roles) {
-        this.provisionableRoles = Arrays.asList(roles);
+        this.provisionableRoles = new ArrayList<ProvisioningRole>(roles.length);
+        for (SuiteRole role : roles) {
+            this.provisionableRoles.add(new ProvisioningRole(role));
+        }
     }
 
     public List<Site> getProvisionableSites() {
@@ -417,6 +419,8 @@ public class ProvisionUserCommand implements Validatable {
         this.rePassword = rePassword;
     }
 
+    ////// INNER CLASSES
+
     private class SubmittedChange {
         private boolean all;
         private String scopeIdentifier;
@@ -458,4 +462,5 @@ public class ProvisionUserCommand implements Validatable {
             return this.scopeType != null;
         }
     }
+
 }

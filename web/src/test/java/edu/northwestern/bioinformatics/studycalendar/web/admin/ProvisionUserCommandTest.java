@@ -116,10 +116,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
         assertEquals("Wrong number of provisionable roles: " + actual.getProvisionableRoles(),
             2, actual.getProvisionableRoles().size());
-        assertTrue("Should be able to provision user admins",
-            actual.getProvisionableRoles().contains(SuiteRole.USER_ADMINISTRATOR));
-        assertTrue("Should be able to provision sys admins",
-            actual.getProvisionableRoles().contains(SuiteRole.SYSTEM_ADMINISTRATOR));
+        assertMayProvision(SuiteRole.USER_ADMINISTRATOR, actual);
+        assertMayProvision(SuiteRole.SYSTEM_ADMINISTRATOR, actual);
 
         assertEquals("Should not be able to provision for any specific sites",
             0, actual.getProvisionableSites().size());
@@ -132,6 +130,11 @@ public class ProvisionUserCommandTest extends WebTestCase {
         assertFalse("Should be able to provision for \"all sites\"",
             actual.getCanProvisionAllStudies());
          */
+    }
+
+    private void assertMayProvision(SuiteRole expectedRole, ProvisionUserCommand actual) {
+        assertTrue("Should be able to provision " + expectedRole,
+            actual.getProvisionableRoles().contains(new ProvisioningRole(expectedRole)));
     }
 
     public void testCreateForUnlimitedUserAdministrator() throws Exception {

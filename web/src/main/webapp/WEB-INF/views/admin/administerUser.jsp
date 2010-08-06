@@ -1,9 +1,11 @@
-<jsp:useBean id="command" scope="request" type="edu.northwestern.bioinformatics.studycalendar.web.admin.ProvisionUserCommand"/>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@taglib prefix="laf" tagdir="/WEB-INF/tags/laf"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<jsp:useBean id="command" scope="request" type="edu.northwestern.bioinformatics.studycalendar.web.admin.ProvisionUserCommand"/>
+
 <html>
 <head>
     <title>Administer user ${command.user.loginName}</title>
@@ -23,23 +25,7 @@
 
         var PROVISIONABLE_ROLES = [
             <c:forEach items="${command.provisionableRoles}" var="role" varStatus="status">
-            {
-                name: '${role.displayName}',
-                key: '${role.csmName}',
-                description: '${fn:replace(role.description, "'", "\\'")}',
-                scopes:
-                <c:choose>
-                    <c:when test="${role.scoped}">
-                        [
-                           <c:forEach items="${role.scopes}" var="scope" varStatus="scopeStatus">
-                                "<%= pageContext.getAttribute("scope").toString().toLowerCase() %>"
-                                ${scopeStatus.last ? '' : ','}
-                           </c:forEach>
-                        ]
-                    </c:when>
-                    <c:otherwise>null</c:otherwise>
-                </c:choose>
-            }
+                ${role.json}
             ${status.last ? '' : ','}
             </c:forEach>
         ];
@@ -176,10 +162,10 @@
             <div id="roles">
                 <c:forEach items="${command.provisionableRoles}" var="role">
                     <div class="role-tab">
-                        <a id="role-${role.csmName}" class="role" href="#">${role.displayName}</a>
+                        <a id="role-${role.key}" class="role" href="#">${role.displayName}</a>
                         <div class="role-control">
                             <!-- TODO: use this -->
-                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.csmName}"/>
+                            <input class="roles-to-edit" type="checkbox" name="roles_to_edit" value="${role.key}"/>
                         </div>
                     </div>
                 </c:forEach>
