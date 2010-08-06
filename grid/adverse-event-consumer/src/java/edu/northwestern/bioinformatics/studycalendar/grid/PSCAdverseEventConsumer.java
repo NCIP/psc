@@ -77,13 +77,13 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     }
 
     public void register(final AENotificationType aeNotification) throws java.rmi.RemoteException, InvalidRegistration, RegistrationFailed {
-    	try{
+    	
     		// Check for Role
     		// 1. If Assigned Role is AE_REPORTER, then process, otherwise Access Denied.
     		SuiteRoleMembership suiteRoleMembership = getUserSuiteRoleMembership();
     		if(suiteRoleMembership == null){
-    			logger.error("Access Denied");
-    			throw new RegistrationFailed();
+    			logger.error("Access Denied: user does not have AE_REPORTER role");
+    			throw new RemoteException("Access Denied: user does not have AE_REPORTER role");
     		}
 
     		// TODO: Change fault implementation to accept a reason message.
@@ -105,7 +105,7 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     		if(!authorizedStudyIdentifier(studyAssignedIdentifier, suiteRoleMembership)){
     			String message = "Access Denied: AE_REPORTER is not authorized for this Study Identifier : " + studyAssignedIdentifier;
     			logger.error(message);
-    			throw new RegistrationFailed();
+    			throw new RemoteException(message);
     		}
     		
     		Site site = studySite.getSite();
@@ -115,7 +115,7 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     		if(!authorizedSiteIdentifier(siteAssignedIdentifier, suiteRoleMembership)){
     			String message = "Access Denied: AE_REPORTER is not authorized for this Site Identifier : " + siteAssignedIdentifier;
     			logger.error(message);
-    			throw new RegistrationFailed();
+    			throw new RemoteException(message);
     		}
     		
     		String description = aeNotification.getDescription();
@@ -143,10 +143,7 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
     			logger.error("Error registering adverse event: " + ex.getMessage(), ex);
     			throw new RegistrationFailed();
     		}
-    	}catch (Exception e) {
-    		logger.error("Error while creating Adverse Event", e);
-    		throw new RemoteException("Unable to create Adverse Event", e);
-    	} 
+    	
     }
 
     @Required
