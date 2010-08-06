@@ -565,26 +565,26 @@ public class ProvisionUserCommandTest extends WebTestCase {
     ////// javascript user init
     
     public void testJavascriptUserForEmptyUserIsCorrect() throws Exception {
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n\n})", command.getJavaScriptProvisionableUser());
+        assertEquals("new psc.admin.ProvisionableUser('jo', {})", command.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithOneGroupOnlyRole() throws Exception {
         ProvisionUserCommand actual = actual(new PscUserBuilder("jo").add(PscRole.SYSTEM_ADMINISTRATOR).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  system_administrator: {  }\n})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"system_administrator\": {}})",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithOneSiteScopedRole() throws Exception {
         ProvisionUserCommand actual = actual(
             new PscUserBuilder("jo").add(PscRole.USER_ADMINISTRATOR).forSites(austin).toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['i-a'] }\n})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"user_administrator\": {\"sites\": [\"i-a\"]}})",
             actual.getJavaScriptProvisionableUser());
     }
 
     public void testJavascriptUserWithOneSitePlusStudyScopedRole() throws Exception {
         ProvisionUserCommand actual = actual(
             new PscUserBuilder("jo").add(PscRole.DATA_READER).forSites(sanAntonio).forAllStudies().toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  data_reader: { sites: ['i-sa'], studies: ['__ALL__'] }\n})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\"data_reader\": {\n    \"sites\": [\"i-sa\"],\n    \"studies\": [\"__ALL__\"]\n}})",
             actual.getJavaScriptProvisionableUser());
     }
 
@@ -595,7 +595,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
                 add(PscRole.DATA_READER).forAllSites().
                     forStudies(Fixtures.createBasicTemplate("T"), Fixtures.createBasicTemplate("Q")).
                 toUser());
-        assertEquals("new psc.admin.ProvisionableUser('jo', {\n  user_administrator: { sites: ['i-a'] },\n  data_reader: { sites: ['__ALL__'], studies: ['T', 'Q'] }\n})",
+        assertEquals("new psc.admin.ProvisionableUser('jo', {\n    \"data_reader\": {\n        \"sites\": [\"__ALL__\"],\n        \"studies\": [\n            \"T\",\n            \"Q\"\n        ]\n    },\n    \"user_administrator\": {\"sites\": [\"i-a\"]}\n})",
             actual.getJavaScriptProvisionableUser());
     }
 

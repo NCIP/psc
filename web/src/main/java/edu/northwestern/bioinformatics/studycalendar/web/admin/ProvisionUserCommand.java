@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -68,6 +69,7 @@ public class ProvisionUserCommand implements Validatable {
     private boolean canProvisionAllSites;
     private boolean lookUpBoundUser;
     private String password, rePassword;
+    static final int JSON_INDENT_DEPTH = 4;
 
     private ProvisionUserCommand(
         PscUser user,
@@ -296,29 +298,26 @@ public class ProvisionUserCommand implements Validatable {
     }
 
     public String getJavaScriptProvisionableUser() {
-        List<String> roleClauses = buildJsProvisionableUserRoleClauses();
-        
-        return String.format(
-            "new psc.admin.ProvisionableUser('%s', {\n%s\n})",
-            getUser().getLoginName(),
-            StringUtils.join(roleClauses.iterator(), ",\n")
-            );
-    }
-
-    private List<String> buildJsProvisionableUserRoleClauses() {
-        List<String> roleClauses = new ArrayList<String>(getCurrentRoles().size());
-        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
-            roleClauses.add(new StringBuilder().append("  ").append(entry.getKey().getCsmName()).
-                append(": { ").
-                append(StringUtils.join(buildJsProvisionableUserScopeClauses(entry.getValue()).iterator(), ", ")).
-                append(" }").
-                toString());
+        try {
+            return String.format(
+                "new psc.admin.ProvisionableUser('%s', %s)",
+                getUser().getLoginName(),
+                buildProvisionableUserRoleJSON().toString(JSON_INDENT_DEPTH));
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException("Building JSON for provisionable user failed", e);
         }
-        return roleClauses;
     }
 
-    private List<String> buildJsProvisionableUserScopeClauses(SuiteRoleMembership membership) {
-        List<String> clauses = new ArrayList<String>(ScopeType.values().length);
+    private JSONObject buildProvisionableUserRoleJSON() throws JSONException {
+        JSONObject rolesJSON = new JSONObject();
+        for (Map.Entry<SuiteRole, SuiteRoleMembership> entry : getCurrentRoles().entrySet()) {
+            rolesJSON.put(entry.getKey().getCsmName(), buildProvisionableUserScopeJSON(entry.getValue()));
+        }
+        return rolesJSON;
+    }
+
+    private JSONObject buildProvisionableUserScopeJSON(SuiteRoleMembership membership) throws JSONException {
+        JSONObject scopeJSON = new JSONObject();
         for (ScopeType scopeType : ScopeType.values()) {
             if (membership.hasScope(scopeType)) {
                 List<String> identifiers;
@@ -327,12 +326,41 @@ public class ProvisionUserCommand implements Validatable {
                 } else {
                     identifiers = membership.getIdentifiers(scopeType);
                 }
-                clauses.add(String.format("%s: ['%s']",
-                    scopeType.getPluralName(),
-                    StringUtils.join(identifiers.iterator(), "', '")));
+                scopeJSON.put(scopeType.getPluralName(), new JSONArray(identifiers));
             }
         }
-        return clauses;
+        return scopeJSON;
+    }
+
+    public String getJavaScriptProvisionableSites() {
+        try {
+            JSONArray sites = new JSONArray();
+            sites.put(new MapBuilder<String, String>().
+                put("identifier", JSON_ALL_SCOPE_IDENTIFIER).
+                put("name", "All sites  (this user will have access in this role for all sites, including new ones as they are created)").
+                toMap());
+            for (Site site : provisionableSites) {
+                sites.put(new MapBuilder<String, String>().
+                    put("name", site.getName()).
+                    put("identifier", site.getAssignedIdentifier()).
+                    toMap());
+            }
+            return sites.toString(JSON_INDENT_DEPTH);
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException("Building JSON for provisionable sites failed", e);
+        }
+    }
+
+    public String getJavaScriptProvisionableRoles() {
+        try {
+            JSONArray roles = new JSONArray();
+            for (ProvisioningRole role : provisionableRoles) {
+                roles.put(role.toJSON());
+            }
+            return roles.toString(JSON_INDENT_DEPTH);
+        } catch (JSONException e) {
+            throw new StudyCalendarSystemException("Building JSON for provisionable roles failed", e);
+        }
     }
 
     ////// CONFIGURATION

@@ -15,20 +15,9 @@
     <tags:javascriptLink name="resig-templates"/>
 
     <script type="text/javascript">
-        var PROVISIONABLE_SITES = [
-            { name: "All sites  (this user will have access in this role for all sites, including new ones as they are created)", identifier: "__ALL__" },
-            <c:forEach items="${command.provisionableSites}" var="site" varStatus="status">
-            { identifier: '${site.assignedIdentifier}', name: '${fn:replace(site.name, "'", "\\'")}' }
-            ${status.last ? '' : ','}
-            </c:forEach>
-        ];
+        var PROVISIONABLE_SITES = ${command.javaScriptProvisionableSites};
 
-        var PROVISIONABLE_ROLES = [
-            <c:forEach items="${command.provisionableRoles}" var="role" varStatus="status">
-                ${role.json}
-            ${status.last ? '' : ','}
-            </c:forEach>
-        ];
+        var PROVISIONABLE_ROLES = ${command.javaScriptProvisionableRoles};
     </script>
 
     <tags:javascriptLink name="admin/provisionable_user"/>
