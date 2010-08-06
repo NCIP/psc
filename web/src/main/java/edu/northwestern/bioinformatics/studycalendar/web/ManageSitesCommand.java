@@ -33,4 +33,10 @@ public class ManageSitesCommand {
         }
 
     }
+
+    public boolean siteCreationEnabled() {
+        SuiteRoleMembership m = user.getMembership(PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
+
+        return (m != null) && m.isAllSites();
+    }
 }

@@ -65,6 +65,50 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         assertEquals("Should only contain NU", nu, actual.get(0));
     }
 
+    public void testManageableSitesForNoRole() {
+        PscUser user = create();
+
+        replayMocks();
+        List<Site> actual = command(user).manageableSites();
+
+        verifyMocks();
+        assertEquals("Wrong number of sites", 0, actual.size());
+    }
+
+    public void testSiteCreationEnabled() {
+        PscUser user = create(
+            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forAllSites()
+        );
+
+        replayMocks();
+        boolean actual = command(user).siteCreationEnabled();
+
+        verifyMocks();
+        assertTrue("should be allowed", actual);
+    }
+    
+    public void testSiteCreationEnabledIsFalse() {
+        PscUser user = create(
+            createMembership(SuiteRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER).forSites(nu)
+        );
+
+        replayMocks();
+        boolean actual = command(user).siteCreationEnabled();
+
+        verifyMocks();
+        assertFalse("should not be allowed", actual);
+    }
+
+    public void testSiteCreationEnabledWithoutRole() {
+        PscUser user = create();
+
+        replayMocks();
+        boolean actual = command(user).siteCreationEnabled();
+
+        verifyMocks();
+        assertFalse("should not be allowed", actual);
+    }
+
     ////// HELPERS
 
     private PscUser create(SuiteRoleMembership... memberships) {
