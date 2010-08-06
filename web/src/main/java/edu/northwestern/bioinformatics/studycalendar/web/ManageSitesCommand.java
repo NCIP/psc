@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscU
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -15,13 +14,13 @@ public class ManageSitesCommand {
     private PscUser user;
     private SiteService siteService;
 
-    public ManageSitesCommand(PscUser user, SiteService siteService) {
+    public ManageSitesCommand(SiteService siteService, PscUser user) {
         this.user = user;
         this.siteService = siteService;
     }
 
     @SuppressWarnings("unchecked")
-    public List<Site> manageableSites() {
+    public List<Site> getManageableSites() {
         SuiteRoleMembership m = user.getMembership(PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
 
         if (m == null) return emptyList();
@@ -34,9 +33,13 @@ public class ManageSitesCommand {
 
     }
 
-    public boolean siteCreationEnabled() {
+    public boolean isSiteCreationEnabled() {
         SuiteRoleMembership m = user.getMembership(PscRole.PERSON_AND_ORGANIZATION_INFORMATION_MANAGER);
 
         return (m != null) && m.isAllSites();
+    }
+
+    public static ManageSitesCommand create(SiteService siteService, PscUser user) {
+        return new ManageSitesCommand(siteService, user);
     }
 }

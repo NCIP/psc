@@ -45,7 +45,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         expect(siteService.getAll()).andReturn(sites);
 
         replayMocks();
-        List<Site> actual = command(user).manageableSites();
+        List<Site> actual = command(user).getManageableSites();
 
         verifyMocks();
         assertEquals("Wrong number of sites", 2, actual.size());
@@ -58,7 +58,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         );
 
         replayMocks();
-        List<Site> actual = command(user).manageableSites();
+        List<Site> actual = command(user).getManageableSites();
 
         verifyMocks();
         assertEquals("Wrong number of sites", 1, actual.size());
@@ -69,7 +69,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         PscUser user = create();
 
         replayMocks();
-        List<Site> actual = command(user).manageableSites();
+        List<Site> actual = command(user).getManageableSites();
 
         verifyMocks();
         assertEquals("Wrong number of sites", 0, actual.size());
@@ -81,7 +81,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         );
 
         replayMocks();
-        boolean actual = command(user).siteCreationEnabled();
+        boolean actual = command(user).isSiteCreationEnabled();
 
         verifyMocks();
         assertTrue("should be allowed", actual);
@@ -93,7 +93,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         );
 
         replayMocks();
-        boolean actual = command(user).siteCreationEnabled();
+        boolean actual = command(user).isSiteCreationEnabled();
 
         verifyMocks();
         assertFalse("should not be allowed", actual);
@@ -103,7 +103,7 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
         PscUser user = create();
 
         replayMocks();
-        boolean actual = command(user).siteCreationEnabled();
+        boolean actual = command(user).isSiteCreationEnabled();
 
         verifyMocks();
         assertFalse("should not be allowed", actual);
@@ -128,6 +128,6 @@ public class ManageSitesCommandTest extends StudyCalendarTestCase {
     }
 
     private ManageSitesCommand command(PscUser user) {
-        return new ManageSitesCommand(user, siteService);
+        return new ManageSitesCommand(siteService, user);
     }
 }

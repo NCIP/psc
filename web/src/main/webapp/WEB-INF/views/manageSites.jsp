@@ -64,13 +64,16 @@
 <body>
 <laf:box title="Manage Sites" cssClass="yui-skin-sam" autopad="true">
     <laf:division>
-        <p><a href="<c:url value="/pages/admin/manage/newSite"/>">Create New Site</a></p>
+        <c:if test="${command.siteCreationEnabled}">
+            <p><a href="<c:url value="/pages/admin/manage/newSite"/>">Create New Site</a></p>
+        </c:if>
+
         <div id="site-list">
         <table id="site-list-table">
             <thead>
             </thead>
             <tbody>
-            <c:forEach items="${sites}" var="site">
+            <c:forEach items="${command.manageableSites}" var="site">
                 <tr>
                     <td>${site.name}</td>
                     <td><input type="button" name="manageBlackoutDates" value="Manage Blackout Dates"
