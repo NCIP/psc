@@ -52,7 +52,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 	private SiteDao siteDao;
 	private String shortTitle = "SMOTE_TEST";
 	private String longTitle = "Test long title";
-	private String assignmentGridId = "6115c43c-851e-425c-8312-fd78367aaef3"; 
+	private String assignmentGridId = "sampleRegistration"; 
 	private String subjectGridId = "91dd4580-801b-4874-adeb-a174361bacea";
 	
 	private StudySubjectAssignmentDao studySubjectAssignmentDao;
@@ -158,7 +158,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		EasyMock.replay(pscUserDetailsService);
 		try {
 			registrationConsumer.register(registration);
-			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+			StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 			EasyMock.verify(gridServicesAuthorizationHelper);
 			EasyMock.verify(pscUserDetailsService);
@@ -187,7 +187,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		EasyMock.replay(pscUserDetailsService);
 		try {
 			registrationConsumer.register(registration);
-			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+			StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 			EasyMock.verify(gridServicesAuthorizationHelper);
 			EasyMock.verify(pscUserDetailsService);
@@ -216,7 +216,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		EasyMock.replay(pscUserDetailsService);
 		try {
 			registrationConsumer.register(registration);
-			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+			StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 			EasyMock.verify(gridServicesAuthorizationHelper);
 			EasyMock.verify(pscUserDetailsService);
@@ -250,7 +250,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		}catch(InvalidRegistrationException e){
 			assertEquals("Test failed:","Access Denied: user does not have REGISTRAR role", e.getFaultReason());
 		}
-		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+		StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -277,8 +277,8 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		}catch(InvalidRegistrationException e){
 			assertEquals("Test failed:","Access Denied: Registrar is not authorized for the associated StudySite:SITE_01", e.getFaultReason());
 		}
-		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
-
+		StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
+		
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
 		assertNull("Authorization Failed: Assignment should haven't been created", assignment);
@@ -304,7 +304,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		}catch(InvalidRegistrationException e){
 			assertEquals("Test failed:","Access Denied: Registrar is not authorized for the Study:TEST_STUDY", e.getFaultReason());
 		}
-		StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+		StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 		EasyMock.verify(gridServicesAuthorizationHelper);
 		EasyMock.verify(pscUserDetailsService);
@@ -331,7 +331,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 
 		try {
 			registrationConsumer.register(registration);
-			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+			StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 			EasyMock.verify(gridServicesAuthorizationHelper);
 			EasyMock.verify(pscUserDetailsService);
@@ -359,7 +359,7 @@ public class PSCRegistrationConsumerTest extends AbstractTransactionalSpringCont
 		EasyMock.replay(pscUserDetailsService);
 		try {           
 			registrationConsumer.register(registration);
-			StudySubjectAssignment assignment = subjectDao.getAssignment(subjectService.findSubjectByPersonId("TEST_MRN"), study, studySite.getSite());
+			StudySubjectAssignment assignment = studySubjectAssignmentDao.getByGridId(assignmentGridId);
 
 			EasyMock.verify(gridServicesAuthorizationHelper);
 			EasyMock.verify(pscUserDetailsService);
