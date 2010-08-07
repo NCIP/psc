@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.core.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -11,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 
 import static edu.northwestern.bioinformatics.studycalendar.core.Fixtures.*;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author John Dzak
@@ -80,14 +79,4 @@ public class AssignSubjectCoordinatorByStudyCommandTest extends StudyCalendarTes
         command.performUncheckAction(user0, site0);
         verifyMocks();
     }
-
-    public void testRefreshUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(user0, "secret");
-        expect(templateService.removeAssignedTemplateFromSubjectCoordinator(study, site0, user0)).andReturn(user0);
-        installedAuthenticationSystem.reloadAuthorities();
-        replayMocks();
-        command.performUncheckAction(user0, site0);
-        verifyMocks();
-    }
-
 }

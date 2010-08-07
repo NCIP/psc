@@ -1,20 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.osgi;
 
+import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import edu.northwestern.bioinformatics.studycalendar.security.CompleteAuthenticationSystem;
 import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
+import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.DictionaryConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.RawDataConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.tools.MapBasedDictionary;
-import edu.northwestern.bioinformatics.studycalendar.core.osgi.OsgiLayerTools;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.web.filters.FilterAdapter;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetailsService;
-import org.acegisecurity.userdetails.UserDetails;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -103,16 +100,6 @@ public class InstalledAuthenticationSystem extends FilterAdapter implements Init
 
     public AuthenticationSystem getAuthenticationSystem() {
         return getCompleteAuthenticationSystem().getCurrentAuthenticationSystem();
-    }
-
-    public void reloadAuthorities() {
-        SecurityContext securityContext = getCompleteAuthenticationSystem().getCurrentSecurityContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication != null) {
-            UserDetails user =  userDetailsService.loadUserByUsername(authentication.getName());
-            Authentication newAuthentication = new UsernamePasswordAuthenticationToken(user, authentication.getCredentials(), user.getAuthorities());
-            securityContext.setAuthentication(newAuthentication);
-        }
     }
 
     ////// CONFIGURATION

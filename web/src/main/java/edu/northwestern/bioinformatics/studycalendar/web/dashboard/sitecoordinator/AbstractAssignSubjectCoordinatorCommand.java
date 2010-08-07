@@ -4,11 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.web.AbstractGridCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -45,12 +42,6 @@ public abstract class AbstractAssignSubjectCoordinatorCommand<R extends Named, C
     }
 
     protected void refreshUser(User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            PscUser authenticatedUser = (PscUser) authentication.getPrincipal();
-            if (user.getName().equals(authenticatedUser.getUsername())) {
-                installedAuthenticationSystem.reloadAuthorities();
-            }
-        }
+        throw new UnsupportedOperationException("TODO: use PscUser#stale when doing #1105");
     }
 }

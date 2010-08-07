@@ -1,14 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.tools.NamedComparatorByLetterCase;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.osgi.InstalledAuthenticationSystem;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.*;
 
 /**
  * @author John Dzak
@@ -46,12 +52,14 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
 
      protected void performCheckAction(Study study, Site site) throws Exception {
         templateService.assignTemplateToSubjectCoordinator(study,site, selected);
-        refreshUser(selected);
+        // TODO: #1105
+        // refreshUser(selected);
     }
 
     protected void performUncheckAction(Study study, Site site) throws Exception  {
         templateService.removeAssignedTemplateFromSubjectCoordinator(study,site, selected);
-        refreshUser(selected);
+        // TODO: #1105
+        // refreshUser(selected);
     }
 
     public User getSelected() {

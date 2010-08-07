@@ -79,13 +79,4 @@ public class AssignSubjectCoordinatorByUserCommandTest extends StudyCalendarTest
         command.performUncheckAction(study0, site0);
         verifyMocks();
     }
-
-    public void testRefreshUser() throws Exception {
-        SecurityContextHolderTestHelper.setSecurityContext(user, "secret");
-        expect(templateService.removeAssignedTemplateFromSubjectCoordinator(study0, site0, user)).andReturn(user);
-        installedAuthenticationSystem.reloadAuthorities();
-        replayMocks();
-        command.performUncheckAction(study0, site0);
-        verifyMocks();
-    }
 }
