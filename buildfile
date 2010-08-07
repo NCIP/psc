@@ -259,7 +259,8 @@ define "psc" do
       test.with UNIT_TESTING,
         project.parent.project('local-plugin'),
         project('plugin-api').test_dependencies,
-        project('domain').test_dependencies
+        project('domain').test_dependencies,
+        SECURITY.suite_authorization
       package(:jar)
     end
 
