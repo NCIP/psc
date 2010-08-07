@@ -3,11 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 import edu.northwestern.bioinformatics.studycalendar.core.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.AuthorizationScopeMappings;
 import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.PscUserBuilder;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscRole;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUser;
 import edu.northwestern.bioinformatics.studycalendar.security.authorization.VisibleStudyParameters;
@@ -31,8 +31,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static edu.northwestern.bioinformatics.studycalendar.security.authorization.AuthorizationObjectFactory.*;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.anyLong;
+import static org.easymock.classextension.EasyMock.expectLastCall;
 
 /**
  * @author Rhett Sutphin
@@ -57,10 +59,8 @@ public class ProvisionUserCommandTest extends WebTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        csmUser = new User();
+        csmUser = createCsmUser("jo");
         csmUser.setUserId(15L);
-        csmUser.setLoginName("jo");
-        csmUser.setUpdateDate(new Date()); // or CSM pukes
 
         pscUser = new PscUser(csmUser, Collections.<SuiteRole, SuiteRoleMembership>emptyMap());
 
@@ -92,6 +92,10 @@ public class ProvisionUserCommandTest extends WebTestCase {
         studyC = Fixtures.createBasicTemplate("C");
         studyDao = new StubStudyDao();
 
+        PscUser principal = new PscUserBuilder("zelda").add(PscRole.USER_ADMINISTRATOR).forAllSites().toUser();
+        principal.getCsmUser().setUserId(99L);
+        SecurityContextHolderTestHelper.setSecurityContext(principal);
+
         command = create(pscUser);
     }
 
@@ -103,7 +107,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
 
     private ProvisionUserCommand create(PscUser existingUser, PscUser provisioner) {
         return ProvisionUserCommand.create(existingUser,
-            psFactory, authorizationManager, authenticationSystem, siteDao, studyDao,
+            psFactory, authorizationManager, authenticationSystem, applicationSecurityManager, siteDao, studyDao,
             provisioner
         );
     }
@@ -269,7 +273,7 @@ public class ProvisionUserCommandTest extends WebTestCase {
         csmUser.setUserId(null);
         csmUser.setEmailId("foo@nihil.it");
 
-        User savedJo = AuthorizationObjectFactory.createCsmUser("jo");
+        User savedJo = createCsmUser("jo");
         savedJo.setUserId(13L);
         savedJo.setUpdateDate(new Date());
         savedJo.setFirstName("Josephine");
@@ -435,6 +439,44 @@ public class ProvisionUserCommandTest extends WebTestCase {
         expect(pSession.getProvisionableRoleMembership(expectedRole)).andReturn(srm);
         /* expect */ pSession.replaceRole(srm);
         return srm;
+    }
+
+    public void testApplySetsStaleIfModifyingSelf() throws Exception {
+        PscUser existingUser = createPscUser("zelda");
+        existingUser.getCsmUser().setUserId(99L);
+
+        /* expect */ authorizationManager.modifyUser(existingUser.getCsmUser());
+
+        ProvisionUserCommand selfMod = create(existingUser);
+        replayMocks();
+
+        selfMod.apply();
+        verifyMocks();
+
+        assertTrue("Security context principal should be stale",
+            applicationSecurityManager.getUser().isStale());
+    }
+
+    public void testApplyDoesNotSetStaleIfNotModifyingSelf() throws Exception {
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+
+        assertFalse("Security context principal should not be stale",
+            applicationSecurityManager.getUser().isStale());
+    }
+
+    public void testApplyDoesNotSetStaleIfNoApplicationSecurityManager() throws Exception {
+        ProvisionUserCommand setup = ProvisionUserCommand.create(pscUser,
+            psFactory, authorizationManager, authenticationSystem, null,
+            siteDao, studyDao, null
+        );
+        replayMocks();
+
+        setup.apply();
+        verifyMocks();
+        // no exceptions
     }
 
     ////// authorization

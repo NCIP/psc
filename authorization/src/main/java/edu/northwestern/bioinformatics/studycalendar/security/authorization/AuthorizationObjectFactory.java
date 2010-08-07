@@ -5,6 +5,7 @@ import gov.nih.nci.cabig.ctms.suite.authorization.SuiteRoleMembership;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ public class AuthorizationObjectFactory {
     public static User createCsmUser(String username) {
         User csmUser = new User();
         csmUser.setLoginName(username);
+        csmUser.setUpdateDate(new Date()); // Or else CSM pukes
         return csmUser;
     }
 

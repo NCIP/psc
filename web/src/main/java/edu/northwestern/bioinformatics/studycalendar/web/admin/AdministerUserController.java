@@ -64,7 +64,8 @@ public class AdministerUserController
         return ProvisionUserCommand.create(targetUser,
             provisioningSessionFactory, authorizationManager,
             installedAuthenticationSystem.getAuthenticationSystem(),
-            siteDao, studyDao, applicationSecurityManager.getUser());
+            applicationSecurityManager, siteDao, studyDao,
+            applicationSecurityManager.getUser());
     }
 
     @Override

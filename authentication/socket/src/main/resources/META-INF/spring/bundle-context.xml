@@ -38,7 +38,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
 
     <bean id="securityContextReloadFilter"
-          class="edu.northwestern.bioinformatics.studycalendar.security.internal.SecurityContextReloadFilter"/>
+          class="edu.northwestern.bioinformatics.studycalendar.security.internal.SecurityContextReloadFilter">
+        <property name="pscUserDetailsService" ref="pscUserDetailsService"/>
+    </bean>
 
     <bean id="authenticationSystemLogoutFilter"
           class="edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemLogoutFilter">

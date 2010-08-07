@@ -34,4 +34,7 @@
             </entry>
         </osgi:service-properties>
     </osgi:service>
+
+    <osgi:reference id="pscUserDetailsService"
+                    interface="edu.northwestern.bioinformatics.studycalendar.security.authorization.PscUserDetailsService"/>
 </beans>

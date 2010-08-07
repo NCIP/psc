@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.core.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -70,6 +71,7 @@ public class ProvisionUserCommand implements Validatable {
     private final ProvisioningSessionFactory provisioningSessionFactory;
     private final AuthorizationManager authorizationManager;
     private final AuthenticationSystem authenticationSystem;
+    private final ApplicationSecurityManager applicationSecurityManager;
 
     private List<ProvisioningRole> provisionableRoles;
     private List<Site> provisionableSites;
@@ -85,12 +87,14 @@ public class ProvisionUserCommand implements Validatable {
         PscUser user,
         ProvisioningSessionFactory provisioningSessionFactory,
         AuthorizationManager authorizationManager,
-        AuthenticationSystem authenticationSystem
+        AuthenticationSystem authenticationSystem,
+        ApplicationSecurityManager applicationSecurityManager
     ) {
         this.user = user;
         this.provisioningSessionFactory = provisioningSessionFactory;
         this.authorizationManager = authorizationManager;
         this.authenticationSystem = authenticationSystem;
+        this.applicationSecurityManager = applicationSecurityManager;
 
         // locked down by default
         this.provisionableRoles = Collections.emptyList();
@@ -106,11 +110,12 @@ public class ProvisionUserCommand implements Validatable {
     public static ProvisionUserCommand create(
         PscUser existingUser, ProvisioningSessionFactory psFactory,
         AuthorizationManager authorizationManager, AuthenticationSystem authenticationSystem,
+        ApplicationSecurityManager applicationSecurityManager,
         SiteDao siteDao, StudyDao studyDao, PscUser provisioner
     ) {
         ProvisionUserCommand command = new ProvisionUserCommand(
             existingUser == null ? AuthorizationObjectFactory.createPscUser() : existingUser,
-            psFactory, authorizationManager, authenticationSystem);
+            psFactory, authorizationManager, authenticationSystem, applicationSecurityManager);
         if (provisioner == null) return command;
 
         if (provisioner.getMembership(PscRole.USER_ADMINISTRATOR) != null) {
@@ -183,6 +188,7 @@ public class ProvisionUserCommand implements Validatable {
         applyAddAndRemoveScopes(changesByType.get("specificScope"));
         applyAddAndRemoveAllScope(changesByType.get("allScope"));
         applyAddAndRemoveGroupOnly(changesByType.get("groupOnly"));
+        applyStaleFlag();
     }
 
     private void applyPassword() {
@@ -272,6 +278,14 @@ public class ProvisionUserCommand implements Validatable {
             } else if (change.isRemove()) {
                 getProvisioningSession().deleteRole(change.getRole());
             }
+        }
+    }
+
+    private void applyStaleFlag() {
+        if (applicationSecurityManager == null) return;
+        PscUser principal = applicationSecurityManager.getUser();
+        if (principal.getCsmUser().getUserId().equals(getUser().getUserId())) {
+            principal.setStale(true);
         }
     }
 
