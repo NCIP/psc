@@ -27,7 +27,10 @@
         <!-- the globus, cryptix, bouncycastle, and claymoresystems entries are because of
              http://cagrid.org/display/knowledgebase/GSSAPI+-+Bad+Certificate+Error+Solution
              See also static-lib/globus-security-packages.rb -->
-        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.corba.*,com.sun.image.*,com.sun.imageio.*,com.sun.java.*,com.sun.naming.*,com.sun.security.*,net.sf.cglib.*,org.globus.common,org.globus.ftp,org.globus.ftp.*,org.globus.gram,org.globus.gram.*,org.globus.gsi,org.globus.gsi.*,org.globus.io.*,org.globus.mds,org.globus.mds.*,org.globus.myproxy,org.globus.rsl,org.globus.security.gridmap,org.globus.util,org.globus.util.*,org.gridforum.jgss,cryptix,cryptix.*,org.bouncycastle,org.bouncycastle.*,org.ietf.jgss,COM.claymoresystems.*</property>
+        <!-- org.hibernate.jdbc is because of
+             http://opensource.atlassian.com/projects/hibernate/browse/HHH-3529
+             and should be removeable after upgrading to hibernate 3.5 -->
+        <property name="org.osgi.framework.bootdelegation">sun.*,com.sun.corba.*,com.sun.image.*,com.sun.imageio.*,com.sun.java.*,com.sun.naming.*,com.sun.security.*,net.sf.cglib.*,org.globus.common,org.globus.ftp,org.globus.ftp.*,org.globus.gram,org.globus.gram.*,org.globus.gsi,org.globus.gsi.*,org.globus.io.*,org.globus.mds,org.globus.mds.*,org.globus.myproxy,org.globus.rsl,org.globus.security.gridmap,org.globus.util,org.globus.util.*,org.gridforum.jgss,cryptix,cryptix.*,org.bouncycastle,org.bouncycastle.*,org.ietf.jgss,COM.claymoresystems.*,org.hibernate.jdbc</property>
         <!-- <property name="org.knopflerfish.framework.debug.classloader">true</property> -->
 	</framework-properties>
 
