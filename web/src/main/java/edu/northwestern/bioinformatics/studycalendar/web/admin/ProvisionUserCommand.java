@@ -61,6 +61,7 @@ public class ProvisionUserCommand implements Validatable {
     public static final String JSON_CHANGE_PROP_SCOPE_TYPE = "scopeType";
     public static final String JSON_CHANGE_PROP_SCOPE_IDENTIFIER = "scopeIdentifier";
     public static final String JSON_ALL_SCOPE_IDENTIFIER = "__ALL__";
+    private static final int JSON_INDENT_DEPTH = 4;
 
     private PscUser user;
     private JSONArray roleChanges;
@@ -79,7 +80,6 @@ public class ProvisionUserCommand implements Validatable {
         canProvisionManagingAllStudies, canProvisionParticipateInAllStudies;
     private boolean lookUpBoundUser;
     private String password, rePassword;
-    static final int JSON_INDENT_DEPTH = 4;
 
     private ProvisionUserCommand(
         PscUser user,
