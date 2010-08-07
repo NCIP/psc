@@ -10,6 +10,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="filters">
             <list>
                 <ref bean="httpSessionContextIntegrationFilter"/>
+                <ref bean="securityContextReloadFilter"/>
                 <ref bean="authenticationSystemLogoutFilter"/>
                 <ref bean="authenticationSystemSocket"/>
                 <ref bean="requestAuthenticationSocket"/>
@@ -35,6 +36,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <bean id="httpSessionContextIntegrationFilter"
           class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
+
+    <bean id="securityContextReloadFilter"
+          class="edu.northwestern.bioinformatics.studycalendar.security.internal.SecurityContextReloadFilter"/>
 
     <bean id="authenticationSystemLogoutFilter"
           class="edu.northwestern.bioinformatics.studycalendar.security.internal.AuthenticationSystemLogoutFilter">

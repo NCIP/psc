@@ -24,6 +24,7 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
     private Map<SuiteRole, SuiteRoleMembership> memberships;
     private edu.northwestern.bioinformatics.studycalendar.domain.User legacyUser;
 
+    private boolean stale;
     private Map<String, Object> attributes;
 
     /** Default constructor is for proxying only. */
@@ -37,6 +38,7 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
         this.user = user;
         this.memberships = memberships;
 
+        this.stale = false;
         this.attributes = new LinkedHashMap<String, Object>();
     }
 
@@ -122,6 +124,14 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
         return getUsername().compareToIgnoreCase(o.getUsername());
     }
 
+    public boolean isStale() {
+        return stale;
+    }
+
+    public void setStale(boolean stale) {
+        this.stale = stale;
+    }
+
     ////// ARBITRARY ATTRIBUTES
 
     public Object getAttribute(String key) {
@@ -130,6 +140,12 @@ public class PscUser implements UserDetails, Comparable<PscUser> {
 
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+    }
+
+    public void copyAttributesInto(PscUser other) {
+        for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+            other.setAttribute(entry.getKey(), entry.getValue());
+        }
     }
 
     ////// IMPLEMENTATION OF UserDetails
